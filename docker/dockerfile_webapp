@@ -2,9 +2,9 @@
 FROM ubuntu:18.04
 
 ARG DEBIAN_FRONTEND=noninteractive
+
 # Common software : always run apt-get update et apt-get install in the same run statement
 RUN apt-get update && \
-    apt-get -y install nginx && \
     apt-get -y install software-properties-common && \
     apt-get -y install unzip
 
@@ -23,12 +23,10 @@ EXPOSE 9000
 # Define commonly used JAVA_HOME variable
 ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
 
-# Get APP
-COPY mrs-1.0-SNAPSHOT.zip .
+WORKDIR /opt/perspectives-webapp
 
-# unzip APP
-RUN unzip mrs-1.0-SNAPSHOT.zip
+COPY perspectives-webapp-0.1.0-SNAPSHOT.zip .
 
-# launch app
-CMD ["./mrs-1.0-SNAPSHOT/bin/mrs"]
+RUN unzip perspectives-webapp-0.1.0-SNAPSHOT.zip
 
+CMD ["./perspectives-webapp-0.1.0-SNAPSHOT/bin/perspectives-webapp", "-Dlogger.resource=logback-recette.xml", "-Dconfig.resource=application-recette.conf"]
