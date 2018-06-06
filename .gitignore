@@ -3,3 +3,6 @@ logs/
 project/project/
 target/
 webapp/public/
+webapp/conf/application-recette.conf
+webapp/conf/application-production.conf
+docker/*.env
