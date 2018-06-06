@@ -59,7 +59,7 @@ class InfraModule extends AbstractModule with ScalaModule {
   def provideDatabase(lifecycle: ApplicationLifecycle,
                       configuration: Configuration): Database = {
     val database = Database.forConfig(
-      path = "db.default",
+      path = "db.postgresql",
       config = configuration.underlying
     )
 

@@ -25,8 +25,17 @@ ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
 
 WORKDIR /opt/perspectives-webapp
 
-COPY perspectives-webapp-0.1.0-SNAPSHOT.zip .
+ARG WEBAPP_LOGBACK_RESOURCE=logback.xml
+ENV WEBAPP_LOGBACK_RESOURCE=${WEBAPP_LOGBACK_RESOURCE}
 
-RUN unzip perspectives-webapp-0.1.0-SNAPSHOT.zip
+ARG WEBAPP_CONFIG_RESOURCE=application.conf
+ENV WEBAPP_CONFIG_RESOURCE=${WEBAPP_CONFIG_RESOURCE}
 
-CMD ["./perspectives-webapp-0.1.0-SNAPSHOT/bin/perspectives-webapp", "-Dlogger.resource=logback-recette.xml", "-Dconfig.resource=application-recette.conf"]
+ARG WEBAPP_VERSION
+ENV WEBAPP_VERSION=${WEBAPP_VERSION}
+
+COPY perspectives-webapp-${WEBAPP_VERSION}.zip .
+
+RUN unzip perspectives-webapp-${WEBAPP_VERSION}.zip
+
+CMD ["sh", "-c", "./perspectives-webapp-${WEBAPP_VERSION}/bin/perspectives-webapp -Dlogger.resource=${WEBAPP_LOGBACK_RESOURCE} -Dconfig.resource=${WEBAPP_CONFIG_RESOURCE}"]

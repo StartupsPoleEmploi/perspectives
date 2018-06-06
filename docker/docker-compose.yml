@@ -20,8 +20,6 @@ services:
       - dev.env
     deploy:
       replicas: 1
-    ports:
-      - "8090:5432"
     networks:
       - net
 
