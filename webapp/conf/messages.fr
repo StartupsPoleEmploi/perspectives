@@ -1,0 +1,2 @@
+error.required=Veuillez saisir une valeur pour ce champ
+constraint.criteres.selectionmetiers=Choisissez vos métiers dans la liste

@@ -1,0 +1,44 @@
+version: "3.5"
+services:
+  nginx:
+    image: nginx-certbot
+    ports:
+      - "80:80"
+      - "443:443"
+    deploy:
+      replicas: 1
+    environment:
+      - CERTBOT_EMAIL=brice.friederich@beta.gouv.fr
+    networks:
+      - net
+
+  database:
+    image: postgres:10.4
+    volumes:
+      - postgresql:/var/lib/postgresql/data
+      - ./events.sql:/docker-entrypoint-initdb.d/events.sql
+      - ./candidats.sql:/docker-entrypoint-initdb.d/candidats.sql
+    env_file:
+      - prod.env
+    deploy:
+      replicas: 1
+    networks:
+      - net
+
+  webapp:
+    image: webapp
+    depends_on:
+      - database
+      - nginx
+    env_file:
+      - prod.env
+    deploy:
+      replicas: 1
+    networks:
+      - net
+
+networks:
+  net:
+
+volumes:
+  postgresql:

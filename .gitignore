@@ -1,8 +1,8 @@
+docker/*.env
 .idea/
 logs/
+node_modules/
 project/project/
 target/
 webapp/public/
-webapp/conf/application-recette.conf
-webapp/conf/application-production.conf
-docker/*.env
+webapp/conf/application-*.conf

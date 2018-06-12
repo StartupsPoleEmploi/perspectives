@@ -1,22 +1,37 @@
 import sbt.Keys._
-import sbt._
+import sbt.{Resolver, _}
 
 object Settings {
 
-  // Repositories
-  /*val customResolvers: Seq[Resolver] = Seq(
-    "HTTPS Maven Central" at "https://repo1.maven.org/maven2/",
-    "Sonatype Releases" at "https://oss.sonatype.org/content/repositories/releases/",
-    "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/",
-    "Typesafe Releases" at "http://repo.typesafe.com/typesafe/releases/",
-    "Typesafe Snapshots" at "http://repo.typesafe.com/typesafe/snapshots/",
-    "Typesafe repository mvn" at "http://repo.typesafe.com/typesafe/maven-releases/",
-    Resolver.url("Typesafe Ivy releases", url("https://repo.typesafe.com/typesafe/ivy-releases"))(Resolver.ivyStylePatterns)
-  )*/
-
   val settings: Seq[Setting[_]] = Seq(
-    organization := "fr.poleemploi",
-    scalaVersion := "2.12.4",
-    version := "0.1.0-SNAPSHOT"
+    organization := "fr.poleemploi.perspectives",
+    scalaVersion := "2.12.4"
+  )
+
+  // Configuration sans publication
+  val noPublishSettings: Seq[Setting[_]] = settings ++ Seq(
+    skip in publish := true
+  )
+
+  // Configuration générale de la publication
+  val publishSettings: Seq[Setting[_]] = settings ++ Seq(
+    publishArtifact in(Compile, packageBin) := true,
+    publishArtifact in(Compile, packageDoc) := true,
+    publishArtifact in(Compile, packageSrc) := true,
+    publishArtifact in(Test, packageBin) := false,
+    publishArtifact in(Test, packageDoc) := false,
+    publishArtifact in(Test, packageSrc) := false,
+    publishMavenStyle := true,
+    pomIncludeRepository := { _ => false },
+    publishTo := {
+      Some(Resolver.mavenLocal)
+    }
+  )
+
+  // Configuration spécifique de la publication pour une appli Play!
+  val playPublishSettings: Seq[Setting[_]] = publishSettings ++ Seq(
+    publishArtifact in(Compile, packageBin) := false,
+    publishArtifact in(Compile, packageDoc) := false,
+    publishArtifact in(Compile, packageSrc) := true
   )
 }

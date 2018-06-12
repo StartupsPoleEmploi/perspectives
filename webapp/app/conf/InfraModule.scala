@@ -22,6 +22,11 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
+  def webappConfig(configuration: Configuration): WebAppConfig =
+    new WebAppConfig(configuration = configuration)
+
+  @Provides
+  @Singleton
   @Named("eventStoreObjectMapper")
   def eventObjectMapper: ObjectMapper =
     EventStoreObjectMapper.mapper

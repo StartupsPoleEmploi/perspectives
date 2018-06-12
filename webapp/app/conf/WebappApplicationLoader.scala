@@ -13,7 +13,8 @@ class WebappApplicationLoader extends GuiceApplicationLoader() {
       .bindings(
         new InfraModule(),
         new EventSourcingModule(),
-        new ProjectionsModule()
+        new ProjectionsModule(),
+        new ServicesModule()
       )
   }
 

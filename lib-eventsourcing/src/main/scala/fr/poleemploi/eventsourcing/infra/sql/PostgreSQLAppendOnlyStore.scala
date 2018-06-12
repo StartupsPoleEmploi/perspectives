@@ -58,8 +58,7 @@ class PostgreSQLAppendOnlyStore(val driver: PostgresDriver,
           streamName = streamName
         ))
     }
-    val result = Await.result(f, 5.seconds)
-    println(result)
+    Await.ready(f, 5.seconds)
   }
 
   override def readRecords(streamName: String): List[AppendOnlyData] = {

@@ -1,0 +1,18 @@
+@import "../../node_modules/bootstrap/scss/functions";
+@import "../../node_modules/bootstrap/scss/variables";
+@import "../../node_modules/bootstrap/scss/mixins";
+
+@import "partials/base";
+@import "partials/buttons";
+
+@import "modules/menuCandidat";
+@import "modules/peConnect";
+@import "modules/headerPrincipal";
+
+@import "pages/landing";
+@import "pages/saisieCriteresRecherche";
+
+body {
+    font-family: $font-family;
+    background: $gradient-gris-blanc;
+}
