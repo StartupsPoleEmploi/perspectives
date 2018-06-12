@@ -1,8 +1,12 @@
 package fr.poleemploi.eventsourcing
 
+import java.time.ZonedDateTime
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility
 import com.fasterxml.jackson.annotation.PropertyAccessor
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat
+import com.fasterxml.jackson.databind.{ObjectMapper, SerializationFeature}
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
 import org.scalatest.{MustMatchers, WordSpec}
@@ -11,7 +15,9 @@ class EventSpec extends WordSpec with MustMatchers {
 
   implicit val objectMapper: ObjectMapper =
     (new ObjectMapper() with ScalaObjectMapper)
-      .registerModules(DefaultScalaModule)
+      .registerModules(DefaultScalaModule, new JavaTimeModule)
+      .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+      .setDateFormat(new ISO8601DateFormat())
       .setVisibility(PropertyAccessor.ALL, Visibility.NONE)
       .setVisibility(PropertyAccessor.FIELD, Visibility.ANY)
 
@@ -75,9 +81,23 @@ class EventSpec extends WordSpec with MustMatchers {
       // Then
       result mustBe """{"@class":"fr.poleemploi.eventsourcing.EventTest","chaine":"hello","nombre":43}"""
     }
+    "renvoyer une serialisation Json d'un evenement contenant une date" in {
+      // Given
+      val event = EventWithDate(
+        date = ZonedDateTime.now()
+      )
+
+      // When
+      val result = Event.toJson(event)
+
+      // Then
+      result must include(""""date":""")
+    }
   }
 
 }
 
 case class EventTest(chaine: String,
                      nombre: Int) extends Event
+
+case class EventWithDate(date: ZonedDateTime) extends Event

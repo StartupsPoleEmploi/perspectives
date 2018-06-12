@@ -19,6 +19,9 @@ object Dependencies {
 
   val jacksonDatabind = "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion
 
+  /** For DateTimeModule */
+  val jacksonDatatypeJSR310 = "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310" % jacksonVersion
+
   val jacksonModuleScala = "com.fasterxml.jackson.module" % "jackson-module-scala_2.12" % jacksonVersion
 
   val scalaGuice = "net.codingwell" %% "scala-guice" % guiceVersion
@@ -28,4 +31,6 @@ object Dependencies {
   val slickHikariCp = "com.typesafe.slick" %% "slick-hikaricp" % slickVersion
 
   val scalatestplus = "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test
+
+  val mockito = "org.mockito" % "mockito-core" % "2.18.3" % "test"
 }

@@ -17,7 +17,9 @@ class EventStore(eventPublisher: EventPublisher,
     */
   def loadEventStream(aggregateId: AggregateId): EventStream = {
     val datas = appendOnlyStore.readRecords(aggregateId.value)
-    datas.foldRight(EventStream(0, Nil))((data, es) => EventStream(data.streamVersion, data.event :: es.events))
+    datas.foldRight(EventStream(0, Nil))((data, es) =>
+      EventStream(if (es.version < data.streamVersion) data.streamVersion else es.version, data.event :: es.events)
+    )
   }
 
   /**
@@ -67,7 +69,7 @@ class EventStore(eventPublisher: EventPublisher,
   private def tryResolveConflicts(id: AggregateId,
                                   expectedStreamVersion: Int,
                                   actualStreamVersion: Int, events: List[Event]): Unit = {
-
+    println(s"CONFLIT SUR AGGREGAT id $id. expectedStreamVersion : $expectedStreamVersion, actualStreamVersion : $actualStreamVersion")
   }
 }
 
