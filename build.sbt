@@ -18,5 +18,6 @@ lazy val webapp = (project in file("webapp"))
   .dependsOn(domain, projections)
 
 lazy val root = (project in file("."))
+  .settings(Settings.publishSettings: _*)
   .settings(Settings.noPublishSettings: _*)
   .aggregate(domain, eventsourcing, projections, webapp)
