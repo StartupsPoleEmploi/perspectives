@@ -1,0 +1,8 @@
+docker/*.env
+.idea/
+logs/
+node_modules/
+project/project/
+target/
+webapp/public/
+webapp/conf/application-*.conf

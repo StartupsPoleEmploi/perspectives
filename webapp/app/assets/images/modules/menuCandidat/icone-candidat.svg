@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 50.2 (55047) - http://www.bohemiancoding.com/sketch -->
+    <title>4DB8A654-ABAB-4C91-923D-1D5881B39156</title>
+    <desc>Created with sketchtool.</desc>
+    <defs></defs>
+    <g id="UI-Landing" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+        <g id="inscription.v.0-dropdown" transform="translate(-1019.000000, -16.000000)" stroke="#334051" stroke-width="1.5">
+            <g id="Group-20" transform="translate(1019.000000, 14.000000)">
+                <g id="Group-19" transform="translate(0.000000, 2.000000)">
+                    <g id="user" transform="translate(2.000000, 1.000000)">
+                        <path d="M12,14 L12,12.4444444 C12,10.7262252 10.6568542,9.33333333 9,9.33333333 L3,9.33333333 C1.34314575,9.33333333 0,10.7262252 0,12.4444444 L0,14" id="Shape"></path>
+                        <ellipse id="Oval" cx="6" cy="3.11111111" rx="3" ry="3.11111111"></ellipse>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

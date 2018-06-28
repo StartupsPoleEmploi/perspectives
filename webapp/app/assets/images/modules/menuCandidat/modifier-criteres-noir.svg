@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 50.2 (55047) - http://www.bohemiancoding.com/sketch -->
+    <title>05EEB61D-541B-433C-9A60-D5A8A4B52770</title>
+    <desc>Created with sketchtool.</desc>
+    <defs></defs>
+    <g id="UI-Landing" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+        <g id="inscription.v.0-dropdown" transform="translate(-969.000000, -61.000000)" stroke="#334051" stroke-width="1.5">
+            <g id="edit" transform="translate(969.000000, 61.000000)">
+                <path d="M13,10.5144444 L13,13.7777778 C13,14.4527925 12.4527925,15 11.7777778,15 L3.22222222,15 C2.54720753,15 2,14.4527925 2,13.7777778 L2,5.22222222 C2,4.54720753 2.54720753,4 3.22222222,4 L6.48555556,4" id="Shape"></path>
+                <polygon id="Shape" points="12.4285714 2 15 4.57142857 8.57142857 11 6 11 6 8.42857143"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>

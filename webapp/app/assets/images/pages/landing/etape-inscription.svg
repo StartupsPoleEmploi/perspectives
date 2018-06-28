@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="289px" height="229px" viewBox="0 0 289 229" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 50.2 (55047) - http://www.bohemiancoding.com/sketch -->
+    <title>step1-ccm</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <rect id="path-1" x="44" y="73" width="201" height="120" rx="2"></rect>
+        <filter x="-1.5%" y="-2.5%" width="103.0%" height="105.0%" filterUnits="objectBoundingBox" id="filter-2">
+            <feGaussianBlur stdDeviation="3" in="SourceAlpha" result="shadowBlurInner1"></feGaussianBlur>
+            <feOffset dx="0" dy="0" in="shadowBlurInner1" result="shadowOffsetInner1"></feOffset>
+            <feComposite in="shadowOffsetInner1" in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="shadowInnerInner1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.1 0" type="matrix" in="shadowInnerInner1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="UI-Landing" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="landing-page-3" transform="translate(-210.000000, -1044.000000)">
+            <g id="Group-27" transform="translate(210.000000, 1044.000000)">
+                <g id="Group-18">
+                    <circle id="Oval-2" fill="#334051" cx="40.3000022" cy="40.3000022" r="40.3000022"></circle>
+                    <polygon id="1" fill="#FFFFFF" points="39.4784022 32.1279992 32.8328018 37.9779995 28.8548016 33.3915993 39.6656022 24.2655987 46.2176025 24.2655987 46.2176025 57.4000006 39.4784022 57.4000006"></polygon>
+                </g>
+                <ellipse id="Oval-4" fill="#334051" opacity="0.6" cx="144.5" cy="225.5" rx="79.5" ry="3.5"></ellipse>
+                <g id="Group-13" transform="translate(117.000000, 197.000000)">
+                    <rect id="Rectangle-14" fill="#DADCE0" x="14" y="0" width="26" height="19"></rect>
+                    <path d="M13.8739558,18.8022461 L3.37788834,26.6234316 C2.93503254,26.9534273 2.84354137,27.5799473 3.17353709,28.0228031 C3.36226156,28.2760722 3.65954697,28.425293 3.97539846,28.425293 L50.105518,28.425293 C50.6578028,28.425293 51.105518,27.9775777 51.105518,27.425293 C51.105518,27.0998745 50.9471743,26.7948075 50.6810549,26.6075171 L39.5906058,18.8022461" id="Path-18" fill="#D0D2D5"></path>
+                </g>
+                <rect id="Rectangle-Copy" fill="#C4C4C4" x="39" y="68" width="211" height="130" rx="4.37400012"></rect>
+                <g id="Rectangle-Copy">
+                    <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-1"></use>
+                    <use fill="black" fill-opacity="1" filter="url(#filter-2)" xlink:href="#path-1"></use>
+                </g>
+                <g id="Group-14" transform="translate(99.000000, 107.000000)">
+                    <rect id="Rectangle-7" fill="#82CCDD" x="34" y="69" width="27" height="7" rx="3.5"></rect>
+                    <rect id="Rectangle-5" stroke="#000000" opacity="0.275502232" x="0.5" y="7.5" width="94" height="7" rx="1"></rect>
+                    <rect id="Rectangle-5-Copy" stroke="#000000" opacity="0.275502232" x="0.5" y="29.5" width="94" height="7" rx="1"></rect>
+                    <rect id="Rectangle-6" fill="#D8D8D8" x="0" y="0" width="35" height="3"></rect>
+                    <rect id="Rectangle-6-Copy" fill="#D8D8D8" x="0" y="22" width="35" height="3"></rect>
+                    <rect id="Rectangle-5-Copy-2" stroke="#000000" opacity="0.275502232" x="0.5" y="51.5" width="94" height="7" rx="1"></rect>
+                    <rect id="Rectangle-6-Copy-2" fill="#D8D8D8" x="0" y="44" width="35" height="3"></rect>
+                </g>
+                <rect id="Rectangle-4" fill="#334051" x="106" y="86" width="77" height="7" rx="3"></rect>
+            </g>
+        </g>
+    </g>
+</svg>

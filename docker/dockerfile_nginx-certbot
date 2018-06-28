@@ -1,0 +1,2 @@
+FROM staticfloat/nginx-certbot
+COPY nginx-https.conf /etc/nginx/conf.d/

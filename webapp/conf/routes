@@ -1,0 +1,19 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# https://www.playframework.com/documentation/latest/ScalaRouting
+# ~~~~
+
+# An example controller showing a sample home page
+GET     /                                           controllers.LandingController.landing
+
+GET     /connexion                                  controllers.AuthentificationController.connexion
+GET     /connexion/callback                         controllers.AuthentificationController.connexionCallback
+GET     /connexion/peconnect                        controllers.AuthentificationController.connexionPEConnect
+GET     /connexion/simple                           controllers.AuthentificationController.connexionSimple
+GET     /deconnexion                                controllers.AuthentificationController.deconnexion
+
+GET     /candidat/criteres-recherche                controllers.SaisieCriteresRechercheController.saisieCriteresRecherche
+POST    /candidat/criteres-recherche                controllers.SaisieCriteresRechercheController.modifierCriteresRecherche
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

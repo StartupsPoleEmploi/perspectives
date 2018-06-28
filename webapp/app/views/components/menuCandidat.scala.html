@@ -1,0 +1,28 @@
+@import _root_.authentification.AuthenticatedCandidat
+
+@(authenticatedCandidat: AuthenticatedCandidat)
+
+<nav class="menuCandidat">
+    <span class="menuCandidat-js-responsive"></span>
+    <div class="menuCandidatHeader">
+        <img class="menuCandidatHeader-iconeFermeture" src="@routes.Assets.versioned("images/modules/menuCandidat/fermer-menu.png")"/>
+        <img class="menuCandidatHeader-iconeOuverture" src="@routes.Assets.versioned("images/modules/menuCandidat/ouvrir-menu.png")"/>
+        <img class="menuCandidatHeader-icone" src="@routes.Assets.versioned("images/modules/menuCandidat/icone-candidat.svg")" />
+        <span class="menuCandidatHeader-whois">@{authenticatedCandidat.prenom.capitalize} @{authenticatedCandidat.nom.capitalize.take(1)}.</span>
+        <img class="menuCandidatHeader-icone" src="@routes.Assets.versioned("images/modules/menuCandidat/derouler-menu.svg")" />
+    </div>
+    <ul class="menuCandidatActions">
+        <li class="menuCandidatActions-item">
+            <a class="menuCandidatActions-lien" href="/candidat/criteres-recherche">
+                <span class="menuCandidatActions-icone iconeCritere"></span>
+                Modifier mes critères
+            </a>
+        </li>
+        <li class="menuCandidatActions-item">
+            <a class="menuCandidatActions-lien" href="/deconnexion">
+                <span class="menuCandidatActions-icone iconeDeconnexion"></span>
+                Se déconnecter
+            </a>
+        </li>
+    </ul>
+</nav>

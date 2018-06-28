@@ -1,0 +1,20 @@
+.headerPrincipal {
+    @include make-container();
+    @include make-container-max-widths();
+
+    &-titre {
+        display: none;
+    }
+
+    &-description {
+        display: none;
+    }
+
+    &-banniere {
+        @include make-row();
+        text-align: center;
+        margin-top: 3em;
+        margin-bottom: 1.5em;
+    }
+
+}

@@ -1,0 +1,41 @@
+# base image
+FROM ubuntu:18.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+# Common software : always run apt-get update et apt-get install in the same run statement
+RUN apt-get update && \
+    apt-get -y install software-properties-common && \
+    apt-get -y install unzip
+
+# Java8
+RUN \
+  echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | debconf-set-selections && \
+  apt-add-repository -y ppa:webupd8team/java && \
+  apt-get update && \
+  apt-get install -y oracle-java8-installer && \
+  rm -rf /var/cache/oracle-jdk8-installer && \
+  rm -rf /var/lib/apt/lists/* # delete all the apt list files since they're big and get stale quickly
+
+# Make port 9000 available to the world outside this container
+EXPOSE 9000
+
+# Define commonly used JAVA_HOME variable
+ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
+
+WORKDIR /opt/perspectives-webapp
+
+ARG WEBAPP_LOGBACK_RESOURCE=logback.xml
+ENV WEBAPP_LOGBACK_RESOURCE=${WEBAPP_LOGBACK_RESOURCE}
+
+ARG WEBAPP_CONFIG_RESOURCE=application.conf
+ENV WEBAPP_CONFIG_RESOURCE=${WEBAPP_CONFIG_RESOURCE}
+
+ARG WEBAPP_VERSION
+ENV WEBAPP_VERSION=${WEBAPP_VERSION}
+
+COPY perspectives-webapp-${WEBAPP_VERSION}.zip .
+
+RUN unzip perspectives-webapp-${WEBAPP_VERSION}.zip
+
+CMD ["sh", "-c", "./perspectives-webapp-${WEBAPP_VERSION}/bin/perspectives-webapp -Dlogger.resource=${WEBAPP_LOGBACK_RESOURCE} -Dconfig.resource=${WEBAPP_CONFIG_RESOURCE}"]
