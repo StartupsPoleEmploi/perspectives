@@ -1,26 +1,26 @@
-@import _root_.authentification.AuthenticatedCandidat
+@import authentification.model.CandidatAuthentifie
 
-@(authenticatedCandidat: AuthenticatedCandidat)
+@(candidatAuthentifie: CandidatAuthentifie)
 
-<nav class="menuCandidat">
-    <span class="menuCandidat-js-responsive"></span>
-    <div class="menuCandidatHeader">
-        <img class="menuCandidatHeader-iconeFermeture" src="@routes.Assets.versioned("images/modules/menuCandidat/fermer-menu.png")"/>
-        <img class="menuCandidatHeader-iconeOuverture" src="@routes.Assets.versioned("images/modules/menuCandidat/ouvrir-menu.png")"/>
-        <img class="menuCandidatHeader-icone" src="@routes.Assets.versioned("images/modules/menuCandidat/icone-candidat.svg")" />
-        <span class="menuCandidatHeader-whois">@{authenticatedCandidat.prenom.capitalize} @{authenticatedCandidat.nom.capitalize.take(1)}.</span>
-        <img class="menuCandidatHeader-icone" src="@routes.Assets.versioned("images/modules/menuCandidat/derouler-menu.svg")" />
+<nav class="menuNavigation">
+    <span class="menuNavigation-js-responsive"></span>
+    <div class="menuNavigationHeader">
+        <img class="menuNavigationHeader-iconeFermeture" src="@routes.Assets.versioned("images/modules/menuNavigation/fermer-menu.png")"/>
+        <img class="menuNavigationHeader-iconeOuverture" src="@routes.Assets.versioned("images/modules/menuNavigation/ouvrir-menu.png")"/>
+        <img class="menuNavigationHeader-icone" src="@routes.Assets.versioned("images/modules/menuNavigation/icone-connecte.svg")" />
+        <span class="menuNavigationHeader-whois">@{candidatAuthentifie.prenom.capitalize} @{candidatAuthentifie.nom.capitalize.take(1)}.</span>
+        <img class="menuNavigationHeader-icone" src="@routes.Assets.versioned("images/modules/menuNavigation/derouler-menu.svg")" />
     </div>
-    <ul class="menuCandidatActions">
-        <li class="menuCandidatActions-item">
-            <a class="menuCandidatActions-lien" href="/candidat/criteres-recherche">
-                <span class="menuCandidatActions-icone iconeCritere"></span>
+    <ul class="menuNavigationActions">
+        <li class="menuNavigationActions-item">
+            <a class="menuNavigationActions-lien" href="/candidat/criteres-recherche">
+                <span class="menuNavigationActions-icone iconeModifier"></span>
                 Modifier mes critères
             </a>
         </li>
-        <li class="menuCandidatActions-item">
-            <a class="menuCandidatActions-lien" href="/deconnexion">
-                <span class="menuCandidatActions-icone iconeDeconnexion"></span>
+        <li class="menuNavigationActions-item">
+            <a class="menuNavigationActions-lien" href="/candidat/deconnexion">
+                <span class="menuNavigationActions-icone iconeDeconnexion"></span>
                 Se déconnecter
             </a>
         </li>

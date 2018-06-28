@@ -1,0 +1,173 @@
+@import authentification.model.RecruteurAuthentifie
+@import conf.WebAppConfig
+@import controllers.recruteur.ProfilForm
+@import fr.poleemploi.perspectives.domain.recruteur.TypeRecruteur
+@import helper._
+
+@(profilForm: Form[ProfilForm], recruteurAuthentifie: RecruteurAuthentifie)(implicit request: MessagesRequestHeader, flash: Flash, webAppConfig: WebAppConfig)
+
+@hasErrors(field:String) = @{
+    profilForm(field).hasErrors
+}
+
+@layout(recruteurAuthentifie = Some(recruteurAuthentifie)) {
+<div id="inscriptionRecruteur">
+    <section class="presentation">
+        <header class="presentationTitres">
+            <h2 class="presentationTitres-titre">Faisons connaissance...</h2>
+            <p class="presentationTitres-description">Bénéficiez rapidement de mises en relation avec des candidats !</p>
+        </header>
+        <div class="separation">
+            <span class="separation-ligne"></span>
+        </div>
+    </section>
+    <section class="criteres">
+        @form(action = controllers.recruteur.routes.ProfilController.modifierProfil(), 'id -> "modificationProfilForm") {
+        @CSRF.formField
+        <dl class="critere">
+            <dt class="question">
+                <span class="question-puce @if(hasErrors("typeRecruteur")){question-puce--erreur}">1</span>
+                <div class="question-texte">
+                    Vous êtes?
+                    <span class="question-requise">*</span>
+                </div>
+            </dt>
+            <dd class="choix">
+                <span class="choix-item">
+                    <input id="typeRecruteur-entreprise"
+                           name="typeRecruteur"
+                           type="radio"
+                           value="@TypeRecruteur.ENTREPRISE.code"
+                    @if(profilForm("typeRecruteur").value.contains(TypeRecruteur.ENTREPRISE.code)){checked}/>
+                    <label class="labelRadio" for="typeRecruteur-entreprise">Une entreprise
+                        <span class="labelRadio-circle"></span>
+                    </label>
+                </span>
+                <span class="choix-item">
+                    <input id="typeRecruteur-interim"
+                           name="typeRecruteur"
+                           type="radio"
+                           value="@TypeRecruteur.AGENCE_INTERIM.code"
+                    @if(profilForm("typeRecruteur").value.contains(TypeRecruteur.AGENCE_INTERIM.code)){checked}/>
+                    <label class="labelRadio" for="typeRecruteur-interim">Une agence d'interim
+                        <span class="labelRadio-circle"></span>
+                    </label>
+                </span>
+                <span class="choix-item">
+                    <input id="typeRecruteur-formation"
+                           name="typeRecruteur"
+                           type="radio"
+                           value="@TypeRecruteur.ORGANISME_FORMATION.code"
+                    @if(profilForm("typeRecruteur").value.contains(TypeRecruteur.ORGANISME_FORMATION.code)){checked}/>
+                    <label class="labelRadio" for="typeRecruteur-formation">Un organisme de formation
+                        <span class="labelRadio-circle"></span>
+                    </label>
+                </span>
+            </dd>
+            @if(hasErrors("typeRecruteur")) {
+            <dd class="erreurs">
+                <span class="erreurs-item">@profilForm("typeRecruteur").errors.map(_.format).mkString(", ")</span>
+            </dd>
+            }
+            </dl>
+            <dl class="critere">
+                <dt class="question">
+                    <span class="question-puce @if(hasErrors("raisonSociale")){question-puce--erreur}">2</span>
+                    <div class="question-texte">
+                        Quel est le nom de votre entreprise ?
+                        <span class="question-requise">*</span>
+                    </div>
+                </dt>
+                <dd class="choix">
+                    <input id="raisonSociale"
+                           name="raisonSociale"
+                           type="text"
+                           placeholder="Saisissez le nom de votre entreprise ici"
+                           value="@profilForm("raisonSociale").value"/>
+                </dd>
+                @if(hasErrors("raisonSociale")) {
+                <dd class="erreurs">
+                    <span class="erreurs-item">@profilForm("raisonSociale").errors.map(_.format).mkString(", ")</span>
+                </dd>
+                }
+            </dl>
+            <dl class="critere">
+                <dt class="question">
+                    <span class="question-puce @if(hasErrors("numeroSiret")){question-puce--erreur}">3</span>
+                    <div class="question-texte">
+                        Quel est votre numéro SIRET ?
+                        <span class="question-requise">*</span>
+                    </div>
+                </dt>
+                <dd class="choix">
+                    <input id="numeroSiret"
+                           name="numeroSiret"
+                           type="text"
+                           maxlength="14"
+                           placeholder="Saisissez votre numéro SIRET ici"
+                           value="@profilForm("numeroSiret").value"/>
+                </dd>
+                @if(hasErrors("numeroSiret")) {
+                <dd class="erreurs">
+                    <span class="erreurs-item">@profilForm("numeroSiret").errors.map(_.format).mkString(", ")</span>
+                </dd>
+                }
+            </dl>
+            <dl class="critere">
+                <dt class="question">
+                    <span class="question-puce @if(hasErrors("numeroTelephone")){question-puce--erreur}">4</span>
+                    <div class="question-texte">
+                        Quel est votre numéro de téléphone ?
+                        <span class="question-requise">*</span>
+                    </div>
+                </dt>
+                <dd class="choix">
+                    <input id="numeroTelephone"
+                           name="numeroTelephone"
+                           type="text"
+                           maxlength="11"
+                           placeholder="Saisissez votre numéro de téléphone ici"
+                           value="@profilForm("numeroTelephone").value"/>
+                </dd>
+                @if(hasErrors("numeroTelephone")) {
+                <dd class="erreurs">
+                    <span class="erreurs-item">@profilForm("numeroTelephone").errors.map(_.format).mkString(", ")</span>
+                </dd>
+                }
+            </dl>
+            <dl class="critere">
+                <dt class="question">
+                    <span class="question-puce @if(hasErrors("contactParCandidats")){question-puce--erreur}">5</span>
+                    <div class="question-texte">
+                        Acceptez-vous d'être contacté directement par les candidats ?
+                        <span class="question-requise">*</span>
+                    </div>
+                </dt>
+                <dd class="choix">
+                    @components.radioOuiNon(profilForm, "contactParCandidats")
+                </dd>
+                @if(hasErrors("contactParCandidats")) {
+                <dd class="erreurs">
+                    <span class="erreurs-item">@profilForm("contactParCandidats").errors.map(_.format).mkString(", ")</span>
+                </dd>
+                }
+            </dl>
+            <div class="validerInscription">
+                <div class="conditions">
+                    <input id="js-formerCandidats"
+                           name="formerCandidats"
+                           type="checkbox" value="true" @if(profilForm("formerCandidats").value.contains("true")){checked} />
+                    <label class="labelCheckbox" for="js-formerCandidats">Nous sommes prêts à former le(s) candidat(s) recherché(s)
+                        <span class="question-requise">*</span>
+                        <span class="checkmark"></span>
+                    </label>
+                </div>
+                <button id="js-boutonInscription" class="bouton bouton-action-principale bouton-action-principale--petit" type="submit">
+                    J'inscris mon entreprise
+                </button>
+            </div>
+        }
+    </section>
+</div>
+<script src="@routes.Assets.versioned("javascripts/pages/recruteur/profil.js")" type="text/javascript"></script>
+}

@@ -1,0 +1,51 @@
+@import java.time.format.DateTimeFormatter
+
+@import conf.WebAppConfig
+@import fr.poleemploi.perspectives.projections.recruteur.RecruteurDto
+
+@(recruteurs: List[RecruteurDto])(implicit flash: Flash, webAppConfig: WebAppConfig)
+
+@getBoolean(boolean: Option[Boolean]) = @{
+    if (boolean.getOrElse(false)) "Oui" else "Non"
+}
+
+@layout() {
+<div id="recruteurs">
+    <div class="container">
+        <div class="table-responsive">
+            <table class="table">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Date d'inscription</th>
+                        <th>Type</th>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Genre</th>
+                        <th>Raison sociale</th>
+                        <th>Email</th>
+                        <th>Numéro de téléphone</th>
+                        <th>Siret</th>
+                        <th>Etre contacté par les candidats</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @for(recruteur <- recruteurs) {
+                    <tr>
+                        <td>@recruteur.dateInscription.format(DateTimeFormatter.ofPattern("d MMM yyyy hh:mm"))</td>
+                        <td>@recruteur.typeRecruteur.map(_.value)</td>
+                        <td>@recruteur.nom</td>
+                        <td>@recruteur.prenom</td>
+                        <td>@recruteur.genre.label</td>
+                        <td>@recruteur.raisonSociale</td>
+                        <td>@recruteur.email</td>
+                        <td>@recruteur.numeroTelephone.map(_.value)</td>
+                        <td>@recruteur.numeroSiret.map(_.value)</td>
+                        <td>@getBoolean(recruteur.contactParCandidats)</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+}

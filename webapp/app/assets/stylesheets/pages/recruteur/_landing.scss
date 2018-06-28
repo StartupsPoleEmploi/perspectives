@@ -1,0 +1,251 @@
+#landingEmployeur {
+
+  .introArrierePlan {
+    background: linear-gradient(to bottom right, rgba(255, 255, 255, 1) 0%, rgba(130, 204, 221, 0.15) 100%);
+  }
+
+  .intro {
+    @include make-container();
+    @include make-container-max-widths();
+    padding-bottom: 4em;
+
+    &-titre {
+      color: #334051;
+      font-size: 1.9em;
+      font-weight: 300;
+      letter-spacing: 1.42px;
+      line-height: 44px;
+      width: 60%;
+
+      @include media-breakpoint-down(md) {
+        width: 100%;
+        text-align: center;
+      }
+    }
+  }
+
+  .introVersion {
+    color: #334051;
+    font-size: 0.8em;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 1.42px;
+    line-height: 19px;
+    margin-top: 3em;
+
+    &-deco {
+      background: #82CCDD;
+      width: 5px;
+      height: 5px;
+      display: inline-block;
+    }
+  }
+
+  .introTitres {
+    padding: 0.5em 0 3em 0;
+  }
+
+  .presentation {
+    @include make-row();
+  }
+
+  .introIllustration {
+    @include make-col-ready();
+
+    @include media-breakpoint-up(lg) {
+      @include make-col(6);
+    }
+
+    @include media-breakpoint-down(lg) {
+      display: none;
+    }
+  }
+
+  .avantages {
+    @include make-col-ready();
+
+    @include media-breakpoint-up(lg) {
+      @include make-col(6);
+    }
+
+    @include media-breakpoint-down(lg) {
+      @include make-col(12);
+    }
+  }
+
+  .listeAvantages {
+    list-style-type: none;
+    padding: 0 0 0 1em;
+    margin: 2.5em 0 4em 0;
+
+    &-item {
+      margin-bottom: 2em;
+      color: #334051;
+      font-size: 1.2em;
+      letter-spacing: 1px;
+      line-height: 28px;
+    }
+
+    &-item:before {
+      content: "";
+      position: absolute;
+      left: 15px;
+      border-left: 1px solid #334051;
+      height: 24px;
+    }
+  }
+
+  .bouton-inscription {
+    color: white;
+    background: linear-gradient(0deg, #82CCDD 0%, #6A89CC 100%);
+    font-size: 1.2em;
+    font-weight: 700;
+    letter-spacing: -0.92px;
+    line-height: 1.5em;
+    border-radius: 5px;
+    padding: .8em 2em;
+
+    display: inline-block;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+
+    box-shadow: 10px 23px 20px 0 rgba(57, 92, 99, 0.15);
+
+    &:hover {
+      color: white;
+      text-decoration: none;
+      cursor: pointer;
+    }
+  }
+
+  .introActions {
+    text-align: center;
+
+    &-sponsor {
+      color: #334051;
+      padding-top: 0.7em;
+      letter-spacing: -0.8px;
+      font-size: 1.1em;
+    }
+
+    &-fusee {
+      padding-left: 8px;
+      font-size: 1.5em;
+    }
+  }
+
+  .sponsors {
+    text-align: center;
+    margin: 2em 0;
+
+    @include media-breakpoint-down(md) {
+      display: none;
+      margin: 0;
+    }
+  }
+
+  .listeSponsors {
+    margin: 0;
+    list-style-type: none;
+
+    &-item {
+      display: inline-block;
+      padding: 0 30px;
+    }
+  }
+
+  .definitionArrierePlan {
+    background-color: #FAFAFA;
+  }
+
+  .definition {
+    @include make-container();
+    @include make-container-max-widths();
+
+    text-align: center;
+    padding: 7em 0;
+
+    &-texte {
+      display: inline;
+      color: #334051;
+      font-size: 2.1em;
+      font-weight: 300;
+      letter-spacing: 1px;
+      line-height: 55px;
+
+      &:before {
+        @include media-breakpoint-up(sm) {
+          content: url('/assets/images/pages/landingEmployeur/quote.png');
+          position: relative;
+          left: 7%;
+          top: -10px;
+        }
+      }
+    }
+  }
+
+  .commentCaMarche {
+    @include make-container();
+    @include make-container-max-widths();
+
+    &-titre {
+      color: #2C4054;
+      font-size: 2.1em;
+      font-weight: 300;
+      letter-spacing: 0.94px;
+      line-height: 50px;
+      text-align: center;
+      margin: 3em 0;
+    }
+  }
+
+  .etapes {
+    @include make-row();
+    counter-reset: etape;
+    list-style-type: none;
+    padding: 0;
+    margin-top: 7em;
+    text-align: center;
+
+    @include media-breakpoint-down(md) {
+      margin-top: 2em;
+    }
+
+    &-item {
+      @include make-col-ready();
+      @include make-col(4);
+
+      counter-increment: etape;
+      color: #334051;
+      font-size: 20px;
+      letter-spacing: 1px;
+      line-height: 32px;
+
+      @include media-breakpoint-down(md) {
+        @include make-col(12);
+
+        padding: 2em 0;
+      }
+
+      &:before {
+        content: counter(etape)".";
+        color: #82CCDD;
+        font-size: 4em;
+        display: block;
+        position: relative;
+        top: -0.5em;
+
+        @include media-breakpoint-down(md) {
+          top: 0;
+          margin-bottom: 0.5em;
+        }
+      }
+    }
+  }
+
+  .caVousTente {
+    margin: 4em 0 2em 0;
+    text-align: center;
+  }
+}

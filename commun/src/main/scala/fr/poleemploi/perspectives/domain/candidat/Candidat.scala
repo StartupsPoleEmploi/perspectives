@@ -11,31 +11,31 @@ class Candidat(override val id: AggregateId,
 
   // DECIDE
   // TODO : Behavior pour éviter les trop gros aggrégats
-  def inscrire(inscrireCandidatCommand: InscrireCandidatCommand): List[Event] = {
+  def inscrire(command: InscrireCandidatCommand): List[Event] = {
     if (state.estInscrit) {
-      throw new RuntimeException("Le candidat est déjà inscrit")
+      throw new RuntimeException(s"Le candidat ${id.value} est déjà inscrit")
     }
 
     List(CandidatInscrisEvent(
-      peConnectId = inscrireCandidatCommand.peConnectId,
-      nom = inscrireCandidatCommand.nom,
-      prenom = inscrireCandidatCommand.prenom,
-      email = inscrireCandidatCommand.email
+      nom = command.nom,
+      prenom = command.prenom,
+      email = command.email,
+      genre = Some(command.genre.code)
     ))
   }
 
-  def modifierCriteres(modifierCriteresRechercheCommand: ModifierCriteresRechercheCommand): List[Event] = {
+  def modifierCriteres(command: ModifierCriteresRechercheCommand): List[Event] = {
     if (!state.estInscrit) {
       throw new RuntimeException(s"Le candidat ${id.value} n'est pas encore inscrit")
     }
 
     List(CriteresRechercheModifiesEvent(
-      rechercheMetierEvalue = modifierCriteresRechercheCommand.rechercheMetierEvalue,
-      rechercheAutreMetier = modifierCriteresRechercheCommand.rechercheAutreMetier,
-      listeMetiersRecherches = modifierCriteresRechercheCommand.metiersRecherches.map(_.code),
-      etreContacteParAgenceInterim = modifierCriteresRechercheCommand.etreContacteParAgenceInterim,
-      etreContacteParOrganismeFormation = modifierCriteresRechercheCommand.etreContacteParOrganismeFormation,
-      rayonRecherche = modifierCriteresRechercheCommand.rayonRecherche
+      rechercheMetierEvalue = command.rechercheMetierEvalue,
+      rechercheAutreMetier = command.rechercheAutreMetier,
+      listeMetiersRecherches = command.metiersRecherches.map(_.code),
+      etreContacteParAgenceInterim = command.etreContacteParAgenceInterim,
+      etreContacteParOrganismeFormation = command.etreContacteParOrganismeFormation,
+      rayonRecherche = command.rayonRecherche
     ))
   }
 }

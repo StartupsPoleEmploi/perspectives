@@ -1,0 +1,207 @@
+.menuNavigation {
+    font-size: 0.9em;
+    letter-spacing: -0.45px;
+    color: #334051;
+    z-index: 1;
+
+    @include media-breakpoint-up(lg) {
+        position: absolute;
+        top: 0;
+        right: 1em;
+        width: 248px;
+        margin-top: 1em;
+    }
+    @include media-breakpoint-down(lg) {
+        position: relative;
+        right: 0;
+        width: 100%;
+        margin-top: 0;
+        margin-bottom: 2em;
+    }
+    &-js-responsive {
+        @include media-breakpoint-up(lg) {
+            display: none;
+        }
+        @include media-breakpoint-down(lg) {
+            display: inline;
+        }
+    }
+
+    .menuNavigationHeader {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        cursor: pointer;
+
+        @include media-breakpoint-up(lg) {
+            margin-bottom: 0.5em;
+            text-align: right;
+            color: #334051;
+        }
+        @include media-breakpoint-down(lg) {
+            margin-bottom: 0;
+            padding-top: 10px;
+            height: 40px;
+            text-align: center;
+            color: white;
+            background-color: #334051;
+        }
+
+        &-icone {
+            height: 16px;
+            width: 16px;
+            @include media-breakpoint-down(lg) {
+                display: none;
+            }
+        }
+
+        &-iconeFermeture, &-iconeOuverture {
+            @include media-breakpoint-up(lg) {
+                display: none;
+            }
+            @include media-breakpoint-down(lg) {
+                position: absolute;
+                float: left;
+                top: 10px;
+                left: 15px;
+            }
+        }
+        /** Initialise les icones d'ouverture et de fermeture */
+        &-iconeOuverture {
+            @include media-breakpoint-down(lg) {
+                display: block;
+            }
+        }
+        &-iconeFermeture {
+            @include media-breakpoint-down(lg) {
+                display: none;
+            }
+        }
+    }
+
+    .menuNavigationActions {
+        display: none;
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+
+        @include media-breakpoint-up(lg) {
+            border: 1px solid rgba(51,64,81,0.1);
+            border-radius: 3.6px;
+            box-shadow: 0 0 6px 0 rgba(1,1,1,0.1);
+        }
+        @include media-breakpoint-down(lg) {
+            background-color: #6A89CC;
+            border: none;
+            border-radius: unset;
+            display: none;
+        }
+
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+
+        &-item {
+            @include media-breakpoint-up(lg) {
+                &:after {
+                    content: "";
+                    display: block;
+                    height: 1px;
+                    width: 165px;
+                    opacity: 0.22;
+                    background: #6A89CC;
+                    margin: 15px 15px 15px 33px;
+                }
+            }
+
+            @include media-breakpoint-down(lg) {
+                &:after {
+                    content: "";
+                    display: block;
+                    height: 1px;
+                    width: 100%;
+                    opacity: 0.22;
+                    background: #334051;
+                    margin: 15px 15px 15px 37px;
+                }
+            }
+
+            &:last-child:after {
+                display: none;
+            }
+
+            &:first-child {
+                padding: 15px 15px 0 15px;
+            }
+
+            &:last-child {
+                padding: 0 15px 15px 15px;
+            }
+        }
+
+        &-lien {
+            display: block;
+            white-space: nowrap;
+            vertical-align: middle;
+            text-decoration: none;
+
+            &:hover {
+                text-decoration: none;
+                cursor: pointer;
+            }
+
+            @include media-breakpoint-up(lg) {
+                color: #334051;
+                font-size: 1em;
+                letter-spacing: -0.45px;
+
+                &:hover {
+                    color: #334051;
+                }
+            }
+            @include media-breakpoint-down(lg) {
+                color: white;
+                font-size: 1.1em;
+                letter-spacing: -0.58px;
+
+                &:hover {
+                    color: white;
+                }
+            }
+        }
+
+        &-icone {
+            display: inline-block;
+            margin-right: 15px;
+
+            @include media-breakpoint-up(lg) {
+                height: 16px;
+                width: 16px;
+            }
+            @include media-breakpoint-down(lg) {
+                height: 19px;
+                width: 19px;
+            }
+
+            &.iconeModifier {
+                @include media-breakpoint-up(lg) {
+                    background: url('/assets/images/modules/menuNavigation/modifier-noir.svg');
+                }
+                @include media-breakpoint-down(lg) {
+                    background: url('/assets/images/modules/menuNavigation/modifier-blanc.svg');
+                }
+            }
+
+            &.iconeDeconnexion {
+                @include media-breakpoint-up(lg) {
+                    background: url('/assets/images/modules/menuNavigation/deconnexion-noir.svg');
+                }
+                @include media-breakpoint-down(lg) {
+                    background: url('/assets/images/modules/menuNavigation/deconnexion-blanc.svg');
+                }
+            }
+        }
+    }
+}

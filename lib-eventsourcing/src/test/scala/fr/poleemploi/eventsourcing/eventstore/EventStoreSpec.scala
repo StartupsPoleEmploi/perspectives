@@ -31,7 +31,7 @@ class EventStoreSpec extends WordSpec with MustMatchers
   }
 
   "loadEventStream" should {
-    "retourner une version à 0 lorsqu'au evenement n'existe" in {
+    "retourner une version à 0 lorsqu'aucun evenement n'existe" in {
       // Given
       when(appendOnlyStore.readRecords(aggregateId.value)) thenReturn Future.successful(List())
 

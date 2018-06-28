@@ -1,9 +1,7 @@
 package conf
 
-import authentification.{RoleService, SimpleRoleService}
 import com.google.inject.{AbstractModule, Provides, Singleton}
-import domain.services.{PEConnectIndividuService, PEConnectService}
-import play.api.libs.ws.WSClient
+import fr.poleemploi.perspectives.domain.conseiller.{AutorisationService, AutorisationServiceDefaut}
 
 class ServicesModule extends AbstractModule {
 
@@ -11,25 +9,7 @@ class ServicesModule extends AbstractModule {
 
   @Provides
   @Singleton
-  def peConnectService(webAppConfig: WebAppConfig,
-                       wsClient: WSClient): PEConnectService =
-    new PEConnectService(
-      wsClient = wsClient,
-      peConnectConfig = webAppConfig.peConnectConfig
-    )
-
-  @Provides
-  @Singleton
-  def peConnectIndividuService(webAppConfig: WebAppConfig,
-                               wsClient: WSClient): PEConnectIndividuService =
-    new PEConnectIndividuService(
-      wsClient = wsClient,
-      url = webAppConfig.peConnectIndividuURL
-    )
-
-  @Provides
-  @Singleton
-  def roleService(webAppConfig: WebAppConfig): RoleService = new SimpleRoleService(
+  def autorisationService(webAppConfig: WebAppConfig): AutorisationService = new AutorisationServiceDefaut(
     admins = webAppConfig.admins
   )
 }

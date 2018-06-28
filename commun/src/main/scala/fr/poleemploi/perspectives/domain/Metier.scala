@@ -8,7 +8,7 @@ import scala.collection.immutable.ListMap
 case class Metier(code: String, label: String)
 
 /**
-  * Factory methods pour construire et valide un Metier
+  * Factory methods pour construire et valider un Metier
   */
 object Metier {
 

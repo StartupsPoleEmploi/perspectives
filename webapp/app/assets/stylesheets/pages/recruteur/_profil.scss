@@ -1,0 +1,192 @@
+#inscriptionRecruteur {
+
+  .presentation {
+    @include make-container();
+    @include make-container-max-widths();
+  }
+
+  .presentationTitres {
+    @include make-row();
+
+    padding-top: 3rem;
+    justify-content: center;
+
+    &-titre {
+      @include make-col($grid-columns);
+      padding-bottom: 0.5rem;
+      font-weight: lighter;
+      color: #334051;
+      font-size: 2em;
+      letter-spacing: -1px;
+      text-align: center;
+    }
+
+    &-description {
+      @include make-col($grid-columns);
+      margin-bottom: 0.5rem;
+      color: #334051;
+      font-size: 1.2em;
+      letter-spacing: 1.12px;
+      font-weight: lighter;
+      line-height: 1.2;
+      text-align: center;
+      max-width: 80%;
+    }
+  }
+
+  .separation {
+    @include make-row();
+    justify-content: center;
+
+    padding: 3rem 0;
+
+    &-ligne {
+      box-sizing: border-box;
+      border: 0.5px solid #334051;
+      opacity: 0.6;
+      width: 16.5%;
+    }
+  }
+
+  .criteres {
+    @include make-container();
+    @include make-container-max-widths();
+  }
+
+  .critere {
+    margin-bottom: 3.5rem;
+
+    @include media-breakpoint-up(md) {
+      @include make-col-offset(1);
+    }
+  }
+
+  .question {
+    @include make-row();
+    margin: 0 0 1.5rem 0;
+
+    &-puce {
+      height: 22px;
+      width: 22px;
+      color: white;
+      background-color: #334051;
+      border-radius: 50%;
+      display: inline-block;
+      text-align: center;
+
+      &--erreur {
+        background-color: $perspectives-text-required;
+      }
+    }
+
+    &-texte {
+      @include make-col-ready();
+      @include make-col(11);
+
+      color: #334051;
+      font-size: 1em;
+      font-weight: 700;
+    }
+
+    &-requise {
+      color: $perspectives-text-required;
+    }
+  }
+
+  .choix {
+    margin-left: 2.5rem;
+
+    &-item {
+      @include media-breakpoint-down(md) {
+        display: block;
+        margin-bottom: 1em;
+      }
+    }
+  }
+
+  .erreurs {
+    margin-left: 2.5rem;
+
+    &-item {
+      color: $perspectives-text-required;
+      font-weight: bold;
+    }
+  }
+
+  .conditions {
+    margin-bottom: 2em;
+  }
+
+  .validerInscription {
+    text-align: center;
+    margin: 4rem 0;
+  }
+
+  input[type="text"] {
+    min-width: 40%;
+    padding: 10px;
+    border: none;
+    border-bottom: 1px solid #334051;
+    box-sizing: border-box;
+    caret-color: #1157F0;
+  }
+
+  .labelCheckbox {
+    position: relative;
+    padding-left: 35px;
+    padding-right: 35px;
+    min-height: 36px;
+    padding-top: 5px;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    font-size: 1em;
+    font-weight: 600;
+  }
+
+  input[type="checkbox"] {
+    /* Hide the browser's default checkbox */
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+
+    &:checked ~ .labelCheckbox {
+      .checkmark:after {
+        display: block;
+      }
+    }
+  }
+
+  .checkmark {
+    position: absolute;
+    top: 9px;
+    left: 0;
+    height: 18px;
+    width: 18px;
+    border: 2px solid #334051;
+    border-radius: 2px;
+  }
+
+  /* Create the checkmark/indicator (hidden when not checked) */
+  .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+  }
+
+  /* checkmark indicator */
+  .checkmark:after {
+    left: 4px;
+    top: 0;
+    width: 7px;
+    height: 12px;
+    border: solid #82CCDD;
+    border-width: 0 3px 3px 0;
+    -webkit-transform: rotate(40deg);
+    -ms-transform: rotate(40deg);
+    transform: rotate(40deg);
+  }
+}

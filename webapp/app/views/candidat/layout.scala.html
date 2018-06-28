@@ -1,0 +1,30 @@
+@import authentification.model.CandidatAuthentifie
+@import conf.WebAppConfig
+
+@(title: String = "Perspectives", candidatAuthentifie: Option[CandidatAuthentifie])(content: Html)(implicit flash: Flash, webAppConfig: WebAppConfig)
+
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <title>@title</title>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/vendor/bootstrap.css")">
+        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/vendor/pe-connect_html-bootstrap.css")">
+        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
+        <script src="@routes.Assets.versioned("javascripts/vendor/jquery-3.3.1.min.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.versioned("javascripts/modules/googleTagManager.js")" type="text/javascript"></script>
+    </head>
+    <body>
+        @components.googleTagManagerNoScript()
+        @candidatAuthentifie.map(c => components.menuCandidat(c))
+        @components.headerPrincipal()
+        @components.flashMessages()
+
+        @content
+
+        <footer></footer>
+        <script src="@routes.Assets.versioned("javascripts/modules/menuNavigation.js")" type="text/javascript"></script>
+    </body>
+</html>

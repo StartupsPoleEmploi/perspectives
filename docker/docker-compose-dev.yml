@@ -17,6 +17,7 @@ services:
       - postgresql:/var/lib/postgresql/data
       - ./postgresql/events.sql:/docker-entrypoint-initdb.d/events.sql
       - ./postgresql/candidats.sql:/docker-entrypoint-initdb.d/candidats.sql
+      - ./postgresql/recruteurs.sql:/docker-entrypoint-initdb.d/recruteurs.sql
     env_file:
       - dev.env
     deploy:

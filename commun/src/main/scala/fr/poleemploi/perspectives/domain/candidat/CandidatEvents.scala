@@ -4,11 +4,13 @@ import java.time.ZonedDateTime
 
 import fr.poleemploi.eventsourcing.Event
 
-case class CandidatInscrisEvent(peConnectId: String,
-                                nom: String,
+sealed trait CandidatEvent extends Event
+
+case class CandidatInscrisEvent(nom: String,
                                 prenom: String,
                                 email: String,
-                                date: ZonedDateTime = ZonedDateTime.now()) extends Event
+                                genre: Option[String],
+                                date: ZonedDateTime = ZonedDateTime.now()) extends CandidatEvent
 
 case class CriteresRechercheModifiesEvent(rechercheMetierEvalue: Boolean,
                                           rechercheAutreMetier: Boolean,
@@ -16,4 +18,4 @@ case class CriteresRechercheModifiesEvent(rechercheMetierEvalue: Boolean,
                                           etreContacteParOrganismeFormation: Boolean,
                                           etreContacteParAgenceInterim: Boolean,
                                           rayonRecherche: Int,
-                                          date: ZonedDateTime = ZonedDateTime.now()) extends Event
+                                          date: ZonedDateTime = ZonedDateTime.now()) extends CandidatEvent

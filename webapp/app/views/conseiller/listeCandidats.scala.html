@@ -1,0 +1,51 @@
+@import java.time.format.DateTimeFormatter
+
+@import conf.WebAppConfig
+@import fr.poleemploi.perspectives.projections.candidat.CandidatDto
+
+@(candidats: List[CandidatDto])(implicit flash: Flash, webAppConfig: WebAppConfig)
+
+@getBoolean(boolean: Option[Boolean]) = @{
+    if (boolean.getOrElse(false)) "Oui" else "Non"
+}
+
+@layout() {
+<div id="listeCandidats">
+    <div class="container">
+        <div class="table-responsive">
+            <table class="table">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Date d'inscription</th>
+                        <th>Nom</th>
+                        <th>Prenom</th>
+                        <th>Email</th>
+                        <th>Recherche métier évalué</th>
+                        <th>Recherche autre métier</th>
+                        <th>Metiers recherchés</th>
+                        <th>Etre contacte par une agence d'interim</th>
+                        <th>Etre contacte par un organisme de formation</th>
+                        <th>Rayon de recherche</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @for(candidat <- candidats) {
+                    <tr>
+                        <td>@candidat.dateInscription.format(DateTimeFormatter.ofPattern("d MMM yyyy hh:mm"))</td>
+                        <td>@candidat.nom</td>
+                        <td>@candidat.prenom</td>
+                        <td>@candidat.email</td>
+                        <td>@getBoolean(candidat.rechercheMetierEvalue)</td>
+                        <td>@getBoolean(candidat.rechercheAutreMetier)</td>
+                        <td>@candidat.metiersRecherches.map(_.label).mkString(", ")</td>
+                        <td>@getBoolean(candidat.contacteParAgenceInterim)</td>
+                        <td>@getBoolean(candidat.contacteParOrganismeFormation)</td>
+                        <td>@candidat.rayonRecherche</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+}

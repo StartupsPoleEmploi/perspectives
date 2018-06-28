@@ -3,8 +3,8 @@ package fr.poleemploi.perspectives.domain.candidat
 import fr.poleemploi.cqrs.command.CommandHandler
 import fr.poleemploi.eventsourcing.{AggregateId, Event}
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class CandidatCommandHandler(candidatRepository: CandidatRepository)
   extends CommandHandler {
