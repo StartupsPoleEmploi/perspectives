@@ -5,6 +5,8 @@ import play.api.Configuration
 
 class WebAppConfig(configuration: Configuration) {
 
+  val usePEConnect: Boolean = configuration.getOptional[Boolean]("usePEConnect").getOrElse(true)
+
   val peConnectConfig: PEConnectConfig = PEConnectConfig(
     url = configuration.get[String]("peconnect.url"),
     clientId = configuration.get[String]("peconnect.oauth2.clientId"),

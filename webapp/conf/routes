@@ -9,7 +9,6 @@ GET     /                                           controllers.LandingControlle
 GET     /connexion                                  controllers.AuthentificationController.connexion
 GET     /connexion/callback                         controllers.AuthentificationController.connexionCallback
 GET     /connexion/peconnect                        controllers.AuthentificationController.connexionPEConnect
-GET     /connexion/simple                           controllers.AuthentificationController.connexionSimple
 GET     /deconnexion                                controllers.AuthentificationController.deconnexion
 
 GET     /candidat/criteres-recherche                controllers.SaisieCriteresRechercheController.saisieCriteresRecherche

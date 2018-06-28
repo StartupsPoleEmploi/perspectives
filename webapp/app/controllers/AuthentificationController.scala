@@ -30,34 +30,17 @@ class AuthentificationController @Inject()(cc: ControllerComponents,
   val nonceAttribute: String = "oauth.nonce"
   val redirectUri: Call = routes.AuthentificationController.connexionCallback()
 
-  def connexionSimple(): Action[AnyContent] = Action.async { implicit request =>
-    val userInfos = UserInfos(
-      nom = "robert",
-      prenom = "plantu",
-      email = "robert.plantu@mail.com",
-      peConnectId = UUID.randomUUID().toString
-    )
+  def connexionPEConnect(): Action[AnyContent] =
+    if (webappConfig.usePEConnect) {
+      Action { request =>
+          val stateToken = tokenProvider.generateToken
+          val nonceToken = tokenProvider.generateToken
 
-    inscrire(userInfos).map { aggregateId =>
-      val authenticatedCandidat = AuthenticatedCandidat(
-        candidatId = aggregateId.value,
-        idTokenPEConnect = None,
-        nom = userInfos.nom,
-        prenom = userInfos.prenom
-      )
-      Redirect(routes.SaisieCriteresRechercheController.saisieCriteresRecherche())
-        .withSession(AuthenticatedCandidat.storeInSession(authenticatedCandidat, request.session))
-    }
-  }
-
-  def connexionPEConnect() = Action { request =>
-    val stateToken = tokenProvider.generateToken
-    val nonceToken = tokenProvider.generateToken
-
-    Redirect(routes.AuthentificationController.connexion()).withSession(
-      request.session + (stateAttribute -> stateToken) + (nonceAttribute -> nonceToken)
-    )
-  }
+          Redirect(routes.AuthentificationController.connexion()).withSession(
+            request.session + (stateAttribute -> stateToken) + (nonceAttribute -> nonceToken)
+          )
+      }
+    } else connexionSimple()
 
   def connexion(): Action[AnyContent] = Action.async { implicit request =>
     (for {
@@ -178,5 +161,25 @@ class AuthentificationController @Inject()(cc: ControllerComponents,
           aggregateId
         }
     })
+  }
+
+  private def connexionSimple(): Action[AnyContent] = Action.async { implicit request =>
+    val userInfos = UserInfos(
+      nom = "robert",
+      prenom = "plantu",
+      email = "robert.plantu@mail.com",
+      peConnectId = UUID.randomUUID().toString
+    )
+
+    inscrire(userInfos).map { aggregateId =>
+      val authenticatedCandidat = AuthenticatedCandidat(
+        candidatId = aggregateId.value,
+        idTokenPEConnect = None,
+        nom = userInfos.nom,
+        prenom = userInfos.prenom
+      )
+      Redirect(routes.SaisieCriteresRechercheController.saisieCriteresRecherche())
+        .withSession(AuthenticatedCandidat.storeInSession(authenticatedCandidat, request.session))
+    }
   }
 }
