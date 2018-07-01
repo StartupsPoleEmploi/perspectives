@@ -6,9 +6,11 @@ import fr.poleemploi.eventsourcing.AggregateId
 import fr.poleemploi.perspectives.domain.candidat.{CandidatCommandHandler, ModifierCriteresRechercheCommand}
 import fr.poleemploi.perspectives.projections.{CandidatQueryHandler, GetCandidatQuery}
 import javax.inject.Inject
+import play.api.Logger
 import play.api.mvc._
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class SaisieCriteresRechercheController @Inject()(components: ControllerComponents,
                                                   implicit val webAppConfig: WebAppConfig,
@@ -38,13 +40,13 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
     })
   }
 
-  def modifierCriteresRecherche(): Action[AnyContent] = (authenticatedAction andThen messagesAction) { implicit request: MessagesRequest[AnyContent] =>
+  def modifierCriteresRecherche(): Action[AnyContent] = (authenticatedAction andThen messagesAction).async { implicit request: MessagesRequest[AnyContent] =>
     def stringToBoolean(string: String): Boolean = if ("true".equalsIgnoreCase(string)) true else false
 
     SaisieCriteresRechercheForm.form.bindFromRequest.fold(
       formWithErrors => {
         // TODO : accéder au candidat directement depuis la request
-        BadRequest(views.html.saisieCriteresRecherche(formWithErrors, authenticatedCandidat = AuthenticatedCandidat.buildFromSession(request.session).get))
+        Future.successful(BadRequest(views.html.saisieCriteresRecherche(formWithErrors, authenticatedCandidat = AuthenticatedCandidat.buildFromSession(request.session).get)))
       },
       saisieCriteresRechercheForm => {
         // TODO : aggregateId sale
@@ -59,9 +61,17 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
           rayonRecherche = saisieCriteresRechercheForm.rayonRecherche
         )
         commandHandler.modifierCriteresRecherche(command)
-        Redirect(routes.LandingController.landing()).flashing(
-          ("criteres_sauvegardes", "Merci, vos criteres ont bien été pris en compte")
-        )
+          .map(_ =>
+            Redirect(routes.LandingController.landing()).flashing(
+              ("criteres_sauvegardes", "Merci, vos criteres ont bien été pris en compte")
+            ))
+          .recoverWith {
+            case t: Throwable =>
+              Logger.error("Erreur lors de l'enregistrement des critères", t)
+              Future(Redirect(routes.LandingController.landing()).flashing(
+                ("message_erreur", "Une erreur s'est produite lors de l'enregistrement, veuillez réessayer ultérieurement")
+              ))
+          }
       }
     )
   }

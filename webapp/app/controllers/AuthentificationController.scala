@@ -143,11 +143,11 @@ class AuthentificationController @Inject()(cc: ControllerComponents,
   }
 
   private def inscrire(userInfos: UserInfos): Future[AggregateId] = {
-    queryHandler.findCandidat(FindCandidatQuery(
-      peConnectId = userInfos.peConnectId
-    )).map(optCandidat => {
-      optCandidat
-        .map(u => AggregateId(u.candidatId))
+    for {
+      optCandidat <- queryHandler.findCandidat(FindCandidatQuery(
+        peConnectId = userInfos.peConnectId
+      ))
+      aggregateId <- optCandidat.map(u => Future(AggregateId(u.candidatId)))
         .getOrElse {
           val aggregateId = AggregateId(UUID.randomUUID().toString)
           val command = InscrireCandidatCommand(
@@ -157,10 +157,9 @@ class AuthentificationController @Inject()(cc: ControllerComponents,
             prenom = userInfos.prenom,
             email = userInfos.email
           )
-          commandHandler.inscrire(command)
-          aggregateId
+          commandHandler.inscrire(command).map(_ => aggregateId)
         }
-    })
+    } yield aggregateId
   }
 
   private def connexionSimple(): Action[AnyContent] = Action.async { implicit request =>

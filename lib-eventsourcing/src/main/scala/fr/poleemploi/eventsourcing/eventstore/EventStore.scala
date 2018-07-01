@@ -2,6 +2,9 @@ package fr.poleemploi.eventsourcing.eventstore
 
 import fr.poleemploi.eventsourcing.{AggregateId, AppendedEvent, Event, EventPublisher}
 
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
+
 /**
   * Class for high-level data access to the store. <br />
   * Handle concurrency exception and publish events.
@@ -15,12 +18,12 @@ class EventStore(eventPublisher: EventPublisher,
     * @param aggregateId id of the aggregate
     * @return
     */
-  def loadEventStream(aggregateId: AggregateId): EventStream = {
-    val datas = appendOnlyStore.readRecords(aggregateId.value)
-    datas.foldRight(EventStream(0, Nil))((data, es) =>
-      EventStream(if (es.version < data.streamVersion) data.streamVersion else es.version, data.event :: es.events)
-    )
-  }
+  def loadEventStream(aggregateId: AggregateId): Future[EventStream] =
+    appendOnlyStore.readRecords(aggregateId.value).map { datas =>
+      datas.foldRight(EventStream(0, Nil))((data, es) =>
+        EventStream(if (es.version < data.streamVersion) data.streamVersion else es.version, data.event :: es.events)
+      )
+    }
 
   /**
     * Appends events for the provided aggregate.
@@ -33,7 +36,7 @@ class EventStore(eventPublisher: EventPublisher,
     */
   def append(aggregateId: AggregateId,
              expectedVersion: Int,
-             events: List[Event]): Unit = {
+             events: List[Event]): Future[Unit] = {
     val datas = events.zip(Stream.from(expectedVersion + 1)).map {
       case (e, v) => AppendOnlyData(
         eventType = e.getClass.getSimpleName,
@@ -42,34 +45,31 @@ class EventStore(eventPublisher: EventPublisher,
       )
     }
 
-    try {
-      appendOnlyStore.append(
-        streamName = aggregateId.value,
-        expectedStreamVersion = expectedVersion,
-        datas = datas
-      )
-    } catch {
+    appendOnlyStore.append(
+      streamName = aggregateId.value,
+      expectedStreamVersion = expectedVersion,
+      datas = datas
+    ).map { _ =>
+      events.foreach(e => {
+        eventPublisher.publish(
+          AppendedEvent(
+            aggregateId = AggregateId(aggregateId.value),
+            eventType = e.getClass.getSimpleName,
+            event = e
+          )
+        )
+      })
+    }.recoverWith {
       case ex: AppendOnlyStoreConcurrencyException =>
         tryResolveConflicts(aggregateId, ex.expectedStreamVersion, ex.actualStreamVersion, events)
     }
-
-    // TODO : ne pas publier l'evenement si non enregistré, et inversement
-    events.foreach(e => {
-      eventPublisher.publish(
-        AppendedEvent(
-          aggregateId = AggregateId(aggregateId.value),
-          eventType = e.getClass.getSimpleName,
-          event = e
-        )
-      )
-    })
   }
 
   // TODO
   private def tryResolveConflicts(id: AggregateId,
                                   expectedStreamVersion: Int,
-                                  actualStreamVersion: Int, events: List[Event]): Unit = {
-    println(s"CONFLIT SUR AGGREGAT id $id. expectedStreamVersion : $expectedStreamVersion, actualStreamVersion : $actualStreamVersion")
+                                  actualStreamVersion: Int, events: List[Event]): Future[Unit] = {
+    Future.successful(println(s"CONFLIT SUR AGGREGAT id $id. expectedStreamVersion : $expectedStreamVersion, actualStreamVersion : $actualStreamVersion"))
   }
 }
 

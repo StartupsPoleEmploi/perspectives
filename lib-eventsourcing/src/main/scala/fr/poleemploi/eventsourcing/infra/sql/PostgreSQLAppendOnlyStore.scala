@@ -8,9 +8,8 @@ import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.eventsourcing.eventstore.{AppendOnlyData, AppendOnlyStore, AppendOnlyStoreConcurrencyException}
 import slick.jdbc.JdbcBackend.Database
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration._
+import scala.concurrent.Future
 
 /**
   * Implémentation PostgreSql de AppendOnlyStore. <br />
@@ -43,13 +42,16 @@ class PostgreSQLAppendOnlyStore(val driver: PostgresDriver,
 
   override def append(streamName: String,
                       expectedStreamVersion: Int,
-                      datas: List[AppendOnlyData]): Unit = {
+                      datas: List[AppendOnlyData]): Future[Unit] = {
     // TODO : selectionner la derniere version du stream dans la meme transaction que l'insert
     val actions = datas.map(
       d => eventsTable.map(e => (e.streamName, e.streamVersion, e.eventType, e.data))
         += (streamName, d.streamVersion, d.eventType, JsonString(serializeData(d.event)))
     )
-    val f = database.run(DBIO.sequence(actions)) recoverWith {
+
+    database.run(DBIO.sequence(actions))
+    .map(_ => ())
+    .recoverWith {
       // TODO : uniqueConstraint n'est pas forcément une AppendOnlyStoreConcurrencyException
       case e: SQLException if e.getSQLState == uniqueConstraintViolationCode =>
         Future.failed(throw AppendOnlyStoreConcurrencyException(
@@ -58,23 +60,19 @@ class PostgreSQLAppendOnlyStore(val driver: PostgresDriver,
           streamName = streamName
         ))
     }
-    Await.ready(f, 5.seconds)
   }
 
-  override def readRecords(streamName: String): List[AppendOnlyData] = {
+  override def readRecords(streamName: String): Future[List[AppendOnlyData]] = {
     val query = eventsTable
       .filter(e => e.streamName === streamName)
       .sortBy(_.streamVersion)
 
-    Await.result(
-      database.run(query.result)
-        .map(_.toList.map(f => AppendOnlyData(
-          streamVersion = f.streamVersion,
-          eventType = f.eventType,
-          event = unserializeData(f.data.value))
-        ))
-      , 5.seconds
-    )
+    database.run(query.result)
+      .map(_.toList.map(f => AppendOnlyData(
+        streamVersion = f.streamVersion,
+        eventType = f.eventType,
+        event = unserializeData(f.data.value))
+      ))
   }
 
   private def getLastStreamVersion(streamName: String): Int = 0

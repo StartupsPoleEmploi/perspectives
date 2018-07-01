@@ -12,6 +12,11 @@
                 @flash.get("criteres_sauvegardes")
             </div>
             }
+            @if(flash.data.contains("message_erreur")) {
+            <div class="message alert alert-danger">
+                @flash.get("message_erreur")
+            </div>
+            }
         </div>
         <header class="landingIntroTitres">
             <h2 class="landingIntro-titre">Vous avez été évalué par la <span class="landingIntro-titre--surbrillance">méthode de recrutement par simulation</span> MRS ?</h2>

@@ -2,6 +2,8 @@ package fr.poleemploi.eventsourcing.eventstore
 
 import fr.poleemploi.eventsourcing.Event
 
+import scala.concurrent.Future
+
 /**
   * Base class for low-level data access. <br />
   * To be implemented by various storage engines such as SQL, NoSQL, Documents, etc.
@@ -19,7 +21,7 @@ trait AppendOnlyStore {
     */
   def append(streamName: String,
              expectedStreamVersion: Int,
-             datas: List[AppendOnlyData]): Unit
+             datas: List[AppendOnlyData]): Future[Unit]
 
   /**
     * Load records for a streamName.
@@ -27,7 +29,7 @@ trait AppendOnlyStore {
     * @param streamName Identifier of the stream
     * @return List of <code>AppendOnlyData</code> : empty when there is no records
     */
-  def readRecords(streamName: String): List[AppendOnlyData]
+  def readRecords(streamName: String): Future[List[AppendOnlyData]]
 }
 
 /**
