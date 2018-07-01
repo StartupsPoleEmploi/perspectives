@@ -2,7 +2,7 @@
 @import _root_.conf.WebAppConfig
 @import helper._
 
-@(saisieCriteresRechercheForm: Form[SaisieCriteresRechercheForm], authenticatedCandidat: AuthenticatedCandidat)(implicit request: MessagesRequestHeader, webAppConfig: WebAppConfig)
+@(saisieCriteresRechercheForm: Form[SaisieCriteresRechercheForm], authenticatedCandidat: AuthenticatedCandidat)(implicit request: MessagesRequestHeader, flash: Flash, webAppConfig: WebAppConfig)
 
 @containsMetier(code: String) = @{
  if (saisieCriteresRechercheForm("listeMetiersRecherches").indexes.map( i => saisieCriteresRechercheForm("listeMetiersRecherches[%s]".format(i)).value ).flatten.toSet.contains(code)) "checked" else ""

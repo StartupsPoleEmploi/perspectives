@@ -63,7 +63,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
         commandHandler.modifierCriteresRecherche(command)
           .map(_ =>
             Redirect(routes.LandingController.landing()).flashing(
-              ("criteres_sauvegardes", "Merci, vos criteres ont bien été pris en compte")
+              ("message_succes", "Merci, vos criteres ont bien été pris en compte")
             ))
           .recoverWith {
             case t: Throwable =>
