@@ -1,4 +1,5 @@
 docker/*.env
+docker/nginx/ssl
 .idea/
 logs/
 node_modules/
