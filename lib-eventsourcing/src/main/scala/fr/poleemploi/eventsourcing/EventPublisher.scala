@@ -1,6 +1,7 @@
 package fr.poleemploi.eventsourcing
 
 import scala.collection.mutable
+import scala.concurrent.Future
 
 /**
   * Publish saved events for listeners (projections). <br />
@@ -17,7 +18,7 @@ trait EventPublisher {
 
 trait EventHandler {
 
-  def handle(appendedEvent: AppendedEvent): Unit
+  def handle(appendedEvent: AppendedEvent): Future[Unit]
 }
 
 /**

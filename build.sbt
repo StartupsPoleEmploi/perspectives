@@ -3,21 +3,21 @@ name := "perspectives"
 lazy val eventsourcing = (project in file("lib-eventsourcing"))
   .settings(Settings.noPublishSettings: _*)
 
-lazy val domain = (project in file("domain"))
+lazy val commun = (project in file("commun"))
   .settings(Settings.noPublishSettings: _*)
   .dependsOn(eventsourcing)
 
 lazy val projections = (project in file("projections"))
   .settings(Settings.noPublishSettings: _*)
   .dependsOn(eventsourcing)
-  .dependsOn(domain)
+  .dependsOn(commun)
 
 lazy val webapp = (project in file("webapp"))
   .settings(Settings.playPublishSettings: _*)
   .enablePlugins(PlayScala)
-  .dependsOn(domain, projections)
+  .dependsOn(commun, projections)
 
 lazy val root = (project in file("."))
   .settings(Settings.publishSettings: _*)
   .settings(Settings.noPublishSettings: _*)
-  .aggregate(domain, eventsourcing, projections, webapp)
+  .aggregate(commun, eventsourcing, projections, webapp)

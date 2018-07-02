@@ -12,12 +12,12 @@ trait AppendOnlyStore {
 
   /**
     * Appends events to the stream with the specified name. <br />
-    * If expectedStreamVersion does not match the last stored version, an <code>AppendOnlyStoreConcurrencyException</code> is thrown.
+    * If expectedStreamVersion does not match the last stored version, an AppendOnlyStoreConcurrencyException is thrown.
     *
     * @param streamName Identifier of the stream
     * @param expectedStreamVersion The expected version of the stream that will be checked for concurrency.
     * @param datas List of <code>AppendOnlyData</code> to append
-    * @throws AppendOnlyStoreConcurrencyException when expected stream version does not match the last stored version
+    * @throws fr.poleemploi.eventsourcing.eventstore.AppendOnlyStoreConcurrencyException when expected stream version does not match the last stored version
     */
   def append(streamName: String,
              expectedStreamVersion: Int,

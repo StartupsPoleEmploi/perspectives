@@ -1,6 +1,5 @@
-name := "perspectives-domain"
+name := "perspectives-commun"
 
 libraryDependencies ++= Seq(
-  guice,
   Dependencies.scalatestplus
 )
