@@ -20,7 +20,7 @@ case class CandidatDto(candidatId: String,
 class CandidatProjection(val driver: PostgresDriver,
                          database: Database) extends EventHandler {
 
-  override def handle(appendedEvent: AppendedEvent): Unit = appendedEvent.eventType match {
+  override def handle(appendedEvent: AppendedEvent): Future[Unit] = appendedEvent.eventType match {
     case "CandidatInscrisEvent" =>
       onCandidatInscrisEvent(
         aggregateId = appendedEvent.aggregateId,
@@ -31,7 +31,7 @@ class CandidatProjection(val driver: PostgresDriver,
         aggregateId = appendedEvent.aggregateId,
         event = appendedEvent.event.asInstanceOf[CriteresRechercheModifiesEvent]
       )
-    case _ => ()
+    case _ => Future.successful()
   }
 
   import driver.api._

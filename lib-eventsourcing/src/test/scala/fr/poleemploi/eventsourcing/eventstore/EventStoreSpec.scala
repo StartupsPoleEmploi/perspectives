@@ -5,6 +5,9 @@ import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, MustMatchers, WordSpec}
 
+import scala.concurrent.{Await, Future}
+import scala.concurrent.duration._
+
 class EventStoreSpec extends WordSpec with MustMatchers
   with MockitoSugar with BeforeAndAfter {
 
@@ -28,10 +31,10 @@ class EventStoreSpec extends WordSpec with MustMatchers
   "loadEventStream" should {
     "retourner une version à 0 lorsqu'au evenement n'existe" in {
       // Given
-      when(appendOnlyStore.readRecords(aggregateId.value)) thenReturn List()
+      when(appendOnlyStore.readRecords(aggregateId.value)) thenReturn Future.successful(List())
 
       // When
-      val eventStream = eventStore.loadEventStream(aggregateId)
+      val eventStream = Await.result(eventStore.loadEventStream(aggregateId), 5.seconds)
 
       // Then
       eventStream.version mustBe 0
@@ -39,10 +42,10 @@ class EventStoreSpec extends WordSpec with MustMatchers
     "retourner la version de l'evenement lorsqu'il existe" in {
       // Given
       val datas = mockAppendOnlyDatas(1)
-      when(appendOnlyStore.readRecords(aggregateId.value)) thenReturn datas
+      when(appendOnlyStore.readRecords(aggregateId.value)) thenReturn Future.successful(datas)
 
       // When
-      val eventStream = eventStore.loadEventStream(aggregateId)
+      val eventStream = Await.result(eventStore.loadEventStream(aggregateId), 5.seconds)
 
       // Then
       eventStream.version mustBe 1
@@ -50,10 +53,10 @@ class EventStoreSpec extends WordSpec with MustMatchers
     "retourner la version du dernier evenement lorsque des evenements existent" in {
       // Given
       val datas = mockAppendOnlyDatas(7)
-      when(appendOnlyStore.readRecords(aggregateId.value)) thenReturn datas
+      when(appendOnlyStore.readRecords(aggregateId.value)) thenReturn Future.successful(datas)
 
       // When
-      val eventStream = eventStore.loadEventStream(aggregateId)
+      val eventStream = Await.result(eventStore.loadEventStream(aggregateId), 5.seconds)
 
       // Then
       eventStream.version mustBe 7
@@ -61,10 +64,10 @@ class EventStoreSpec extends WordSpec with MustMatchers
     "retourner les evenements" in {
       // Given
       val datas = mockAppendOnlyDatas(4)
-      when(appendOnlyStore.readRecords(aggregateId.value)) thenReturn datas
+      when(appendOnlyStore.readRecords(aggregateId.value)) thenReturn Future.successful(datas)
 
       // When
-      val eventStream = eventStore.loadEventStream(aggregateId)
+      val eventStream = Await.result(eventStore.loadEventStream(aggregateId), 5.seconds)
 
       // Then
       eventStream.events.size mustBe datas.size
@@ -72,10 +75,10 @@ class EventStoreSpec extends WordSpec with MustMatchers
     "retourner un stream d'evenements ordonnés" in {
       // Given
       val datas = mockAppendOnlyDatas(5)
-      when(appendOnlyStore.readRecords(aggregateId.value)) thenReturn datas
+      when(appendOnlyStore.readRecords(aggregateId.value)) thenReturn Future.successful(datas)
 
       // When
-      val eventStream = eventStore.loadEventStream(aggregateId)
+      val eventStream = Await.result(eventStore.loadEventStream(aggregateId), 5.seconds)
 
       // Then
       eventStream.events must contain theSameElementsInOrderAs datas.map(_.event)

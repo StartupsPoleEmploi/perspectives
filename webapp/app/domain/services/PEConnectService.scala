@@ -39,7 +39,7 @@ class PEConnectService(wsClient: WSClient,
         "redirect_uri" -> redirectUri
       )).map(response => {
       if (response.status >= 400) {
-        throw new RuntimeException(s"Error lors de l'appel à la generation du token pour PEConnect. Code: ${response.status}. Reponse : ${response.body}")
+        throw new RuntimeException(s"Erreur lors de l'appel à la generation du token pour PEConnect. Code: ${response.status}. Reponse : ${response.body}")
       } else if (response.status != 200) {
         throw new RuntimeException(s"Statut non géré lors de l'appel à la generation du token pour PEConnect. Code: ${response.status}. Reponse : ${response.body}")
       } else {
@@ -63,7 +63,7 @@ class PEConnectService(wsClient: WSClient,
       .get()
       .map(response => {
         if (response.status >= 400) {
-          throw new RuntimeException(s"Error lors de l'appel à la deconnexion PEConnect. Code: ${response.status}. Reponse : ${response.body}")
+          throw new RuntimeException(s"Erreur lors de l'appel à la deconnexion PEConnect. Code: ${response.status}. Reponse : ${response.body}")
         } else if (response.status != 200) {
           throw new RuntimeException(s"Statut non géré lors de l'appel à la deconnexion PEConnect. Code: ${response.status}. Reponse : ${response.body}")
         }
