@@ -22,6 +22,11 @@ object AuthenticatedCandidat {
     )
 
   def storeInSession(authenticatedCandidat: AuthenticatedCandidat,
-                     session: Session): Session =
-    session + ("candidatId" -> authenticatedCandidat.candidatId) + ("nom" -> authenticatedCandidat.nom) + ("prenom" -> authenticatedCandidat.prenom) + ("idTokenPEConnect" -> authenticatedCandidat.idTokenPEConnect.getOrElse(""))
+                     session: Session): Session = {
+    val result = session + ("candidatId" -> authenticatedCandidat.candidatId) + ("nom" -> authenticatedCandidat.nom) + ("prenom" -> authenticatedCandidat.prenom)
+
+    if (authenticatedCandidat.idTokenPEConnect.isDefined) {
+      result + ("idTokenPEConnect" -> authenticatedCandidat.idTokenPEConnect.get)
+    } else result
+  }
 }
