@@ -5,7 +5,7 @@
 @(saisieCriteresRechercheForm: Form[SaisieCriteresRechercheForm], authenticatedCandidat: AuthenticatedCandidat)(implicit request: MessagesRequestHeader, flash: Flash, webAppConfig: WebAppConfig)
 
 @containsMetier(code: String) = @{
- if (saisieCriteresRechercheForm("listeMetiersRecherches").indexes.map( i => saisieCriteresRechercheForm("listeMetiersRecherches[%s]".format(i)).value ).flatten.toSet.contains(code)) "checked" else ""
+ if (saisieCriteresRechercheForm("listeMetiersRecherches").indexes.flatMap(i => saisieCriteresRechercheForm("listeMetiersRecherches[%s]".format(i)).value).toSet.contains(code)) "checked" else ""
 }
 
 @hasErrors(field:String) = @{
@@ -13,7 +13,7 @@
 }
 
 @erreurSelectionMetier() = @{
-    saisieCriteresRechercheForm.globalErrors.filter(_.messages.contains("constraint.criteres.selectionmetiers")).headOption
+    saisieCriteresRechercheForm.globalErrors.find(_.messages.contains("constraint.criteres.selectionmetiers"))
 }
 
 @layout(authenticatedCandidat = Some(authenticatedCandidat)) {

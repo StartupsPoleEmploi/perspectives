@@ -1,5 +1,6 @@
 package conf
 
+import authentification.{RoleService, SimpleRoleService}
 import com.google.inject.{AbstractModule, Provides, Singleton}
 import domain.services.{PEConnectIndividuService, PEConnectService}
 import play.api.libs.ws.WSClient
@@ -25,4 +26,10 @@ class ServicesModule extends AbstractModule {
       wsClient = wsClient,
       url = webAppConfig.peConnectIndividuURL
     )
+
+  @Provides
+  @Singleton
+  def roleService(webAppConfig: WebAppConfig): RoleService = new SimpleRoleService(
+    admins = webAppConfig.admins
+  )
 }
