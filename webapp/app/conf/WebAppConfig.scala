@@ -26,4 +26,6 @@ class WebAppConfig(configuration: Configuration) {
     webhookURL = configuration.get[String]("slack.notificationInscriptionCandidat.url"),
     environnement = environnement
   )
+
+  val admins: List[String] = configuration.getOptional[Seq[String]]("admins").map(_.toList).getOrElse(Nil)
 }

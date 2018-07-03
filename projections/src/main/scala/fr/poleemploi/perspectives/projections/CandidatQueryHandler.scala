@@ -12,4 +12,7 @@ class CandidatQueryHandler(candidatProjection: CandidatProjection) extends Query
   def getCandidat(query: GetCandidatQuery): Future[CandidatDto] =
     candidatProjection.getCandidat(query.candidatId)
 
+  def findAll(): Future[List[CandidatDto]] =
+    candidatProjection.findAll
+
 }

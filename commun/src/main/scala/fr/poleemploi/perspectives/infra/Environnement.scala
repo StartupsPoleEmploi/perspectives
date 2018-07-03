@@ -2,10 +2,7 @@ package fr.poleemploi.perspectives.infra
 
 import scala.collection.immutable.ListMap
 
-case class Environnement(value: String) {
-
-  override def toString: String = super.toString
-}
+case class Environnement(value: String)
 
 object Environnement {
 

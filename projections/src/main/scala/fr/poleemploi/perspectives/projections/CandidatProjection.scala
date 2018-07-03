@@ -10,6 +10,9 @@ import scala.concurrent.Future
 
 case class CandidatDto(candidatId: String,
                        peConnectId: String,
+                       nom: String,
+                       prenom: String,
+                       email: String,
                        rechercheMetierEvalue: Option[Boolean],
                        rechercheAutreMetier: Option[Boolean],
                        metiersRecherches: List[String],
@@ -44,6 +47,12 @@ class CandidatProjection(val driver: PostgresDriver,
 
     def peConnectId = column[String]("peconnect_id")
 
+    def nom = column[String]("nom")
+
+    def prenom = column[String]("prenom")
+
+    def email = column[String]("email")
+
     def rechercheMetierEvalue = column[Option[Boolean]]("recherche_metier_evalue")
 
     def rechercheAutreMetier = column[Option[Boolean]]("recherche_autre_metier")
@@ -56,7 +65,7 @@ class CandidatProjection(val driver: PostgresDriver,
 
     def rayonRecherche = column[Option[Int]]("rayon_recherche")
 
-    def * = (candidatId, peConnectId, rechercheMetierEvalue, rechercheAutreMetier, metiersRecherches, contacteParAgenceInterim, contacteParOrganismeFormation, rayonRecherche) <> (CandidatDto.tupled, CandidatDto.unapply)
+    def * = (candidatId, peConnectId, nom, prenom, email, rechercheMetierEvalue, rechercheAutreMetier, metiersRecherches, contacteParAgenceInterim, contacteParOrganismeFormation, rayonRecherche) <> (CandidatDto.tupled, CandidatDto.unapply)
   }
 
   val candidatTable = TableQuery[CandidatTable]
@@ -73,12 +82,15 @@ class CandidatProjection(val driver: PostgresDriver,
     database.run(query.result.head)
   }
 
+  def findAll: Future[List[CandidatDto]] =
+    database.run(candidatTable.result).map(_.toList)
+
   private def onCandidatInscrisEvent(aggregateId: AggregateId,
                                      event: CandidatInscrisEvent): Future[Unit] =
     database
       .run(candidatTable.map(
-        u => (u.candidatId, u.peConnectId, u.metiersRecherches))
-        += (aggregateId.value, event.peConnectId, Nil))
+        u => (u.candidatId, u.peConnectId, u.nom, u.prenom, u.email, u.metiersRecherches))
+        += (aggregateId.value, event.peConnectId, event.nom, event.prenom, event.email, Nil))
       .map(_ => ())
 
   private def onCriteresRechercheModifiesEvent(aggregateId: AggregateId,
