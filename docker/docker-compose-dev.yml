@@ -7,7 +7,7 @@ services:
     deploy:
       replicas: 1
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
     networks:
       - net
 
@@ -15,8 +15,8 @@ services:
     image: postgres:10.4
     volumes:
       - postgresql:/var/lib/postgresql/data
-      - ./events.sql:/docker-entrypoint-initdb.d/events.sql
-      - ./candidats.sql:/docker-entrypoint-initdb.d/candidats.sql
+      - ./postgresql/events.sql:/docker-entrypoint-initdb.d/events.sql
+      - ./postgresql/candidats.sql:/docker-entrypoint-initdb.d/candidats.sql
     env_file:
       - dev.env
     deploy:
