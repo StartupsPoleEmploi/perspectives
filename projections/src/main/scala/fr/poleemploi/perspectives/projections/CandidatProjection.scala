@@ -104,7 +104,7 @@ class CandidatProjection(val driver: PostgresDriver,
       Some(event.rechercheMetierEvalue),
       Some(event.rechercheAutreMetier),
       Some(event.rayonRecherche),
-      event.listeMetiersRecherches
+      event.listeMetiersRecherches.toList
     ))
 
     database.run(updateAction).map(_ => ())

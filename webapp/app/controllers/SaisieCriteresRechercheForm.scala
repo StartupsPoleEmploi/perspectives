@@ -6,7 +6,7 @@ import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 
 case class SaisieCriteresRechercheForm(rechercheMetierEvalue: String,
                                        rechercheAutreMetier: String,
-                                       listeMetiersRecherches: List[String],
+                                       metiersRecherches: Set[String],
                                        etreContacteParOrganismeFormation: String,
                                        etreContacteParAgenceInterim: String,
                                        rayonRecherche: Int)
@@ -17,7 +17,7 @@ object SaisieCriteresRechercheForm {
     mapping(
       "rechercheMetierEvalue" -> nonEmptyText,
       "rechercheAutreMetier" -> nonEmptyText,
-      "listeMetiersRecherches" -> list(nonEmptyText),
+      "listeMetiersRecherches" -> set(nonEmptyText),
       "contactFormation" -> nonEmptyText,
       "contactInterim" -> nonEmptyText,
       "rayonRecherche" -> number
@@ -27,7 +27,7 @@ object SaisieCriteresRechercheForm {
   def metiersSelectionnes: Constraint[SaisieCriteresRechercheForm] =
     Constraint {
       fields =>
-        if (fields.rechercheAutreMetier == "true" && fields.listeMetiersRecherches.isEmpty) {
+        if (fields.rechercheAutreMetier == "true" && fields.metiersRecherches.isEmpty) {
           Invalid(ValidationError("constraint.criteres.selectionmetiers"))
         } else {
           Valid

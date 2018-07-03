@@ -30,7 +30,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
           SaisieCriteresRechercheForm(
             rechercheMetierEvalue = candidatDto.rechercheMetierEvalue.map(booleanToString).getOrElse(""),
             rechercheAutreMetier = candidatDto.rechercheAutreMetier.map(booleanToString).getOrElse(""),
-            listeMetiersRecherches = candidatDto.metiersRecherches,
+            metiersRecherches = candidatDto.metiersRecherches.toSet,
             etreContacteParAgenceInterim = candidatDto.contacteParAgenceInterim.map(booleanToString).getOrElse(""),
             etreContacteParOrganismeFormation = candidatDto.contacteParOrganismeFormation.map(booleanToString).getOrElse(""),
             rayonRecherche = candidatDto.rayonRecherche.getOrElse(0)
@@ -55,7 +55,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
             id = aggregateId,
             rechercheMetierEvalue = stringToBoolean(saisieCriteresRechercheForm.rechercheMetierEvalue),
             rechercheAutreMetier = stringToBoolean(saisieCriteresRechercheForm.rechercheAutreMetier),
-            listeMetiersRecherches = if (stringToBoolean(saisieCriteresRechercheForm.rechercheAutreMetier)) saisieCriteresRechercheForm.listeMetiersRecherches else Nil,
+            metiersRecherches = if (stringToBoolean(saisieCriteresRechercheForm.rechercheAutreMetier)) saisieCriteresRechercheForm.metiersRecherches else Set.empty,
             etreContacteParOrganismeFormation = stringToBoolean(saisieCriteresRechercheForm.etreContacteParOrganismeFormation),
             etreContacteParAgenceInterim = stringToBoolean(saisieCriteresRechercheForm.etreContacteParAgenceInterim),
             rayonRecherche = saisieCriteresRechercheForm.rayonRecherche

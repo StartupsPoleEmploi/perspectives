@@ -12,7 +12,7 @@ case class InscrireCandidatCommand(override val id: AggregateId,
 case class ModifierCriteresRechercheCommand(override val id: AggregateId,
                                             rechercheMetierEvalue: Boolean,
                                             rechercheAutreMetier: Boolean,
-                                            listeMetiersRecherches: List[String],
+                                            metiersRecherches: Set[String],
                                             etreContacteParOrganismeFormation: Boolean,
                                             etreContacteParAgenceInterim: Boolean,
                                             rayonRecherche: Int) extends Command

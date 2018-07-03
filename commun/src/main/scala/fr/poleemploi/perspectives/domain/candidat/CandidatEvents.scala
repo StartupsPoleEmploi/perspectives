@@ -12,7 +12,7 @@ case class CandidatInscrisEvent(peConnectId: String,
 
 case class CriteresRechercheModifiesEvent(rechercheMetierEvalue: Boolean,
                                           rechercheAutreMetier: Boolean,
-                                          listeMetiersRecherches: List[String],
+                                          listeMetiersRecherches: Set[String],
                                           etreContacteParOrganismeFormation: Boolean,
                                           etreContacteParAgenceInterim: Boolean,
                                           rayonRecherche: Int,
