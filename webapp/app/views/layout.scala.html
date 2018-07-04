@@ -30,18 +30,20 @@
             </div>
         </header>
 
+        @if(flash.data.nonEmpty) {
         <div class="messages">
             @if(flash.data.contains("message_succes")) {
-            <div class="message alert alert-success">
+                <div class="message alert alert-success">
                 @flash.get("message_succes")
-            </div>
+                </div>
             }
             @if(flash.data.contains("message_erreur")) {
-            <div class="message alert alert-danger">
+                <div class="message alert alert-danger">
                 @flash.get("message_erreur")
-            </div>
+                </div>
             }
         </div>
+        }
 
         @content
 

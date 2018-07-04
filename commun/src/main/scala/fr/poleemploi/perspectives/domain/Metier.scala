@@ -30,7 +30,7 @@ object Metier {
   val FABRICATION_PIECES = Metier("H3203", "Fabrication de pièces")
   val TRI_EMBALLAGE = Metier("H3302", "Tri et emballage")
   val AIDE_PERSONNES_AGEES = Metier("K1302", "Aide aux personnes âgées")
-  val AIDE_DOMICILE = Metier("K1304", "Aide a domicile")
+  val AIDE_DOMICILE = Metier("K1304", "Aide à domicile")
   val NETTOYAGE_LOCAUX = Metier("K2204", "Nettoyage de locaux")
   val PREPARATION_COMMANDE = Metier("N1103", "Préparation de commandes")
   val MANUTENTION = Metier("N1105", "Manutention")
