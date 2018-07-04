@@ -1,3 +1,5 @@
+@import java.time.format.DateTimeFormatter
+
 @import authentification.AuthenticatedCandidat
 @import conf.WebAppConfig
 @import fr.poleemploi.perspectives.projections.CandidatDto
@@ -15,6 +17,7 @@
             <table class="table">
                 <thead class="thead-light">
                     <tr>
+                        <th>Date d'inscription</th>
                         <th>Nom</th>
                         <th>Prenom</th>
                         <th>Email</th>
@@ -29,6 +32,7 @@
                 <tbody>
                 @for(candidat <- candidats) {
                     <tr>
+                        <td>@candidat.dateInscription.format(DateTimeFormatter.ofPattern("d MMM yyyy hh:mm"))</td>
                         <td>@candidat.nom</td>
                         <td>@candidat.prenom</td>
                         <td>@candidat.email</td>

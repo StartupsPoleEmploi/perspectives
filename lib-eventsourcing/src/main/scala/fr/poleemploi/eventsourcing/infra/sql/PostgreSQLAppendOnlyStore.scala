@@ -65,7 +65,7 @@ class PostgreSQLAppendOnlyStore(val driver: PostgresDriver,
   override def readRecords(streamName: String): Future[List[AppendOnlyData]] = {
     val query = eventsTable
       .filter(e => e.streamName === streamName)
-      .sortBy(_.streamVersion)
+      .sortBy(_.streamVersion.asc)
 
     database.run(query.result)
       .map(_.toList.map(f => AppendOnlyData(

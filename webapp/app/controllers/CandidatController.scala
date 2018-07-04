@@ -17,7 +17,7 @@ class CandidatController @Inject()(cc: ControllerComponents,
 
   def liste(): Action[AnyContent] = authenticatedAction.async { implicit candidatRequest: CandidatRequest[AnyContent] =>
     if (roleService.hasRole(candidatRequest.authenticatedCandidat, Role.ADMIN)) {
-      queryHandler.findAll()
+      queryHandler.findAllOrderByDateInscription()
         .map(candidats =>
           Ok(views.html.listeCandidats(candidatRequest.authenticatedCandidat, candidats))
         )

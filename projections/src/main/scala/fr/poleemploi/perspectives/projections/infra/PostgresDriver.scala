@@ -3,10 +3,12 @@ package fr.poleemploi.perspectives.projections.infra
 import com.github.tminglei.slickpg._
 
 trait PostgresDriver extends ExPostgresProfile
-  with PgArraySupport {
+  with PgArraySupport
+  with PgDate2Support {
 
   object PostgresAPI extends API
-    with ArrayImplicits {
+    with ArrayImplicits
+    with DateTimeImplicits {
 
     implicit val strListTypeMapper = new SimpleArrayJdbcType[String]("text").to(_.toList)
   }

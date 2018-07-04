@@ -1,5 +1,7 @@
 package fr.poleemploi.perspectives.projections
 
+import java.time.ZonedDateTime
+
 import fr.poleemploi.cqrs.projection.Projection
 import fr.poleemploi.eventsourcing.{AggregateId, Event}
 import fr.poleemploi.perspectives.domain.Metier
@@ -20,7 +22,8 @@ case class CandidatDto(candidatId: String,
                        metiersRecherches: Set[Metier],
                        contacteParAgenceInterim: Option[Boolean],
                        contacteParOrganismeFormation: Option[Boolean],
-                       rayonRecherche: Option[Int])
+                       rayonRecherche: Option[Int],
+                       dateInscription: ZonedDateTime)
 
 class CandidatProjection(val driver: PostgresDriver,
                          database: Database) extends Projection {
@@ -70,7 +73,9 @@ class CandidatProjection(val driver: PostgresDriver,
 
     def rayonRecherche = column[Option[Int]]("rayon_recherche")
 
-    def * = (candidatId, peConnectId, nom, prenom, email, rechercheMetierEvalue, rechercheAutreMetier, metiersRecherches, contacteParAgenceInterim, contacteParOrganismeFormation, rayonRecherche) <> (CandidatRecord.tupled, CandidatRecord.unapply)
+    def dateInscription = column[ZonedDateTime]("date_inscription")
+
+    def * = (candidatId, peConnectId, nom, prenom, email, rechercheMetierEvalue, rechercheAutreMetier, metiersRecherches, contacteParAgenceInterim, contacteParOrganismeFormation, rayonRecherche, dateInscription) <> (CandidatRecord.tupled, CandidatRecord.unapply)
   }
 
   val candidatTable = TableQuery[CandidatTable]
@@ -87,15 +92,18 @@ class CandidatProjection(val driver: PostgresDriver,
     database.run(query.result.head).map(_.toCandidatDto)
   }
 
-  def findAll: Future[List[CandidatDto]] =
-    database.run(candidatTable.result).map(_.toList.map(_.toCandidatDto))
+  def findAllOrderByDateInscription: Future[List[CandidatDto]] = {
+    val query = candidatTable.sortBy(_.dateInscription.desc)
+
+    database.run(query.result).map(_.toList.map(_.toCandidatDto))
+  }
 
   private def onCandidatInscrisEvent(aggregateId: AggregateId,
                                      event: CandidatInscrisEvent): Future[Unit] =
     database
       .run(candidatTable.map(
-        u => (u.candidatId, u.peConnectId, u.nom, u.prenom, u.email, u.metiersRecherches))
-        += (aggregateId.value, event.peConnectId, event.nom, event.prenom, event.email, Nil))
+        u => (u.candidatId, u.peConnectId, u.nom, u.prenom, u.email, u.metiersRecherches, u.dateInscription))
+        += (aggregateId.value, event.peConnectId, event.nom, event.prenom, event.email, Nil, event.date))
       .map(_ => ())
 
   private def onCriteresRechercheModifiesEvent(aggregateId: AggregateId,
@@ -126,7 +134,8 @@ case class CandidatRecord(candidatId: String,
                           metiersRecherches: List[String],
                           contacteParAgenceInterim: Option[Boolean],
                           contacteParOrganismeFormation: Option[Boolean],
-                          rayonRecherche: Option[Int]) {
+                          rayonRecherche: Option[Int],
+                          dateInscription: ZonedDateTime) {
 
   def toCandidatDto: CandidatDto = CandidatDto(
     candidatId = candidatId,
@@ -139,6 +148,7 @@ case class CandidatRecord(candidatId: String,
     metiersRecherches = metiersRecherches.flatMap(Metier.from).toSet,
     contacteParAgenceInterim = contacteParAgenceInterim,
     contacteParOrganismeFormation = contacteParOrganismeFormation,
-    rayonRecherche = rayonRecherche
+    rayonRecherche = rayonRecherche,
+    dateInscription = dateInscription
   )
 }
