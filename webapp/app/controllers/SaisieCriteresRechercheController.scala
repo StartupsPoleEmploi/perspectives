@@ -3,6 +3,7 @@ package controllers
 import authentification.{AuthenticatedAction, CandidatRequest}
 import conf.WebAppConfig
 import fr.poleemploi.eventsourcing.AggregateId
+import fr.poleemploi.perspectives.domain.Metier
 import fr.poleemploi.perspectives.domain.candidat.{CandidatCommandHandler, ModifierCriteresRechercheCommand}
 import fr.poleemploi.perspectives.projections.{CandidatQueryHandler, GetCandidatQuery}
 import javax.inject.Inject
@@ -30,7 +31,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
           SaisieCriteresRechercheForm(
             rechercheMetierEvalue = candidatDto.rechercheMetierEvalue.map(booleanToString).getOrElse(""),
             rechercheAutreMetier = candidatDto.rechercheAutreMetier.map(booleanToString).getOrElse(""),
-            metiersRecherches = candidatDto.metiersRecherches.toSet,
+            metiersRecherches = candidatDto.metiersRecherches.map(_.code),
             etreContacteParAgenceInterim = candidatDto.contacteParAgenceInterim.map(booleanToString).getOrElse(""),
             etreContacteParOrganismeFormation = candidatDto.contacteParOrganismeFormation.map(booleanToString).getOrElse(""),
             rayonRecherche = candidatDto.rayonRecherche.getOrElse(0)
@@ -55,7 +56,10 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
             id = aggregateId,
             rechercheMetierEvalue = stringToBoolean(saisieCriteresRechercheForm.rechercheMetierEvalue),
             rechercheAutreMetier = stringToBoolean(saisieCriteresRechercheForm.rechercheAutreMetier),
-            metiersRecherches = if (stringToBoolean(saisieCriteresRechercheForm.rechercheAutreMetier)) saisieCriteresRechercheForm.metiersRecherches else Set.empty,
+            metiersRecherches =
+              if (stringToBoolean(saisieCriteresRechercheForm.rechercheAutreMetier))
+                saisieCriteresRechercheForm.metiersRecherches.flatMap(Metier.from)
+              else Set.empty,
             etreContacteParOrganismeFormation = stringToBoolean(saisieCriteresRechercheForm.etreContacteParOrganismeFormation),
             etreContacteParAgenceInterim = stringToBoolean(saisieCriteresRechercheForm.etreContacteParAgenceInterim),
             rayonRecherche = saisieCriteresRechercheForm.rayonRecherche

@@ -32,7 +32,7 @@ class Candidat(override val id: AggregateId,
     List(CriteresRechercheModifiesEvent(
       rechercheMetierEvalue = modifierCriteresRechercheCommand.rechercheMetierEvalue,
       rechercheAutreMetier = modifierCriteresRechercheCommand.rechercheAutreMetier,
-      listeMetiersRecherches = modifierCriteresRechercheCommand.metiersRecherches,
+      listeMetiersRecherches = modifierCriteresRechercheCommand.metiersRecherches.map(_.code),
       etreContacteParAgenceInterim = modifierCriteresRechercheCommand.etreContacteParAgenceInterim,
       etreContacteParOrganismeFormation = modifierCriteresRechercheCommand.etreContacteParOrganismeFormation,
       rayonRecherche = modifierCriteresRechercheCommand.rayonRecherche

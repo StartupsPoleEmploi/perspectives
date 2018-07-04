@@ -2,6 +2,7 @@ package fr.poleemploi.perspectives.projections
 
 import fr.poleemploi.cqrs.projection.Projection
 import fr.poleemploi.eventsourcing.{AggregateId, Event}
+import fr.poleemploi.perspectives.domain.Metier
 import fr.poleemploi.perspectives.domain.candidat.{CandidatInscrisEvent, CriteresRechercheModifiesEvent}
 import fr.poleemploi.perspectives.projections.infra.PostgresDriver
 import slick.jdbc.JdbcBackend.Database
@@ -16,7 +17,7 @@ case class CandidatDto(candidatId: String,
                        email: String,
                        rechercheMetierEvalue: Option[Boolean],
                        rechercheAutreMetier: Option[Boolean],
-                       metiersRecherches: List[String],
+                       metiersRecherches: Set[Metier],
                        contacteParAgenceInterim: Option[Boolean],
                        contacteParOrganismeFormation: Option[Boolean],
                        rayonRecherche: Option[Int])
@@ -43,7 +44,7 @@ class CandidatProjection(val driver: PostgresDriver,
 
   import driver.api._
 
-  class CandidatTable(tag: Tag) extends Table[CandidatDto](tag, "candidats") {
+  class CandidatTable(tag: Tag) extends Table[CandidatRecord](tag, "candidats") {
 
     def id = column[Long]("id", O.PrimaryKey)
 
@@ -69,7 +70,7 @@ class CandidatProjection(val driver: PostgresDriver,
 
     def rayonRecherche = column[Option[Int]]("rayon_recherche")
 
-    def * = (candidatId, peConnectId, nom, prenom, email, rechercheMetierEvalue, rechercheAutreMetier, metiersRecherches, contacteParAgenceInterim, contacteParOrganismeFormation, rayonRecherche) <> (CandidatDto.tupled, CandidatDto.unapply)
+    def * = (candidatId, peConnectId, nom, prenom, email, rechercheMetierEvalue, rechercheAutreMetier, metiersRecherches, contacteParAgenceInterim, contacteParOrganismeFormation, rayonRecherche) <> (CandidatRecord.tupled, CandidatRecord.unapply)
   }
 
   val candidatTable = TableQuery[CandidatTable]
@@ -77,17 +78,17 @@ class CandidatProjection(val driver: PostgresDriver,
   def findCandidat(peConnectId: String): Future[Option[CandidatDto]] = {
     val query = candidatTable.filter(u => u.peConnectId === peConnectId)
 
-    database.run(query.result.headOption)
+    database.run(query.result.headOption).map(_.map(_.toCandidatDto))
   }
 
   def getCandidat(candidatId: String): Future[CandidatDto] = {
     val query = candidatTable.filter(u => u.candidatId === candidatId)
 
-    database.run(query.result.head)
+    database.run(query.result.head).map(_.toCandidatDto)
   }
 
   def findAll: Future[List[CandidatDto]] =
-    database.run(candidatTable.result).map(_.toList)
+    database.run(candidatTable.result).map(_.toList.map(_.toCandidatDto))
 
   private def onCandidatInscrisEvent(aggregateId: AggregateId,
                                      event: CandidatInscrisEvent): Future[Unit] =
@@ -113,4 +114,31 @@ class CandidatProjection(val driver: PostgresDriver,
 
     database.run(updateAction).map(_ => ())
   }
+}
+
+case class CandidatRecord(candidatId: String,
+                          peConnectId: String,
+                          nom: String,
+                          prenom: String,
+                          email: String,
+                          rechercheMetierEvalue: Option[Boolean],
+                          rechercheAutreMetier: Option[Boolean],
+                          metiersRecherches: List[String],
+                          contacteParAgenceInterim: Option[Boolean],
+                          contacteParOrganismeFormation: Option[Boolean],
+                          rayonRecherche: Option[Int]) {
+
+  def toCandidatDto: CandidatDto = CandidatDto(
+    candidatId = candidatId,
+    peConnectId = peConnectId,
+    nom = nom,
+    prenom = prenom,
+    email = email,
+    rechercheAutreMetier = rechercheAutreMetier,
+    rechercheMetierEvalue = rechercheMetierEvalue,
+    metiersRecherches = metiersRecherches.flatMap(Metier.from).toSet,
+    contacteParAgenceInterim = contacteParAgenceInterim,
+    contacteParOrganismeFormation = contacteParOrganismeFormation,
+    rayonRecherche = rayonRecherche
+  )
 }

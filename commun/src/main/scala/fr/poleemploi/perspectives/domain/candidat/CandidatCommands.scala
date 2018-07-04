@@ -2,6 +2,7 @@ package fr.poleemploi.perspectives.domain.candidat
 
 import fr.poleemploi.cqrs.command.Command
 import fr.poleemploi.eventsourcing.AggregateId
+import fr.poleemploi.perspectives.domain.Metier
 
 case class InscrireCandidatCommand(override val id: AggregateId,
                                    peConnectId: String,
@@ -12,7 +13,7 @@ case class InscrireCandidatCommand(override val id: AggregateId,
 case class ModifierCriteresRechercheCommand(override val id: AggregateId,
                                             rechercheMetierEvalue: Boolean,
                                             rechercheAutreMetier: Boolean,
-                                            metiersRecherches: Set[String],
+                                            metiersRecherches: Set[Metier],
                                             etreContacteParOrganismeFormation: Boolean,
                                             etreContacteParAgenceInterim: Boolean,
                                             rayonRecherche: Int) extends Command
