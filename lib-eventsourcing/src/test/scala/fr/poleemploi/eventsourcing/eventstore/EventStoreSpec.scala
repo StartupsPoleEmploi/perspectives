@@ -1,7 +1,9 @@
 package fr.poleemploi.eventsourcing.eventstore
 
-import fr.poleemploi.eventsourcing.{AggregateId, Event, EventPublisher}
-import org.mockito.Mockito.when
+import fr.poleemploi.eventsourcing.{AggregateId, Event, EventPublisher, AppendedEvent}
+import org.mockito.ArgumentMatchers
+import org.mockito.Mockito._
+import org.mockito.ArgumentMatchers._
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, MustMatchers, WordSpec}
 
@@ -82,6 +84,35 @@ class EventStoreSpec extends WordSpec with MustMatchers
 
       // Then
       eventStream.events must contain theSameElementsInOrderAs datas.map(_.event)
+    }
+  }
+
+  "append" should {
+    "ne pas publier un evenement s'il n'a pas pu etre sauvegarde dans le store" in {
+      // Given
+      when(appendOnlyStore.append(ArgumentMatchers.eq(aggregateId.value), ArgumentMatchers.eq(0), any[List[AppendOnlyData]])) thenReturn Future.failed(new RuntimeException("Erreur de sauvegarde"))
+
+      // When
+      Await.ready(eventStore.append(
+        aggregateId = aggregateId,
+        expectedVersion = 0,
+        events = List(mock[Event])
+      ), 5.seconds)
+
+      // Then
+      verify(eventPublisher, never()).publish(any[AppendedEvent])
+    }
+    "sauvegarder un evenement dans le store meme si la publication echoue" in {
+      // Given
+      when(appendOnlyStore.append(ArgumentMatchers.eq(aggregateId.value), ArgumentMatchers.eq(0), ArgumentMatchers.any[List[AppendOnlyData]])) thenReturn Future.successful()
+      when(eventPublisher.publish(ArgumentMatchers.any[AppendedEvent]())) thenReturn Future.failed(new RuntimeException("Erreur de publication"))
+
+      // When & Then
+      Await.ready(eventStore.append(
+        aggregateId = aggregateId,
+        expectedVersion = 0,
+        events = List(mock[Event])
+      ), 5.seconds)
     }
   }
 

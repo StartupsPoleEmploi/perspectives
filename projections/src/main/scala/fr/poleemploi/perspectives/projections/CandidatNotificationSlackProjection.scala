@@ -1,6 +1,7 @@
 package fr.poleemploi.perspectives.projections
 
-import fr.poleemploi.eventsourcing.{AggregateId, AppendedEvent, EventHandler}
+import fr.poleemploi.cqrs.projection.Projection
+import fr.poleemploi.eventsourcing.{AggregateId, Event}
 import fr.poleemploi.perspectives.domain.candidat.CandidatInscrisEvent
 import fr.poleemploi.perspectives.infra.Environnement
 import play.api.libs.json.Json
@@ -13,15 +14,18 @@ case class SlackCandidatConfig(webhookURL: String,
                                environnement: Environnement)
 
 class CandidatNotificationSlackProjection(slackCandidatConfig: SlackCandidatConfig,
-                                          wsClient: WSClient) extends EventHandler {
+                                          wsClient: WSClient) extends Projection {
 
-  override def handle(appendedEvent: AppendedEvent): Future[Unit] = appendedEvent.eventType match {
-    case "CandidatInscrisEvent" =>
+  override def listenTo: List[Class[_ <: Event]] = List(classOf[Event])
+
+  override def isReplayable: Boolean = false
+
+  override def onEvent(aggregateId: AggregateId): ReceiveEvent = {
+    case e: CandidatInscrisEvent =>
       onCandidatInscrisEvent(
-        aggregateId = appendedEvent.aggregateId,
-        event = appendedEvent.event.asInstanceOf[CandidatInscrisEvent]
+        aggregateId = aggregateId,
+        event = e
       )
-    case _ => Future.successful()
   }
 
   private def onCandidatInscrisEvent(aggregateId: AggregateId,

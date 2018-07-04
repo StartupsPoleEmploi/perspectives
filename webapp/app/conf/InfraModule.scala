@@ -6,7 +6,7 @@ import com.google.inject.{AbstractModule, Provider, Provides, Singleton}
 import fr.poleemploi.eventsourcing.eventstore.{AppendOnlyStore, EventStore}
 import fr.poleemploi.eventsourcing.infra.jackson.EventStoreObjectMapper
 import fr.poleemploi.eventsourcing.infra.sql.{PostgreSQLAppendOnlyStore, PostgresDriver}
-import fr.poleemploi.eventsourcing.{EventPublisher, SynchronousEventPublisher}
+import fr.poleemploi.eventsourcing.{EventHandler, EventPublisher, LocalEventPublisher, LocalEventHandler}
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
 import play.api.inject.ApplicationLifecycle
@@ -33,7 +33,11 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
-  def eventPublisher: EventPublisher = new SynchronousEventPublisher
+  def eventPublisher: EventPublisher = new LocalEventPublisher
+
+  @Provides
+  @Singleton
+  def eventHandler: EventHandler = new LocalEventHandler
 
   @Provides
   @Singleton

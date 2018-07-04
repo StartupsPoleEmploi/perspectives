@@ -1,6 +1,6 @@
 package fr.poleemploi.eventsourcing.eventstore
 
-import fr.poleemploi.eventsourcing.{AggregateId, AppendedEvent, Event, EventPublisher}
+import fr.poleemploi.eventsourcing._
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -51,10 +51,10 @@ class EventStore(eventPublisher: EventPublisher,
       datas = datas
     ).map { _ =>
       events.foreach(e => {
+        // On attend pas le retour de la publication
         eventPublisher.publish(
           AppendedEvent(
             aggregateId = AggregateId(aggregateId.value),
-            eventType = e.getClass.getSimpleName,
             event = e
           )
         )

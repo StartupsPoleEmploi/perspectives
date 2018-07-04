@@ -1,6 +1,7 @@
 package fr.poleemploi.perspectives.projections
 
-import fr.poleemploi.eventsourcing.{AggregateId, AppendedEvent, EventHandler}
+import fr.poleemploi.cqrs.projection.Projection
+import fr.poleemploi.eventsourcing.{AggregateId, Event}
 import fr.poleemploi.perspectives.domain.candidat.{CandidatInscrisEvent, CriteresRechercheModifiesEvent}
 import fr.poleemploi.perspectives.projections.infra.PostgresDriver
 import slick.jdbc.JdbcBackend.Database
@@ -21,20 +22,23 @@ case class CandidatDto(candidatId: String,
                        rayonRecherche: Option[Int])
 
 class CandidatProjection(val driver: PostgresDriver,
-                         database: Database) extends EventHandler {
+                         database: Database) extends Projection {
 
-  override def handle(appendedEvent: AppendedEvent): Future[Unit] = appendedEvent.eventType match {
-    case "CandidatInscrisEvent" =>
+  override def listenTo: List[Class[_ <: Event]] = List(classOf[Event])
+
+  override def isReplayable: Boolean = true
+
+  override def onEvent(aggregateId: AggregateId): ReceiveEvent = {
+    case e: CandidatInscrisEvent =>
       onCandidatInscrisEvent(
-        aggregateId = appendedEvent.aggregateId,
-        event = appendedEvent.event.asInstanceOf[CandidatInscrisEvent]
+        aggregateId = aggregateId,
+        event = e
       )
-    case "CriteresRechercheModifiesEvent" =>
+    case e: CriteresRechercheModifiesEvent =>
       onCriteresRechercheModifiesEvent(
-        aggregateId = appendedEvent.aggregateId,
-        event = appendedEvent.event.asInstanceOf[CriteresRechercheModifiesEvent]
+        aggregateId = aggregateId,
+        event = e
       )
-    case _ => Future.successful()
   }
 
   import driver.api._
