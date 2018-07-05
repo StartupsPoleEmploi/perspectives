@@ -5,10 +5,6 @@
 
 @(saisieCriteresRechercheForm: Form[SaisieCriteresRechercheForm], authenticatedCandidat: AuthenticatedCandidat)(implicit request: MessagesRequestHeader, flash: Flash, webAppConfig: WebAppConfig)
 
-@containsMetier(code: String) = @{
- if (saisieCriteresRechercheForm("listeMetiersRecherches").indexes.flatMap(i => saisieCriteresRechercheForm("listeMetiersRecherches[%s]".format(i)).value).toSet.contains(code)) "checked" else ""
-}
-
 @hasErrors(field:String) = @{
     saisieCriteresRechercheForm(field).hasErrors
 }
@@ -17,622 +13,324 @@
     saisieCriteresRechercheForm.globalErrors.find(_.messages.contains("constraint.criteres.selectionmetiers"))
 }
 
-@getLabelMetier(code: String) = @{
-    Metier.values.get(code).map(_.label).getOrElse("")
-}
-
 @layout(authenticatedCandidat = Some(authenticatedCandidat)) {
 <div id="saisieCriteresRecherche">
-    <section>
-        <div class="container">
-            <h1 class="pt-5 pb-2">Choisissez vos critères</h1>
-            <div class="row">
-                <div class="col-10 offset-1">
-                    <h2>Faisons connaissance et bénéficiez rapidement de mises en relation avec des employeurs, agences d'interim et organismes de formation.</h2>
-                </div>
-            </div>
-            <div class="row pt-5 pb-5">
-                <span class="col-2 offset-5 h-line"></span>
-            </div>
+    <section class="presentation">
+        <header class="presentationTitres">
+            <h2 class="presentationTitres-titre">Choisissez vos critères</h2>
+            <p class="presentationTitres-description">Faisons connaissance et bénéficiez rapidement de mises en relation avec des employeurs, agences d'interim et organismes de formation.</p>
+        </header>
+        <div class="separation">
+            <span class="separation-ligne"></span>
         </div>
     </section>
-    <section>
-        <div class="container">
-            @form(action = routes.SaisieCriteresRechercheController.modifierCriteresRecherche(), 'id -> "criteresRechercheForm") {
-            @CSRF.formField
-            <div class="row mb-4 offset-md-1">
-                <dl class="col">
-                    <dt class="row question-form">
-                        <div class="col-xs-auto puce-question-form @if(hasErrors("rechercheMetierEvalue")){puce-question-form-erreur}">1</div>
-                        <div class="col-11">
-                            Cherchez-vous toujours sur le métier pour lequel vous avez été évalué ?
-                            <span class="text-required">*</span>
-                        </div>
-                    </dt>
-                    <dd class="row ml-2">
-                        <div class="col-auto">
-                            <input id="rechercheMetierEvalue-oui"
-                                   name="rechercheMetierEvalue"
-                                   type="radio" value="true"
-                                   @if(saisieCriteresRechercheForm("rechercheMetierEvalue").value.contains("true")) {
-                                    checked
-                                    }
-                            />
-                            <label class="label-reponse-radio" for="rechercheMetierEvalue-oui">Oui
-                                <span class="radio-circle"></span>
-                            </label>
-                        </div>
-                        <div class="col-auto">
-                            <input id="rechercheMetierEvalue-non"
-                                   name="rechercheMetierEvalue"
-                                   type="radio" value="false"
-                                   @if(saisieCriteresRechercheForm("rechercheMetierEvalue").value.contains("false")) {
-                                    checked
-                                    }
-                            />
-                            <label class="label-reponse-radio" for="rechercheMetierEvalue-non">Non
-                                <span class="radio-circle"></span>
-                            </label>
-                        </div>
-                    </dd>
-                    @if(hasErrors("rechercheMetierEvalue")) {
-                    <dd class="row ml-4">
-                        <span class="erreur-formulaire">@saisieCriteresRechercheForm("rechercheMetierEvalue").errors.map(_.format).mkString(",")</span>
-                    </dd>
-                    }
-                </dl>
-            </div>
-            <div class="row mb-4 offset-md-1">
-                <dl class="col">
-                    <dt class="row question-form">
-                        <div class="col-xs-auto puce-question-form @if(hasErrors("rechercheAutreMetier") || erreurSelectionMetier.isDefined){puce-question-form-erreur}">2</div>
-                        <div class="col-11">
-                            Recherchez-vous un autre métier ?
-                            <span class="text-required">*</span>
-                        </div>
-                    </dt>
-                    <dd class="row ml-2">
-                        <div class="col-auto">
-                            <input id="rechercheAutreMetier-oui"
-                                   name="rechercheAutreMetier"
-                                   type="radio" value="true"
-                                   @if(saisieCriteresRechercheForm("rechercheAutreMetier").value.contains("true")) {
-                                    checked
-                                    }
-                            />
-                            <label class="label-reponse-radio" for="rechercheAutreMetier-oui">Oui
-                                <span class="radio-circle"></span>
-                            </label>
-                        </div>
-                        <div class="col-auto">
-                            <input id="rechercheAutreMetier-non"
-                                   name="rechercheAutreMetier"
-                                   type="radio" value="false"
-                                   @if(saisieCriteresRechercheForm("rechercheAutreMetier").value.contains("false")) {
-                                    checked
-                                    }
-                            />
-                            <label class="label-reponse-radio" for="rechercheAutreMetier-non">Non
-                                <span class="radio-circle"></span>
-                            </label>
-                        </div>
-                    </dd>
-                    @if(hasErrors("rechercheAutreMetier")) {
-                    <dd class="row ml-4">
-                        <span class="erreur-formulaire">@saisieCriteresRechercheForm("rechercheAutreMetier").errors.map(_.format).mkString(",")</span>
-                    </dd>
-                    }
-                    @if(erreurSelectionMetier.isDefined) {
-                    <dd class="row ml-4">
-                        <span class="erreur-formulaire">@erreurSelectionMetier.get.format</span>
-                    </dd>
-                    }
-                </dl>
-            </div>
-            <div class="row mb-4 offset-md-1 listeMetiersContainer">
-                <dl class="col">
-                    <dt class="row ml-2 question-form">
-                        <div class="col">
-                            Si oui, lesquels ?
-                            <span class="text-required">*</span>
-                            <p class="aide-question-form">Choisissez-en autant que vous le souhaitez</p>
-                        </div>
-                    </dt>
-                    <dd class="row ml-2">
-                        <div class="col-xs-auto d-flex align-self-stretch">
-                            <span class="v-line"></span>
-                        </div>
-                        <div class="col-11">
-                            <ul>
-                                <li>
-                                    <input id="secteurActivite-5"
-                                           name="secteurActivite"
-                                           type="checkbox" value="" />
-                                    <label class="secteur-activite" for="secteurActivite-5">
-                                        <span class="checkmark"></span>
-                                        Industrie
-                                        <span class="compteur-metiers-selectionnes"></span>
-                                    </label>
-                                    <div class="row mb-3 metiers-container">
-                                        <div class="col-auto d-flex align-self-stretch">
-                                            <span class="v-line-niveau2"></span>
-                                        </div>
-                                        <div class="col-11">
-                                            <ul class="metiers">
-                                                <li>
-                                                    <input id="listeMetiersRecherches-10"
-                                                           name="listeMetiersRecherches[]"
-                                                           type="checkbox" value="H2202" @containsMetier("H2202")/>
-                                                    <label class="label-metier-checkbox" for="listeMetiersRecherches-10">
-                                                        <span class="checkmark"></span>
-                                                        @getLabelMetier("H2202")
-                                                    </label>
-                                                </li>
-                                                <li>
-                                                    <input id="listeMetiersRecherches-11"
-                                                           name="listeMetiersRecherches[]"
-                                                           type="checkbox" value="H2913" @containsMetier("H2913")/>
-                                                    <label class="label-metier-checkbox" for="listeMetiersRecherches-11">
-                                                        <span class="checkmark"></span>
-                                                        @getLabelMetier("H2913")
-                                                    </label>
-                                                </li>
-                                                <li>
-                                                    <input id="listeMetiersRecherches-12"
-                                                           name="listeMetiersRecherches[]"
-                                                           type="checkbox" value="H3203" @containsMetier("H3203")/>
-                                                    <label class="label-metier-checkbox" for="listeMetiersRecherches-12">
-                                                        <span class="checkmark"></span>
-                                                        @getLabelMetier("H3203")
-                                                    </label>
-                                                </li>
-                                                <li>
-                                                    <input id="listeMetiersRecherches-13"
-                                                           name="listeMetiersRecherches[]"
-                                                           type="checkbox" value="H3302" @containsMetier("H3302")/>
-                                                    <label class="label-metier-checkbox" for="listeMetiersRecherches-13">
-                                                        <span class="checkmark"></span>
-                                                        @getLabelMetier("H3302")
-                                                    </label>
-                                                </li>
-                                                <li>
-                                                    <input id="listeMetiersRecherches-14"
-                                                           name="listeMetiersRecherches[]"
-                                                           type="checkbox" value="N1103" @containsMetier("N1103")/>
-                                                    <label class="label-metier-checkbox" for="listeMetiersRecherches-14">
-                                                        <span class="checkmark"></span>
-                                                        @getLabelMetier("N1103")
-                                                    </label>
-                                                </li>
-                                                <li>
-                                                    <input id="listeMetiersRecherches-15"
-                                                           name="listeMetiersRecherches[]"
-                                                           type="checkbox" value="N1105" @containsMetier("N1105")/>
-                                                    <label class="label-metier-checkbox" for="listeMetiersRecherches-15">
-                                                        <span class="checkmark"></span>
-                                                        @getLabelMetier("N1105")
-                                                    </label>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li>
-                                    <input id="secteurActivite-2"
-                                           name="secteurActivite"
-                                           type="checkbox" value="" />
-                                    <label class="secteur-activite" for="secteurActivite-2">
-                                        <span class="checkmark"></span>
-                                        Commerce
-                                        <span class="compteur-metiers-selectionnes"></span>
-                                    </label>
-                                    <div class="row mb-3 metiers-container">
-                                        <div class="col-auto d-flex align-self-stretch">
-                                            <span class="v-line-niveau2"></span>
-                                        </div>
-                                        <div class="col-11">
-                                            <ul class="metiers">
-                                                <li>
-                                                    <input id="listeMetiersRecherches-2"
-                                                           name="listeMetiersRecherches[]"
-                                                           type="checkbox" value="D1507" @containsMetier("D1507")/>
-                                                    <label class="label-metier-checkbox" for="listeMetiersRecherches-2">
-                                                        <span class="checkmark"></span>
-                                                        @getLabelMetier("D1507")
-                                                    </label>
-                                                </li>
-                                                <li>
-                                                    <input id="listeMetiersRecherches-3"
-                                                           name="listeMetiersRecherches[]"
-                                                           type="checkbox" value="D1505" @containsMetier("D1505")/>
-                                                    <label class="label-metier-checkbox" for="listeMetiersRecherches-3">
-                                                        <span class="checkmark"></span>
-                                                        @getLabelMetier("D1505")
-                                                    </label>
-                                                </li>
-                                                <li>
-                                                    <input id="listeMetiersRecherches-4"
-                                                           name="listeMetiersRecherches[]"
-                                                           type="checkbox" value="D1106" @containsMetier("D1106")/>
-                                                    <label class="label-metier-checkbox" for="listeMetiersRecherches-4">
-                                                        <span class="checkmark"></span>
-                                                        @getLabelMetier("D1106")
-                                                    </label>
-                                                </li>
-                                                <li>
-                                                    <input id="listeMetiersRecherches-5"
-                                                           name="listeMetiersRecherches[]"
-                                                           type="checkbox" value="N1105" @containsMetier("N1105")/>
-                                                    <label class="label-metier-checkbox" for="listeMetiersRecherches-5">
-                                                        <span class="checkmark"></span>
-                                                        @getLabelMetier("N1105")
-                                                    </label>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li>
-                                    <input id="secteurActivite-3"
-                                           name="secteurActivite"
-                                           type="checkbox" value="" />
-                                    <label class="secteur-activite" for="secteurActivite-3">
-                                        <span class="checkmark"></span>
-                                        Bâtiment
-                                        <span class="compteur-metiers-selectionnes"></span>
-                                    </label>
-                                    <div class="row mb-3 metiers-container">
-                                        <div class="col-auto d-flex align-self-stretch">
-                                            <span class="v-line-niveau2"></span>
-                                        </div>
-                                        <div class="col-11">
-                                            <ul class="metiers">
-                                                <li>
-                                                    <input id="listeMetiersRecherches-6"
-                                                           name="listeMetiersRecherches[]"
-                                                           type="checkbox" value="F1602" @containsMetier("F1602")/>
-                                                    <label class="label-metier-checkbox" for="listeMetiersRecherches-6">
-                                                        <span class="checkmark"></span>
-                                                        @getLabelMetier("F1602")
-                                                    </label>
-                                                </li>
-                                                <li>
-                                                    <input id="listeMetiersRecherches-7"
-                                                           name="listeMetiersRecherches[]"
-                                                           type="checkbox" value="F1703" @containsMetier("F1703")/>
-                                                    <label class="label-metier-checkbox" for="listeMetiersRecherches-7">
-                                                        <span class="checkmark"></span>
-                                                        @getLabelMetier("F1703")
-                                                    </label>
-                                                </li>
-                                                <li>
-                                                    <input id="listeMetiersRecherches-21"
-                                                           name="listeMetiersRecherches[]"
-                                                           type="checkbox" value="F1301" @containsMetier("F1301")/>
-                                                    <label class="label-metier-checkbox" for="listeMetiersRecherches-21">
-                                                        <span class="checkmark"></span>
-                                                        @getLabelMetier("F1301")
-                                                    </label>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li>
-                                    <input id="secteurActivite-4"
-                                           name="secteurActivite"
-                                           type="checkbox" value="" />
-                                    <label class="secteur-activite" for="secteurActivite-4">
-                                        <span class="checkmark"></span>
-                                        Hôtellerie restauration
-                                        <span class="compteur-metiers-selectionnes"></span>
-                                    </label>
-                                    <div class="row mb-3 metiers-container">
-                                        <div class="col-auto d-flex align-self-stretch">
-                                            <span class="v-line-niveau2"></span>
-                                        </div>
-                                        <div class="col-11">
-                                            <ul class="metiers">
-                                                <li>
-                                                    <input id="listeMetiersRecherches-8"
-                                                           name="listeMetiersRecherches[]"
-                                                           type="checkbox" value="G1603" @containsMetier("G1603")/>
-                                                    <label class="label-metier-checkbox" for="listeMetiersRecherches-8">
-                                                        <span class="checkmark"></span>
-                                                        @getLabelMetier("G1603")
-                                                    </label>
-                                                </li>
-                                                <li>
-                                                    <input id="listeMetiersRecherches-9"
-                                                           name="listeMetiersRecherches[]"
-                                                           type="checkbox" value="G1803" @containsMetier("G1803")/>
-                                                    <label class="label-metier-checkbox" for="listeMetiersRecherches-9">
-                                                        <span class="checkmark"></span>
-                                                        @getLabelMetier("G1803")
-                                                    </label>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li>
-                                    <input id="secteurActivite-1"
-                                           name="secteurActivite"
-                                           type="checkbox" value="" />
-                                    <label class="secteur-activite" for="secteurActivite-1">
-                                        <span class="checkmark"></span>
-                                        Agriculture
-                                        <span class="compteur-metiers-selectionnes"></span>
-                                    </label>
-                                    <div class="row mb-3 metiers-container">
-                                        <div class="col-auto d-flex align-self-stretch">
-                                            <span class="v-line-niveau2"></span>
-                                        </div>
-                                        <div class="col-11">
-                                            <ul class="metiers">
-                                                <li>
-                                                    <input id="listeMetiersRecherches-1"
-                                                           name="listeMetiersRecherches[]"
-                                                           type="checkbox" value="A1401" @containsMetier("A1401")/>
-                                                    <label class="label-metier-checkbox" for="listeMetiersRecherches-1">
-                                                        <span class="checkmark"></span>
-                                                        @getLabelMetier("A1401")
-                                                    </label>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li>
-                                    <input id="secteurActivite-6"
-                                           name="secteurActivite"
-                                           type="checkbox" value="" />
-                                    <label class="secteur-activite" for="secteurActivite-6">
-                                        <span class="checkmark"></span>
-                                        Textile
-                                        <span class="compteur-metiers-selectionnes"></span>
-                                    </label>
-                                    <div class="row mb-3 metiers-container">
-                                        <div class="col-auto d-flex align-self-stretch">
-                                            <span class="v-line-niveau2"></span>
-                                        </div>
-                                        <div class="col-11">
-                                            <ul class="metiers">
-                                                <li>
-                                                    <input id="listeMetiersRecherches-16"
-                                                           name="listeMetiersRecherches[]"
-                                                           type="checkbox" value="B1802" @containsMetier("B1802")/>
-                                                    <label class="label-metier-checkbox" for="listeMetiersRecherches-16">
-                                                        <span class="checkmark"></span>
-                                                        @getLabelMetier("B1802")
-                                                    </label>
-                                                </li>
-                                                <li>
-                                                    <input id="listeMetiersRecherches-17"
-                                                           name="listeMetiersRecherches[]"
-                                                           type="checkbox" value="H2402" @containsMetier("H2402")/>
-                                                    <label class="label-metier-checkbox" for="listeMetiersRecherches-17">
-                                                        <span class="checkmark"></span>
-                                                        @getLabelMetier("H2402")
-                                                    </label>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li>
-                                    <input id="secteurActivite-7"
-                                           name="secteurActivite"
-                                           type="checkbox" value="" />
-                                    <label class="secteur-activite" for="secteurActivite-7">
-                                        <span class="checkmark"></span>
-                                        Services à la personne
-                                        <span class="compteur-metiers-selectionnes"></span>
-                                    </label>
-                                    <div class="row mb-3 metiers-container">
-                                        <div class="col-auto d-flex align-self-stretch">
-                                            <span class="v-line-niveau2"></span>
-                                        </div>
-                                        <div class="col-11">
-                                            <ul class="metiers">
-                                                <li>
-                                                    <input id="listeMetiersRecherches-18"
-                                                           name="listeMetiersRecherches[]"
-                                                           type="checkbox" value="K1302" @containsMetier("K1302")/>
-                                                    <label class="label-metier-checkbox" for="listeMetiersRecherches-18">
-                                                        <span class="checkmark"></span>
-                                                        @getLabelMetier("K1302")
-                                                    </label>
-                                                </li>
-                                                <li>
-                                                    <input id="listeMetiersRecherches-19"
-                                                           name="listeMetiersRecherches[]"
-                                                           type="checkbox" value="K1304" @containsMetier("K1304")/>
-                                                    <label class="label-metier-checkbox" for="listeMetiersRecherches-19">
-                                                        <span class="checkmark"></span>
-                                                        @getLabelMetier("K1304")
-                                                    </label>
-                                                </li>
-                                                <li>
-                                                    <input id="listeMetiersRecherches-20"
-                                                           name="listeMetiersRecherches[]"
-                                                           type="checkbox" value="K2204" @containsMetier("K2204")/>
-                                                    <label class="label-metier-checkbox" for="listeMetiersRecherches-20">
-                                                        <span class="checkmark"></span>
-                                                        @getLabelMetier("K2204")
-                                                    </label>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </li>
+    <section class="criteres">
+        @form(action = routes.SaisieCriteresRechercheController.modifierCriteresRecherche(), 'id -> "criteresRechercheForm") {
+        @CSRF.formField
+        <dl class="critere">
+            <dt class="question">
+                <span class="question-puce @if(hasErrors("rechercheMetierEvalue")){question-puce--erreur}">1</span>
+                <div class="question-texte">
+                    Cherchez-vous toujours sur le métier pour lequel vous avez été évalué ?
+                    <span class="question-requise">*</span>
+                </div>
+            </dt>
+            <dd class="choix">
+                @components.radioOuiNon(saisieCriteresRechercheForm, "rechercheMetierEvalue")
+            </dd>
+            @if(hasErrors("rechercheMetierEvalue")) {
+            <dd class="erreurs">
+                <span class="erreurs-item">@saisieCriteresRechercheForm("rechercheMetierEvalue").errors.map(_.format).mkString(",")</span>
+            </dd>
+            }
+        </dl>
+        <dl class="critere">
+            <dt class="question">
+                <span class="question-puce @if(hasErrors("rechercheAutreMetier")){question-puce--erreur}">2</span>
+                <div class="question-texte">
+                    Recherchez-vous un autre métier ?
+                    <span class="question-requise">*</span>
+                </div>
+            </dt>
+            <dd class="choix">
+                @components.radioOuiNon(saisieCriteresRechercheForm, "rechercheAutreMetier")
+            </dd>
+            @if(hasErrors("rechercheAutreMetier")) {
+            <dd class="erreurs">
+                <span class="erreurs-item">@saisieCriteresRechercheForm("rechercheAutreMetier").errors.map(_.format).mkString(",")</span>
+            </dd>
+            }
+            @if(erreurSelectionMetier.isDefined) {
+            <dd class="erreurs">
+                <span class="erreurs-item">@erreurSelectionMetier.get.format</span>
+            </dd>
+            }
+        </dl>
+        <dl id="js-critere-metiers" class="critere">
+            <dt class="sousQuestion">
+                <div class="sousQuestion-texte">
+                    Si oui, lesquels ?
+                    <span class="sousQuestion-requise">*</span>
+                </div>
+                <p class="sousQuestion-aide">Choisissez-en autant que vous le souhaitez</p>
+            </dt>
+            <dd class="choixMetiers">
+                <div class="col-xs-auto d-flex align-self-stretch">
+                    <span class="v-line"></span>
+                </div>
+                <ul class="secteursActivites">
+                    <li>
+                        <input id="secteurActivite-5"
+                               name="secteurActivite"
+                               type="checkbox" value="" />
+                        <label class="labelSecteurActivite" for="secteurActivite-5">
+                            <span class="checkmark"></span>
+                            Industrie
+                            <span class="compteur-metiers-selectionnes"></span>
+                        </label>
+                        <div class="row mb-3 metiers-container">
+                            <div class="col-auto d-flex align-self-stretch">
+                                <span class="v-line-niveau2"></span>
+                            </div>
+                            <ul class="metiers">
+                                <li class="metiers-item">@components.checkboxMetier(saisieCriteresRechercheForm, Metier.CONDUITE_MACHINE)</li>
+                                <li class="metiers-item">@components.checkboxMetier(saisieCriteresRechercheForm, Metier.SOUDAGE)</li>
+                                <li class="metiers-item">@components.checkboxMetier(saisieCriteresRechercheForm, Metier.FABRICATION_PIECES)</li>
+                                <li class="metiers-item">@components.checkboxMetier(saisieCriteresRechercheForm, Metier.TRI_EMBALLAGE)</li>
+                                <li class="metiers-item">@components.checkboxMetier(saisieCriteresRechercheForm, Metier.PREPARATION_COMMANDE)</li>
+                                <li class="metiers-item">@components.checkboxMetier(saisieCriteresRechercheForm, Metier.MANUTENTION)</li>
                             </ul>
                         </div>
-                    </dd>
-                    @if(hasErrors("listeMetiersRecherches")) {
-                    <dd class="row ml-4">
-                        <span class="erreur-formulaire">@saisieCriteresRechercheForm("listeMetiersRecherches").errors.map(_.format).mkString(",")</span>
-                    </dd>
-                    }
-                </dl>
-            </div>
-            <div class="row mb-4 offset-md-1">
-                <dl class="col">
-                    <dt class="row question-form">
-                        <div class="col-xs-auto puce-question-form @if(hasErrors("contactInterim")){puce-question-form-erreur}">3</div>
-                        <div class="col-11">
-                            Acceptez-vous d'être contacté pour des missions d'interim ?
-                            <span class="text-required">*</span>
+                    </li>
+                    <li>
+                        <input id="secteurActivite-2"
+                               name="secteurActivite"
+                               type="checkbox" value="" />
+                        <label class="labelSecteurActivite" for="secteurActivite-2">
+                            <span class="checkmark"></span>
+                            Commerce
+                            <span class="compteur-metiers-selectionnes"></span>
+                        </label>
+                        <div class="row mb-3 metiers-container">
+                            <div class="col-auto d-flex align-self-stretch">
+                                <span class="v-line-niveau2"></span>
+                            </div>
+                            <ul class="metiers">
+                                <li class="metiers-item">@components.checkboxMetier(saisieCriteresRechercheForm, Metier.MISE_EN_RAYON)</li>
+                                <li class="metiers-item">@components.checkboxMetier(saisieCriteresRechercheForm, Metier.CAISSE)</li>
+                                <li class="metiers-item">@components.checkboxMetier(saisieCriteresRechercheForm, Metier.VENTE)</li>
+                                <li class="metiers-item">@components.checkboxMetier(saisieCriteresRechercheForm, Metier.MANUTENTION, Some(2))</li>
+                            </ul>
                         </div>
-                    </dt>
-                    <dd class="row ml-2">
-                        <div class="col-auto">
-                            <input id="contactInterim-oui"
-                                   name="contactInterim"
-                                   type="radio" value="true"
-                                   @if(saisieCriteresRechercheForm("contactInterim").value.contains("true")) {
-                                    checked
-                                    }
-                            />
-                            <label class="label-reponse-radio" for="contactInterim-oui">Oui
-                                <span class="radio-circle"></span>
-                            </label>
+                    </li>
+                    <li>
+                        <input id="secteurActivite-3"
+                               name="secteurActivite"
+                               type="checkbox" value="" />
+                        <label class="labelSecteurActivite" for="secteurActivite-3">
+                            <span class="checkmark"></span>
+                            Bâtiment
+                            <span class="compteur-metiers-selectionnes"></span>
+                        </label>
+                        <div class="row mb-3 metiers-container">
+                            <div class="col-auto d-flex align-self-stretch">
+                                <span class="v-line-niveau2"></span>
+                            </div>
+                            <ul class="metiers">
+                                <li class="metiers-item">@components.checkboxMetier(saisieCriteresRechercheForm, Metier.ELECTRICITE)</li>
+                                <li class="metiers-item">@components.checkboxMetier(saisieCriteresRechercheForm, Metier.MACONNERIE)</li>
+                                <li class="metiers-item">@components.checkboxMetier(saisieCriteresRechercheForm, Metier.CONDUITE_ENGINS)</li>
+                            </ul>
                         </div>
-                        <div class="col-auto">
-                            <input id="contactInterim-non"
-                                   name="contactInterim"
-                                   type="radio" value="false"
-                                   @if(saisieCriteresRechercheForm("contactInterim").value.contains("false")) {
-                                    checked
-                                    }
-                            />
-                            <label class="label-reponse-radio" for="contactInterim-non">Non
-                                <span class="radio-circle"></span>
-                            </label>
+                    </li>
+                    <li>
+                        <input id="secteurActivite-4"
+                               name="secteurActivite"
+                               type="checkbox" value="" />
+                        <label class="labelSecteurActivite" for="secteurActivite-4">
+                            <span class="checkmark"></span>
+                            Hôtellerie restauration
+                            <span class="compteur-metiers-selectionnes"></span>
+                        </label>
+                        <div class="row mb-3 metiers-container">
+                            <div class="col-auto d-flex align-self-stretch">
+                                <span class="v-line-niveau2"></span>
+                            </div>
+                            <ul class="metiers">
+                                <li class="metiers-item">@components.checkboxMetier(saisieCriteresRechercheForm, Metier.PERSONNEL_POLYVALENT)</li>
+                                <li class="metiers-item">@components.checkboxMetier(saisieCriteresRechercheForm, Metier.SERVICE)</li>
+                            </ul>
                         </div>
-                    </dd>
-                    @if(hasErrors("contactInterim")) {
-                    <dd class="row ml-4">
-                        <span class="erreur-formulaire">@saisieCriteresRechercheForm("contactInterim").errors.map(_.format).mkString(",")</span>
-                    </dd>
-                    }
-                </dl>
-            </div>
-            <div class="row mb-4 offset-md-1">
-                <dl class="col">
-                    <dt class="row question-form">
-                        <div class="col-xs-auto puce-question-form @if(hasErrors("contactFormation")){puce-question-form-erreur}">4</div>
-                        <div class="col-11">
-                            Acceptez-vous d'être contacté pour une formation sur ces métiers ?
-                            <span class="text-required">*</span>
+                    </li>
+                    <li>
+                        <input id="secteurActivite-1"
+                               name="secteurActivite"
+                               type="checkbox" value="" />
+                        <label class="labelSecteurActivite" for="secteurActivite-1">
+                            <span class="checkmark"></span>
+                            Agriculture
+                            <span class="compteur-metiers-selectionnes"></span>
+                        </label>
+                        <div class="row mb-3 metiers-container">
+                            <div class="col-auto d-flex align-self-stretch">
+                                <span class="v-line-niveau2"></span>
+                            </div>
+                            <ul class="metiers">
+                                <li class="metiers-item">@components.checkboxMetier(saisieCriteresRechercheForm, Metier.AIDE_AGRICOLE)</li>
+                            </ul>
                         </div>
-                    </dt>
-                    <dd class="row ml-2">
-                        <div class="col-auto">
-                            <input id="contactFormation-oui"
-                                   name="contactFormation"
-                                   type="radio" value="true"
-                                   @if(saisieCriteresRechercheForm("contactFormation").value.contains("true")) {
-                                    checked
-                                    }
-                            />
-                            <label class="label-reponse-radio" for="contactFormation-oui">Oui
-                                <span class="radio-circle"></span>
-                            </label>
+                    </li>
+                    <li>
+                        <input id="secteurActivite-6"
+                               name="secteurActivite"
+                               type="checkbox" value="" />
+                        <label class="labelSecteurActivite" for="secteurActivite-6">
+                            <span class="checkmark"></span>
+                            Textile
+                            <span class="compteur-metiers-selectionnes"></span>
+                        </label>
+                        <div class="row mb-3 metiers-container">
+                            <div class="col-auto d-flex align-self-stretch">
+                                <span class="v-line-niveau2"></span>
+                            </div>
+                            <ul class="metiers">
+                                <li class="metiers-item">@components.checkboxMetier(saisieCriteresRechercheForm, Metier.REALISATION_ARTICLES)</li>
+                                <li class="metiers-item">@components.checkboxMetier(saisieCriteresRechercheForm, Metier.MECANICIEN_CONFECTION)</li>
+                            </ul>
                         </div>
-                        <div class="col-auto">
-                            <input id="contactFormation-non"
-                                   name="contactFormation"
-                                   type="radio" value="false"
-                                   @if(saisieCriteresRechercheForm("contactFormation").value.contains("false")) {
-                                    checked
-                                    }
-                            />
-                            <label class="label-reponse-radio" for="contactFormation-non">Non
-                                <span class="radio-circle"></span>
-                            </label>
+                    </li>
+                    <li>
+                        <input id="secteurActivite-7"
+                               name="secteurActivite"
+                               type="checkbox" value="" />
+                        <label class="labelSecteurActivite" for="secteurActivite-7">
+                            <span class="checkmark"></span>
+                            Services à la personne
+                            <span class="compteur-metiers-selectionnes"></span>
+                        </label>
+                        <div class="row mb-3 metiers-container">
+                            <div class="col-auto d-flex align-self-stretch">
+                                <span class="v-line-niveau2"></span>
+                            </div>
+                            <ul class="metiers">
+                                <li class="metiers-item">@components.checkboxMetier(saisieCriteresRechercheForm, Metier.AIDE_PERSONNES_AGEES)</li>
+                                <li class="metiers-item">@components.checkboxMetier(saisieCriteresRechercheForm, Metier.AIDE_DOMICILE)</li>
+                                <li class="metiers-item">@components.checkboxMetier(saisieCriteresRechercheForm, Metier.NETTOYAGE_LOCAUX)</li>
+                            </ul>
                         </div>
-                    </dd>
-                    @if(hasErrors("contactFormation")) {
-                    <dd class="row ml-4">
-                        <span class="erreur-formulaire">@saisieCriteresRechercheForm("contactFormation").errors.map(_.format).mkString(",")</span>
-                    </dd>
-                    }
-                </dl>
-            </div>
-            <div class="row mb-4 offset-md-1">
-                <dl class="col">
-                    <dt class="row question-form">
-                        <div class="col-xs-auto puce-question-form @if(hasErrors("rayonRecherche")){puce-question-form-erreur}">5</div>
-                        <div class="col-11">
-                            Combien de km acceptez-vous de faire ?
-                            <span class="text-required">*</span>
-                        </div>
-                    </dt>
-                    <dd class="row ml-2">
-                        <div class="col-auto">
-                            <input id="rayonRecherche-10"
-                                   name="rayonRecherche"
-                                   type="radio" value="10"
-                                   @if(saisieCriteresRechercheForm("rayonRecherche").value.contains("10")) {
-                                    checked
-                                    }
-                            />
-                            <label class="label-reponse-radio" for="rayonRecherche-10">Moins de 10km
-                                <span class="radio-circle"></span>
-                            </label>
-                        </div>
-                        <div class="col-auto">
-                            <input id="rayonRecherche-30"
-                                   name="rayonRecherche"
-                                   type="radio" value="30"
-                                   @if(saisieCriteresRechercheForm("rayonRecherche").value.contains("30")) {
-                                    checked
-                                    }
-                            />
-                            <label class="label-reponse-radio" for="rayonRecherche-30">Moins de 30km
-                                <span class="radio-circle"></span>
-                            </label>
-                        </div>
-                        <div class="col-auto">
-                            <input id="rayonRecherche-50"
-                                   name="rayonRecherche"
-                                   type="radio" value="50"
-                                   @if(saisieCriteresRechercheForm("rayonRecherche").value.contains("50")) {
-                                    checked
-                                    }
-                            />
-                            <label class="label-reponse-radio" for="rayonRecherche-50">Moins de 50km
-                                <span class="radio-circle"></span>
-                            </label>
-                        </div>
-                        <div class="col-auto">
-                            <input id="rayonRecherche-1000"
-                                   name="rayonRecherche"
-                                   type="radio" value="1000"
-                                   @if(saisieCriteresRechercheForm("rayonRecherche").value.contains("1000")) {
-                                    checked
-                                    }
-                            />
-                            <label class="label-reponse-radio" for="rayonRecherche-1000">Plus de 50km
-                                <span class="radio-circle"></span>
-                            </label>
-                        </div>
-                    </dd>
-                    @if(hasErrors("rayonRecherche")) {
-                    <dd class="row ml-4">
-                        <span class="erreur-formulaire">@saisieCriteresRechercheForm("rayonRecherche").errors.map(_.format).mkString(",")</span>
-                    </dd>
-                    }
-                </dl>
-            </div>
-            <div class="text-center mb-5">
-                <button class="bouton bouton-action-principale" type="submit">
-                    Valider mes critères
-                </button>
-            </div>
+                    </li>
+                </ul>
+            </dd>
+            @if(hasErrors("listeMetiersRecherches")) {
+            <dd class="erreurs">
+                <span class="erreurs-item">@saisieCriteresRechercheForm("listeMetiersRecherches").errors.map(_.format).mkString(",")</span>
+            </dd>
             }
+        </dl>
+        <dl class="critere">
+            <dt class="question">
+                <span class="question-puce @if(hasErrors("contactInterim")){question-puce--erreur}">3</span>
+                <div class="question-texte">
+                    Acceptez-vous d'être contacté pour des missions d'interim ?
+                    <span class="question-requise">*</span>
+                </div>
+            </dt>
+            <dd class="choix">
+                @components.radioOuiNon(saisieCriteresRechercheForm, "contactInterim")
+            </dd>
+            @if(hasErrors("contactInterim")) {
+            <dd class="erreurs">
+                <span class="erreurs-item">@saisieCriteresRechercheForm("contactInterim").errors.map(_.format).mkString(",")</span>
+            </dd>
+            }
+        </dl>
+        <dl class="critere">
+            <dt class="question">
+                <span class="question-puce @if(hasErrors("contactFormation")){question-puce--erreur}">4</span>
+                <div class="question-texte">
+                    Acceptez-vous d'être contacté pour une formation sur ces métiers ?
+                    <span class="question-requise">*</span>
+                </div>
+            </dt>
+            <dd class="choix">
+                @components.radioOuiNon(saisieCriteresRechercheForm, "contactFormation")
+            </dd>
+            @if(hasErrors("contactFormation")) {
+            <dd class="erreurs">
+                <span class="erreurs-item">@saisieCriteresRechercheForm("contactFormation").errors.map(_.format).mkString(",")</span>
+            </dd>
+            }
+        </dl>
+        <dl class="critere">
+            <dt class="question">
+                <span class="question-puce @if(hasErrors("rayonRecherche")){question-puce--erreur}">5</span>
+                <div class="question-texte">
+                    Combien de km acceptez-vous de faire ?
+                    <span class="question-requise">*</span>
+                </div>
+            </dt>
+            <dd class="choix">
+                <span class="choix-item">
+                    <input id="rayonRecherche-10"
+                           name="rayonRecherche"
+                           type="radio" value="10"
+                           @if(saisieCriteresRechercheForm("rayonRecherche").value.contains("10")) {
+                            checked
+                            }
+                    />
+                    <label class="label-reponse-radio" for="rayonRecherche-10">Moins de 10km
+                        <span class="radio-circle"></span>
+                    </label>
+                </span>
+                <span class="choix-item">
+                    <input id="rayonRecherche-30"
+                           name="rayonRecherche"
+                           type="radio" value="30"
+                           @if(saisieCriteresRechercheForm("rayonRecherche").value.contains("30")) {
+                            checked
+                            }
+                    />
+                    <label class="label-reponse-radio" for="rayonRecherche-30">Moins de 30km
+                        <span class="radio-circle"></span>
+                    </label>
+                </span>
+                <span class="choix-item">
+                    <input id="rayonRecherche-50"
+                           name="rayonRecherche"
+                           type="radio" value="50"
+                           @if(saisieCriteresRechercheForm("rayonRecherche").value.contains("50")) {
+                            checked
+                            }
+                    />
+                    <label class="label-reponse-radio" for="rayonRecherche-50">Moins de 50km
+                        <span class="radio-circle"></span>
+                    </label>
+                </span>
+                <span class="choix-item">
+                    <input id="rayonRecherche-1000"
+                           name="rayonRecherche"
+                           type="radio" value="1000"
+                           @if(saisieCriteresRechercheForm("rayonRecherche").value.contains("1000")) {
+                            checked
+                            }
+                    />
+                    <label class="label-reponse-radio" for="rayonRecherche-1000">Plus de 50km
+                        <span class="radio-circle"></span>
+                    </label>
+                </span>
+            </dd>
+            @if(hasErrors("rayonRecherche")) {
+            <dd class="erreurs">
+                <span class="erreurs-item">@saisieCriteresRechercheForm("rayonRecherche").errors.map(_.format).mkString(",")</span>
+            </dd>
+            }
+        </dl>
+        <div class="validerCriteres">
+            <button class="bouton bouton-action-principale" type="submit">
+                Valider mes critères
+            </button>
         </div>
+        }
     </section>
 </div>
 <script src="@routes.Assets.versioned("javascripts/pages/saisieCriteresRecherche.js")" type="text/javascript"></script>

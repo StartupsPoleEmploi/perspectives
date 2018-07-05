@@ -1,0 +1,20 @@
+@(form: Form[_], name: String)
+
+<span>
+    <input id="@name-oui"
+    name="@name"
+    type="radio" value="true"
+    @if(form(name).value.contains("true")){checked}/>
+    <label class="label-reponse-radio" for="@name-oui">Oui
+        <span class="radio-circle"></span>
+    </label>
+</span>
+<span>
+    <input id="@name-non"
+    name="@name"
+    type="radio" value="false"
+    @if(form(name).value.contains("false")){checked}/>
+    <label class="label-reponse-radio" for="@name-non">Non
+        <span class="radio-circle"></span>
+    </label>
+</span>

@@ -4,11 +4,11 @@ $(document).ready(function(){
     $(".metiers-container").hide();
 
     $("#rechercheAutreMetier-oui").each(function (i) {
-        $('.listeMetiersContainer').toggle($(this).prop("checked"));
+        $('#js-critere-metiers').toggle($(this).prop("checked"));
     });
 
     $("input[type='radio'][name='rechercheAutreMetier']").click(function (i) {
-        $('.listeMetiersContainer').toggle($(this).prop("value") === "true");
+        $('#js-critere-metiers').toggle($(this).prop("value") === "true");
     });
 
     // Initialisation des secteurs d'activités
@@ -19,7 +19,7 @@ $(document).ready(function(){
         var nbMetiers = secteurActivite.parent().find("input[type='checkbox'][name='listeMetiersRecherches[]']:checked").length;
 
         var avecMetiers = nbMetiers > 0;
-        labelSecteurActivite.toggleClass("secteur-activite-sans-focus-avec-metiers", avecMetiers);
+        labelSecteurActivite.toggleClass("labelSecteurActivite-sans-focus-avec-metiers", avecMetiers);
         compteurSecteurActivite.toggle(avecMetiers);
         compteurSecteurActivite.html(nbMetiers);
     });
@@ -43,8 +43,8 @@ $(document).ready(function(){
         compteurClickedSecteurActivite.html(nbMetiers);
 
         // On modifie la classe indiquant une sélection en cours
-        labelClickedSecteurActivite.toggleClass("secteur-activite-avec-focus", isMetiersVisible);
-        labelClickedSecteurActivite.toggleClass("secteur-activite-sans-focus-avec-metiers", isUnselected);
+        labelClickedSecteurActivite.toggleClass("labelSecteurActivite-avec-focus", isMetiersVisible);
+        labelClickedSecteurActivite.toggleClass("labelSecteurActivite-sans-focus-avec-metiers", isUnselected);
 
         // On décoche le secteur d'activité précedemment coché si présent
         $("input[type='checkbox'][name='secteurActivite'][id!='" + clickedSecteurActivite.attr("id") + "']:checked").each(function(i) {
@@ -55,7 +55,7 @@ $(document).ready(function(){
             unclickedSecteurActivite.prop("checked", false);
 
             // On modifie la classe
-            unclickedLabelClickedSecteurActivite.removeClass("secteur-activite-avec-focus");
+            unclickedLabelClickedSecteurActivite.removeClass("labelSecteurActivite-avec-focus");
 
             // On affiche le compteur si le nombre de métiers du secteur est supérieur à 0
             var compteurUnclickedSecteurActivite = unclickedLabelClickedSecteurActivite.find(".compteur-metiers-selectionnes");
@@ -63,7 +63,7 @@ $(document).ready(function(){
             compteurUnclickedSecteurActivite.toggle(nbMetiersUnclickedSecteurActivite > 0);
             compteurUnclickedSecteurActivite.html(nbMetiersUnclickedSecteurActivite);
 
-            unclickedLabelClickedSecteurActivite.toggleClass("secteur-activite-sans-focus-avec-metiers", nbMetiersUnclickedSecteurActivite > 0);
+            unclickedLabelClickedSecteurActivite.toggleClass("labelSecteurActivite-sans-focus-avec-metiers", nbMetiersUnclickedSecteurActivite > 0);
         })
     });
 });
