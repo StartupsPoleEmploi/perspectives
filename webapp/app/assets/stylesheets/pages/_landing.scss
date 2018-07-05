@@ -4,7 +4,7 @@
         text-align: center;
     }
 
-    .landingIntro {
+    .intro {
         @include make-container();
         @include make-container-max-widths();
 
@@ -19,16 +19,16 @@
         }
     }
 
-    .landingIntroTitres {
+    .introTitres {
         padding: 3em 0 3em 0;
     }
 
-    .landingIntroPresentation {
+    .presentation {
         @include make-row();
         margin-bottom: 1em;
     }
 
-    .landingIntroIllustration {
+    .introIllustration {
         @include make-col-ready();
 
         @include media-breakpoint-up(lg) {
@@ -40,7 +40,7 @@
         }
     }
 
-    .landingIntroAvantages {
+    .avantages {
         @include make-col-ready();
 
         @include media-breakpoint-up(lg) {
@@ -54,7 +54,7 @@
         }
     }
 
-    .landingIntroListeAvantages {
+    .listeAvantages {
         list-style-type: none;
         padding: 0 0 0 1em;
         margin: 2.5em 0 4em 0;
@@ -76,7 +76,7 @@
         }
     }
 
-    .landingIntroActions {
+    .introActions {
         text-align: center;
 
         &-sponsor {
@@ -92,7 +92,7 @@
         }
     }
 
-    .landingCCM {
+    .commentCaMarche {
         color: white;
         background: linear-gradient(323.84deg, #75a8d3 0%, #6a88cb 100%);
 
@@ -105,7 +105,7 @@
         }
     }
 
-    .landingCCMEtapes {
+    .etapes {
         @include make-row();
 
         @include media-breakpoint-up(md) {
@@ -117,7 +117,7 @@
         }
     }
 
-    .landingCCMSeparation {
+    .CCMSeparation {
         width: 100%;
         height: 100px;
         background-color: #FDFDFE;
@@ -241,7 +241,7 @@
         }
     }
 
-    .landingMetiers {
+    .metiers {
         @include make-container();
         @include make-container-max-widths();
 
@@ -288,7 +288,7 @@
         text-transform: uppercase;
     }
 
-    .metiers {
+    .metiersSecteur {
         list-style-type: none;
         padding: 1.3em 0 0 0;
 

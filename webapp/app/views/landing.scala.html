@@ -1,29 +1,30 @@
-@import _root_.authentification.AuthenticatedCandidat
-@import _root_.conf.WebAppConfig
+@import authentification.AuthenticatedCandidat
+@import conf.WebAppConfig
+@import fr.poleemploi.perspectives.domain.Metier
 
 @(authenticatedCandidat: Option[AuthenticatedCandidat])(implicit flash: Flash, webAppConfig: WebAppConfig)
 
 @layout(authenticatedCandidat = authenticatedCandidat) {
 <div id="landing">
-    <section class="landingIntro">
-        <header class="landingIntroTitres">
-            <h2 class="landingIntro-titre">Vous avez été évalué par la <span class="landingIntro-titre--surbrillance">méthode de recrutement par simulation</span> MRS ?</h2>
-            <h2 class="landingIntro-titre">Vous êtes toujours disponible ?</h2>
+    <section class="intro">
+        <header class="introTitres">
+            <h2 class="intro-titre">Vous avez été évalué par la <span class="intro-titre--surbrillance">méthode de recrutement par simulation</span> MRS ?</h2>
+            <h2 class="intro-titre">Vous êtes toujours disponible ?</h2>
         </header>
-        <div class="landingIntroPresentation">
-            <aside class="landingIntroAvantages">
-                <ul class="landingIntroListeAvantages">
-                    <li class="landingIntroListeAvantages-item">
+        <div class="presentation">
+            <aside class="avantages">
+                <ul class="listeAvantages">
+                    <li class="listeAvantages-item">
                         Bénéficiez de <b>mises en relation</b> avec des employeurs prêts à vous former
                     </li>
-                    <li class="landingIntroListeAvantages-item">
+                    <li class="listeAvantages-item">
                         Recevez des propositions de <b>formations qualifiantes</b> ou <b>certifiantes gratuites</b>
                     </li>
-                    <li class="landingIntroListeAvantages-item">
+                    <li class="listeAvantages-item">
                         Élargissez vos possibilités en <b>sélectionnant d’autres métiers</b>
                     </li>
                 </ul>
-                <div class="landingIntroActions">
+                <div class="introActions">
                     @if(authenticatedCandidat.isDefined) {
                     <a class="bouton bouton-action-secondaire" href="/candidat/criteres-recherche">
                         Modifier mes critères
@@ -34,19 +35,19 @@
                         <small>(en moins de 30 secondes)</small>
                     </a>
                     }
-                    <p class="landingIntroActions-sponsor">Propulsé par Pôle Emploi<span class="landingIntroActions-fusee">&#x1F680</span><p>
+                    <p class="introActions-sponsor">Propulsé par Pôle Emploi<span class="introActions-fusee">&#x1F680</span><p>
                 </div>
             </aside>
-            <aside class="landingIntroIllustration">
+            <aside class="introIllustration">
                 <img src="@routes.Assets.versioned("images/pages/landing/intro-landing.svg")" />
             </aside>
         </div>
     </section>
-    <section class="landingCCM">
-        <div class="landingCCMSeparation"></div>
+    <section class="commentCaMarche">
+        <div class="CCMSeparation"></div>
         <div class="container">
-            <h2 class="landingCCM-titre">Comment ça marche ?</h2>
-            <div class="landingCCMEtapes">
+            <h2 class="commentCaMarche-titre">Comment ça marche ?</h2>
+            <div class="etapes">
                 <div class="etapeInscription">
                     <img src="@routes.Assets.versioned("images/pages/landing/etape-inscription.svg")" />
                     <p class="etapeInscription-texte etape-texte">
@@ -70,63 +71,63 @@
             </div>
         </div>
     </section>
-    <section class="landingMetiers">
-        <h2 class="landingMetiers-titre">Accédez à de nouveaux emplois !</h2>
+    <section class="metiers">
+        <h2 class="metiers-titre">Accédez à de nouveaux emplois !</h2>
         <ul class="secteursActivites">
             <li class="secteursActivites-item">
                 <span class="secteurActivite-intitule">Agriculture</span>
-                <ul class="metiers">
-                    <li class="metiers-item">Aide agricole</li>
+                <ul class="metiersSecteur">
+                    <li class="metiersSecteur-item">@Metier.AIDE_AGRICOLE.label</li>
                 </ul>
             </li>
             <li class="secteursActivites-item">
                 <span class="secteurActivite-intitule">Hôtellerie restauration</span>
-                <ul class="metiers">
-                    <li class="metiers-item">Personnel polyvalent</li>
-                    <li class="metiers-item">Service</li>
+                <ul class="metiersSecteur">
+                    <li class="metiersSecteur-item">@Metier.PERSONNEL_POLYVALENT.label</li>
+                    <li class="metiersSecteur-item">@Metier.SERVICE.label</li>
                 </ul>
             </li>
             <li class="secteursActivites-item">
                 <span class="secteurActivite-intitule">Bâtiment</span>
-                <ul class="metiers">
-                    <li class="metiers-item">Électricité</li>
-                    <li class="metiers-item">Maçonnerie</li>
-                    <li class="metiers-item">Conduite d'engins</li>
+                <ul class="metiersSecteur">
+                    <li class="metiersSecteur-item">@Metier.ELECTRICITE.label</li>
+                    <li class="metiersSecteur-item">@Metier.MACONNERIE.label</li>
+                    <li class="metiersSecteur-item">@Metier.CONDUITE_ENGINS.label</li>
                 </ul>
             </li>
             <li class="secteursActivites-item">
                 <span class="secteurActivite-intitule">Commerce</span>
-                <ul class="metiers">
-                    <li class="metiers-item">Mise en rayon</li>
-                    <li class="metiers-item">Caisse</li>
-                    <li class="metiers-item">Vente</li>
-                    <li class="metiers-item">Manutention</li>
+                <ul class="metiersSecteur">
+                    <li class="metiersSecteur-item">@Metier.MISE_EN_RAYON.label</li>
+                    <li class="metiersSecteur-item">@Metier.CAISSE.label</li>
+                    <li class="metiersSecteur-item">@Metier.VENTE.label</li>
+                    <li class="metiersSecteur-item">@Metier.MANUTENTION.label</li>
                 </ul>
             </li>
             <li class="secteursActivites-item">
                 <span class="secteurActivite-intitule">Services à la personne</span>
-                <ul class="metiers">
-                    <li class="metiers-item">Aide aux personnes âgées</li>
-                    <li class="metiers-item">Aide à domicile</li>
-                    <li class="metiers-item">Nettoyage de locaux</li>
+                <ul class="metiersSecteur">
+                    <li class="metiersSecteur-item">@Metier.AIDE_PERSONNES_AGEES.label</li>
+                    <li class="metiersSecteur-item">@Metier.AIDE_DOMICILE.label</li>
+                    <li class="metiersSecteur-item">@Metier.NETTOYAGE_LOCAUX.label</li>
                 </ul>
             </li>
             <li class="secteursActivites-item">
                 <span class="secteurActivite-intitule">Textile</span>
-                <ul class="metiers">
-                    <li class="metiers-item">Réalisation d'articles</li>
-                    <li class="metiers-item">Mécanicien en confection</li>
+                <ul class="metiersSecteur">
+                    <li class="metiersSecteur-item">@Metier.REALISATION_ARTICLES.label</li>
+                    <li class="metiersSecteur-item">@Metier.MECANICIEN_CONFECTION.label</li>
                 </ul>
             </li>
             <li class="secteursActivites-item">
                 <span class="secteurActivite-intitule">Industrie</span>
-                <ul class="metiers">
-                    <li class="metiers-item">Conduite de machines</li>
-                    <li class="metiers-item">Soudage</li>
-                    <li class="metiers-item">Fabrication de pièces</li>
-                    <li class="metiers-item">Tri et emballage</li>
-                    <li class="metiers-item">Préparation de commandes</li>
-                    <li class="metiers-item">Manutention</li>
+                <ul class="metiersSecteur">
+                    <li class="metiersSecteur-item">@Metier.CONDUITE_MACHINE.label</li>
+                    <li class="metiersSecteur-item">@Metier.SOUDAGE.label</li>
+                    <li class="metiersSecteur-item">@Metier.FABRICATION_PIECES.label</li>
+                    <li class="metiersSecteur-item">@Metier.TRI_EMBALLAGE.label</li>
+                    <li class="metiersSecteur-item">@Metier.PREPARATION_COMMANDE.label</li>
+                    <li class="metiersSecteur-item">@Metier.MANUTENTION.label</li>
                 </ul>
             </li>
         </ul>
