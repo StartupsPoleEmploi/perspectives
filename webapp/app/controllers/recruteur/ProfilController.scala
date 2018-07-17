@@ -56,7 +56,7 @@ class ProfilController @Inject()(components: ControllerComponents,
           val command = ModifierProfilCommand(
             id = aggregateId,
             raisonSociale = inscriptionForm.raisonSociale,
-            typeRecruteur = TypeRecruteur.from(inscriptionForm.typeRecruteur),
+            typeRecruteur = TypeRecruteur.from(inscriptionForm.typeRecruteur).get,
             numeroSiret = NumeroSiret.from(inscriptionForm.numeroSiret).get,
             numeroTelephone = NumeroTelephone.from(inscriptionForm.numeroTelephone).get,
             contactParCandidats = stringToBoolean(inscriptionForm.contactParCandidats)

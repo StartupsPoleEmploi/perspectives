@@ -22,6 +22,6 @@ object TypeRecruteur {
     ORGANISME_FORMATION.code -> ORGANISME_FORMATION
   )
 
-  def from(code: String): TypeRecruteur = values.getOrElse(code, throw new IllegalArgumentException(s"TypeRecruteur inconnu : $code"))
+  def from(code: String): Option[TypeRecruteur] = values.get(code)
 
 }
