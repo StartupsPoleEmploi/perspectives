@@ -19,6 +19,7 @@
                         <th>Date d'inscription</th>
                         <th>Nom</th>
                         <th>Prenom</th>
+                        <th>Genre</th>
                         <th>Email</th>
                         <th>Recherche métier évalué</th>
                         <th>Recherche autre métier</th>
@@ -34,6 +35,7 @@
                         <td>@candidat.dateInscription.format(DateTimeFormatter.ofPattern("d MMM yyyy hh:mm"))</td>
                         <td>@candidat.nom</td>
                         <td>@candidat.prenom</td>
+                        <td>@candidat.genre.map(_.label)</td>
                         <td>@candidat.email</td>
                         <td>@getBoolean(candidat.rechercheMetierEvalue)</td>
                         <td>@getBoolean(candidat.rechercheAutreMetier)</td>
