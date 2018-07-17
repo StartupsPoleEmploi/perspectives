@@ -16,7 +16,7 @@ case class SlackCandidatConfig(webhookURL: String,
 class CandidatNotificationSlackProjection(slackCandidatConfig: SlackCandidatConfig,
                                           wsClient: WSClient) extends Projection {
 
-  override def listenTo: List[Class[_ <: Event]] = List(classOf[Event])
+  override def listenTo: List[Class[_ <: Event]] = List(classOf[CandidatInscrisEvent])
 
   override def isReplayable: Boolean = false
 
