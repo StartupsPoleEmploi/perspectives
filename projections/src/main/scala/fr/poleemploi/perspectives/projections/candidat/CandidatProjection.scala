@@ -4,8 +4,8 @@ import java.time.ZonedDateTime
 
 import fr.poleemploi.cqrs.projection.Projection
 import fr.poleemploi.eventsourcing.{AggregateId, Event}
-import fr.poleemploi.perspectives.domain.candidat.{CandidatEvent, CandidatInscrisEvent, CriteresRechercheModifiesEvent, ProfilCandidatModifiePEConnectEvent}
-import fr.poleemploi.perspectives.domain.{Genre, Metier}
+import fr.poleemploi.perspectives.domain.candidat._
+import fr.poleemploi.perspectives.domain.{Genre, Metier, NumeroTelephone}
 import fr.poleemploi.perspectives.projections.infra.PostgresDriver
 import slick.jdbc.JdbcBackend.Database
 
@@ -23,6 +23,7 @@ case class CandidatDto(candidatId: String,
                        contacteParAgenceInterim: Option[Boolean],
                        contacteParOrganismeFormation: Option[Boolean],
                        rayonRecherche: Option[Int],
+                       numeroTelephone: Option[NumeroTelephone],
                        dateInscription: ZonedDateTime)
 
 class CandidatProjection(val driver: PostgresDriver,
@@ -36,6 +37,7 @@ class CandidatProjection(val driver: PostgresDriver,
     case e: CandidatInscrisEvent => onCandidatInscrisEvent(aggregateId, e)
     case e: ProfilCandidatModifiePEConnectEvent => onProfilPEConnectModifieEvent(aggregateId, e)
     case e: CriteresRechercheModifiesEvent => onCriteresRechercheModifiesEvent(aggregateId, e)
+    case e: NumeroTelephoneModifieEvent => onNumeroTelephoneModifieEvent(aggregateId, e)
   }
 
   import driver.api._
@@ -66,9 +68,11 @@ class CandidatProjection(val driver: PostgresDriver,
 
     def rayonRecherche = column[Option[Int]]("rayon_recherche")
 
+    def numeroTelephone = column[Option[String]]("numero_telephone")
+
     def dateInscription = column[ZonedDateTime]("date_inscription")
 
-    def * = (candidatId, nom, prenom, genre, email, rechercheMetierEvalue, rechercheAutreMetier, metiersRecherches, contacteParAgenceInterim, contacteParOrganismeFormation, rayonRecherche, dateInscription) <> (CandidatRecord.tupled, CandidatRecord.unapply)
+    def * = (candidatId, nom, prenom, genre, email, rechercheMetierEvalue, rechercheAutreMetier, metiersRecherches, contacteParAgenceInterim, contacteParOrganismeFormation, rayonRecherche, numeroTelephone, dateInscription) <> (CandidatRecord.tupled, CandidatRecord.unapply)
   }
 
   val candidatTable = TableQuery[CandidatTable]
@@ -124,6 +128,17 @@ class CandidatProjection(val driver: PostgresDriver,
 
     database.run(updateAction).map(_ => ())
   }
+
+  private def onNumeroTelephoneModifieEvent(aggregateId: AggregateId,
+                                            event: NumeroTelephoneModifieEvent): Future[Unit] = {
+    val query = for {
+      c <- candidatTable if c.candidatId === aggregateId.value
+    } yield c.numeroTelephone
+    val updateAction = query.update(Some(event.numeroTelephone))
+
+    database.run(updateAction).map(_ => ())
+  }
+
 }
 
 private[candidat] case class CandidatRecord(candidatId: String,
@@ -137,6 +152,7 @@ private[candidat] case class CandidatRecord(candidatId: String,
                                             contacteParAgenceInterim: Option[Boolean],
                                             contacteParOrganismeFormation: Option[Boolean],
                                             rayonRecherche: Option[Int],
+                                            numeroTelephone: Option[String],
                                             dateInscription: ZonedDateTime) {
 
   def toCandidatDto: CandidatDto = CandidatDto(
@@ -151,6 +167,7 @@ private[candidat] case class CandidatRecord(candidatId: String,
     contacteParAgenceInterim = contacteParAgenceInterim,
     contacteParOrganismeFormation = contacteParOrganismeFormation,
     rayonRecherche = rayonRecherche,
+    numeroTelephone = numeroTelephone.flatMap(NumeroTelephone.from),
     dateInscription = dateInscription
   )
 }

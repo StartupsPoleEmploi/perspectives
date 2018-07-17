@@ -326,6 +326,28 @@
             </dd>
             }
         </dl>
+        <dl class="critere">
+            <dt class="question">
+                <span class="question-puce @if(hasErrors("numeroTelephone")){question-puce--erreur}">6</span>
+                <div class="question-texte">
+                    Quel est votre numéro de téléphone ?
+                    <span class="question-requise">*</span>
+                </div>
+            </dt>
+            <dd class="choix">
+                <input id="numeroTelephone"
+                       name="numeroTelephone"
+                       type="text"
+                       maxlength="11"
+                       placeholder="Saisissez votre numéro de téléphone ici"
+                       value="@saisieCriteresRechercheForm("numeroTelephone").value"/>
+            </dd>
+            @if(hasErrors("numeroTelephone")) {
+            <dd class="erreurs">
+                <span class="erreurs-item">@saisieCriteresRechercheForm("numeroTelephone").errors.map(_.format).mkString(", ")</span>
+            </dd>
+            }
+        </dl>
         <div class="validerCriteres">
             <button class="bouton bouton-action-principale" type="submit">
                 Valider mes critères

@@ -12,6 +12,7 @@ CREATE TABLE candidats
   contacte_par_agence_interim BOOL,
   contacte_par_organisme_formation BOOL,
   rayon_recherche INT,
+  numero_telephone CHARACTER VARYING(255),
   date_inscription TIMESTAMP with time zone,
   CONSTRAINT candidats_pk PRIMARY KEY (id),
   UNIQUE (candidat_id)

@@ -1,7 +1,7 @@
 package fr.poleemploi.perspectives.domain.candidat
 
 import fr.poleemploi.eventsourcing.{Aggregate, Event}
-import fr.poleemploi.perspectives.domain.{Genre, Metier}
+import fr.poleemploi.perspectives.domain.{Genre, Metier, NumeroTelephone}
 
 class Candidat(override val id: CandidatId,
                override val version: Int,
@@ -67,6 +67,18 @@ class Candidat(override val id: CandidatId,
       ))
     } else Nil
   }
+
+  def modifierNumeroTelephone(command: ModifierNumeroTelephoneCommand): List[Event] = {
+    if (!state.estInscrit) {
+      throw new RuntimeException(s"Le candidat ${id.value} n'est pas encore inscrit")
+    }
+
+    if (!state.numeroTelephone.contains(command.numeroTelephone)) {
+      List(NumeroTelephoneModifieEvent(
+        numeroTelephone = command.numeroTelephone.value
+      ))
+    } else Nil
+  }
 }
 
 // APPLY
@@ -80,7 +92,8 @@ private[candidat] case class CandidatState(estInscrit: Boolean = false,
                                            metiersRecherches: Set[Metier] = Set.empty,
                                            etreContacteParAgenceInterim: Option[Boolean] = None,
                                            etreContacteParOrganismeFormation: Option[Boolean] = None,
-                                           rayonRecherche: Option[Int] = None) {
+                                           rayonRecherche: Option[Int] = None,
+                                           numeroTelephone: Option[NumeroTelephone] = None) {
 
   def apply(event: Event): CandidatState = event match {
     case e: CandidatInscrisEvent =>
@@ -107,6 +120,8 @@ private[candidat] case class CandidatState(estInscrit: Boolean = false,
         etreContacteParOrganismeFormation = Some(e.etreContacteParOrganismeFormation),
         rayonRecherche = Some(e.rayonRecherche)
       )
+    case e: NumeroTelephoneModifieEvent =>
+      copy(numeroTelephone = NumeroTelephone.from(e.numeroTelephone))
     case _ => this
   }
 }

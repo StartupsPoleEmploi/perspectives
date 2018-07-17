@@ -2,8 +2,8 @@ package controllers.candidat
 
 import authentification.infra.play.{CandidatAuthentifieAction, CandidatAuthentifieRequest}
 import conf.WebAppConfig
-import fr.poleemploi.perspectives.domain.Metier
-import fr.poleemploi.perspectives.domain.candidat.{CandidatCommandHandler, CandidatId, ModifierCriteresRechercheCommand}
+import fr.poleemploi.perspectives.domain.{Metier, NumeroTelephone}
+import fr.poleemploi.perspectives.domain.candidat.{CandidatCommandHandler, CandidatId, ModifierCriteresRechercheCommand, ModifierNumeroTelephoneCommand}
 import fr.poleemploi.perspectives.projections.candidat.{CandidatQueryHandler, GetCandidatQuery}
 import javax.inject.Inject
 import play.api.Logger
@@ -33,7 +33,8 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
             metiersRecherches = candidatDto.metiersRecherches.map(_.code),
             etreContacteParAgenceInterim = candidatDto.contacteParAgenceInterim.map(booleanToString).getOrElse(""),
             etreContacteParOrganismeFormation = candidatDto.contacteParOrganismeFormation.map(booleanToString).getOrElse(""),
-            rayonRecherche = candidatDto.rayonRecherche.getOrElse(0)
+            rayonRecherche = candidatDto.rayonRecherche.getOrElse(0),
+            numeroTelephone = candidatDto.numeroTelephone.map(_.value).getOrElse("")
           )
         )
         Ok(views.html.candidat.saisieCriteresRecherche(filledForm, candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie))
@@ -51,7 +52,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
         },
         saisieCriteresRechercheForm => {
           val candidatId = CandidatId(candidatAuthentifieRequest.candidatId)
-          val command = ModifierCriteresRechercheCommand(
+          val modifierCriteresRechercheCommand = ModifierCriteresRechercheCommand(
             id = candidatId,
             rechercheMetierEvalue = stringToBoolean(saisieCriteresRechercheForm.rechercheMetierEvalue),
             rechercheAutreMetier = stringToBoolean(saisieCriteresRechercheForm.rechercheAutreMetier),
@@ -63,11 +64,17 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
             etreContacteParAgenceInterim = stringToBoolean(saisieCriteresRechercheForm.etreContacteParAgenceInterim),
             rayonRecherche = saisieCriteresRechercheForm.rayonRecherche
           )
-          candidatCommandHandler.modifierCriteresRecherche(command)
-            .map(_ =>
-              Redirect(routes.LandingController.landing()).flashing(
-                ("message_succes", "Merci, vos criteres ont bien été pris en compte")
-              ))
+          val modifierNumeroTelephoneCommand = ModifierNumeroTelephoneCommand(
+            id = candidatId,
+            numeroTelephone = NumeroTelephone.from(saisieCriteresRechercheForm.numeroTelephone).get
+          )
+          candidatCommandHandler.modifierCriteresRechercheEtTelephone(
+            modifierCriteresRechercheCommand = modifierCriteresRechercheCommand,
+            modifierNumeroTelephoneCommand = modifierNumeroTelephoneCommand
+          ).map(_ =>
+            Redirect(routes.LandingController.landing()).flashing(
+              ("message_succes", "Merci, vos criteres ont bien été pris en compte")
+            ))
             .recoverWith {
               case t: Throwable =>
                 Logger.error("Erreur lors de l'enregistrement des critères", t)

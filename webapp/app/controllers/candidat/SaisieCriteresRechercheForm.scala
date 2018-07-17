@@ -1,10 +1,12 @@
 package controllers.candidat
 
+import controllers.FormHelpers
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 
-case class SaisieCriteresRechercheForm(rechercheMetierEvalue: String,
+case class SaisieCriteresRechercheForm(numeroTelephone: String,
+                                       rechercheMetierEvalue: String,
                                        rechercheAutreMetier: String,
                                        metiersRecherches: Set[String],
                                        etreContacteParOrganismeFormation: String,
@@ -15,6 +17,7 @@ object SaisieCriteresRechercheForm {
 
   val form = Form(
     mapping(
+      "numeroTelephone" -> nonEmptyText.verifying(FormHelpers.numeroTelephoneConstraint),
       "rechercheMetierEvalue" -> nonEmptyText,
       "rechercheAutreMetier" -> nonEmptyText,
       "listeMetiersRecherches" -> set(nonEmptyText),
