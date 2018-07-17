@@ -48,12 +48,12 @@
     }
   }
 
-  .criteres {
+  .informations {
     @include make-container();
     @include make-container-max-widths();
   }
 
-  .critere {
+  .informationProfil {
     margin-bottom: 3.5rem;
 
     @include media-breakpoint-up(md) {

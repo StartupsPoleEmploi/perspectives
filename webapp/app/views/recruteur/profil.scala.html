@@ -21,10 +21,10 @@
             <span class="separation-ligne"></span>
         </div>
     </section>
-    <section class="criteres">
+    <section class="informations">
         @form(action = controllers.recruteur.routes.ProfilController.modifierProfil(), 'id -> "modificationProfilForm") {
         @CSRF.formField
-        <dl class="critere">
+        <dl class="informationProfil">
             <dt class="question">
                 <span class="question-puce @if(hasErrors("typeRecruteur")){question-puce--erreur}">1</span>
                 <div class="question-texte">
@@ -70,7 +70,7 @@
             </dd>
             }
             </dl>
-            <dl class="critere">
+            <dl class="informationProfil">
                 <dt class="question">
                     <span class="question-puce @if(hasErrors("raisonSociale")){question-puce--erreur}">2</span>
                     <div class="question-texte">
@@ -91,7 +91,7 @@
                 </dd>
                 }
             </dl>
-            <dl class="critere">
+            <dl class="informationProfil">
                 <dt class="question">
                     <span class="question-puce @if(hasErrors("numeroSiret")){question-puce--erreur}">3</span>
                     <div class="question-texte">
@@ -113,7 +113,7 @@
                 </dd>
                 }
             </dl>
-            <dl class="critere">
+            <dl class="informationProfil">
                 <dt class="question">
                     <span class="question-puce @if(hasErrors("numeroTelephone")){question-puce--erreur}">4</span>
                     <div class="question-texte">
@@ -135,7 +135,7 @@
                 </dd>
                 }
             </dl>
-            <dl class="critere">
+            <dl class="informationProfil">
                 <dt class="question">
                     <span class="question-puce @if(hasErrors("contactParCandidats")){question-puce--erreur}">5</span>
                     <div class="question-texte">
