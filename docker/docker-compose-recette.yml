@@ -1,13 +1,11 @@
 version: "3.5"
 services:
   nginx:
-    image: nginx:1.14.0
+    image: perspectives-nginx
     ports:
       - "80:80"
     deploy:
       replicas: 1
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
     networks:
       - net
 
@@ -23,7 +21,7 @@ services:
       - net
 
   webapp:
-    image: webapp
+    image: perspectives-webapp
     depends_on:
       - database
       - nginx
