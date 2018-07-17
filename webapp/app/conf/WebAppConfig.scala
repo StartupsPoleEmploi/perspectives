@@ -1,8 +1,8 @@
 package conf
 
-import domain.services.PEConnectConfig
+import authentification.infra.peconnect.{OAuthConfig, PEConnectCandidatConfig, PEConnectRecruteurConfig}
 import fr.poleemploi.perspectives.infra.Environnement
-import fr.poleemploi.perspectives.projections.SlackCandidatConfig
+import fr.poleemploi.perspectives.projections.candidat.SlackCandidatConfig
 import play.api.Configuration
 
 class WebAppConfig(configuration: Configuration) {
@@ -12,13 +12,22 @@ class WebAppConfig(configuration: Configuration) {
 
   val environnement: Environnement = Environnement.from(configuration.get[String]("environnement"))
 
-  val peConnectConfig: PEConnectConfig = PEConnectConfig(
-    url = configuration.get[String]("peconnect.url"),
+  val oauthConfig = OAuthConfig(
     clientId = configuration.get[String]("peconnect.oauth2.clientId"),
-    clientSecret = configuration.get[String]("peconnect.oauth2.clientSecret"),
+    clientSecret = configuration.get[String]("peconnect.oauth2.clientSecret")
   )
 
-  val peConnectIndividuURL: String = configuration.get[String]("peconnectIndividu.url")
+  val peConnectRecruteurConfig: PEConnectRecruteurConfig = PEConnectRecruteurConfig(
+    urlAuthentification = configuration.get[String]("peconnect.recruteur.urlAuthentification"),
+    urlApi = configuration.get[String]("peconnect.recruteur.urlApi"),
+    oauthConfig = oauthConfig,
+  )
+
+  val peConnectCandidatConfig: PEConnectCandidatConfig = PEConnectCandidatConfig(
+    urlAuthentification = configuration.get[String]("peconnect.candidat.urlAuthentification"),
+    urlApi = configuration.get[String]("peconnect.candidat.urlApi"),
+    oauthConfig = oauthConfig
+  )
 
   val googleTagManagerContainerId: String = configuration.get[String]("googleTagManager.containerId")
 

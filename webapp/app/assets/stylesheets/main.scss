@@ -3,17 +3,20 @@
 @import "../../node_modules/bootstrap/scss/mixins";
 
 @import "partials/base";
-@import "partials/buttons";
+@import "partials/inputs";
 
-@import "modules/menuCandidat";
+@import "modules/menuNavigation";
 @import "modules/peConnect";
 @import "modules/headerPrincipal";
 @import "modules/messages";
 
-@import "pages/landing";
-@import "pages/saisieCriteresRecherche";
+@import "pages/candidat/landing";
+@import "pages/candidat/saisieCriteresRecherche";
+
+@import "pages/recruteur/landing";
+@import "pages/recruteur/profil";
 
 body {
     font-family: $font-family;
-    background: $gradient-gris-blanc;
+    background: $gradient-gris-blanc no-repeat no-repeat;
 }

@@ -1,14 +1,21 @@
-GET     /                                           controllers.LandingController.landing
+GET     /                                           controllers.candidat.LandingController.landing
+GET     /candidat/inscription                       controllers.candidat.InscriptionController.inscription
+GET     /candidat/peconnect/connexion               controllers.candidat.PEConnectController.connexion
+GET     /candidat/peconnect/callback                controllers.candidat.PEConnectController.connexionCallback
+GET     /candidat/deconnexion                       controllers.candidat.AuthentificationController.deconnexion
+GET     /candidat/criteres-recherche                controllers.candidat.SaisieCriteresRechercheController.saisieCriteresRecherche
+POST    /candidat/criteres-recherche                controllers.candidat.SaisieCriteresRechercheController.modifierCriteresRecherche
 
-GET     /connexion                                  controllers.AuthentificationController.connexion
-GET     /connexion/callback                         controllers.AuthentificationController.connexionCallback
-GET     /connexion/peconnect                        controllers.AuthentificationController.connexionPEConnect
-GET     /deconnexion                                controllers.AuthentificationController.deconnexion
+GET     /recruteur                                  controllers.recruteur.LandingController.landing
+GET     /recruteur/inscription                      controllers.recruteur.InscriptionController.inscription
+GET     /recruteur/peconnect/connexion              controllers.recruteur.PEConnectController.connexion
+GET     /recruteur/peconnect/callback               controllers.recruteur.PEConnectController.connexionCallback
+GET     /recruteur/deconnexion                      controllers.recruteur.AuthentificationController.deconnexion
+GET     /recruteur/profil                           controllers.recruteur.ProfilController.modificationProfil
+POST    /recruteur/profil                           controllers.recruteur.ProfilController.modifierProfil
 
-GET     /candidat/criteres-recherche                controllers.SaisieCriteresRechercheController.saisieCriteresRecherche
-POST    /candidat/criteres-recherche                controllers.SaisieCriteresRechercheController.modifierCriteresRecherche
-
-GET     /admin/candidats                            controllers.CandidatController.liste
+GET     /conseiller/candidats                       controllers.conseiller.ConseillerController.listeCandidats
+GET     /conseiller/recruteurs                      controllers.conseiller.ConseillerController.listeRecruteurs
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file                               controllers.Assets.versioned(path="/public", file: Asset)

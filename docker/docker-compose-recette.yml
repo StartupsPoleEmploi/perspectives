@@ -12,11 +12,9 @@ services:
       - net
 
   database:
-    image: postgres:10.4
+    image: perspectives-postgres
     volumes:
       - postgresql:/var/lib/postgresql/data
-      - ./postgresql/events.sql:/docker-entrypoint-initdb.d/events.sql
-      - ./postgresql/candidats.sql:/docker-entrypoint-initdb.d/candidats.sql
     env_file:
       - recette.env
     deploy:

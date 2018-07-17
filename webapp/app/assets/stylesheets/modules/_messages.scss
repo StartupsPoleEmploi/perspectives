@@ -1,5 +1,6 @@
 .messages {
-    @include make-row();
+    @include make-container();
+    @include make-container-max-widths();
 }
 
 .message {

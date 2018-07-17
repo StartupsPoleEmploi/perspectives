@@ -1,0 +1,28 @@
+@import authentification.model.RecruteurAuthentifie
+
+@(recruteurAuthentifie: RecruteurAuthentifie)
+
+<nav class="menuNavigation">
+    <span class="menuNavigation-js-responsive"></span>
+    <div class="menuNavigationHeader">
+        <img class="menuNavigationHeader-iconeFermeture" src="@routes.Assets.versioned("images/modules/menuNavigation/fermer-menu.png")"/>
+        <img class="menuNavigationHeader-iconeOuverture" src="@routes.Assets.versioned("images/modules/menuNavigation/ouvrir-menu.png")"/>
+        <img class="menuNavigationHeader-icone" src="@routes.Assets.versioned("images/modules/menuNavigation/icone-connecte.svg")" />
+        <span class="menuNavigationHeader-whois">@{recruteurAuthentifie.prenom.capitalize} @{recruteurAuthentifie.nom.capitalize.take(1)}.</span>
+        <img class="menuNavigationHeader-icone" src="@routes.Assets.versioned("images/modules/menuNavigation/derouler-menu.svg")" />
+    </div>
+    <ul class="menuNavigationActions">
+        <li class="menuNavigationActions-item">
+            <a class="menuNavigationActions-lien" href="/recruteur/profil">
+                <span class="menuNavigationActions-icone iconeModifier"></span>
+                Modifier mon profil
+            </a>
+        </li>
+        <li class="menuNavigationActions-item">
+            <a class="menuNavigationActions-lien" href="/recruteur/deconnexion">
+                <span class="menuNavigationActions-icone iconeDeconnexion"></span>
+                Se déconnecter
+            </a>
+        </li>
+    </ul>
+</nav>
