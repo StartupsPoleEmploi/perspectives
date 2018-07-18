@@ -1,4 +1,4 @@
-package fr.poleemploi.perspectives.projections.infra
+package fr.poleemploi.perspectives.infra.sql
 
 import com.github.tminglei.slickpg._
 

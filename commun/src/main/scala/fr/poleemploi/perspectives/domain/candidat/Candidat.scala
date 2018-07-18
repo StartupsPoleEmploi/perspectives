@@ -1,7 +1,13 @@
 package fr.poleemploi.perspectives.domain.candidat
 
+import java.util.UUID
+
 import fr.poleemploi.eventsourcing.{Aggregate, Event}
+import fr.poleemploi.perspectives.domain.candidat.cv.{CVCandidat, CVId, CVService}
 import fr.poleemploi.perspectives.domain.{Genre, Metier, NumeroTelephone}
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class Candidat(override val id: CandidatId,
                override val version: Int,
@@ -79,6 +85,36 @@ class Candidat(override val id: CandidatId,
       ))
     } else Nil
   }
+
+  def modifierCV(command: ModifierCVCommand,
+                 cvService: CVService): Future[List[Event]] = {
+    if (!state.estInscrit) {
+      Future.failed(throw new RuntimeException(s"Le candidat ${id.value} n'est pas encore inscrit"))
+    }
+
+    def ajout: Future[Unit] =
+      cvService.save(
+        cvId = CVId(UUID.randomUUID().toString),
+        candidatId = command.id,
+        nomFichier = command.nomFichier,
+        typeMedia = command.typeMedia,
+        path = command.path
+      )
+
+    def mettreAJour(cvCandidat: CVCandidat): Future[Unit] =
+      cvService.update(
+        cvId = cvCandidat.cvId,
+        candidatId = cvCandidat.candidatId,
+        nomFichier = command.nomFichier,
+        typeMedia = command.typeMedia,
+        path = command.path
+      )
+
+    for {
+      optCvCandidat <- cvService.findByCandidat(command.id)
+      _ <- optCvCandidat.map(mettreAJour).getOrElse(ajout)
+    } yield Nil
+  }
 }
 
 // APPLY
@@ -93,7 +129,8 @@ private[candidat] case class CandidatState(estInscrit: Boolean = false,
                                            etreContacteParAgenceInterim: Option[Boolean] = None,
                                            etreContacteParOrganismeFormation: Option[Boolean] = None,
                                            rayonRecherche: Option[Int] = None,
-                                           numeroTelephone: Option[NumeroTelephone] = None) {
+                                           numeroTelephone: Option[NumeroTelephone] = None,
+                                           cvId: Option[CVId] = None) {
 
   def apply(event: Event): CandidatState = event match {
     case e: CandidatInscrisEvent =>

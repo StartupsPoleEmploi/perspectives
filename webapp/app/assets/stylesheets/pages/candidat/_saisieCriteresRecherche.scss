@@ -297,6 +297,55 @@
     -ms-transform: rotate(40deg);
     transform: rotate(40deg);
   }
+
+  .labelUploadFichier {
+    display: inline-block;
+
+    &-indicationTailleMax {
+      font-size: 1em;
+      color: #0F415A;
+      padding-left: 1em;
+
+      @include media-breakpoint-down(md) {
+        display: block;
+        margin-top: 1em;
+      }
+    }
+
+    &-input {
+      position: absolute;
+      opacity: 0;
+    }
+  }
+
+  .uploadActions {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+
+    &-nomFichier {
+      font-size: 1em;
+      color: #2C4054;
+      background-color: #EAEBED;
+      border-radius: 4px;
+      padding: 1em 2em;
+    }
+
+    &-boutonParcourir {
+      font-size: 1em;
+      color: white;
+      background-color: #334051;
+      border-radius: 4px;
+      padding: 1em;
+    }
+  }
+
+  .telechargerCV {
+    font-weight: 300;
+    padding-left: 15px;
+    color: #334051;
+    text-decoration: underline;
+  }
 }
 
 

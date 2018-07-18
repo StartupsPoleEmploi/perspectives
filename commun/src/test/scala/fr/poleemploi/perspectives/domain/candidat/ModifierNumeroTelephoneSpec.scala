@@ -38,11 +38,12 @@ class ModifierNumeroTelephoneSpec extends WordSpec
         events = Nil
       )
 
-      // When & Then
+      // When
       val ex = intercept[RuntimeException] {
         candidat.modifierNumeroTelephone(commande)
       }
 
+      // Then
       ex.getMessage mustBe s"Le candidat ${candidat.id.value} n'est pas encore inscrit"
     }
     "ne pas générer d'événement lorsque le numéro de téléphone ne change pas" in {

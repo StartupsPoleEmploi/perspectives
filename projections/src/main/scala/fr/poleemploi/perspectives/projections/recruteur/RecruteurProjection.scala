@@ -6,7 +6,7 @@ import fr.poleemploi.cqrs.projection.Projection
 import fr.poleemploi.eventsourcing.{AggregateId, Event}
 import fr.poleemploi.perspectives.domain.recruteur._
 import fr.poleemploi.perspectives.domain.{Genre, NumeroTelephone}
-import fr.poleemploi.perspectives.projections.infra.PostgresDriver
+import fr.poleemploi.perspectives.infra.sql.PostgresDriver
 import slick.jdbc.JdbcBackend.Database
 
 import scala.concurrent.ExecutionContext.Implicits.global

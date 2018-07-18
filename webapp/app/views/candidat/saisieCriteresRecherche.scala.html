@@ -2,9 +2,11 @@
 @import conf.WebAppConfig
 @import controllers.candidat.SaisieCriteresRechercheForm
 @import fr.poleemploi.perspectives.domain.Metier
+@import fr.poleemploi.perspectives.projections.candidat.cv.DetailsCVDto
 @import helper._
-
-@(saisieCriteresRechercheForm: Form[SaisieCriteresRechercheForm], candidatAuthentifie: CandidatAuthentifie)(implicit request: MessagesRequestHeader, flash: Flash, webAppConfig: WebAppConfig)
+@(saisieCriteresRechercheForm: Form[SaisieCriteresRechercheForm],
+        detailsCVDto: Option[DetailsCVDto],
+        candidatAuthentifie: CandidatAuthentifie)(implicit request: MessagesRequestHeader, flash: Flash, webAppConfig: WebAppConfig)
 
 @hasErrors(field:String) = @{
     saisieCriteresRechercheForm(field).hasErrors
@@ -26,7 +28,7 @@
         </div>
     </section>
     <section class="criteres">
-        @form(action = controllers.candidat.routes.SaisieCriteresRechercheController.modifierCriteresRecherche(), 'id -> "criteresRechercheForm") {
+        @form(action = controllers.candidat.routes.SaisieCriteresRechercheController.modifierCriteresRecherche(), 'id -> "criteresRechercheForm", 'enctype -> "multipart/form-data") {
         @CSRF.formField
         <dl class="critere">
             <dt class="question">
@@ -347,6 +349,38 @@
                 <span class="erreurs-item">@saisieCriteresRechercheForm("numeroTelephone").errors.map(_.format).mkString(", ")</span>
             </dd>
             }
+        </dl>
+        <dl class="critere">
+            <dt class="question">
+                <span class="question-puce @if(hasErrors("cv")){question-puce--erreur}">7</span>
+                <div class="question-texte">
+                    @if(detailsCVDto.isDefined) {
+                        Remplacez votre dernier CV envoyé (pdf, doc, docx, jpg) :
+                        <a class="telechargerCV" href="/candidat/cv/telecharger" target="_blank">Voir mon CV</a>
+                    } else {
+                        Ajoutez votre dernier CV à jour (pdf, doc, docx, jpg) :
+                        <span class="question-requise">*</span>
+                    }
+                </div>
+            </dt>
+            <dd class="choix">
+                <label class="labelUploadFichier" for="js-input-cv">
+                    <span class="uploadActions">
+                        <span id="js-nom-fichier" class="uploadActions-nomFichier">
+                            @detailsCVDto.map(_ => "Remplacer mon CV").getOrElse("Ajouter mon CV")
+                        </span>
+                        <span class="uploadActions-boutonParcourir">Parcourir</span>
+                    </span>
+                    <span class="labelUploadFichier-indicationTailleMax">(poids maximum du document 5mo)</span>
+                    <input id="js-input-cv" class="labelUploadFichier-input" name="cv" type="file" accept="application/pdf,application/vnd.oasis.opendocument.text,image/jpeg,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"/>
+                </label>
+            </dd>
+            <dd class="erreurs">
+                <span id="js-erreur-cv" class="erreurs-item"></span>
+                @if(hasErrors("cv")) {
+                <span class="erreurs-item">@saisieCriteresRechercheForm("cv").errors.map(_.format).mkString(", ")</span>
+                }
+            </dd>
         </dl>
         <div class="validerCriteres">
             <button class="bouton bouton-action-principale" type="submit">

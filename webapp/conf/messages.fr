@@ -1,4 +1,5 @@
 error.required=Veuillez saisir une valeur pour ce champ
+error.typeMediaInvalide=Le type de fichier n''est pas valide
 constraint.criteres.selectionmetiers=Choisissez vos métiers dans la liste
 constraint.numeroSiret=Le numéro de SIRET n''est pas valide
 constraint.numeroTelephone=Le numéro de téléphone n''est pas valide
