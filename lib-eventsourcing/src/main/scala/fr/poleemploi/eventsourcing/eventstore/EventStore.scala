@@ -2,8 +2,8 @@ package fr.poleemploi.eventsourcing.eventstore
 
 import fr.poleemploi.eventsourcing._
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 /**
   * Class for high-level data access to the store. <br />
@@ -54,7 +54,7 @@ class EventStore(eventPublisher: EventPublisher,
         // On attend pas le retour de la publication
         eventPublisher.publish(
           AppendedEvent(
-            aggregateId = AggregateId(aggregateId.value),
+            aggregateId = aggregateId,
             event = e
           )
         )

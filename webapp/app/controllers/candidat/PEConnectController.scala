@@ -6,8 +6,7 @@ import authentification.infra.peconnect._
 import authentification.infra.play._
 import authentification.model.CandidatAuthentifie
 import conf.WebAppConfig
-import fr.poleemploi.eventsourcing.AggregateId
-import fr.poleemploi.perspectives.domain.candidat.{CandidatCommandHandler, InscrireCandidatCommand}
+import fr.poleemploi.perspectives.domain.candidat.{CandidatCommandHandler, CandidatId, InscrireCandidatCommand}
 import javax.inject.{Inject, Singleton}
 import play.api.Logger
 import play.api.mvc._
@@ -71,10 +70,10 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       _ <- Either.cond(peConnectFacade.verifyNonce(oauthTokens, accessTokenResponse.nonce), (), "La comparaison du nonce a échoué").toFuture
       _ <- peConnectFacade.validateAccessToken(accessTokenResponse)
       candidatInfos <- peConnectFacade.getInfosCandidat(accessTokenResponse.accessToken)
-      aggregateId <- inscrire(candidatInfos)
+      candidatId <- inscrire(candidatInfos)
     } yield {
       val candidatAuthentifie = CandidatAuthentifie(
-        candidatId = aggregateId.value,
+        candidatId = candidatId.value,
         nom = candidatInfos.nom,
         prenom = candidatInfos.prenom
       )
@@ -109,14 +108,14 @@ class PEConnectController @Inject()(cc: ControllerComponents,
     }
   }
 
-  private def inscrire(peConnectCandidatInfos: PEConnectCandidatInfos): Future[AggregateId] =
+  private def inscrire(peConnectCandidatInfos: PEConnectCandidatInfos): Future[CandidatId] =
     for {
       optCandidat <- peConnectFacade.findCandidat(peConnectCandidatInfos.peConnectId)
-      aggregateId <- optCandidat.map(candidat => Future(AggregateId(candidat.candidatId)))
+      candidatId <- optCandidat.map(candidat => Future(CandidatId(candidat.candidatId)))
         .getOrElse {
-          val aggregateId = AggregateId(UUID.randomUUID().toString)
+          val candidatId = CandidatId(UUID.randomUUID().toString)
           val command = InscrireCandidatCommand(
-            id = aggregateId,
+            id = candidatId,
             nom = peConnectCandidatInfos.nom,
             prenom = peConnectCandidatInfos.prenom,
             genre = peConnectCandidatInfos.genre,
@@ -124,10 +123,10 @@ class PEConnectController @Inject()(cc: ControllerComponents,
           )
           candidatCommandHandler.inscrire(command)
             .flatMap(_ => peConnectFacade.saveCandidat(CandidatPEConnect(
-              candidatId = aggregateId.value,
+              candidatId = candidatId.value,
               peConnectId = peConnectCandidatInfos.peConnectId
             )))
-            .map(_ => aggregateId)
+            .map(_ => candidatId)
         }
-    } yield aggregateId
+    } yield candidatId
 }

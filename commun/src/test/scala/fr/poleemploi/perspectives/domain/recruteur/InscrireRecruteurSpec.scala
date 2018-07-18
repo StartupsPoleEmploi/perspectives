@@ -2,18 +2,18 @@ package fr.poleemploi.perspectives.domain.recruteur
 
 import java.util.UUID
 
-import fr.poleemploi.eventsourcing.{AggregateId, Event}
+import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.perspectives.domain.Genre
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{MustMatchers, WordSpec}
 
 class InscrireRecruteurSpec extends WordSpec with MustMatchers with MockitoSugar {
 
-  val aggregateId: AggregateId = AggregateId(UUID.randomUUID().toString)
+  val recruteurId: RecruteurId = RecruteurId(UUID.randomUUID().toString)
 
   val inscrireCommande: InscrireRecruteurCommand =
     InscrireRecruteurCommand(
-      id = aggregateId,
+      id = recruteurId,
       nom = "nom",
       prenom = "prenom",
       email = "email@domain.com",
@@ -24,7 +24,7 @@ class InscrireRecruteurSpec extends WordSpec with MustMatchers with MockitoSugar
     "renvoyer une erreur lorsque le recruteur est déjà inscrit" in {
       // Given
       val recruteur = new Recruteur(
-        id = aggregateId,
+        id = recruteurId,
         version = 0,
         events = List(mock[RecruteurInscrisEvent])
       )
@@ -40,7 +40,7 @@ class InscrireRecruteurSpec extends WordSpec with MustMatchers with MockitoSugar
     "générer un événement lorsque le recruteur n'est pas encore inscrit" in {
       // Given
       val recruteur = new Recruteur(
-        id = aggregateId,
+        id = recruteurId,
         version = 0,
         events = Nil
       )
@@ -54,7 +54,7 @@ class InscrireRecruteurSpec extends WordSpec with MustMatchers with MockitoSugar
     "générer un événement contenant les informations d'inscription" in {
       // Given
       val recruteur = new Recruteur(
-        id = aggregateId,
+        id = recruteurId,
         version = 0,
         events = Nil
       )

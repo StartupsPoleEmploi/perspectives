@@ -1,3 +1,6 @@
 package fr.poleemploi.eventsourcing
 
-case class AggregateId(value: String)
+trait AggregateId {
+
+  def value: String
+}

@@ -1,11 +1,13 @@
 package fr.poleemploi.perspectives.domain.candidat
 
-import fr.poleemploi.eventsourcing.{Aggregate, AggregateId, Event}
+import fr.poleemploi.eventsourcing.{Aggregate, Event}
 import fr.poleemploi.perspectives.domain.Metier
 
-class Candidat(override val id: AggregateId,
+class Candidat(override val id: CandidatId,
                override val version: Int,
                events: List[Event]) extends Aggregate {
+
+  override type Id = CandidatId
 
   private val state: CandidatState =
     events.foldLeft(CandidatState())((s, e) => s.apply(e))

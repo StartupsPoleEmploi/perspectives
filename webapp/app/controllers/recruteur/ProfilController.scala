@@ -2,9 +2,8 @@ package controllers.recruteur
 
 import authentification.infra.play.{RecruteurAuthentifieAction, RecruteurAuthentifieRequest}
 import conf.WebAppConfig
-import fr.poleemploi.eventsourcing.AggregateId
 import fr.poleemploi.perspectives.domain.NumeroTelephone
-import fr.poleemploi.perspectives.domain.recruteur.{ModifierProfilCommand, NumeroSiret, RecruteurCommandHandler, TypeRecruteur}
+import fr.poleemploi.perspectives.domain.recruteur._
 import fr.poleemploi.perspectives.projections.recruteur.{GetRecruteurQuery, RecruteurQueryHandler}
 import javax.inject.Inject
 import play.api.Logger
@@ -52,9 +51,9 @@ class ProfilController @Inject()(components: ControllerComponents,
         },
         inscriptionForm => {
           Future.successful(NoContent)
-          val aggregateId = AggregateId(recruteurAuthentifieRequest.recruteurId)
+          val recruteurId = RecruteurId(recruteurAuthentifieRequest.recruteurId)
           val command = ModifierProfilCommand(
-            id = aggregateId,
+            id = recruteurId,
             raisonSociale = inscriptionForm.raisonSociale,
             typeRecruteur = TypeRecruteur.from(inscriptionForm.typeRecruteur).get,
             numeroSiret = NumeroSiret.from(inscriptionForm.numeroSiret).get,

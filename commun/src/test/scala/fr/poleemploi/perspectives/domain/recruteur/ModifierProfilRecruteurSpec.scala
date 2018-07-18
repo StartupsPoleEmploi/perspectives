@@ -2,18 +2,17 @@ package fr.poleemploi.perspectives.domain.recruteur
 
 import java.util.UUID
 
-import fr.poleemploi.eventsourcing.AggregateId
 import fr.poleemploi.perspectives.domain.NumeroTelephone
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{MustMatchers, WordSpec}
 
 class ModifierProfilRecruteurSpec extends WordSpec with MustMatchers with MockitoSugar {
 
-  val aggregateId: AggregateId = AggregateId(UUID.randomUUID().toString)
+  val recruteurId: RecruteurId = RecruteurId(UUID.randomUUID().toString)
 
   val modifierProfilCommande: ModifierProfilCommand =
     ModifierProfilCommand(
-      id = aggregateId,
+      id = recruteurId,
       raisonSociale = "raison sociale",
       numeroSiret = NumeroSiret("13000548100010"),
       typeRecruteur = TypeRecruteur.AGENCE_INTERIM,
@@ -34,7 +33,7 @@ class ModifierProfilRecruteurSpec extends WordSpec with MustMatchers with Mockit
     "renvoyer une erreur lorsque le recruteur n'est pas encore inscrit" in {
       // Given
       val recruteur = new Recruteur(
-        id = aggregateId,
+        id = recruteurId,
         version = 0,
         events = Nil
       )
@@ -50,7 +49,7 @@ class ModifierProfilRecruteurSpec extends WordSpec with MustMatchers with Mockit
     "ne pas générer d'événement si aucune information de profil n'a été modifiée" in {
       // Given
       val recruteur = new Recruteur(
-        id = aggregateId,
+        id = recruteurId,
         version = 0,
         events = List(mock[RecruteurInscrisEvent], profilModifieEvent)
       )
@@ -64,7 +63,7 @@ class ModifierProfilRecruteurSpec extends WordSpec with MustMatchers with Mockit
     "générer un événement si une information de profil a été saisie pour la premiere fois" in {
       // Given
       val recruteur = new Recruteur(
-        id = aggregateId,
+        id = recruteurId,
         version = 0,
         events = List(mock[RecruteurInscrisEvent])
       )
@@ -78,7 +77,7 @@ class ModifierProfilRecruteurSpec extends WordSpec with MustMatchers with Mockit
     "générer un événement si la raison sociale a été modifiée" in {
       // Given
       val recruteur = new Recruteur(
-        id = aggregateId,
+        id = recruteurId,
         version = 0,
         events = List(mock[RecruteurInscrisEvent], profilModifieEvent.copy(
           raisonSociale = "raison sociale"
@@ -96,7 +95,7 @@ class ModifierProfilRecruteurSpec extends WordSpec with MustMatchers with Mockit
     "générer un événement si le numero de siret a été modifié" in {
       // Given
       val recruteur = new Recruteur(
-        id = aggregateId,
+        id = recruteurId,
         version = 0,
         events = List(mock[RecruteurInscrisEvent], profilModifieEvent.copy(
           numeroSiret = "13000548100010"
@@ -114,7 +113,7 @@ class ModifierProfilRecruteurSpec extends WordSpec with MustMatchers with Mockit
     "générer un événement si le type de recruteur a été modifié" in {
       // Given
       val recruteur = new Recruteur(
-        id = aggregateId,
+        id = recruteurId,
         version = 0,
         events = List(mock[RecruteurInscrisEvent], profilModifieEvent.copy(
           typeRecruteur = TypeRecruteur.ENTREPRISE.value
@@ -132,7 +131,7 @@ class ModifierProfilRecruteurSpec extends WordSpec with MustMatchers with Mockit
     "générer un événement si le numéro de téléphone a été modifié" in {
       // Given
       val recruteur = new Recruteur(
-        id = aggregateId,
+        id = recruteurId,
         version = 0,
         events = List(mock[RecruteurInscrisEvent], profilModifieEvent.copy(
           numeroTelephone = "0897563423"
@@ -150,7 +149,7 @@ class ModifierProfilRecruteurSpec extends WordSpec with MustMatchers with Mockit
     "générer un événement si contactParCandidats a été modifié" in {
       // Given
       val recruteur = new Recruteur(
-        id = aggregateId,
+        id = recruteurId,
         version = 0,
         events = List(mock[RecruteurInscrisEvent], profilModifieEvent.copy(
           contactParCandidats = false
@@ -168,7 +167,7 @@ class ModifierProfilRecruteurSpec extends WordSpec with MustMatchers with Mockit
     "générer un événement contenant les informations modifiées" in {
       // Given
       val recruteur = new Recruteur(
-        id = aggregateId,
+        id = recruteurId,
         version = 0,
         events = List(mock[RecruteurInscrisEvent])
       )

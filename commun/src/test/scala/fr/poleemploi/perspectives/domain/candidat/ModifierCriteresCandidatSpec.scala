@@ -2,18 +2,17 @@ package fr.poleemploi.perspectives.domain.candidat
 
 import java.util.UUID
 
-import fr.poleemploi.eventsourcing.AggregateId
 import fr.poleemploi.perspectives.domain.Metier
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{MustMatchers, WordSpec}
 
 class ModifierCriteresCandidatSpec extends WordSpec with MustMatchers with MockitoSugar {
 
-  val aggregateId: AggregateId = AggregateId(UUID.randomUUID().toString)
+  val candidatId: CandidatId = CandidatId(UUID.randomUUID().toString)
 
   val modifierCriteresCommande: ModifierCriteresRechercheCommand =
     ModifierCriteresRechercheCommand(
-      id = aggregateId,
+      id = candidatId,
       rechercheAutreMetier = true,
       rechercheMetierEvalue = false,
       metiersRecherches = Set.empty,
@@ -36,7 +35,7 @@ class ModifierCriteresCandidatSpec extends WordSpec with MustMatchers with Mocki
     "renvoyer une erreur lorsque le candidat n'est pas inscrit" in {
       // Given
       val candidat = new Candidat(
-        id = aggregateId,
+        id = candidatId,
         version = 0,
         events = Nil
       )
@@ -52,7 +51,7 @@ class ModifierCriteresCandidatSpec extends WordSpec with MustMatchers with Mocki
     "ne pas générer d'événement si aucun critère n'a été modifié" in {
       // Given
       val candidat = new Candidat(
-        id = aggregateId,
+        id = candidatId,
         version = 0,
         events = List(mock[CandidatInscrisEvent], criteresRechercheModifieEvent)
       )
@@ -66,7 +65,7 @@ class ModifierCriteresCandidatSpec extends WordSpec with MustMatchers with Mocki
     "générer un événement si un critère a été saisi pour la premiere fois" in {
       // Given
       val candidat = new Candidat(
-        id = aggregateId,
+        id = candidatId,
         version = 0,
         events = List(mock[CandidatInscrisEvent])
       )
@@ -80,7 +79,7 @@ class ModifierCriteresCandidatSpec extends WordSpec with MustMatchers with Mocki
     "générer un événement si rechercheMetierEvalue a été modifié" in {
       // Given
       val candidat = new Candidat(
-        id = aggregateId,
+        id = candidatId,
         version = 0,
         events = List(mock[CandidatInscrisEvent], criteresRechercheModifieEvent.copy(
           rechercheMetierEvalue = false
@@ -98,7 +97,7 @@ class ModifierCriteresCandidatSpec extends WordSpec with MustMatchers with Mocki
     "générer un événement si rechercheAutreMetier a été modifié" in {
       // Given
       val candidat = new Candidat(
-        id = aggregateId,
+        id = candidatId,
         version = 0,
         events = List(mock[CandidatInscrisEvent], criteresRechercheModifieEvent.copy(
           rechercheAutreMetier = false
@@ -116,7 +115,7 @@ class ModifierCriteresCandidatSpec extends WordSpec with MustMatchers with Mocki
     "générer un événement si etreContacteParOrganismeFormation a été modifié" in {
       // Given
       val candidat = new Candidat(
-        id = aggregateId,
+        id = candidatId,
         version = 0,
         events = List(mock[CandidatInscrisEvent], criteresRechercheModifieEvent.copy(
           etreContacteParOrganismeFormation = false
@@ -134,7 +133,7 @@ class ModifierCriteresCandidatSpec extends WordSpec with MustMatchers with Mocki
     "générer un événement si etreContacteParAgenceInterim a été modifié" in {
       // Given
       val candidat = new Candidat(
-        id = aggregateId,
+        id = candidatId,
         version = 0,
         events = List(mock[CandidatInscrisEvent], criteresRechercheModifieEvent.copy(
           etreContacteParAgenceInterim = false
@@ -152,7 +151,7 @@ class ModifierCriteresCandidatSpec extends WordSpec with MustMatchers with Mocki
     "générer un événement si rayonRecherche a été modifié" in {
       // Given
       val candidat = new Candidat(
-        id = aggregateId,
+        id = candidatId,
         version = 0,
         events = List(mock[CandidatInscrisEvent], criteresRechercheModifieEvent.copy(
           rayonRecherche = 30
@@ -170,7 +169,7 @@ class ModifierCriteresCandidatSpec extends WordSpec with MustMatchers with Mocki
     "générer un événement si un métier a été ajouté" in {
       // Given
       val candidat = new Candidat(
-        id = aggregateId,
+        id = candidatId,
         version = 0,
         events = List(mock[CandidatInscrisEvent], criteresRechercheModifieEvent.copy(
           listeMetiersRecherches = Set.empty
@@ -188,7 +187,7 @@ class ModifierCriteresCandidatSpec extends WordSpec with MustMatchers with Mocki
     "générer un événement si un métier a été retiré" in {
       // Given
       val candidat = new Candidat(
-        id = aggregateId,
+        id = candidatId,
         version = 0,
         events = List(mock[CandidatInscrisEvent], criteresRechercheModifieEvent.copy(
           listeMetiersRecherches = Set(Metier.SERVICE.code)
@@ -206,7 +205,7 @@ class ModifierCriteresCandidatSpec extends WordSpec with MustMatchers with Mocki
     "générer un événement contenant les critères modifiés" in {
       // Given
       val candidat = new Candidat(
-        id = aggregateId,
+        id = candidatId,
         version = 0,
         events = List(mock[CandidatInscrisEvent])
       )

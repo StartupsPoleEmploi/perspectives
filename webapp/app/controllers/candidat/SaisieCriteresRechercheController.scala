@@ -2,9 +2,8 @@ package controllers.candidat
 
 import authentification.infra.play.{CandidatAuthentifieAction, CandidatAuthentifieRequest}
 import conf.WebAppConfig
-import fr.poleemploi.eventsourcing.AggregateId
 import fr.poleemploi.perspectives.domain.Metier
-import fr.poleemploi.perspectives.domain.candidat.{CandidatCommandHandler, ModifierCriteresRechercheCommand}
+import fr.poleemploi.perspectives.domain.candidat.{CandidatCommandHandler, CandidatId, ModifierCriteresRechercheCommand}
 import fr.poleemploi.perspectives.projections.candidat.{CandidatQueryHandler, GetCandidatQuery}
 import javax.inject.Inject
 import play.api.Logger
@@ -51,9 +50,9 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
           Future.successful(BadRequest(views.html.candidat.saisieCriteresRecherche(formWithErrors, candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie)))
         },
         saisieCriteresRechercheForm => {
-          val aggregateId = AggregateId(candidatAuthentifieRequest.candidatId)
+          val candidatId = CandidatId(candidatAuthentifieRequest.candidatId)
           val command = ModifierCriteresRechercheCommand(
-            id = aggregateId,
+            id = candidatId,
             rechercheMetierEvalue = stringToBoolean(saisieCriteresRechercheForm.rechercheMetierEvalue),
             rechercheAutreMetier = stringToBoolean(saisieCriteresRechercheForm.rechercheAutreMetier),
             metiersRecherches =

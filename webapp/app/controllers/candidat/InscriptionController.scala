@@ -5,9 +5,8 @@ import java.util.UUID
 import authentification.infra.play.SessionCandidatAuthentifie
 import authentification.model.CandidatAuthentifie
 import conf.WebAppConfig
-import fr.poleemploi.eventsourcing.AggregateId
 import fr.poleemploi.perspectives.domain.Genre
-import fr.poleemploi.perspectives.domain.candidat.{CandidatCommandHandler, InscrireCandidatCommand}
+import fr.poleemploi.perspectives.domain.candidat.{CandidatCommandHandler, CandidatId, InscrireCandidatCommand}
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
 
@@ -25,9 +24,9 @@ class InscriptionController @Inject()(cc: ControllerComponents,
     } else inscriptionSimple()
 
   private def inscriptionSimple(): Action[AnyContent] = Action.async { implicit request =>
-    val aggregateId = AggregateId(UUID.randomUUID().toString)
+    val candidatId = CandidatId(UUID.randomUUID().toString)
     val command = InscrireCandidatCommand(
-      id = aggregateId,
+      id = candidatId,
       nom = "plantu",
       prenom = "robert",
       email = "robert.plantu@mail.com",

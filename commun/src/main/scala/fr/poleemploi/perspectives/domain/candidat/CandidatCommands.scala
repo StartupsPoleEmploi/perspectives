@@ -1,16 +1,15 @@
 package fr.poleemploi.perspectives.domain.candidat
 
 import fr.poleemploi.cqrs.command.Command
-import fr.poleemploi.eventsourcing.AggregateId
 import fr.poleemploi.perspectives.domain.{Genre, Metier}
 
-case class InscrireCandidatCommand(override val id: AggregateId,
+case class InscrireCandidatCommand(override val id: CandidatId,
                                    nom: String,
                                    prenom: String,
                                    email: String,
                                    genre: Genre) extends Command
 
-case class ModifierCriteresRechercheCommand(override val id: AggregateId,
+case class ModifierCriteresRechercheCommand(override val id: CandidatId,
                                             rechercheMetierEvalue: Boolean,
                                             rechercheAutreMetier: Boolean,
                                             metiersRecherches: Set[Metier],

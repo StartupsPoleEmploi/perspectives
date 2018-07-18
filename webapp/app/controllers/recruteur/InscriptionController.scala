@@ -5,19 +5,18 @@ import java.util.UUID
 import authentification.infra.play.SessionRecruteurAuthentifie
 import authentification.model.RecruteurAuthentifie
 import conf.WebAppConfig
-import fr.poleemploi.eventsourcing.AggregateId
 import fr.poleemploi.perspectives.domain.Genre
-import fr.poleemploi.perspectives.domain.recruteur.{InscrireRecruteurCommand, RecruteurCommandHandler}
+import fr.poleemploi.perspectives.domain.recruteur.{InscrireRecruteurCommand, RecruteurCommandHandler, RecruteurId}
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Singleton
-class InscriptionController@Inject()(cc: ControllerComponents,
-                                     webappConfig: WebAppConfig,
-                                     recruteurCommandHandler: RecruteurCommandHandler,
-                                     peConnectController: PEConnectController) extends AbstractController(cc) {
+class InscriptionController @Inject()(cc: ControllerComponents,
+                                      webappConfig: WebAppConfig,
+                                      recruteurCommandHandler: RecruteurCommandHandler,
+                                      peConnectController: PEConnectController) extends AbstractController(cc) {
 
   def inscription(): Action[AnyContent] =
     if (webappConfig.usePEConnect) {
@@ -25,9 +24,9 @@ class InscriptionController@Inject()(cc: ControllerComponents,
     } else inscriptionSimple()
 
   private def inscriptionSimple(): Action[AnyContent] = Action.async { implicit request =>
-    val aggregateId = AggregateId(UUID.randomUUID().toString)
+    val recruteurId = RecruteurId(UUID.randomUUID().toString)
     val command = InscrireRecruteurCommand(
-      id = aggregateId,
+      id = recruteurId,
       nom = "michu",
       prenom = "robert",
       email = "robert.michu@maboite.com",

@@ -1,11 +1,13 @@
 package fr.poleemploi.perspectives.domain.recruteur
 
-import fr.poleemploi.eventsourcing.{Aggregate, AggregateId, Event}
+import fr.poleemploi.eventsourcing.{Aggregate, Event}
 import fr.poleemploi.perspectives.domain.NumeroTelephone
 
-class Recruteur(override val id: AggregateId,
+class Recruteur(override val id: RecruteurId,
                 override val version: Int,
                 events: List[Event]) extends Aggregate {
+
+  override type Id = RecruteurId
 
   private val state: RecruteurState =
     events.foldLeft(RecruteurState())((s, e) => s.apply(e))

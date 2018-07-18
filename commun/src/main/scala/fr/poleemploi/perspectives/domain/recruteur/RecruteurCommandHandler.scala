@@ -1,7 +1,7 @@
 package fr.poleemploi.perspectives.domain.recruteur
 
 import fr.poleemploi.cqrs.command.CommandHandler
-import fr.poleemploi.eventsourcing.{AggregateId, Event}
+import fr.poleemploi.eventsourcing.Event
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -15,8 +15,8 @@ class RecruteurCommandHandler(recruteurRepository: RecruteurRepository)
   def modifierProfil(command: ModifierProfilCommand): Future[Unit] =
     execute(command.id, _.modifierProfil(command))
 
-  private def execute(aggregateId: AggregateId, f: Recruteur => List[Event]): Future[Unit] =
-    recruteurRepository.getById(aggregateId).map(candidat =>
-      recruteurRepository.save(candidat, f(candidat))
+  private def execute(recruteurId: RecruteurId, f: Recruteur => List[Event]): Future[Unit] =
+    recruteurRepository.getById(recruteurId).map(recruteur =>
+      recruteurRepository.save(recruteur, f(recruteur))
     )
 }

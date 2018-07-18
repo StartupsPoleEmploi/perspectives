@@ -2,7 +2,9 @@ package fr.poleemploi.eventsourcing
 
 trait Aggregate {
 
-  def id: AggregateId
+  type Id <: AggregateId
+
+  def id: Id
 
   def version: Int
 }
