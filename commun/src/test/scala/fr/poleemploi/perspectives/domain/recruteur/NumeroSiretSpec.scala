@@ -38,6 +38,13 @@ class NumeroSiretSpec extends WordSpec with MustMatchers {
       // Then
       result mustBe None
     }
+    "retourner None lorsque c'est un nombre de 14 chiffres avec uniquement des 0" in {
+      // When
+      val result = NumeroSiret.from("00000000000000")
+
+      // Then
+      result mustBe None
+    }
     "retourner None lorsque c'est un nombre de 14 chiffres mais qui n'est pas un Siret" in {
       // When
       val result = NumeroSiret.from("12345678901234")
