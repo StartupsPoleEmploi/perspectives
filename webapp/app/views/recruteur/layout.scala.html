@@ -1,5 +1,5 @@
-@import conf.WebAppConfig
 @import authentification.model.RecruteurAuthentifie
+@import conf.WebAppConfig
 
 @(title: String = "Perspectives", recruteurAuthentifie: Option[RecruteurAuthentifie])(content: Html)(implicit flash: Flash, webAppConfig: WebAppConfig)
 
@@ -18,8 +18,7 @@
     </head>
     <body>
         @components.googleTagManagerNoScript()
-        @recruteurAuthentifie.map(r => components.menuRecruteur(r))
-        @components.headerPrincipal()
+        @navigation(recruteurAuthentifie)
         @components.flashMessages()
 
         @content

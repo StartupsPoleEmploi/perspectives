@@ -1,0 +1,17 @@
+@import authentification.model.RecruteurAuthentifie
+
+@(recruteurAuthentifie: Option[RecruteurAuthentifie])
+
+<div class="navigation">
+    <div class="row align-items-center">
+        @components.headerPrincipal()
+    <nav class="accesLanding @if(recruteurAuthentifie.isDefined){accesLanding--connecte} else {accesLanding--deconnecte}">
+        <a class="accesLanding-lien" href="/">Accès candidat</a>
+    </nav>
+        @recruteurAuthentifie.map(r => components.menuRecruteur(r)).getOrElse {
+            <div class="conteneurPEConnect">
+            @components.peconnect("/recruteur/inscription")
+            </div>
+        }
+    </div>
+</div>

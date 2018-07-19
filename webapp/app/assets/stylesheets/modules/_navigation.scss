@@ -1,0 +1,313 @@
+.navigation {
+  @include media-breakpoint-up(md) {
+    @include make-container();
+    @include make-container-max-widths();
+    padding-top: 2em;
+    padding-bottom: 3em;
+  }
+  @include media-breakpoint-down(md) {
+    @include make-container();
+    max-width: 100%;
+    padding-top: 0;
+    padding-bottom: 1em;
+  }
+}
+
+.headerPrincipal {
+  @include make-col-ready();
+
+  @include media-breakpoint-up(lg) {
+    @include make-col(6);
+    margin-top: 0;
+    text-align: left;
+  }
+  @include media-breakpoint-between(md, lg) {
+    @include make-col(5);
+    margin-top: 0;
+    text-align: left;
+  }
+  @include media-breakpoint-down(md) {
+    @include make-col(12);
+    margin-top: 2em;
+    text-align: center;
+  }
+
+  &-titre {
+    display: none;
+  }
+  &-description {
+    display: none;
+  }
+}
+
+.accesLanding {
+  @include make-col-ready();
+
+  @include media-breakpoint-up(md) {
+    @include make-col(2);
+
+    &--connecte {
+      @include make-col-offset(2);
+      text-align: center;
+
+      &:after {
+        content: "";
+        position: absolute;
+        right: -8px;
+        top: 7px;
+        height: 12px;
+        border-right: 2px solid #334051;
+      }
+    }
+
+    &--deconnecte {
+      text-align: right;
+      padding: 0;
+    }
+  }
+  @include media-breakpoint-down(md) {
+    @include make-col(12);
+    text-align: center;
+    margin-top: 1em;
+
+    &--connecte {
+      @include make-col-offset(0);
+      text-align: center;
+
+      &:after {
+        display: none;
+      }
+    }
+  }
+
+  &-lien {
+    color: #334051;
+    font-size: 0.8em;
+    font-weight: 300;
+    text-transform: uppercase;
+
+    &:hover {
+      color: #334051;
+      text-decoration: none;
+      cursor: pointer;
+    }
+  }
+}
+
+.conteneurPEConnect {
+  @include make-col-ready();
+  text-align: center;
+  font-size: 0.8rem;
+
+  @include media-breakpoint-up(lg) {
+    @include make-col(4);
+  }
+  @include media-breakpoint-between(md, lg) {
+    @include make-col(5);
+  }
+  @include media-breakpoint-down(md) {
+    @include make-col(12);
+    margin-top: 2em;
+  }
+}
+
+.menuNavigation {
+  font-size: 0.9em;
+  letter-spacing: -0.45px;
+
+  @include media-breakpoint-up(md) {
+    @include make-col-ready();
+    @include make-col(2);
+  }
+  @include media-breakpoint-down(md) {
+    @include make-col(12);
+    padding: 0;
+    order: -1;
+  }
+  &-js-responsive {
+    @include media-breakpoint-up(md) {
+      display: none;
+    }
+    @include media-breakpoint-down(md) {
+      display: inline;
+    }
+  }
+
+  .menuNavigationHeader {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: pointer;
+    text-align: center;
+
+    @include media-breakpoint-up(md) {
+      color: #334051;
+    }
+    @include media-breakpoint-down(md) {
+      padding-top: 10px;
+      height: 40px;
+      color: white;
+      background-color: #334051;
+    }
+
+    &-icone {
+      height: 16px;
+      width: 16px;
+      @include media-breakpoint-down(md) {
+        display: none;
+      }
+    }
+
+    &-iconeFermeture, &-iconeOuverture {
+      @include media-breakpoint-up(md) {
+        display: none;
+      }
+      @include media-breakpoint-down(md) {
+        float: left;
+        padding-left: 15px;
+      }
+    }
+    /** Initialise les icones d'ouverture et de fermeture */
+    &-iconeOuverture {
+      @include media-breakpoint-down(md) {
+        display: block;
+      }
+    }
+    &-iconeFermeture {
+      @include media-breakpoint-down(md) {
+        display: none;
+      }
+    }
+  }
+
+  .menuNavigationActions {
+    display: none;
+    list-style-type: none;
+    padding: 0;
+
+    @include media-breakpoint-up(md) {
+      position: absolute;
+      right: 1em;
+      margin: 0.5em 0 0 0;
+      border: 1px solid rgba(51, 64, 81, 0.1);
+      border-radius: 3.6px;
+      box-shadow: 0 0 6px 0 rgba(1, 1, 1, 0.1);
+    }
+    @include media-breakpoint-down(md) {
+      position: relative;
+      right: 0;
+      margin: 0;
+      background-color: #6A89CC;
+      border: none;
+      border-radius: unset;
+      display: none;
+    }
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    &-item {
+      @include media-breakpoint-up(md) {
+        &:after {
+          content: "";
+          display: block;
+          height: 1px;
+          width: 165px;
+          opacity: 0.22;
+          background: #6A89CC;
+          margin: 15px 15px 15px 33px;
+        }
+      }
+
+      @include media-breakpoint-down(md) {
+        &:after {
+          content: "";
+          display: block;
+          height: 1px;
+          width: auto;
+          opacity: 0.22;
+          background: #334051;
+          margin: 15px 15px 15px 37px;
+        }
+      }
+
+      &:last-child:after {
+        display: none;
+      }
+
+      &:first-child {
+        padding: 15px 15px 0 15px;
+      }
+
+      &:last-child {
+        padding: 0 15px 15px 15px;
+      }
+    }
+
+    &-lien {
+      display: block;
+      white-space: nowrap;
+      vertical-align: middle;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      @include media-breakpoint-up(md) {
+        color: #334051;
+        font-size: 1em;
+        letter-spacing: -0.45px;
+
+        &:hover {
+          color: #334051;
+        }
+      }
+      @include media-breakpoint-down(md) {
+        color: white;
+        font-size: 1.1em;
+        letter-spacing: -0.58px;
+
+        &:hover {
+          color: white;
+        }
+      }
+    }
+
+    &-icone {
+      display: inline-block;
+      margin-right: 15px;
+
+      @include media-breakpoint-up(md) {
+        height: 16px;
+        width: 16px;
+      }
+      @include media-breakpoint-down(md) {
+        height: 19px;
+        width: 19px;
+      }
+
+      &.iconeModifier {
+        @include media-breakpoint-up(md) {
+          background: url('/assets/images/modules/menuNavigation/modifier-noir.svg');
+        }
+        @include media-breakpoint-down(md) {
+          background: url('/assets/images/modules/menuNavigation/modifier-blanc.svg');
+        }
+      }
+
+      &.iconeDeconnexion {
+        @include media-breakpoint-up(md) {
+          background: url('/assets/images/modules/menuNavigation/deconnexion-noir.svg');
+        }
+        @include media-breakpoint-down(md) {
+          background: url('/assets/images/modules/menuNavigation/deconnexion-blanc.svg');
+        }
+      }
+    }
+  }
+}
