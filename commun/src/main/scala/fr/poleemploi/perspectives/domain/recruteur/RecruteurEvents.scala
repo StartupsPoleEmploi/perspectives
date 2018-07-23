@@ -18,3 +18,9 @@ case class ProfilModifieEvent(typeRecruteur: String,
                               numeroTelephone: String,
                               contactParCandidats: Boolean,
                               date: ZonedDateTime = ZonedDateTime.now()) extends RecruteurEvent
+
+case class ProfilRecruteurModifiePEConnectEvent(nom: String,
+                                                prenom: String,
+                                                email: String,
+                                                genre: String,
+                                                date: ZonedDateTime = ZonedDateTime.now()) extends RecruteurEvent

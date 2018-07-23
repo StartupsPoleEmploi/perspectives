@@ -6,7 +6,7 @@ import authentification.infra.peconnect._
 import authentification.infra.play._
 import authentification.model.RecruteurAuthentifie
 import conf.WebAppConfig
-import fr.poleemploi.perspectives.domain.recruteur.{InscrireRecruteurCommand, RecruteurCommandHandler, RecruteurId}
+import fr.poleemploi.perspectives.domain.recruteur.{InscrireRecruteurCommand, ModifierProfilPEConnectCommand, RecruteurCommandHandler, RecruteurId}
 import javax.inject.{Inject, Singleton}
 import play.api.Logger
 import play.api.mvc._
@@ -69,7 +69,8 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       _ <- Either.cond(peConnectFacade.verifyNonce(oauthTokens, accessTokenResponse.nonce), (), "La comparaison du nonce a échoué").toFuture
       _ <- peConnectFacade.validateAccessToken(accessTokenResponse)
       recruteurInfos <- peConnectFacade.getInfosRecruteur(accessTokenResponse.accessToken)
-      recruteurId <- inscrire(recruteurInfos)
+      optRecruteur <- peConnectFacade.findRecruteur(recruteurInfos.peConnectId)
+      recruteurId <- optRecruteur.map(r => mettreAJour(r, recruteurInfos)).getOrElse(inscrire(recruteurInfos))
     } yield {
       val recruteurAuthentifie = RecruteurAuthentifie(
         recruteurId = recruteurId.value,
@@ -108,25 +109,32 @@ class PEConnectController @Inject()(cc: ControllerComponents,
   }
 
   private def inscrire(peConnectRecruteurInfos: PEConnectRecruteurInfos): Future[RecruteurId] = {
-    for {
-      optRecruteur <- peConnectFacade.findRecruteur(peConnectRecruteurInfos.peConnectId)
-      recruteurId <- optRecruteur.map(recruteur => Future(RecruteurId(recruteur.recruteurId)))
-        .getOrElse {
-          val recruteurId = RecruteurId(UUID.randomUUID().toString)
-          val command = InscrireRecruteurCommand(
-            id = recruteurId,
-            nom = peConnectRecruteurInfos.nom,
-            prenom = peConnectRecruteurInfos.prenom,
-            email = peConnectRecruteurInfos.email,
-            genre = peConnectRecruteurInfos.genre
-          )
-          recruteurCommandHandler.inscrire(command)
-            .flatMap(_ => peConnectFacade.saveRecruteur(RecruteurPEConnect(
-              recruteurId = recruteurId.value,
-              peConnectId = peConnectRecruteurInfos.peConnectId
-            )))
-            .map(_ => recruteurId)
-        }
-    } yield recruteurId
+    val recruteurId = RecruteurId(UUID.randomUUID().toString)
+    val command = InscrireRecruteurCommand(
+      id = recruteurId,
+      nom = peConnectRecruteurInfos.nom,
+      prenom = peConnectRecruteurInfos.prenom,
+      email = peConnectRecruteurInfos.email,
+      genre = peConnectRecruteurInfos.genre
+    )
+    recruteurCommandHandler.inscrire(command)
+      .flatMap(_ => peConnectFacade.saveRecruteur(RecruteurPEConnect(
+        recruteurId = recruteurId.value,
+        peConnectId = peConnectRecruteurInfos.peConnectId
+      )))
+      .map(_ => recruteurId)
+  }
+
+  private def mettreAJour(recruteurPEConnect: RecruteurPEConnect,
+                          peConnectRecruteurInfos: PEConnectRecruteurInfos): Future[RecruteurId] = {
+    val recruteurId = RecruteurId(recruteurPEConnect.recruteurId)
+    val command = ModifierProfilPEConnectCommand(
+      id = recruteurId,
+      nom = peConnectRecruteurInfos.nom,
+      prenom = peConnectRecruteurInfos.prenom,
+      email = peConnectRecruteurInfos.email,
+      genre = peConnectRecruteurInfos.genre
+    )
+    recruteurCommandHandler.modifierProfilPEConnect(command).map(_ => recruteurId)
   }
 }

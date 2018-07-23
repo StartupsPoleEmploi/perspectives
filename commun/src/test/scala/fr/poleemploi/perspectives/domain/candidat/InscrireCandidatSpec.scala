@@ -4,14 +4,16 @@ import java.util.UUID
 
 import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.perspectives.domain.Genre
+import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
-import org.scalatest.{MustMatchers, WordSpec}
+import org.scalatest.{BeforeAndAfter, MustMatchers, WordSpec}
 
-class InscrireCandidatSpec extends WordSpec with MustMatchers with MockitoSugar {
+class InscrireCandidatSpec extends WordSpec
+  with MustMatchers with MockitoSugar with BeforeAndAfter {
 
   val candidatId: CandidatId = CandidatId(UUID.randomUUID().toString)
 
-  val inscrireCommande: InscrireCandidatCommand =
+  val commande: InscrireCandidatCommand =
     InscrireCandidatCommand(
       id = candidatId,
       nom = "nom",
@@ -19,6 +21,12 @@ class InscrireCandidatSpec extends WordSpec with MustMatchers with MockitoSugar 
       email = "email@domain.com",
       genre = Genre.HOMME
     )
+  var candidatInscrisEvent: CandidatInscrisEvent = _
+
+  before {
+    candidatInscrisEvent = mock[CandidatInscrisEvent]
+    when(candidatInscrisEvent.genre) thenReturn Some(Genre.HOMME.code)
+  }
 
   "inscrire" should {
     "renvoyer une erreur lorsque le candidat est déjà inscrit" in {
@@ -26,12 +34,12 @@ class InscrireCandidatSpec extends WordSpec with MustMatchers with MockitoSugar 
       val candidat = new Candidat(
         id = candidatId,
         version = 0,
-        events = List(mock[CandidatInscrisEvent])
+        events = List(candidatInscrisEvent)
       )
 
       // When
       val ex = intercept[RuntimeException] {
-        candidat.inscrire(inscrireCommande)
+        candidat.inscrire(commande)
       }
 
       // Then
@@ -46,7 +54,7 @@ class InscrireCandidatSpec extends WordSpec with MustMatchers with MockitoSugar 
       )
 
       // When
-      val events: List[Event] = candidat.inscrire(inscrireCommande)
+      val events: List[Event] = candidat.inscrire(commande)
 
       // Then
       events.size mustBe 1
@@ -60,14 +68,14 @@ class InscrireCandidatSpec extends WordSpec with MustMatchers with MockitoSugar 
       )
 
       // When
-      val results = candidat.inscrire(inscrireCommande)
+      val results = candidat.inscrire(commande)
 
       // Then
       val event = results.head.asInstanceOf[CandidatInscrisEvent]
-      event.nom mustBe inscrireCommande.nom
-      event.prenom mustBe inscrireCommande.prenom
-      event.email mustBe inscrireCommande.email
-      event.genre mustBe Some(inscrireCommande.genre.code)
+      event.nom mustBe commande.nom
+      event.prenom mustBe commande.prenom
+      event.email mustBe commande.email
+      event.genre mustBe Some(commande.genre.code)
     }
   }
 

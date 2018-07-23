@@ -2,15 +2,17 @@ package fr.poleemploi.perspectives.domain.candidat
 
 import java.util.UUID
 
-import fr.poleemploi.perspectives.domain.Metier
+import fr.poleemploi.perspectives.domain.{Genre, Metier}
+import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
-import org.scalatest.{MustMatchers, WordSpec}
+import org.scalatest.{BeforeAndAfter, MustMatchers, WordSpec}
 
-class ModifierCriteresCandidatSpec extends WordSpec with MustMatchers with MockitoSugar {
+class ModifierCriteresCandidatSpec extends WordSpec
+  with MustMatchers with MockitoSugar with BeforeAndAfter {
 
   val candidatId: CandidatId = CandidatId(UUID.randomUUID().toString)
 
-  val modifierCriteresCommande: ModifierCriteresRechercheCommand =
+  val commande: ModifierCriteresRechercheCommand =
     ModifierCriteresRechercheCommand(
       id = candidatId,
       rechercheAutreMetier = true,
@@ -23,13 +25,20 @@ class ModifierCriteresCandidatSpec extends WordSpec with MustMatchers with Mocki
 
   val criteresRechercheModifieEvent =
     CriteresRechercheModifiesEvent(
-      rechercheAutreMetier = modifierCriteresCommande.rechercheAutreMetier,
-      rechercheMetierEvalue = modifierCriteresCommande.rechercheMetierEvalue,
-      etreContacteParAgenceInterim = modifierCriteresCommande.etreContacteParAgenceInterim,
-      etreContacteParOrganismeFormation = modifierCriteresCommande.etreContacteParOrganismeFormation,
-      listeMetiersRecherches = modifierCriteresCommande.metiersRecherches.map(_.code),
-      rayonRecherche = modifierCriteresCommande.rayonRecherche
+      rechercheAutreMetier = commande.rechercheAutreMetier,
+      rechercheMetierEvalue = commande.rechercheMetierEvalue,
+      etreContacteParAgenceInterim = commande.etreContacteParAgenceInterim,
+      etreContacteParOrganismeFormation = commande.etreContacteParOrganismeFormation,
+      listeMetiersRecherches = commande.metiersRecherches.map(_.code),
+      rayonRecherche = commande.rayonRecherche
     )
+
+  var candidatInscrisEvent: CandidatInscrisEvent = _
+
+  before {
+    candidatInscrisEvent = mock[CandidatInscrisEvent]
+    when(candidatInscrisEvent.genre) thenReturn Some(Genre.HOMME.code)
+  }
 
   "modifierCriteres" should {
     "renvoyer une erreur lorsque le candidat n'est pas inscrit" in {
@@ -42,7 +51,7 @@ class ModifierCriteresCandidatSpec extends WordSpec with MustMatchers with Mocki
 
       // When
       val ex = intercept[RuntimeException] {
-        candidat.modifierCriteres(modifierCriteresCommande)
+        candidat.modifierCriteres(commande)
       }
 
       // Then
@@ -53,11 +62,11 @@ class ModifierCriteresCandidatSpec extends WordSpec with MustMatchers with Mocki
       val candidat = new Candidat(
         id = candidatId,
         version = 0,
-        events = List(mock[CandidatInscrisEvent], criteresRechercheModifieEvent)
+        events = List(candidatInscrisEvent, criteresRechercheModifieEvent)
       )
 
       // When
-      val result = candidat.modifierCriteres(modifierCriteresCommande)
+      val result = candidat.modifierCriteres(commande)
 
       // Then
       result.isEmpty mustBe true
@@ -67,11 +76,11 @@ class ModifierCriteresCandidatSpec extends WordSpec with MustMatchers with Mocki
       val candidat = new Candidat(
         id = candidatId,
         version = 0,
-        events = List(mock[CandidatInscrisEvent])
+        events = List(candidatInscrisEvent)
       )
 
       // When
-      val result = candidat.modifierCriteres(modifierCriteresCommande)
+      val result = candidat.modifierCriteres(commande)
 
       // Then
       result.size mustBe 1
@@ -81,13 +90,13 @@ class ModifierCriteresCandidatSpec extends WordSpec with MustMatchers with Mocki
       val candidat = new Candidat(
         id = candidatId,
         version = 0,
-        events = List(mock[CandidatInscrisEvent], criteresRechercheModifieEvent.copy(
+        events = List(candidatInscrisEvent, criteresRechercheModifieEvent.copy(
           rechercheMetierEvalue = false
         ))
       )
 
       // When
-      val result = candidat.modifierCriteres(modifierCriteresCommande.copy(
+      val result = candidat.modifierCriteres(commande.copy(
         rechercheMetierEvalue = true
       ))
 
@@ -99,13 +108,13 @@ class ModifierCriteresCandidatSpec extends WordSpec with MustMatchers with Mocki
       val candidat = new Candidat(
         id = candidatId,
         version = 0,
-        events = List(mock[CandidatInscrisEvent], criteresRechercheModifieEvent.copy(
+        events = List(candidatInscrisEvent, criteresRechercheModifieEvent.copy(
           rechercheAutreMetier = false
         ))
       )
 
       // When
-      val result = candidat.modifierCriteres(modifierCriteresCommande.copy(
+      val result = candidat.modifierCriteres(commande.copy(
         rechercheAutreMetier = true
       ))
 
@@ -117,13 +126,13 @@ class ModifierCriteresCandidatSpec extends WordSpec with MustMatchers with Mocki
       val candidat = new Candidat(
         id = candidatId,
         version = 0,
-        events = List(mock[CandidatInscrisEvent], criteresRechercheModifieEvent.copy(
+        events = List(candidatInscrisEvent, criteresRechercheModifieEvent.copy(
           etreContacteParOrganismeFormation = false
         ))
       )
 
       // When
-      val result = candidat.modifierCriteres(modifierCriteresCommande.copy(
+      val result = candidat.modifierCriteres(commande.copy(
         etreContacteParOrganismeFormation = true
       ))
 
@@ -135,13 +144,13 @@ class ModifierCriteresCandidatSpec extends WordSpec with MustMatchers with Mocki
       val candidat = new Candidat(
         id = candidatId,
         version = 0,
-        events = List(mock[CandidatInscrisEvent], criteresRechercheModifieEvent.copy(
+        events = List(candidatInscrisEvent, criteresRechercheModifieEvent.copy(
           etreContacteParAgenceInterim = false
         ))
       )
 
       // When
-      val result = candidat.modifierCriteres(modifierCriteresCommande.copy(
+      val result = candidat.modifierCriteres(commande.copy(
         etreContacteParAgenceInterim = true
       ))
 
@@ -153,13 +162,13 @@ class ModifierCriteresCandidatSpec extends WordSpec with MustMatchers with Mocki
       val candidat = new Candidat(
         id = candidatId,
         version = 0,
-        events = List(mock[CandidatInscrisEvent], criteresRechercheModifieEvent.copy(
+        events = List(candidatInscrisEvent, criteresRechercheModifieEvent.copy(
           rayonRecherche = 30
         ))
       )
 
       // When
-      val result = candidat.modifierCriteres(modifierCriteresCommande.copy(
+      val result = candidat.modifierCriteres(commande.copy(
         rayonRecherche = 50
       ))
 
@@ -171,14 +180,14 @@ class ModifierCriteresCandidatSpec extends WordSpec with MustMatchers with Mocki
       val candidat = new Candidat(
         id = candidatId,
         version = 0,
-        events = List(mock[CandidatInscrisEvent], criteresRechercheModifieEvent.copy(
+        events = List(candidatInscrisEvent, criteresRechercheModifieEvent.copy(
           listeMetiersRecherches = Set.empty
         ))
       )
 
       // When
-      val result = candidat.modifierCriteres(modifierCriteresCommande.copy(
-        metiersRecherches = modifierCriteresCommande.metiersRecherches + Metier.SERVICE
+      val result = candidat.modifierCriteres(commande.copy(
+        metiersRecherches = commande.metiersRecherches + Metier.SERVICE
       ))
 
       // Then
@@ -189,14 +198,14 @@ class ModifierCriteresCandidatSpec extends WordSpec with MustMatchers with Mocki
       val candidat = new Candidat(
         id = candidatId,
         version = 0,
-        events = List(mock[CandidatInscrisEvent], criteresRechercheModifieEvent.copy(
+        events = List(candidatInscrisEvent, criteresRechercheModifieEvent.copy(
           listeMetiersRecherches = Set(Metier.SERVICE.code)
         ))
       )
 
       // When
-      val result = candidat.modifierCriteres(modifierCriteresCommande.copy(
-        metiersRecherches = modifierCriteresCommande.metiersRecherches - Metier.SERVICE
+      val result = candidat.modifierCriteres(commande.copy(
+        metiersRecherches = commande.metiersRecherches - Metier.SERVICE
       ))
 
       // Then
@@ -207,20 +216,20 @@ class ModifierCriteresCandidatSpec extends WordSpec with MustMatchers with Mocki
       val candidat = new Candidat(
         id = candidatId,
         version = 0,
-        events = List(mock[CandidatInscrisEvent])
+        events = List(candidatInscrisEvent)
       )
 
       // When
-      val result = candidat.modifierCriteres(modifierCriteresCommande)
+      val result = candidat.modifierCriteres(commande)
 
       // Then
       val event = result.head.asInstanceOf[CriteresRechercheModifiesEvent]
-      event.rechercheAutreMetier mustBe modifierCriteresCommande.rechercheAutreMetier
-      event.rechercheMetierEvalue mustBe modifierCriteresCommande.rechercheMetierEvalue
-      event.etreContacteParAgenceInterim mustBe modifierCriteresCommande.etreContacteParAgenceInterim
-      event.etreContacteParOrganismeFormation mustBe modifierCriteresCommande.etreContacteParOrganismeFormation
-      event.rayonRecherche mustBe modifierCriteresCommande.rayonRecherche
-      event.listeMetiersRecherches mustBe modifierCriteresCommande.metiersRecherches.map(_.code)
+      event.rechercheAutreMetier mustBe commande.rechercheAutreMetier
+      event.rechercheMetierEvalue mustBe commande.rechercheMetierEvalue
+      event.etreContacteParAgenceInterim mustBe commande.etreContacteParAgenceInterim
+      event.etreContacteParOrganismeFormation mustBe commande.etreContacteParOrganismeFormation
+      event.rayonRecherche mustBe commande.rayonRecherche
+      event.listeMetiersRecherches mustBe commande.metiersRecherches.map(_.code)
     }
   }
 

@@ -15,6 +15,9 @@ class CandidatCommandHandler(candidatRepository: CandidatRepository)
   def modifierCriteresRecherche(command: ModifierCriteresRechercheCommand): Future[Unit] =
     execute(command.id, _.modifierCriteres(command))
 
+  def modifierProfil(command: ModifierProfilPEConnectCommand): Future[Unit] =
+    execute(command.id, _.modifierProfilPEConnect(command))
+
   private def execute(candidatId: CandidatId, f: Candidat => List[Event]): Future[Unit] =
     candidatRepository.getById(candidatId).map(candidat =>
       candidatRepository.save(candidat, f(candidat))

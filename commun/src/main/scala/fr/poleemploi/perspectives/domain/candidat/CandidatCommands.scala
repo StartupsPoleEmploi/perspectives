@@ -16,3 +16,9 @@ case class ModifierCriteresRechercheCommand(override val id: CandidatId,
                                             etreContacteParOrganismeFormation: Boolean,
                                             etreContacteParAgenceInterim: Boolean,
                                             rayonRecherche: Int) extends Command
+
+case class ModifierProfilPEConnectCommand(override val id: CandidatId,
+                                          nom: String,
+                                          prenom: String,
+                                          email: String,
+                                          genre: Genre) extends Command
