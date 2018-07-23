@@ -15,6 +15,9 @@ class RecruteurCommandHandler(recruteurRepository: RecruteurRepository)
   def modifierProfil(command: ModifierProfilCommand): Future[Unit] =
     execute(command.id, _.modifierProfil(command))
 
+  def modifierProfilPEConnect(command: ModifierProfilPEConnectCommand): Future[Unit] =
+    execute(command.id, _.modifierProfilPEConnect(command))
+
   private def execute(recruteurId: RecruteurId, f: Recruteur => List[Event]): Future[Unit] =
     recruteurRepository.getById(recruteurId).map(recruteur =>
       recruteurRepository.save(recruteur, f(recruteur))

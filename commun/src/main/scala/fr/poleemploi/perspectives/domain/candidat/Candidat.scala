@@ -1,7 +1,7 @@
 package fr.poleemploi.perspectives.domain.candidat
 
 import fr.poleemploi.eventsourcing.{Aggregate, Event}
-import fr.poleemploi.perspectives.domain.Metier
+import fr.poleemploi.perspectives.domain.{Genre, Metier}
 
 class Candidat(override val id: CandidatId,
                override val version: Int,
@@ -49,10 +49,32 @@ class Candidat(override val id: CandidatId,
       ))
     } else Nil
   }
+
+  def modifierProfilPEConnect(command: ModifierProfilPEConnectCommand): List[Event] = {
+    if (!state.estInscrit) {
+      throw new RuntimeException(s"Le candidat ${id.value} n'est pas encore inscrit")
+    }
+
+    if (!state.nom.contains(command.nom) ||
+      !state.prenom.contains(command.prenom) ||
+      !state.email.contains(command.email) ||
+      !state.genre.contains(command.genre)) {
+      List(ProfilCandidatModifiePEConnectEvent(
+        nom = command.nom,
+        prenom = command.prenom,
+        email = command.email,
+        genre = command.genre.code
+      ))
+    } else Nil
+  }
 }
 
 // APPLY
 private[candidat] case class CandidatState(estInscrit: Boolean = false,
+                                           nom: Option[String] = None,
+                                           prenom: Option[String] = None,
+                                           email: Option[String] = None,
+                                           genre: Option[Genre] = None,
                                            rechercheMetierEvalue: Option[Boolean] = None,
                                            rechercheAutreMetier: Option[Boolean] = None,
                                            metiersRecherches: Set[Metier] = Set.empty,
@@ -61,8 +83,21 @@ private[candidat] case class CandidatState(estInscrit: Boolean = false,
                                            rayonRecherche: Option[Int] = None) {
 
   def apply(event: Event): CandidatState = event match {
-    case _: CandidatInscrisEvent =>
-      copy(estInscrit = true)
+    case e: CandidatInscrisEvent =>
+      copy(
+        estInscrit = true,
+        nom = Some(e.nom),
+        prenom = Some(e.prenom),
+        email = Some(e.email),
+        genre = e.genre.flatMap(Genre.from)
+      )
+    case e: ProfilCandidatModifiePEConnectEvent =>
+      copy(
+        nom = Some(e.nom),
+        prenom = Some(e.prenom),
+        email = Some(e.email),
+        genre = Genre.from(e.genre)
+      )
     case e: CriteresRechercheModifiesEvent =>
       copy(
         rechercheMetierEvalue = Some(e.rechercheMetierEvalue),

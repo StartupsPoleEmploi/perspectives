@@ -6,7 +6,7 @@ import authentification.infra.peconnect._
 import authentification.infra.play._
 import authentification.model.CandidatAuthentifie
 import conf.WebAppConfig
-import fr.poleemploi.perspectives.domain.candidat.{CandidatCommandHandler, CandidatId, InscrireCandidatCommand}
+import fr.poleemploi.perspectives.domain.candidat.{CandidatCommandHandler, CandidatId, InscrireCandidatCommand, ModifierProfilPEConnectCommand}
 import javax.inject.{Inject, Singleton}
 import play.api.Logger
 import play.api.mvc._
@@ -70,7 +70,8 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       _ <- Either.cond(peConnectFacade.verifyNonce(oauthTokens, accessTokenResponse.nonce), (), "La comparaison du nonce a échoué").toFuture
       _ <- peConnectFacade.validateAccessToken(accessTokenResponse)
       candidatInfos <- peConnectFacade.getInfosCandidat(accessTokenResponse.accessToken)
-      candidatId <- inscrire(candidatInfos)
+      optCandidat <- peConnectFacade.findCandidat(candidatInfos.peConnectId)
+      candidatId <- optCandidat.map(c => mettreAJour(c, candidatInfos)).getOrElse(inscrire(candidatInfos))
     } yield {
       val candidatAuthentifie = CandidatAuthentifie(
         candidatId = candidatId.value,
@@ -108,25 +109,33 @@ class PEConnectController @Inject()(cc: ControllerComponents,
     }
   }
 
-  private def inscrire(peConnectCandidatInfos: PEConnectCandidatInfos): Future[CandidatId] =
-    for {
-      optCandidat <- peConnectFacade.findCandidat(peConnectCandidatInfos.peConnectId)
-      candidatId <- optCandidat.map(candidat => Future(CandidatId(candidat.candidatId)))
-        .getOrElse {
-          val candidatId = CandidatId(UUID.randomUUID().toString)
-          val command = InscrireCandidatCommand(
-            id = candidatId,
-            nom = peConnectCandidatInfos.nom,
-            prenom = peConnectCandidatInfos.prenom,
-            genre = peConnectCandidatInfos.genre,
-            email = peConnectCandidatInfos.email
-          )
-          candidatCommandHandler.inscrire(command)
-            .flatMap(_ => peConnectFacade.saveCandidat(CandidatPEConnect(
-              candidatId = candidatId.value,
-              peConnectId = peConnectCandidatInfos.peConnectId
-            )))
-            .map(_ => candidatId)
-        }
-    } yield candidatId
+  private def inscrire(peConnectCandidatInfos: PEConnectCandidatInfos): Future[CandidatId] = {
+    val candidatId = CandidatId(UUID.randomUUID().toString)
+    val command = InscrireCandidatCommand(
+      id = candidatId,
+      nom = peConnectCandidatInfos.nom,
+      prenom = peConnectCandidatInfos.prenom,
+      genre = peConnectCandidatInfos.genre,
+      email = peConnectCandidatInfos.email
+    )
+    candidatCommandHandler.inscrire(command)
+      .flatMap(_ => peConnectFacade.saveCandidat(CandidatPEConnect(
+        candidatId = candidatId.value,
+        peConnectId = peConnectCandidatInfos.peConnectId
+      )))
+      .map(_ => candidatId)
+  }
+
+  private def mettreAJour(candidatPEConnect: CandidatPEConnect,
+                          peConnectCandidatInfos: PEConnectCandidatInfos): Future[CandidatId] = {
+    val candidatId = CandidatId(candidatPEConnect.candidatId)
+    val command = ModifierProfilPEConnectCommand(
+      id = candidatId,
+      nom = peConnectCandidatInfos.nom,
+      prenom = peConnectCandidatInfos.prenom,
+      genre = peConnectCandidatInfos.genre,
+      email = peConnectCandidatInfos.email
+    )
+    candidatCommandHandler.modifierProfil(command).map(_ => candidatId)
+  }
 }

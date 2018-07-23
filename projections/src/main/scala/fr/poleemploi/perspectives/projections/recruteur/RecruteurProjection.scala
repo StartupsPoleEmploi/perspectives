@@ -4,8 +4,8 @@ import java.time.ZonedDateTime
 
 import fr.poleemploi.cqrs.projection.Projection
 import fr.poleemploi.eventsourcing.{AggregateId, Event}
-import fr.poleemploi.perspectives.domain.{Genre, NumeroTelephone}
 import fr.poleemploi.perspectives.domain.recruteur._
+import fr.poleemploi.perspectives.domain.{Genre, NumeroTelephone}
 import fr.poleemploi.perspectives.projections.infra.PostgresDriver
 import slick.jdbc.JdbcBackend.Database
 
@@ -34,6 +34,7 @@ class RecruteurProjection(val driver: PostgresDriver,
   override def onEvent(aggregateId: AggregateId): ReceiveEvent = {
     case e: RecruteurInscrisEvent => onRecruteurInscrisEvent(aggregateId, e)
     case e: ProfilModifieEvent => onProfilModifieEvent(aggregateId, e)
+    case e: ProfilRecruteurModifiePEConnectEvent => onProfilPEConnectModifieEvent(aggregateId, e)
   }
 
   import driver.api._
@@ -100,6 +101,21 @@ class RecruteurProjection(val driver: PostgresDriver,
       Some(event.numeroSiret),
       Some(event.numeroTelephone),
       Some(event.contactParCandidats)
+    ))
+
+    database.run(updateAction).map(_ => ())
+  }
+
+  private def onProfilPEConnectModifieEvent(aggregateId: AggregateId,
+                                           event: ProfilRecruteurModifiePEConnectEvent): Future[Unit] = {
+    val query = for {
+      r <- recruteurTable if r.recruteurId === aggregateId.value
+    } yield (r.nom, r.prenom, r.email, r.genre)
+    val updateAction = query.update((
+      event.nom,
+      event.prenom,
+      event.email,
+      event.genre
     ))
 
     database.run(updateAction).map(_ => ())

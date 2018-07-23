@@ -19,3 +19,9 @@ case class CriteresRechercheModifiesEvent(rechercheMetierEvalue: Boolean,
                                           etreContacteParAgenceInterim: Boolean,
                                           rayonRecherche: Int,
                                           date: ZonedDateTime = ZonedDateTime.now()) extends CandidatEvent
+
+case class ProfilCandidatModifiePEConnectEvent(nom: String,
+                                               prenom: String,
+                                               email: String,
+                                               genre: String,
+                                               date: ZonedDateTime = ZonedDateTime.now()) extends CandidatEvent

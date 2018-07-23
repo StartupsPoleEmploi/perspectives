@@ -4,8 +4,8 @@ import java.time.ZonedDateTime
 
 import fr.poleemploi.cqrs.projection.Projection
 import fr.poleemploi.eventsourcing.{AggregateId, Event}
+import fr.poleemploi.perspectives.domain.candidat.{CandidatEvent, CandidatInscrisEvent, CriteresRechercheModifiesEvent, ProfilCandidatModifiePEConnectEvent}
 import fr.poleemploi.perspectives.domain.{Genre, Metier}
-import fr.poleemploi.perspectives.domain.candidat.{CandidatEvent, CandidatInscrisEvent, CriteresRechercheModifiesEvent}
 import fr.poleemploi.perspectives.projections.infra.PostgresDriver
 import slick.jdbc.JdbcBackend.Database
 
@@ -33,16 +33,9 @@ class CandidatProjection(val driver: PostgresDriver,
   override def isReplayable: Boolean = true
 
   override def onEvent(aggregateId: AggregateId): ReceiveEvent = {
-    case e: CandidatInscrisEvent =>
-      onCandidatInscrisEvent(
-        aggregateId = aggregateId,
-        event = e
-      )
-    case e: CriteresRechercheModifiesEvent =>
-      onCriteresRechercheModifiesEvent(
-        aggregateId = aggregateId,
-        event = e
-      )
+    case e: CandidatInscrisEvent => onCandidatInscrisEvent(aggregateId, e)
+    case e: ProfilCandidatModifiePEConnectEvent => onProfilPEConnectModifieEvent(aggregateId, e)
+    case e: CriteresRechercheModifiesEvent => onCriteresRechercheModifiesEvent(aggregateId, e)
   }
 
   import driver.api._
@@ -99,6 +92,21 @@ class CandidatProjection(val driver: PostgresDriver,
         c => (c.candidatId, c.nom, c.prenom, c.genre, c.email, c.metiersRecherches, c.dateInscription))
         += (aggregateId.value, event.nom, event.prenom, event.genre, event.email, Nil, event.date))
       .map(_ => ())
+
+  private def onProfilPEConnectModifieEvent(aggregateId: AggregateId,
+                                           event: ProfilCandidatModifiePEConnectEvent): Future[Unit] = {
+    val query = for {
+      c <- candidatTable if c.candidatId === aggregateId.value
+    } yield (c.nom, c.prenom, c.email, c.genre)
+    val updateAction = query.update((
+      event.nom,
+      event.prenom,
+      event.email,
+      Some(event.genre)
+    ))
+
+    database.run(updateAction).map(_ => ())
+  }
 
   private def onCriteresRechercheModifiesEvent(aggregateId: AggregateId,
                                                event: CriteresRechercheModifiesEvent): Future[Unit] = {
