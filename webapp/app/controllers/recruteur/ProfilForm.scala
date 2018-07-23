@@ -1,6 +1,6 @@
 package controllers.recruteur
 
-import fr.poleemploi.perspectives.domain.NumeroTelephone
+import controllers.FormHelpers
 import fr.poleemploi.perspectives.domain.recruteur.NumeroSiret
 import play.api.data.Form
 import play.api.data.Forms._
@@ -24,21 +24,12 @@ object ProfilForm {
       }
   })
 
-  val numeroTelephoneConstraint: Constraint[String] = Constraint("constraint.numeroTelephone")({
-    text =>
-      if (NumeroTelephone.from(text).isDefined) {
-        Valid
-      } else {
-        Invalid(Seq(ValidationError("constraint.numeroTelephone")))
-      }
-  })
-
   val form = Form(
     mapping(
       "typeRecruteur" -> nonEmptyText,
       "raisonSociale" -> nonEmptyText,
       "numeroSiret" -> nonEmptyText.verifying(numeroSiretConstraint),
-      "numeroTelephone" -> nonEmptyText.verifying(numeroTelephoneConstraint),
+      "numeroTelephone" -> nonEmptyText.verifying(FormHelpers.numeroTelephoneConstraint),
       "contactParCandidats" -> nonEmptyText
     )(ProfilForm.apply)(ProfilForm.unapply)
   )
