@@ -36,8 +36,8 @@ object Settings {
 
   // Configuration spécifique de la publication pour une appli Play!
   val playPublishSettings: Seq[Setting[_]] = publishSettings ++ Seq(
+    sources in (Compile, doc) := Seq.empty,
     publishArtifact in(Compile, packageBin) := false,
-    publishArtifact in(Compile, packageDoc) := false,
-    publishArtifact in(Compile, packageSrc) := true
+    publishArtifact in(Compile, packageDoc) := false
   )
 }
