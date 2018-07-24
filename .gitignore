@@ -7,3 +7,4 @@ project/project/
 target/
 webapp/public/
 webapp/conf/application-*.conf
+.DS_STORE
