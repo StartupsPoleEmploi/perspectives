@@ -92,6 +92,7 @@
 
   .commentCaMarcheArrierePlan {
     background: linear-gradient(323.84deg, #75a8d3 0%, #6a88cb 100%);
+    padding: 0 0 50px;
   }
   .commentCaMarche {
     @include make-container();
@@ -108,6 +109,10 @@
       padding: 3rem 0 3rem 0;
       margin: 0;
     }
+  }
+
+  .commentCaMarcheActions {
+    text-align: center;
   }
 
   .etapes {

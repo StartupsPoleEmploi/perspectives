@@ -14,7 +14,7 @@
     background-color: #6A89CC;
     font-size: 1.4em;
     font-weight: 700;
-    letter-spacing: -0.92px;
+    letter-spacing: -0.90px;
     line-height: 1.5em;
     border: 1px solid transparent;
     border-radius: 10px;
@@ -41,6 +41,14 @@
     &--petit {
       font-size: 1.3em;
       font-weight: 300;
+    }
+
+    &--blanc {
+      color: #6A89CC;
+      background-color: white;
+      &:hover {
+        color: #6A89CC;
+      }
     }
   }
 
