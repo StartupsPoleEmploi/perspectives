@@ -1,7 +1,7 @@
 package conf
 
 import authentification.infra.peconnect.{OAuthConfig, PEConnectCandidatConfig, PEConnectRecruteurConfig}
-import fr.poleemploi.perspectives.infra.Environnement
+import fr.poleemploi.perspectives.infra.{BuildInfo, Environnement}
 import fr.poleemploi.perspectives.projections.candidat.SlackCandidatConfig
 import play.api.Configuration
 
@@ -11,6 +11,7 @@ class WebAppConfig(configuration: Configuration) {
   val useSlackNotificationCandidat: Boolean = configuration.getOptional[Boolean]("useSlackNotificationCandidat").getOrElse(true)
 
   val environnement: Environnement = Environnement.from(configuration.get[String]("environnement"))
+  val version: String = BuildInfo.version
 
   val oauthConfig = OAuthConfig(
     clientId = configuration.get[String]("peconnect.oauth2.clientId"),

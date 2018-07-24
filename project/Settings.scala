@@ -1,20 +1,26 @@
 import sbt.Keys._
 import sbt.{Resolver, _}
+import sbtbuildinfo.{BuildInfoKey, BuildInfoKeys}
 
 object Settings {
 
-  val settings: Seq[Setting[_]] = Seq(
+  val commonSettings: Seq[Setting[_]] = Seq(
     organization := "fr.poleemploi.perspectives",
     scalaVersion := "2.12.4"
   )
 
+  val buildInfoSettings: Seq[Setting[_]] = Seq(
+    BuildInfoKeys.buildInfoKeys := Seq[BuildInfoKey](version),
+    BuildInfoKeys.buildInfoPackage := "fr.poleemploi.perspectives.infra"
+  )
+
   // Configuration sans publication
-  val noPublishSettings: Seq[Setting[_]] = settings ++ Seq(
+  val noPublishSettings: Seq[Setting[_]] = Seq(
     skip in publish := true
   )
 
   // Configuration générale de la publication
-  val publishSettings: Seq[Setting[_]] = settings ++ Seq(
+  val publishSettings: Seq[Setting[_]] = Seq(
     publishArtifact in(Compile, packageBin) := true,
     publishArtifact in(Compile, packageDoc) := true,
     publishArtifact in(Compile, packageSrc) := true,
