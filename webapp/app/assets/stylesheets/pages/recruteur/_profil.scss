@@ -129,10 +129,7 @@
     min-height: 36px;
     padding-top: 5px;
     cursor: pointer;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+    @include userSelect(none);
 
     font-size: 1em;
     font-weight: 600;

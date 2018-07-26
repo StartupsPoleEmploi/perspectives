@@ -134,10 +134,7 @@
   }
 
   .menuNavigationHeader {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+    @include userSelect(none);
     cursor: pointer;
     text-align: center;
 
@@ -204,10 +201,7 @@
       display: none;
     }
 
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+    @include userSelect(none);
 
     &-item {
       @include media-breakpoint-up(md) {

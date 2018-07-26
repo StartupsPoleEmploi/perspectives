@@ -211,10 +211,7 @@
     cursor: pointer;
     border: 1px solid #334051;
     border-radius: 4px;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+    @include userSelect(none);
   }
 
   .checkmark {
@@ -236,10 +233,7 @@
     color: #334051;
     border: 1px solid #334051;
     border-radius: 4px;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+    @include userSelect(none);
 
     &-avec-focus {
       color: white;
