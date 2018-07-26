@@ -3,6 +3,7 @@ package fr.poleemploi.perspectives.domain.candidat
 import java.nio.file.Path
 
 import fr.poleemploi.cqrs.command.Command
+import fr.poleemploi.perspectives.domain.candidat.cv.CVId
 import fr.poleemploi.perspectives.domain.{Genre, Metier, NumeroTelephone}
 
 
@@ -29,7 +30,13 @@ case class ModifierProfilPEConnectCommand(override val id: CandidatId,
 case class ModifierNumeroTelephoneCommand(override val id: CandidatId,
                                           numeroTelephone: NumeroTelephone) extends Command
 
-case class ModifierCVCommand(override val id: CandidatId,
-                             nomFichier: String,
-                             typeMedia: String,
-                             path: Path) extends Command
+case class AjouterCVCommand(override val id: CandidatId,
+                            nomFichier: String,
+                            typeMedia: String,
+                            path: Path) extends Command
+
+case class RemplacerCVCommand(override val id: CandidatId,
+                              cvId: CVId,
+                              nomFichier: String,
+                              typeMedia: String,
+                              path: Path) extends Command

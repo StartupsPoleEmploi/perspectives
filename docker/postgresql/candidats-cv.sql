@@ -6,7 +6,6 @@ CREATE TABLE candidats_cv
   nom_fichier   CHARACTER VARYING(255) NOT NULL,
   fichier bytea NOT NULL,
   type_media   CHARACTER VARYING(255) NOT NULL,
-  hash   CHARACTER VARYING(255) NOT NULL,
   date TIMESTAMP with time zone,
   CONSTRAINT candidats_cv_pk PRIMARY KEY (id),
   UNIQUE (candidat_id)

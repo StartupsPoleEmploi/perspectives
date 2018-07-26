@@ -4,7 +4,6 @@ import com.google.inject.{AbstractModule, Inject, Provides, Singleton}
 import fr.poleemploi.eventsourcing.{EventHandler, EventPublisher}
 import fr.poleemploi.perspectives.domain.candidat.cv.CVService
 import fr.poleemploi.perspectives.infra.sql.PostgresDriver
-import fr.poleemploi.perspectives.projections.candidat.cv.CvProjection
 import fr.poleemploi.perspectives.projections.candidat.{CandidatNotificationSlackProjection, CandidatProjection, CandidatQueryHandler}
 import fr.poleemploi.perspectives.projections.recruteur.{RecruteurProjection, RecruteurQueryHandler}
 import net.codingwell.scalaguice.ScalaModule
@@ -43,18 +42,11 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
-  def cvProjection(cvService: CVService): CvProjection =
-    new CvProjection(
-      cvService = cvService
-    )
-
-  @Provides
-  @Singleton
   def candidatQueryHandler(candidatProjection: CandidatProjection,
-                           cvProjection: CvProjection): CandidatQueryHandler =
+                           cvService: CVService): CandidatQueryHandler =
     new CandidatQueryHandler(
       candidatProjection = candidatProjection,
-      cvProjection = cvProjection
+      cvService = cvService
     )
 
   @Provides

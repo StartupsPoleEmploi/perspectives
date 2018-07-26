@@ -24,8 +24,11 @@ class CandidatCommandHandler(candidatRepository: CandidatRepository,
   def modifierProfil(command: ModifierProfilPEConnectCommand): Future[Unit] =
     execute(command.id, c => Future(c.modifierProfilPEConnect(command)))
 
-  def modifierCV(command: ModifierCVCommand): Future[Unit] =
-    execute(command.id, _.modifierCV(command, cvService))
+  def ajouterCV(command: AjouterCVCommand): Future[Unit] =
+    execute(command.id, _.ajouterCV(command, cvService))
+
+  def remplacerCV(command: RemplacerCVCommand): Future[Unit] =
+    execute(command.id, _.remplacerCV(command, cvService))
 
   private def execute(candidatId: CandidatId, f: Candidat => Future[List[Event]]): Future[Unit] =
     for {

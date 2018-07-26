@@ -15,16 +15,11 @@ trait CVService {
            path: Path): Future[Unit]
 
   def update(cvId: CVId,
-             candidatId: CandidatId,
              nomFichier: String,
              typeMedia: String,
              path: Path): Future[Unit]
 
-  def findByCandidat(candidatId: CandidatId): Future[Option[CVCandidat]]
+  def findDetailsCvByCandidat(candidatId: CandidatId): Future[Option[DetailsCV]]
 
-  def findCvByCandidat(candidatId: CandidatId): Future[Option[CV]]
-
-  def getFichierCV(cvId: CVId): Future[FichierCV]
-
-  def getByCandidat(candidatId: CandidatId): Future[FichierCV]
+  def getCvByCandidat(candidatId: CandidatId): Future[CV]
 }

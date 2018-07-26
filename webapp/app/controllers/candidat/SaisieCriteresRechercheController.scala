@@ -3,16 +3,16 @@ package controllers.candidat
 import authentification.infra.play.{CandidatAuthentifieAction, CandidatAuthentifieRequest}
 import conf.WebAppConfig
 import fr.poleemploi.perspectives.domain.candidat._
+import fr.poleemploi.perspectives.domain.candidat.cv.CVId
 import fr.poleemploi.perspectives.domain.{Metier, NumeroTelephone}
-import fr.poleemploi.perspectives.projections.candidat.{CandidatQueryHandler, GetCandidatQuery, GetDetailsCVByCandidat}
+import fr.poleemploi.perspectives.projections.candidat.{CandidatQueryHandler, FindDetailsCVByCandidatQuery, GetCandidatQuery}
 import javax.inject.Inject
 import play.api.Logger
 import play.api.libs.Files
 import play.api.mvc._
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 
 class SaisieCriteresRechercheController @Inject()(components: ControllerComponents,
                                                   implicit val webAppConfig: WebAppConfig,
@@ -27,7 +27,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
 
       for {
         candidatDto <- candidatQueryHandler.getCandidat(GetCandidatQuery(candidatAuthentifieRequest.candidatId))
-        detailsCvDto <- candidatQueryHandler.getDetailsCvCandidat(GetDetailsCVByCandidat(candidatAuthentifieRequest.candidatId))
+        detailsCvDto <- candidatQueryHandler.findDetailsCvByCandidat(FindDetailsCVByCandidatQuery(candidatAuthentifieRequest.candidatId))
       } yield {
         val filledForm = SaisieCriteresRechercheForm.form.fill(
           SaisieCriteresRechercheForm(
@@ -49,51 +49,51 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
     }(candidatAuthentifieRequest)
   }
 
-  // La taille est validée au niveau du parser pour refuser la requête et ne pas enregistrer le fichier en cas de dépassement
   def modifierCriteresRecherche(): Action[MultipartFormData[Files.TemporaryFile]] =
     candidatAuthentifieAction.async(parse.multipartFormData(5L * 1000L * 1000L)) { candidatAuthentifieRequest: CandidatAuthentifieRequest[MultipartFormData[Files.TemporaryFile]] =>
       messagesAction.async(parse.multipartFormData) { implicit messagesRequest: MessagesRequest[MultipartFormData[Files.TemporaryFile]] =>
-        // TODO
-        val detailsCvDto = Await.result(candidatQueryHandler.getDetailsCvCandidat(GetDetailsCVByCandidat(candidatAuthentifieRequest.candidatId)), 5.seconds)
-        val candidatAvecCv = detailsCvDto.isDefined
-        val cvFourni = messagesRequest.body.file("cv").exists(_.ref.path.toFile.length() > 0)
+        val cv = messagesRequest.body.file("cv").filter(_.ref.path.toFile.length() > 0)
         val typeMediaValide = messagesRequest.body.file("cv").flatMap(_.contentType).exists(SaisieCriteresRechercheForm.mediaTypesValides.contains)
 
-        val form = if (!cvFourni && !candidatAvecCv) {
-          SaisieCriteresRechercheForm.form.withError("cv", "error.required")
-        } else if (cvFourni && !typeMediaValide) {
+        val form = if (cv.isDefined && !typeMediaValide) {
           SaisieCriteresRechercheForm.form.withError("cv", "error.typeMediaInvalide")
         } else SaisieCriteresRechercheForm.form
 
-        form.bindFromRequest.fold(
-          formWithErrors => {
-            Future.successful(BadRequest(views.html.candidat.saisieCriteresRecherche(
-              saisieCriteresRechercheForm = formWithErrors,
-              detailsCVDto = detailsCvDto,
-              candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie)))
-          },
-          saisieCriteresRechercheForm => {
-            val candidatId = CandidatId(candidatAuthentifieRequest.candidatId)
-            val modifierCVCommand = buildModifierCvCommand(candidatId, messagesRequest.body.file("cv").get)
-            val modifierNumeroTelephoneCommand = buildModifierNumeroTelephoneCommand(candidatId, saisieCriteresRechercheForm)
-            val modifierCriteresCommand = buildModifierCriteresRechercheCommand(candidatId, saisieCriteresRechercheForm)
+        candidatQueryHandler.findDetailsCvByCandidat(FindDetailsCVByCandidatQuery(candidatAuthentifieRequest.candidatId))
+          .flatMap(detailsCvDto => {
+            form.bindFromRequest.fold(
+              formWithErrors => {
+                Future.successful(BadRequest(views.html.candidat.saisieCriteresRecherche(
+                  saisieCriteresRechercheForm = formWithErrors,
+                  detailsCVDto = detailsCvDto,
+                  candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie)
+                ))
+              },
+              saisieCriteresRechercheForm => {
+                val candidatId = CandidatId(candidatAuthentifieRequest.candidatId)
+                val modifierNumeroTelephoneCommand = buildModifierNumeroTelephoneCommand(candidatId, saisieCriteresRechercheForm)
+                val modifierCriteresCommand = buildModifierCriteresRechercheCommand(candidatId, saisieCriteresRechercheForm)
 
-            (for {
-              _ <- candidatCommandHandler.modifierCriteresRechercheEtTelephone(modifierCriteresCommand, modifierNumeroTelephoneCommand)
-              _ <- candidatCommandHandler.modifierCV(modifierCVCommand)
-            } yield ()).map(_ =>
-              Redirect(routes.LandingController.landing()).flashing(
-                ("message_succes", "Merci, vos criteres ont bien été pris en compte")
-              ))
-              .recoverWith {
-                case t: Throwable =>
-                  Logger.error("Erreur lors de l'enregistrement des critères", t)
-                  Future(Redirect(routes.LandingController.landing()).flashing(
-                    ("message_erreur", "Une erreur s'est produite lors de l'enregistrement, veuillez réessayer ultérieurement")
+                (for {
+                  _ <- candidatCommandHandler.modifierCriteresRechercheEtTelephone(modifierCriteresCommand, modifierNumeroTelephoneCommand)
+                  _ <- cv.map(cv =>
+                    detailsCvDto
+                      .map(detailsCv => candidatCommandHandler.remplacerCV(buildRemplacerCvCommand(candidatId, detailsCv.id, cv)))
+                      .getOrElse(candidatCommandHandler.ajouterCV(buildAjouterCvCommand(candidatId, cv)))
+                  ) getOrElse Future.successful(())
+                } yield ()).map(_ =>
+                  Redirect(routes.LandingController.landing()).flashing(
+                    ("message_succes", "Merci, vos criteres ont bien été pris en compte")
                   ))
               }
-          }
-        )
+            )
+          }).recoverWith {
+          case t: Throwable =>
+            Logger.error("Erreur lors de l'enregistrement des critères", t)
+            Future(Redirect(routes.LandingController.landing()).flashing(
+              ("message_erreur", "Une erreur s'est produite lors de l'enregistrement, veuillez réessayer ultérieurement")
+            ))
+        }
       }(candidatAuthentifieRequest)
     }
 
@@ -120,9 +120,21 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
       numeroTelephone = NumeroTelephone.from(saisieCriteresRechercheForm.numeroTelephone).get
     )
 
-  private def buildModifierCvCommand(candidatId: CandidatId, cv: MultipartFormData.FilePart[Files.TemporaryFile]): ModifierCVCommand =
-    ModifierCVCommand(
+  private def buildAjouterCvCommand(candidatId: CandidatId,
+                                    cv: MultipartFormData.FilePart[Files.TemporaryFile]): AjouterCVCommand =
+    AjouterCVCommand(
       id = candidatId,
+      nomFichier = cv.filename,
+      typeMedia = cv.contentType.getOrElse(""),
+      path = cv.ref.path
+    )
+
+  private def buildRemplacerCvCommand(candidatId: CandidatId,
+                                      cvId: CVId,
+                                      cv: MultipartFormData.FilePart[Files.TemporaryFile]): RemplacerCVCommand =
+    RemplacerCVCommand(
+      id = candidatId,
+      cvId = cvId,
       nomFichier = cv.filename,
       typeMedia = cv.contentType.getOrElse(""),
       path = cv.ref.path

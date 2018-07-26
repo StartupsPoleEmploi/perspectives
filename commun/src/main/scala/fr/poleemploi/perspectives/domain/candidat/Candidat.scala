@@ -3,7 +3,7 @@ package fr.poleemploi.perspectives.domain.candidat
 import java.util.UUID
 
 import fr.poleemploi.eventsourcing.{Aggregate, Event}
-import fr.poleemploi.perspectives.domain.candidat.cv.{CVCandidat, CVId, CVService}
+import fr.poleemploi.perspectives.domain.candidat.cv.{CVId, CVService}
 import fr.poleemploi.perspectives.domain.{Genre, Metier, NumeroTelephone}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -86,34 +86,33 @@ class Candidat(override val id: CandidatId,
     } else Nil
   }
 
-  def modifierCV(command: ModifierCVCommand,
-                 cvService: CVService): Future[List[Event]] = {
+  def ajouterCV(command: AjouterCVCommand,
+                cvService: CVService): Future[List[Event]] = {
     if (!state.estInscrit) {
       Future.failed(throw new RuntimeException(s"Le candidat ${id.value} n'est pas encore inscrit"))
     }
 
-    def ajout: Future[Unit] =
-      cvService.save(
-        cvId = CVId(UUID.randomUUID().toString),
-        candidatId = command.id,
-        nomFichier = command.nomFichier,
-        typeMedia = command.typeMedia,
-        path = command.path
-      )
+    cvService.save(
+      cvId = CVId(UUID.randomUUID().toString),
+      candidatId = command.id,
+      nomFichier = command.nomFichier,
+      typeMedia = command.typeMedia,
+      path = command.path
+    ).map(_ => Nil)
+  }
 
-    def mettreAJour(cvCandidat: CVCandidat): Future[Unit] =
-      cvService.update(
-        cvId = cvCandidat.cvId,
-        candidatId = cvCandidat.candidatId,
-        nomFichier = command.nomFichier,
-        typeMedia = command.typeMedia,
-        path = command.path
-      )
+  def remplacerCV(command: RemplacerCVCommand,
+                  cvService: CVService): Future[List[Event]] = {
+    if (!state.estInscrit) {
+      Future.failed(throw new RuntimeException(s"Le candidat ${id.value} n'est pas encore inscrit"))
+    }
 
-    for {
-      optCvCandidat <- cvService.findByCandidat(command.id)
-      _ <- optCvCandidat.map(mettreAJour).getOrElse(ajout)
-    } yield Nil
+    cvService.update(
+      cvId = command.cvId,
+      nomFichier = command.nomFichier,
+      typeMedia = command.typeMedia,
+      path = command.path
+    ).map(_ => Nil)
   }
 }
 
