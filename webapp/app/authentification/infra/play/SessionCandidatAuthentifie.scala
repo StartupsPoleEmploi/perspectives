@@ -1,6 +1,7 @@
 package authentification.infra.play
 
 import authentification.model.CandidatAuthentifie
+import fr.poleemploi.perspectives.domain.candidat.CandidatId
 import play.api.mvc.Session
 
 object SessionCandidatAuthentifie {
@@ -12,7 +13,7 @@ object SessionCandidatAuthentifie {
 
   def get(session: Session): Option[CandidatAuthentifie] =
     for {
-      candidatId <- session.get(candidatIdAttribute)
+      candidatId <- session.get(candidatIdAttribute).map(CandidatId)
       nom <- session.get(nomAttribute)
       prenom <- session.get(prenomAttribute)
     } yield CandidatAuthentifie(
@@ -23,7 +24,7 @@ object SessionCandidatAuthentifie {
 
   def set(candidatAuthentifie: CandidatAuthentifie,
           session: Session): Session =
-    session + (candidatIdAttribute -> candidatAuthentifie.candidatId) + (nomAttribute -> candidatAuthentifie.nom) + (prenomAttribute -> candidatAuthentifie.prenom)
+    session + (candidatIdAttribute -> candidatAuthentifie.candidatId.value) + (nomAttribute -> candidatAuthentifie.nom) + (prenomAttribute -> candidatAuthentifie.prenom)
 
   def remove(session: Session): Session =
     session - candidatIdAttribute - nomAttribute - prenomAttribute

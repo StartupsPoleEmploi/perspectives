@@ -1,6 +1,7 @@
 package authentification.infra.play
 
 import authentification.model.CandidatAuthentifie
+import fr.poleemploi.perspectives.domain.candidat.CandidatId
 import javax.inject.Inject
 import play.api.http.Status.UNAUTHORIZED
 import play.api.mvc._
@@ -10,7 +11,7 @@ import scala.concurrent.{ExecutionContext, Future}
 case class CandidatAuthentifieRequest[A](candidatAuthentifie: CandidatAuthentifie,
                                          request: Request[A]) extends WrappedRequest[A](request) {
 
-  def candidatId: String = candidatAuthentifie.candidatId
+  def candidatId: CandidatId = candidatAuthentifie.candidatId
 }
 
 

@@ -25,7 +25,7 @@ class InscrireCandidatSpec extends WordSpec
 
   before {
     candidatInscrisEvent = mock[CandidatInscrisEvent]
-    when(candidatInscrisEvent.genre) thenReturn Some(Genre.HOMME.code)
+    when(candidatInscrisEvent.genre) thenReturn Some(Genre.HOMME)
   }
 
   "inscrire" should {
@@ -75,7 +75,7 @@ class InscrireCandidatSpec extends WordSpec
       event.nom mustBe commande.nom
       event.prenom mustBe commande.prenom
       event.email mustBe commande.email
-      event.genre mustBe Some(commande.genre.code)
+      event.genre mustBe Some(commande.genre)
     }
   }
 

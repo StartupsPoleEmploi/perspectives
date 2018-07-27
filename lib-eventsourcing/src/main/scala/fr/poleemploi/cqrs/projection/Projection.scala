@@ -14,7 +14,7 @@ trait Projection {
   type ReceiveEvent = PartialFunction[Event, Future[Unit]]
 
   /**
-    * @return La liste des classes d'evenement à écouter
+    * @return La liste des classes d'événement à écouter
     */
   def listenTo: List[Class[_ <: Event]]
 

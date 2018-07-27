@@ -11,8 +11,8 @@ import slick.jdbc.JdbcBackend.Database
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-private[infra] case class CVRecord(candidatId: String,
-                                   cvId: String,
+private[infra] case class CVRecord(candidatId: CandidatId,
+                                   cvId: CVId,
                                    nomFichier: String,
                                    typeMedia: String,
                                    fichier: Array[Byte],
@@ -27,9 +27,9 @@ class CVBddService(val driver: PostgresDriver,
 
     def id = column[Long]("id", O.PrimaryKey)
 
-    def candidatId = column[String]("candidat_id")
+    def candidatId = column[CandidatId]("candidat_id")
 
-    def cvId = column[String]("cv_id")
+    def cvId = column[CVId]("cv_id")
 
     def nomFichier = column[String]("nom_fichier")
 
@@ -52,7 +52,7 @@ class CVBddService(val driver: PostgresDriver,
     database
       .run(cvCandidatTable.map(
         c => (c.cvId, c.candidatId, c.nomFichier, c.fichier, c.typeMedia, c.date))
-        += (cvId.value, candidatId.value, nomFichier, Files.readAllBytes(path), typeMedia, ZonedDateTime.now()))
+        += (cvId, candidatId, nomFichier, Files.readAllBytes(path), typeMedia, ZonedDateTime.now()))
       .map(_ => ())
 
   override def update(cvId: CVId,
@@ -60,7 +60,7 @@ class CVBddService(val driver: PostgresDriver,
                       typeMedia: String,
                       path: Path): Future[Unit] = {
     val query = for {
-      c <- cvCandidatTable if c.cvId === cvId.value
+      c <- cvCandidatTable if c.cvId === cvId
     } yield (c.nomFichier, c.fichier, c.typeMedia, c.date)
     val updateAction = query.update((
       nomFichier,
@@ -74,11 +74,11 @@ class CVBddService(val driver: PostgresDriver,
 
   override def findDetailsCvByCandidat(candidatId: CandidatId): Future[Option[DetailsCV]] = {
     val query = cvCandidatTable
-      .filter(c => c.candidatId === candidatId.value)
+      .filter(c => c.candidatId === candidatId)
       .map(c => (c.cvId, c.nomFichier, c.typeMedia, c.date))
 
     database.run(query.result.headOption).map(_.map(c => DetailsCV(
-      id = CVId(c._1),
+      id = c._1,
       nomFichier = c._2,
       typeMedia = c._3,
       date = c._4
@@ -87,10 +87,10 @@ class CVBddService(val driver: PostgresDriver,
 
   override def getCvByCandidat(candidatId: CandidatId): Future[CV] = {
     val query = cvCandidatTable
-      .filter(c => c.candidatId === candidatId.value)
+      .filter(c => c.candidatId === candidatId)
 
     database.run(query.result.head).map(c => CV(
-      id = CVId(c.cvId),
+      id = c.cvId,
       data = c.fichier,
       typeMedia = c.typeMedia,
       nomFichier = c.nomFichier,

@@ -5,9 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.inject.name.Named
 import com.google.inject.{AbstractModule, Provider, Provides, Singleton}
 import fr.poleemploi.eventsourcing.eventstore.{AppendOnlyStore, EventStore}
-import fr.poleemploi.eventsourcing.infra.jackson.EventStoreObjectMapper
-import fr.poleemploi.eventsourcing.infra.sql.{PostgreSQLAppendOnlyStore, PostgresDriver}
+import fr.poleemploi.eventsourcing.infra.jackson.EventStoreObjectMapperBuilder
+import fr.poleemploi.eventsourcing.infra.sql.{PostgreSQLAppendOnlyStore, PostgresDriver => EventSourcingPostgresDriver}
 import fr.poleemploi.eventsourcing.{EventHandler, EventPublisher, LocalEventHandler, LocalEventPublisher}
+import fr.poleemploi.perspectives.infra.jackson.PerspectivesValueObjectModule
+import fr.poleemploi.perspectives.infra.sql.PostgresDriver
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
 import play.api.inject.ApplicationLifecycle
@@ -32,7 +34,7 @@ class InfraModule extends AbstractModule with ScalaModule {
   @Singleton
   @Named("eventStoreObjectMapper")
   def eventObjectMapper: ObjectMapper =
-    EventStoreObjectMapper.mapper
+    EventStoreObjectMapperBuilder(PerspectivesValueObjectModule).build()
 
   @Provides
   @Singleton
@@ -47,7 +49,7 @@ class InfraModule extends AbstractModule with ScalaModule {
   def postgreSqlAppendOnlyStore(database: Database,
                                 @Named("eventStoreObjectMapper") objectMapper: ObjectMapper): PostgreSQLAppendOnlyStore =
     new PostgreSQLAppendOnlyStore(
-      driver = PostgresDriver,
+      driver = EventSourcingPostgresDriver,
       database = database,
       objectMapper = objectMapper
     )

@@ -7,10 +7,10 @@
     if (form("listeMetiersRecherches").indexes.flatMap(i => form("listeMetiersRecherches[%s]".format(i)).value).toSet.contains(code)) "checked" else ""
 }
 
-<input id="listeMetiersRecherches-@index.getOrElse(1)-@metier.code"
+<input id="listeMetiersRecherches-@index.getOrElse(1)-@metier.value"
     name="listeMetiersRecherches[]"
-    type="checkbox" value="@metier.code" @containsMetier(metier.code)/>
-<label class="labelMetierCheckbox" for="listeMetiersRecherches-@index.getOrElse(1)-@metier.code">
+    type="checkbox" value="@metier.value" @containsMetier(metier.value)/>
+<label class="labelMetierCheckbox" for="listeMetiersRecherches-@index.getOrElse(1)-@metier.value">
     <span class="checkmark"></span>
     @metier.label
 </label>

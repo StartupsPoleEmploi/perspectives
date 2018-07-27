@@ -29,7 +29,7 @@ class ModifierCriteresCandidatSpec extends WordSpec
       rechercheMetierEvalue = commande.rechercheMetierEvalue,
       etreContacteParAgenceInterim = commande.etreContacteParAgenceInterim,
       etreContacteParOrganismeFormation = commande.etreContacteParOrganismeFormation,
-      listeMetiersRecherches = commande.metiersRecherches.map(_.code),
+      listeMetiersRecherches = commande.metiersRecherches,
       rayonRecherche = commande.rayonRecherche
     )
 
@@ -37,7 +37,7 @@ class ModifierCriteresCandidatSpec extends WordSpec
 
   before {
     candidatInscrisEvent = mock[CandidatInscrisEvent]
-    when(candidatInscrisEvent.genre) thenReturn Some(Genre.HOMME.code)
+    when(candidatInscrisEvent.genre) thenReturn Some(Genre.HOMME)
   }
 
   "modifierCriteres" should {
@@ -199,7 +199,7 @@ class ModifierCriteresCandidatSpec extends WordSpec
         id = candidatId,
         version = 0,
         events = List(candidatInscrisEvent, criteresRechercheModifieEvent.copy(
-          listeMetiersRecherches = Set(Metier.SERVICE.code)
+          listeMetiersRecherches = Set(Metier.SERVICE)
         ))
       )
 
@@ -229,7 +229,7 @@ class ModifierCriteresCandidatSpec extends WordSpec
       event.etreContacteParAgenceInterim mustBe commande.etreContacteParAgenceInterim
       event.etreContacteParOrganismeFormation mustBe commande.etreContacteParOrganismeFormation
       event.rayonRecherche mustBe commande.rayonRecherche
-      event.listeMetiersRecherches mustBe commande.metiersRecherches.map(_.code)
+      event.listeMetiersRecherches mustBe commande.metiersRecherches
     }
   }
 

@@ -12,7 +12,7 @@ import slick.jdbc.JdbcBackend.Database
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-case class RecruteurDto(recruteurId: String,
+case class RecruteurDto(recruteurId: RecruteurId,
                         nom: String,
                         prenom: String,
                         email: String,
@@ -32,68 +32,69 @@ class RecruteurProjection(val driver: PostgresDriver,
   override def isReplayable: Boolean = true
 
   override def onEvent(aggregateId: AggregateId): ReceiveEvent = {
-    case e: RecruteurInscrisEvent => onRecruteurInscrisEvent(aggregateId, e)
-    case e: ProfilModifieEvent => onProfilModifieEvent(aggregateId, e)
-    case e: ProfilRecruteurModifiePEConnectEvent => onProfilPEConnectModifieEvent(aggregateId, e)
+    // TODO
+    case e: RecruteurInscrisEvent => onRecruteurInscrisEvent(RecruteurId(aggregateId.value), e)
+    case e: ProfilModifieEvent => onProfilModifieEvent(RecruteurId(aggregateId.value), e)
+    case e: ProfilRecruteurModifiePEConnectEvent => onProfilPEConnectModifieEvent(RecruteurId(aggregateId.value), e)
   }
 
   import driver.api._
 
-  class RecruteurTable(tag: Tag) extends Table[RecruteurRecord](tag, "recruteurs") {
+  class RecruteurTable(tag: Tag) extends Table[RecruteurDto](tag, "recruteurs") {
 
     def id = column[Long]("id", O.PrimaryKey)
 
-    def recruteurId = column[String]("recruteur_id")
+    def recruteurId = column[RecruteurId]("recruteur_id")
 
     def nom = column[String]("nom")
 
     def prenom = column[String]("prenom")
 
-    def genre = column[String]("genre")
-
     def email = column[String]("email")
 
-    def typeRecruteur = column[Option[String]]("type_recruteur")
+    def genre = column[Genre]("genre")
+
+    def typeRecruteur = column[Option[TypeRecruteur]]("type_recruteur")
 
     def raisonSociale = column[Option[String]]("raison_sociale")
 
-    def numeroSiret = column[Option[String]]("numero_siret")
+    def numeroSiret = column[Option[NumeroSiret]]("numero_siret")
 
-    def numeroTelephone = column[Option[String]]("numero_telephone")
+    def numeroTelephone = column[Option[NumeroTelephone]]("numero_telephone")
 
     def contactParCandidats = column[Option[Boolean]]("contact_par_candidats")
 
     def dateInscription = column[ZonedDateTime]("date_inscription")
 
-    def * = (recruteurId, nom, prenom, genre, email, typeRecruteur, raisonSociale, numeroSiret, numeroTelephone, contactParCandidats, dateInscription) <> (RecruteurRecord.tupled, RecruteurRecord.unapply)
+    def * = (recruteurId, nom, prenom, email, genre, typeRecruteur, raisonSociale, numeroSiret, numeroTelephone, contactParCandidats, dateInscription) <> (RecruteurDto.tupled, RecruteurDto.unapply)
   }
 
   val recruteurTable = TableQuery[RecruteurTable]
 
-  def getRecruteur(recruteurId: String): Future[RecruteurDto] = {
-    val query = recruteurTable.filter(u => u.recruteurId === recruteurId)
+  def getRecruteur(recruteurId: RecruteurId): Future[RecruteurDto] = {
+    val query = recruteurTable.filter(r => r.recruteurId === recruteurId)
 
-    database.run(query.result.head).map(_.toRecruteurDto)
+    database.run(query.result.head)
   }
 
   def findAllOrderByDateInscription: Future[List[RecruteurDto]] = {
     val query = recruteurTable.sortBy(_.dateInscription.desc)
 
-    database.run(query.result).map(_.toList.map(_.toRecruteurDto))
+    database.run(query.result).map(_.toList)
   }
 
-  private def onRecruteurInscrisEvent(aggregateId: AggregateId,
+  private def onRecruteurInscrisEvent(recruteurId: RecruteurId,
                                       event: RecruteurInscrisEvent): Future[Unit] =
     database
       .run(recruteurTable.map(
         r => (r.recruteurId, r.nom, r.prenom, r.genre, r.email, r.dateInscription))
-        += (aggregateId.value, event.nom, event.prenom, event.genre, event.email, event.date))
+        += (recruteurId, event.nom, event.prenom, event.genre, event.email, event.date))
       .map(_ => ())
 
-  private def onProfilModifieEvent(aggregateId: AggregateId,
+  private def onProfilModifieEvent(recruteurId: RecruteurId,
                                    event: ProfilModifieEvent): Future[Unit] = {
     val query = for {
-      r <- recruteurTable if r.recruteurId === aggregateId.value
+      r <- recruteurTable if r.recruteurId === recruteurId
     } yield (r.typeRecruteur, r.raisonSociale, r.numeroSiret, r.numeroTelephone, r.contactParCandidats)
     val updateAction = query.update((
       Some(event.typeRecruteur),
@@ -106,10 +107,10 @@ class RecruteurProjection(val driver: PostgresDriver,
     database.run(updateAction).map(_ => ())
   }
 
-  private def onProfilPEConnectModifieEvent(aggregateId: AggregateId,
-                                           event: ProfilRecruteurModifiePEConnectEvent): Future[Unit] = {
+  private def onProfilPEConnectModifieEvent(recruteurId: RecruteurId,
+                                            event: ProfilRecruteurModifiePEConnectEvent): Future[Unit] = {
     val query = for {
-      r <- recruteurTable if r.recruteurId === aggregateId.value
+      r <- recruteurTable if r.recruteurId === recruteurId
     } yield (r.nom, r.prenom, r.email, r.genre)
     val updateAction = query.update((
       event.nom,
@@ -120,31 +121,4 @@ class RecruteurProjection(val driver: PostgresDriver,
 
     database.run(updateAction).map(_ => ())
   }
-}
-
-private[recruteur] case class RecruteurRecord(recruteurId: String,
-                                              nom: String,
-                                              prenom: String,
-                                              genre: String,
-                                              email: String,
-                                              typeRecruteur: Option[String],
-                                              raisonSociale: Option[String],
-                                              numeroSiret: Option[String],
-                                              numeroTelephone: Option[String],
-                                              contactParCandidats: Option[Boolean],
-                                              dateInscription: ZonedDateTime) {
-
-  def toRecruteurDto: RecruteurDto = RecruteurDto(
-    recruteurId = recruteurId,
-    nom = nom,
-    prenom = prenom,
-    genre = Genre.from(genre).get,
-    email = email,
-    typeRecruteur = typeRecruteur.flatMap(TypeRecruteur.from),
-    raisonSociale = raisonSociale,
-    numeroSiret = numeroSiret.flatMap(NumeroSiret.from),
-    numeroTelephone = numeroTelephone.flatMap(NumeroTelephone.from),
-    contactParCandidats = contactParCandidats,
-    dateInscription = dateInscription
-  )
 }

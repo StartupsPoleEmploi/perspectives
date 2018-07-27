@@ -21,7 +21,7 @@ class Recruteur(override val id: RecruteurId,
       nom = command.nom,
       prenom = command.prenom,
       email = command.email,
-      genre = command.genre.code
+      genre = command.genre
     ))
   }
 
@@ -37,10 +37,10 @@ class Recruteur(override val id: RecruteurId,
       !state.numeroTelephone.contains(command.numeroTelephone)) {
       List(ProfilModifieEvent(
         raisonSociale = command.raisonSociale,
-        numeroSiret = command.numeroSiret.value,
-        typeRecruteur = command.typeRecruteur.code,
+        numeroSiret = command.numeroSiret,
+        typeRecruteur = command.typeRecruteur,
         contactParCandidats = command.contactParCandidats,
-        numeroTelephone = command.numeroTelephone.value
+        numeroTelephone = command.numeroTelephone
       ))
     } else Nil
   }
@@ -58,7 +58,7 @@ class Recruteur(override val id: RecruteurId,
         nom = command.nom,
         prenom = command.prenom,
         email = command.email,
-        genre = command.genre.code
+        genre = command.genre
       ))
     } else Nil
   }
@@ -82,22 +82,22 @@ private[recruteur] case class RecruteurState(estInscrit: Boolean = false,
         nom = Some(e.nom),
         prenom = Some(e.prenom),
         email = Some(e.email),
-        genre = Genre.from(e.genre)
+        genre = Some(e.genre)
       )
     case e: ProfilModifieEvent =>
       copy(
         raisonSociale = Some(e.raisonSociale),
-        numeroSiret = NumeroSiret.from(e.numeroSiret),
-        typeRecruteur = TypeRecruteur.from(e.typeRecruteur),
+        numeroSiret = Some(e.numeroSiret),
+        typeRecruteur = Some(e.typeRecruteur),
         contactParCandidats = Some(e.contactParCandidats),
-        numeroTelephone = NumeroTelephone.from(e.numeroTelephone)
+        numeroTelephone = Some(e.numeroTelephone)
       )
     case e: ProfilRecruteurModifiePEConnectEvent =>
       copy(
         nom = Some(e.nom),
         prenom = Some(e.prenom),
         email = Some(e.email),
-        genre = Genre.from(e.genre)
+        genre = Some(e.genre)
       )
     case _ => this
   }

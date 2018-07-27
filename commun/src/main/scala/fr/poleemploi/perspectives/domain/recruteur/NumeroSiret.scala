@@ -2,13 +2,15 @@ package fr.poleemploi.perspectives.domain.recruteur
 
 import java.util.regex.Pattern
 
+import fr.poleemploi.eventsourcing.StringValueObject
+
 /**
   * Value Object NumeroSiret
   */
-case class NumeroSiret(value: String)
+case class NumeroSiret(value: String) extends StringValueObject
 
 /**
-  * Factory methods pour construire et valider un NumeroSiret
+  * Methodes pour construire et valider un NumeroSiret
   */
 object NumeroSiret {
 

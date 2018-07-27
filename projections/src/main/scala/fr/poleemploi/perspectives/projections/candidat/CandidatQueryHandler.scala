@@ -1,7 +1,6 @@
 package fr.poleemploi.perspectives.projections.candidat
 
 import fr.poleemploi.cqrs.projection.QueryHandler
-import fr.poleemploi.perspectives.domain.candidat.CandidatId
 import fr.poleemploi.perspectives.domain.candidat.cv.{CV, CVService, DetailsCV}
 
 import scala.concurrent.Future
@@ -16,9 +15,9 @@ class CandidatQueryHandler(candidatProjection: CandidatProjection,
     candidatProjection.findAllOrderByDateInscription
 
   def findDetailsCvByCandidat(query: FindDetailsCVByCandidatQuery): Future[Option[DetailsCV]] =
-    cvService.findDetailsCvByCandidat(CandidatId(query.candidatId))
+    cvService.findDetailsCvByCandidat(query.candidatId)
 
   def getCVByCandidat(query: GetCVByCandidatQuery): Future[CV] =
-    cvService.getCvByCandidat(CandidatId(query.candidatId))
+    cvService.getCvByCandidat(query.candidatId)
 
 }

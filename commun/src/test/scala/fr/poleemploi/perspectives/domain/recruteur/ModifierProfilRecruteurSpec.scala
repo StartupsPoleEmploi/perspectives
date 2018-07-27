@@ -22,10 +22,10 @@ class ModifierProfilRecruteurSpec extends WordSpec with MustMatchers with Mockit
 
   val profilModifieEvent: ProfilModifieEvent =
     ProfilModifieEvent(
-      typeRecruteur = modifierProfilCommande.typeRecruteur.code,
+      typeRecruteur = modifierProfilCommande.typeRecruteur,
       raisonSociale = modifierProfilCommande.raisonSociale,
-      numeroSiret = modifierProfilCommande.numeroSiret.value,
-      numeroTelephone = modifierProfilCommande.numeroTelephone.value,
+      numeroSiret = modifierProfilCommande.numeroSiret,
+      numeroTelephone = modifierProfilCommande.numeroTelephone,
       contactParCandidats = modifierProfilCommande.contactParCandidats
     )
 
@@ -98,7 +98,7 @@ class ModifierProfilRecruteurSpec extends WordSpec with MustMatchers with Mockit
         id = recruteurId,
         version = 0,
         events = List(mock[RecruteurInscrisEvent], profilModifieEvent.copy(
-          numeroSiret = "13000548100010"
+          numeroSiret = NumeroSiret("13000548100010")
         ))
       )
 
@@ -116,7 +116,7 @@ class ModifierProfilRecruteurSpec extends WordSpec with MustMatchers with Mockit
         id = recruteurId,
         version = 0,
         events = List(mock[RecruteurInscrisEvent], profilModifieEvent.copy(
-          typeRecruteur = TypeRecruteur.ENTREPRISE.value
+          typeRecruteur = TypeRecruteur.ENTREPRISE
         ))
       )
 
@@ -134,7 +134,7 @@ class ModifierProfilRecruteurSpec extends WordSpec with MustMatchers with Mockit
         id = recruteurId,
         version = 0,
         events = List(mock[RecruteurInscrisEvent], profilModifieEvent.copy(
-          numeroTelephone = "0897563423"
+          numeroTelephone = NumeroTelephone("0897563423")
         ))
       )
 
@@ -178,9 +178,9 @@ class ModifierProfilRecruteurSpec extends WordSpec with MustMatchers with Mockit
       // Then
       val event = results.head.asInstanceOf[ProfilModifieEvent]
       event.raisonSociale mustBe modifierProfilCommande.raisonSociale
-      event.numeroSiret mustBe modifierProfilCommande.numeroSiret.value
-      event.numeroTelephone mustBe modifierProfilCommande.numeroTelephone.value
-      event.typeRecruteur mustBe modifierProfilCommande.typeRecruteur.code
+      event.numeroSiret mustBe modifierProfilCommande.numeroSiret
+      event.numeroTelephone mustBe modifierProfilCommande.numeroTelephone
+      event.typeRecruteur mustBe modifierProfilCommande.typeRecruteur
       event.contactParCandidats mustBe modifierProfilCommande.contactParCandidats
     }
   }

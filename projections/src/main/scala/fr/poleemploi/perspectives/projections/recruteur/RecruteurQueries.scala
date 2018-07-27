@@ -1,7 +1,8 @@
 package fr.poleemploi.perspectives.projections.recruteur
 
 import fr.poleemploi.cqrs.projection.Query
+import fr.poleemploi.perspectives.domain.recruteur.RecruteurId
 
 sealed trait RecruteurQuery extends Query
 
-case class GetRecruteurQuery(recruteurId: String) extends RecruteurQuery
+case class GetRecruteurQuery(recruteurId: RecruteurId) extends RecruteurQuery

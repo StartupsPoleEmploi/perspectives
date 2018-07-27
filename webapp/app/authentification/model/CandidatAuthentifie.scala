@@ -1,5 +1,7 @@
 package authentification.model
 
-case class CandidatAuthentifie(candidatId: String,
+import fr.poleemploi.perspectives.domain.candidat.CandidatId
+
+case class CandidatAuthentifie(candidatId: CandidatId,
                                nom: String,
                                prenom: String)

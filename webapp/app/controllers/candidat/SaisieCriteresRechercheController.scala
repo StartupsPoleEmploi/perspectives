@@ -33,7 +33,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
           SaisieCriteresRechercheForm(
             rechercheMetierEvalue = candidatDto.rechercheMetierEvalue.map(booleanToString).getOrElse(""),
             rechercheAutreMetier = candidatDto.rechercheAutreMetier.map(booleanToString).getOrElse(""),
-            metiersRecherches = candidatDto.metiersRecherches.map(_.code),
+            metiersRecherches = candidatDto.metiersRecherches.map(_.value),
             etreContacteParAgenceInterim = candidatDto.contacteParAgenceInterim.map(booleanToString).getOrElse(""),
             etreContacteParOrganismeFormation = candidatDto.contacteParOrganismeFormation.map(booleanToString).getOrElse(""),
             rayonRecherche = candidatDto.rayonRecherche.getOrElse(0),
@@ -70,7 +70,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
                 ))
               },
               saisieCriteresRechercheForm => {
-                val candidatId = CandidatId(candidatAuthentifieRequest.candidatId)
+                val candidatId = candidatAuthentifieRequest.candidatId
                 val modifierNumeroTelephoneCommand = buildModifierNumeroTelephoneCommand(candidatId, saisieCriteresRechercheForm)
                 val modifierCriteresCommand = buildModifierCriteresRechercheCommand(candidatId, saisieCriteresRechercheForm)
 

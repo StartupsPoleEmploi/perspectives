@@ -9,13 +9,19 @@ import com.fasterxml.jackson.databind.{ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
+import fr.poleemploi.eventsourcing.infra.jackson.ValueObjectModule
 import org.scalatest.{MustMatchers, WordSpec}
 
 class EventSpec extends WordSpec with MustMatchers {
 
+  object TestValueObjectModule extends ValueObjectModule {
+
+    addStringValueObject[TestStringValueObject](classOf[TestStringValueObject], TestStringValueObject)
+  }
+
   implicit val objectMapper: ObjectMapper =
     (new ObjectMapper() with ScalaObjectMapper)
-      .registerModules(DefaultScalaModule, new JavaTimeModule)
+      .registerModules(DefaultScalaModule, new JavaTimeModule, TestValueObjectModule)
       .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
       .setDateFormat(new ISO8601DateFormat())
       .setVisibility(PropertyAccessor.ALL, Visibility.NONE)
@@ -55,7 +61,7 @@ class EventSpec extends WordSpec with MustMatchers {
     "renvoyer un evenement lorsque le Json est valide et correspond à un événement connu" in {
       // Given
       val json =
-        """{"@class":"fr.poleemploi.eventsourcing.EventTest","chaine":"hello","nombre":68}"""
+        """{"@class":"fr.poleemploi.eventsourcing.EventTest","chaine":"hello","nombre":68,"valueObject":"test"}"""
 
       // When
       val result = Event.fromJson(json)
@@ -64,6 +70,7 @@ class EventSpec extends WordSpec with MustMatchers {
       result.isInstanceOf[EventTest] mustBe true
       result.asInstanceOf[EventTest].chaine mustBe "hello"
       result.asInstanceOf[EventTest].nombre mustBe 68
+      result.asInstanceOf[EventTest].valueObject mustBe TestStringValueObject("test")
     }
   }
 
@@ -72,14 +79,15 @@ class EventSpec extends WordSpec with MustMatchers {
       // Given
       val event = EventTest(
         chaine = "hello",
-        nombre = 43
+        nombre = 43,
+        valueObject = TestStringValueObject("test")
       )
 
       // When
       val result = Event.toJson(event)
 
       // Then
-      result mustBe """{"@class":"fr.poleemploi.eventsourcing.EventTest","chaine":"hello","nombre":43}"""
+      result mustBe """{"@class":"fr.poleemploi.eventsourcing.EventTest","chaine":"hello","nombre":43,"valueObject":"test"}"""
     }
     "renvoyer une serialisation Json d'un evenement contenant une date" in {
       // Given
@@ -98,6 +106,9 @@ class EventSpec extends WordSpec with MustMatchers {
 }
 
 case class EventTest(chaine: String,
-                     nombre: Int) extends Event
+                     nombre: Int,
+                     valueObject: TestStringValueObject) extends Event
 
 case class EventWithDate(date: ZonedDateTime) extends Event
+
+case class TestStringValueObject(value: String) extends StringValueObject
