@@ -1,6 +1,6 @@
 package authentification.infra.play
 
-import authentification.model.ConseillerAuthentifie
+import fr.poleemploi.perspectives.domain.authentification.ConseillerAuthentifie
 import play.api.mvc.Session
 
 object SessionConseillerAuthentifie {

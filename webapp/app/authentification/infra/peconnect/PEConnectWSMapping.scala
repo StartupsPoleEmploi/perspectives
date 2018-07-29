@@ -1,6 +1,7 @@
 package authentification.infra.peconnect
 
 import fr.poleemploi.perspectives.domain.Genre
+import fr.poleemploi.perspectives.domain.authentification.infra.peconnect.PEConnectId
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsPath, Reads}
 
@@ -17,7 +18,7 @@ object AccessTokenResponse {
     ) (AccessTokenResponse.apply _)
 }
 
-case class PEConnectCandidatInfos(peConnectId: String,
+case class PEConnectCandidatInfos(peConnectId: PEConnectId,
                                   nom: String,
                                   prenom: String,
                                   email: String,
@@ -41,7 +42,7 @@ object CandidatUserInfos {
 
   def toPEConnectCandidatInfos(candidatUserInfos: CandidatUserInfos): PEConnectCandidatInfos =
     PEConnectCandidatInfos(
-      peConnectId = candidatUserInfos.sub,
+      peConnectId = PEConnectId(candidatUserInfos.sub),
       nom = candidatUserInfos.familyName.toLowerCase,
       prenom = candidatUserInfos.givenName.toLowerCase,
       email = candidatUserInfos.email.toLowerCase,
@@ -50,7 +51,7 @@ object CandidatUserInfos {
 }
 
 
-case class PEConnectRecruteurInfos(peConnectId: String,
+case class PEConnectRecruteurInfos(peConnectId: PEConnectId,
                                    nom: String,
                                    prenom: String,
                                    email: String,
@@ -74,7 +75,7 @@ object RecruteurUserInfos {
 
   def toPEConnectRecruteurInfos(recruteurUserInfos: RecruteurUserInfos): PEConnectRecruteurInfos =
     PEConnectRecruteurInfos(
-      peConnectId = recruteurUserInfos.sub,
+      peConnectId = PEConnectId(recruteurUserInfos.sub),
       nom = recruteurUserInfos.familyName.toLowerCase,
       prenom = recruteurUserInfos.givenName.toLowerCase,
       email = recruteurUserInfos.email.toLowerCase,

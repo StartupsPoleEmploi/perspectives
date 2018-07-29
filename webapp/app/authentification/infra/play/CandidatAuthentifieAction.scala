@@ -1,6 +1,6 @@
 package authentification.infra.play
 
-import authentification.model.CandidatAuthentifie
+import fr.poleemploi.perspectives.domain.authentification.CandidatAuthentifie
 import fr.poleemploi.perspectives.domain.candidat.CandidatId
 import javax.inject.Inject
 import play.api.http.Status.UNAUTHORIZED

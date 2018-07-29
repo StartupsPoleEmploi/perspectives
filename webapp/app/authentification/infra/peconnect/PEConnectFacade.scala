@@ -1,5 +1,7 @@
 package authentification.infra.peconnect
 
+import fr.poleemploi.perspectives.domain.authentification.infra.peconnect.PEConnectId
+
 import scala.concurrent.Future
 
 /**
@@ -23,13 +25,13 @@ class PEConnectFacade(oauthService: OauthService,
     Future.successful(())
   }
 
-  def findCandidat(peConnectId: String): Future[Option[CandidatPEConnect]] =
+  def findCandidat(peConnectId: PEConnectId): Future[Option[CandidatPEConnect]] =
     peConnectInscrisService.findCandidat(peConnectId)
 
   def saveCandidat(candidatPEConnect: CandidatPEConnect): Future[Unit] =
     peConnectInscrisService.saveCandidat(candidatPEConnect)
 
-  def findRecruteur(peConnectId: String): Future[Option[RecruteurPEConnect]] =
+  def findRecruteur(peConnectId: PEConnectId): Future[Option[RecruteurPEConnect]] =
     peConnectInscrisService.findRecruteur(peConnectId)
 
   def saveRecruteur(recruteurPEConnect: RecruteurPEConnect): Future[Unit] =

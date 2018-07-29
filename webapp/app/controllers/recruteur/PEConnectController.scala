@@ -4,8 +4,8 @@ import java.util.UUID
 
 import authentification.infra.peconnect._
 import authentification.infra.play._
-import authentification.model.RecruteurAuthentifie
 import conf.WebAppConfig
+import fr.poleemploi.perspectives.domain.authentification.RecruteurAuthentifie
 import fr.poleemploi.perspectives.domain.recruteur.{InscrireRecruteurCommand, ModifierProfilPEConnectCommand, RecruteurCommandHandler, RecruteurId}
 import javax.inject.{Inject, Singleton}
 import play.api.Logger

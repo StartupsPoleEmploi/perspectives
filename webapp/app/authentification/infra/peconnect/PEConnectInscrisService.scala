@@ -1,5 +1,6 @@
 package authentification.infra.peconnect
 
+import fr.poleemploi.perspectives.domain.authentification.infra.peconnect.PEConnectId
 import fr.poleemploi.perspectives.domain.candidat.CandidatId
 import fr.poleemploi.perspectives.domain.recruteur.RecruteurId
 import fr.poleemploi.perspectives.infra.sql.PostgresDriver
@@ -9,10 +10,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 case class CandidatPEConnect(candidatId: CandidatId,
-                             peConnectId: String)
+                             peConnectId: PEConnectId)
 
 case class RecruteurPEConnect(recruteurId: RecruteurId,
-                              peConnectId: String)
+                              peConnectId: PEConnectId)
 
 class PEConnectInscrisService(val driver: PostgresDriver,
                               database: Database) {
@@ -25,7 +26,7 @@ class PEConnectInscrisService(val driver: PostgresDriver,
 
     def candidatId = column[CandidatId]("candidat_id")
 
-    def peConnectId = column[String]("peconnect_id")
+    def peConnectId = column[PEConnectId]("peconnect_id")
 
     def * = (candidatId, peConnectId) <> (CandidatPEConnect.tupled, CandidatPEConnect.unapply)
   }
@@ -38,14 +39,14 @@ class PEConnectInscrisService(val driver: PostgresDriver,
 
     def recruteurId = column[RecruteurId]("recruteur_id")
 
-    def peConnectId = column[String]("peconnect_id")
+    def peConnectId = column[PEConnectId]("peconnect_id")
 
     def * = (recruteurId, peConnectId) <> (RecruteurPEConnect.tupled, RecruteurPEConnect.unapply)
   }
 
   val recruteursPEConnectTable = TableQuery[RecruteurPEConnectTable]
 
-  def findCandidat(peConnectId: String): Future[Option[CandidatPEConnect]] = {
+  def findCandidat(peConnectId: PEConnectId): Future[Option[CandidatPEConnect]] = {
     val query = candidatsPEConnectTable.filter(u => u.peConnectId === peConnectId)
 
     database.run(query.result.headOption)
@@ -58,7 +59,7 @@ class PEConnectInscrisService(val driver: PostgresDriver,
         += (candidat.candidatId, candidat.peConnectId))
       .map(_ => ())
 
-  def findRecruteur(peConnectId: String): Future[Option[RecruteurPEConnect]] = {
+  def findRecruteur(peConnectId: PEConnectId): Future[Option[RecruteurPEConnect]] = {
     val query = recruteursPEConnectTable.filter(u => u.peConnectId === peConnectId)
 
     database.run(query.result.headOption)

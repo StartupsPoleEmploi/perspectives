@@ -3,9 +3,9 @@ package controllers.recruteur
 import java.util.UUID
 
 import authentification.infra.play.SessionRecruteurAuthentifie
-import authentification.model.RecruteurAuthentifie
 import conf.WebAppConfig
 import fr.poleemploi.perspectives.domain.Genre
+import fr.poleemploi.perspectives.domain.authentification.RecruteurAuthentifie
 import fr.poleemploi.perspectives.domain.recruteur.{InscrireRecruteurCommand, RecruteurCommandHandler, RecruteurId}
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}

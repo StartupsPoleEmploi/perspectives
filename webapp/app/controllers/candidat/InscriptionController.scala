@@ -3,9 +3,9 @@ package controllers.candidat
 import java.util.UUID
 
 import authentification.infra.play.SessionCandidatAuthentifie
-import authentification.model.CandidatAuthentifie
 import conf.WebAppConfig
 import fr.poleemploi.perspectives.domain.Genre
+import fr.poleemploi.perspectives.domain.authentification.CandidatAuthentifie
 import fr.poleemploi.perspectives.domain.candidat.{CandidatCommandHandler, CandidatId, InscrireCandidatCommand}
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}

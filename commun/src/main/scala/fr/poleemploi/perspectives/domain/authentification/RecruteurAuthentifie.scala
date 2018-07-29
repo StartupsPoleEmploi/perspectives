@@ -1,4 +1,4 @@
-package authentification.model
+package fr.poleemploi.perspectives.domain.authentification
 
 import fr.poleemploi.perspectives.domain.recruteur.RecruteurId
 
