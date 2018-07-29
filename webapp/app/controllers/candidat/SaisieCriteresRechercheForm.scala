@@ -15,6 +15,14 @@ case class SaisieCriteresRechercheForm(numeroTelephone: String,
 
 object SaisieCriteresRechercheForm {
 
+  val mediaTypesValides = List(
+    "application/pdf",
+    "application/vnd.oasis.opendocument.text",
+    "image/jpeg",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  )
+
   val form = Form(
     mapping(
       "numeroTelephone" -> nonEmptyText.verifying(FormHelpers.numeroTelephoneConstraint),

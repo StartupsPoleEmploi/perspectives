@@ -45,11 +45,7 @@ object CandidatUserInfos {
       nom = candidatUserInfos.familyName.toLowerCase,
       prenom = candidatUserInfos.givenName.toLowerCase,
       email = candidatUserInfos.email.toLowerCase,
-      genre = candidatUserInfos.gender match {
-        case "male" => Genre.HOMME
-        case "female" => Genre.FEMME
-        case g@_ => throw new IllegalArgumentException(s"Genre inconnu : $g")
-      }
+      genre = Gender.extractGender(candidatUserInfos.gender)
     )
 }
 
@@ -82,10 +78,16 @@ object RecruteurUserInfos {
       nom = recruteurUserInfos.familyName.toLowerCase,
       prenom = recruteurUserInfos.givenName.toLowerCase,
       email = recruteurUserInfos.email.toLowerCase,
-      genre = recruteurUserInfos.gender match {
-        case "male" => Genre.HOMME
-        case "female" => Genre.FEMME
-        case g@_ => throw new IllegalArgumentException(s"Genre inconnu : $g")
-      }
+      genre = Gender.extractGender(recruteurUserInfos.gender)
     )
+}
+
+private[peconnect] object Gender {
+
+  def extractGender(gender: String): Genre = gender match {
+    case "male" => Genre.HOMME
+    case "female" => Genre.FEMME
+    case g@_ => throw new IllegalArgumentException(s"Genre inconnu : $g")
+  }
+
 }

@@ -1,14 +1,16 @@
 package fr.poleemploi.perspectives.domain
 
+import fr.poleemploi.eventsourcing.StringValueObject
+
 import scala.collection.immutable.ListMap
 
 /**
   * Value Object Metier
   */
-case class Metier(code: String, label: String)
+case class Metier(value: String, label: String) extends StringValueObject
 
 /**
-  * Factory methods pour construire et valider un Metier
+  * Methodes pour construire et valider un Metier
   */
 object Metier {
 
@@ -36,28 +38,28 @@ object Metier {
   val MANUTENTION = Metier("N1105", "Manutention")
 
   val values = ListMap(
-    AIDE_AGRICOLE.code -> AIDE_AGRICOLE,
-    REALISATION_ARTICLES.code -> REALISATION_ARTICLES,
-    CAISSE.code -> CAISSE,
-    VENTE.code -> VENTE,
-    MISE_EN_RAYON.code -> MISE_EN_RAYON,
-    CONDUITE_ENGINS.code -> CONDUITE_ENGINS,
-    ELECTRICITE.code -> ELECTRICITE,
-    MACONNERIE.code -> MACONNERIE,
-    PERSONNEL_POLYVALENT.code -> PERSONNEL_POLYVALENT,
-    SERVICE.code -> SERVICE,
-    DECOUPE_VIANDE.code -> DECOUPE_VIANDE,
-    CONDUITE_MACHINE_AGRO.code -> CONDUITE_MACHINE_AGRO,
-    CONDUITE_MACHINE.code -> CONDUITE_MACHINE,
-    MECANICIEN_CONFECTION.code -> MECANICIEN_CONFECTION,
-    SOUDAGE.code -> SOUDAGE,
-    FABRICATION_PIECES.code -> FABRICATION_PIECES,
-    TRI_EMBALLAGE.code -> TRI_EMBALLAGE,
-    AIDE_PERSONNES_AGEES.code -> AIDE_PERSONNES_AGEES,
-    AIDE_DOMICILE.code -> AIDE_DOMICILE,
-    NETTOYAGE_LOCAUX.code -> NETTOYAGE_LOCAUX,
-    MANUTENTION.code -> MANUTENTION,
-    PREPARATION_COMMANDE.code -> PREPARATION_COMMANDE
+    AIDE_AGRICOLE.value -> AIDE_AGRICOLE,
+    REALISATION_ARTICLES.value -> REALISATION_ARTICLES,
+    CAISSE.value -> CAISSE,
+    VENTE.value -> VENTE,
+    MISE_EN_RAYON.value -> MISE_EN_RAYON,
+    CONDUITE_ENGINS.value -> CONDUITE_ENGINS,
+    ELECTRICITE.value -> ELECTRICITE,
+    MACONNERIE.value -> MACONNERIE,
+    PERSONNEL_POLYVALENT.value -> PERSONNEL_POLYVALENT,
+    SERVICE.value -> SERVICE,
+    DECOUPE_VIANDE.value -> DECOUPE_VIANDE,
+    CONDUITE_MACHINE_AGRO.value -> CONDUITE_MACHINE_AGRO,
+    CONDUITE_MACHINE.value -> CONDUITE_MACHINE,
+    MECANICIEN_CONFECTION.value -> MECANICIEN_CONFECTION,
+    SOUDAGE.value -> SOUDAGE,
+    FABRICATION_PIECES.value -> FABRICATION_PIECES,
+    TRI_EMBALLAGE.value -> TRI_EMBALLAGE,
+    AIDE_PERSONNES_AGEES.value -> AIDE_PERSONNES_AGEES,
+    AIDE_DOMICILE.value -> AIDE_DOMICILE,
+    NETTOYAGE_LOCAUX.value -> NETTOYAGE_LOCAUX,
+    MANUTENTION.value -> MANUTENTION,
+    PREPARATION_COMMANDE.value -> PREPARATION_COMMANDE
   )
 
   def from(code: String): Option[Metier] = values.get(code)

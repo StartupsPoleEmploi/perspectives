@@ -1,17 +1,25 @@
 package fr.poleemploi.perspectives.domain
 
+import fr.poleemploi.eventsourcing.StringValueObject
+
 import scala.collection.immutable.ListMap
 
-case class Genre(code: String, label: String)
+/**
+  * Value Object Genre
+  */
+case class Genre(value: String, label: String) extends StringValueObject
 
+/**
+  * Methodes pour construire et valider un Genre
+  */
 object Genre {
 
-  val HOMME = Genre(code = "H", "Homme")
-  val FEMME = Genre(code = "F", "Femme")
+  val HOMME = Genre(value = "H", "Homme")
+  val FEMME = Genre(value = "F", "Femme")
 
   private val values = ListMap(
-    HOMME.code -> HOMME,
-    FEMME.code -> FEMME,
+    HOMME.value -> HOMME,
+    FEMME.value -> FEMME,
   )
 
   def from(r: String): Option[Genre] = values.get(r)

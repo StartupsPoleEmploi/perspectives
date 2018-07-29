@@ -1,4 +1,6 @@
-$(document).ready(function(){
+"use strict";
+
+$(document).ready(function () {
     var secteursActivites = $("input[type='checkbox'][name='secteurActivite']");
 
     // On cache les métiers : on affiche uniquement les secteurs d'activité
@@ -13,7 +15,7 @@ $(document).ready(function(){
     });
 
     // Initialisation des secteurs d'activités
-    secteursActivites.each(function() {
+    secteursActivites.each(function () {
         var secteurActivite = $(this);
         var labelSecteurActivite = $("label[for='" + secteurActivite.attr("id") + "']");
         var compteurSecteurActivite = labelSecteurActivite.find(".compteur-metiers-selectionnes");
@@ -25,7 +27,7 @@ $(document).ready(function(){
         compteurSecteurActivite.html(nbMetiers);
     });
 
-    secteursActivites.click(function() {
+    secteursActivites.click(function () {
         var clickedSecteurActivite = $(this);
         var labelClickedSecteurActivite = $("label[for='" + clickedSecteurActivite.attr("id") + "']");
         var compteurClickedSecteurActivite = labelClickedSecteurActivite.find(".compteur-metiers-selectionnes");
@@ -48,7 +50,7 @@ $(document).ready(function(){
         labelClickedSecteurActivite.toggleClass("labelSecteurActivite-sans-focus-avec-metiers", isUnselected);
 
         // On décoche le secteur d'activité précedemment coché si présent
-        $("input[type='checkbox'][name='secteurActivite'][id!='" + clickedSecteurActivite.attr("id") + "']:checked").each(function() {
+        $("input[type='checkbox'][name='secteurActivite'][id!='" + clickedSecteurActivite.attr("id") + "']:checked").each(function () {
             var unclickedSecteurActivite = $(this);
             var unclickedLabelClickedSecteurActivite = $("label[for='" + unclickedSecteurActivite.attr("id") + "']");
 
@@ -67,4 +69,42 @@ $(document).ready(function(){
             unclickedLabelClickedSecteurActivite.toggleClass("labelSecteurActivite-sans-focus-avec-metiers", nbMetiersUnclickedSecteurActivite > 0);
         })
     });
+
+    if (window.FileReader) {
+        var nomFichier = $("#js-nom-fichier");
+        var nomFichierInitial = nomFichier.text();
+        var erreurCv = $("#js-erreur-cv");
+        var tailleMaximumFichierBytes = 5 * 1000 * 1000;
+        var mediaTypesValides = ["application/pdf", "application/vnd.oasis.opendocument.text", "image/jpeg", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
+
+        $('#js-input-cv').bind('change', function() {
+            var fichier = this.files[0];
+            var erreurs = [];
+            viderErreursPrecedentes(erreurCv);
+
+            if (fichier !== undefined) {
+                if (fichier.size > tailleMaximumFichierBytes) {
+                    erreurs.push("Le fichier dépasse la taille maximale autorisée");
+                }
+                if (!mediaTypesValides.includes(fichier.type)) {
+                    erreurs.push("Le type de fichier n'est pas valide");
+                }
+                nomFichier.text(fichier.name);
+            } else {
+                nomFichier.text(nomFichierInitial);
+            }
+
+            if (erreurs.length > 0) {
+                erreurCv.text(erreurs.join(", "));
+            } else {
+                erreurCv.text("");
+            }
+        });
+    }
+
+    function viderErreursPrecedentes(erreurCv) {
+        erreurCv.parent().find(".erreurs-item").each(function() {
+            $(this).text("");
+        });
+    }
 });

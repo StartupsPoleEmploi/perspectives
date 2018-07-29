@@ -19,14 +19,14 @@ class ModifierNumeroTelephoneSpec extends WordSpec
 
   val numeroTelephoneModifieEvent =
     NumeroTelephoneModifieEvent(
-      numeroTelephone = commande.numeroTelephone.value
+      numeroTelephone = commande.numeroTelephone
     )
 
   var candidatInscrisEvent: CandidatInscrisEvent = _
 
   before {
     candidatInscrisEvent = mock[CandidatInscrisEvent]
-    when(candidatInscrisEvent.genre) thenReturn Some(Genre.HOMME.code)
+    when(candidatInscrisEvent.genre) thenReturn Some(Genre.HOMME)
   }
 
   "modifierNumeroTelephone" should {
@@ -38,11 +38,12 @@ class ModifierNumeroTelephoneSpec extends WordSpec
         events = Nil
       )
 
-      // When & Then
+      // When
       val ex = intercept[RuntimeException] {
         candidat.modifierNumeroTelephone(commande)
       }
 
+      // Then
       ex.getMessage mustBe s"Le candidat ${candidat.id.value} n'est pas encore inscrit"
     }
     "ne pas générer d'événement lorsque le numéro de téléphone ne change pas" in {
@@ -79,7 +80,7 @@ class ModifierNumeroTelephoneSpec extends WordSpec
         id = candidatId,
         version = 0,
         events = List(candidatInscrisEvent, numeroTelephoneModifieEvent.copy(
-          numeroTelephone = "0134767892"
+          numeroTelephone = NumeroTelephone("0134767892")
         ))
       )
 
@@ -103,7 +104,7 @@ class ModifierNumeroTelephoneSpec extends WordSpec
       val result = candidat.modifierNumeroTelephone(commande)
 
       // Then
-      result.head.asInstanceOf[NumeroTelephoneModifieEvent].numeroTelephone mustBe commande.numeroTelephone.value
+      result.head.asInstanceOf[NumeroTelephoneModifieEvent].numeroTelephone mustBe commande.numeroTelephone
     }
   }
 }

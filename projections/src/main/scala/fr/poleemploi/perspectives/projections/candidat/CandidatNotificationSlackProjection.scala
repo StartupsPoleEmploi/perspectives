@@ -21,15 +21,10 @@ class CandidatNotificationSlackProjection(slackCandidatConfig: SlackCandidatConf
   override def isReplayable: Boolean = false
 
   override def onEvent(aggregateId: AggregateId): ReceiveEvent = {
-    case e: CandidatInscrisEvent =>
-      onCandidatInscrisEvent(
-        aggregateId = aggregateId,
-        event = e
-      )
+    case e: CandidatInscrisEvent => onCandidatInscrisEvent
   }
 
-  private def onCandidatInscrisEvent(aggregateId: AggregateId,
-                                     event: CandidatInscrisEvent): Future[Unit] = {
+  private def onCandidatInscrisEvent: Future[Unit] = {
     wsClient
       .url(s"${slackCandidatConfig.webhookURL}")
       .addHttpHeaders("Content-Type" -> "application/json")

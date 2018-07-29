@@ -73,7 +73,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       recruteurId <- optRecruteur.map(r => mettreAJour(r, recruteurInfos)).getOrElse(inscrire(recruteurInfos))
     } yield {
       val recruteurAuthentifie = RecruteurAuthentifie(
-        recruteurId = recruteurId.value,
+        recruteurId = recruteurId,
         nom = recruteurInfos.nom,
         prenom = recruteurInfos.prenom
       )
@@ -119,7 +119,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
     )
     recruteurCommandHandler.inscrire(command)
       .flatMap(_ => peConnectFacade.saveRecruteur(RecruteurPEConnect(
-        recruteurId = recruteurId.value,
+        recruteurId = recruteurId,
         peConnectId = peConnectRecruteurInfos.peConnectId
       )))
       .map(_ => recruteurId)
@@ -127,7 +127,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
 
   private def mettreAJour(recruteurPEConnect: RecruteurPEConnect,
                           peConnectRecruteurInfos: PEConnectRecruteurInfos): Future[RecruteurId] = {
-    val recruteurId = RecruteurId(recruteurPEConnect.recruteurId)
+    val recruteurId = recruteurPEConnect.recruteurId
     val command = ModifierProfilPEConnectCommand(
       id = recruteurId,
       nom = peConnectRecruteurInfos.nom,

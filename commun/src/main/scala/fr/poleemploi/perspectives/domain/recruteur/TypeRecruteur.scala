@@ -1,14 +1,16 @@
 package fr.poleemploi.perspectives.domain.recruteur
 
+import fr.poleemploi.eventsourcing.StringValueObject
+
 import scala.collection.immutable.ListMap
 
 /**
   * Value Object TypeRecruteur
   */
-case class TypeRecruteur(code: String, value: String)
+case class TypeRecruteur(value: String, label: String) extends StringValueObject
 
 /**
-  * Factory methods pour construire et valider un TypeRecruteur
+  * Methodes pour construire et valider un TypeRecruteur
   */
 object TypeRecruteur {
 
@@ -17,9 +19,9 @@ object TypeRecruteur {
   val ORGANISME_FORMATION = TypeRecruteur("ORGANISME_FORMATION", "Organisme de formation")
 
   val values = ListMap(
-    ENTREPRISE.code -> ENTREPRISE,
-    AGENCE_INTERIM.code -> AGENCE_INTERIM,
-    ORGANISME_FORMATION.code -> ORGANISME_FORMATION
+    ENTREPRISE.value -> ENTREPRISE,
+    AGENCE_INTERIM.value -> AGENCE_INTERIM,
+    ORGANISME_FORMATION.value -> ORGANISME_FORMATION
   )
 
   def from(code: String): Option[TypeRecruteur] = values.get(code)

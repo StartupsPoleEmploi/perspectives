@@ -37,8 +37,8 @@
                     <input id="typeRecruteur-entreprise"
                            name="typeRecruteur"
                            type="radio"
-                           value="@TypeRecruteur.ENTREPRISE.code"
-                    @if(profilForm("typeRecruteur").value.contains(TypeRecruteur.ENTREPRISE.code)){checked}/>
+                           value="@TypeRecruteur.ENTREPRISE.value"
+                    @if(profilForm("typeRecruteur").value.contains(TypeRecruteur.ENTREPRISE.value)){checked}/>
                     <label class="labelRadio" for="typeRecruteur-entreprise">Une entreprise
                         <span class="labelRadio-circle"></span>
                     </label>
@@ -47,8 +47,8 @@
                     <input id="typeRecruteur-interim"
                            name="typeRecruteur"
                            type="radio"
-                           value="@TypeRecruteur.AGENCE_INTERIM.code"
-                    @if(profilForm("typeRecruteur").value.contains(TypeRecruteur.AGENCE_INTERIM.code)){checked}/>
+                           value="@TypeRecruteur.AGENCE_INTERIM.value"
+                    @if(profilForm("typeRecruteur").value.contains(TypeRecruteur.AGENCE_INTERIM.value)){checked}/>
                     <label class="labelRadio" for="typeRecruteur-interim">Une agence d'interim
                         <span class="labelRadio-circle"></span>
                     </label>
@@ -57,8 +57,8 @@
                     <input id="typeRecruteur-formation"
                            name="typeRecruteur"
                            type="radio"
-                           value="@TypeRecruteur.ORGANISME_FORMATION.code"
-                    @if(profilForm("typeRecruteur").value.contains(TypeRecruteur.ORGANISME_FORMATION.code)){checked}/>
+                           value="@TypeRecruteur.ORGANISME_FORMATION.value"
+                    @if(profilForm("typeRecruteur").value.contains(TypeRecruteur.ORGANISME_FORMATION.value)){checked}/>
                     <label class="labelRadio" for="typeRecruteur-formation">Un organisme de formation
                         <span class="labelRadio-circle"></span>
                     </label>

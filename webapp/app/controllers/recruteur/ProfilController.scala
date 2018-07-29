@@ -19,7 +19,6 @@ class ProfilController @Inject()(components: ControllerComponents,
                                  recruteurQueryHandler: RecruteurQueryHandler,
                                  recruteurAuthentifieAction: RecruteurAuthentifieAction) extends AbstractController(components) {
 
-
   def modificationProfil(): Action[AnyContent] = recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
       def booleanToString(boolean: Boolean): String = if (boolean) "true" else "false"
@@ -29,7 +28,7 @@ class ProfilController @Inject()(components: ControllerComponents,
       )).map(recruteurDto => {
         val filledForm = ProfilForm.form.fill(
           ProfilForm(
-            typeRecruteur = recruteurDto.typeRecruteur.map(_.code).getOrElse(""),
+            typeRecruteur = recruteurDto.typeRecruteur.map(_.value).getOrElse(""),
             raisonSociale = recruteurDto.raisonSociale.getOrElse(""),
             numeroSiret = recruteurDto.numeroSiret.map(_.value).getOrElse(""),
             numeroTelephone = recruteurDto.numeroTelephone.map(_.value).getOrElse(""),
@@ -51,7 +50,7 @@ class ProfilController @Inject()(components: ControllerComponents,
         },
         inscriptionForm => {
           Future.successful(NoContent)
-          val recruteurId = RecruteurId(recruteurAuthentifieRequest.recruteurId)
+          val recruteurId = recruteurAuthentifieRequest.recruteurId
           val command = ModifierProfilCommand(
             id = recruteurId,
             raisonSociale = inscriptionForm.raisonSociale,

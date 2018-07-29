@@ -1,6 +1,7 @@
 package authentification.infra.play
 
 import authentification.model.RecruteurAuthentifie
+import fr.poleemploi.perspectives.domain.recruteur.RecruteurId
 import javax.inject.Inject
 import play.api.http.Status.UNAUTHORIZED
 import play.api.mvc._
@@ -10,7 +11,7 @@ import scala.concurrent.{ExecutionContext, Future}
 case class RecruteurAuthentifieRequest[A](recruteurAuthentifie: RecruteurAuthentifie,
                                           request: Request[A]) extends WrappedRequest[A](request) {
 
-  def recruteurId: String = recruteurAuthentifie.recruteurId
+  def recruteurId: RecruteurId = recruteurAuthentifie.recruteurId
 }
 
 class RecruteurAuthentifieAction @Inject()(override val parser: BodyParsers.Default)

@@ -1,4 +1,6 @@
-$(document).ready(function(){
+"use strict";
+
+$(document).ready(function() {
     var formerCandidats = $("#js-formerCandidats");
     var boutonInscription = $("#js-boutonInscription");
 

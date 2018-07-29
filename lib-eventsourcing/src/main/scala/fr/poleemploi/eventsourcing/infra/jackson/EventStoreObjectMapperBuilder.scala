@@ -8,10 +8,10 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
 
-object EventStoreObjectMapper {
+case class EventStoreObjectMapperBuilder(stringValueObjectModule: ValueObjectModule) {
 
-  val mapper: ObjectMapper = (new ObjectMapper() with ScalaObjectMapper)
-    .registerModules(DefaultScalaModule, new JavaTimeModule)
+  def build(): ObjectMapper = (new ObjectMapper() with ScalaObjectMapper)
+    .registerModules(DefaultScalaModule, new JavaTimeModule, stringValueObjectModule)
     .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
     .setDateFormat(new ISO8601DateFormat)
     .setVisibility(PropertyAccessor.ALL, Visibility.NONE)

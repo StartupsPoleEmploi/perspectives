@@ -1,7 +1,13 @@
 package fr.poleemploi.perspectives.domain.candidat
 
+import java.util.UUID
+
 import fr.poleemploi.eventsourcing.{Aggregate, Event}
+import fr.poleemploi.perspectives.domain.candidat.cv.{CVId, CVService}
 import fr.poleemploi.perspectives.domain.{Genre, Metier, NumeroTelephone}
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class Candidat(override val id: CandidatId,
                override val version: Int,
@@ -23,7 +29,7 @@ class Candidat(override val id: CandidatId,
       nom = command.nom,
       prenom = command.prenom,
       email = command.email,
-      genre = Some(command.genre.code)
+      genre = Some(command.genre)
     ))
   }
 
@@ -42,7 +48,7 @@ class Candidat(override val id: CandidatId,
       List(CriteresRechercheModifiesEvent(
         rechercheMetierEvalue = command.rechercheMetierEvalue,
         rechercheAutreMetier = command.rechercheAutreMetier,
-        listeMetiersRecherches = command.metiersRecherches.map(_.code),
+        listeMetiersRecherches = command.metiersRecherches,
         etreContacteParAgenceInterim = command.etreContacteParAgenceInterim,
         etreContacteParOrganismeFormation = command.etreContacteParOrganismeFormation,
         rayonRecherche = command.rayonRecherche
@@ -63,7 +69,7 @@ class Candidat(override val id: CandidatId,
         nom = command.nom,
         prenom = command.prenom,
         email = command.email,
-        genre = command.genre.code
+        genre = command.genre
       ))
     } else Nil
   }
@@ -75,9 +81,38 @@ class Candidat(override val id: CandidatId,
 
     if (!state.numeroTelephone.contains(command.numeroTelephone)) {
       List(NumeroTelephoneModifieEvent(
-        numeroTelephone = command.numeroTelephone.value
+        numeroTelephone = command.numeroTelephone
       ))
     } else Nil
+  }
+
+  def ajouterCV(command: AjouterCVCommand,
+                cvService: CVService): Future[List[Event]] = {
+    if (!state.estInscrit) {
+      Future.failed(throw new RuntimeException(s"Le candidat ${id.value} n'est pas encore inscrit"))
+    }
+
+    cvService.save(
+      cvId = CVId(UUID.randomUUID().toString),
+      candidatId = command.id,
+      nomFichier = command.nomFichier,
+      typeMedia = command.typeMedia,
+      path = command.path
+    ).map(_ => Nil)
+  }
+
+  def remplacerCV(command: RemplacerCVCommand,
+                  cvService: CVService): Future[List[Event]] = {
+    if (!state.estInscrit) {
+      Future.failed(throw new RuntimeException(s"Le candidat ${id.value} n'est pas encore inscrit"))
+    }
+
+    cvService.update(
+      cvId = command.cvId,
+      nomFichier = command.nomFichier,
+      typeMedia = command.typeMedia,
+      path = command.path
+    ).map(_ => Nil)
   }
 }
 
@@ -93,7 +128,8 @@ private[candidat] case class CandidatState(estInscrit: Boolean = false,
                                            etreContacteParAgenceInterim: Option[Boolean] = None,
                                            etreContacteParOrganismeFormation: Option[Boolean] = None,
                                            rayonRecherche: Option[Int] = None,
-                                           numeroTelephone: Option[NumeroTelephone] = None) {
+                                           numeroTelephone: Option[NumeroTelephone] = None,
+                                           cvId: Option[CVId] = None) {
 
   def apply(event: Event): CandidatState = event match {
     case e: CandidatInscrisEvent =>
@@ -102,26 +138,26 @@ private[candidat] case class CandidatState(estInscrit: Boolean = false,
         nom = Some(e.nom),
         prenom = Some(e.prenom),
         email = Some(e.email),
-        genre = e.genre.flatMap(Genre.from)
+        genre = e.genre
       )
     case e: ProfilCandidatModifiePEConnectEvent =>
       copy(
         nom = Some(e.nom),
         prenom = Some(e.prenom),
         email = Some(e.email),
-        genre = Genre.from(e.genre)
+        genre = Some(e.genre)
       )
     case e: CriteresRechercheModifiesEvent =>
       copy(
         rechercheMetierEvalue = Some(e.rechercheMetierEvalue),
         rechercheAutreMetier = Some(e.rechercheAutreMetier),
-        metiersRecherches = e.listeMetiersRecherches.flatMap(Metier.from),
+        metiersRecherches = e.listeMetiersRecherches,
         etreContacteParAgenceInterim = Some(e.etreContacteParAgenceInterim),
         etreContacteParOrganismeFormation = Some(e.etreContacteParOrganismeFormation),
         rayonRecherche = Some(e.rayonRecherche)
       )
     case e: NumeroTelephoneModifieEvent =>
-      copy(numeroTelephone = NumeroTelephone.from(e.numeroTelephone))
+      copy(numeroTelephone = Some(e.numeroTelephone))
     case _ => this
   }
 }

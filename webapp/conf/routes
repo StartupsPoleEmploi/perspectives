@@ -1,5 +1,6 @@
 GET     /                                           controllers.candidat.LandingController.landing
 GET     /candidat/inscription                       controllers.candidat.InscriptionController.inscription
+GET     /candidat/cv/telecharger                    controllers.candidat.CVController.telecharger
 GET     /candidat/peconnect/connexion               controllers.candidat.PEConnectController.connexion
 GET     /candidat/peconnect/callback                controllers.candidat.PEConnectController.connexionCallback
 GET     /candidat/deconnexion                       controllers.candidat.AuthentificationController.deconnexion

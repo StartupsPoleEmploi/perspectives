@@ -34,7 +34,7 @@ class InscriptionController @Inject()(cc: ControllerComponents,
     )
     candidatCommandHandler.inscrire(command).map { _ =>
       val candidatAuthentifie = CandidatAuthentifie(
-        candidatId = command.id.value,
+        candidatId = command.id,
         nom = command.nom,
         prenom = command.prenom
       )

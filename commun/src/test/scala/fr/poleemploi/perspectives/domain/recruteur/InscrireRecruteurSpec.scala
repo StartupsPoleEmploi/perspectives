@@ -67,7 +67,7 @@ class InscrireRecruteurSpec extends WordSpec with MustMatchers with MockitoSugar
       event.nom mustBe inscrireCommande.nom
       event.prenom mustBe inscrireCommande.prenom
       event.email mustBe inscrireCommande.email
-      event.genre mustBe inscrireCommande.genre.code
+      event.genre mustBe inscrireCommande.genre
     }
   }
 

@@ -1,18 +1,20 @@
 package authentification.infra.peconnect
 
+import fr.poleemploi.perspectives.domain.candidat.CandidatId
+import fr.poleemploi.perspectives.domain.recruteur.RecruteurId
+import fr.poleemploi.perspectives.infra.sql.PostgresDriver
 import slick.jdbc.JdbcBackend.Database
-import slick.jdbc.JdbcProfile
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-case class CandidatPEConnect(candidatId: String,
+case class CandidatPEConnect(candidatId: CandidatId,
                              peConnectId: String)
 
-case class RecruteurPEConnect(recruteurId: String,
+case class RecruteurPEConnect(recruteurId: RecruteurId,
                               peConnectId: String)
 
-class PEConnectInscrisService(val driver: JdbcProfile,
+class PEConnectInscrisService(val driver: PostgresDriver,
                               database: Database) {
 
   import driver.api._
@@ -21,7 +23,7 @@ class PEConnectInscrisService(val driver: JdbcProfile,
 
     def id = column[Long]("id", O.PrimaryKey)
 
-    def candidatId = column[String]("candidat_id")
+    def candidatId = column[CandidatId]("candidat_id")
 
     def peConnectId = column[String]("peconnect_id")
 
@@ -34,7 +36,7 @@ class PEConnectInscrisService(val driver: JdbcProfile,
 
     def id = column[Long]("id", O.PrimaryKey)
 
-    def recruteurId = column[String]("recruteur_id")
+    def recruteurId = column[RecruteurId]("recruteur_id")
 
     def peConnectId = column[String]("peconnect_id")
 

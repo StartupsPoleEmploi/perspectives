@@ -25,14 +25,14 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
       nom = commande.nom,
       prenom = commande.prenom,
       email = commande.email,
-      genre = commande.genre.code
+      genre = commande.genre
     )
 
   var candidatInscrisEvent: CandidatInscrisEvent = _
 
   before {
     candidatInscrisEvent = mock[CandidatInscrisEvent]
-    when(candidatInscrisEvent.genre) thenReturn Some(Genre.HOMME.code)
+    when(candidatInscrisEvent.genre) thenReturn Some(Genre.HOMME)
   }
 
   "modifierProfilPEConnect" should {
@@ -140,7 +140,7 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
         id = candidatId,
         version = 0,
         events = List(candidatInscrisEvent, profilModifieEvent.copy(
-          genre = "Homme"
+          genre = Genre.HOMME
         ))
       )
 
@@ -168,7 +168,7 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
       event.nom mustBe commande.nom
       event.prenom mustBe commande.prenom
       event.email mustBe commande.email
-      event.genre mustBe commande.genre.code
+      event.genre mustBe commande.genre
     }
   }
 }
