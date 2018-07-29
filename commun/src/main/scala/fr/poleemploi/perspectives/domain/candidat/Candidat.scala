@@ -48,7 +48,7 @@ class Candidat(override val id: CandidatId,
       List(CriteresRechercheModifiesEvent(
         rechercheMetierEvalue = command.rechercheMetierEvalue,
         rechercheAutreMetier = command.rechercheAutreMetier,
-        listeMetiersRecherches = command.metiersRecherches,
+        metiersRecherches = command.metiersRecherches,
         etreContacteParAgenceInterim = command.etreContacteParAgenceInterim,
         etreContacteParOrganismeFormation = command.etreContacteParOrganismeFormation,
         rayonRecherche = command.rayonRecherche
@@ -151,7 +151,7 @@ private[candidat] case class CandidatState(estInscrit: Boolean = false,
       copy(
         rechercheMetierEvalue = Some(e.rechercheMetierEvalue),
         rechercheAutreMetier = Some(e.rechercheAutreMetier),
-        metiersRecherches = e.listeMetiersRecherches,
+        metiersRecherches = e.metiersRecherches,
         etreContacteParAgenceInterim = Some(e.etreContacteParAgenceInterim),
         etreContacteParOrganismeFormation = Some(e.etreContacteParOrganismeFormation),
         rayonRecherche = Some(e.rayonRecherche)

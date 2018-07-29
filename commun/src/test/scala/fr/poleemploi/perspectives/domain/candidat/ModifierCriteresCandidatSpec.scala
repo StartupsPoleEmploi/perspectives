@@ -29,7 +29,7 @@ class ModifierCriteresCandidatSpec extends WordSpec
       rechercheMetierEvalue = commande.rechercheMetierEvalue,
       etreContacteParAgenceInterim = commande.etreContacteParAgenceInterim,
       etreContacteParOrganismeFormation = commande.etreContacteParOrganismeFormation,
-      listeMetiersRecherches = commande.metiersRecherches,
+      metiersRecherches = commande.metiersRecherches,
       rayonRecherche = commande.rayonRecherche
     )
 
@@ -181,7 +181,7 @@ class ModifierCriteresCandidatSpec extends WordSpec
         id = candidatId,
         version = 0,
         events = List(candidatInscrisEvent, criteresRechercheModifieEvent.copy(
-          listeMetiersRecherches = Set.empty
+          metiersRecherches = Set.empty
         ))
       )
 
@@ -199,7 +199,7 @@ class ModifierCriteresCandidatSpec extends WordSpec
         id = candidatId,
         version = 0,
         events = List(candidatInscrisEvent, criteresRechercheModifieEvent.copy(
-          listeMetiersRecherches = Set(Metier.SERVICE)
+          metiersRecherches = Set(Metier.SERVICE)
         ))
       )
 
@@ -229,7 +229,7 @@ class ModifierCriteresCandidatSpec extends WordSpec
       event.etreContacteParAgenceInterim mustBe commande.etreContacteParAgenceInterim
       event.etreContacteParOrganismeFormation mustBe commande.etreContacteParOrganismeFormation
       event.rayonRecherche mustBe commande.rayonRecherche
-      event.listeMetiersRecherches mustBe commande.metiersRecherches
+      event.metiersRecherches mustBe commande.metiersRecherches
     }
   }
 

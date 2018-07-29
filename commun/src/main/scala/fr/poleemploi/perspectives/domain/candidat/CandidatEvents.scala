@@ -15,7 +15,7 @@ case class CandidatInscrisEvent(nom: String,
 
 case class CriteresRechercheModifiesEvent(rechercheMetierEvalue: Boolean,
                                           rechercheAutreMetier: Boolean,
-                                          listeMetiersRecherches: Set[Metier],
+                                          metiersRecherches: Set[Metier],
                                           etreContacteParOrganismeFormation: Boolean,
                                           etreContacteParAgenceInterim: Boolean,
                                           rayonRecherche: Int,
