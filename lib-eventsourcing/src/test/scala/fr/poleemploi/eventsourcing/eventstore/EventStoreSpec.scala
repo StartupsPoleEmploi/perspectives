@@ -1,17 +1,17 @@
 package fr.poleemploi.eventsourcing.eventstore
 
-import fr.poleemploi.eventsourcing.{AggregateId, Event, EventPublisher, AppendedEvent}
+import fr.poleemploi.eventsourcing.{AggregateId, AppendedEvent, Event, EventPublisher}
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
 import org.mockito.ArgumentMatchers._
+import org.mockito.Mockito._
+import org.scalatest._
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
-import org.scalatest.{BeforeAndAfter, MustMatchers, WordSpec}
 
-import scala.concurrent.{Await, Future}
-import scala.concurrent.duration._
+import scala.concurrent.Future
 
-class EventStoreSpec extends WordSpec with MustMatchers
-  with MockitoSugar with BeforeAndAfter {
+class EventStoreSpec extends AsyncWordSpec with MustMatchers
+  with MockitoSugar with BeforeAndAfter with ScalaFutures {
 
   var eventPublisher: EventPublisher = _
   var appendOnlyStore: AppendOnlyStore = _
@@ -36,10 +36,10 @@ class EventStoreSpec extends WordSpec with MustMatchers
       when(appendOnlyStore.readRecords(aggregateId.value)) thenReturn Future.successful(List())
 
       // When
-      val eventStream = Await.result(eventStore.loadEventStream(aggregateId), 5.seconds)
+      val future = eventStore.loadEventStream(aggregateId)
 
       // Then
-      eventStream.version mustBe 0
+      future map (eventStream => eventStream.version mustBe 0)
     }
     "retourner la version de l'evenement lorsqu'il existe" in {
       // Given
@@ -47,10 +47,10 @@ class EventStoreSpec extends WordSpec with MustMatchers
       when(appendOnlyStore.readRecords(aggregateId.value)) thenReturn Future.successful(datas)
 
       // When
-      val eventStream = Await.result(eventStore.loadEventStream(aggregateId), 5.seconds)
+      val future = eventStore.loadEventStream(aggregateId)
 
       // Then
-      eventStream.version mustBe 1
+      future map (eventStream => eventStream.version mustBe 1)
     }
     "retourner la version du dernier evenement lorsque des evenements existent" in {
       // Given
@@ -58,10 +58,10 @@ class EventStoreSpec extends WordSpec with MustMatchers
       when(appendOnlyStore.readRecords(aggregateId.value)) thenReturn Future.successful(datas)
 
       // When
-      val eventStream = Await.result(eventStore.loadEventStream(aggregateId), 5.seconds)
+      val future = eventStore.loadEventStream(aggregateId)
 
       // Then
-      eventStream.version mustBe 7
+      future map (eventStream => eventStream.version mustBe 7)
     }
     "retourner les evenements" in {
       // Given
@@ -69,10 +69,10 @@ class EventStoreSpec extends WordSpec with MustMatchers
       when(appendOnlyStore.readRecords(aggregateId.value)) thenReturn Future.successful(datas)
 
       // When
-      val eventStream = Await.result(eventStore.loadEventStream(aggregateId), 5.seconds)
+      val future = eventStore.loadEventStream(aggregateId)
 
       // Then
-      eventStream.events.size mustBe datas.size
+      future map (eventStream => eventStream.events.size mustBe datas.size)
     }
     "retourner un stream d'evenements ordonnés" in {
       // Given
@@ -80,10 +80,10 @@ class EventStoreSpec extends WordSpec with MustMatchers
       when(appendOnlyStore.readRecords(aggregateId.value)) thenReturn Future.successful(datas)
 
       // When
-      val eventStream = Await.result(eventStore.loadEventStream(aggregateId), 5.seconds)
+      val future = eventStore.loadEventStream(aggregateId)
 
       // Then
-      eventStream.events must contain theSameElementsInOrderAs datas.map(_.event)
+      future map (eventStream => eventStream.events must contain theSameElementsInOrderAs datas.map(_.event))
     }
   }
 
@@ -92,27 +92,32 @@ class EventStoreSpec extends WordSpec with MustMatchers
       // Given
       when(appendOnlyStore.append(ArgumentMatchers.eq(aggregateId.value), ArgumentMatchers.eq(0), any[List[AppendOnlyData]])) thenReturn Future.failed(new RuntimeException("Erreur de sauvegarde"))
 
-      // When
-      Await.ready(eventStore.append(
-        aggregateId = aggregateId,
-        expectedVersion = 0,
-        events = List(mock[Event])
-      ), 5.seconds)
-
-      // Then
-      verify(eventPublisher, never()).publish(any[AppendedEvent])
+      // When & Then
+      recoverToSucceededIf[RuntimeException] {
+        eventStore.append(
+          aggregateId = aggregateId,
+          expectedVersion = 0,
+          events = List(mock[Event])
+        )
+      } map {_ =>
+        verify(eventPublisher, never()).publish(any[AppendedEvent])
+        Succeeded
+      }
     }
     "sauvegarder un evenement dans le store meme si la publication echoue" in {
       // Given
       when(appendOnlyStore.append(ArgumentMatchers.eq(aggregateId.value), ArgumentMatchers.eq(0), ArgumentMatchers.any[List[AppendOnlyData]])) thenReturn Future.successful()
       when(eventPublisher.publish(ArgumentMatchers.any[AppendedEvent]())) thenReturn Future.failed(new RuntimeException("Erreur de publication"))
 
-      // When & Then
-      Await.ready(eventStore.append(
+      // When
+      val future = eventStore.append(
         aggregateId = aggregateId,
         expectedVersion = 0,
         events = List(mock[Event])
-      ), 5.seconds)
+      )
+
+      // Then
+      future map(_ => Succeeded)
     }
   }
 

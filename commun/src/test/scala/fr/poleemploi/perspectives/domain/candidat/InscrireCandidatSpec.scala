@@ -2,7 +2,6 @@ package fr.poleemploi.perspectives.domain.candidat
 
 import java.util.UUID
 
-import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.perspectives.domain.Genre
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
@@ -54,10 +53,10 @@ class InscrireCandidatSpec extends WordSpec
       )
 
       // When
-      val events: List[Event] = candidat.inscrire(commande)
+      val result = candidat.inscrire(commande)
 
       // Then
-      events.size mustBe 1
+      result.size mustBe 1
     }
     "générer un événement contenant les informations d'inscription" in {
       // Given
@@ -68,10 +67,10 @@ class InscrireCandidatSpec extends WordSpec
       )
 
       // When
-      val results = candidat.inscrire(commande)
+      val result = candidat.inscrire(commande)
 
       // Then
-      val event = results.head.asInstanceOf[CandidatInscrisEvent]
+      val event = result.head.asInstanceOf[CandidatInscrisEvent]
       event.nom mustBe commande.nom
       event.prenom mustBe commande.prenom
       event.email mustBe commande.email
