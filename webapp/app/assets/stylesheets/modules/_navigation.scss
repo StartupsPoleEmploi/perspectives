@@ -16,12 +16,7 @@
 .headerPrincipal {
   @include make-col-ready();
 
-  @include media-breakpoint-up(lg) {
-    @include make-col(6);
-    margin-top: 0;
-    text-align: left;
-  }
-  @include media-breakpoint-between(md, lg) {
+  @include media-breakpoint-up(md) {
     @include make-col(5);
     margin-top: 0;
     text-align: left;
@@ -47,20 +42,12 @@
     @include make-col(2);
 
     &--connecte {
-      @include make-col-offset(2);
+      @include make-col-offset(1);
       text-align: center;
-
-      &:after {
-        content: "";
-        position: absolute;
-        right: -8px;
-        top: 7px;
-        height: 12px;
-        border-right: 2px solid #334051;
-      }
     }
 
     &--deconnecte {
+      @include make-col-offset(1);
       text-align: right;
       padding: 0;
     }
@@ -73,10 +60,11 @@
     &--connecte {
       @include make-col-offset(0);
       text-align: center;
+    }
 
-      &:after {
-        display: none;
-      }
+    &--deconnecte {
+      @include make-col-offset(0);
+      text-align: center;
     }
   }
 
@@ -99,11 +87,8 @@
   text-align: center;
   font-size: 0.8rem;
 
-  @include media-breakpoint-up(lg) {
+  @include media-breakpoint-up(md) {
     @include make-col(4);
-  }
-  @include media-breakpoint-between(md, lg) {
-    @include make-col(5);
   }
   @include media-breakpoint-down(md) {
     @include make-col(12);
@@ -117,7 +102,7 @@
 
   @include media-breakpoint-up(md) {
     @include make-col-ready();
-    @include make-col(2);
+    @include make-col(4);
   }
   @include media-breakpoint-down(md) {
     @include make-col(12);
@@ -136,16 +121,32 @@
   .menuNavigationHeader {
     @include userSelect(none);
     cursor: pointer;
-    text-align: center;
 
     @include media-breakpoint-up(md) {
+      text-align: left;
+      padding-left: 3em;
       color: #334051;
+
+      &:before {
+        content: "";
+        position: absolute;
+        left: 15px;
+        top: 3px;
+        height: 13px;
+        border-right: 2px solid #334051;
+      }
     }
     @include media-breakpoint-down(md) {
+      text-align: center;
+      padding-left: 0;
       padding-top: 10px;
       height: 40px;
       color: white;
       background-color: #334051;
+
+      &:before {
+        display: none;
+      }
     }
 
     &-icone {
@@ -185,7 +186,7 @@
 
     @include media-breakpoint-up(md) {
       position: absolute;
-      right: 1em;
+      left: 1em;
       margin: 0.5em 0 0 0;
       border: 1px solid rgba(51, 64, 81, 0.1);
       border-radius: 3.6px;
@@ -193,7 +194,7 @@
     }
     @include media-breakpoint-down(md) {
       position: relative;
-      right: 0;
+      left: 0;
       margin: 0;
       background-color: #6A89CC;
       border: none;
