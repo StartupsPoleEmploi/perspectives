@@ -8,7 +8,7 @@
         <img class="menuNavigationHeader-iconeFermeture" src="@routes.Assets.versioned("images/modules/menuNavigation/fermer-menu.png")"/>
         <img class="menuNavigationHeader-iconeOuverture" src="@routes.Assets.versioned("images/modules/menuNavigation/ouvrir-menu.png")"/>
         <img class="menuNavigationHeader-icone" src="@routes.Assets.versioned("images/modules/menuNavigation/icone-connecte.svg")" />
-        <span class="menuNavigationHeader-whois">@{candidatAuthentifie.prenom.capitalize} @{candidatAuthentifie.nom.capitalize.take(1)}.</span>
+        <span class="menuNavigationHeader-whois">@{candidatAuthentifie.prenom.capitalize} @{candidatAuthentifie.nom.capitalize}</span>
         <img class="menuNavigationHeader-icone" src="@routes.Assets.versioned("images/modules/menuNavigation/derouler-menu.svg")" />
     </div>
     <ul class="menuNavigationActions">
@@ -21,7 +21,7 @@
         <li class="menuNavigationActions-item">
             <a class="menuNavigationActions-lien" href="/candidat/deconnexion">
                 <span class="menuNavigationActions-icone iconeDeconnexion"></span>
-                Se déconnecter
+                Me déconnecter
             </a>
         </li>
     </ul>

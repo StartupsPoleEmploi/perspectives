@@ -6,7 +6,8 @@
 <!DOCTYPE html>
 <html lang="fr">
     <head>
-        <title>Perspectives</title>
+        <title>Perspectives : boostez vos opportunités !</title>
+        <meta name="description" content="Vous êtes recruteurs et recherchez des candidats à former aux besoins de votre entreprise ?" />
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=Edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -28,26 +29,27 @@
                         <span class="introVersion-deco"></span>
                     </div>
                     <header class="introTitres">
-                        <h2 class="intro-titre">Vous recherchez des candidats à former aux besoins de votre entreprise?</h2>
+                        <h2 class="intro-titre">Vous recherchez des candidats à former aux besoins de votre entreprise ?</h2>
                     </header>
                     <div class="presentation">
                         <aside class="avantages">
                             <ul class="listeAvantages">
                                 <li class="listeAvantages-item">Découvrez des candidats dont les aptitudes ont été validées par Pôle emploi</li>
-                                <li class="listeAvantages-item">Contactez des candidats disponibles</li>
-                                <li class="listeAvantages-item">Vous n'avez pas d'offre à déposer</li>
+                                <li class="listeAvantages-item">Contactez des <b>candidats disponibles</b></li>
+                                <li class="listeAvantages-item">Vous n'avez <b>pas d'offre à déposer</b></li>
                             </ul>
                             <div class="introActions">
                                 @if(recruteurAuthentifie.isDefined) {
                                     <a class="bouton bouton-inscription" href="/recruteur/profil">Modifier mon profil</a>
                                 } else {
-                                    <a class="bouton bouton-inscription" href="/recruteur/inscription">Je m'inscris<br><small>(en moins de 30 secondes)</small></a>
+                                    <a class="bouton bouton-inscription" href="/recruteur/inscription">Je m'inscris<br><small>en moins de 30 secondes</small></a>
                                 }
-                                <p class="introActions-sponsor">Crée par Pôle Emploi<span class="introActions-fusee">&#x1F680</span><p>
+                                <p class="introActions-sponsor">Crée par Pôle Emploi<p>
                             </div>
                         </aside>
                         <aside class="introIllustration">
-                            <img src="@routes.Assets.versioned("images/pages/landingEmployeur/intro-landing.svg")" />
+                            <img src="@routes.Assets.versioned("images/pages/landingEmployeur/intro-landing.svg")"
+                                 alt="Perspectives : recrutez des candidats"/>
                         </aside>
                     </div>
                 </div>
@@ -79,12 +81,11 @@
                 @if(recruteurAuthentifie.isDefined) {
                     <a class="bouton bouton-inscription" href="/recruteur/profil">Modifier mon profil</a>
                 } else {
-                    <a class="bouton bouton-inscription" href="/recruteur/inscription">Je m'inscris<br><small>(en moins de 30 secondes)</small></a>
+                    <a class="bouton bouton-inscription" href="/recruteur/inscription">Je m'inscris<br><small>en moins de 30 secondes</small></a>
                 }
             </section>
         </div>
 
-        <footer></footer>
         <script src="@routes.Assets.versioned("javascripts/modules/menuNavigation.js")" type="text/javascript"></script>
         @components.infosWebapp()
     </body>
