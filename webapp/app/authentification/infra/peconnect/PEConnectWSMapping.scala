@@ -2,6 +2,7 @@ package authentification.infra.peconnect
 
 import fr.poleemploi.perspectives.domain.Genre
 import fr.poleemploi.perspectives.domain.authentification.infra.peconnect.PEConnectId
+import fr.poleemploi.perspectives.domain.candidat.Adresse
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsPath, Reads}
 
@@ -50,7 +51,6 @@ object CandidatUserInfos {
     )
 }
 
-
 case class PEConnectRecruteurInfos(peConnectId: PEConnectId,
                                    nom: String,
                                    prenom: String,
@@ -90,5 +90,37 @@ private[peconnect] object Gender {
     case "female" => Genre.FEMME
     case g@_ => throw new IllegalArgumentException(s"Genre inconnu : $g")
   }
+}
 
+private[peconnect] case class CoordonneesCandidatResponse(adresse1: Option[String],
+                                                           adresse2: Option[String],
+                                                           adresse3: Option[String],
+                                                           adresse4: String,
+                                                           codePostal: String,
+                                                           codeINSEE: String,
+                                                           libelleCommune: String,
+                                                           codePays: String,
+                                                           libellePays: String)
+
+private[peconnect] object CoordonneesCandidatResponse {
+
+  implicit val coordoneesCandidatReads: Reads[CoordonneesCandidatResponse] = (
+    (JsPath \ "adresse1").readNullable[String] and
+      (JsPath \ "adresse2").readNullable[String] and
+      (JsPath \ "adresse3").readNullable[String] and
+      (JsPath \ "adresse4").read[String] and
+      (JsPath \ "codePostal").read[String] and
+      (JsPath \ "codeINSEE").read[String] and
+      (JsPath \ "libelleCommune").read[String] and
+      (JsPath \ "codePays").read[String] and
+      (JsPath \ "libellePays").read[String]
+    ) (CoordonneesCandidatResponse.apply _)
+
+  def buildAdresse(coordonneesCandidatResponse: CoordonneesCandidatResponse): Adresse =
+    Adresse(
+      voie = coordonneesCandidatResponse.adresse4.toLowerCase,
+      codePostal = coordonneesCandidatResponse.codePostal,
+      libelleCommune = coordonneesCandidatResponse.libelleCommune.toLowerCase.capitalize,
+      libellePays = coordonneesCandidatResponse.libellePays.toLowerCase.capitalize
+    )
 }

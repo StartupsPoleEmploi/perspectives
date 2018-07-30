@@ -1,6 +1,7 @@
 package authentification.infra.peconnect
 
 import fr.poleemploi.perspectives.domain.authentification.infra.peconnect.PEConnectId
+import fr.poleemploi.perspectives.domain.candidat.Adresse
 
 import scala.concurrent.Future
 
@@ -42,6 +43,9 @@ class PEConnectFacade(oauthService: OauthService,
 
   def getInfosCandidat(accessToken: String): Future[PEConnectCandidatInfos] =
     peConnectWS.getInfosCandidat(accessToken)
+
+  def getAdresseCandidat(accessToken: String): Future[Adresse] =
+    peConnectWS.getCoordonneesCandidat(accessToken)
 
   def getAccessTokenCandidat(authorizationCode: String,
                              redirectUri: String): Future[AccessTokenResponse] =

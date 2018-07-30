@@ -11,24 +11,25 @@ case class InscrireCandidatCommand(override val id: CandidatId,
                                    nom: String,
                                    prenom: String,
                                    email: String,
-                                   genre: Genre) extends Command
+                                   genre: Genre,
+                                   adresse: Adresse) extends Command
 
+// FIXME : Le numéro de téléphone est sur le formulaire des critères de recherche pour l'instant
 case class ModifierCriteresRechercheCommand(override val id: CandidatId,
                                             rechercheMetierEvalue: Boolean,
                                             rechercheAutreMetier: Boolean,
                                             metiersRecherches: Set[Metier],
                                             etreContacteParOrganismeFormation: Boolean,
                                             etreContacteParAgenceInterim: Boolean,
-                                            rayonRecherche: Int) extends Command
+                                            rayonRecherche: Int,
+                                            numeroTelephone: NumeroTelephone) extends Command
 
 case class ModifierProfilPEConnectCommand(override val id: CandidatId,
                                           nom: String,
                                           prenom: String,
                                           email: String,
-                                          genre: Genre) extends Command
-
-case class ModifierNumeroTelephoneCommand(override val id: CandidatId,
-                                          numeroTelephone: NumeroTelephone) extends Command
+                                          genre: Genre,
+                                          adresse: Adresse) extends Command
 
 case class AjouterCVCommand(override val id: CandidatId,
                             nomFichier: String,

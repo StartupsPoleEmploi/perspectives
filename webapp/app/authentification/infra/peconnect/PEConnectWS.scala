@@ -1,5 +1,6 @@
 package authentification.infra.peconnect
 
+import fr.poleemploi.perspectives.domain.candidat.Adresse
 import play.api.libs.ws.{WSClient, WSResponse}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -11,7 +12,7 @@ class PEConnectWS(wsClient: WSClient,
 
   def getInfosRecruteur(accessToken: String): Future[PEConnectRecruteurInfos] =
     wsClient
-      .url(s"${peConnectRecruteurConfig.urlApi}")
+      .url(s"${peConnectRecruteurConfig.urlApi}/peconnect-entreprise/v1/userinfo")
       .addHttpHeaders(("Authorization", s"Bearer $accessToken"))
       .get()
       .map(filtreStatutReponse(_))
@@ -21,12 +22,22 @@ class PEConnectWS(wsClient: WSClient,
 
   def getInfosCandidat(accessToken: String): Future[PEConnectCandidatInfos] =
     wsClient
-      .url(s"${peConnectCandidatConfig.urlApi}")
+      .url(s"${peConnectCandidatConfig.urlApi}/peconnect-individu/v1/userinfo")
       .addHttpHeaders(("Authorization", s"Bearer $accessToken"))
       .get()
       .map(filtreStatutReponse(_))
       .map(response =>
         CandidatUserInfos.toPEConnectCandidatInfos(response.json.as[CandidatUserInfos])
+      )
+
+  def getCoordonneesCandidat(accessToken: String): Future[Adresse] =
+    wsClient
+      .url(s"${peConnectCandidatConfig.urlApi}/peconnect-coordonnees/v1/coordonnees")
+      .addHttpHeaders(("Authorization", s"Bearer $accessToken"))
+      .get()
+      .map(filtreStatutReponse(_))
+      .map(response =>
+        CoordonneesCandidatResponse.buildAdresse(response.json.as[CoordonneesCandidatResponse])
       )
 
   def getAccessTokenCandidat(authorizationCode: String,

@@ -25,12 +25,17 @@ class Candidat(override val id: CandidatId,
       throw new RuntimeException(s"Le candidat ${id.value} est déjà inscrit")
     }
 
-    List(CandidatInscrisEvent(
-      nom = command.nom,
-      prenom = command.prenom,
-      email = command.email,
-      genre = Some(command.genre)
-    ))
+    List(
+      CandidatInscrisEvent(
+        nom = command.nom,
+        prenom = command.prenom,
+        email = command.email,
+        genre = Some(command.genre)
+      ),
+      AdressePEConnectModifieeEvent(
+        adresse = command.adresse
+      )
+    )
   }
 
   def modifierCriteres(command: ModifierCriteresRechercheCommand): List[Event] = {
@@ -38,14 +43,15 @@ class Candidat(override val id: CandidatId,
       throw new RuntimeException(s"Le candidat ${id.value} n'est pas encore inscrit")
     }
 
-    if (!state.rechercheMetierEvalue.contains(command.rechercheMetierEvalue) ||
+    val criteresRechercheModifiesEvent =
+      if (!state.rechercheMetierEvalue.contains(command.rechercheMetierEvalue) ||
       !state.rechercheAutreMetier.contains(command.rechercheAutreMetier) ||
       !state.metiersRecherches.forall(command.metiersRecherches.contains) ||
       !command.metiersRecherches.forall(state.metiersRecherches.contains) ||
       !state.etreContacteParAgenceInterim.contains(command.etreContacteParAgenceInterim) ||
       !state.etreContacteParOrganismeFormation.contains(command.etreContacteParOrganismeFormation) ||
       !state.rayonRecherche.contains(command.rayonRecherche)) {
-      List(CriteresRechercheModifiesEvent(
+      Some(CriteresRechercheModifiesEvent(
         rechercheMetierEvalue = command.rechercheMetierEvalue,
         rechercheAutreMetier = command.rechercheAutreMetier,
         metiersRecherches = command.metiersRecherches,
@@ -53,7 +59,16 @@ class Candidat(override val id: CandidatId,
         etreContacteParOrganismeFormation = command.etreContacteParOrganismeFormation,
         rayonRecherche = command.rayonRecherche
       ))
-    } else Nil
+    } else None
+
+    val numeroTelephoneModifieEvent =
+      if (!state.numeroTelephone.contains(command.numeroTelephone)) {
+      Some(NumeroTelephoneModifieEvent(
+        numeroTelephone = command.numeroTelephone
+      ))
+    } else None
+
+    List(criteresRechercheModifiesEvent, numeroTelephoneModifieEvent).flatten
   }
 
   def modifierProfilPEConnect(command: ModifierProfilPEConnectCommand): List[Event] = {
@@ -61,29 +76,27 @@ class Candidat(override val id: CandidatId,
       throw new RuntimeException(s"Le candidat ${id.value} n'est pas encore inscrit")
     }
 
-    if (!state.nom.contains(command.nom) ||
+    val profilCandidatModifiePEConnectEvent =
+      if (!state.nom.contains(command.nom) ||
       !state.prenom.contains(command.prenom) ||
       !state.email.contains(command.email) ||
       !state.genre.contains(command.genre)) {
-      List(ProfilCandidatModifiePEConnectEvent(
+      Some(ProfilCandidatModifiePEConnectEvent(
         nom = command.nom,
         prenom = command.prenom,
         email = command.email,
         genre = command.genre
       ))
-    } else Nil
-  }
+    } else None
 
-  def modifierNumeroTelephone(command: ModifierNumeroTelephoneCommand): List[Event] = {
-    if (!state.estInscrit) {
-      throw new RuntimeException(s"Le candidat ${id.value} n'est pas encore inscrit")
-    }
-
-    if (!state.numeroTelephone.contains(command.numeroTelephone)) {
-      List(NumeroTelephoneModifieEvent(
-        numeroTelephone = command.numeroTelephone
+    val adressePEConnectModifieeEvent =
+      if (!state.adresse.contains(command.adresse)) {
+      Some(AdressePEConnectModifieeEvent(
+        adresse = command.adresse
       ))
-    } else Nil
+    } else None
+
+    List(profilCandidatModifiePEConnectEvent, adressePEConnectModifieeEvent).flatten
   }
 
   def ajouterCV(command: AjouterCVCommand,
@@ -122,6 +135,7 @@ private[candidat] case class CandidatState(estInscrit: Boolean = false,
                                            prenom: Option[String] = None,
                                            email: Option[String] = None,
                                            genre: Option[Genre] = None,
+                                           adresse: Option[Adresse] = None,
                                            rechercheMetierEvalue: Option[Boolean] = None,
                                            rechercheAutreMetier: Option[Boolean] = None,
                                            metiersRecherches: Set[Metier] = Set.empty,
@@ -158,6 +172,8 @@ private[candidat] case class CandidatState(estInscrit: Boolean = false,
       )
     case e: NumeroTelephoneModifieEvent =>
       copy(numeroTelephone = Some(e.numeroTelephone))
+    case e: AdressePEConnectModifieeEvent =>
+      copy(adresse = Some(e.adresse))
     case _ => this
   }
 }

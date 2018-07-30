@@ -28,3 +28,5 @@ case class ProfilCandidatModifiePEConnectEvent(nom: String,
                                                date: ZonedDateTime = ZonedDateTime.now()) extends CandidatEvent
 
 case class NumeroTelephoneModifieEvent(numeroTelephone: NumeroTelephone) extends CandidatEvent
+
+case class AdressePEConnectModifieeEvent(adresse: Adresse) extends CandidatEvent

@@ -14,12 +14,8 @@ class CandidatCommandHandler(candidatRepository: CandidatRepository,
   def inscrire(command: InscrireCandidatCommand): Future[Unit] =
     execute(command.id, c => Future(c.inscrire(command)))
 
-  // FIXME : Le numéro de téléphone est sur le formulaire des critères de recherche pour l'instant
-  def modifierCriteresRechercheEtTelephone(modifierCriteresRechercheCommand: ModifierCriteresRechercheCommand,
-                                           modifierNumeroTelephoneCommand: ModifierNumeroTelephoneCommand): Future[Unit] =
-    execute(modifierCriteresRechercheCommand.id, candidat => Future(
-      candidat.modifierCriteres(modifierCriteresRechercheCommand) ++ candidat.modifierNumeroTelephone(modifierNumeroTelephoneCommand)
-    ))
+  def modifierCriteresRecherche(command: ModifierCriteresRechercheCommand): Future[Unit] =
+    execute(command.id, c => Future(c.modifierCriteres(command)))
 
   def modifierProfil(command: ModifierProfilPEConnectCommand): Future[Unit] =
     execute(command.id, c => Future(c.modifierProfilPEConnect(command)))

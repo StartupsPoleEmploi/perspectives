@@ -18,7 +18,8 @@ class InscrireCandidatSpec extends WordSpec
       nom = "nom",
       prenom = "prenom",
       email = "email@domain.com",
-      genre = Genre.HOMME
+      genre = Genre.HOMME,
+      adresse = mock[Adresse]
     )
   var candidatInscrisEvent: CandidatInscrisEvent = _
 
@@ -44,7 +45,7 @@ class InscrireCandidatSpec extends WordSpec
       // Then
       ex.getMessage mustBe s"Le candidat ${candidat.id.value} est déjà inscrit"
     }
-    "générer un événement lorsque le candidat n'est pas encore inscrit" in {
+    "générer des événements lorsque le candidat n'est pas encore inscrit" in {
       // Given
       val candidat = new Candidat(
         id = candidatId,
@@ -56,7 +57,7 @@ class InscrireCandidatSpec extends WordSpec
       val result = candidat.inscrire(commande)
 
       // Then
-      result.size mustBe 1
+      result.size mustBe 2
     }
     "générer un événement contenant les informations d'inscription" in {
       // Given
@@ -70,11 +71,30 @@ class InscrireCandidatSpec extends WordSpec
       val result = candidat.inscrire(commande)
 
       // Then
-      val event = result.head.asInstanceOf[CandidatInscrisEvent]
-      event.nom mustBe commande.nom
-      event.prenom mustBe commande.prenom
-      event.email mustBe commande.email
-      event.genre mustBe Some(commande.genre)
+      val event = result.filter(_.isInstanceOf[CandidatInscrisEvent])
+      event.size mustBe 1
+      val candidatInscrisEvent = event.head.asInstanceOf[CandidatInscrisEvent]
+      candidatInscrisEvent.nom mustBe commande.nom
+      candidatInscrisEvent.prenom mustBe commande.prenom
+      candidatInscrisEvent.email mustBe commande.email
+      candidatInscrisEvent.genre mustBe Some(commande.genre)
+    }
+    "générer un événement contenant l'adresse" in {
+      // Given
+      val candidat = new Candidat(
+        id = candidatId,
+        version = 0,
+        events = Nil
+      )
+
+      // When
+      val result = candidat.inscrire(commande)
+
+      // Then
+      val event = result.filter(_.isInstanceOf[AdressePEConnectModifieeEvent])
+      event.size mustBe 1
+      val adressePEConnectModifieeEvent = event.head.asInstanceOf[AdressePEConnectModifieeEvent]
+      adressePEConnectModifieeEvent.adresse mustBe commande.adresse
     }
   }
 

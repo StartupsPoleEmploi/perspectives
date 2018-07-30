@@ -12,27 +12,42 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
 
   val candidatId: CandidatId = CandidatId(UUID.randomUUID().toString)
 
-  val commande: ModifierProfilPEConnectCommand = ModifierProfilPEConnectCommand(
-    id = candidatId,
-    nom = "nom",
-    prenom = "prenom",
-    email = "email",
-    genre = Genre.HOMME
-  )
+  var commande: ModifierProfilPEConnectCommand = _
+  var profilModifieEvent: ProfilCandidatModifiePEConnectEvent = _
+  var candidatInscrisEvent: CandidatInscrisEvent = _
+  var adresse: Adresse = _
+  var adressePEConnectModifieeEvent: AdressePEConnectModifieeEvent = _
 
-  val profilModifieEvent =
-    ProfilCandidatModifiePEConnectEvent(
+  before {
+    candidatInscrisEvent = mock[CandidatInscrisEvent]
+    when(candidatInscrisEvent.genre) thenReturn Some(Genre.HOMME)
+
+    adresse = Adresse(
+      voie = "3 rue des oursons",
+      codePostal = "75020",
+      libelleCommune = "Paris",
+      libellePays = "France"
+    )
+
+    commande = ModifierProfilPEConnectCommand(
+      id = candidatId,
+      nom = "nom",
+      prenom = "prenom",
+      email = "email",
+      genre = Genre.HOMME,
+      adresse = adresse
+    )
+
+    profilModifieEvent = ProfilCandidatModifiePEConnectEvent(
       nom = commande.nom,
       prenom = commande.prenom,
       email = commande.email,
       genre = commande.genre
     )
 
-  var candidatInscrisEvent: CandidatInscrisEvent = _
-
-  before {
-    candidatInscrisEvent = mock[CandidatInscrisEvent]
-    when(candidatInscrisEvent.genre) thenReturn Some(Genre.HOMME)
+    adressePEConnectModifieeEvent = AdressePEConnectModifieeEvent(
+      adresse = adresse
+    )
   }
 
   "modifierProfilPEConnect" should {
@@ -52,12 +67,12 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
       // Then
       ex.getMessage mustBe s"Le candidat ${candidat.id.value} n'est pas encore inscrit"
     }
-    "ne pas générer d'événement si aucun critère n'a été modifié" in {
+    "ne pas générer d'événement si aucune information de profil n'a été modifié" in {
       // Given
       val candidat = new Candidat(
         id = candidatId,
         version = 0,
-        events = List(candidatInscrisEvent, profilModifieEvent)
+        events = List(candidatInscrisEvent, profilModifieEvent, adressePEConnectModifieeEvent)
       )
 
       // When
@@ -66,12 +81,12 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
       // Then
       result.isEmpty mustBe true
     }
-    "générer un événement si un critère a été saisi pour la premiere fois" in {
+    "générer un événement si une information de profil a été saisie pour la premiere fois" in {
       // Given
       val candidat = new Candidat(
         id = candidatId,
         version = 0,
-        events = List(candidatInscrisEvent)
+        events = List(candidatInscrisEvent, adressePEConnectModifieeEvent)
       )
 
       // When
@@ -87,7 +102,7 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
         version = 0,
         events = List(candidatInscrisEvent, profilModifieEvent.copy(
           nom = "ancien nom"
-        ))
+        ), adressePEConnectModifieeEvent)
       )
 
       // When
@@ -105,7 +120,7 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
         version = 0,
         events = List(candidatInscrisEvent, profilModifieEvent.copy(
           nom = "ancien prénom"
-        ))
+        ), adressePEConnectModifieeEvent)
       )
 
       // When
@@ -123,7 +138,7 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
         version = 0,
         events = List(candidatInscrisEvent, profilModifieEvent.copy(
           nom = "ancien-email@domain.fr"
-        ))
+        ), adressePEConnectModifieeEvent)
       )
 
       // When
@@ -141,7 +156,7 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
         version = 0,
         events = List(candidatInscrisEvent, profilModifieEvent.copy(
           genre = Genre.HOMME
-        ))
+        ), adressePEConnectModifieeEvent)
       )
 
       // When
@@ -152,12 +167,12 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
       // Then
       result.size mustBe 1
     }
-    "générer un événement contenant les informations modifiés" in {
+    "générer un événement contenant les informations de profil modifiés" in {
       // Given
       val candidat = new Candidat(
         id = candidatId,
         version = 0,
-        events = List(candidatInscrisEvent)
+        events = List(candidatInscrisEvent, adressePEConnectModifieeEvent)
       )
 
       // When
@@ -169,6 +184,40 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
       event.prenom mustBe commande.prenom
       event.email mustBe commande.email
       event.genre mustBe commande.genre
+    }
+    "générer un événement si l'adresse a été modifiée" in {
+      // Given
+      val candidat = new Candidat(
+        id = candidatId,
+        version = 0,
+        events =
+          List(candidatInscrisEvent, profilModifieEvent, adressePEConnectModifieeEvent.copy(
+          adresse = adresse.copy(voie = "ancienne voie")
+        ))
+      )
+
+      // When
+      val result = candidat.modifierProfilPEConnect(commande.copy(
+        adresse = adresse
+      ))
+
+      // Then
+      result.size mustBe 1
+    }
+    "générer un événement contenant l'adresse modifiée" in {
+      // Given
+      val candidat = new Candidat(
+        id = candidatId,
+        version = 0,
+        events = List(candidatInscrisEvent, profilModifieEvent)
+      )
+
+      // When
+      val result = candidat.modifierProfilPEConnect(commande)
+
+      // Then
+      val event = result.head.asInstanceOf[AdressePEConnectModifieeEvent]
+      event.adresse mustBe commande.adresse
     }
   }
 }

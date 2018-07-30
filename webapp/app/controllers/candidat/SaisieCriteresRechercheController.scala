@@ -71,11 +71,10 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
               },
               saisieCriteresRechercheForm => {
                 val candidatId = candidatAuthentifieRequest.candidatId
-                val modifierNumeroTelephoneCommand = buildModifierNumeroTelephoneCommand(candidatId, saisieCriteresRechercheForm)
                 val modifierCriteresCommand = buildModifierCriteresRechercheCommand(candidatId, saisieCriteresRechercheForm)
 
                 (for {
-                  _ <- candidatCommandHandler.modifierCriteresRechercheEtTelephone(modifierCriteresCommand, modifierNumeroTelephoneCommand)
+                  _ <- candidatCommandHandler.modifierCriteresRecherche(modifierCriteresCommand)
                   _ <- cv.map(cv =>
                     detailsCvDto
                       .map(detailsCv => candidatCommandHandler.remplacerCV(buildRemplacerCvCommand(candidatId, detailsCv.id, cv)))
@@ -110,15 +109,10 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
         else Set.empty,
       etreContacteParOrganismeFormation = stringToBoolean(saisieCriteresRechercheForm.etreContacteParOrganismeFormation),
       etreContacteParAgenceInterim = stringToBoolean(saisieCriteresRechercheForm.etreContacteParAgenceInterim),
-      rayonRecherche = saisieCriteresRechercheForm.rayonRecherche
-    )
-  }
-
-  private def buildModifierNumeroTelephoneCommand(candidatId: CandidatId, saisieCriteresRechercheForm: SaisieCriteresRechercheForm): ModifierNumeroTelephoneCommand =
-    ModifierNumeroTelephoneCommand(
-      id = candidatId,
+      rayonRecherche = saisieCriteresRechercheForm.rayonRecherche,
       numeroTelephone = NumeroTelephone.from(saisieCriteresRechercheForm.numeroTelephone).get
     )
+  }
 
   private def buildAjouterCvCommand(candidatId: CandidatId,
                                     cv: MultipartFormData.FilePart[Files.TemporaryFile]): AjouterCVCommand =

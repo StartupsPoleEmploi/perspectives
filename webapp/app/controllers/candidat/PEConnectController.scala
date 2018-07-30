@@ -6,7 +6,7 @@ import authentification.infra.peconnect._
 import authentification.infra.play._
 import conf.WebAppConfig
 import fr.poleemploi.perspectives.domain.authentification.CandidatAuthentifie
-import fr.poleemploi.perspectives.domain.candidat.{CandidatCommandHandler, CandidatId, InscrireCandidatCommand, ModifierProfilPEConnectCommand}
+import fr.poleemploi.perspectives.domain.candidat._
 import javax.inject.{Inject, Singleton}
 import play.api.Logger
 import play.api.mvc._
@@ -42,7 +42,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
             "realm" -> Seq("/individu"),
             "response_type" -> Seq("code"),
             "client_id" -> Seq(peConnectConfig.clientId),
-            "scope" -> Seq(s"application_${peConnectConfig.clientId} api_peconnect-individuv1 openid profile email"),
+            "scope" -> Seq(s"application_${peConnectConfig.clientId} api_peconnect-individuv1 api_peconnect-coordonneesv1 openid profile email coordonnees"),
             "redirect_uri" -> Seq(redirectUri.absoluteURL()),
             "state" -> Seq(oauthTokens.state),
             "nonce" -> Seq(oauthTokens.nonce)
@@ -69,14 +69,15 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       _ <- Either.cond(peConnectFacade.verifyState(oauthTokens, stateCallback), (), "La comparaison du state a échoué").toFuture
       _ <- Either.cond(peConnectFacade.verifyNonce(oauthTokens, accessTokenResponse.nonce), (), "La comparaison du nonce a échoué").toFuture
       _ <- peConnectFacade.validateAccessToken(accessTokenResponse)
-      candidatInfos <- peConnectFacade.getInfosCandidat(accessTokenResponse.accessToken)
-      optCandidat <- peConnectFacade.findCandidat(candidatInfos.peConnectId)
-      candidatId <- optCandidat.map(c => mettreAJour(c, candidatInfos)).getOrElse(inscrire(candidatInfos))
+      infosCandidat <- peConnectFacade.getInfosCandidat(accessTokenResponse.accessToken)
+      adresse <- peConnectFacade.getAdresseCandidat(accessTokenResponse.accessToken)
+      optCandidat <- peConnectFacade.findCandidat(infosCandidat.peConnectId)
+      candidatId <- optCandidat.map(c => mettreAJour(c, infosCandidat, adresse)).getOrElse(inscrire(infosCandidat, adresse))
     } yield {
       val candidatAuthentifie = CandidatAuthentifie(
         candidatId = candidatId,
-        nom = candidatInfos.nom,
-        prenom = candidatInfos.prenom
+        nom = infosCandidat.nom,
+        prenom = infosCandidat.prenom
       )
       Redirect(routes.SaisieCriteresRechercheController.saisieCriteresRecherche())
         .withSession(SessionCandidatPEConnect.set(accessTokenResponse.idToken, SessionCandidatAuthentifie.set(candidatAuthentifie, oauthTokenSessionStorage.remove(request.session))))
@@ -109,14 +110,16 @@ class PEConnectController @Inject()(cc: ControllerComponents,
     }
   }
 
-  private def inscrire(peConnectCandidatInfos: PEConnectCandidatInfos): Future[CandidatId] = {
+  private def inscrire(peConnectCandidatInfos: PEConnectCandidatInfos,
+                       adresse: Adresse): Future[CandidatId] = {
     val candidatId = CandidatId(UUID.randomUUID().toString)
     val command = InscrireCandidatCommand(
       id = candidatId,
       nom = peConnectCandidatInfos.nom,
       prenom = peConnectCandidatInfos.prenom,
       genre = peConnectCandidatInfos.genre,
-      email = peConnectCandidatInfos.email
+      email = peConnectCandidatInfos.email,
+      adresse = adresse
     )
     candidatCommandHandler.inscrire(command)
       .flatMap(_ => peConnectFacade.saveCandidat(CandidatPEConnect(
@@ -127,14 +130,16 @@ class PEConnectController @Inject()(cc: ControllerComponents,
   }
 
   private def mettreAJour(candidatPEConnect: CandidatPEConnect,
-                          peConnectCandidatInfos: PEConnectCandidatInfos): Future[CandidatId] = {
+                          peConnectCandidatInfos: PEConnectCandidatInfos,
+                          adresse: Adresse): Future[CandidatId] = {
     val candidatId = candidatPEConnect.candidatId
     val command = ModifierProfilPEConnectCommand(
       id = candidatId,
       nom = peConnectCandidatInfos.nom,
       prenom = peConnectCandidatInfos.prenom,
       genre = peConnectCandidatInfos.genre,
-      email = peConnectCandidatInfos.email
+      email = peConnectCandidatInfos.email,
+      adresse = adresse
     )
     candidatCommandHandler.modifierProfil(command).map(_ => candidatId)
   }

@@ -2,7 +2,7 @@ package fr.poleemploi.perspectives.domain.candidat
 
 import java.util.UUID
 
-import fr.poleemploi.perspectives.domain.{Genre, Metier}
+import fr.poleemploi.perspectives.domain.{Genre, Metier, NumeroTelephone}
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, MustMatchers, WordSpec}
@@ -20,7 +20,8 @@ class ModifierCriteresCandidatSpec extends WordSpec
       metiersRecherches = Set.empty,
       etreContacteParAgenceInterim = true,
       etreContacteParOrganismeFormation = true,
-      rayonRecherche = 10
+      rayonRecherche = 10,
+      numeroTelephone = NumeroTelephone("0234567890")
     )
 
   val criteresRechercheModifieEvent =
@@ -31,6 +32,11 @@ class ModifierCriteresCandidatSpec extends WordSpec
       etreContacteParOrganismeFormation = commande.etreContacteParOrganismeFormation,
       metiersRecherches = commande.metiersRecherches,
       rayonRecherche = commande.rayonRecherche
+    )
+
+  val numeroTelephoneModifieEvent =
+    NumeroTelephoneModifieEvent(
+      numeroTelephone = commande.numeroTelephone
     )
 
   var candidatInscrisEvent: CandidatInscrisEvent = _
@@ -62,7 +68,7 @@ class ModifierCriteresCandidatSpec extends WordSpec
       val candidat = new Candidat(
         id = candidatId,
         version = 0,
-        events = List(candidatInscrisEvent, criteresRechercheModifieEvent)
+        events = List(candidatInscrisEvent, criteresRechercheModifieEvent, numeroTelephoneModifieEvent)
       )
 
       // When
@@ -76,7 +82,21 @@ class ModifierCriteresCandidatSpec extends WordSpec
       val candidat = new Candidat(
         id = candidatId,
         version = 0,
-        events = List(candidatInscrisEvent)
+        events = List(candidatInscrisEvent, numeroTelephoneModifieEvent)
+      )
+
+      // When
+      val result = candidat.modifierCriteres(commande)
+
+      // Then
+      result.size mustBe 1
+    }
+    "générer un événement lorsque le numéro de téléphone est saisit la premiere fois" in {
+      // Given
+      val candidat = new Candidat(
+        id = candidatId,
+        version = 0,
+        events = List(candidatInscrisEvent, criteresRechercheModifieEvent)
       )
 
       // When
@@ -90,7 +110,7 @@ class ModifierCriteresCandidatSpec extends WordSpec
       val candidat = new Candidat(
         id = candidatId,
         version = 0,
-        events = List(candidatInscrisEvent, criteresRechercheModifieEvent.copy(
+        events = List(candidatInscrisEvent, numeroTelephoneModifieEvent, criteresRechercheModifieEvent.copy(
           rechercheMetierEvalue = false
         ))
       )
@@ -108,7 +128,7 @@ class ModifierCriteresCandidatSpec extends WordSpec
       val candidat = new Candidat(
         id = candidatId,
         version = 0,
-        events = List(candidatInscrisEvent, criteresRechercheModifieEvent.copy(
+        events = List(candidatInscrisEvent, numeroTelephoneModifieEvent, criteresRechercheModifieEvent.copy(
           rechercheAutreMetier = false
         ))
       )
@@ -126,7 +146,7 @@ class ModifierCriteresCandidatSpec extends WordSpec
       val candidat = new Candidat(
         id = candidatId,
         version = 0,
-        events = List(candidatInscrisEvent, criteresRechercheModifieEvent.copy(
+        events = List(candidatInscrisEvent, numeroTelephoneModifieEvent, criteresRechercheModifieEvent.copy(
           etreContacteParOrganismeFormation = false
         ))
       )
@@ -144,7 +164,7 @@ class ModifierCriteresCandidatSpec extends WordSpec
       val candidat = new Candidat(
         id = candidatId,
         version = 0,
-        events = List(candidatInscrisEvent, criteresRechercheModifieEvent.copy(
+        events = List(candidatInscrisEvent, numeroTelephoneModifieEvent, criteresRechercheModifieEvent.copy(
           etreContacteParAgenceInterim = false
         ))
       )
@@ -162,7 +182,7 @@ class ModifierCriteresCandidatSpec extends WordSpec
       val candidat = new Candidat(
         id = candidatId,
         version = 0,
-        events = List(candidatInscrisEvent, criteresRechercheModifieEvent.copy(
+        events = List(candidatInscrisEvent, numeroTelephoneModifieEvent, criteresRechercheModifieEvent.copy(
           rayonRecherche = 30
         ))
       )
@@ -180,7 +200,7 @@ class ModifierCriteresCandidatSpec extends WordSpec
       val candidat = new Candidat(
         id = candidatId,
         version = 0,
-        events = List(candidatInscrisEvent, criteresRechercheModifieEvent.copy(
+        events = List(candidatInscrisEvent, numeroTelephoneModifieEvent, criteresRechercheModifieEvent.copy(
           metiersRecherches = Set.empty
         ))
       )
@@ -198,7 +218,7 @@ class ModifierCriteresCandidatSpec extends WordSpec
       val candidat = new Candidat(
         id = candidatId,
         version = 0,
-        events = List(candidatInscrisEvent, criteresRechercheModifieEvent.copy(
+        events = List(candidatInscrisEvent, numeroTelephoneModifieEvent, criteresRechercheModifieEvent.copy(
           metiersRecherches = Set(Metier.SERVICE)
         ))
       )
@@ -216,7 +236,7 @@ class ModifierCriteresCandidatSpec extends WordSpec
       val candidat = new Candidat(
         id = candidatId,
         version = 0,
-        events = List(candidatInscrisEvent)
+        events = List(candidatInscrisEvent, numeroTelephoneModifieEvent)
       )
 
       // When
@@ -230,6 +250,38 @@ class ModifierCriteresCandidatSpec extends WordSpec
       event.etreContacteParOrganismeFormation mustBe commande.etreContacteParOrganismeFormation
       event.rayonRecherche mustBe commande.rayonRecherche
       event.metiersRecherches mustBe commande.metiersRecherches
+    }
+    "générer un événement lorsque le candidat est inscrit et que le numéro de téléphone change" in {
+      // Given
+      val candidat = new Candidat(
+        id = candidatId,
+        version = 0,
+        events = List(candidatInscrisEvent, criteresRechercheModifieEvent, numeroTelephoneModifieEvent.copy(
+          numeroTelephone = NumeroTelephone("0134767892")
+        ))
+      )
+
+      // When
+      val result = candidat.modifierCriteres(commande.copy(
+        numeroTelephone = NumeroTelephone("0234567890")
+      ))
+
+      // Then
+      result.size mustBe 1
+    }
+    "générer un événement contenant le numero de téléphone" in {
+      // Given
+      val candidat = new Candidat(
+        id = candidatId,
+        version = 0,
+        events = List(candidatInscrisEvent, criteresRechercheModifieEvent)
+      )
+
+      // When
+      val result = candidat.modifierCriteres(commande)
+
+      // Then
+      result.head.asInstanceOf[NumeroTelephoneModifieEvent].numeroTelephone mustBe commande.numeroTelephone
     }
   }
 
