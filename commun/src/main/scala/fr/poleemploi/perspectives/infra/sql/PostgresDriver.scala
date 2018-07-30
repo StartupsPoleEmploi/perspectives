@@ -2,8 +2,8 @@ package fr.poleemploi.perspectives.infra.sql
 
 import com.github.tminglei.slickpg._
 import fr.poleemploi.perspectives.domain.authentification.infra.peconnect.PEConnectId
-import fr.poleemploi.perspectives.domain.candidat.CandidatId
 import fr.poleemploi.perspectives.domain.candidat.cv.CVId
+import fr.poleemploi.perspectives.domain.candidat.{CandidatId, StatutDemandeurEmploi}
 import fr.poleemploi.perspectives.domain.recruteur.{NumeroSiret, RecruteurId, TypeRecruteur}
 import fr.poleemploi.perspectives.domain.{Genre, Metier, NumeroTelephone}
 
@@ -60,6 +60,11 @@ trait PostgresDriver extends ExPostgresProfile
     implicit val setMetiersColumnType: BaseColumnType[Set[Metier]] = MappedColumnType.base[Set[Metier], List[String]](
       { m => m.map(_.value).toList },
       { s => s.flatMap(Metier.from).toSet }
+    )
+
+    implicit val statutDemandeurEmploiColumnType: BaseColumnType[StatutDemandeurEmploi] = MappedColumnType.base[StatutDemandeurEmploi, String](
+      { st => st.value },
+      { s => StatutDemandeurEmploi.from(s).get }
     )
   }
 

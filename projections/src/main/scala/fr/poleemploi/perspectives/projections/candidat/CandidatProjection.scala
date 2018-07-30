@@ -17,6 +17,7 @@ case class CandidatDto(candidatId: CandidatId,
                        prenom: String,
                        genre: Option[Genre],
                        email: String,
+                       statutDemandeurEmploi: Option[StatutDemandeurEmploi],
                        rechercheMetierEvalue: Option[Boolean],
                        rechercheAutreMetier: Option[Boolean],
                        metiersRecherches: Set[Metier],
@@ -39,6 +40,8 @@ class CandidatProjection(val driver: PostgresDriver,
     case e: ProfilCandidatModifiePEConnectEvent => onProfilPEConnectModifieEvent(CandidatId(aggregateId.value), e)
     case e: CriteresRechercheModifiesEvent => onCriteresRechercheModifiesEvent(CandidatId(aggregateId.value), e)
     case e: NumeroTelephoneModifieEvent => onNumeroTelephoneModifieEvent(CandidatId(aggregateId.value), e)
+    case e: AdressePEConnectModifieeEvent => Future.successful(())
+    case e: StatutDemandeurEmploiPEConnectModifieEvent => onStatutDemandeurEmploiPEConnectModifieEvent(CandidatId(aggregateId.value), e)
   }
 
   import driver.api._
@@ -57,6 +60,8 @@ class CandidatProjection(val driver: PostgresDriver,
 
     def email = column[String]("email")
 
+    def statutDemandeurEmploi = column[Option[StatutDemandeurEmploi]]("statut_demandeur_emploi")
+
     def rechercheMetierEvalue = column[Option[Boolean]]("recherche_metier_evalue")
 
     def rechercheAutreMetier = column[Option[Boolean]]("recherche_autre_metier")
@@ -73,7 +78,7 @@ class CandidatProjection(val driver: PostgresDriver,
 
     def dateInscription = column[ZonedDateTime]("date_inscription")
 
-    def * = (candidatId, nom, prenom, genre, email, rechercheMetierEvalue, rechercheAutreMetier, metiersRecherches, contacteParAgenceInterim, contacteParOrganismeFormation, rayonRecherche, numeroTelephone, dateInscription) <> (CandidatDto.tupled, CandidatDto.unapply)
+    def * = (candidatId, nom, prenom, genre, email, statutDemandeurEmploi, rechercheMetierEvalue, rechercheAutreMetier, metiersRecherches, contacteParAgenceInterim, contacteParOrganismeFormation, rayonRecherche, numeroTelephone, dateInscription) <> (CandidatDto.tupled, CandidatDto.unapply)
   }
 
   val candidatTable = TableQuery[CandidatTable]
@@ -93,8 +98,7 @@ class CandidatProjection(val driver: PostgresDriver,
   private def onCandidatInscrisEvent(candidatId: CandidatId,
                                      event: CandidatInscrisEvent): Future[Unit] =
     database
-      .run(candidatTable.map(
-        c => (c.candidatId, c.nom, c.prenom, c.genre, c.email, c.metiersRecherches, c.dateInscription))
+      .run(candidatTable.map(c => (c.candidatId, c.nom, c.prenom, c.genre, c.email, c.metiersRecherches, c.dateInscription))
         += (candidatId, event.nom, event.prenom, event.genre, event.email, Set.empty, event.date))
       .map(_ => ())
 
@@ -136,6 +140,16 @@ class CandidatProjection(val driver: PostgresDriver,
       c <- candidatTable if c.candidatId === candidatId
     } yield c.numeroTelephone
     val updateAction = query.update(Some(event.numeroTelephone))
+
+    database.run(updateAction).map(_ => ())
+  }
+
+  private def onStatutDemandeurEmploiPEConnectModifieEvent(candidatId: CandidatId,
+                                                           event: StatutDemandeurEmploiPEConnectModifieEvent): Future[Unit] = {
+    val query = for {
+      c <- candidatTable if c.candidatId === candidatId
+    } yield c.statutDemandeurEmploi
+    val updateAction = query.update(Some(event.statutDemandeurEmploi))
 
     database.run(updateAction).map(_ => ())
   }

@@ -30,3 +30,5 @@ case class ProfilCandidatModifiePEConnectEvent(nom: String,
 case class NumeroTelephoneModifieEvent(numeroTelephone: NumeroTelephone) extends CandidatEvent
 
 case class AdressePEConnectModifieeEvent(adresse: Adresse) extends CandidatEvent
+
+case class StatutDemandeurEmploiPEConnectModifieEvent(statutDemandeurEmploi: StatutDemandeurEmploi) extends CandidatEvent

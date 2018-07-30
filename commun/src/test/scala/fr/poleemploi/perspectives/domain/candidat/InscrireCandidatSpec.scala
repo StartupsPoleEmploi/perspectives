@@ -19,7 +19,8 @@ class InscrireCandidatSpec extends WordSpec
       prenom = "prenom",
       email = "email@domain.com",
       genre = Genre.HOMME,
-      adresse = mock[Adresse]
+      adresse = mock[Adresse],
+      statutDemandeurEmploi = StatutDemandeurEmploi.DEMANDEUR_EMPLOI
     )
   var candidatInscrisEvent: CandidatInscrisEvent = _
 
@@ -57,7 +58,7 @@ class InscrireCandidatSpec extends WordSpec
       val result = candidat.inscrire(commande)
 
       // Then
-      result.size mustBe 2
+      result.size mustBe 3
     }
     "générer un événement contenant les informations d'inscription" in {
       // Given
@@ -95,6 +96,23 @@ class InscrireCandidatSpec extends WordSpec
       event.size mustBe 1
       val adressePEConnectModifieeEvent = event.head.asInstanceOf[AdressePEConnectModifieeEvent]
       adressePEConnectModifieeEvent.adresse mustBe commande.adresse
+    }
+    "générer un événement contenant le statut de demandeur d'emploi" in {
+      // Given
+      val candidat = new Candidat(
+        id = candidatId,
+        version = 0,
+        events = Nil
+      )
+
+      // When
+      val result = candidat.inscrire(commande)
+
+      // Then
+      val event = result.filter(_.isInstanceOf[StatutDemandeurEmploiPEConnectModifieEvent])
+      event.size mustBe 1
+      val statutDemandeurEmploiPEConnectModifieEvent = event.head.asInstanceOf[StatutDemandeurEmploiPEConnectModifieEvent]
+      statutDemandeurEmploiPEConnectModifieEvent.statutDemandeurEmploi mustBe commande.statutDemandeurEmploi
     }
   }
 

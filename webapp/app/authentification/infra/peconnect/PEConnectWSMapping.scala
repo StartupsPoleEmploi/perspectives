@@ -2,7 +2,7 @@ package authentification.infra.peconnect
 
 import fr.poleemploi.perspectives.domain.Genre
 import fr.poleemploi.perspectives.domain.authentification.infra.peconnect.PEConnectId
-import fr.poleemploi.perspectives.domain.candidat.Adresse
+import fr.poleemploi.perspectives.domain.candidat.{Adresse, StatutDemandeurEmploi}
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsPath, Reads}
 
@@ -29,7 +29,17 @@ private[peconnect] case class CandidatUserInfos(sub: String,
                                                 familyName: String,
                                                 givenName: String,
                                                 email: String,
-                                                gender: String)
+                                                gender: String) {
+
+  def toPEConnectCandidatInfos: PEConnectCandidatInfos =
+    PEConnectCandidatInfos(
+      peConnectId = PEConnectId(sub),
+      nom = familyName.toLowerCase,
+      prenom = givenName.toLowerCase,
+      email = email.toLowerCase,
+      genre = Gender.extractGender(gender)
+    )
+}
 
 object CandidatUserInfos {
 
@@ -40,15 +50,6 @@ object CandidatUserInfos {
       (JsPath \ "email").read[String] and
       (JsPath \ "gender").read[String]
     ) (CandidatUserInfos.apply _)
-
-  def toPEConnectCandidatInfos(candidatUserInfos: CandidatUserInfos): PEConnectCandidatInfos =
-    PEConnectCandidatInfos(
-      peConnectId = PEConnectId(candidatUserInfos.sub),
-      nom = candidatUserInfos.familyName.toLowerCase,
-      prenom = candidatUserInfos.givenName.toLowerCase,
-      email = candidatUserInfos.email.toLowerCase,
-      genre = Gender.extractGender(candidatUserInfos.gender)
-    )
 }
 
 case class PEConnectRecruteurInfos(peConnectId: PEConnectId,
@@ -61,7 +62,17 @@ private[peconnect] case class RecruteurUserInfos(sub: String,
                                                  familyName: String,
                                                  givenName: String,
                                                  email: String,
-                                                 gender: String)
+                                                 gender: String) {
+
+  def toPEConnectRecruteurInfos: PEConnectRecruteurInfos =
+    PEConnectRecruteurInfos(
+      peConnectId = PEConnectId(sub),
+      nom = familyName.toLowerCase,
+      prenom = givenName.toLowerCase,
+      email = email.toLowerCase,
+      genre = Gender.extractGender(gender)
+    )
+}
 
 object RecruteurUserInfos {
 
@@ -72,15 +83,6 @@ object RecruteurUserInfos {
       (JsPath \ "email").read[String] and
       (JsPath \ "gender").read[String]
     ) (RecruteurUserInfos.apply _)
-
-  def toPEConnectRecruteurInfos(recruteurUserInfos: RecruteurUserInfos): PEConnectRecruteurInfos =
-    PEConnectRecruteurInfos(
-      peConnectId = PEConnectId(recruteurUserInfos.sub),
-      nom = recruteurUserInfos.familyName.toLowerCase,
-      prenom = recruteurUserInfos.givenName.toLowerCase,
-      email = recruteurUserInfos.email.toLowerCase,
-      genre = Gender.extractGender(recruteurUserInfos.gender)
-    )
 }
 
 private[peconnect] object Gender {
@@ -88,23 +90,32 @@ private[peconnect] object Gender {
   def extractGender(gender: String): Genre = gender match {
     case "male" => Genre.HOMME
     case "female" => Genre.FEMME
-    case g@_ => throw new IllegalArgumentException(s"Genre inconnu : $g")
+    case g@_ => throw new IllegalArgumentException(s"Gender inconnu : $g")
   }
 }
 
-private[peconnect] case class CoordonneesCandidatResponse(adresse1: Option[String],
-                                                           adresse2: Option[String],
-                                                           adresse3: Option[String],
-                                                           adresse4: String,
-                                                           codePostal: String,
-                                                           codeINSEE: String,
-                                                           libelleCommune: String,
-                                                           codePays: String,
-                                                           libellePays: String)
+private[peconnect] case class CoordonneesCandidatReponse(adresse1: Option[String],
+                                                         adresse2: Option[String],
+                                                         adresse3: Option[String],
+                                                         adresse4: String,
+                                                         codePostal: String,
+                                                         codeINSEE: String,
+                                                         libelleCommune: String,
+                                                         codePays: String,
+                                                         libellePays: String) {
 
-private[peconnect] object CoordonneesCandidatResponse {
+  def toAdresse: Adresse =
+    Adresse(
+      voie = adresse4.toLowerCase,
+      codePostal = codePostal,
+      libelleCommune = libelleCommune.toLowerCase.capitalize,
+      libellePays = libellePays.toLowerCase.capitalize
+    )
+}
 
-  implicit val coordoneesCandidatReads: Reads[CoordonneesCandidatResponse] = (
+private[peconnect] object CoordonneesCandidatReponse {
+
+  implicit val coordoneesCandidatReads: Reads[CoordonneesCandidatReponse] = (
     (JsPath \ "adresse1").readNullable[String] and
       (JsPath \ "adresse2").readNullable[String] and
       (JsPath \ "adresse3").readNullable[String] and
@@ -114,13 +125,24 @@ private[peconnect] object CoordonneesCandidatResponse {
       (JsPath \ "libelleCommune").read[String] and
       (JsPath \ "codePays").read[String] and
       (JsPath \ "libellePays").read[String]
-    ) (CoordonneesCandidatResponse.apply _)
+    ) (CoordonneesCandidatReponse.apply _)
+}
 
-  def buildAdresse(coordonneesCandidatResponse: CoordonneesCandidatResponse): Adresse =
-    Adresse(
-      voie = coordonneesCandidatResponse.adresse4.toLowerCase,
-      codePostal = coordonneesCandidatResponse.codePostal,
-      libelleCommune = coordonneesCandidatResponse.libelleCommune.toLowerCase.capitalize,
-      libellePays = coordonneesCandidatResponse.libellePays.toLowerCase.capitalize
-    )
+private[peconnect] case class StatutCandidatReponse(codeStatutIndividu: String,
+                                                    libelleStatutIndividu: String) {
+
+  def toStatutDemandeurEmploi: StatutDemandeurEmploi =
+    codeStatutIndividu match {
+      case "0" => StatutDemandeurEmploi.NON_DEMANDEUR_EMPLOI
+      case "1" => StatutDemandeurEmploi.DEMANDEUR_EMPLOI
+      case code@_ => throw new IllegalArgumentException(s"CodeStatutIndividu non géré : $code")
+    }
+}
+
+private[peconnect] object StatutCandidatReponse {
+
+  implicit val statutCandidatReponseReads: Reads[StatutCandidatReponse] = (
+    (JsPath \ "codeStatutIndividu").read[String] and
+      (JsPath \ "libelleStatutIndividu").read[String]
+    ) (StatutCandidatReponse.apply _)
 }

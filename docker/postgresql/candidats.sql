@@ -6,6 +6,7 @@ CREATE TABLE candidats
   prenom   CHARACTER VARYING(255) NOT NULL,
   genre   CHARACTER VARYING(255),
   email   CHARACTER VARYING(255) NOT NULL,
+  statut_demandeur_emploi   CHARACTER VARYING(255),
   recherche_metier_evalue BOOL,
   recherche_autre_metier BOOL,
   metiers_recherches TEXT[],

@@ -54,8 +54,7 @@ class PEConnectInscrisService(val driver: PostgresDriver,
 
   def saveCandidat(candidat: CandidatPEConnect): Future[Unit] =
     database
-      .run(candidatsPEConnectTable.map(
-        c => (c.candidatId, c.peConnectId))
+      .run(candidatsPEConnectTable.map(c => (c.candidatId, c.peConnectId))
         += (candidat.candidatId, candidat.peConnectId))
       .map(_ => ())
 
@@ -67,8 +66,7 @@ class PEConnectInscrisService(val driver: PostgresDriver,
 
   def saveRecruteur(recruteur: RecruteurPEConnect): Future[Unit] =
     database
-      .run(recruteursPEConnectTable.map(
-        r => (r.recruteurId, r.peConnectId))
+      .run(recruteursPEConnectTable.map(r => (r.recruteurId, r.peConnectId))
         += (recruteur.recruteurId, recruteur.peConnectId))
       .map(_ => ())
 

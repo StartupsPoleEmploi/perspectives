@@ -86,8 +86,7 @@ class RecruteurProjection(val driver: PostgresDriver,
   private def onRecruteurInscrisEvent(recruteurId: RecruteurId,
                                       event: RecruteurInscrisEvent): Future[Unit] =
     database
-      .run(recruteurTable.map(
-        r => (r.recruteurId, r.nom, r.prenom, r.genre, r.email, r.dateInscription))
+      .run(recruteurTable.map(r => (r.recruteurId, r.nom, r.prenom, r.genre, r.email, r.dateInscription))
         += (recruteurId, event.nom, event.prenom, event.genre, event.email, event.date))
       .map(_ => ())
 

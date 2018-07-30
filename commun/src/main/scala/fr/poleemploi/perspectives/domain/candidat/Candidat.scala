@@ -34,6 +34,9 @@ class Candidat(override val id: CandidatId,
       ),
       AdressePEConnectModifieeEvent(
         adresse = command.adresse
+      ),
+      StatutDemandeurEmploiPEConnectModifieEvent(
+        statutDemandeurEmploi = command.statutDemandeurEmploi
       )
     )
   }
@@ -96,7 +99,14 @@ class Candidat(override val id: CandidatId,
       ))
     } else None
 
-    List(profilCandidatModifiePEConnectEvent, adressePEConnectModifieeEvent).flatten
+    val statutDemandeurEmploiPEConnectModifieEvent =
+      if (!state.statutDemandeurEmploi.contains(command.statutDemandeurEmploi)) {
+        Some(StatutDemandeurEmploiPEConnectModifieEvent(
+          statutDemandeurEmploi = command.statutDemandeurEmploi
+        ))
+      } else None
+
+    List(profilCandidatModifiePEConnectEvent, adressePEConnectModifieeEvent, statutDemandeurEmploiPEConnectModifieEvent).flatten
   }
 
   def ajouterCV(command: AjouterCVCommand,
@@ -136,6 +146,7 @@ private[candidat] case class CandidatState(estInscrit: Boolean = false,
                                            email: Option[String] = None,
                                            genre: Option[Genre] = None,
                                            adresse: Option[Adresse] = None,
+                                           statutDemandeurEmploi: Option[StatutDemandeurEmploi] = None,
                                            rechercheMetierEvalue: Option[Boolean] = None,
                                            rechercheAutreMetier: Option[Boolean] = None,
                                            metiersRecherches: Set[Metier] = Set.empty,
@@ -174,6 +185,8 @@ private[candidat] case class CandidatState(estInscrit: Boolean = false,
       copy(numeroTelephone = Some(e.numeroTelephone))
     case e: AdressePEConnectModifieeEvent =>
       copy(adresse = Some(e.adresse))
+    case e: StatutDemandeurEmploiPEConnectModifieEvent =>
+      copy(statutDemandeurEmploi = Some(e.statutDemandeurEmploi))
     case _ => this
   }
 }

@@ -21,6 +21,7 @@
                         <th>Prenom</th>
                         <th>Genre</th>
                         <th>Email</th>
+                        <th>Statut Demandeur d'emploi</th>
                         <th>Recherche métier évalué</th>
                         <th>Recherche autre métier</th>
                         <th>Metiers recherchés</th>
@@ -37,6 +38,7 @@
                         <td>@candidat.prenom</td>
                         <td>@candidat.genre.map(_.label)</td>
                         <td>@candidat.email</td>
+                        <td>@candidat.statutDemandeurEmploi.map(_.label)</td>
                         <td>@getBoolean(candidat.rechercheMetierEvalue)</td>
                         <td>@getBoolean(candidat.rechercheAutreMetier)</td>
                         <td>@candidat.metiersRecherches.map(_.label).mkString(", ")</td>

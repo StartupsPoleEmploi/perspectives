@@ -42,7 +42,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
             "realm" -> Seq("/individu"),
             "response_type" -> Seq("code"),
             "client_id" -> Seq(peConnectConfig.clientId),
-            "scope" -> Seq(s"application_${peConnectConfig.clientId} api_peconnect-individuv1 api_peconnect-coordonneesv1 openid profile email coordonnees"),
+            "scope" -> Seq(s"application_${peConnectConfig.clientId} api_peconnect-individuv1 api_peconnect-coordonneesv1 api_peconnect-statutv1 openid profile email coordonnees statut"),
             "redirect_uri" -> Seq(redirectUri.absoluteURL()),
             "state" -> Seq(oauthTokens.state),
             "nonce" -> Seq(oauthTokens.nonce)
@@ -71,8 +71,9 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       _ <- peConnectFacade.validateAccessToken(accessTokenResponse)
       infosCandidat <- peConnectFacade.getInfosCandidat(accessTokenResponse.accessToken)
       adresse <- peConnectFacade.getAdresseCandidat(accessTokenResponse.accessToken)
+      statutDemandeurEmploi <- peConnectFacade.getStatutDemandeurEmploiCandidat(accessTokenResponse.accessToken)
       optCandidat <- peConnectFacade.findCandidat(infosCandidat.peConnectId)
-      candidatId <- optCandidat.map(c => mettreAJour(c, infosCandidat, adresse)).getOrElse(inscrire(infosCandidat, adresse))
+      candidatId <- optCandidat.map(c => mettreAJour(c, infosCandidat, adresse, statutDemandeurEmploi)).getOrElse(inscrire(infosCandidat, adresse, statutDemandeurEmploi))
     } yield {
       val candidatAuthentifie = CandidatAuthentifie(
         candidatId = candidatId,
@@ -111,7 +112,8 @@ class PEConnectController @Inject()(cc: ControllerComponents,
   }
 
   private def inscrire(peConnectCandidatInfos: PEConnectCandidatInfos,
-                       adresse: Adresse): Future[CandidatId] = {
+                       adresse: Adresse,
+                       statutDemandeurEmploi: StatutDemandeurEmploi): Future[CandidatId] = {
     val candidatId = CandidatId(UUID.randomUUID().toString)
     val command = InscrireCandidatCommand(
       id = candidatId,
@@ -119,7 +121,8 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       prenom = peConnectCandidatInfos.prenom,
       genre = peConnectCandidatInfos.genre,
       email = peConnectCandidatInfos.email,
-      adresse = adresse
+      adresse = adresse,
+      statutDemandeurEmploi = statutDemandeurEmploi
     )
     candidatCommandHandler.inscrire(command)
       .flatMap(_ => peConnectFacade.saveCandidat(CandidatPEConnect(
@@ -131,7 +134,8 @@ class PEConnectController @Inject()(cc: ControllerComponents,
 
   private def mettreAJour(candidatPEConnect: CandidatPEConnect,
                           peConnectCandidatInfos: PEConnectCandidatInfos,
-                          adresse: Adresse): Future[CandidatId] = {
+                          adresse: Adresse,
+                          statutDemandeurEmploi: StatutDemandeurEmploi): Future[CandidatId] = {
     val candidatId = candidatPEConnect.candidatId
     val command = ModifierProfilPEConnectCommand(
       id = candidatId,
@@ -139,7 +143,8 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       prenom = peConnectCandidatInfos.prenom,
       genre = peConnectCandidatInfos.genre,
       email = peConnectCandidatInfos.email,
-      adresse = adresse
+      adresse = adresse,
+      statutDemandeurEmploi = statutDemandeurEmploi
     )
     candidatCommandHandler.modifierProfil(command).map(_ => candidatId)
   }

@@ -6,7 +6,7 @@ import authentification.infra.play.SessionCandidatAuthentifie
 import conf.WebAppConfig
 import fr.poleemploi.perspectives.domain.Genre
 import fr.poleemploi.perspectives.domain.authentification.CandidatAuthentifie
-import fr.poleemploi.perspectives.domain.candidat.{Adresse, CandidatCommandHandler, CandidatId, InscrireCandidatCommand}
+import fr.poleemploi.perspectives.domain.candidat._
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
 
@@ -36,7 +36,8 @@ class InscriptionController @Inject()(cc: ControllerComponents,
         codePostal = "75020",
         libelleCommune = "Paris",
         libellePays = "France"
-      )
+      ),
+      statutDemandeurEmploi = StatutDemandeurEmploi.DEMANDEUR_EMPLOI
     )
     candidatCommandHandler.inscrire(command).map { _ =>
       val candidatAuthentifie = CandidatAuthentifie(
