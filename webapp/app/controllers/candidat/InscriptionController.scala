@@ -27,9 +27,9 @@ class InscriptionController @Inject()(cc: ControllerComponents,
     val candidatId = CandidatId(UUID.randomUUID().toString)
     val command = InscrireCandidatCommand(
       id = candidatId,
-      nom = "plantu",
-      prenom = "robert",
-      email = "robert.plantu@mail.com",
+      nom = "perspectives",
+      prenom = "mickael",
+      email = "mickael.perspectives@mail.com",
       genre = Genre.HOMME
     )
     candidatCommandHandler.inscrire(command).map { _ =>
