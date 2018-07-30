@@ -50,7 +50,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
   }
 
   def modifierCriteresRecherche(): Action[MultipartFormData[Files.TemporaryFile]] =
-    candidatAuthentifieAction.async(parse.multipartFormData(5L * 1000L * 1000L)) { candidatAuthentifieRequest: CandidatAuthentifieRequest[MultipartFormData[Files.TemporaryFile]] =>
+    candidatAuthentifieAction.async(parse.multipartFormData(5L * 1024 * 1024)) { candidatAuthentifieRequest: CandidatAuthentifieRequest[MultipartFormData[Files.TemporaryFile]] =>
       messagesAction.async(parse.multipartFormData) { implicit messagesRequest: MessagesRequest[MultipartFormData[Files.TemporaryFile]] =>
         val cv = messagesRequest.body.file("cv").filter(_.ref.path.toFile.length() > 0)
         val typeMediaValide = messagesRequest.body.file("cv").flatMap(_.contentType).exists(SaisieCriteresRechercheForm.mediaTypesValides.contains)
