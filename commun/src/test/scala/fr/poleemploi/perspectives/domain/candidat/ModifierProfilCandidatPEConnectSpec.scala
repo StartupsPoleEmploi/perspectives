@@ -12,28 +12,16 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
 
   val candidatId: CandidatId = CandidatId(UUID.randomUUID().toString)
 
-  var commande: ModifierProfilPEConnectCommand = _
-  var profilModifieEvent: ProfilCandidatModifiePEConnectEvent = _
-  var candidatInscrisEvent: CandidatInscrisEvent = _
-  var adresse: Adresse = _
-  var adressePEConnectModifieeEvent: AdressePEConnectModifieeEvent = _
-  val statutDemandeurEmploiPEConnectModifieEvent: StatutDemandeurEmploiPEConnectModifieEvent =
-    StatutDemandeurEmploiPEConnectModifieEvent(
-      statutDemandeurEmploi = StatutDemandeurEmploi.DEMANDEUR_EMPLOI
-    )
-
-  before {
-    candidatInscrisEvent = mock[CandidatInscrisEvent]
-    when(candidatInscrisEvent.genre) thenReturn Some(Genre.HOMME)
-
-    adresse = Adresse(
+  val adresse: Adresse =
+    Adresse(
       voie = "3 rue des oursons",
       codePostal = "75020",
       libelleCommune = "Paris",
       libellePays = "France"
     )
 
-    commande = ModifierProfilPEConnectCommand(
+  val commande: ModifierProfilPEConnectCommand =
+    ModifierProfilPEConnectCommand(
       id = candidatId,
       nom = "nom",
       prenom = "prenom",
@@ -43,16 +31,27 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
       statutDemandeurEmploi = StatutDemandeurEmploi.DEMANDEUR_EMPLOI
     )
 
-    profilModifieEvent = ProfilCandidatModifiePEConnectEvent(
+  val profilModifieEvent: ProfilCandidatModifiePEConnectEvent =
+    ProfilCandidatModifiePEConnectEvent(
       nom = commande.nom,
       prenom = commande.prenom,
       email = commande.email,
       genre = commande.genre
     )
-
-    adressePEConnectModifieeEvent = AdressePEConnectModifieeEvent(
+  val adressePEConnectModifieeEvent: AdressePEConnectModifieeEvent =
+    AdressePEConnectModifieeEvent(
       adresse = adresse
     )
+  val statutDemandeurEmploiPEConnectModifieEvent: StatutDemandeurEmploiPEConnectModifieEvent =
+    StatutDemandeurEmploiPEConnectModifieEvent(
+      statutDemandeurEmploi = StatutDemandeurEmploi.DEMANDEUR_EMPLOI
+    )
+
+  var candidatInscrisEvent: CandidatInscrisEvent = _
+
+  before {
+    candidatInscrisEvent = mock[CandidatInscrisEvent]
+    when(candidatInscrisEvent.genre) thenReturn Some(Genre.HOMME)
   }
 
   "modifierProfilPEConnect" should {
