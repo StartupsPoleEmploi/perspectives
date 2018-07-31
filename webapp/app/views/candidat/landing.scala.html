@@ -1,5 +1,5 @@
 @import conf.WebAppConfig
-@import fr.poleemploi.perspectives.domain.Metier
+@import fr.poleemploi.perspectives.domain.SecteurActivite
 @import fr.poleemploi.perspectives.domain.authentification.CandidatAuthentifie
 
 @(candidatAuthentifie: Option[CandidatAuthentifie])(implicit flash: Flash, webAppConfig: WebAppConfig)
@@ -86,62 +86,16 @@
         <section class="metiers">
             <h2 class="metiers-titre">Accédez à de nouveaux emplois !</h2>
             <ul class="secteursActivites">
-                <li class="secteursActivites-item">
-                    <span class="secteurActivite-intitule">Agriculture</span>
-                    <ul class="metiersSecteur">
-                        <li class="metiersSecteur-item">@Metier.AIDE_AGRICOLE.label</li>
-                    </ul>
-                </li>
-                <li class="secteursActivites-item">
-                    <span class="secteurActivite-intitule">Hôtellerie restauration</span>
-                    <ul class="metiersSecteur">
-                        <li class="metiersSecteur-item">@Metier.PERSONNEL_POLYVALENT.label</li>
-                        <li class="metiersSecteur-item">@Metier.SERVICE.label</li>
-                    </ul>
-                </li>
-                <li class="secteursActivites-item">
-                    <span class="secteurActivite-intitule">Bâtiment</span>
-                    <ul class="metiersSecteur">
-                        <li class="metiersSecteur-item">@Metier.ELECTRICITE.label</li>
-                        <li class="metiersSecteur-item">@Metier.MACONNERIE.label</li>
-                        <li class="metiersSecteur-item">@Metier.CONDUITE_ENGINS.label</li>
-                    </ul>
-                </li>
-                <li class="secteursActivites-item">
-                    <span class="secteurActivite-intitule">Commerce</span>
-                    <ul class="metiersSecteur">
-                        <li class="metiersSecteur-item">@Metier.MISE_EN_RAYON.label</li>
-                        <li class="metiersSecteur-item">@Metier.CAISSE.label</li>
-                        <li class="metiersSecteur-item">@Metier.VENTE.label</li>
-                        <li class="metiersSecteur-item">@Metier.MANUTENTION.label</li>
-                    </ul>
-                </li>
-                <li class="secteursActivites-item">
-                    <span class="secteurActivite-intitule">Services à la personne</span>
-                    <ul class="metiersSecteur">
-                        <li class="metiersSecteur-item">@Metier.AIDE_PERSONNES_AGEES.label</li>
-                        <li class="metiersSecteur-item">@Metier.AIDE_DOMICILE.label</li>
-                        <li class="metiersSecteur-item">@Metier.NETTOYAGE_LOCAUX.label</li>
-                    </ul>
-                </li>
-                <li class="secteursActivites-item">
-                    <span class="secteurActivite-intitule">Textile</span>
-                    <ul class="metiersSecteur">
-                        <li class="metiersSecteur-item">@Metier.REALISATION_ARTICLES.label</li>
-                        <li class="metiersSecteur-item">@Metier.MECANICIEN_CONFECTION.label</li>
-                    </ul>
-                </li>
-                <li class="secteursActivites-item">
-                    <span class="secteurActivite-intitule">Industrie</span>
-                    <ul class="metiersSecteur">
-                        <li class="metiersSecteur-item">@Metier.CONDUITE_MACHINE.label</li>
-                        <li class="metiersSecteur-item">@Metier.SOUDAGE.label</li>
-                        <li class="metiersSecteur-item">@Metier.FABRICATION_PIECES.label</li>
-                        <li class="metiersSecteur-item">@Metier.TRI_EMBALLAGE.label</li>
-                        <li class="metiersSecteur-item">@Metier.PREPARATION_COMMANDE.label</li>
-                        <li class="metiersSecteur-item">@Metier.MANUTENTION.label</li>
-                    </ul>
-                </li>
+                @for(secteurActivite <- SecteurActivite.values.values) {
+                    <li class="secteursActivites-item">
+                        <span class="secteurActivite-intitule">@secteurActivite.label</span>
+                        <ul class="metiersSecteur">
+                        @for(metier <- secteurActivite.metiers) {
+                            <li class="metiersSecteur-item">@metier.label</li>
+                        }
+                        </ul>
+                    </li>
+                }
             </ul>
         </section>
         <section class="caVousTente">
