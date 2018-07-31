@@ -49,7 +49,6 @@ class ProfilController @Inject()(components: ControllerComponents,
           Future.successful(BadRequest(views.html.recruteur.profil(formWithErrors, recruteurAuthentifie = recruteurAuthentifieRequest.recruteurAuthentifie)))
         },
         inscriptionForm => {
-          Future.successful(NoContent)
           val recruteurId = recruteurAuthentifieRequest.recruteurId
           val command = ModifierProfilCommand(
             id = recruteurId,
