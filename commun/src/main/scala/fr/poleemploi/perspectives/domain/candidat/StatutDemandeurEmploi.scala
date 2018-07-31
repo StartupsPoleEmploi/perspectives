@@ -22,5 +22,5 @@ object StatutDemandeurEmploi {
     DEMANDEUR_EMPLOI.value -> DEMANDEUR_EMPLOI
   )
 
-  def from(r: String): Option[StatutDemandeurEmploi] = values.get(r)
+  def from(value: String): Option[StatutDemandeurEmploi] = values.get(value)
 }

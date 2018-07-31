@@ -16,5 +16,5 @@ object Environnement {
     PRODUCTION.value -> PRODUCTION
   )
 
-  def from(s: String): Environnement = values.getOrElse(s, throw new IllegalArgumentException(s"Environnement inconnu : $s"))
+  def from(value: String): Environnement = values.getOrElse(value, throw new IllegalArgumentException(s"Environnement inconnu : $value"))
 }

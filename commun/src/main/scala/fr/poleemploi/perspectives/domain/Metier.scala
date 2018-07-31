@@ -62,6 +62,6 @@ object Metier {
     PREPARATION_COMMANDE.value -> PREPARATION_COMMANDE
   )
 
-  def from(code: String): Option[Metier] = values.get(code)
+  def from(value: String): Option[Metier] = values.get(value)
 
 }

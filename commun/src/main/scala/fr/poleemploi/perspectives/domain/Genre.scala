@@ -22,5 +22,5 @@ object Genre {
     FEMME.value -> FEMME,
   )
 
-  def from(r: String): Option[Genre] = values.get(r)
+  def from(value: String): Option[Genre] = values.get(value)
 }

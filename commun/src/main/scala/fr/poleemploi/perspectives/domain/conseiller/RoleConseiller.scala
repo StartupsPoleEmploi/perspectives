@@ -12,5 +12,5 @@ object RoleConseiller {
     ADMIN.value -> ADMIN
   )
 
-  def from(r: String): Option[RoleConseiller] = values.get(r)
+  def from(value: String): Option[RoleConseiller] = values.get(value)
 }

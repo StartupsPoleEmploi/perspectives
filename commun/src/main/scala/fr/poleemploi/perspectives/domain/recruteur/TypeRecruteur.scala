@@ -24,6 +24,6 @@ object TypeRecruteur {
     ORGANISME_FORMATION.value -> ORGANISME_FORMATION
   )
 
-  def from(code: String): Option[TypeRecruteur] = values.get(code)
+  def from(value: String): Option[TypeRecruteur] = values.get(value)
 
 }
