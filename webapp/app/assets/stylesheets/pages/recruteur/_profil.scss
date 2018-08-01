@@ -123,20 +123,23 @@
   }
 
   .labelCheckbox {
-    position: relative;
-    padding-left: 35px;
-    padding-right: 35px;
-    min-height: 36px;
-    padding-top: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
     cursor: pointer;
     @include userSelect(none);
 
-    font-size: 1em;
-    font-weight: 600;
+    &-text {
+      font-size: 1em;
+      font-weight: 600;
+      padding-left: 15px;
+      padding-right: 15px;
+      max-width: 90%;
+    }
   }
 
   input[type="checkbox"] {
-    /* Hide the browser's default checkbox */
     position: absolute;
     opacity: 0;
     cursor: pointer;
@@ -149,26 +152,21 @@
   }
 
   .checkmark {
-    position: absolute;
-    top: 9px;
-    left: 0;
+    display: inline-block;
     height: 18px;
     width: 18px;
     border: 2px solid #334051;
     border-radius: 2px;
+    margin: 3px;
   }
 
-  /* Create the checkmark/indicator (hidden when not checked) */
   .checkmark:after {
     content: "";
-    position: absolute;
     display: none;
   }
 
-  /* checkmark indicator */
   .checkmark:after {
-    left: 4px;
-    top: 0;
+    margin-left: 3px;
     width: 7px;
     height: 12px;
     border: solid #82CCDD;

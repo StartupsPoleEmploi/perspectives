@@ -155,11 +155,14 @@
             <div class="validerInscription">
                 <div class="conditions">
                     <input id="js-formerCandidats"
-                           name="formerCandidats"
-                           type="checkbox" value="true" @if(profilForm("formerCandidats").value.contains("true")){checked} />
-                    <label class="labelCheckbox" for="js-formerCandidats">Nous sommes prêts à former le(s) candidat(s) recherché(s)
-                        <span class="question-requise">*</span>
+                    name="formerCandidats"
+                    type="checkbox" value="true" @if(profilForm("formerCandidats").value.contains("true")){checked} />
+                    <label class="labelCheckbox" for="js-formerCandidats">
                         <span class="checkmark"></span>
+                        <span class="labelCheckbox-text">
+                            Nous sommes prêts à former le(s) candidat(s) recherché(s)
+                            <span class="question-requise">*</span>
+                        </span>
                     </label>
                 </div>
                 <button id="js-boutonInscription" class="bouton bouton-action-principale bouton-action-principale--petit" type="submit">
