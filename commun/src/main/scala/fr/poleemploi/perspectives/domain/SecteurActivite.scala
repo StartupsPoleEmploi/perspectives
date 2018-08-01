@@ -16,47 +16,68 @@ case class SecteurActivite(value: String,
   */
 object SecteurActivite {
 
-  val AGRICULTURE = SecteurActivite("A", "Agriculture", Set(
-    Metier.AIDE_AGRICOLE
-  ))
+  val AGRICULTURE = SecteurActivite(
+    value = "A",
+    label = "Agriculture",
+    metiers = Set(
+      Metier.AIDE_AGRICOLE
+    ))
 
-  val HOTELLERIE_RESTAURATION = SecteurActivite("G", "Hôtellerie restauration", Set(
-    Metier.PERSONNEL_POLYVALENT,
-    Metier.SERVICE
-  ))
+  val HOTELLERIE_RESTAURATION = SecteurActivite(
+    value = "G",
+    label = "Hôtellerie restauration",
+    metiers = Set(
+      Metier.PERSONNEL_POLYVALENT,
+      Metier.SERVICE
+    ))
 
-  val BATIMENT = SecteurActivite("F", "Bâtiment", Set(
-    Metier.ELECTRICITE,
-    Metier.MACONNERIE,
-    Metier.CONDUITE_ENGINS
-  ))
+  val BATIMENT = SecteurActivite(
+    value = "F",
+    label = "Bâtiment",
+    metiers = Set(
+      Metier.ELECTRICITE,
+      Metier.MACONNERIE,
+      Metier.CONDUITE_ENGINS
+    ))
 
-  val COMMERCE = SecteurActivite("D", "Commerce", Set(
-    Metier.MISE_EN_RAYON,
-    Metier.CAISSE,
-    Metier.VENTE,
-    Metier.MANUTENTION,
-  ))
+  val COMMERCE = SecteurActivite(
+    value = "D",
+    label = "Commerce",
+    metiers = Set(
+      Metier.MISE_EN_RAYON,
+      Metier.CAISSE,
+      Metier.VENTE,
+      Metier.MANUTENTION,
+    ))
 
-  val SERVICES_A_LA_PERSONNE = SecteurActivite("K", "Services à la personne", Set(
-    Metier.AIDE_PERSONNES_AGEES,
-    Metier.AIDE_DOMICILE,
-    Metier.NETTOYAGE_LOCAUX
-  ))
+  val SERVICES_A_LA_PERSONNE = SecteurActivite(
+    value = "K",
+    label = "Services à la personne",
+    metiers = Set(
+      Metier.AIDE_PERSONNES_AGEES,
+      Metier.AIDE_DOMICILE,
+      Metier.NETTOYAGE_LOCAUX
+    ))
 
-  val TEXTILE = SecteurActivite("B", "Textile", Set(
-    Metier.REALISATION_ARTICLES,
-    Metier.MECANICIEN_CONFECTION
-  ))
+  val TEXTILE = SecteurActivite(
+    value = "B",
+    label = "Textile",
+    metiers = Set(
+      Metier.REALISATION_ARTICLES,
+      Metier.MECANICIEN_CONFECTION
+    ))
 
-  val INDUSTRIE = SecteurActivite("H", "Industrie", Set(
-    Metier.CONDUITE_MACHINE,
-    Metier.SOUDAGE,
-    Metier.FABRICATION_PIECES,
-    Metier.TRI_EMBALLAGE,
-    Metier.PREPARATION_COMMANDE,
-    Metier.MANUTENTION
-  ))
+  val INDUSTRIE = SecteurActivite(
+    value = "H",
+    label = "Industrie",
+    metiers = Set(
+      Metier.CONDUITE_MACHINE,
+      Metier.SOUDAGE,
+      Metier.FABRICATION_PIECES,
+      Metier.TRI_EMBALLAGE,
+      Metier.PREPARATION_COMMANDE,
+      Metier.MANUTENTION
+    ))
 
   val values = ListMap(
     AGRICULTURE.value -> AGRICULTURE,
