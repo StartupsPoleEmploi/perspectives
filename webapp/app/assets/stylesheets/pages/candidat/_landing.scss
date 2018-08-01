@@ -237,6 +237,7 @@
       position: absolute;
       left: -50%;
       width: 200%;
+      white-space: pre-line;
 
       @include media-breakpoint-down(md) {
         position: relative;
