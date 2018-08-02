@@ -1,0 +1,18 @@
+.flashMessages {
+  @include make-container();
+  @include make-container-max-widths();
+}
+
+.flashMessage {
+  @include make-col-ready();
+
+  @include media-breakpoint-up(xs) {
+    @include make-col(12);
+  }
+
+  @include media-breakpoint-up(md) {
+    @include make-col(6);
+    @include make-col-offset(3);
+  }
+  text-align: center;
+}

@@ -2,6 +2,7 @@ package controllers.candidat
 
 import authentification.infra.play.{CandidatAuthentifieAction, CandidatAuthentifieRequest}
 import conf.WebAppConfig
+import controllers.FlashMessages._
 import fr.poleemploi.perspectives.domain.candidat._
 import fr.poleemploi.perspectives.domain.candidat.cv.CVId
 import fr.poleemploi.perspectives.domain.{Metier, NumeroTelephone, RayonRecherche}
@@ -82,7 +83,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
                   ) getOrElse Future.successful(())
                 } yield ()).map(_ =>
                   Redirect(routes.LandingController.landing()).flashing(
-                    ("message_succes", "Merci, vos criteres ont bien été pris en compte")
+                    messagesRequest.flash.withMessageSucces("Merci, vos criteres ont bien été pris en compte")
                   ))
               }
             )
@@ -90,7 +91,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
           case t: Throwable =>
             Logger.error("Erreur lors de l'enregistrement des critères", t)
             Future(Redirect(routes.LandingController.landing()).flashing(
-              ("message_erreur", "Une erreur s'est produite lors de l'enregistrement, veuillez réessayer ultérieurement")
+              messagesRequest.flash.withMessageErreur("Une erreur s'est produite lors de l'enregistrement, veuillez réessayer ultérieurement")
             ))
         }
       }(candidatAuthentifieRequest)

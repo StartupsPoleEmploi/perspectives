@@ -2,6 +2,7 @@ package controllers.recruteur
 
 import authentification.infra.play.{RecruteurAuthentifieAction, RecruteurAuthentifieRequest}
 import conf.WebAppConfig
+import controllers.FlashMessages._
 import fr.poleemploi.perspectives.domain.NumeroTelephone
 import fr.poleemploi.perspectives.domain.recruteur._
 import fr.poleemploi.perspectives.projections.recruteur.{GetRecruteurQuery, RecruteurQueryHandler}
@@ -61,13 +62,13 @@ class ProfilController @Inject()(components: ControllerComponents,
           recruteurCommandHandler.modifierProfil(command)
             .map(_ =>
               Redirect(routes.LandingController.landing()).flashing(
-                ("message_succes", "Merci, votre inscription a bien été prise en compte")
+                messagesRequest.flash.withMessageSucces("Merci, votre inscription a bien été prise en compte")
               ))
             .recoverWith {
               case t: Throwable =>
                 Logger.error("Erreur lors de l'enregistrement de l'inscription", t)
                 Future(Redirect(routes.LandingController.landing()).flashing(
-                  ("message_erreur", "Une erreur s'est produite lors de l'enregistrement, veuillez réessayer ultérieurement")
+                  messagesRequest.flash.withMessageErreur("Une erreur s'est produite lors de l'enregistrement, veuillez réessayer ultérieurement")
                 ))
             }
         }
