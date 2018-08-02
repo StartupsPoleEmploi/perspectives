@@ -8,16 +8,12 @@
   align-items: center;
 
   @include media-breakpoint-up(md) {
-    //@include make-container();
     @include make-container-max-widths();
-    padding-top: 2em;
-    padding-bottom: 3em;
+    padding: 2em 0 3em 0;
   }
   @include media-breakpoint-down(md) {
-    //@include make-container();
     max-width: 100%;
-    padding-top: 0;
-    padding-bottom: 1em;
+    padding: 0 0 1em 0;
   }
 }
 
