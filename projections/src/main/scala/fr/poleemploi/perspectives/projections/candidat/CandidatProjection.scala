@@ -5,7 +5,8 @@ import java.time.ZonedDateTime
 import fr.poleemploi.cqrs.projection.Projection
 import fr.poleemploi.eventsourcing.{AggregateId, Event}
 import fr.poleemploi.perspectives.domain.candidat._
-import fr.poleemploi.perspectives.domain.{Genre, Metier, NumeroTelephone}
+import fr.poleemploi.perspectives.domain.recruteur.TypeRecruteur
+import fr.poleemploi.perspectives.domain.{Genre, Metier, NumeroTelephone, RayonRecherche}
 import fr.poleemploi.perspectives.infra.sql.PostgresDriver
 import slick.jdbc.JdbcBackend.Database
 
@@ -23,7 +24,7 @@ case class CandidatDto(candidatId: CandidatId,
                        metiersRecherches: Set[Metier],
                        contacteParAgenceInterim: Option[Boolean],
                        contacteParOrganismeFormation: Option[Boolean],
-                       rayonRecherche: Option[Int],
+                       rayonRecherche: Option[RayonRecherche],
                        numeroTelephone: Option[NumeroTelephone],
                        dateInscription: ZonedDateTime)
 
@@ -72,7 +73,7 @@ class CandidatProjection(val driver: PostgresDriver,
 
     def contacteParOrganismeFormation = column[Option[Boolean]]("contacte_par_organisme_formation")
 
-    def rayonRecherche = column[Option[Int]]("rayon_recherche")
+    def rayonRecherche = column[Option[RayonRecherche]]("rayon_recherche")
 
     def numeroTelephone = column[Option[NumeroTelephone]]("numero_telephone")
 
@@ -83,10 +84,10 @@ class CandidatProjection(val driver: PostgresDriver,
 
   val candidatTable = TableQuery[CandidatTable]
 
-  def getCandidat(candidatId: CandidatId): Future[CandidatDto] = {
-    val query = candidatTable.filter(c => c.candidatId === candidatId)
+  def getCandidat(query: GetCandidatQuery): Future[CandidatDto] = {
+    val select = candidatTable.filter(c => c.candidatId === query.candidatId)
 
-    database.run(query.result.head)
+    database.run(select.result.head)
   }
 
   def findAllOrderByDateInscription: Future[List[CandidatDto]] = {

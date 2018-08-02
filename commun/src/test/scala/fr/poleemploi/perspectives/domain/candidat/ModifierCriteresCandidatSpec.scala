@@ -2,7 +2,7 @@ package fr.poleemploi.perspectives.domain.candidat
 
 import java.util.UUID
 
-import fr.poleemploi.perspectives.domain.{Genre, Metier, NumeroTelephone}
+import fr.poleemploi.perspectives.domain.{Genre, Metier, NumeroTelephone, RayonRecherche}
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, MustMatchers, WordSpec}
@@ -20,7 +20,7 @@ class ModifierCriteresCandidatSpec extends WordSpec
       metiersRecherches = Set.empty,
       etreContacteParAgenceInterim = true,
       etreContacteParOrganismeFormation = true,
-      rayonRecherche = 10,
+      rayonRecherche = RayonRecherche.MAX_10,
       numeroTelephone = NumeroTelephone("0234567890")
     )
 
@@ -183,13 +183,13 @@ class ModifierCriteresCandidatSpec extends WordSpec
         id = candidatId,
         version = 0,
         events = List(candidatInscrisEvent, numeroTelephoneModifieEvent, criteresRechercheModifieEvent.copy(
-          rayonRecherche = 30
+          rayonRecherche = RayonRecherche.MAX_30
         ))
       )
 
       // When
       val result = candidat.modifierCriteres(commande.copy(
-        rayonRecherche = 50
+        rayonRecherche = RayonRecherche.MAX_50
       ))
 
       // Then

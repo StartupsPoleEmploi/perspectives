@@ -1,8 +1,8 @@
 @import conf.WebAppConfig
 @import controllers.candidat.SaisieCriteresRechercheForm
-@import fr.poleemploi.perspectives.domain.Metier
 @import fr.poleemploi.perspectives.domain.authentification.CandidatAuthentifie
 @import fr.poleemploi.perspectives.domain.candidat.cv.DetailsCV
+@import fr.poleemploi.perspectives.domain.{Metier, RayonRecherche}
 @import helper._
 
 @(saisieCriteresRechercheForm: Form[SaisieCriteresRechercheForm],
@@ -274,54 +274,26 @@
                 </div>
             </dt>
             <dd class="choix">
+            @for(rayonRecherche <- RayonRecherche.values.values) {
                 <span class="choix-item">
-                    <input id="rayonRecherche-10"
+                    <input id="rayonRecherche-@rayonRecherche.value"
                            name="rayonRecherche"
-                           type="radio" value="10"
-                           @if(saisieCriteresRechercheForm("rayonRecherche").value.contains("10")) {
-                            checked
-                            }
-                    />
-                    <label class="labelRadio" for="rayonRecherche-10">Moins de 10km
+                           type="radio" value="@rayonRecherche.value"
+                    @if(saisieCriteresRechercheForm("rayonRecherche").value.contains(rayonRecherche.value.toString)) {
+                        checked
+                    }/>
+                    <label class="labelRadio" for="rayonRecherche-@rayonRecherche.value">
+                        @(rayonRecherche match {
+                            case RayonRecherche.MAX_10 => "Moins de 10km"
+                            case RayonRecherche.MAX_30 => "Moins de 30km"
+                            case RayonRecherche.MAX_50 => "Moins de 50km"
+                            case RayonRecherche.MAX_100 => "Plus de 50km"
+                            case _ => ""
+                        })
                         <span class="labelRadio-circle"></span>
                     </label>
                 </span>
-                <span class="choix-item">
-                    <input id="rayonRecherche-30"
-                           name="rayonRecherche"
-                           type="radio" value="30"
-                           @if(saisieCriteresRechercheForm("rayonRecherche").value.contains("30")) {
-                            checked
-                            }
-                    />
-                    <label class="labelRadio" for="rayonRecherche-30">Moins de 30km
-                        <span class="labelRadio-circle"></span>
-                    </label>
-                </span>
-                <span class="choix-item">
-                    <input id="rayonRecherche-50"
-                           name="rayonRecherche"
-                           type="radio" value="50"
-                           @if(saisieCriteresRechercheForm("rayonRecherche").value.contains("50")) {
-                            checked
-                            }
-                    />
-                    <label class="labelRadio" for="rayonRecherche-50">Moins de 50km
-                        <span class="labelRadio-circle"></span>
-                    </label>
-                </span>
-                <span class="choix-item">
-                    <input id="rayonRecherche-1000"
-                           name="rayonRecherche"
-                           type="radio" value="1000"
-                           @if(saisieCriteresRechercheForm("rayonRecherche").value.contains("1000")) {
-                            checked
-                            }
-                    />
-                    <label class="labelRadio" for="rayonRecherche-1000">Plus de 50km
-                        <span class="labelRadio-circle"></span>
-                    </label>
-                </span>
+            }
             </dd>
             @if(hasErrors("rayonRecherche")) {
             <dd class="erreurs">

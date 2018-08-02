@@ -9,7 +9,7 @@ class CandidatQueryHandler(candidatProjection: CandidatProjection,
                            cvService: CVService) extends QueryHandler {
 
   def getCandidat(query: GetCandidatQuery): Future[CandidatDto] =
-    candidatProjection.getCandidat(query.candidatId)
+    candidatProjection.getCandidat(query)
 
   def findAllOrderByDateInscription(): Future[List[CandidatDto]] =
     candidatProjection.findAllOrderByDateInscription

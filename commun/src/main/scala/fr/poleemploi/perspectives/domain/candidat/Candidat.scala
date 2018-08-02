@@ -4,7 +4,7 @@ import java.util.UUID
 
 import fr.poleemploi.eventsourcing.{Aggregate, Event}
 import fr.poleemploi.perspectives.domain.candidat.cv.{CVId, CVService}
-import fr.poleemploi.perspectives.domain.{Genre, Metier, NumeroTelephone}
+import fr.poleemploi.perspectives.domain.{Genre, Metier, NumeroTelephone, RayonRecherche}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -152,7 +152,7 @@ private[candidat] case class CandidatState(estInscrit: Boolean = false,
                                            metiersRecherches: Set[Metier] = Set.empty,
                                            etreContacteParAgenceInterim: Option[Boolean] = None,
                                            etreContacteParOrganismeFormation: Option[Boolean] = None,
-                                           rayonRecherche: Option[Int] = None,
+                                           rayonRecherche: Option[RayonRecherche] = None,
                                            numeroTelephone: Option[NumeroTelephone] = None,
                                            cvId: Option[CVId] = None) {
 

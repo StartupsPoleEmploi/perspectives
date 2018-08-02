@@ -9,3 +9,11 @@ trait StringValueObject extends ValueObject {
 
   def value: String
 }
+
+/**
+  * Value Object qui wrappe un Int
+  */
+trait IntValueObject extends ValueObject {
+
+  def value: Int
+}

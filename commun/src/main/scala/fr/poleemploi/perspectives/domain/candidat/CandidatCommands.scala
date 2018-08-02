@@ -4,7 +4,7 @@ import java.nio.file.Path
 
 import fr.poleemploi.cqrs.command.Command
 import fr.poleemploi.perspectives.domain.candidat.cv.CVId
-import fr.poleemploi.perspectives.domain.{Genre, Metier, NumeroTelephone}
+import fr.poleemploi.perspectives.domain.{Genre, Metier, NumeroTelephone, RayonRecherche}
 
 
 case class InscrireCandidatCommand(override val id: CandidatId,
@@ -22,7 +22,7 @@ case class ModifierCriteresRechercheCommand(override val id: CandidatId,
                                             metiersRecherches: Set[Metier],
                                             etreContacteParOrganismeFormation: Boolean,
                                             etreContacteParAgenceInterim: Boolean,
-                                            rayonRecherche: Int,
+                                            rayonRecherche: RayonRecherche,
                                             numeroTelephone: NumeroTelephone) extends Command
 
 case class ModifierProfilPEConnectCommand(override val id: CandidatId,

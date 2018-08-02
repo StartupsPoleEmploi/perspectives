@@ -1,11 +1,12 @@
 package fr.poleemploi.perspectives.infra.sql
 
 import com.github.tminglei.slickpg._
+import com.github.tminglei.slickpg.array.PgArrayExtensions
 import fr.poleemploi.perspectives.domain.authentification.infra.peconnect.PEConnectId
 import fr.poleemploi.perspectives.domain.candidat.cv.CVId
 import fr.poleemploi.perspectives.domain.candidat.{CandidatId, StatutDemandeurEmploi}
 import fr.poleemploi.perspectives.domain.recruteur.{NumeroSiret, RecruteurId, TypeRecruteur}
-import fr.poleemploi.perspectives.domain.{Genre, Metier, NumeroTelephone}
+import fr.poleemploi.perspectives.domain.{Genre, Metier, NumeroTelephone, RayonRecherche}
 
 trait PostgresDriver extends ExPostgresProfile
   with PgArraySupport
@@ -28,12 +29,12 @@ trait PostgresDriver extends ExPostgresProfile
     )
 
     implicit val cvIdColumnType: BaseColumnType[CVId] = MappedColumnType.base[CVId, String](
-      { id => id.value},
+      { id => id.value },
       { s => CVId(s) }
     )
 
     implicit val peConnectIdColumnType: BaseColumnType[PEConnectId] = MappedColumnType.base[PEConnectId, String](
-      { id => id.value},
+      { id => id.value },
       { s => PEConnectId(s) }
     )
 
@@ -70,6 +71,11 @@ trait PostgresDriver extends ExPostgresProfile
     implicit val statutDemandeurEmploiColumnType: BaseColumnType[StatutDemandeurEmploi] = MappedColumnType.base[StatutDemandeurEmploi, String](
       { st => st.value },
       { s => StatutDemandeurEmploi.from(s).get }
+    )
+
+    implicit val rayonRechercheColumnType: BaseColumnType[RayonRecherche] = MappedColumnType.base[RayonRecherche, Int](
+      { r => r.value },
+      { s => RayonRecherche.from(s).get }
     )
   }
 

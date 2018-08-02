@@ -3,7 +3,7 @@ package fr.poleemploi.perspectives.domain.candidat
 import java.time.ZonedDateTime
 
 import fr.poleemploi.eventsourcing.Event
-import fr.poleemploi.perspectives.domain.{Genre, Metier, NumeroTelephone}
+import fr.poleemploi.perspectives.domain.{Genre, Metier, NumeroTelephone, RayonRecherche}
 
 sealed trait CandidatEvent extends Event
 
@@ -18,7 +18,7 @@ case class CriteresRechercheModifiesEvent(rechercheMetierEvalue: Boolean,
                                           metiersRecherches: Set[Metier],
                                           etreContacteParOrganismeFormation: Boolean,
                                           etreContacteParAgenceInterim: Boolean,
-                                          rayonRecherche: Int,
+                                          rayonRecherche: RayonRecherche,
                                           date: ZonedDateTime = ZonedDateTime.now()) extends CandidatEvent
 
 case class ProfilCandidatModifiePEConnectEvent(nom: String,

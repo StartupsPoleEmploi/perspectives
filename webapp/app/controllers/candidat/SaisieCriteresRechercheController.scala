@@ -4,7 +4,7 @@ import authentification.infra.play.{CandidatAuthentifieAction, CandidatAuthentif
 import conf.WebAppConfig
 import fr.poleemploi.perspectives.domain.candidat._
 import fr.poleemploi.perspectives.domain.candidat.cv.CVId
-import fr.poleemploi.perspectives.domain.{Metier, NumeroTelephone}
+import fr.poleemploi.perspectives.domain.{Metier, NumeroTelephone, RayonRecherche}
 import fr.poleemploi.perspectives.projections.candidat.{CandidatQueryHandler, FindDetailsCVByCandidatQuery, GetCandidatQuery}
 import javax.inject.Inject
 import play.api.Logger
@@ -36,7 +36,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
             metiersRecherches = candidatDto.metiersRecherches.map(_.value),
             etreContacteParAgenceInterim = candidatDto.contacteParAgenceInterim.map(booleanToString).getOrElse(""),
             etreContacteParOrganismeFormation = candidatDto.contacteParOrganismeFormation.map(booleanToString).getOrElse(""),
-            rayonRecherche = candidatDto.rayonRecherche.getOrElse(0),
+            rayonRecherche = candidatDto.rayonRecherche.map(_.value).getOrElse(0),
             numeroTelephone = candidatDto.numeroTelephone.map(_.value).getOrElse("")
           )
         )
@@ -109,7 +109,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
         else Set.empty,
       etreContacteParOrganismeFormation = stringToBoolean(saisieCriteresRechercheForm.etreContacteParOrganismeFormation),
       etreContacteParAgenceInterim = stringToBoolean(saisieCriteresRechercheForm.etreContacteParAgenceInterim),
-      rayonRecherche = saisieCriteresRechercheForm.rayonRecherche,
+      rayonRecherche = RayonRecherche.from(saisieCriteresRechercheForm.rayonRecherche).get,
       numeroTelephone = NumeroTelephone.from(saisieCriteresRechercheForm.numeroTelephone).get
     )
   }
