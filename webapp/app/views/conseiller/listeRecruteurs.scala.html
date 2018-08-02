@@ -10,42 +10,38 @@
 }
 
 @layout() {
-<div id="recruteurs">
-    <div class="container-fluid">
-        <div class="table-responsive">
-            <table class="table">
-                <thead class="thead-light">
-                    <tr>
-                        <th>Date d'inscription</th>
-                        <th>Type</th>
-                        <th>Raison sociale</th>
-                        <th>Genre</th>
-                        <th>Nom</th>
-                        <th>Prénom</th>
-                        <th>Email</th>
-                        <th>Téléphone</th>
-                        <th>SIRET</th>
-                        <th>Etre contacté par les candidats</th>
-                    </tr>
-                </thead>
-                <tbody>
-                @for(recruteur <- recruteurs) {
-                    <tr>
-                        <td>@recruteur.dateInscription.format(DateTimeFormatter.ofPattern("d MMM yyyy hh:mm"))</td>
-                        <td>@recruteur.typeRecruteur.map(_.label)</td>
-                        <td>@recruteur.raisonSociale</td>
-                        <td>@recruteur.genre.label</td>
-                        <td>@recruteur.nom</td>
-                        <td>@recruteur.prenom</td>
-                        <td>@recruteur.email</td>
-                        <td>@recruteur.numeroTelephone.map(_.value)</td>
-                        <td>@recruteur.numeroSiret.map(_.value)</td>
-                        <td>@getBoolean(recruteur.contactParCandidats)</td>
-                    </tr>
-                }
-                </tbody>
-            </table>
-        </div>
-    </div>
+<div id="listeRecruteurs">
+    <table class="table table-responsive">
+        <thead class="thead-light">
+            <tr>
+                <th>Date d'inscription</th>
+                <th>Type</th>
+                <th>Raison sociale</th>
+                <th>Genre</th>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Email</th>
+                <th>Téléphone</th>
+                <th>SIRET</th>
+                <th>Etre contacté par les candidats</th>
+            </tr>
+        </thead>
+        <tbody>
+        @for(recruteur <- recruteurs) {
+            <tr>
+                <td>@recruteur.dateInscription.format(DateTimeFormatter.ofPattern("d MMM yyyy hh:mm"))</td>
+                <td>@recruteur.typeRecruteur.map(_.label)</td>
+                <td>@recruteur.raisonSociale</td>
+                <td>@recruteur.genre.label</td>
+                <td>@recruteur.nom</td>
+                <td>@recruteur.prenom</td>
+                <td>@recruteur.email</td>
+                <td>@recruteur.numeroTelephone.map(_.value)</td>
+                <td>@recruteur.numeroSiret.map(_.value)</td>
+                <td>@getBoolean(recruteur.contactParCandidats)</td>
+            </tr>
+        }
+        </tbody>
+    </table>
 </div>
 }

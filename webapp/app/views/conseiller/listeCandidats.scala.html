@@ -11,47 +11,43 @@
 
 @layout() {
 <div id="listeCandidats">
-    <div class="container-fluid">
-        <div class="table-responsive">
-            <table class="table">
-                <thead class="thead-light">
-                    <tr>
-                        <th>Date d'inscription</th>
-                        <th>Nom</th>
-                        <th>Prenom</th>
-                        <th>Genre</th>
-                        <th>Email</th>
-                        <th>Téléphone</th>
-                        <th>Statut Demandeur d'emploi</th>
-                        <th>Recherche métier évalué</th>
-                        <th>Recherche autre métier</th>
-                        <th>Metiers recherchés</th>
-                        <th>Etre contacté par interims</th>
-                        <th>Etre contacté par formations</th>
-                        <th>Rayon de recherche (KM)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                @for(candidat <- candidats) {
-                    <tr>
-                        <td>@candidat.dateInscription.format(DateTimeFormatter.ofPattern("d MMM yyyy hh:mm"))</td>
-                        <td>@candidat.nom</td>
-                        <td>@candidat.prenom</td>
-                        <td>@candidat.genre.map(_.label)</td>
-                        <td>@candidat.email</td>
-                        <td>@candidat.numeroTelephone.map(_.value)</td>
-                        <td>@candidat.statutDemandeurEmploi.map(_.label)</td>
-                        <td>@getBoolean(candidat.rechercheMetierEvalue)</td>
-                        <td>@getBoolean(candidat.rechercheAutreMetier)</td>
-                        <td>@candidat.metiersRecherches.map(_.label).mkString(", ")</td>
-                        <td>@getBoolean(candidat.contacteParAgenceInterim)</td>
-                        <td>@getBoolean(candidat.contacteParOrganismeFormation)</td>
-                        <td>@candidat.rayonRecherche</td>
-                    </tr>
-                }
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <table class="table table-responsive">
+        <thead class="thead-light">
+            <tr>
+                <th>Date d'inscription</th>
+                <th>Nom</th>
+                <th>Prenom</th>
+                <th>Genre</th>
+                <th>Email</th>
+                <th>Téléphone</th>
+                <th>Statut Demandeur d'emploi</th>
+                <th>Recherche métier évalué</th>
+                <th>Recherche autre métier</th>
+                <th>Metiers recherchés</th>
+                <th>Etre contacté par interims</th>
+                <th>Etre contacté par formations</th>
+                <th>Rayon de recherche (KM)</th>
+            </tr>
+        </thead>
+        <tbody>
+        @for(candidat <- candidats) {
+            <tr>
+                <td>@candidat.dateInscription.format(DateTimeFormatter.ofPattern("d MMM yyyy hh:mm"))</td>
+                <td>@candidat.nom</td>
+                <td>@candidat.prenom</td>
+                <td>@candidat.genre.map(_.label)</td>
+                <td>@candidat.email</td>
+                <td>@candidat.numeroTelephone.map(_.value)</td>
+                <td>@candidat.statutDemandeurEmploi.map(_.label)</td>
+                <td>@getBoolean(candidat.rechercheMetierEvalue)</td>
+                <td>@getBoolean(candidat.rechercheAutreMetier)</td>
+                <td>@candidat.metiersRecherches.map(_.label).mkString(", ")</td>
+                <td>@getBoolean(candidat.contacteParAgenceInterim)</td>
+                <td>@getBoolean(candidat.contacteParOrganismeFormation)</td>
+                <td>@candidat.rayonRecherche</td>
+            </tr>
+        }
+        </tbody>
+    </table>
 </div>
 }
