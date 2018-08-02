@@ -6,6 +6,8 @@ import play.api.libs.ws.{WSClient, WSResponse}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
+case class PEConnectException(message: String) extends Exception(message)
+
 class PEConnectWS(wsClient: WSClient,
                   peConnectRecruteurConfig: PEConnectRecruteurConfig,
                   peConnectCandidatConfig: PEConnectCandidatConfig) {
@@ -103,8 +105,8 @@ class PEConnectWS(wsClient: WSClient,
   private def filtreStatutReponse(response: WSResponse,
                                   statutErreur: Int => Boolean = s => s >= 400,
                                   statutNonGere: Int => Boolean = s => s != 200): WSResponse = response.status match {
-    case s if statutErreur(s) => throw new RuntimeException(s"Erreur lors de l'appel à PEConnect. Code: ${response.status}. Reponse : ${response.body}")
-    case s if statutNonGere(s) => throw new RuntimeException(s"Statut non géré lors de l'appel à PEConnect. Code: ${response.status}. Reponse : ${response.body}")
+    case s if statutErreur(s) => throw PEConnectException(s"Erreur lors de l'appel à PEConnect. Code: ${response.status}. Reponse : ${response.body}")
+    case s if statutNonGere(s) => throw PEConnectException(s"Statut non géré lors de l'appel à PEConnect. Code: ${response.status}. Reponse : ${response.body}")
     case _ => response
   }
 }

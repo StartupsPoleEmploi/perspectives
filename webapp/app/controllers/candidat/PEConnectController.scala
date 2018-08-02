@@ -5,6 +5,7 @@ import java.util.UUID
 import authentification.infra.peconnect._
 import authentification.infra.play._
 import conf.WebAppConfig
+import controllers.FlashMessages._
 import fr.poleemploi.perspectives.domain.authentification.CandidatAuthentifie
 import fr.poleemploi.perspectives.domain.candidat._
 import javax.inject.{Inject, Singleton}
@@ -51,9 +52,9 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       case t: Throwable =>
         Logger.error("Erreur lors de l'authentification PEConnect", t)
         // Nettoyage de session et redirect
-        Redirect(routes.LandingController.landing()).withSession(
-          oauthTokenSessionStorage.remove(request.session)
-        )
+        Redirect(routes.LandingController.landing())
+          .withSession(oauthTokenSessionStorage.remove(request.session))
+          .flashing(request.flash.withMessageErreur("Une erreur est survenue lors de l'accès au service de Pôle Emploi, veuillez réessayer ultérieurement"))
     }
   }
 
@@ -83,6 +84,12 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       Redirect(routes.SaisieCriteresRechercheController.saisieCriteresRecherche())
         .withSession(SessionCandidatPEConnect.set(accessTokenResponse.idToken, SessionCandidatAuthentifie.set(candidatAuthentifie, oauthTokenSessionStorage.remove(request.session))))
     }).recover {
+      case t: PEConnectException =>
+        Logger.error("Erreur lors du callback PEConnect", t)
+        // Nettoyage de session et redirect
+        Redirect(routes.LandingController.landing())
+          .withSession(oauthTokenSessionStorage.remove(request.session))
+          .flashing(request.flash.withMessageErreur("Une erreur est survenue lors de l'accès au service de Pôle Emploi, veuillez réessayer ultérieurement"))
       case t: Throwable =>
         Logger.error("Erreur lors du callback PEConnect", t)
         // Nettoyage de session et redirect
