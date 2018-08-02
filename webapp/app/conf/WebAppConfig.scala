@@ -9,6 +9,7 @@ class WebAppConfig(configuration: Configuration) {
 
   val usePEConnect: Boolean = configuration.getOptional[Boolean]("usePEConnect").getOrElse(true)
   val useSlackNotificationCandidat: Boolean = configuration.getOptional[Boolean]("useSlackNotificationCandidat").getOrElse(true)
+  val useGoogleTagManager: Boolean = configuration.getOptional[Boolean]("useGoogleTagManager").getOrElse(true)
 
   val environnement: Environnement = Environnement.from(configuration.get[String]("environnement"))
   val version: String = BuildInfo.version
