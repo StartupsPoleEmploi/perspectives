@@ -20,17 +20,15 @@
     <body>
         @components.googleTagManagerNoScript()
         <div class="navigation">
-            <div class="row align-items-center">
-                @components.headerPrincipal()
-                <nav class="accesLanding @if(candidatAuthentifie.isDefined){accesLanding--connecte} else {accesLanding--deconnecte}">
-                    <a class="accesLanding-lien" href="/recruteur">Accès recruteur</a>
-                </nav>
-                @candidatAuthentifie.map(c => components.menuCandidat(c)).getOrElse {
-                <div class="conteneurPEConnect">
-                    @components.peconnect("/candidat/inscription")
-                </div>
-                }
+            @components.headerPrincipal()
+            <nav class="accesLanding @if(candidatAuthentifie.isDefined){accesLanding--connecte} else {accesLanding--deconnecte}">
+                <a class="accesLanding-lien" href="/recruteur">Accès recruteur</a>
+            </nav>
+            @candidatAuthentifie.map(c => components.menuCandidat(c)).getOrElse {
+            <div class="conteneurPEConnect">
+                @components.peconnect("/candidat/inscription")
             </div>
+            }
         </div>
         @components.flashMessages()
 
