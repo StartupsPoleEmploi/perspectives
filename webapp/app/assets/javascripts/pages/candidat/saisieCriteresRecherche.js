@@ -4,7 +4,7 @@ $(document).ready(function () {
     var secteursActivites = $("input[type='checkbox'][name='secteurActivite']");
 
     // On cache les métiers : on affiche uniquement les secteurs d'activité
-    $(".metiers-container").hide();
+    $(".conteneurMetiers").hide();
 
     $("#rechercheAutreMetier-oui").each(function () {
         $('#js-critere-metiers').toggle($(this).prop("checked"));
@@ -31,7 +31,7 @@ $(document).ready(function () {
         var clickedSecteurActivite = $(this);
         var labelClickedSecteurActivite = $("label[for='" + clickedSecteurActivite.attr("id") + "']");
         var compteurClickedSecteurActivite = labelClickedSecteurActivite.find(".compteur-metiers-selectionnes");
-        var metiersContainer = clickedSecteurActivite.siblings(".metiers-container");
+        var metiersContainer = clickedSecteurActivite.siblings(".conteneurMetiers");
 
         // Tout ce qu'on sait c'est que les métiers sont cachés au démarrage
         metiersContainer.toggle();
@@ -54,7 +54,7 @@ $(document).ready(function () {
             var unclickedSecteurActivite = $(this);
             var unclickedLabelClickedSecteurActivite = $("label[for='" + unclickedSecteurActivite.attr("id") + "']");
 
-            unclickedSecteurActivite.siblings(".metiers-container").hide();
+            unclickedSecteurActivite.siblings(".conteneurMetiers").hide();
             unclickedSecteurActivite.prop("checked", false);
 
             // On modifie la classe

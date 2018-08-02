@@ -159,6 +159,11 @@
     padding-left: 1em;
   }
 
+  .conteneurMetiers {
+    @include make-row();
+    margin-bottom: 1rem;
+  }
+
   .metiers {
     @include make-col-ready();
     @include make-col(11);
