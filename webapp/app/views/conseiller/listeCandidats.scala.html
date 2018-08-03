@@ -44,7 +44,7 @@
                 <td>@candidat.metiersRecherches.map(_.label).mkString(", ")</td>
                 <td>@getBoolean(candidat.contacteParAgenceInterim)</td>
                 <td>@getBoolean(candidat.contacteParOrganismeFormation)</td>
-                <td>@candidat.rayonRecherche</td>
+                <td>@candidat.rayonRecherche.map(_.value)</td>
             </tr>
         }
         </tbody>
