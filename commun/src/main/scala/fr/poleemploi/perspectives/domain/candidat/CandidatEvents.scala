@@ -3,27 +3,36 @@ package fr.poleemploi.perspectives.domain.candidat
 import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.perspectives.domain.{Genre, Metier, NumeroTelephone, RayonRecherche}
 
-sealed trait CandidatEvent extends Event
+sealed trait CandidatEvent extends Event {
 
-case class CandidatInscrisEvent(nom: String,
+  def candidatId: CandidatId
+}
+
+case class CandidatInscrisEvent(candidatId: CandidatId,
+                                nom: String,
                                 prenom: String,
                                 email: String,
                                 genre: Option[Genre]) extends CandidatEvent
 
-case class CriteresRechercheModifiesEvent(rechercheMetierEvalue: Boolean,
+case class CriteresRechercheModifiesEvent(candidatId: CandidatId,
+                                          rechercheMetierEvalue: Boolean,
                                           rechercheAutreMetier: Boolean,
                                           metiersRecherches: Set[Metier],
                                           etreContacteParOrganismeFormation: Boolean,
                                           etreContacteParAgenceInterim: Boolean,
                                           rayonRecherche: RayonRecherche) extends CandidatEvent
 
-case class ProfilCandidatModifiePEConnectEvent(nom: String,
+case class ProfilCandidatModifiePEConnectEvent(candidatId: CandidatId,
+                                               nom: String,
                                                prenom: String,
                                                email: String,
                                                genre: Genre) extends CandidatEvent
 
-case class NumeroTelephoneModifieEvent(numeroTelephone: NumeroTelephone) extends CandidatEvent
+case class NumeroTelephoneModifieEvent(candidatId: CandidatId,
+                                       numeroTelephone: NumeroTelephone) extends CandidatEvent
 
-case class AdressePEConnectModifieeEvent(adresse: Adresse) extends CandidatEvent
+case class AdressePEConnectModifieeEvent(candidatId: CandidatId,
+                                         adresse: Adresse) extends CandidatEvent
 
-case class StatutDemandeurEmploiPEConnectModifieEvent(statutDemandeurEmploi: StatutDemandeurEmploi) extends CandidatEvent
+case class StatutDemandeurEmploiPEConnectModifieEvent(candidatId: CandidatId,
+                                                      statutDemandeurEmploi: StatutDemandeurEmploi) extends CandidatEvent

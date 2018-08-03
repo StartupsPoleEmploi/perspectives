@@ -7,12 +7,12 @@ import com.fasterxml.jackson.databind.{ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
-import fr.poleemploi.eventsourcing.infra.jackson.ValueObjectModule
+import fr.poleemploi.eventsourcing.infra.jackson.EventSourcingModule
 import org.scalatest.{MustMatchers, WordSpec}
 
 class EventSpec extends WordSpec with MustMatchers {
 
-  object TestValueObjectModule extends ValueObjectModule {
+  object TestValueObjectModule extends EventSourcingModule {
 
     addStringValueObject[TestStringValueObject](classOf[TestStringValueObject], TestStringValueObject)
   }

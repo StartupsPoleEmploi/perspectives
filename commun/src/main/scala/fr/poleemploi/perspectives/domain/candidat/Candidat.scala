@@ -27,15 +27,18 @@ class Candidat(override val id: CandidatId,
 
     List(
       CandidatInscrisEvent(
+        candidatId = command.id,
         nom = command.nom,
         prenom = command.prenom,
         email = command.email,
         genre = Some(command.genre)
       ),
       AdressePEConnectModifieeEvent(
+        candidatId = command.id,
         adresse = command.adresse
       ),
       StatutDemandeurEmploiPEConnectModifieEvent(
+        candidatId = command.id,
         statutDemandeurEmploi = command.statutDemandeurEmploi
       )
     )
@@ -55,6 +58,7 @@ class Candidat(override val id: CandidatId,
       !state.etreContacteParOrganismeFormation.contains(command.etreContacteParOrganismeFormation) ||
       !state.rayonRecherche.contains(command.rayonRecherche)) {
       Some(CriteresRechercheModifiesEvent(
+        candidatId = command.id,
         rechercheMetierEvalue = command.rechercheMetierEvalue,
         rechercheAutreMetier = command.rechercheAutreMetier,
         metiersRecherches = command.metiersRecherches,
@@ -67,6 +71,7 @@ class Candidat(override val id: CandidatId,
     val numeroTelephoneModifieEvent =
       if (!state.numeroTelephone.contains(command.numeroTelephone)) {
       Some(NumeroTelephoneModifieEvent(
+        candidatId = command.id,
         numeroTelephone = command.numeroTelephone
       ))
     } else None
@@ -85,6 +90,7 @@ class Candidat(override val id: CandidatId,
       !state.email.contains(command.email) ||
       !state.genre.contains(command.genre)) {
       Some(ProfilCandidatModifiePEConnectEvent(
+        candidatId = command.id,
         nom = command.nom,
         prenom = command.prenom,
         email = command.email,
@@ -95,6 +101,7 @@ class Candidat(override val id: CandidatId,
     val adressePEConnectModifieeEvent =
       if (!state.adresse.contains(command.adresse)) {
       Some(AdressePEConnectModifieeEvent(
+        candidatId = command.id,
         adresse = command.adresse
       ))
     } else None
@@ -102,6 +109,7 @@ class Candidat(override val id: CandidatId,
     val statutDemandeurEmploiPEConnectModifieEvent =
       if (!state.statutDemandeurEmploi.contains(command.statutDemandeurEmploi)) {
         Some(StatutDemandeurEmploiPEConnectModifieEvent(
+          candidatId = command.id,
           statutDemandeurEmploi = command.statutDemandeurEmploi
         ))
       } else None

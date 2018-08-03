@@ -64,6 +64,7 @@ class InscrireRecruteurSpec extends WordSpec with MustMatchers with MockitoSugar
 
       // Then
       val event = results.head.asInstanceOf[RecruteurInscrisEvent]
+      event.recruteurId mustBe inscrireCommande.id
       event.nom mustBe inscrireCommande.nom
       event.prenom mustBe inscrireCommande.prenom
       event.email mustBe inscrireCommande.email

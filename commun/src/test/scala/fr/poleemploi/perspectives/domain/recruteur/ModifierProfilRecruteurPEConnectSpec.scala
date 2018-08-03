@@ -22,6 +22,7 @@ class ModifierProfilRecruteurPEConnectSpec extends WordSpec
 
   val profilModifieEvent =
     ProfilRecruteurModifiePEConnectEvent(
+      recruteurId = recruteurId,
       nom = commande.nom,
       prenom = commande.prenom,
       email = commande.email,
@@ -165,6 +166,7 @@ class ModifierProfilRecruteurPEConnectSpec extends WordSpec
 
       // Then
       val event = result.head.asInstanceOf[ProfilRecruteurModifiePEConnectEvent]
+      event.recruteurId mustBe commande.id
       event.nom mustBe commande.nom
       event.prenom mustBe commande.prenom
       event.email mustBe commande.email

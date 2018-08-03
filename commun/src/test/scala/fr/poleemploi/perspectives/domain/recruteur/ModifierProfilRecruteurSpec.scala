@@ -22,6 +22,7 @@ class ModifierProfilRecruteurSpec extends WordSpec with MustMatchers with Mockit
 
   val profilModifieEvent: ProfilModifieEvent =
     ProfilModifieEvent(
+      recruteurId = recruteurId,
       typeRecruteur = modifierProfilCommande.typeRecruteur,
       raisonSociale = modifierProfilCommande.raisonSociale,
       numeroSiret = modifierProfilCommande.numeroSiret,
@@ -177,6 +178,7 @@ class ModifierProfilRecruteurSpec extends WordSpec with MustMatchers with Mockit
 
       // Then
       val event = results.head.asInstanceOf[ProfilModifieEvent]
+      event.recruteurId mustBe modifierProfilCommande.id
       event.raisonSociale mustBe modifierProfilCommande.raisonSociale
       event.numeroSiret mustBe modifierProfilCommande.numeroSiret
       event.numeroTelephone mustBe modifierProfilCommande.numeroTelephone

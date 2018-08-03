@@ -33,6 +33,7 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
 
   val profilModifieEvent: ProfilCandidatModifiePEConnectEvent =
     ProfilCandidatModifiePEConnectEvent(
+      candidatId = candidatId,
       nom = commande.nom,
       prenom = commande.prenom,
       email = commande.email,
@@ -40,10 +41,12 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
     )
   val adressePEConnectModifieeEvent: AdressePEConnectModifieeEvent =
     AdressePEConnectModifieeEvent(
+      candidatId = candidatId,
       adresse = adresse
     )
   val statutDemandeurEmploiPEConnectModifieEvent: StatutDemandeurEmploiPEConnectModifieEvent =
     StatutDemandeurEmploiPEConnectModifieEvent(
+      candidatId = candidatId,
       statutDemandeurEmploi = StatutDemandeurEmploi.DEMANDEUR_EMPLOI
     )
 
@@ -184,6 +187,7 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
 
       // Then
       val event = result.head.asInstanceOf[ProfilCandidatModifiePEConnectEvent]
+      event.candidatId mustBe commande.id
       event.nom mustBe commande.nom
       event.prenom mustBe commande.prenom
       event.email mustBe commande.email
@@ -221,6 +225,7 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
 
       // Then
       val event = result.head.asInstanceOf[AdressePEConnectModifieeEvent]
+      event.candidatId mustBe commande.id
       event.adresse mustBe commande.adresse
     }
     "générer un événement contenant le statut de demandeur d'emploi modifié" in {
@@ -236,6 +241,7 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
 
       // Then
       val event = result.head.asInstanceOf[StatutDemandeurEmploiPEConnectModifieEvent]
+      event.candidatId mustBe commande.id
       event.statutDemandeurEmploi mustBe commande.statutDemandeurEmploi
     }
   }

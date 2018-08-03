@@ -18,6 +18,7 @@ class Recruteur(override val id: RecruteurId,
     }
 
     List(RecruteurInscrisEvent(
+      recruteurId = command.id,
       nom = command.nom,
       prenom = command.prenom,
       email = command.email,
@@ -36,6 +37,7 @@ class Recruteur(override val id: RecruteurId,
       !state.contactParCandidats.contains(command.contactParCandidats) ||
       !state.numeroTelephone.contains(command.numeroTelephone)) {
       List(ProfilModifieEvent(
+        recruteurId = command.id,
         raisonSociale = command.raisonSociale,
         numeroSiret = command.numeroSiret,
         typeRecruteur = command.typeRecruteur,
@@ -55,6 +57,7 @@ class Recruteur(override val id: RecruteurId,
       !state.email.contains(command.email) ||
       !state.genre.contains(command.genre)) {
       List(ProfilRecruteurModifiePEConnectEvent(
+        recruteurId = command.id,
         nom = command.nom,
         prenom = command.prenom,
         email = command.email,

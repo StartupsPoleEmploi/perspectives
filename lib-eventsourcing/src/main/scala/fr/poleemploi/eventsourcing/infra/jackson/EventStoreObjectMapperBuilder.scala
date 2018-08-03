@@ -8,7 +8,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
 
-case class EventStoreObjectMapperBuilder(stringValueObjectModule: ValueObjectModule) {
+case class EventStoreObjectMapperBuilder(stringValueObjectModule: EventSourcingModule) {
 
   def build(): ObjectMapper = (new ObjectMapper() with ScalaObjectMapper)
     .registerModules(DefaultScalaModule, new JavaTimeModule, stringValueObjectModule)

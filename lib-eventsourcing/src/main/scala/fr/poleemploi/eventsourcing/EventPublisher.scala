@@ -79,8 +79,8 @@ class LocalEventHandler extends EventHandler {
         .filter(v => v._1 isAssignableFrom event.getClass)
         .flatMap(_._2)
         .map(p =>
-          if (p.onEvent(aggregateId).isDefinedAt(event)) {
-            p.onEvent(aggregateId).apply(event) recoverWith {
+          if (p.onEvent.isDefinedAt(event)) {
+            p.onEvent.apply(event) recoverWith {
               case t: Throwable => Future.successful(
                 if (eventSourcingLogger.isErrorEnabled) {
                   eventSourcingLogger.error(s"Erreur lors de la publication de l'evenement $event par la projection ${p.getClass.getName}", t)

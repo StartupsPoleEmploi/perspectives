@@ -75,6 +75,7 @@ class InscrireCandidatSpec extends WordSpec
       val event = result.filter(_.isInstanceOf[CandidatInscrisEvent])
       event.size mustBe 1
       val candidatInscrisEvent = event.head.asInstanceOf[CandidatInscrisEvent]
+      candidatInscrisEvent.candidatId mustBe commande.id
       candidatInscrisEvent.nom mustBe commande.nom
       candidatInscrisEvent.prenom mustBe commande.prenom
       candidatInscrisEvent.email mustBe commande.email
@@ -95,6 +96,7 @@ class InscrireCandidatSpec extends WordSpec
       val event = result.filter(_.isInstanceOf[AdressePEConnectModifieeEvent])
       event.size mustBe 1
       val adressePEConnectModifieeEvent = event.head.asInstanceOf[AdressePEConnectModifieeEvent]
+      adressePEConnectModifieeEvent.candidatId mustBe commande.id
       adressePEConnectModifieeEvent.adresse mustBe commande.adresse
     }
     "générer un événement contenant le statut de demandeur d'emploi" in {
@@ -112,6 +114,7 @@ class InscrireCandidatSpec extends WordSpec
       val event = result.filter(_.isInstanceOf[StatutDemandeurEmploiPEConnectModifieEvent])
       event.size mustBe 1
       val statutDemandeurEmploiPEConnectModifieEvent = event.head.asInstanceOf[StatutDemandeurEmploiPEConnectModifieEvent]
+      statutDemandeurEmploiPEConnectModifieEvent.candidatId mustBe commande.id
       statutDemandeurEmploiPEConnectModifieEvent.statutDemandeurEmploi mustBe commande.statutDemandeurEmploi
     }
   }

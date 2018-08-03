@@ -1,6 +1,6 @@
 package fr.poleemploi.cqrs.projection
 
-import fr.poleemploi.eventsourcing.{AggregateId, Event}
+import fr.poleemploi.eventsourcing.Event
 
 import scala.concurrent.Future
 
@@ -23,7 +23,7 @@ trait Projection {
     *
     * @return ReceiveEvent: le Future[Unit] indiquant un side effect sur la projection
     */
-  def onEvent(aggregateId: AggregateId): ReceiveEvent
+  def onEvent: ReceiveEvent
 
   /**
     * Indique si la projection peut être rejouée

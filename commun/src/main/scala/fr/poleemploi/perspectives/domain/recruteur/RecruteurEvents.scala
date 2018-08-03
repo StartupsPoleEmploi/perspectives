@@ -3,20 +3,26 @@ package fr.poleemploi.perspectives.domain.recruteur
 import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.perspectives.domain.{Genre, NumeroTelephone}
 
-sealed trait RecruteurEvent extends Event
+sealed trait RecruteurEvent extends Event {
 
-case class RecruteurInscrisEvent(nom: String,
+  def recruteurId: RecruteurId
+}
+
+case class RecruteurInscrisEvent(recruteurId: RecruteurId,
+                                 nom: String,
                                  prenom: String,
                                  email: String,
                                  genre: Genre) extends RecruteurEvent
 
-case class ProfilModifieEvent(typeRecruteur: TypeRecruteur,
+case class ProfilModifieEvent(recruteurId: RecruteurId,
+                              typeRecruteur: TypeRecruteur,
                               raisonSociale: String,
                               numeroSiret: NumeroSiret,
                               numeroTelephone: NumeroTelephone,
                               contactParCandidats: Boolean) extends RecruteurEvent
 
-case class ProfilRecruteurModifiePEConnectEvent(nom: String,
+case class ProfilRecruteurModifiePEConnectEvent(recruteurId: RecruteurId,
+                                                nom: String,
                                                 prenom: String,
                                                 email: String,
                                                 genre: Genre) extends RecruteurEvent

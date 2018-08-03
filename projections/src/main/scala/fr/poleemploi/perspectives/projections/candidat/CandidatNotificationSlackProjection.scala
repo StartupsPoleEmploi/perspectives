@@ -1,7 +1,7 @@
 package fr.poleemploi.perspectives.projections.candidat
 
 import fr.poleemploi.cqrs.projection.Projection
-import fr.poleemploi.eventsourcing.{AggregateId, Event}
+import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.perspectives.domain.candidat.CandidatInscrisEvent
 import fr.poleemploi.perspectives.infra.Environnement
 import play.api.libs.json.Json
@@ -20,7 +20,7 @@ class CandidatNotificationSlackProjection(slackCandidatConfig: SlackCandidatConf
 
   override def isReplayable: Boolean = false
 
-  override def onEvent(aggregateId: AggregateId): ReceiveEvent = {
+  override def onEvent: ReceiveEvent = {
     case e: CandidatInscrisEvent => onCandidatInscrisEvent
   }
 

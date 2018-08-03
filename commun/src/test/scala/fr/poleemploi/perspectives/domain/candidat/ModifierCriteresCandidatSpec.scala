@@ -26,6 +26,7 @@ class ModifierCriteresCandidatSpec extends WordSpec
 
   val criteresRechercheModifieEvent =
     CriteresRechercheModifiesEvent(
+      candidatId = candidatId,
       rechercheAutreMetier = commande.rechercheAutreMetier,
       rechercheMetierEvalue = commande.rechercheMetierEvalue,
       etreContacteParAgenceInterim = commande.etreContacteParAgenceInterim,
@@ -36,6 +37,7 @@ class ModifierCriteresCandidatSpec extends WordSpec
 
   val numeroTelephoneModifieEvent =
     NumeroTelephoneModifieEvent(
+      candidatId = candidatId,
       numeroTelephone = commande.numeroTelephone
     )
 
@@ -244,6 +246,7 @@ class ModifierCriteresCandidatSpec extends WordSpec
 
       // Then
       val event = result.head.asInstanceOf[CriteresRechercheModifiesEvent]
+      event.candidatId mustBe commande.id
       event.rechercheAutreMetier mustBe commande.rechercheAutreMetier
       event.rechercheMetierEvalue mustBe commande.rechercheMetierEvalue
       event.etreContacteParAgenceInterim mustBe commande.etreContacteParAgenceInterim
@@ -281,7 +284,9 @@ class ModifierCriteresCandidatSpec extends WordSpec
       val result = candidat.modifierCriteres(commande)
 
       // Then
-      result.head.asInstanceOf[NumeroTelephoneModifieEvent].numeroTelephone mustBe commande.numeroTelephone
+      val event = result.head.asInstanceOf[NumeroTelephoneModifieEvent]
+      event.candidatId mustBe commande.id
+      event.numeroTelephone mustBe commande.numeroTelephone
     }
   }
 

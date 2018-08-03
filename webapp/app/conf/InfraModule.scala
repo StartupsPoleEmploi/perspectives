@@ -8,7 +8,7 @@ import fr.poleemploi.eventsourcing.eventstore.{AppendOnlyStore, EventStore}
 import fr.poleemploi.eventsourcing.infra.jackson.EventStoreObjectMapperBuilder
 import fr.poleemploi.eventsourcing.infra.sql.{PostgreSQLAppendOnlyStore, PostgresDriver => EventSourcingPostgresDriver}
 import fr.poleemploi.eventsourcing.{EventHandler, EventPublisher, LocalEventHandler, LocalEventPublisher}
-import fr.poleemploi.perspectives.infra.jackson.PerspectivesValueObjectModule
+import fr.poleemploi.perspectives.infra.jackson.PerspectivesEventSourcingModule
 import fr.poleemploi.perspectives.infra.sql.PostgresDriver
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
@@ -34,7 +34,7 @@ class InfraModule extends AbstractModule with ScalaModule {
   @Singleton
   @Named("eventStoreObjectMapper")
   def eventObjectMapper: ObjectMapper =
-    EventStoreObjectMapperBuilder(PerspectivesValueObjectModule).build()
+    EventStoreObjectMapperBuilder(PerspectivesEventSourcingModule).build()
 
   @Provides
   @Singleton
