@@ -1,5 +1,7 @@
 package fr.poleemploi.eventsourcing
 
+import java.time.ZonedDateTime
+
 import com.fasterxml.jackson.annotation.{JsonIgnoreProperties, JsonTypeInfo}
 import com.fasterxml.jackson.databind.ObjectMapper
 
@@ -7,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 @JsonIgnoreProperties(ignoreUnknown = true)
 trait Event {
 
+  final val date: ZonedDateTime = ZonedDateTime.now()
 }
 
 object Event {

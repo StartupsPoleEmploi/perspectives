@@ -1,7 +1,5 @@
 package fr.poleemploi.eventsourcing
 
-import java.time.ZonedDateTime
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility
 import com.fasterxml.jackson.annotation.PropertyAccessor
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat
@@ -87,18 +85,10 @@ class EventSpec extends WordSpec with MustMatchers {
       val result = Event.toJson(event)
 
       // Then
-      result mustBe """{"@class":"fr.poleemploi.eventsourcing.EventTest","chaine":"hello","nombre":43,"valueObject":"test"}"""
-    }
-    "renvoyer une serialisation Json d'un evenement contenant une date" in {
-      // Given
-      val event = EventWithDate(
-        date = ZonedDateTime.now()
-      )
-
-      // When
-      val result = Event.toJson(event)
-
-      // Then
+      result must include(""""@class":"fr.poleemploi.eventsourcing.EventTest"""")
+      result must include(""""chaine":"hello"""")
+      result must include(""""nombre":43""")
+      result must include(""""valueObject":"test""")
       result must include(""""date":""")
     }
   }
@@ -108,7 +98,5 @@ class EventSpec extends WordSpec with MustMatchers {
 case class EventTest(chaine: String,
                      nombre: Int,
                      valueObject: TestStringValueObject) extends Event
-
-case class EventWithDate(date: ZonedDateTime) extends Event
 
 case class TestStringValueObject(value: String) extends StringValueObject
