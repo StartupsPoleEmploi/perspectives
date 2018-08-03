@@ -2,7 +2,9 @@ package fr.poleemploi.perspectives.domain.candidat.cv
 
 import java.time.ZonedDateTime
 
-case class CVId(value: String)
+import fr.poleemploi.eventsourcing.EntityId
+
+case class CVId(value: String) extends EntityId
 
 case class CV(id: CVId,
               nomFichier: String,

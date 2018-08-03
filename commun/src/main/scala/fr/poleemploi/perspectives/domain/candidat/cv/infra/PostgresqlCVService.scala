@@ -2,6 +2,7 @@ package fr.poleemploi.perspectives.domain.candidat.cv.infra
 
 import java.nio.file.{Files, Path}
 import java.time.ZonedDateTime
+import java.util.UUID
 
 import fr.poleemploi.perspectives.domain.candidat.CandidatId
 import fr.poleemploi.perspectives.domain.candidat.cv._
@@ -43,6 +44,8 @@ class CVBddService(val driver: PostgresDriver,
   }
 
   val cvCandidatTable = TableQuery[CVCandidatTable]
+
+  override def nextIdentity: CVId = CVId(UUID.randomUUID().toString)
 
   override def save(cvId: CVId,
                     candidatId: CandidatId,

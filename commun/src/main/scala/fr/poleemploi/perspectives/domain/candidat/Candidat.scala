@@ -1,7 +1,5 @@
 package fr.poleemploi.perspectives.domain.candidat
 
-import java.util.UUID
-
 import fr.poleemploi.eventsourcing.{Aggregate, Event}
 import fr.poleemploi.perspectives.domain.candidat.cv.{CVId, CVService}
 import fr.poleemploi.perspectives.domain.{Genre, Metier, NumeroTelephone, RayonRecherche}
@@ -51,30 +49,30 @@ class Candidat(override val id: CandidatId,
 
     val criteresRechercheModifiesEvent =
       if (!state.rechercheMetierEvalue.contains(command.rechercheMetierEvalue) ||
-      !state.rechercheAutreMetier.contains(command.rechercheAutreMetier) ||
-      !state.metiersRecherches.forall(command.metiersRecherches.contains) ||
-      !command.metiersRecherches.forall(state.metiersRecherches.contains) ||
-      !state.etreContacteParAgenceInterim.contains(command.etreContacteParAgenceInterim) ||
-      !state.etreContacteParOrganismeFormation.contains(command.etreContacteParOrganismeFormation) ||
-      !state.rayonRecherche.contains(command.rayonRecherche)) {
-      Some(CriteresRechercheModifiesEvent(
-        candidatId = command.id,
-        rechercheMetierEvalue = command.rechercheMetierEvalue,
-        rechercheAutreMetier = command.rechercheAutreMetier,
-        metiersRecherches = command.metiersRecherches,
-        etreContacteParAgenceInterim = command.etreContacteParAgenceInterim,
-        etreContacteParOrganismeFormation = command.etreContacteParOrganismeFormation,
-        rayonRecherche = command.rayonRecherche
-      ))
-    } else None
+        !state.rechercheAutreMetier.contains(command.rechercheAutreMetier) ||
+        !state.metiersRecherches.forall(command.metiersRecherches.contains) ||
+        !command.metiersRecherches.forall(state.metiersRecherches.contains) ||
+        !state.etreContacteParAgenceInterim.contains(command.etreContacteParAgenceInterim) ||
+        !state.etreContacteParOrganismeFormation.contains(command.etreContacteParOrganismeFormation) ||
+        !state.rayonRecherche.contains(command.rayonRecherche)) {
+        Some(CriteresRechercheModifiesEvent(
+          candidatId = command.id,
+          rechercheMetierEvalue = command.rechercheMetierEvalue,
+          rechercheAutreMetier = command.rechercheAutreMetier,
+          metiersRecherches = command.metiersRecherches,
+          etreContacteParAgenceInterim = command.etreContacteParAgenceInterim,
+          etreContacteParOrganismeFormation = command.etreContacteParOrganismeFormation,
+          rayonRecherche = command.rayonRecherche
+        ))
+      } else None
 
     val numeroTelephoneModifieEvent =
       if (!state.numeroTelephone.contains(command.numeroTelephone)) {
-      Some(NumeroTelephoneModifieEvent(
-        candidatId = command.id,
-        numeroTelephone = command.numeroTelephone
-      ))
-    } else None
+        Some(NumeroTelephoneModifieEvent(
+          candidatId = command.id,
+          numeroTelephone = command.numeroTelephone
+        ))
+      } else None
 
     List(criteresRechercheModifiesEvent, numeroTelephoneModifieEvent).flatten
   }
@@ -86,25 +84,25 @@ class Candidat(override val id: CandidatId,
 
     val profilCandidatModifiePEConnectEvent =
       if (!state.nom.contains(command.nom) ||
-      !state.prenom.contains(command.prenom) ||
-      !state.email.contains(command.email) ||
-      !state.genre.contains(command.genre)) {
-      Some(ProfilCandidatModifiePEConnectEvent(
-        candidatId = command.id,
-        nom = command.nom,
-        prenom = command.prenom,
-        email = command.email,
-        genre = command.genre
-      ))
-    } else None
+        !state.prenom.contains(command.prenom) ||
+        !state.email.contains(command.email) ||
+        !state.genre.contains(command.genre)) {
+        Some(ProfilCandidatModifiePEConnectEvent(
+          candidatId = command.id,
+          nom = command.nom,
+          prenom = command.prenom,
+          email = command.email,
+          genre = command.genre
+        ))
+      } else None
 
     val adressePEConnectModifieeEvent =
       if (!state.adresse.contains(command.adresse)) {
-      Some(AdressePEConnectModifieeEvent(
-        candidatId = command.id,
-        adresse = command.adresse
-      ))
-    } else None
+        Some(AdressePEConnectModifieeEvent(
+          candidatId = command.id,
+          adresse = command.adresse
+        ))
+      } else None
 
     val statutDemandeurEmploiPEConnectModifieEvent =
       if (!state.statutDemandeurEmploi.contains(command.statutDemandeurEmploi)) {
@@ -120,22 +118,33 @@ class Candidat(override val id: CandidatId,
   def ajouterCV(command: AjouterCVCommand,
                 cvService: CVService): Future[List[Event]] = {
     if (!state.estInscrit) {
-      Future.failed(throw new RuntimeException(s"Le candidat ${id.value} n'est pas encore inscrit"))
+      return Future.failed(new RuntimeException(s"Le candidat ${id.value} n'est pas encore inscrit"))
+    }
+    if (state.cvId.isDefined) {
+      return Future.failed(new RuntimeException(s"Impossible d'ajouter un CV au candidat ${id.value}, il existe déjà"))
     }
 
+    val cvId = cvService.nextIdentity
     cvService.save(
-      cvId = CVId(UUID.randomUUID().toString),
+      cvId = cvId,
       candidatId = command.id,
       nomFichier = command.nomFichier,
       typeMedia = command.typeMedia,
       path = command.path
-    ).map(_ => Nil)
+    ).map(_ => List(
+      CVAjouteEvent(
+        candidatId = command.id,
+        cvId = cvId
+      )
+    ))
   }
 
   def remplacerCV(command: RemplacerCVCommand,
                   cvService: CVService): Future[List[Event]] = {
     if (!state.estInscrit) {
-      Future.failed(throw new RuntimeException(s"Le candidat ${id.value} n'est pas encore inscrit"))
+      return Future.failed(new RuntimeException(s"Le candidat ${id.value} n'est pas encore inscrit"))
+    } else if (state.cvId.isEmpty) {
+      return Future.failed(new RuntimeException(s"Impossible de remplacer le CV inexistant du candidat ${id.value}"))
     }
 
     cvService.update(
@@ -143,7 +152,12 @@ class Candidat(override val id: CandidatId,
       nomFichier = command.nomFichier,
       typeMedia = command.typeMedia,
       path = command.path
-    ).map(_ => Nil)
+    ).map(_ => List(
+      CVRemplaceEvent(
+        candidatId = command.id,
+        cvId = command.cvId
+      )
+    ))
   }
 }
 
@@ -195,6 +209,10 @@ private[candidat] case class CandidatState(estInscrit: Boolean = false,
       copy(adresse = Some(e.adresse))
     case e: StatutDemandeurEmploiPEConnectModifieEvent =>
       copy(statutDemandeurEmploi = Some(e.statutDemandeurEmploi))
+    case e: CVAjouteEvent =>
+      copy(cvId = Some(e.cvId))
+    case e: CVRemplaceEvent =>
+      copy(cvId = Some(e.cvId))
     case _ => this
   }
 }

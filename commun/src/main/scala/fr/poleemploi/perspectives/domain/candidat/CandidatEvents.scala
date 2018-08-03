@@ -1,6 +1,7 @@
 package fr.poleemploi.perspectives.domain.candidat
 
 import fr.poleemploi.eventsourcing.Event
+import fr.poleemploi.perspectives.domain.candidat.cv.CVId
 import fr.poleemploi.perspectives.domain.{Genre, Metier, NumeroTelephone, RayonRecherche}
 
 sealed trait CandidatEvent extends Event {
@@ -36,3 +37,9 @@ case class AdressePEConnectModifieeEvent(candidatId: CandidatId,
 
 case class StatutDemandeurEmploiPEConnectModifieEvent(candidatId: CandidatId,
                                                       statutDemandeurEmploi: StatutDemandeurEmploi) extends CandidatEvent
+
+case class CVAjouteEvent(candidatId: CandidatId,
+                         cvId: CVId) extends CandidatEvent
+
+case class CVRemplaceEvent(candidatId: CandidatId,
+                           cvId: CVId) extends CandidatEvent

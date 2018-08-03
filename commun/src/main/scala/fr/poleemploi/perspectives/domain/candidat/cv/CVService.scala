@@ -8,6 +8,8 @@ import scala.concurrent.Future
 
 trait CVService {
 
+  def nextIdentity: CVId
+
   def save(cvId: CVId,
            candidatId: CandidatId,
            nomFichier: String,
