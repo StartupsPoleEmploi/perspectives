@@ -9,6 +9,8 @@ import scala.concurrent.Future
 class RecruteurCommandHandler(recruteurRepository: RecruteurRepository)
   extends CommandHandler {
 
+  def newRecruteurId: RecruteurId = recruteurRepository.newRecruteurId
+
   def inscrire(command: InscrireRecruteurCommand): Future[Unit] =
     execute(command.id, _.inscrire(command))
 

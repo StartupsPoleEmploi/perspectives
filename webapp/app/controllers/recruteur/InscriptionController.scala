@@ -1,12 +1,10 @@
 package controllers.recruteur
 
-import java.util.UUID
-
 import authentification.infra.play.SessionRecruteurAuthentifie
 import conf.WebAppConfig
 import fr.poleemploi.perspectives.domain.Genre
 import fr.poleemploi.perspectives.domain.authentification.RecruteurAuthentifie
-import fr.poleemploi.perspectives.domain.recruteur.{InscrireRecruteurCommand, RecruteurCommandHandler, RecruteurId}
+import fr.poleemploi.perspectives.domain.recruteur.{InscrireRecruteurCommand, RecruteurCommandHandler}
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
 
@@ -24,7 +22,7 @@ class InscriptionController @Inject()(cc: ControllerComponents,
     } else inscriptionSimple()
 
   private def inscriptionSimple(): Action[AnyContent] = Action.async { implicit request =>
-    val recruteurId = RecruteurId(UUID.randomUUID().toString)
+    val recruteurId = recruteurCommandHandler.newRecruteurId
     val command = InscrireRecruteurCommand(
       id = recruteurId,
       nom = "michu",

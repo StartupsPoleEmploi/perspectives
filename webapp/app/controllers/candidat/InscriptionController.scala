@@ -1,7 +1,5 @@
 package controllers.candidat
 
-import java.util.UUID
-
 import authentification.infra.play.SessionCandidatAuthentifie
 import conf.WebAppConfig
 import fr.poleemploi.perspectives.domain.Genre
@@ -24,7 +22,7 @@ class InscriptionController @Inject()(cc: ControllerComponents,
     } else inscriptionSimple()
 
   private def inscriptionSimple(): Action[AnyContent] = Action.async { implicit request =>
-    val candidatId = CandidatId(UUID.randomUUID().toString)
+    val candidatId = candidatCommandHandler.newCandidatId
     val command = InscrireCandidatCommand(
       id = candidatId,
       nom = "perspectives",

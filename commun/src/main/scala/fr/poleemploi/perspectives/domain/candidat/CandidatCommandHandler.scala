@@ -11,6 +11,8 @@ class CandidatCommandHandler(candidatRepository: CandidatRepository,
                              cvService: CVService)
   extends CommandHandler {
 
+  def newCandidatId: CandidatId = candidatRepository.newCandidatId
+
   def inscrire(command: InscrireCandidatCommand): Future[Unit] =
     execute(command.id, c => Future(c.inscrire(command)))
 

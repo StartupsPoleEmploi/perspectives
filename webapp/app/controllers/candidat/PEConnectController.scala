@@ -1,7 +1,5 @@
 package controllers.candidat
 
-import java.util.UUID
-
 import authentification.infra.peconnect._
 import authentification.infra.play._
 import conf.WebAppConfig
@@ -121,7 +119,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
   private def inscrire(peConnectCandidatInfos: PEConnectCandidatInfos,
                        adresse: Adresse,
                        statutDemandeurEmploi: StatutDemandeurEmploi): Future[CandidatId] = {
-    val candidatId = CandidatId(UUID.randomUUID().toString)
+    val candidatId = candidatCommandHandler.newCandidatId
     val command = InscrireCandidatCommand(
       id = candidatId,
       nom = peConnectCandidatInfos.nom,
