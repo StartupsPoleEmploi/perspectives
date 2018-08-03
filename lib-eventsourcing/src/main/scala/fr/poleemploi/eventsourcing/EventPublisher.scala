@@ -81,9 +81,17 @@ class LocalEventHandler extends EventHandler {
         .map(p =>
           if (p.onEvent(aggregateId).isDefinedAt(event)) {
             p.onEvent(aggregateId).apply(event) recoverWith {
-              case t: Throwable => Future.successful(println(s"Erreur lors de la publication de l'evenement $event par la projection ${p.getClass.getName}. ${t.getCause} : ${t.getMessage}"))
+              case t: Throwable => Future.successful(
+                if (eventSourcingLogger.isErrorEnabled) {
+                  eventSourcingLogger.error(s"Erreur lors de la publication de l'evenement $event par la projection ${p.getClass.getName}", t)
+                }
+              )
             }
-          } else Future.successful(println(s"La projection ${p.getClass.getName} s'est enregistrée sur les evenements de type ${event.getClass.getName} mais ne les gère pas"))
+          } else Future.successful(
+            if (eventSourcingLogger.isWarnEnabled) {
+              eventSourcingLogger.warn(s"La projection ${p.getClass.getName} s'est enregistrée sur les evenements de type ${event.getClass.getName} mais ne les gère pas")
+            }
+          )
         )
     ).map(_ => ())
   }

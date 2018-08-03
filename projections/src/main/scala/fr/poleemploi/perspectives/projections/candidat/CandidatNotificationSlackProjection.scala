@@ -31,9 +31,9 @@ class CandidatNotificationSlackProjection(slackCandidatConfig: SlackCandidatConf
       .post(Json.stringify(Json.obj("text" -> s"Nouveau candidat inscrit en ${slackCandidatConfig.environnement.value}")))
       .map(response => {
         if (response.status >= 400) {
-          println(s"Erreur lors de l'appel à la notification slack. Code: ${response.status}. Reponse : ${response.body}")
+          throw new RuntimeException(s"Erreur lors de l'appel à la notification slack. Code: ${response.status}. Reponse : ${response.body}")
         } else if (response.status != 200) {
-          println(s"Statut non géré lors de l'appel à la notification slack. Code: ${response.status}. Reponse : ${response.body}")
+          throw new RuntimeException(s"Statut non géré lors de l'appel à la notification slack. Code: ${response.status}. Reponse : ${response.body}")
         }
       })
   }
