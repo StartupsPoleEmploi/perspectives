@@ -152,6 +152,14 @@
     margin-left: 1.5rem;
   }
 
+  .ligneVerticaleSecteurs {
+    display: flex;
+    align-self: stretch;
+
+    border-radius: 10%;
+    border: 3px solid #e0e2e4;
+  }
+
   .secteursActivites {
     @include make-col(11);
 
@@ -175,23 +183,22 @@
     }
   }
 
-  .validerCriteres {
-    text-align: center;
-    margin: 3rem 0;
-  }
+  .ligneVerticaleMetiers {
+    display: flex;
+    align-self: stretch;
+    margin: 0 15px;
 
-  .v-line {
-    border-radius: 10%;
-    border: 3px solid #e0e2e4;
-  }
-
-  .v-line-niveau2 {
     border-radius: 10%;
     border: 3px solid #e8edf8;
 
     @include media-breakpoint-down(sm) {
       display: none;
     }
+  }
+
+  .validerCriteres {
+    text-align: center;
+    margin: 3rem 0;
   }
 
   .compteur-metiers-selectionnes {
