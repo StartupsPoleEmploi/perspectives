@@ -21,3 +21,5 @@ OIDS =FALSE
 ALTER TABLE recruteurs OWNER TO perspectives;
 COMMENT ON TABLE recruteurs IS 'Table des recruteurs';
 COMMENT ON COLUMN recruteurs.recruteur_id IS 'Identifiant unique du recruteur';
+
+CREATE UNIQUE INDEX recruteur_id_idx ON recruteurs (recruteur_id);

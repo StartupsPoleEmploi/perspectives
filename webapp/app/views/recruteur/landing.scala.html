@@ -41,11 +41,11 @@
                             </ul>
                             <div class="introActions">
                                 @if(recruteurAuthentifie.isDefined) {
-                                    <a class="bouton bouton-inscription" href="/recruteur/profil">Modifier mon profil</a>
+                                    <a class="bouton bouton-actionSecondaire bouton--degradeBleu" href="/recruteur/profil">Modifier mon profil</a>
                                 } else {
-                                    <a class="bouton bouton-inscription" href="/recruteur/inscription">
+                                    <a class="bouton bouton-actionPrincipale bouton--degradeBleu" href="/recruteur/inscription">
                                         Je m'inscris
-                                        <small>en moins de 30 secondes</small>
+                                        <small class="bouton-small bouton-small--gras">en moins de 30 secondes</small>
                                     </a>
                                 }
                                 <p class="introActions-sponsor">Crée par Pôle Emploi<p>
@@ -90,11 +90,11 @@
             </section>
             <section class="caVousTente">
                 @if(recruteurAuthentifie.isDefined) {
-                    <a class="bouton bouton-inscription" href="/recruteur/profil">Modifier mon profil</a>
+                    <a class="bouton bouton-actionSecondaire bouton--degradeBleu" href="/recruteur/profil">Modifier mon profil</a>
                 } else {
-                    <a class="bouton bouton-inscription" href="/recruteur/inscription">
+                    <a class="bouton bouton-actionPrincipale bouton--degradeBleu" href="/recruteur/inscription">
                         Je m'inscris
-                        <small>en moins de 30 secondes</small>
+                        <small class="bouton-small bouton-small--gras">en moins de 30 secondes</small>
                     </a>
                 }
             </section>

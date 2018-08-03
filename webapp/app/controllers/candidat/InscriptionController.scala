@@ -2,6 +2,7 @@ package controllers.candidat
 
 import authentification.infra.play.SessionCandidatAuthentifie
 import conf.WebAppConfig
+import controllers.FlashMessages._
 import fr.poleemploi.perspectives.domain.Genre
 import fr.poleemploi.perspectives.domain.authentification.CandidatAuthentifie
 import fr.poleemploi.perspectives.domain.candidat._
@@ -45,6 +46,7 @@ class InscriptionController @Inject()(cc: ControllerComponents,
       )
       Redirect(routes.SaisieCriteresRechercheController.saisieCriteresRecherche())
         .withSession(SessionCandidatAuthentifie.set(candidatAuthentifie, request.session))
+        .flashing(request.flash.withCandidatInscris)
     }
   }
 }

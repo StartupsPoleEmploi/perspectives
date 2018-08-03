@@ -17,3 +17,5 @@ ALTER TABLE candidats_cv OWNER TO perspectives;
 COMMENT ON TABLE candidats_cv IS 'Table de relation entre les candidats et leur cv';
 COMMENT ON COLUMN candidats_cv.candidat_id IS 'Identifiant unique du candidat';
 COMMENT ON COLUMN candidats_cv.cv_id IS 'Identifiant unique du CV';
+
+CREATE UNIQUE INDEX cv_id_idx ON candidats_cv (cv_id);

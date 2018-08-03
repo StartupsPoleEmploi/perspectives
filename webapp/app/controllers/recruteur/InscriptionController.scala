@@ -2,6 +2,7 @@ package controllers.recruteur
 
 import authentification.infra.play.SessionRecruteurAuthentifie
 import conf.WebAppConfig
+import controllers.FlashMessages._
 import fr.poleemploi.perspectives.domain.Genre
 import fr.poleemploi.perspectives.domain.authentification.RecruteurAuthentifie
 import fr.poleemploi.perspectives.domain.recruteur.{InscrireRecruteurCommand, RecruteurCommandHandler}
@@ -38,6 +39,7 @@ class InscriptionController @Inject()(cc: ControllerComponents,
       )
       Redirect(routes.ProfilController.modificationProfil())
         .withSession(SessionRecruteurAuthentifie.set(recruteurAuthentifie, request.session))
+        .flashing(request.flash.withRecruteurInscris)
     }
   }
 }

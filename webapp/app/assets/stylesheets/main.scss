@@ -17,11 +17,7 @@
 
 @import "pages/recruteur/landing";
 @import "pages/recruteur/profil";
+@import "pages/recruteur/matching";
 
 @import "pages/conseiller/listeCandidats";
 @import "pages/conseiller/listeRecruteurs";
-
-body {
-    font-family: $font-family;
-    background: $gradient-gris-blanc no-repeat no-repeat;
-}

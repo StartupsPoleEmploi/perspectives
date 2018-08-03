@@ -17,4 +17,12 @@ class CandidatQueryHandler(candidatProjection: CandidatProjection,
   def getCVByCandidat(query: GetCVByCandidatQuery): Future[CV] =
     cvService.getCvByCandidat(query.candidatId)
 
+  def rechercheCandidatsParDateInscription(query: RechercherCandidatsParDateInscriptionQuery): Future[ResultatRechercheCandidatParDateInscription] =
+    candidatProjection.rechercherCandidatParDateInscription(query)
+
+  def rechercherCandidatsParSecteur(query: RechercheCandidatsParSecteurQuery): Future[ResultatRechercheCandidat] =
+    candidatProjection.rechercherCandidatParSecteur(query)
+
+  def rechercherCandidatsParMetier(query: RechercherCandidatsParMetierQuery): Future[ResultatRechercheCandidatParMetier] =
+    candidatProjection.rechercherCandidatParMetier(query)
 }

@@ -9,8 +9,9 @@ CREATE TABLE candidats
   email   CHARACTER VARYING(255) NOT NULL,
   statut_demandeur_emploi   CHARACTER VARYING(255),
   recherche_metier_evalue BOOL,
+  metiers_evalues   TEXT[] SET DEFAULT '{}',
   recherche_autre_metier BOOL,
-  metiers_recherches TEXT[],
+  metiers_recherches TEXT[] SET DEFAULT '{}',
   contacte_par_agence_interim BOOL,
   contacte_par_organisme_formation BOOL,
   rayon_recherche INT,
@@ -25,3 +26,5 @@ OIDS =FALSE
 ALTER TABLE candidats OWNER TO perspectives;
 COMMENT ON TABLE candidats IS 'Table des candidats';
 COMMENT ON COLUMN candidats.candidat_id IS 'Identifiant unique du candidat';
+
+CREATE UNIQUE INDEX candidat_id_idx ON candidats (candidat_id);

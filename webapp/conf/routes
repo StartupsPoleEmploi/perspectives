@@ -14,6 +14,9 @@ GET     /recruteur/peconnect/callback               controllers.recruteur.PEConn
 GET     /recruteur/deconnexion                      controllers.recruteur.AuthentificationController.deconnexion
 GET     /recruteur/profil                           controllers.recruteur.ProfilController.modificationProfil
 POST    /recruteur/profil                           controllers.recruteur.ProfilController.modifierProfil
+GET     /recruteur/matching-candidats               controllers.recruteur.MatchingController.index
+POST    /recruteur/matching-candidats               controllers.recruteur.MatchingController.rechercherCandidats
+GET     /recruteur/cv/telecharger/:candidatId       controllers.recruteur.MatchingController.telechargerCV(candidatId)
 
 GET     /conseiller/candidats                       controllers.conseiller.ConseillerController.listeCandidats
 GET     /conseiller/recruteurs                      controllers.conseiller.ConseillerController.listeRecruteurs

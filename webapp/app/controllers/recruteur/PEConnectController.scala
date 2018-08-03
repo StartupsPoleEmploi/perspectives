@@ -3,8 +3,10 @@ package controllers.recruteur
 import authentification.infra.peconnect._
 import authentification.infra.play._
 import conf.WebAppConfig
+import controllers.FlashMessages._
 import fr.poleemploi.perspectives.domain.authentification.RecruteurAuthentifie
 import fr.poleemploi.perspectives.domain.recruteur.{InscrireRecruteurCommand, ModifierProfilPEConnectCommand, RecruteurCommandHandler, RecruteurId}
+import fr.poleemploi.perspectives.projections.recruteur.{GetRecruteurQuery, RecruteurQueryHandler}
 import javax.inject.{Inject, Singleton}
 import play.api.Logger
 import play.api.mvc._
@@ -18,7 +20,8 @@ class PEConnectController @Inject()(cc: ControllerComponents,
                                     webAppConfig: WebAppConfig,
                                     recruteurPEConnectAction: RecruteurPEConnectAction,
                                     peConnectFacade: PEConnectFacade,
-                                    recruteurCommandHandler: RecruteurCommandHandler) extends AbstractController(cc) {
+                                    recruteurCommandHandler: RecruteurCommandHandler,
+                                    recruteurQueryHandler: RecruteurQueryHandler) extends AbstractController(cc) {
 
   val oauthTokenSessionStorage = new OauthTokenSessionStorage("recruteur")
   val redirectUri: Call = routes.PEConnectController.connexionCallback()
@@ -67,16 +70,23 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       _ <- Either.cond(peConnectFacade.verifyNonce(oauthTokens, accessTokenResponse.nonce), (), "La comparaison du nonce a échoué").toFuture
       _ <- peConnectFacade.validateAccessToken(accessTokenResponse)
       recruteurInfos <- peConnectFacade.getInfosRecruteur(accessTokenResponse.accessToken)
-      optRecruteur <- peConnectFacade.findRecruteur(recruteurInfos.peConnectId)
-      recruteurId <- optRecruteur.map(r => mettreAJour(r, recruteurInfos)).getOrElse(inscrire(recruteurInfos))
+      optRecruteurPEConnnect <- peConnectFacade.findRecruteur(recruteurInfos.peConnectId)
+      optRecruteur <- optRecruteurPEConnnect.map(r => recruteurQueryHandler.getRecruteur(GetRecruteurQuery(r.recruteurId)).map(Some(_))).getOrElse(Future.successful(None))
+      recruteurId <- optRecruteurPEConnnect.map(r => mettreAJour(r, recruteurInfos)).getOrElse(inscrire(recruteurInfos))
     } yield {
       val recruteurAuthentifie = RecruteurAuthentifie(
         recruteurId = recruteurId,
         nom = recruteurInfos.nom,
         prenom = recruteurInfos.prenom
       )
-      Redirect(routes.ProfilController.modificationProfil())
-        .withSession(SessionRecruteurPEConnect.set(accessTokenResponse.idToken, SessionRecruteurAuthentifie.set(recruteurAuthentifie, oauthTokenSessionStorage.remove(request.session))))
+      val session = SessionRecruteurPEConnect.set(accessTokenResponse.idToken, SessionRecruteurAuthentifie.set(recruteurAuthentifie, oauthTokenSessionStorage.remove(request.session)))
+      if (optRecruteur.exists(_.profilComplet))
+        Redirect(routes.MatchingController.rechercherCandidats()).withSession(session)
+      else if (optRecruteur.isDefined)
+        Redirect(routes.ProfilController.modificationProfil()).withSession(session)
+      else
+        Redirect(routes.ProfilController.modificationProfil()).withSession(session)
+          .flashing(request.flash.withRecruteurInscris)
     }).recover {
       case t: Throwable =>
         Logger.error("Erreur lors de l'authentification PEConnect", t)

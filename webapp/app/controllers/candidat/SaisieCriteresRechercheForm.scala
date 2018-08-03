@@ -35,6 +35,18 @@ object SaisieCriteresRechercheForm {
     )(SaisieCriteresRechercheForm.apply)(SaisieCriteresRechercheForm.unapply) verifying metiersSelectionnes
   )
 
+  val emptyForm = SaisieCriteresRechercheForm.form.fill(
+    SaisieCriteresRechercheForm(
+      rechercheMetierEvalue = "",
+      rechercheAutreMetier = "",
+      metiersRecherches = Set.empty,
+      etreContacteParAgenceInterim = "",
+      etreContacteParOrganismeFormation = "",
+      rayonRecherche = 0,
+      numeroTelephone = ""
+    )
+  )
+
   def metiersSelectionnes: Constraint[SaisieCriteresRechercheForm] =
     Constraint {
       fields =>

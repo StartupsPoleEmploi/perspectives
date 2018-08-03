@@ -12,18 +12,6 @@ import slick.jdbc.JdbcBackend.Database
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-case class RecruteurDto(recruteurId: RecruteurId,
-                        nom: String,
-                        prenom: String,
-                        email: String,
-                        genre: Genre,
-                        typeRecruteur: Option[TypeRecruteur],
-                        raisonSociale: Option[String],
-                        numeroSiret: Option[NumeroSiret],
-                        numeroTelephone: Option[NumeroTelephone],
-                        contactParCandidats: Option[Boolean],
-                        dateInscription: ZonedDateTime)
-
 class RecruteurProjection(val driver: PostgresDriver,
                           database: Database) extends Projection {
 
