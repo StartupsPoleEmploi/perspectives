@@ -17,3 +17,5 @@ ALTER TABLE events OWNER TO perspectives;
 COMMENT ON TABLE events IS 'Contient les événements';
 COMMENT ON COLUMN events.stream_version IS 'version du stream (incrémentale)';
 COMMENT ON COLUMN events.stream_name IS 'Identifiant de l''aggregat concerne par l''événement';
+
+CREATE INDEX stream_name_idx ON events (stream_name);

@@ -1,7 +1,9 @@
 @import conf.WebAppConfig
 @import fr.poleemploi.perspectives.domain.authentification.RecruteurAuthentifie
 
-@(title: String = "Perspectives : boostez vos opportunités !", recruteurAuthentifie: Option[RecruteurAuthentifie])(content: Html)(implicit flash: Flash, webAppConfig: WebAppConfig)
+@(title: String = "Perspectives : boostez vos opportunités !",
+        recruteurAuthentifie: Option[RecruteurAuthentifie],
+        cssClassesBody: List[String] = Nil)(content: Html)(implicit flash: Flash, webAppConfig: WebAppConfig)
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -15,7 +17,7 @@
         <script src="@routes.Assets.versioned("javascripts/vendor/jquery-3.3.1.min.js")" type="text/javascript"></script>
         @if(webAppConfig.useGoogleTagManager) {<script src="@routes.Assets.versioned("javascripts/modules/googleTagManager.js")" type="text/javascript"></script>}
     </head>
-    <body>
+    <body @if(cssClassesBody.nonEmpty){class="@cssClassesBody.mkString(" ")"}>
         @if(webAppConfig.useGoogleTagManager) {@components.googleTagManagerNoScript()}
         @navigation(recruteurAuthentifie)
         @components.flashMessages()

@@ -26,25 +26,33 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
       def booleanToString(boolean: Boolean): String = if (boolean) "true" else "false"
 
-      for {
-        candidatDto <- candidatQueryHandler.getCandidat(GetCandidatQuery(candidatAuthentifieRequest.candidatId))
-      } yield {
-        val filledForm = SaisieCriteresRechercheForm.form.fill(
-          SaisieCriteresRechercheForm(
-            rechercheMetierEvalue = candidatDto.rechercheMetierEvalue.map(booleanToString).getOrElse(""),
-            rechercheAutreMetier = candidatDto.rechercheAutreMetier.map(booleanToString).getOrElse(""),
-            metiersRecherches = candidatDto.metiersRecherches.map(_.value),
-            etreContacteParAgenceInterim = candidatDto.contacteParAgenceInterim.map(booleanToString).getOrElse(""),
-            etreContacteParOrganismeFormation = candidatDto.contacteParOrganismeFormation.map(booleanToString).getOrElse(""),
-            rayonRecherche = candidatDto.rayonRecherche.map(_.value).getOrElse(0),
-            numeroTelephone = candidatDto.numeroTelephone.map(_.value).getOrElse("")
+      if (messagesRequest.flash.candidatInscris) {
+        Future.successful(
+          Ok(views.html.candidat.saisieCriteresRecherche(
+            saisieCriteresRechercheForm = SaisieCriteresRechercheForm.emptyForm,
+            candidatDto = None,
+            candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie)
           )
         )
-        Ok(views.html.candidat.saisieCriteresRecherche(
-          saisieCriteresRechercheForm = filledForm,
-          candidatDto = candidatDto,
-          candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie)
-        )
+      } else {
+        candidatQueryHandler.getCandidat(GetCandidatQuery(candidatAuthentifieRequest.candidatId)).map { candidatDto =>
+          val filledForm = SaisieCriteresRechercheForm.form.fill(
+            SaisieCriteresRechercheForm(
+              rechercheMetierEvalue = candidatDto.rechercheMetierEvalue.map(booleanToString).getOrElse(""),
+              rechercheAutreMetier = candidatDto.rechercheAutreMetier.map(booleanToString).getOrElse(""),
+              metiersRecherches = candidatDto.metiersRecherches.map(_.value).toSet,
+              etreContacteParAgenceInterim = candidatDto.contacteParAgenceInterim.map(booleanToString).getOrElse(""),
+              etreContacteParOrganismeFormation = candidatDto.contacteParOrganismeFormation.map(booleanToString).getOrElse(""),
+              rayonRecherche = candidatDto.rayonRecherche.map(_.value).getOrElse(0),
+              numeroTelephone = candidatDto.numeroTelephone.map(_.value).getOrElse("")
+            )
+          )
+          Ok(views.html.candidat.saisieCriteresRecherche(
+            saisieCriteresRechercheForm = filledForm,
+            candidatDto = Some(candidatDto),
+            candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie)
+          )
+        }
       }
     }(candidatAuthentifieRequest)
   }
@@ -65,7 +73,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
               formWithErrors => {
                 Future.successful(BadRequest(views.html.candidat.saisieCriteresRecherche(
                   saisieCriteresRechercheForm = formWithErrors,
-                  candidatDto = candidatDto,
+                  candidatDto = Some(candidatDto),
                   candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie)
                 ))
               },

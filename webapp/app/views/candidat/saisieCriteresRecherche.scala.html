@@ -1,12 +1,12 @@
 @import conf.WebAppConfig
 @import controllers.candidat.SaisieCriteresRechercheForm
 @import fr.poleemploi.perspectives.domain.authentification.CandidatAuthentifie
-@import fr.poleemploi.perspectives.projections.candidat.CandidatDto
 @import fr.poleemploi.perspectives.domain.{Metier, RayonRecherche}
+@import fr.poleemploi.perspectives.projections.candidat.CandidatDto
 @import helper._
 
 @(saisieCriteresRechercheForm: Form[SaisieCriteresRechercheForm],
-        candidatDto: CandidatDto,
+        candidatDto: Option[CandidatDto],
         candidatAuthentifie: CandidatAuthentifie)(implicit request: MessagesRequestHeader, flash: Flash, webAppConfig: WebAppConfig)
 
 @hasErrors(field:String) = @{
@@ -17,7 +17,7 @@
     saisieCriteresRechercheForm.globalErrors.find(_.messages.contains("constraint.criteres.selectionmetiers"))
 }
 
-@layout(candidatAuthentifie = Some(candidatAuthentifie)) {
+@layout(candidatAuthentifie = Some(candidatAuthentifie), cssClassesBody = List("degradeGrisBlanc")) {
 <div id="saisieCriteresRechercheCandidat">
     <section class="presentation">
         <header class="presentationTitres">
@@ -268,11 +268,8 @@
                     }/>
                     <label class="labelRadio" for="rayonRecherche-@rayonRecherche.value">
                         @(rayonRecherche match {
-                            case RayonRecherche.MAX_10 => "Moins de 10km"
-                            case RayonRecherche.MAX_30 => "Moins de 30km"
-                            case RayonRecherche.MAX_50 => "Moins de 50km"
                             case RayonRecherche.MAX_100 => "Plus de 50km"
-                            case _ => ""
+                            case r@_ => s"Moins de ${r.value}km"
                         })
                         <span class="labelRadio-circle"></span>
                     </label>
@@ -311,7 +308,7 @@
             <dt class="question">
                 <span class="question-puce @if(hasErrors("cv")){question-puce--erreur}">7</span>
                 <div class="question-texte">
-                    @if(candidatDto.hasCV) {
+                    @if(candidatDto.exists(_.hasCV)) {
                         Remplacez votre dernier CV envoyé (pdf, doc, docx, jpg) :
                         <a class="telechargerCV" href="/candidat/cv/telecharger" target="_blank">Voir mon CV</a>
                     } else {
@@ -323,7 +320,7 @@
                 <label class="labelUploadFichier" for="js-input-cv">
                     <span class="uploadActions">
                         <span id="js-nom-fichier" class="uploadActions-nomFichier">
-                            @candidatDto.cvId.map(_ => "Remplacer mon CV").getOrElse("Ajouter mon CV")
+                            @candidatDto.flatMap(_.cvId).map(_ => "Remplacer mon CV").getOrElse("Ajouter mon CV")
                         </span>
                         <span class="uploadActions-boutonParcourir">Parcourir</span>
                     </span>
@@ -339,7 +336,7 @@
             </dd>
         </dl>
         <div class="validerCriteres">
-            <button class="bouton bouton-action-principale" type="submit">
+            <button class="bouton bouton-actionPrincipale bouton--fondBleu" type="submit">
                 Valider mes critères
             </button>
         </div>

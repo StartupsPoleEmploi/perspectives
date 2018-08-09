@@ -4,7 +4,7 @@
 
 @(candidatAuthentifie: Option[CandidatAuthentifie])(implicit flash: Flash, webAppConfig: WebAppConfig)
 
-@layout(candidatAuthentifie = candidatAuthentifie) {
+@layout(candidatAuthentifie = candidatAuthentifie, cssClassesBody = List("degradeGrisBlanc")) {
     <div id="landingCandidat">
         <section class="intro">
             <header class="introTitres">
@@ -26,13 +26,13 @@
                     </ul>
                     <div class="introActions">
                         @if(candidatAuthentifie.isDefined) {
-                        <a class="bouton bouton-action-secondaire" href="/candidat/criteres-recherche">
+                        <a class="bouton bouton-actionSecondaire bouton--fondBlanc" href="/candidat/criteres-recherche">
                             Modifier mes critères
                         </a>
                         } else {
-                        <a class="bouton bouton-action-principale" href="/candidat/inscription">
+                        <a class="bouton bouton-actionPrincipale bouton--fondBleu" href="/candidat/inscription">
                             Je m'inscris !
-                            <small>en moins de 30 secondes</small>
+                            <small class="bouton-small bouton-small--opaque">en moins de 30 secondes</small>
                         </a>
                         }
                         <p class="introActions-sponsor">Propulsé par Pôle Emploi<p>
@@ -77,9 +77,9 @@
             </div>
             <div class="commentCaMarcheActions">
                 @if(candidatAuthentifie.isEmpty) {
-                <a class="bouton bouton-action-principale bouton-action-principale--blanc" href="/candidat/inscription">
+                <a class="bouton bouton-actionPrincipale bouton--fondBlanc" href="/candidat/inscription">
                     Je m'inscris !
-                    <small>en moins de 30 secondes</small>
+                    <small class="bouton-small bouton-small--opaque">en moins de 30 secondes</small>
                 </a>
                 }
             </div>
@@ -103,13 +103,13 @@
             <h2 class="caVousTente-titre">Ça vous tente ?</h2>
             <div class="caVousTenteAction">
                 @if(candidatAuthentifie.isDefined) {
-                <a class="bouton bouton-action-secondaire" href="/candidat/criteres-recherche">
+                <a class="bouton bouton-actionSecondaire bouton--fondBlanc" href="/candidat/criteres-recherche">
                     Modifier mes critères
                 </a>
                 } else {
-                <a class="bouton bouton-action-principale" href="/candidat/inscription">
+                <a class="bouton bouton-actionPrincipale bouton--fondBleu" href="/candidat/inscription">
                     Je m'inscris !
-                    <small>en moins de 30 secondes</small>
+                    <small class="bouton-small bouton-small--opaque">en moins de 30 secondes</small>
                 </a>
                 }
             </div>

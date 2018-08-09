@@ -33,4 +33,14 @@ object ProfilForm {
       "contactParCandidats" -> nonEmptyText
     )(ProfilForm.apply)(ProfilForm.unapply)
   )
+
+  val emptyForm: Form[ProfilForm] = ProfilForm.form.fill(
+    ProfilForm(
+      typeRecruteur = "",
+      raisonSociale = "",
+      numeroSiret = "",
+      numeroTelephone = "",
+      contactParCandidats = ""
+    )
+  )
 }

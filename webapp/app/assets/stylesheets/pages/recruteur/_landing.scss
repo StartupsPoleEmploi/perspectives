@@ -95,34 +95,6 @@
     }
   }
 
-  .bouton-inscription {
-    color: white;
-    background: linear-gradient(0deg, #82CCDD 0%, #6A89CC 100%);
-    font-size: 1.2em;
-    font-weight: 700;
-    letter-spacing: -0.92px;
-    line-height: 1.5em;
-    border-radius: 5px;
-    padding: .8em 2em;
-
-    display: inline-block;
-    text-align: center;
-    white-space: nowrap;
-    vertical-align: middle;
-
-    box-shadow: 0 0 30px 0 rgba(57, 92, 99, 0.15);
-
-    &:hover {
-      color: white;
-      text-decoration: none;
-      cursor: pointer;
-    }
-
-    small {
-      display: block;
-    }
-  }
-
   .introActions {
     text-align: center;
 

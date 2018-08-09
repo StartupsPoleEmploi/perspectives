@@ -1,0 +1,51 @@
+@import conf.WebAppConfig
+@import controllers.recruteur.MatchingForm
+@import fr.poleemploi.perspectives.domain.authentification.RecruteurAuthentifie
+@import fr.poleemploi.perspectives.domain.{Metier, SecteurActivite}
+@import fr.poleemploi.perspectives.projections.candidat.ResultatRechercheCandidat
+@import helper._
+
+@(matchingForm: Form[MatchingForm],
+        recruteurAuthentifie: RecruteurAuthentifie,
+        resultatRechercheCandidat: ResultatRechercheCandidat)(implicit request: MessagesRequestHeader, flash: Flash, webAppConfig: WebAppConfig)
+
+@layout(recruteurAuthentifie = Some(recruteurAuthentifie)) {
+    <div id="matchingCandidats">
+        <section class="compteurResultats">
+            <h2 class="compteurResultats-titre">
+                <span class="compteurResultats-compteur">@resultatRechercheCandidat.nbCandidats candidat(s) perspectives</span>
+                sont validés par la Méthode de Recrutement par Simulation
+            </h2>
+        </section>
+
+        <section class="criteresRecherche">
+            @form(action = controllers.recruteur.routes.MatchingController.rechercherCandidats(), 'id -> "criteresRechercheForm") {
+                @CSRF.formField
+                <div class="criteres">
+                    <div class="secteursActivites conteneurSelecteur">
+                        <label for="js-secteursActivites-selecteur" class="conteneurSelecteur-label">Choisissez un secteur d'activité</label>
+                        <select class="conteneurSelecteur-selecteur" id="js-secteursActivites-selecteur" name="secteurActivite">
+                            <option value="">Tous les secteurs</option>
+                            @for(secteurActivite <- SecteurActivite.values.values) {
+                                <option value="@secteurActivite.value">@secteurActivite.label</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="metiers conteneurSelecteur">
+                        <label for="js-metiers-selecteur" class="conteneurSelecteur-label">Chosissez un métier</label>
+                        <select class="conteneurSelecteur-selecteur" id="js-metiers-selecteur" name="metiers[]" class="metiers">
+                            <option value="">Tous les métiers</option>
+                            @for(metier <- Metier.values.values) {
+                                <option value="@metier.value">@metier.label</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            }
+        </section>
+        <section id="js-resultatsRecherche" class="resultatsRecherche">
+            @partials.resultatsRecherche(resultatRechercheCandidat)
+        </section>
+    </div>
+    <script src="@routes.Assets.versioned("javascripts/pages/recruteur/matching.js")" type="text/javascript"></script>
+}

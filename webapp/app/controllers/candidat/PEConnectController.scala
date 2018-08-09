@@ -79,8 +79,13 @@ class PEConnectController @Inject()(cc: ControllerComponents,
         nom = infosCandidat.nom,
         prenom = infosCandidat.prenom
       )
-      Redirect(routes.SaisieCriteresRechercheController.saisieCriteresRecherche())
-        .withSession(SessionCandidatPEConnect.set(accessTokenResponse.idToken, SessionCandidatAuthentifie.set(candidatAuthentifie, oauthTokenSessionStorage.remove(request.session))))
+      val session = SessionCandidatPEConnect.set(accessTokenResponse.idToken, SessionCandidatAuthentifie.set(candidatAuthentifie, oauthTokenSessionStorage.remove(request.session)))
+
+      if (optCandidat.isDefined)
+        Redirect(routes.SaisieCriteresRechercheController.saisieCriteresRecherche()).withSession(session)
+      else
+        Redirect(routes.SaisieCriteresRechercheController.saisieCriteresRecherche()).withSession(session)
+          .flashing(request.flash.withCandidatInscris)
     }).recover {
       case t: PEConnectException =>
         Logger.error("Erreur lors du callback PEConnect", t)

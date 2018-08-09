@@ -8,6 +8,7 @@ import fr.poleemploi.perspectives.domain.recruteur._
 import fr.poleemploi.perspectives.projections.recruteur.{GetRecruteurQuery, RecruteurQueryHandler}
 import javax.inject.Inject
 import play.api.Logger
+import play.api.data.Form
 import play.api.mvc._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -24,20 +25,23 @@ class ProfilController @Inject()(components: ControllerComponents,
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
       def booleanToString(boolean: Boolean): String = if (boolean) "true" else "false"
 
-      recruteurQueryHandler.getRecruteur(GetRecruteurQuery(
-        recruteurId = recruteurAuthentifieRequest.recruteurId
-      )).map(recruteurDto => {
-        val filledForm = ProfilForm.form.fill(
-          ProfilForm(
-            typeRecruteur = recruteurDto.typeRecruteur.map(_.value).getOrElse(""),
-            raisonSociale = recruteurDto.raisonSociale.getOrElse(""),
-            numeroSiret = recruteurDto.numeroSiret.map(_.value).getOrElse(""),
-            numeroTelephone = recruteurDto.numeroTelephone.map(_.value).getOrElse(""),
-            contactParCandidats = recruteurDto.contactParCandidats.map(booleanToString).getOrElse("")
-          )
-        )
-        Ok(views.html.recruteur.profil(filledForm, recruteurAuthentifie = recruteurAuthentifieRequest.recruteurAuthentifie))
-      })
+      val form: Future[Form[ProfilForm]] =
+        if (messagesRequest.flash.recruteurInscris) {
+          Future.successful(ProfilForm.emptyForm)
+        } else {
+          recruteurQueryHandler.getRecruteur(GetRecruteurQuery(recruteurId = recruteurAuthentifieRequest.recruteurId)).map(recruteurDto =>
+            ProfilForm.form.fill(
+              ProfilForm(
+                typeRecruteur = recruteurDto.typeRecruteur.map(_.value).getOrElse(""),
+                raisonSociale = recruteurDto.raisonSociale.getOrElse(""),
+                numeroSiret = recruteurDto.numeroSiret.map(_.value).getOrElse(""),
+                numeroTelephone = recruteurDto.numeroTelephone.map(_.value).getOrElse(""),
+                contactParCandidats = recruteurDto.contactParCandidats.map(booleanToString).getOrElse("")
+              )
+            ))
+        }
+
+      form.map(f => Ok(views.html.recruteur.profil(f, recruteurAuthentifie = recruteurAuthentifieRequest.recruteurAuthentifie)))
     }(recruteurAuthentifieRequest)
   }
 

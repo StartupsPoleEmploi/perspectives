@@ -10,6 +10,7 @@ import fr.poleemploi.perspectives.domain.{Genre, Metier, NumeroTelephone, RayonR
 
 trait PostgresDriver extends ExPostgresProfile
   with PgArraySupport
+  with PgArrayExtensions
   with PgDate2Support {
 
   object PostgresAPI extends API
@@ -66,6 +67,11 @@ trait PostgresDriver extends ExPostgresProfile
     implicit val setMetiersColumnType: BaseColumnType[Set[Metier]] = MappedColumnType.base[Set[Metier], List[String]](
       { m => m.map(_.value).toList },
       { s => s.flatMap(Metier.from).toSet }
+    )
+
+    implicit val listMetiersColumnType: BaseColumnType[List[Metier]] = MappedColumnType.base[List[Metier], List[String]](
+      { m => m.map(_.value) },
+      { s => s.flatMap(Metier.from) }
     )
 
     implicit val statutDemandeurEmploiColumnType: BaseColumnType[StatutDemandeurEmploi] = MappedColumnType.base[StatutDemandeurEmploi, String](

@@ -6,31 +6,13 @@ import fr.poleemploi.cqrs.projection.Projection
 import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.perspectives.domain.candidat._
 import fr.poleemploi.perspectives.domain.candidat.cv.CVId
+import fr.poleemploi.perspectives.domain.recruteur.TypeRecruteur
 import fr.poleemploi.perspectives.domain.{Genre, Metier, NumeroTelephone, RayonRecherche}
 import fr.poleemploi.perspectives.infra.sql.PostgresDriver
 import slick.jdbc.JdbcBackend.Database
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-
-case class CandidatDto(candidatId: CandidatId,
-                       nom: String,
-                       prenom: String,
-                       genre: Option[Genre],
-                       email: String,
-                       statutDemandeurEmploi: Option[StatutDemandeurEmploi],
-                       rechercheMetierEvalue: Option[Boolean],
-                       rechercheAutreMetier: Option[Boolean],
-                       metiersRecherches: Set[Metier],
-                       contacteParAgenceInterim: Option[Boolean],
-                       contacteParOrganismeFormation: Option[Boolean],
-                       rayonRecherche: Option[RayonRecherche],
-                       numeroTelephone: Option[NumeroTelephone],
-                       cvId: Option[CVId],
-                       dateInscription: ZonedDateTime) {
-
-  def hasCV: Boolean = cvId.isDefined
-}
 
 class CandidatProjection(val driver: PostgresDriver,
                          database: Database) extends Projection {
@@ -70,9 +52,11 @@ class CandidatProjection(val driver: PostgresDriver,
 
     def rechercheMetierEvalue = column[Option[Boolean]]("recherche_metier_evalue")
 
+    def metiersEvalues = column[List[Metier]]("metiers_evalues")
+
     def rechercheAutreMetier = column[Option[Boolean]]("recherche_autre_metier")
 
-    def metiersRecherches = column[Set[Metier]]("metiers_recherches")
+    def metiersRecherches = column[List[Metier]]("metiers_recherches")
 
     def contacteParAgenceInterim = column[Option[Boolean]]("contacte_par_agence_interim")
 
@@ -86,7 +70,7 @@ class CandidatProjection(val driver: PostgresDriver,
 
     def dateInscription = column[ZonedDateTime]("date_inscription")
 
-    def * = (candidatId, nom, prenom, genre, email, statutDemandeurEmploi, rechercheMetierEvalue, rechercheAutreMetier, metiersRecherches, contacteParAgenceInterim, contacteParOrganismeFormation, rayonRecherche, numeroTelephone, cvId, dateInscription) <> (CandidatDto.tupled, CandidatDto.unapply)
+    def * = (candidatId, nom, prenom, genre, email, statutDemandeurEmploi, rechercheMetierEvalue, metiersEvalues, rechercheAutreMetier, metiersRecherches, contacteParAgenceInterim, contacteParOrganismeFormation, rayonRecherche, numeroTelephone, cvId, dateInscription) <> (CandidatDto.tupled, CandidatDto.unapply)
   }
 
   val candidatTable = TableQuery[CandidatTable]
@@ -103,10 +87,83 @@ class CandidatProjection(val driver: PostgresDriver,
     database.run(query.result).map(_.toList)
   }
 
+  def rechercherCandidatParDateInscription(query: RechercherCandidatsParDateInscriptionQuery): Future[ResultatRechercheCandidatParDateInscription] =
+    database.run(
+      candidatTable
+        .filter(c => filtreCandidatAvecCriteresDeRecherche(c) && filtreTypeRecruteur(c, query.typeRecruteur))
+        .sortBy(_.dateInscription.desc).result
+    ).map(r => ResultatRechercheCandidatParDateInscription(ListeCandidats(
+      nbCandidats = r.size, // FIXME : count avec pagination
+      candidatDtos = r.toList
+    )))
+
+  def rechercherCandidatParSecteur(query: RechercheCandidatsParSecteurQuery): Future[ResultatRechercheCandidatParSecteur] =
+    rechercherCandidats(query.typeRecruteur, query.secteur.metiers)
+      .map(r => {
+        ResultatRechercheCandidatParSecteur(
+          validesSecteur = ListeCandidats(
+            nbCandidats = r._1.size,
+            candidatDtos = r._1
+          ),
+          interessesSecteur = ListeCandidats(
+            nbCandidats = r._2.size,
+            candidatDtos = r._2
+          )
+        )
+      })
+
+  def rechercherCandidatParMetier(query: RechercherCandidatsParMetierQuery): Future[ResultatRechercheCandidatParMetier] =
+    rechercherCandidats(query.typeRecruteur, query.metiers)
+      .map(r => {
+        ResultatRechercheCandidatParMetier(
+          validesMetier = ListeCandidats(
+            nbCandidats = r._1.size,
+            candidatDtos = r._1
+          ),
+          interessesMetier = ListeCandidats(
+            nbCandidats = r._2.size,
+            candidatDtos = r._2
+          )
+        )
+      })
+
+  private def filtreCandidatAvecCriteresDeRecherche(c: CandidatTable): Rep[Boolean] =
+    c.rechercheMetierEvalue.isDefined && c.rechercheAutreMetier.isDefined
+
+  private def filtreTypeRecruteur(c: CandidatTable,
+                                  typeRecruteur: TypeRecruteur): Rep[Option[Boolean]] = typeRecruteur match {
+    case TypeRecruteur.AGENCE_INTERIM => c.contacteParAgenceInterim === true
+    case TypeRecruteur.ORGANISME_FORMATION => c.contacteParOrganismeFormation === true
+    case _ => Some(true)
+  }
+
+  // FIXME : count avec pagination
+  private def rechercherCandidats(typeRecruteur: TypeRecruteur, metiers: Set[Metier]): Future[(List[CandidatDto], List[CandidatDto])] = {
+    val listeMetiers = metiers.toList
+
+    val selectMetiersEvalues = candidatTable.filter { c =>
+      filtreTypeRecruteur(c, typeRecruteur) &&
+        c.rechercheMetierEvalue === true &&
+        c.metiersEvalues @& listeMetiers
+    }.sortBy(_.candidatId)
+    val selectMetiersRecherches = candidatTable.filter { c =>
+      filtreTypeRecruteur(c, typeRecruteur) &&
+        c.rechercheAutreMetier === true &&
+        c.metiersRecherches @& listeMetiers &&
+        !(c.metiersEvalues @& listeMetiers)
+    }.sortBy(_.candidatId)
+
+    // La deuxième liste ne contiendra pas de doublons  par rapport à la première car ils sont exclus par la requete
+    for {
+      candidatsValides <- database.run(selectMetiersEvalues.result)
+      candidatsInteresses <- database.run(selectMetiersRecherches.result)
+    } yield (candidatsValides.toList, candidatsInteresses.toList)
+  }
+
   private def onCandidatInscrisEvent(event: CandidatInscrisEvent): Future[Unit] =
     database
-      .run(candidatTable.map(c => (c.candidatId, c.nom, c.prenom, c.genre, c.email, c.metiersRecherches, c.dateInscription))
-        += (event.candidatId, event.nom, event.prenom, event.genre, event.email, Set.empty, event.date))
+      .run(candidatTable.map(c => (c.candidatId, c.nom, c.prenom, c.genre, c.email, c.dateInscription))
+        += (event.candidatId, event.nom, event.prenom, event.genre, event.email, event.date))
       .map(_ => ())
 
   private def onProfilPEConnectModifieEvent(event: ProfilCandidatModifiePEConnectEvent): Future[Unit] = {
@@ -133,7 +190,7 @@ class CandidatProjection(val driver: PostgresDriver,
       Some(event.rechercheMetierEvalue),
       Some(event.rechercheAutreMetier),
       Some(event.rayonRecherche),
-      event.metiersRecherches
+      event.metiersRecherches.toList
     ))
 
     database.run(updateAction).map(_ => ())
