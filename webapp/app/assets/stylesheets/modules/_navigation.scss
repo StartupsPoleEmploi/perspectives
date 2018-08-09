@@ -44,32 +44,15 @@
 
   @include media-breakpoint-up(md) {
     @include make-col(2);
-
-    &--connecte {
-      @include make-col-offset(2);
-      text-align: center;
-    }
-
-    &--deconnecte {
-      @include make-col-offset(1);
-      text-align: right;
-      padding: 0;
-    }
+    @include make-col-offset(1);
+    text-align: right;
+    padding: 0;
   }
   @include media-breakpoint-down(md) {
     @include make-col(12);
-    text-align: center;
+    @include make-col-offset(0);
     margin-top: 1em;
-
-    &--connecte {
-      @include make-col-offset(0);
-      text-align: center;
-    }
-
-    &--deconnecte {
-      @include make-col-offset(0);
-      text-align: center;
-    }
+    text-align: center;
   }
 
   &-lien {
@@ -107,9 +90,11 @@
   @include media-breakpoint-up(md) {
     @include make-col-ready();
     @include make-col(3);
+    @include make-col-offset(3);
   }
   @include media-breakpoint-down(md) {
     @include make-col(12);
+    @include make-col-offset(0);
     padding: 0;
     order: -1;
   }
@@ -130,15 +115,6 @@
       text-align: left;
       padding-left: 3em;
       color: #334051;
-
-      &:before {
-        content: "";
-        position: absolute;
-        left: 10px;
-        top: 3px;
-        height: 13px;
-        border-right: 2px solid #334051;
-      }
     }
     @include media-breakpoint-down(md) {
       text-align: center;
@@ -147,10 +123,6 @@
       height: 40px;
       color: white;
       background-color: #334051;
-
-      &:before {
-        display: none;
-      }
     }
 
     &-icone {

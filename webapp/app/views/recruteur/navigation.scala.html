@@ -4,10 +4,10 @@
 
 <div class="navigation">
     @components.headerPrincipal()
-    <nav class="accesLanding @if(recruteurAuthentifie.isDefined){accesLanding--connecte} else {accesLanding--deconnecte}">
-        <a class="accesLanding-lien" href="/">Accès candidat</a>
-    </nav>
     @recruteurAuthentifie.map(r => components.menuRecruteur(r)).getOrElse {
+        <nav class="accesLanding">
+            <a class="accesLanding-lien" href="/">Accès candidat</a>
+        </nav>
         <div class="conteneurPEConnect">
         @components.peconnect("/recruteur/inscription")
         </div>

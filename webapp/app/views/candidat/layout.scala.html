@@ -22,13 +22,13 @@
         @if(webAppConfig.useGoogleTagManager) {@components.googleTagManagerNoScript()}
         <div class="navigation">
             @components.headerPrincipal()
-            <nav class="accesLanding @if(candidatAuthentifie.isDefined){accesLanding--connecte} else {accesLanding--deconnecte}">
-                <a class="accesLanding-lien" href="/recruteur">Accès recruteur</a>
-            </nav>
             @candidatAuthentifie.map(c => components.menuCandidat(c)).getOrElse {
-            <div class="conteneurPEConnect">
+                <nav class="accesLanding">
+                    <a class="accesLanding-lien" href="/recruteur">Accès recruteur</a>
+                </nav>
+                <div class="conteneurPEConnect">
                 @components.peconnect("/candidat/inscription")
-            </div>
+                </div>
             }
         </div>
         @components.flashMessages()
