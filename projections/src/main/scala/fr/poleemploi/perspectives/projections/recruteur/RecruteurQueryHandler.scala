@@ -9,6 +9,6 @@ class RecruteurQueryHandler(recruteurProjection: RecruteurProjection) extends Qu
   def getRecruteur(query: GetRecruteurQuery): Future[RecruteurDto] =
     recruteurProjection.getRecruteur(query)
 
-  def findAllOrderByDateInscription(): Future[List[RecruteurDto]] =
-    recruteurProjection.findAllOrderByDateInscription
+  def listerParDateInscription(): Future[List[RecruteurDto]] =
+    recruteurProjection.listerParDateInscription
 }

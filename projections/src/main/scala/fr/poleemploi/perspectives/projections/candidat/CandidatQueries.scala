@@ -16,8 +16,8 @@ case class GetCVPourRecruteurParCandidatQuery(candidatId: CandidatId,
 
 case class RechercherCandidatsParDateInscriptionQuery(typeRecruteur: TypeRecruteur) extends CandidatQuery
 
-case class RechercheCandidatsParSecteurQuery(secteur: SecteurActivite,
-                                             typeRecruteur: TypeRecruteur) extends CandidatQuery
+case class RechercheCandidatsParSecteurQuery(typeRecruteur: TypeRecruteur,
+                                             secteurActivite: SecteurActivite) extends CandidatQuery
 
-case class RechercherCandidatsParMetierQuery(metiers: Set[Metier],
-                                             typeRecruteur: TypeRecruteur) extends CandidatQuery
+case class RechercherCandidatsParMetierQuery(typeRecruteur: TypeRecruteur,
+                                             metiers: Set[Metier]) extends CandidatQuery

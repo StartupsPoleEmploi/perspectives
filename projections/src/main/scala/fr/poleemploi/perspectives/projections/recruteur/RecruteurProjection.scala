@@ -64,7 +64,7 @@ class RecruteurProjection(val driver: PostgresDriver,
     database.run(select.result.head)
   }
 
-  def findAllOrderByDateInscription: Future[List[RecruteurDto]] = {
+  def listerParDateInscription: Future[List[RecruteurDto]] = {
     val select = recruteurTable.sortBy(_.dateInscription.desc)
 
     database.run(select.result).map(_.toList)

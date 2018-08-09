@@ -4,10 +4,10 @@ import java.time.ZonedDateTime
 
 import fr.poleemploi.cqrs.projection.Projection
 import fr.poleemploi.eventsourcing.Event
+import fr.poleemploi.perspectives.domain._
 import fr.poleemploi.perspectives.domain.candidat._
 import fr.poleemploi.perspectives.domain.candidat.cv.CVId
 import fr.poleemploi.perspectives.domain.recruteur.TypeRecruteur
-import fr.poleemploi.perspectives.domain.{Genre, Metier, NumeroTelephone, RayonRecherche}
 import fr.poleemploi.perspectives.infra.sql.PostgresDriver
 import slick.jdbc.JdbcBackend.Database
 
@@ -81,7 +81,7 @@ class CandidatProjection(val driver: PostgresDriver,
     database.run(select.result.head)
   }
 
-  def findAllOrderByDateInscription: Future[List[CandidatDto]] = {
+  def listerParDateInscription: Future[List[CandidatDto]] = {
     val select = candidatTable.sortBy(_.dateInscription.desc)
 
     database.run(select.result).map(_.toList)
@@ -98,7 +98,7 @@ class CandidatProjection(val driver: PostgresDriver,
     )))
 
   def rechercherCandidatParSecteur(query: RechercheCandidatsParSecteurQuery): Future[ResultatRechercheCandidatParSecteur] =
-    rechercherCandidats(query.typeRecruteur, query.secteur.metiers)
+    rechercherCandidats(query.typeRecruteur, query.secteurActivite.metiers)
       .map(r => {
         ResultatRechercheCandidatParSecteur(
           validesSecteur = ListeCandidats(

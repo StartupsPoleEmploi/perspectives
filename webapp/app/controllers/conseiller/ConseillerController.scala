@@ -20,7 +20,7 @@ class ConseillerController @Inject()(cc: ControllerComponents,
 
   def listeCandidats(): Action[AnyContent] = conseillerAuthentifieAction.async { implicit conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
     if (autorisationService.hasRole(conseillerRequest.conseillerId, RoleConseiller.ADMIN)) {
-      candidatQueryHandler.findAllOrderByDateInscription()
+      candidatQueryHandler.listerParDateInscription()
         .map(candidats =>
           Ok(views.html.conseiller.listeCandidats(candidats))
         )
@@ -29,7 +29,7 @@ class ConseillerController @Inject()(cc: ControllerComponents,
 
   def listeRecruteurs(): Action[AnyContent] = conseillerAuthentifieAction.async { implicit conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
     if (autorisationService.hasRole(conseillerRequest.conseillerId, RoleConseiller.ADMIN)) {
-      recruteurQueryHandler.findAllOrderByDateInscription()
+      recruteurQueryHandler.listerParDateInscription()
         .map(recruteurs =>
           Ok(views.html.conseiller.listeRecruteurs(recruteurs))
         )

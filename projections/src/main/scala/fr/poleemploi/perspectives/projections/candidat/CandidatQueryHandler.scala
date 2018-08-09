@@ -15,8 +15,8 @@ class CandidatQueryHandler(candidatProjection: CandidatProjection,
   def getCandidat(query: GetCandidatQuery): Future[CandidatDto] =
     candidatProjection.getCandidat(query)
 
-  def findAllOrderByDateInscription(): Future[List[CandidatDto]] =
-    candidatProjection.findAllOrderByDateInscription
+  def listerParDateInscription(): Future[List[CandidatDto]] =
+    candidatProjection.listerParDateInscription
 
   def getCVParCandidat(query: GetCVParCandidatQuery): Future[CV] =
     cvService.getCvByCandidat(query.candidatId)
