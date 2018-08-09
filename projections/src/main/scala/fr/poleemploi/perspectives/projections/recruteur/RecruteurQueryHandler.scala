@@ -7,7 +7,7 @@ import scala.concurrent.Future
 class RecruteurQueryHandler(recruteurProjection: RecruteurProjection) extends QueryHandler {
 
   def getRecruteur(query: GetRecruteurQuery): Future[RecruteurDto] =
-    recruteurProjection.getRecruteur(query.recruteurId)
+    recruteurProjection.getRecruteur(query)
 
   def findAllOrderByDateInscription(): Future[List[RecruteurDto]] =
     recruteurProjection.findAllOrderByDateInscription

@@ -43,9 +43,11 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
   @Provides
   @Singleton
   def candidatQueryHandler(candidatProjection: CandidatProjection,
+                           recruteurProjection: RecruteurProjection,
                            cvService: CVService): CandidatQueryHandler =
     new CandidatQueryHandler(
       candidatProjection = candidatProjection,
+      recruteurProjection = recruteurProjection,
       cvService = cvService
     )
 

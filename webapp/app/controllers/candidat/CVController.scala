@@ -5,7 +5,7 @@ import akka.util.ByteString
 import authentification.infra.play.{CandidatAuthentifieAction, CandidatAuthentifieRequest}
 import conf.WebAppConfig
 import fr.poleemploi.perspectives.domain.candidat.CandidatCommandHandler
-import fr.poleemploi.perspectives.projections.candidat.{CandidatQueryHandler, GetCVByCandidatQuery}
+import fr.poleemploi.perspectives.projections.candidat.{CandidatQueryHandler, GetCVParCandidatQuery}
 import javax.inject.Inject
 import play.api.http.HttpEntity
 import play.api.mvc._
@@ -21,7 +21,7 @@ class CVController @Inject()(components: ControllerComponents,
 
   def telecharger: Action[AnyContent] = candidatAuthentifieAction.async { candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
-      candidatQueryHandler.getCVByCandidat(GetCVByCandidatQuery(candidatAuthentifieRequest.candidatId))
+      candidatQueryHandler.getCVParCandidat(GetCVParCandidatQuery(candidatAuthentifieRequest.candidatId))
         .map(fichierCv => {
           val source: Source[ByteString, _] = Source.fromIterator[ByteString](
             () => Iterator.fill(1)(ByteString(fichierCv.data))

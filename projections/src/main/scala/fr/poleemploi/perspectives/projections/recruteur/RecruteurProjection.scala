@@ -58,16 +58,16 @@ class RecruteurProjection(val driver: PostgresDriver,
 
   val recruteurTable = TableQuery[RecruteurTable]
 
-  def getRecruteur(recruteurId: RecruteurId): Future[RecruteurDto] = {
-    val query = recruteurTable.filter(r => r.recruteurId === recruteurId)
+  def getRecruteur(query: GetRecruteurQuery): Future[RecruteurDto] = {
+    val select = recruteurTable.filter(r => r.recruteurId === query.recruteurId)
 
-    database.run(query.result.head)
+    database.run(select.result.head)
   }
 
   def findAllOrderByDateInscription: Future[List[RecruteurDto]] = {
-    val query = recruteurTable.sortBy(_.dateInscription.desc)
+    val select = recruteurTable.sortBy(_.dateInscription.desc)
 
-    database.run(query.result).map(_.toList)
+    database.run(select.result).map(_.toList)
   }
 
   private def onRecruteurInscrisEvent(event: RecruteurInscrisEvent): Future[Unit] =
