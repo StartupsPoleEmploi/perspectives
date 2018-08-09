@@ -161,27 +161,43 @@
   .definition {
     @include make-container();
     @include make-container-max-widths();
-
-    text-align: center;
-    padding: 7em 0;
+    padding: 4em 0;
 
     &-texte {
-      display: inline;
+      text-align: center;
+      color: #334051;
+      font-size: 20px;
+      letter-spacing: 1px;
+      line-height: 32px;
+    }
+
+    &-titre {
+      text-align: center;
       color: #334051;
       font-size: 2.1em;
       font-weight: 300;
       letter-spacing: 1px;
       line-height: 55px;
+    }
 
-      &:before {
-        @include media-breakpoint-up(sm) {
-          content: url('/assets/images/pages/recruteur/landing/quote.png');
-          position: relative;
-          left: 7%;
-          top: -10px;
-        }
+    &-lien {
+      color: #82CCDD;
+
+      &:hover {
+        text-decoration: none;
+        color: #82CCDD;
       }
     }
+  }
+
+  .definitionTitres {
+    padding: 0 0 3em 0;
+  }
+
+  .videoPresentation {
+    position:relative;
+    height:0;
+    padding-bottom:56.25%;
   }
 
   .commentCaMarche {
