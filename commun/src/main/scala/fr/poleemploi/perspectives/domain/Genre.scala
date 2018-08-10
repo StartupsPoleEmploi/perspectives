@@ -2,8 +2,6 @@ package fr.poleemploi.perspectives.domain
 
 import fr.poleemploi.eventsourcing.StringValueObject
 
-import scala.collection.immutable.ListMap
-
 /**
   * Value Object Genre
   */
@@ -17,7 +15,7 @@ object Genre {
   val HOMME = Genre(value = "H", "Homme")
   val FEMME = Genre(value = "F", "Femme")
 
-  private val values = ListMap(
+  private val values = Map(
     HOMME.value -> HOMME,
     FEMME.value -> FEMME,
   )
