@@ -2,8 +2,6 @@ package fr.poleemploi.perspectives.domain
 
 import fr.poleemploi.eventsourcing.StringValueObject
 
-import scala.collection.immutable.ListMap
-
 /**
   * Value Object Metier
   */
@@ -37,7 +35,7 @@ object Metier {
   val PREPARATION_COMMANDE = Metier("N1103", "Préparation de commandes")
   val MANUTENTION = Metier("N1105", "Manutention")
 
-  val values = ListMap(
+  val values = Map(
     AIDE_AGRICOLE.value -> AIDE_AGRICOLE,
     REALISATION_ARTICLES.value -> REALISATION_ARTICLES,
     CAISSE.value -> CAISSE,
