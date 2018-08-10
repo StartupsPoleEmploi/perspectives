@@ -3,62 +3,72 @@
 
 @(resultatRechercheCandidat: ResultatRechercheCandidat)
 
-@(resultatRechercheCandidat match {
-    case r@ResultatRechercheCandidatParDateInscription(_) =>
-        affichageResultats(cssClasse = "avecLignesBleues", candidatDtos = r.candidats)
-    case r@ResultatRechercheCandidatParSecteur(_, _) =>
-        affichageResultats(
-            cssClasse = "avecLignesBleues",
-            styleTitre = Some("resultatsRecherche-titre--bleu"),
-            titre = if (r.nbCandidatsValidesSecteur > 0) Some(s"${r.nbCandidatsValidesSecteur} candidat(s) validé(s) sur ce secteur") else None,
-            candidatDtos = r.candidatsValidesSecteur
+@getTitreForCandidats(candidats: List[CandidatDto], finTitre: String) = @{
+    candidats match {
+        case Nil => None
+        case x::Nil => Some(s"1 candidat a du potentiel $finTitre")
+        case x::xs => Some(s"${candidats.size} candidats ont du potentiel $finTitre")
+    }
+}
+
+@resultatRechercheCandidat match {
+    case r@ResultatRechercheCandidatParDateInscription(candidats) => {
+        @affichageResultats(cssClasse = "avecLignesBleues", candidatDtos = candidats)
+    }
+    case ResultatRechercheCandidatParSecteur(candidatsEvaluesSurSecteur, candidatsInteressesParAutreSecteur) => {
+        @affichageResultats(
+             cssClasse = "avecLignesBleues",
+             styleTitre = Some("resultatsRecherche-titre--bleu"),
+             titre = getTitreForCandidats(candidatsEvaluesSurSecteur, "dans ce secteur d'activité"),
+             candidatDtos = candidatsEvaluesSurSecteur
         )
-    case r@ResultatRechercheCandidatParMetier(_, _) =>
-        affichageResultats(
-            cssClasse = "avecLignesBleues",
-            styleTitre = Some("resultatsRecherche-titre--bleu"),
-            titre = if (r.nbCandidatsValidesMetier > 0) Some(s"${r.nbCandidatsValidesMetier} candidat(s) validés sur ce métier") else None,
-            candidatDtos = r.candidatsValidesMetier
-        )
-    case _ => ""
-})
-@(resultatRechercheCandidat match {
-    case r@ResultatRechercheCandidatParSecteur(_, _) =>
-        affichageResultats(
+        @affichageResultats(
             cssClasse = "avecLignesNoires",
             styleTitre = Some("resultatsRecherche-titre--noir"),
-            titre = if (r.nbCandidatsInteressesSecteur > 0) Some(s"${r.nbCandidatsInteressesSecteur} candidat(s) intéressé(s) par ce secteur") else None,
-            candidatDtos = r.candidatsInteressesSecteur
+            titre = getTitreForCandidats(candidatsInteressesParAutreSecteur, "dans un autre secteur d'activité"),
+            candidatDtos = candidatsInteressesParAutreSecteur
         )
-    case r@ResultatRechercheCandidatParMetier(_, _) =>
-        affichageResultats(
+    }
+    case ResultatRechercheCandidatParMetier(candidatsEvaluesSurMetier, candidatsInteressesParMetierMemeSecteur, candidatsInteressesParMetierAutreSecteur) => {
+        @affichageResultats(
+            cssClasse = "avecLignesBleues",
+            styleTitre = Some("resultatsRecherche-titre--bleu"),
+            titre = getTitreForCandidats(candidatsEvaluesSurMetier, "sur ce métier"),
+            candidatDtos = candidatsEvaluesSurMetier
+        )
+        @affichageResultats(
             cssClasse = "avecLignesNoires",
             styleTitre = Some("resultatsRecherche-titre--noir"),
-            titre = if (r.nbCandidatsInteressesMetier > 0) Some(s"${r.nbCandidatsInteressesMetier} candidat(s) intéressé(s) par ce métier") else None,
-            candidatDtos = r.candidatsInteressesMetier
+            titre = getTitreForCandidats(candidatsInteressesParMetierMemeSecteur, "dans ce secteur d'activité"),
+            candidatDtos = candidatsInteressesParMetierMemeSecteur
         )
-    case _ => ""
-})
+        @affichageResultats(
+            cssClasse = "avecLignesNoires",
+            styleTitre = Some("resultatsRecherche-titre--noir"),
+            titre = getTitreForCandidats(candidatsInteressesParMetierAutreSecteur, "dans un autre secteur d'activité"),
+            candidatDtos = candidatsInteressesParMetierAutreSecteur
+        )
+    }
+}
 
 @affichageResultats(cssClasse: String, styleTitre: Option[String] = None, titre: Option[String] = None, candidatDtos: List[CandidatDto]) = {
-@defining(titre) { t =>
-    <span class="resultatsRecherche-titre @styleTitre">@t</span>
-}
-<table class="listeResultatsRecherche @cssClasse">
-    <tbody>
-    @for(candidat <- candidatDtos) {
-        <tr>
-            <td class="listeResultatsRecherche-candidat">
-                <div class="info--majuscule">@candidat.nom</div>
-                <div class="info--minuscule">@candidat.prenom</div>
-            </td>
-            <td class="listeResultatsRecherche-mrs">
-                <div class="info--majuscule">MRS Validée</div>
-                @** FIXME : afficher le metier evalue par rapport à la recherche effectuee : metier ou secteur *@
-                <div class="info--minuscule">@candidat.metiersEvalues.headOption.map(_.label)</div>
-            </td>
-            <td class="listeResultatsRecherche-localisation">
-                @** FIXME : recupérer l'adresse du candidat *@
+    @if(candidatDtos.nonEmpty) {
+    <span class="resultatsRecherche-titre @styleTitre">@titre</span>
+    <table class="listeResultatsRecherche @cssClasse">
+        <tbody>
+        @for(candidat <- candidatDtos) {
+            <tr>
+                <td class="listeResultatsRecherche-candidat">
+                    <div class="info--majuscule">@candidat.nom</div>
+                    <div class="info--minuscule">@candidat.prenom</div>
+                </td>
+                <td class="listeResultatsRecherche-mrs">
+                    <div class="info--majuscule">MRS Validée</div>
+                    @** FIXME : afficher le metier evalue par rapport à la recherche effectuee : metier ou secteur *@
+                    <div class="info--minuscule">@candidat.metiersEvalues.headOption.map(_.label)</div>
+                </td>
+                <td class="listeResultatsRecherche-localisation">
+                    @** FIXME : recupérer l'adresse du candidat *@
                 <div>
                     <span class="info--majuscule">85000</span>
                     <span class="rayonRecherche">
@@ -69,36 +79,37 @@
                     </span>
                 </div>
                 <div class="info--minuscule">la roche sur yon</div>
-            </td>
-            <td class="listeResultatsRecherche-actions">
-                <ul class="listeActions">
-                    <li class="listeActions-item actionCV">
+                </td>
+                <td class="listeResultatsRecherche-actions">
+                    <ul class="listeActions">
+                        <li class="listeActions-item actionCV">
                         @if(candidat.hasCV) {
-                        <a class="bouton bouton-actionCandidat bouton--blancSurNoir" target="_blank" href="/recruteur/cv/telecharger/@candidat.candidatId.value">
-                            <img alt="Télécharger le CV" src="@routes.Assets.versioned("images/pages/recruteur/matching/icone-telecharger-cv.svg")" width="16" height="12" />
-                            CV
-                        </a>
+                            <a class="bouton bouton-actionCandidat bouton--blancSurNoir" target="_blank" href="/recruteur/cv/telecharger/@candidat.candidatId.value">
+                                <img alt="Télécharger le CV" src="@routes.Assets.versioned("images/pages/recruteur/matching/icone-telecharger-cv.svg")" width="16" height="12" />
+                                CV
+                            </a>
                         }
-                    </li>
-                    <li class="listeActions-item">
-                        <div class="bouton bouton-actionCandidat bouton--bleu bouton-actionCandidat--large js-boutonCandidat">Email</div>
-                        <span class="bouton bouton-infoCandidat bouton--noirSurBlanc js-infoCandidat">@candidat.email</span>
-                        <input class="copiePressePapier js-copiePressePapier" type="text" value="@candidat.email" />
-                        <div class="infoBulle infoBulle--email js-infoBulle">Copié !</div>
-                    </li>
-                    @if(candidat.numeroTelephone.isDefined) {
-                        <li class="listeActions-item">
-                            <span class="bouton bouton-actionCandidat bouton--bleu bouton-actionCandidat--large js-boutonCandidat">
-                                Téléphone</span>
-                            <span class="bouton bouton-infoCandidat bouton--noirSurBlanc js-infoCandidat">@candidat.numeroTelephone.map(_.value)</span>
-                            <input class="copiePressePapier js-copiePressePapier" type="text" value="@candidat.numeroTelephone.map(_.value)" />
-                            <div class="infoBulle infoBulle--telephone js-infoBulle">Copié !</div>
                         </li>
-                    }
-                </ul>
-            </td>
-        </tr>
+                        <li class="listeActions-item">
+                            <div class="bouton bouton-actionCandidat bouton--bleu bouton-actionCandidat--large js-boutonCandidat">Email</div>
+                            <span class="bouton bouton-infoCandidat bouton--noirSurBlanc js-infoCandidat">@candidat.email</span>
+                            <input class="copiePressePapier js-copiePressePapier" type="text" value="@candidat.email" />
+                            <div class="infoBulle infoBulle--email js-infoBulle">Copié !</div>
+                        </li>
+                        @if(candidat.numeroTelephone.isDefined) {
+                            <li class="listeActions-item">
+                                <span class="bouton bouton-actionCandidat bouton--bleu bouton-actionCandidat--large js-boutonCandidat">
+                                    Téléphone</span>
+                                <span class="bouton bouton-infoCandidat bouton--noirSurBlanc js-infoCandidat">@candidat.numeroTelephone.map(_.value)</span>
+                                <input class="copiePressePapier js-copiePressePapier" type="text" value="@candidat.numeroTelephone.map(_.value)" />
+                                <div class="infoBulle infoBulle--telephone js-infoBulle">Copié !</div>
+                            </li>
+                        }
+                    </ul>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
     }
-    </tbody>
-</table>
 }

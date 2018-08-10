@@ -11,11 +11,18 @@
 
 @layout(recruteurAuthentifie = Some(recruteurAuthentifie)) {
     <div id="matchingCandidats">
-        <section class="compteurResultats">
-            <h2 class="compteurResultats-titre">
-                <span class="compteurResultats-compteur">@resultatRechercheCandidat.nbCandidats candidat(s) perspectives</span>
-                sont validés par la Méthode de Recrutement par Simulation
-            </h2>
+        <section class="compteurResultats"> @** Utilisation de ifs car si on fait du pattern matching twirl generent des lignes inutiles et le bloc prend alors plus de place sur l'écran... *@
+            @if(resultatRechercheCandidat.nbCandidats == 0) {
+                <h2 class="compteurResultats-titre">Nous n'avons pas de candidats à vous proposer</h2>
+            }
+            @if(resultatRechercheCandidat.nbCandidats == 1) {
+                <h2 class="compteurResultats-titre"><b>1 candidat perspectives</b>
+                    a validé la Méthode de Recrutement par Simulation</h2>
+            }
+            @if(resultatRechercheCandidat.nbCandidats > 1) {
+                <h2 class="compteurResultats-titre"><b>@resultatRechercheCandidat.nbCandidats candidat(s) perspectives</b>
+                    ont validés la Méthode de Recrutement par Simulation</h2>
+            }
         </section>
 
         <section class="criteresRecherche">
@@ -33,7 +40,7 @@
                     </div>
                     <div class="metiers conteneurSelecteur">
                         <label for="js-metiers-selecteur" class="conteneurSelecteur-label">Chosissez un métier</label>
-                        <select class="conteneurSelecteur-selecteur" id="js-metiers-selecteur" name="metiers[]" class="metiers">
+                        <select class="conteneurSelecteur-selecteur" id="js-metiers-selecteur" name="metier">
                             <option value="">Tous les métiers</option>
                             @for(metier <- Metier.values.values) {
                                 <option value="@metier.value">@metier.label</option>

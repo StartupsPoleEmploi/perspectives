@@ -20,4 +20,4 @@ case class RechercheCandidatsParSecteurQuery(typeRecruteur: TypeRecruteur,
                                              secteurActivite: SecteurActivite) extends CandidatQuery
 
 case class RechercherCandidatsParMetierQuery(typeRecruteur: TypeRecruteur,
-                                             metiers: Set[Metier]) extends CandidatQuery
+                                             metier: Metier) extends CandidatQuery

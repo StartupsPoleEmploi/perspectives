@@ -4,14 +4,14 @@ import play.api.data.Form
 import play.api.data.Forms._
 
 case class MatchingForm(secteurActivite: Option[String],
-                        metiers: Set[String])
+                        metier: Option[String])
 
 object MatchingForm {
 
   val form = Form(
     mapping(
       "secteurActivite" -> optional(text),
-      "metiers" -> set(text)
+      "metier" -> optional(text)
     )(MatchingForm.apply)(MatchingForm.unapply)
   )
 }

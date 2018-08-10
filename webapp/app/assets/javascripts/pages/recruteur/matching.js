@@ -41,7 +41,7 @@ $(document).ready(function () {
     var selecteurMetiers = $("#js-metiers-selecteur");
     var htmlTousLesMetiers = selecteurMetiers.html();
     var resultatsRecherche = $("#js-resultatsRecherche");
-    var compteurResultat = $(".compteurResultats-compteur");
+    var titreCompteurResultats = $(".compteurResultats-titre");
 
     selecteurSecteursActivites.change(function () {
         var secteurActivite = $(this).val();
@@ -63,17 +63,27 @@ $(document).ready(function () {
             } else {
                 selecteurMetiers.html(htmlTousLesMetiers);
             }
-            // FIXME : nombre de résultats retournés (prise en compte d'une éventuelle pagination)
             var nbResultats = $(".resultatsRecherche tbody tr").length;
-            compteurResultat.text(nbResultats + " candidat(s) pour ce secteur");
+            if (nbResultats === 0) {
+                titreCompteurResultats.html("Nous n'avons pas de candidats à vous proposer avec ces critères");
+            } else if (nbResultats === 1) {
+                titreCompteurResultats.html("<b>1 candidat intéressé pour ce secteur d'activité</b><br/>a validé la Méthode de Recrutement par Simulation");
+            } else {
+                titreCompteurResultats.html("<b>" + nbResultats + " candidats intéréssés pour ce secteur d'activité</b><br/>ont validé la Méthode de Recrutement par Simulation");
+            }
         });
     });
 
     selecteurMetiers.change(function () {
         rechercherCandidats().always(function () {
-            // FIXME : nombre de résultats retournés (prise en compte d'une éventuelle pagination)
             var nbResultats = $(".resultatsRecherche tbody tr").length;
-            compteurResultat.text(nbResultats + " candidat(s) pour ce métier");
+            if (nbResultats === 0) {
+                titreCompteurResultats.html("Nous n'avons pas de candidats à vous proposer avec ces critères");
+            } else if (nbResultats === 1) {
+                titreCompteurResultats.html("<b>1 candidat intéressé pour ce métier</b><br/>a validé la Méthode de Recrutement par Simulation");
+            } else {
+                titreCompteurResultats.html("<b>" + nbResultats + " candidats intéréssés pour ce métier</b><br/>ont validé la Méthode de Recrutement par Simulation");
+            }
         });
     });
 

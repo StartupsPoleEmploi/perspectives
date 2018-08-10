@@ -30,7 +30,7 @@ class MatchingController @Inject()(cc: ControllerComponents,
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
       val matchingForm = MatchingForm(
         secteurActivite = None,
-        metiers = Set.empty
+        metier = None
       )
       rechercher(matchingForm = matchingForm, recruteurId = recruteurAuthentifieRequest.recruteurId).map { resultatRechercheCandidatDto =>
         MatchingForm.form.fill(matchingForm)
@@ -62,12 +62,12 @@ class MatchingController @Inject()(cc: ControllerComponents,
 
   private def rechercher(matchingForm: MatchingForm, recruteurId: RecruteurId): Future[ResultatRechercheCandidat] =
     getRecruteurAvecProfilComplet(recruteurId).flatMap(recruteurDto =>
-      if (matchingForm.metiers.exists(_.nonEmpty)) {
+      if (matchingForm.metier.exists(_.nonEmpty)) {
         candidatQueryHandler.rechercherCandidatsParMetier(RechercherCandidatsParMetierQuery(
-          metiers = matchingForm.metiers.flatMap(Metier.from),
+          metier = matchingForm.metier.flatMap(Metier.from).get,
           typeRecruteur = recruteurDto.typeRecruteur.get
         ))
-      } else if (matchingForm.secteurActivite.isDefined) {
+      } else if (matchingForm.secteurActivite.exists(_.nonEmpty)) {
         candidatQueryHandler.rechercherCandidatsParSecteur(RechercheCandidatsParSecteurQuery(
           secteurActivite = matchingForm.secteurActivite.flatMap(SecteurActivite.from).get,
           typeRecruteur = recruteurDto.typeRecruteur.get

@@ -92,40 +92,74 @@ class CandidatProjection(val driver: PostgresDriver,
       candidatTable
         .filter(c => filtreCandidatAvecCriteresDeRecherche(c) && filtreTypeRecruteur(c, query.typeRecruteur))
         .sortBy(_.dateInscription.desc).result
-    ).map(r => ResultatRechercheCandidatParDateInscription(ListeCandidats(
-      nbCandidats = r.size, // FIXME : count avec pagination
-      candidatDtos = r.toList
-    )))
+    ).map(r => ResultatRechercheCandidatParDateInscription(r.toList))
 
-  def rechercherCandidatParSecteur(query: RechercheCandidatsParSecteurQuery): Future[ResultatRechercheCandidatParSecteur] =
-    rechercherCandidats(query.typeRecruteur, query.secteurActivite.metiers)
-      .map(r => {
-        ResultatRechercheCandidatParSecteur(
-          validesSecteur = ListeCandidats(
-            nbCandidats = r._1.size,
-            candidatDtos = r._1
-          ),
-          interessesSecteur = ListeCandidats(
-            nbCandidats = r._2.size,
-            candidatDtos = r._2
-          )
-        )
-      })
+  def rechercherCandidatParSecteur(query: RechercheCandidatsParSecteurQuery): Future[ResultatRechercheCandidatParSecteur] = {
+    val metiers = query.secteurActivite.metiers.toList // métiers du secteur
 
-  def rechercherCandidatParMetier(query: RechercherCandidatsParMetierQuery): Future[ResultatRechercheCandidatParMetier] =
-    rechercherCandidats(query.typeRecruteur, query.metiers)
-      .map(r => {
-        ResultatRechercheCandidatParMetier(
-          validesMetier = ListeCandidats(
-            nbCandidats = r._1.size,
-            candidatDtos = r._1
-          ),
-          interessesMetier = ListeCandidats(
-            nbCandidats = r._2.size,
-            candidatDtos = r._2
-          )
-        )
-      })
+    // Candidats qui recherchent parmis leurs métiers évalués et qui ont été évalués sur un métier du secteur
+    val selectCandidatsEvaluesSurSecteur = candidatTable.filter { c =>
+      filtreTypeRecruteur(c, query.typeRecruteur) &&
+        c.rechercheMetierEvalue === true &&
+        c.metiersEvalues @& metiers
+    }.sortBy(_.dateInscription)
+
+    // Candidats qui sont intéréssés par un metier du secteur et qui ont été évalués sur un metier d'un autre secteur
+    val selectCandidatsInteressesParAutreSecteur = candidatTable.filter { c =>
+      filtreTypeRecruteur(c, query.typeRecruteur) &&
+        c.rechercheAutreMetier === true &&
+        c.metiersRecherches @& metiers &&
+        !(c.metiersEvalues @& metiers)
+    }.sortBy(_.dateInscription)
+
+    for {
+      candidatsEvaluesSurSecteur <- database.run(selectCandidatsEvaluesSurSecteur.result)
+      candidatsInteressesParAutreSecteur <- database.run(selectCandidatsInteressesParAutreSecteur.result)
+    } yield
+      ResultatRechercheCandidatParSecteur(
+        candidatsEvaluesSurSecteur = candidatsEvaluesSurSecteur.toList,
+        candidatsInteressesParAutreSecteur = candidatsInteressesParAutreSecteur.toList
+    )
+  }
+
+  def rechercherCandidatParMetier(query: RechercherCandidatsParMetierQuery): Future[ResultatRechercheCandidatParMetier] = {
+    val metiers = List(query.metier)
+
+    // Candidats qui recherchent parmis leurs métiers évalués et qui ont été évalués sur le métier
+    val selectCandidatsEvaluesSurMetier = candidatTable.filter { c =>
+      filtreTypeRecruteur(c, query.typeRecruteur) &&
+        c.rechercheMetierEvalue === true &&
+        c.metiersEvalues @& metiers
+    }.sortBy(_.dateInscription)
+
+    // Candidats qui sont intéréssés par ce métier et qui ont été évalués sur un métier du meme secteur
+    val metiersSecteur = SecteurActivite.getSecteur(query.metier).get.metiers.toList
+    val selectCandidatsInteressesParMetierMemeSecteur = candidatTable.filter { c =>
+      filtreTypeRecruteur(c, query.typeRecruteur) &&
+        c.rechercheAutreMetier === true &&
+        c.metiersRecherches @& metiers &&
+        c.metiersEvalues @& metiersSecteur
+    }.sortBy(_.dateInscription)
+
+    // Candidats qui sont intéréssés par ce métier et qui ont été évalués sur un métier d'un autre secteur
+    val selectCandidatsInteressesParMetierAutreSecteur = candidatTable.filter { c =>
+      filtreTypeRecruteur(c, query.typeRecruteur) &&
+        c.rechercheAutreMetier === true &&
+        c.metiersRecherches @& metiers &&
+        !(c.metiersEvalues @& metiersSecteur)
+    }.sortBy(_.dateInscription)
+
+    for {
+      candidatsEvaluesSurMetier <- database.run(selectCandidatsEvaluesSurMetier.result)
+      candidatsInteressesParMetierMemeSecteur <- database.run(selectCandidatsInteressesParMetierMemeSecteur.result)
+      candidatsInteressesParMetierAutreSecteur <- database.run(selectCandidatsInteressesParMetierAutreSecteur.result)
+    } yield
+      ResultatRechercheCandidatParMetier(
+        candidatsEvaluesSurMetier = candidatsEvaluesSurMetier.toList,
+        candidatsInteressesParMetierMemeSecteur = candidatsInteressesParMetierMemeSecteur.toList,
+        candidatsInteressesParMetierAutreSecteur = candidatsInteressesParMetierAutreSecteur.toList
+      )
+  }
 
   private def filtreCandidatAvecCriteresDeRecherche(c: CandidatTable): Rep[Boolean] =
     c.rechercheMetierEvalue.isDefined && c.rechercheAutreMetier.isDefined
@@ -135,29 +169,6 @@ class CandidatProjection(val driver: PostgresDriver,
     case TypeRecruteur.AGENCE_INTERIM => c.contacteParAgenceInterim === true
     case TypeRecruteur.ORGANISME_FORMATION => c.contacteParOrganismeFormation === true
     case _ => Some(true)
-  }
-
-  // FIXME : count avec pagination
-  private def rechercherCandidats(typeRecruteur: TypeRecruteur, metiers: Set[Metier]): Future[(List[CandidatDto], List[CandidatDto])] = {
-    val listeMetiers = metiers.toList
-
-    val selectMetiersEvalues = candidatTable.filter { c =>
-      filtreTypeRecruteur(c, typeRecruteur) &&
-        c.rechercheMetierEvalue === true &&
-        c.metiersEvalues @& listeMetiers
-    }.sortBy(_.candidatId)
-    val selectMetiersRecherches = candidatTable.filter { c =>
-      filtreTypeRecruteur(c, typeRecruteur) &&
-        c.rechercheAutreMetier === true &&
-        c.metiersRecherches @& listeMetiers &&
-        !(c.metiersEvalues @& listeMetiers)
-    }.sortBy(_.candidatId)
-
-    // La deuxième liste ne contiendra pas de doublons  par rapport à la première car ils sont exclus par la requete
-    for {
-      candidatsValides <- database.run(selectMetiersEvalues.result)
-      candidatsInteresses <- database.run(selectMetiersRecherches.result)
-    } yield (candidatsValides.toList, candidatsInteresses.toList)
   }
 
   private def onCandidatInscrisEvent(event: CandidatInscrisEvent): Future[Unit] =

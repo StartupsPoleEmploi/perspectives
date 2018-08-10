@@ -4,44 +4,21 @@ sealed trait ResultatRechercheCandidat {
   def nbCandidats: Int
 }
 
-case class ResultatRechercheCandidatParDateInscription(private val listeCandidats: ListeCandidats) extends ResultatRechercheCandidat {
+case class ResultatRechercheCandidatParDateInscription(candidats: List[CandidatDto]) extends ResultatRechercheCandidat {
 
-  override val nbCandidats: Int = listeCandidats.nbCandidats
-
-  val candidats: List[CandidatDto] = listeCandidats.candidatDtos
+  override val nbCandidats: Int = candidats.size
 }
 
-case class ResultatRechercheCandidatParSecteur(private val validesSecteur: ListeCandidats,
-                                               private val interessesSecteur: ListeCandidats) extends ResultatRechercheCandidat {
+case class ResultatRechercheCandidatParSecteur(candidatsEvaluesSurSecteur: List[CandidatDto],
+                                               candidatsInteressesParAutreSecteur: List[CandidatDto]) extends ResultatRechercheCandidat {
 
-  override val nbCandidats: Int = validesSecteur.nbCandidats + interessesSecteur.nbCandidats
+  override val nbCandidats: Int = candidatsEvaluesSurSecteur.size + candidatsInteressesParAutreSecteur.size
 
-  val nbCandidatsValidesSecteur: Int = validesSecteur.nbCandidats
-
-  val candidatsValidesSecteur: List[CandidatDto] = validesSecteur.candidatDtos
-
-  val nbCandidatsInteressesSecteur: Int = interessesSecteur.nbCandidats
-
-  val candidatsInteressesSecteur: List[CandidatDto] = interessesSecteur.candidatDtos
 }
 
-case class ResultatRechercheCandidatParMetier(private val validesMetier: ListeCandidats,
-                                              private val interessesMetier: ListeCandidats) extends ResultatRechercheCandidat {
+case class ResultatRechercheCandidatParMetier(candidatsEvaluesSurMetier: List[CandidatDto],
+                                              candidatsInteressesParMetierMemeSecteur: List[CandidatDto],
+                                              candidatsInteressesParMetierAutreSecteur: List[CandidatDto]) extends ResultatRechercheCandidat {
 
-  override val nbCandidats: Int = validesMetier.nbCandidats + interessesMetier.nbCandidats
-
-  val nbCandidatsValidesMetier: Int = validesMetier.nbCandidats
-
-  val candidatsValidesMetier: List[CandidatDto] = validesMetier.candidatDtos
-
-  val nbCandidatsInteressesMetier: Int = interessesMetier.nbCandidats
-
-  val candidatsInteressesMetier: List[CandidatDto] = interessesMetier.candidatDtos
+  override val nbCandidats: Int = candidatsEvaluesSurMetier.size + candidatsInteressesParMetierMemeSecteur.size + candidatsInteressesParMetierAutreSecteur.size
 }
-
-/**
-  * @param nbCandidats  Le nombre de candidats total correspondant à la recherche
-  * @param candidatDtos La liste de candidats (la taille peut différer du total selon la pagination)
-  */
-case class ListeCandidats(nbCandidats: Int,
-                          candidatDtos: List[CandidatDto])
