@@ -80,9 +80,10 @@ class PEConnectController @Inject()(cc: ControllerComponents,
         prenom = recruteurInfos.prenom
       )
       val session = SessionRecruteurPEConnect.set(accessTokenResponse.idToken, SessionRecruteurAuthentifie.set(recruteurAuthentifie, oauthTokenSessionStorage.remove(request.session)))
-      if (optRecruteur.exists(_.profilComplet))
-        Redirect(routes.MatchingController.rechercherCandidats()).withSession(session)
-      else if (optRecruteur.isDefined)
+      // FIXME : en attente de la finalisation du matching
+      /**if (optRecruteur.exists(_.profilComplet))
+        Redirect(routes.MatchingController.rechercherCandidats()).withSession(session)*/
+      if (optRecruteur.isDefined)
         Redirect(routes.ProfilController.modificationProfil()).withSession(session)
       else
         Redirect(routes.ProfilController.modificationProfil()).withSession(session)
