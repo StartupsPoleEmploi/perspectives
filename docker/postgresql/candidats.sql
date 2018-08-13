@@ -8,6 +8,8 @@ CREATE TABLE candidats
   genre   CHARACTER VARYING(255),
   email   CHARACTER VARYING(255) NOT NULL,
   statut_demandeur_emploi   CHARACTER VARYING(255),
+  code_postal   CHARACTER VARYING(255),
+  commune   CHARACTER VARYING(255),
   recherche_metier_evalue BOOL,
   metiers_evalues   TEXT[] DEFAULT '{}',
   recherche_autre_metier BOOL,

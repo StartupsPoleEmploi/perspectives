@@ -26,7 +26,7 @@ class CandidatProjection(val driver: PostgresDriver,
     case e: ProfilCandidatModifiePEConnectEvent => onProfilPEConnectModifieEvent(e)
     case e: CriteresRechercheModifiesEvent => onCriteresRechercheModifiesEvent(e)
     case e: NumeroTelephoneModifieEvent => onNumeroTelephoneModifieEvent(e)
-    case e: AdressePEConnectModifieeEvent => Future.successful(())
+    case e: AdressePEConnectModifieeEvent => onAdressePEConnectModifieeEvent(e)
     case e: StatutDemandeurEmploiPEConnectModifieEvent => onStatutDemandeurEmploiPEConnectModifieEvent(e)
     case e: CVAjouteEvent => onCVAjouteEvent(e)
     case e: CVRemplaceEvent => onCVRemplaceEvent(e)
@@ -50,6 +50,10 @@ class CandidatProjection(val driver: PostgresDriver,
 
     def statutDemandeurEmploi = column[Option[StatutDemandeurEmploi]]("statut_demandeur_emploi")
 
+    def codePostal = column[Option[String]]("code_postal")
+
+    def commune = column[Option[String]]("commune")
+
     def rechercheMetierEvalue = column[Option[Boolean]]("recherche_metier_evalue")
 
     def metiersEvalues = column[List[Metier]]("metiers_evalues")
@@ -70,7 +74,7 @@ class CandidatProjection(val driver: PostgresDriver,
 
     def dateInscription = column[ZonedDateTime]("date_inscription")
 
-    def * = (candidatId, nom, prenom, genre, email, statutDemandeurEmploi, rechercheMetierEvalue, metiersEvalues, rechercheAutreMetier, metiersRecherches, contacteParAgenceInterim, contacteParOrganismeFormation, rayonRecherche, numeroTelephone, cvId, dateInscription) <> (CandidatDto.tupled, CandidatDto.unapply)
+    def * = (candidatId, nom, prenom, genre, email, statutDemandeurEmploi, codePostal, commune, rechercheMetierEvalue, metiersEvalues, rechercheAutreMetier, metiersRecherches, contacteParAgenceInterim, contacteParOrganismeFormation, rayonRecherche, numeroTelephone, cvId, dateInscription) <> (CandidatDto.tupled, CandidatDto.unapply)
   }
 
   val candidatTable = TableQuery[CandidatTable]
@@ -239,6 +243,18 @@ class CandidatProjection(val driver: PostgresDriver,
       c <- candidatTable if c.candidatId === event.candidatId
     } yield c.cvId
     val updateAction = query.update(Some(event.cvId))
+
+    database.run(updateAction).map(_ => ())
+  }
+
+  private def onAdressePEConnectModifieeEvent(event: AdressePEConnectModifieeEvent): Future[Unit] = {
+    val query = for {
+      c <- candidatTable if c.candidatId === event.candidatId
+    } yield (c.codePostal, c.commune)
+    val updateAction = query.update(
+      Some(event.adresse.codePostal),
+      Some(event.adresse.libelleCommune)
+    )
 
     database.run(updateAction).map(_ => ())
   }

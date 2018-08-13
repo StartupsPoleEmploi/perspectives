@@ -68,17 +68,18 @@
                     <div class="info--minuscule">@candidat.metiersEvalues.headOption.map(_.label)</div>
                 </td>
                 <td class="listeResultatsRecherche-localisation">
-                    @** FIXME : recupérer l'adresse du candidat *@
-                <div>
-                    <span class="info--majuscule">85000</span>
-                    <span class="rayonRecherche">
-                    @(candidat.rayonRecherche.map {
-                        case RayonRecherche.MAX_100 => "+50km"
-                        case r@_ => s"${r.value}km"
-                    })
-                    </span>
-                </div>
-                <div class="info--minuscule">la roche sur yon</div>
+                    <div>
+                        @if(candidat.codePostal.isDefined) {
+                        <span class="info--majuscule">@candidat.codePostal</span>
+                        <span class="rayonRecherche">
+                        @(candidat.rayonRecherche.map {
+                            case RayonRecherche.MAX_100 => "+50km"
+                            case r@_ => s"${r.value}km"
+                        })
+                        </span>
+                        }
+                    </div>
+                    <div class="info--minuscule">@candidat.commune</div>
                 </td>
                 <td class="listeResultatsRecherche-actions">
                     <ul class="listeActions">
