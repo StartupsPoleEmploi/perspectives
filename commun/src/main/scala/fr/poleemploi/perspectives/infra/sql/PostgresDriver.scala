@@ -64,12 +64,6 @@ trait PostgresDriver extends ExPostgresProfile
       { s => Metier.from(s).get }
     )
 
-    implicit val setMetiersColumnType: BaseColumnType[Set[Metier]] = MappedColumnType.base[Set[Metier], List[String]](
-      { m => m.map(_.value).toList },
-      { s => s.flatMap(Metier.from).toSet }
-    )
-
-    // FIXME : Array extension sur Set directement
     implicit val listMetiersColumnType: BaseColumnType[List[Metier]] = MappedColumnType.base[List[Metier], List[String]](
       { m => m.map(_.value) },
       { s => s.flatMap(Metier.from) }
