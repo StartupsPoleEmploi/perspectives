@@ -5,10 +5,11 @@ $(document).ready(function () {
         'A': ['A1401'],
         'G': ['G1603', 'G1803'],
         'F': ['F1602', 'F1703', 'F1301'],
-        'D': ['D1507', 'D1505', 'D1106', 'N1105'],
+        'D': ['D1507', 'D1505', 'D1106'],
         'K': ['K1302', 'K1304', 'K2204'],
         'B': ['B1802', 'H2402'],
-        'H': ['H2202', 'H2913', 'H3203', 'H3302', 'N1105']
+        'H': ['H2202', 'H2913', 'H3203', 'H3302'],
+        'N': ['N1105']
     });
     var metiers = Object.freeze({
         'A1401': 'Aide agricole',
@@ -67,9 +68,17 @@ $(document).ready(function () {
             if (nbResultats === 0) {
                 titreCompteurResultats.html("Nous n'avons pas de candidats à vous proposer avec ces critères");
             } else if (nbResultats === 1) {
-                titreCompteurResultats.html("<b>1 candidat intéressé pour ce secteur d'activité</b><br/>a validé la Méthode de Recrutement par Simulation");
+                if (secteurActivite !== '') {
+                    titreCompteurResultats.html("<b>1 candidat intéressé pour ce secteur d'activité</b><br/>a validé la Méthode de Recrutement par Simulation");
+                } else {
+                    titreCompteurResultats.html("<b>1 candidat perspectives</b><br/>a validé la Méthode de Recrutement par Simulation");
+                }
             } else {
-                titreCompteurResultats.html("<b>" + nbResultats + " candidats intéréssés pour ce secteur d'activité</b><br/>ont validé la Méthode de Recrutement par Simulation");
+                if (secteurActivite !== '') {
+                    titreCompteurResultats.html("<b>" + nbResultats + " candidats intéréssés pour ce secteur d'activité</b><br/>ont validé la Méthode de Recrutement par Simulation");
+                } else {
+                    titreCompteurResultats.html("<b>" + nbResultats + " candidats perspectives</b><br/>ont validé la Méthode de Recrutement par Simulation");
+                }
             }
         });
     });

@@ -99,21 +99,21 @@ class CandidatProjection(val driver: PostgresDriver,
     ).map(r => ResultatRechercheCandidatParDateInscription(r.toList))
 
   def rechercherCandidatParSecteur(query: RechercheCandidatsParSecteurQuery): Future[ResultatRechercheCandidatParSecteur] = {
-    val metiers = query.secteurActivite.metiers.toList // métiers du secteur
+    val metiersSecteur = query.secteurActivite.metiers // métiers du secteur
 
     // Candidats qui recherchent parmis leurs métiers évalués et qui ont été évalués sur un métier du secteur
     val selectCandidatsEvaluesSurSecteur = candidatTable.filter { c =>
       filtreTypeRecruteur(c, query.typeRecruteur) &&
         c.rechercheMetierEvalue === true &&
-        c.metiersEvalues @& metiers
+        c.metiersEvalues @& metiersSecteur
     }.sortBy(_.dateInscription)
 
     // Candidats qui sont intéréssés par un metier du secteur et qui ont été évalués sur un metier d'un autre secteur
     val selectCandidatsInteressesParAutreSecteur = candidatTable.filter { c =>
       filtreTypeRecruteur(c, query.typeRecruteur) &&
         c.rechercheAutreMetier === true &&
-        c.metiersRecherches @& metiers &&
-        !(c.metiersEvalues @& metiers)
+        c.metiersRecherches @& metiersSecteur &&
+        !(c.metiersEvalues @& metiersSecteur)
     }.sortBy(_.dateInscription)
 
     for {
@@ -123,7 +123,7 @@ class CandidatProjection(val driver: PostgresDriver,
       ResultatRechercheCandidatParSecteur(
         candidatsEvaluesSurSecteur = candidatsEvaluesSurSecteur.toList,
         candidatsInteressesParAutreSecteur = candidatsInteressesParAutreSecteur.toList
-    )
+      )
   }
 
   def rechercherCandidatParMetier(query: RechercherCandidatsParMetierQuery): Future[ResultatRechercheCandidatParMetier] = {
@@ -137,12 +137,13 @@ class CandidatProjection(val driver: PostgresDriver,
     }.sortBy(_.dateInscription)
 
     // Candidats qui sont intéréssés par ce métier et qui ont été évalués sur un métier du meme secteur
-    val metiersSecteur = SecteurActivite.getSecteur(query.metier).get.metiers.toList
+    val metiersSecteur = SecteurActivite.getSecteur(query.metier).get.metiers
+    val metiersSecteursSansMetierChoisi = metiersSecteur.filter(_ != query.metier)
     val selectCandidatsInteressesParMetierMemeSecteur = candidatTable.filter { c =>
       filtreTypeRecruteur(c, query.typeRecruteur) &&
         c.rechercheAutreMetier === true &&
         c.metiersRecherches @& metiers &&
-        c.metiersEvalues @& metiersSecteur
+        c.metiersEvalues @& metiersSecteursSansMetierChoisi
     }.sortBy(_.dateInscription)
 
     // Candidats qui sont intéréssés par ce métier et qui ont été évalués sur un métier d'un autre secteur
