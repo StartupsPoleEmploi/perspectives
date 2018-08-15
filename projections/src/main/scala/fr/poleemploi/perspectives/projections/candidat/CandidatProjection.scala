@@ -104,6 +104,7 @@ class CandidatProjection(val driver: PostgresDriver,
     // Candidats qui recherchent parmis leurs métiers évalués et qui ont été évalués sur un métier du secteur
     val selectCandidatsEvaluesSurSecteur = candidatTable.filter { c =>
       filtreTypeRecruteur(c, query.typeRecruteur) &&
+        c.numeroTelephone.isDefined &&
         c.rechercheMetierEvalue === true &&
         c.metiersEvalues @& metiersSecteur
     }.sortBy(_.dateInscription)
@@ -111,6 +112,7 @@ class CandidatProjection(val driver: PostgresDriver,
     // Candidats qui sont intéréssés par un metier du secteur et qui ont été évalués sur un metier d'un autre secteur
     val selectCandidatsInteressesParAutreSecteur = candidatTable.filter { c =>
       filtreTypeRecruteur(c, query.typeRecruteur) &&
+        c.numeroTelephone.isDefined &&
         c.rechercheAutreMetier === true &&
         c.metiersRecherches @& metiersSecteur &&
         !(c.metiersEvalues @& metiersSecteur)
@@ -132,6 +134,7 @@ class CandidatProjection(val driver: PostgresDriver,
     // Candidats qui recherchent parmis leurs métiers évalués et qui ont été évalués sur le métier
     val selectCandidatsEvaluesSurMetier = candidatTable.filter { c =>
       filtreTypeRecruteur(c, query.typeRecruteur) &&
+        c.numeroTelephone.isDefined &&
         c.rechercheMetierEvalue === true &&
         c.metiersEvalues @& metiers
     }.sortBy(_.dateInscription)
@@ -141,6 +144,7 @@ class CandidatProjection(val driver: PostgresDriver,
     val metiersSecteursSansMetierChoisi = metiersSecteur.filter(_ != query.metier)
     val selectCandidatsInteressesParMetierMemeSecteur = candidatTable.filter { c =>
       filtreTypeRecruteur(c, query.typeRecruteur) &&
+        c.numeroTelephone.isDefined &&
         c.rechercheAutreMetier === true &&
         c.metiersRecherches @& metiers &&
         c.metiersEvalues @& metiersSecteursSansMetierChoisi
@@ -149,6 +153,7 @@ class CandidatProjection(val driver: PostgresDriver,
     // Candidats qui sont intéréssés par ce métier et qui ont été évalués sur un métier d'un autre secteur
     val selectCandidatsInteressesParMetierAutreSecteur = candidatTable.filter { c =>
       filtreTypeRecruteur(c, query.typeRecruteur) &&
+        c.numeroTelephone.isDefined &&
         c.rechercheAutreMetier === true &&
         c.metiersRecherches @& metiers &&
         !(c.metiersEvalues @& metiersSecteur)
@@ -167,7 +172,7 @@ class CandidatProjection(val driver: PostgresDriver,
   }
 
   private def filtreCandidatAvecCriteresDeRecherche(c: CandidatTable): Rep[Boolean] =
-    c.rechercheMetierEvalue.isDefined && c.rechercheAutreMetier.isDefined
+    c.rechercheMetierEvalue.isDefined && c.rechercheAutreMetier.isDefined && c.numeroTelephone.isDefined
 
   private def filtreTypeRecruteur(c: CandidatTable,
                                   typeRecruteur: TypeRecruteur): Rep[Option[Boolean]] = typeRecruteur match {
