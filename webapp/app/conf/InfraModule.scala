@@ -8,6 +8,7 @@ import fr.poleemploi.eventsourcing.eventstore.{AppendOnlyStore, EventStore}
 import fr.poleemploi.eventsourcing.infra.jackson.EventStoreObjectMapperBuilder
 import fr.poleemploi.eventsourcing.infra.sql.{PostgreSQLAppendOnlyStore, PostgresDriver => EventSourcingPostgresDriver}
 import fr.poleemploi.eventsourcing.{EventHandler, EventPublisher, LocalEventHandler, LocalEventPublisher}
+import fr.poleemploi.perspectives.domain.candidat.mrs.infra.MRSValideePostgreSql
 import fr.poleemploi.perspectives.infra.jackson.PerspectivesEventSourcingModule
 import fr.poleemploi.perspectives.infra.sql.PostgresDriver
 import net.codingwell.scalaguice.ScalaModule
@@ -115,4 +116,12 @@ class InfraModule extends AbstractModule with ScalaModule {
       peConnectWS = peConnectWS,
       peConnectInscrisService = peConnectInscrisService
     )
+
+  @Provides
+  @Singleton
+  def postgreSqlMetierEvalueService(database: Database): MRSValideePostgreSql =
+    new MRSValideePostgreSql(
+    driver = PostgresDriver,
+    database = database
+  )
 }

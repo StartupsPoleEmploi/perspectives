@@ -6,6 +6,7 @@ import conf.WebAppConfig
 import controllers.FlashMessages._
 import fr.poleemploi.perspectives.domain.authentification.CandidatAuthentifie
 import fr.poleemploi.perspectives.domain.candidat._
+import fr.poleemploi.perspectives.domain.candidat.mrs.{MRSValidee, ReferentielMRSCandidat}
 import javax.inject.{Inject, Singleton}
 import play.api.Logger
 import play.api.mvc._
@@ -19,7 +20,8 @@ class PEConnectController @Inject()(cc: ControllerComponents,
                                     webAppConfig: WebAppConfig,
                                     candidatCommandHandler: CandidatCommandHandler,
                                     candidatPEConnectAction: CandidatPEConnectAction,
-                                    peConnectFacade: PEConnectFacade) extends AbstractController(cc) {
+                                    peConnectFacade: PEConnectFacade,
+                                    referentielMRSCandidat: ReferentielMRSCandidat) extends AbstractController(cc) {
 
   val oauthTokenSessionStorage = new OauthTokenSessionStorage("candidat")
   val redirectUri: Call = routes.PEConnectController.connexionCallback()
@@ -71,8 +73,15 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       infosCandidat <- peConnectFacade.getInfosCandidat(accessTokenResponse.accessToken)
       adresse <- peConnectFacade.getAdresseCandidat(accessTokenResponse.accessToken)
       statutDemandeurEmploi <- peConnectFacade.getStatutDemandeurEmploiCandidat(accessTokenResponse.accessToken)
+      mrsValidees <- referentielMRSCandidat.metiersValidesParCandidat(infosCandidat.peConnectId)
       optCandidat <- peConnectFacade.findCandidat(infosCandidat.peConnectId)
-      candidatId <- optCandidat.map(c => mettreAJour(c, infosCandidat, adresse, statutDemandeurEmploi)).getOrElse(inscrire(infosCandidat, adresse, statutDemandeurEmploi))
+      candidatId <- optCandidat.map(c => mettreAJour(c, infosCandidat, adresse, statutDemandeurEmploi))
+        .getOrElse(inscrire(
+          peConnectCandidatInfos = infosCandidat,
+          adresse = adresse,
+          statutDemandeurEmploi = statutDemandeurEmploi,
+          mrsValidees = mrsValidees
+        ))
     } yield {
       val candidatAuthentifie = CandidatAuthentifie(
         candidatId = candidatId,
@@ -123,7 +132,8 @@ class PEConnectController @Inject()(cc: ControllerComponents,
 
   private def inscrire(peConnectCandidatInfos: PEConnectCandidatInfos,
                        adresse: Adresse,
-                       statutDemandeurEmploi: StatutDemandeurEmploi): Future[CandidatId] = {
+                       statutDemandeurEmploi: StatutDemandeurEmploi,
+                       mrsValidees: List[MRSValidee]): Future[CandidatId] = {
     val candidatId = candidatCommandHandler.newCandidatId
     val command = InscrireCandidatCommand(
       id = candidatId,
@@ -133,7 +143,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       email = peConnectCandidatInfos.email,
       adresse = adresse,
       statutDemandeurEmploi = statutDemandeurEmploi,
-      mrsValidees = Nil
+      mrsValidees = mrsValidees
     )
     candidatCommandHandler.inscrire(command)
       .flatMap(_ => peConnectFacade.saveCandidat(CandidatPEConnect(
