@@ -132,7 +132,8 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       genre = peConnectCandidatInfos.genre,
       email = peConnectCandidatInfos.email,
       adresse = adresse,
-      statutDemandeurEmploi = statutDemandeurEmploi
+      statutDemandeurEmploi = statutDemandeurEmploi,
+      mrsValidees = Nil
     )
     candidatCommandHandler.inscrire(command)
       .flatMap(_ => peConnectFacade.saveCandidat(CandidatPEConnect(

@@ -1,42 +1,37 @@
 package fr.poleemploi.perspectives.domain.candidat
 
-import java.util.UUID
+import java.time.LocalDate
 
 import fr.poleemploi.perspectives.domain.Genre
-import org.mockito.Mockito.when
+import fr.poleemploi.perspectives.domain.candidat.mrs.MRSValidee
 import org.scalatest.mockito.MockitoSugar
-import org.scalatest.{BeforeAndAfter, MustMatchers, WordSpec}
+import org.scalatest.{MustMatchers, WordSpec}
 
-class InscrireCandidatSpec extends WordSpec
-  with MustMatchers with MockitoSugar with BeforeAndAfter {
+class InscrireCandidatSpec extends WordSpec with MustMatchers with MockitoSugar {
 
-  val candidatId: CandidatId = CandidatId(UUID.randomUUID().toString)
+  val candidatBuilder = new CandidatBuilder
+
+  val mrsValidee = MRSValidee(
+    codeMetier = "H083",
+    dateEvaluation = LocalDate.now()
+  )
 
   val commande: InscrireCandidatCommand =
     InscrireCandidatCommand(
-      id = candidatId,
+      id = candidatBuilder.candidatId,
       nom = "nom",
       prenom = "prenom",
       email = "email@domain.com",
       genre = Genre.HOMME,
       adresse = mock[Adresse],
-      statutDemandeurEmploi = StatutDemandeurEmploi.DEMANDEUR_EMPLOI
+      statutDemandeurEmploi = StatutDemandeurEmploi.DEMANDEUR_EMPLOI,
+      mrsValidees = Nil
     )
-  var candidatInscrisEvent: CandidatInscrisEvent = _
-
-  before {
-    candidatInscrisEvent = mock[CandidatInscrisEvent]
-    when(candidatInscrisEvent.genre) thenReturn Some(Genre.HOMME)
-  }
 
   "inscrire" should {
     "renvoyer une erreur lorsque le candidat est déjà inscrit" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events = List(candidatInscrisEvent)
-      )
+      val candidat = candidatBuilder.avecInscription().build
 
       // When
       val ex = intercept[RuntimeException] {
@@ -48,11 +43,7 @@ class InscrireCandidatSpec extends WordSpec
     }
     "générer des événements lorsque le candidat n'est pas encore inscrit" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events = Nil
-      )
+      val candidat = candidatBuilder.build
 
       // When
       val result = candidat.inscrire(commande)
@@ -62,11 +53,7 @@ class InscrireCandidatSpec extends WordSpec
     }
     "générer un événement contenant les informations d'inscription" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events = Nil
-      )
+      val candidat = candidatBuilder.build
 
       // When
       val result = candidat.inscrire(commande)
@@ -83,11 +70,7 @@ class InscrireCandidatSpec extends WordSpec
     }
     "générer un événement contenant l'adresse" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events = Nil
-      )
+      val candidat = candidatBuilder.build
 
       // When
       val result = candidat.inscrire(commande)
@@ -101,11 +84,7 @@ class InscrireCandidatSpec extends WordSpec
     }
     "générer un événement contenant le statut de demandeur d'emploi" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events = Nil
-      )
+      val candidat = candidatBuilder.build
 
       // When
       val result = candidat.inscrire(commande)
@@ -116,6 +95,23 @@ class InscrireCandidatSpec extends WordSpec
       val statutDemandeurEmploiPEConnectModifieEvent = event.head.asInstanceOf[StatutDemandeurEmploiPEConnectModifieEvent]
       statutDemandeurEmploiPEConnectModifieEvent.candidatId mustBe commande.id
       statutDemandeurEmploiPEConnectModifieEvent.statutDemandeurEmploi mustBe commande.statutDemandeurEmploi
+    }
+    "générer un événement contenant la liste des MRS validées" in {
+      // Given
+      val candidat = candidatBuilder.build
+
+      // When
+      val result = candidat.inscrire(commande.copy(
+        mrsValidees = List(mrsValidee)
+      ))
+
+      // Then
+      val event = result.filter(_.isInstanceOf[MRSAjouteeEvent])
+      event.size mustBe 1
+      val mrsAjouteeEvent = event.head.asInstanceOf[MRSAjouteeEvent]
+      mrsAjouteeEvent.candidatId mustBe commande.id
+      mrsAjouteeEvent.metier mustBe mrsValidee.codeMetier
+      mrsAjouteeEvent.dateEvaluation mustBe mrsValidee.dateEvaluation
     }
   }
 

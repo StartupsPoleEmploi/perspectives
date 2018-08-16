@@ -2,6 +2,7 @@ package fr.poleemploi.perspectives.domain.candidat
 
 import fr.poleemploi.eventsourcing.{Aggregate, Event}
 import fr.poleemploi.perspectives.domain.candidat.cv.{CVId, CVService}
+import fr.poleemploi.perspectives.domain.candidat.mrs.MRSValidee
 import fr.poleemploi.perspectives.domain.{Genre, Metier, NumeroTelephone, RayonRecherche}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -39,7 +40,12 @@ class Candidat(override val id: CandidatId,
         candidatId = command.id,
         statutDemandeurEmploi = command.statutDemandeurEmploi
       )
-    )
+    ) ++ command.mrsValidees.map(mrsValidee =>
+      MRSAjouteeEvent(
+        candidatId = command.id,
+        metier = mrsValidee.codeMetier,
+        dateEvaluation = mrsValidee.dateEvaluation
+      ))
   }
 
   def modifierCriteres(command: ModifierCriteresRechercheCommand): List[Event] = {
@@ -159,6 +165,24 @@ class Candidat(override val id: CandidatId,
       )
     ))
   }
+
+  def ajouterMRSValidee(command: AjouterMRSValideesCommand): List[Event] = {
+    if (!state.estInscrit) {
+      throw new RuntimeException(s"Le candidat ${id.value} n'est pas encore inscrit")
+    }
+    val mrsDejaValidees = state.mrsValidees.intersect(command.mrsValidees)
+    if (mrsDejaValidees.nonEmpty) {
+      throw new RuntimeException(
+        s"Le candidat ${id.value} a déjà validé les MRS suivantes : ${mrsDejaValidees.foldLeft("")((s, mrs) => s + '\n' + s"${mrs.codeMetier} le ${mrs.dateEvaluation}")}"
+      )
+    }
+
+    command.mrsValidees.map(m => MRSAjouteeEvent(
+      candidatId = command.id,
+      metier = m.codeMetier,
+      dateEvaluation = m.dateEvaluation
+    ))
+  }
 }
 
 // APPLY
@@ -171,6 +195,7 @@ private[candidat] case class CandidatState(estInscrit: Boolean = false,
                                            statutDemandeurEmploi: Option[StatutDemandeurEmploi] = None,
                                            rechercheMetierEvalue: Option[Boolean] = None,
                                            rechercheAutreMetier: Option[Boolean] = None,
+                                           mrsValidees: List[MRSValidee] = Nil,
                                            metiersRecherches: Set[Metier] = Set.empty,
                                            etreContacteParAgenceInterim: Option[Boolean] = None,
                                            etreContacteParOrganismeFormation: Option[Boolean] = None,
@@ -213,6 +238,12 @@ private[candidat] case class CandidatState(estInscrit: Boolean = false,
       copy(cvId = Some(e.cvId))
     case e: CVRemplaceEvent =>
       copy(cvId = Some(e.cvId))
+    case e: MRSAjouteeEvent =>
+      copy(
+        mrsValidees = MRSValidee(
+          codeMetier = e.metier,
+          dateEvaluation = e.dateEvaluation) :: this.mrsValidees
+      )
     case _ => this
   }
 }

@@ -1,5 +1,7 @@
 package fr.poleemploi.perspectives.domain.candidat
 
+import java.time.LocalDate
+
 import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.perspectives.domain.candidat.cv.CVId
 import fr.poleemploi.perspectives.domain.{Genre, Metier, NumeroTelephone, RayonRecherche}
@@ -43,3 +45,7 @@ case class CVAjouteEvent(candidatId: CandidatId,
 
 case class CVRemplaceEvent(candidatId: CandidatId,
                            cvId: CVId) extends CandidatEvent
+
+case class MRSAjouteeEvent(candidatId: CandidatId,
+                           metier: String, // FIXME : referentiel metier
+                           dateEvaluation: LocalDate) extends CandidatEvent

@@ -4,8 +4,8 @@ import java.nio.file.Path
 
 import fr.poleemploi.cqrs.command.Command
 import fr.poleemploi.perspectives.domain.candidat.cv.CVId
+import fr.poleemploi.perspectives.domain.candidat.mrs.MRSValidee
 import fr.poleemploi.perspectives.domain.{Genre, Metier, NumeroTelephone, RayonRecherche}
-
 
 case class InscrireCandidatCommand(override val id: CandidatId,
                                    nom: String,
@@ -13,7 +13,8 @@ case class InscrireCandidatCommand(override val id: CandidatId,
                                    email: String,
                                    genre: Genre,
                                    adresse: Adresse,
-                                   statutDemandeurEmploi: StatutDemandeurEmploi) extends Command
+                                   statutDemandeurEmploi: StatutDemandeurEmploi,
+                                   mrsValidees: List[MRSValidee]) extends Command
 
 // FIXME : Le numéro de téléphone est sur le formulaire des critères de recherche pour l'instant
 case class ModifierCriteresRechercheCommand(override val id: CandidatId,
@@ -43,3 +44,6 @@ case class RemplacerCVCommand(override val id: CandidatId,
                               nomFichier: String,
                               typeMedia: String,
                               path: Path) extends Command
+
+case class AjouterMRSValideesCommand(override val id: CandidatId,
+                                     mrsValidees: List[MRSValidee]) extends Command

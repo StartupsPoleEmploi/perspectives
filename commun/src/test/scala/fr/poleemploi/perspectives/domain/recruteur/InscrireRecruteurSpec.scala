@@ -1,7 +1,5 @@
 package fr.poleemploi.perspectives.domain.recruteur
 
-import java.util.UUID
-
 import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.perspectives.domain.Genre
 import org.scalatest.mockito.MockitoSugar
@@ -9,11 +7,11 @@ import org.scalatest.{MustMatchers, WordSpec}
 
 class InscrireRecruteurSpec extends WordSpec with MustMatchers with MockitoSugar {
 
-  val recruteurId: RecruteurId = RecruteurId(UUID.randomUUID().toString)
+  val recruteurBuilder = new RecruteurBuilder
 
   val inscrireCommande: InscrireRecruteurCommand =
     InscrireRecruteurCommand(
-      id = recruteurId,
+      id = recruteurBuilder.recruteurId,
       nom = "nom",
       prenom = "prenom",
       email = "email@domain.com",
@@ -23,11 +21,7 @@ class InscrireRecruteurSpec extends WordSpec with MustMatchers with MockitoSugar
   "inscrire" should {
     "renvoyer une erreur lorsque le recruteur est déjà inscrit" in {
       // Given
-      val recruteur = new Recruteur(
-        id = recruteurId,
-        version = 0,
-        events = List(mock[RecruteurInscrisEvent])
-      )
+      val recruteur = recruteurBuilder.avecInscription().build
 
       // When
       val ex = intercept[RuntimeException] {
@@ -39,11 +33,7 @@ class InscrireRecruteurSpec extends WordSpec with MustMatchers with MockitoSugar
     }
     "générer un événement lorsque le recruteur n'est pas encore inscrit" in {
       // Given
-      val recruteur = new Recruteur(
-        id = recruteurId,
-        version = 0,
-        events = Nil
-      )
+      val recruteur = recruteurBuilder.build
 
       // When
       val events: List[Event] = recruteur.inscrire(inscrireCommande)
@@ -53,11 +43,7 @@ class InscrireRecruteurSpec extends WordSpec with MustMatchers with MockitoSugar
     }
     "générer un événement contenant les informations d'inscription" in {
       // Given
-      val recruteur = new Recruteur(
-        id = recruteurId,
-        version = 0,
-        events = Nil
-      )
+      val recruteur = recruteurBuilder.build
 
       // When
       val results = recruteur.inscrire(inscrireCommande)

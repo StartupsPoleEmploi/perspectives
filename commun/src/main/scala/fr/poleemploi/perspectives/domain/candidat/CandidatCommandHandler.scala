@@ -28,6 +28,9 @@ class CandidatCommandHandler(candidatRepository: CandidatRepository,
   def remplacerCV(command: RemplacerCVCommand): Future[Unit] =
     execute(command.id, _.remplacerCV(command, cvService))
 
+  def ajouterMRSValidees(command: AjouterMRSValideesCommand): Future[Unit] =
+    execute(command.id, c => Future(c.ajouterMRSValidee(command)))
+
   private def execute(candidatId: CandidatId, f: Candidat => Future[List[Event]]): Future[Unit] =
     for {
       candidat <- candidatRepository.getById(candidatId)

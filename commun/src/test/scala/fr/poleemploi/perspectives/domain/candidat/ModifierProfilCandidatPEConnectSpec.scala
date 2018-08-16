@@ -1,16 +1,13 @@
 package fr.poleemploi.perspectives.domain.candidat
 
-import java.util.UUID
-
 import fr.poleemploi.perspectives.domain.Genre
-import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, MustMatchers, WordSpec}
 
 class ModifierProfilCandidatPEConnectSpec extends WordSpec
   with MustMatchers with MockitoSugar with BeforeAndAfter {
 
-  val candidatId: CandidatId = CandidatId(UUID.randomUUID().toString)
+  val candidatBuilder = new CandidatBuilder
 
   val adresse: Adresse =
     Adresse(
@@ -19,52 +16,23 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
       libelleCommune = "Paris",
       libellePays = "France"
     )
+  val statutDemandeurEmploi: StatutDemandeurEmploi = StatutDemandeurEmploi.DEMANDEUR_EMPLOI
 
   val commande: ModifierProfilPEConnectCommand =
     ModifierProfilPEConnectCommand(
-      id = candidatId,
-      nom = "nom",
-      prenom = "prenom",
-      email = "email",
+      id = candidatBuilder.candidatId,
+      nom = "nouveau nom",
+      prenom = "nouveau prenom",
+      email = "nouveau email",
       genre = Genre.HOMME,
       adresse = adresse,
       statutDemandeurEmploi = StatutDemandeurEmploi.DEMANDEUR_EMPLOI
     )
 
-  val profilModifieEvent: ProfilCandidatModifiePEConnectEvent =
-    ProfilCandidatModifiePEConnectEvent(
-      candidatId = candidatId,
-      nom = commande.nom,
-      prenom = commande.prenom,
-      email = commande.email,
-      genre = commande.genre
-    )
-  val adressePEConnectModifieeEvent: AdressePEConnectModifieeEvent =
-    AdressePEConnectModifieeEvent(
-      candidatId = candidatId,
-      adresse = adresse
-    )
-  val statutDemandeurEmploiPEConnectModifieEvent: StatutDemandeurEmploiPEConnectModifieEvent =
-    StatutDemandeurEmploiPEConnectModifieEvent(
-      candidatId = candidatId,
-      statutDemandeurEmploi = StatutDemandeurEmploi.DEMANDEUR_EMPLOI
-    )
-
-  var candidatInscrisEvent: CandidatInscrisEvent = _
-
-  before {
-    candidatInscrisEvent = mock[CandidatInscrisEvent]
-    when(candidatInscrisEvent.genre) thenReturn Some(Genre.HOMME)
-  }
-
   "modifierProfilPEConnect" should {
     "renvoyer une erreur lorsque le candidat n'est pas inscrit" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events = Nil
-      )
+      val candidat = candidatBuilder.build
 
       // When
       val ex = intercept[RuntimeException] {
@@ -74,13 +42,18 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
       // Then
       ex.getMessage mustBe s"Le candidat ${candidat.id.value} n'est pas encore inscrit"
     }
-    "ne pas générer d'événement si aucune information de profil n'a été modifié" in {
+    "ne pas générer d'événement si aucune information de profil n'a été modifiée" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events = List(candidatInscrisEvent, profilModifieEvent, adressePEConnectModifieeEvent, statutDemandeurEmploiPEConnectModifieEvent)
-      )
+      val candidat = candidatBuilder
+        .avecInscription(
+          nom = Some(commande.nom),
+          prenom = Some(commande.prenom),
+          email = Some(commande.email),
+          genre = Some(commande.genre)
+        )
+        .avecAdresse(commande.adresse)
+        .avecStatutDemandeurEmploi(commande.statutDemandeurEmploi)
+        .build
 
       // When
       val result = candidat.modifierProfilPEConnect(commande)
@@ -90,11 +63,10 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
     }
     "générer un événement si une information de profil a été saisie pour la premiere fois" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events = List(candidatInscrisEvent, adressePEConnectModifieeEvent, statutDemandeurEmploiPEConnectModifieEvent)
-      )
+      val candidat = candidatBuilder.avecInscription()
+        .avecAdresse(adresse)
+        .avecStatutDemandeurEmploi(statutDemandeurEmploi)
+        .build
 
       // When
       val result = candidat.modifierProfilPEConnect(commande)
@@ -104,13 +76,11 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
     }
     "générer un événement si le nom a été modifié" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events = List(candidatInscrisEvent, profilModifieEvent.copy(
-          nom = "ancien nom"
-        ), adressePEConnectModifieeEvent, statutDemandeurEmploiPEConnectModifieEvent)
-      )
+      val candidat = candidatBuilder
+        .avecInscription(nom = Some("ancien nom"))
+        .avecAdresse(adresse)
+        .avecStatutDemandeurEmploi(statutDemandeurEmploi)
+        .build
 
       // When
       val result = candidat.modifierProfilPEConnect(commande.copy(
@@ -122,13 +92,11 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
     }
     "générer un événement si le prénom a été modifié" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events = List(candidatInscrisEvent, profilModifieEvent.copy(
-          nom = "ancien prénom"
-        ), adressePEConnectModifieeEvent, statutDemandeurEmploiPEConnectModifieEvent)
-      )
+      val candidat = candidatBuilder
+        .avecInscription(prenom = Some("ancien prénom"))
+        .avecAdresse(adresse)
+        .avecStatutDemandeurEmploi(statutDemandeurEmploi)
+        .build
 
       // When
       val result = candidat.modifierProfilPEConnect(commande.copy(
@@ -140,13 +108,11 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
     }
     "générer un événement si l'email a été modifié" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events = List(candidatInscrisEvent, profilModifieEvent.copy(
-          nom = "ancien-email@domain.fr"
-        ), adressePEConnectModifieeEvent, statutDemandeurEmploiPEConnectModifieEvent)
-      )
+      val candidat = candidatBuilder
+        .avecInscription(email = Some("ancien-email@domain.fr"))
+        .avecAdresse(adresse)
+        .avecStatutDemandeurEmploi(statutDemandeurEmploi)
+        .build
 
       // When
       val result = candidat.modifierProfilPEConnect(commande.copy(
@@ -158,13 +124,11 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
     }
     "générer un événement si le genre a été modifié" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events = List(candidatInscrisEvent, profilModifieEvent.copy(
-          genre = Genre.HOMME
-        ), adressePEConnectModifieeEvent, statutDemandeurEmploiPEConnectModifieEvent)
-      )
+      val candidat = candidatBuilder
+        .avecInscription(genre = Some(Genre.HOMME))
+        .avecAdresse(adresse)
+        .avecStatutDemandeurEmploi(statutDemandeurEmploi)
+        .build
 
       // When
       val result = candidat.modifierProfilPEConnect(commande.copy(
@@ -176,11 +140,11 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
     }
     "générer un événement contenant les informations de profil modifiées" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events = List(candidatInscrisEvent, adressePEConnectModifieeEvent, statutDemandeurEmploiPEConnectModifieEvent)
-      )
+      val candidat = candidatBuilder
+        .avecInscription()
+        .avecAdresse(adresse)
+        .avecStatutDemandeurEmploi(statutDemandeurEmploi)
+        .build
 
       // When
       val result = candidat.modifierProfilPEConnect(commande)
@@ -195,18 +159,20 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
     }
     "générer un événement si l'adresse a été modifiée" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events =
-          List(candidatInscrisEvent, profilModifieEvent, adressePEConnectModifieeEvent.copy(
-          adresse = adresse.copy(voie = "ancienne voie")
-        ), statutDemandeurEmploiPEConnectModifieEvent)
-      )
+      val candidat = candidatBuilder
+        .avecInscription(
+          nom = Some(commande.nom),
+          prenom = Some(commande.prenom),
+          email = Some(commande.email),
+          genre = Some(commande.genre)
+        )
+        .avecAdresse(adresse.copy(voie = "ancienne voie"))
+        .avecStatutDemandeurEmploi(statutDemandeurEmploi)
+        .build
 
       // When
       val result = candidat.modifierProfilPEConnect(commande.copy(
-        adresse = adresse
+        adresse = adresse.copy(voie = "nouvelle voie")
       ))
 
       // Then
@@ -214,35 +180,49 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
     }
     "générer un événement contenant l'adresse modifiée" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events = List(candidatInscrisEvent, profilModifieEvent, statutDemandeurEmploiPEConnectModifieEvent)
-      )
+      val candidat = candidatBuilder
+        .avecInscription(
+          nom = Some(commande.nom),
+          prenom = Some(commande.prenom),
+          email = Some(commande.email),
+          genre = Some(commande.genre)
+        )
+        .avecAdresse(adresse.copy(voie = "ancienne voie"))
+        .avecStatutDemandeurEmploi(statutDemandeurEmploi)
+        .build
 
       // When
-      val result = candidat.modifierProfilPEConnect(commande)
+      val result = candidat.modifierProfilPEConnect(commande.copy(
+        adresse = adresse.copy(voie = "nouvelle voie")
+      ))
 
       // Then
       val event = result.head.asInstanceOf[AdressePEConnectModifieeEvent]
       event.candidatId mustBe commande.id
-      event.adresse mustBe commande.adresse
+      event.adresse.voie mustBe "nouvelle voie"
     }
     "générer un événement contenant le statut de demandeur d'emploi modifié" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events = List(candidatInscrisEvent, profilModifieEvent, adressePEConnectModifieeEvent)
-      )
+      val candidat = candidatBuilder
+        .avecInscription(
+          nom = Some(commande.nom),
+          prenom = Some(commande.prenom),
+          email = Some(commande.email),
+          genre = Some(commande.genre)
+        )
+        .avecAdresse(adresse)
+        .avecStatutDemandeurEmploi(StatutDemandeurEmploi.DEMANDEUR_EMPLOI)
+        .build
 
       // When
-      val result = candidat.modifierProfilPEConnect(commande)
+      val result = candidat.modifierProfilPEConnect(commande.copy(
+        statutDemandeurEmploi = StatutDemandeurEmploi.NON_DEMANDEUR_EMPLOI
+      ))
 
       // Then
       val event = result.head.asInstanceOf[StatutDemandeurEmploiPEConnectModifieEvent]
       event.candidatId mustBe commande.id
-      event.statutDemandeurEmploi mustBe commande.statutDemandeurEmploi
+      event.statutDemandeurEmploi mustBe StatutDemandeurEmploi.NON_DEMANDEUR_EMPLOI
     }
   }
 }

@@ -1,20 +1,17 @@
 package fr.poleemploi.perspectives.domain.candidat
 
-import java.util.UUID
-
-import fr.poleemploi.perspectives.domain.{Genre, Metier, NumeroTelephone, RayonRecherche}
-import org.mockito.Mockito.when
+import fr.poleemploi.perspectives.domain.{Metier, NumeroTelephone, RayonRecherche}
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, MustMatchers, WordSpec}
 
 class ModifierCriteresCandidatSpec extends WordSpec
   with MustMatchers with MockitoSugar with BeforeAndAfter {
 
-  val candidatId: CandidatId = CandidatId(UUID.randomUUID().toString)
+  val candidatBuilder = new CandidatBuilder
 
   val commande: ModifierCriteresRechercheCommand =
     ModifierCriteresRechercheCommand(
-      id = candidatId,
+      id = candidatBuilder.candidatId,
       rechercheAutreMetier = true,
       rechercheMetierEvalue = false,
       metiersRecherches = Set.empty,
@@ -24,38 +21,10 @@ class ModifierCriteresCandidatSpec extends WordSpec
       numeroTelephone = NumeroTelephone("0234567890")
     )
 
-  val criteresRechercheModifieEvent =
-    CriteresRechercheModifiesEvent(
-      candidatId = candidatId,
-      rechercheAutreMetier = commande.rechercheAutreMetier,
-      rechercheMetierEvalue = commande.rechercheMetierEvalue,
-      etreContacteParAgenceInterim = commande.etreContacteParAgenceInterim,
-      etreContacteParOrganismeFormation = commande.etreContacteParOrganismeFormation,
-      metiersRecherches = commande.metiersRecherches,
-      rayonRecherche = commande.rayonRecherche
-    )
-
-  val numeroTelephoneModifieEvent =
-    NumeroTelephoneModifieEvent(
-      candidatId = candidatId,
-      numeroTelephone = commande.numeroTelephone
-    )
-
-  var candidatInscrisEvent: CandidatInscrisEvent = _
-
-  before {
-    candidatInscrisEvent = mock[CandidatInscrisEvent]
-    when(candidatInscrisEvent.genre) thenReturn Some(Genre.HOMME)
-  }
-
   "modifierCriteres" should {
     "renvoyer une erreur lorsque le candidat n'est pas inscrit" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events = Nil
-      )
+      val candidat = candidatBuilder.build
 
       // When
       val ex = intercept[RuntimeException] {
@@ -67,11 +36,18 @@ class ModifierCriteresCandidatSpec extends WordSpec
     }
     "ne pas générer d'événement si aucun critère n'a été modifié" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events = List(candidatInscrisEvent, criteresRechercheModifieEvent, numeroTelephoneModifieEvent)
-      )
+      val candidat = candidatBuilder
+        .avecInscription()
+        .avecCriteresRecherche(
+          rechercheMetierEvalue = Some(commande.rechercheMetierEvalue),
+          rechercheAutreMetier = Some(commande.rechercheAutreMetier),
+          metiersRecherches = Some(commande.metiersRecherches),
+          etreContacteParAgenceInterim = Some(commande.etreContacteParAgenceInterim),
+          etreContacteParOrganismeFormation = Some(commande.etreContacteParOrganismeFormation),
+          rayonRecherche = Some(commande.rayonRecherche)
+        )
+        .avecNumeroTelephone(numeroTelephone = Some(commande.numeroTelephone))
+        .build
 
       // When
       val result = candidat.modifierCriteres(commande)
@@ -81,11 +57,11 @@ class ModifierCriteresCandidatSpec extends WordSpec
     }
     "générer un événement si un critère a été saisi pour la premiere fois" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events = List(candidatInscrisEvent, numeroTelephoneModifieEvent)
-      )
+      val candidat = candidatBuilder
+        .avecInscription()
+        .avecCriteresRecherche()
+        .avecNumeroTelephone(numeroTelephone = Some(commande.numeroTelephone))
+        .build
 
       // When
       val result = candidat.modifierCriteres(commande)
@@ -95,11 +71,17 @@ class ModifierCriteresCandidatSpec extends WordSpec
     }
     "générer un événement lorsque le numéro de téléphone est saisit la premiere fois" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events = List(candidatInscrisEvent, criteresRechercheModifieEvent)
-      )
+      val candidat = candidatBuilder
+        .avecInscription()
+        .avecCriteresRecherche(
+          rechercheMetierEvalue = Some(commande.rechercheMetierEvalue),
+          rechercheAutreMetier = Some(commande.rechercheAutreMetier),
+          metiersRecherches = Some(commande.metiersRecherches),
+          etreContacteParAgenceInterim = Some(commande.etreContacteParAgenceInterim),
+          etreContacteParOrganismeFormation = Some(commande.etreContacteParOrganismeFormation),
+          rayonRecherche = Some(commande.rayonRecherche)
+        )
+        .build
 
       // When
       val result = candidat.modifierCriteres(commande)
@@ -109,13 +91,13 @@ class ModifierCriteresCandidatSpec extends WordSpec
     }
     "générer un événement si rechercheMetierEvalue a été modifié" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events = List(candidatInscrisEvent, numeroTelephoneModifieEvent, criteresRechercheModifieEvent.copy(
-          rechercheMetierEvalue = false
-        ))
-      )
+      val candidat = candidatBuilder
+        .avecInscription()
+        .avecCriteresRecherche(
+          rechercheMetierEvalue = Some(false)
+        )
+        .avecNumeroTelephone(numeroTelephone = Some(commande.numeroTelephone))
+        .build
 
       // When
       val result = candidat.modifierCriteres(commande.copy(
@@ -127,13 +109,13 @@ class ModifierCriteresCandidatSpec extends WordSpec
     }
     "générer un événement si rechercheAutreMetier a été modifié" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events = List(candidatInscrisEvent, numeroTelephoneModifieEvent, criteresRechercheModifieEvent.copy(
-          rechercheAutreMetier = false
-        ))
-      )
+      val candidat = candidatBuilder
+        .avecInscription()
+        .avecCriteresRecherche(
+          rechercheAutreMetier = Some(false)
+        )
+        .avecNumeroTelephone(numeroTelephone = Some(commande.numeroTelephone))
+        .build
 
       // When
       val result = candidat.modifierCriteres(commande.copy(
@@ -145,13 +127,13 @@ class ModifierCriteresCandidatSpec extends WordSpec
     }
     "générer un événement si etreContacteParOrganismeFormation a été modifié" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events = List(candidatInscrisEvent, numeroTelephoneModifieEvent, criteresRechercheModifieEvent.copy(
-          etreContacteParOrganismeFormation = false
-        ))
-      )
+      val candidat = candidatBuilder
+        .avecInscription()
+        .avecCriteresRecherche(
+          etreContacteParOrganismeFormation = Some(false)
+        )
+        .avecNumeroTelephone(numeroTelephone = Some(commande.numeroTelephone))
+        .build
 
       // When
       val result = candidat.modifierCriteres(commande.copy(
@@ -163,13 +145,13 @@ class ModifierCriteresCandidatSpec extends WordSpec
     }
     "générer un événement si etreContacteParAgenceInterim a été modifié" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events = List(candidatInscrisEvent, numeroTelephoneModifieEvent, criteresRechercheModifieEvent.copy(
-          etreContacteParAgenceInterim = false
-        ))
-      )
+      val candidat = candidatBuilder
+        .avecInscription()
+        .avecCriteresRecherche(
+          etreContacteParAgenceInterim = Some(false)
+        )
+        .avecNumeroTelephone(numeroTelephone = Some(commande.numeroTelephone))
+        .build
 
       // When
       val result = candidat.modifierCriteres(commande.copy(
@@ -181,13 +163,13 @@ class ModifierCriteresCandidatSpec extends WordSpec
     }
     "générer un événement si rayonRecherche a été modifié" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events = List(candidatInscrisEvent, numeroTelephoneModifieEvent, criteresRechercheModifieEvent.copy(
-          rayonRecherche = RayonRecherche.MAX_30
-        ))
-      )
+      val candidat = candidatBuilder
+        .avecInscription()
+        .avecCriteresRecherche(
+          rayonRecherche = Some(RayonRecherche.MAX_30)
+        )
+        .avecNumeroTelephone(numeroTelephone = Some(commande.numeroTelephone))
+        .build
 
       // When
       val result = candidat.modifierCriteres(commande.copy(
@@ -199,13 +181,13 @@ class ModifierCriteresCandidatSpec extends WordSpec
     }
     "générer un événement si un métier a été ajouté" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events = List(candidatInscrisEvent, numeroTelephoneModifieEvent, criteresRechercheModifieEvent.copy(
-          metiersRecherches = Set.empty
-        ))
-      )
+      val candidat = candidatBuilder
+        .avecInscription()
+        .avecCriteresRecherche(
+          metiersRecherches = Some(Set.empty)
+        )
+        .avecNumeroTelephone(numeroTelephone = Some(commande.numeroTelephone))
+        .build
 
       // When
       val result = candidat.modifierCriteres(commande.copy(
@@ -217,13 +199,13 @@ class ModifierCriteresCandidatSpec extends WordSpec
     }
     "générer un événement si un métier a été retiré" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events = List(candidatInscrisEvent, numeroTelephoneModifieEvent, criteresRechercheModifieEvent.copy(
-          metiersRecherches = Set(Metier.SERVICE)
-        ))
-      )
+      val candidat = candidatBuilder
+        .avecInscription()
+        .avecCriteresRecherche(
+          metiersRecherches = Some(Set(Metier.SERVICE))
+        )
+        .avecNumeroTelephone(numeroTelephone = Some(commande.numeroTelephone))
+        .build
 
       // When
       val result = candidat.modifierCriteres(commande.copy(
@@ -235,11 +217,10 @@ class ModifierCriteresCandidatSpec extends WordSpec
     }
     "générer un événement contenant les critères modifiés" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events = List(candidatInscrisEvent, numeroTelephoneModifieEvent)
-      )
+      val candidat = candidatBuilder
+        .avecInscription()
+        .avecNumeroTelephone(numeroTelephone = Some(commande.numeroTelephone))
+        .build
 
       // When
       val result = candidat.modifierCriteres(commande)
@@ -256,13 +237,18 @@ class ModifierCriteresCandidatSpec extends WordSpec
     }
     "générer un événement lorsque le candidat est inscrit et que le numéro de téléphone change" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events = List(candidatInscrisEvent, criteresRechercheModifieEvent, numeroTelephoneModifieEvent.copy(
-          numeroTelephone = NumeroTelephone("0134767892")
-        ))
-      )
+      val candidat = candidatBuilder
+        .avecInscription()
+        .avecCriteresRecherche(
+          rechercheMetierEvalue = Some(commande.rechercheMetierEvalue),
+          rechercheAutreMetier = Some(commande.rechercheAutreMetier),
+          metiersRecherches = Some(commande.metiersRecherches),
+          etreContacteParAgenceInterim = Some(commande.etreContacteParAgenceInterim),
+          etreContacteParOrganismeFormation = Some(commande.etreContacteParOrganismeFormation),
+          rayonRecherche = Some(commande.rayonRecherche)
+        )
+        .avecNumeroTelephone(numeroTelephone = Some(NumeroTelephone("0134767892")))
+        .build
 
       // When
       val result = candidat.modifierCriteres(commande.copy(
@@ -274,11 +260,17 @@ class ModifierCriteresCandidatSpec extends WordSpec
     }
     "générer un événement contenant le numero de téléphone" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events = List(candidatInscrisEvent, criteresRechercheModifieEvent)
-      )
+      val candidat = candidatBuilder
+        .avecInscription()
+        .avecCriteresRecherche(
+          rechercheMetierEvalue = Some(commande.rechercheMetierEvalue),
+          rechercheAutreMetier = Some(commande.rechercheAutreMetier),
+          metiersRecherches = Some(commande.metiersRecherches),
+          etreContacteParAgenceInterim = Some(commande.etreContacteParAgenceInterim),
+          etreContacteParOrganismeFormation = Some(commande.etreContacteParOrganismeFormation),
+          rayonRecherche = Some(commande.rayonRecherche)
+        )
+        .build
 
       // When
       val result = candidat.modifierCriteres(commande)

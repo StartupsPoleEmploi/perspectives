@@ -1,49 +1,26 @@
 package fr.poleemploi.perspectives.domain.recruteur
 
-import java.util.UUID
-
 import fr.poleemploi.perspectives.domain.Genre
-import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, MustMatchers, WordSpec}
 
 class ModifierProfilRecruteurPEConnectSpec extends WordSpec
   with MustMatchers with MockitoSugar with BeforeAndAfter {
 
-  val recruteurId: RecruteurId = RecruteurId(UUID.randomUUID().toString)
+  val recruteurBuilder = new RecruteurBuilder
 
   val commande: ModifierProfilPEConnectCommand = ModifierProfilPEConnectCommand(
-    id = recruteurId,
+    id = recruteurBuilder.recruteurId,
     nom = "nom",
     prenom = "prenom",
     email = "email",
     genre = Genre.HOMME
   )
 
-  val profilModifieEvent =
-    ProfilRecruteurModifiePEConnectEvent(
-      recruteurId = recruteurId,
-      nom = commande.nom,
-      prenom = commande.prenom,
-      email = commande.email,
-      genre = commande.genre
-    )
-
-  var recruteurInscrisEvent: RecruteurInscrisEvent = _
-
-  before {
-    recruteurInscrisEvent = mock[RecruteurInscrisEvent]
-    when(recruteurInscrisEvent.genre) thenReturn Genre.HOMME
-  }
-
   "modifierProfilPEConnect" should {
     "renvoyer une erreur lorsque le candidat n'est pas inscrit" in {
       // Given
-      val recruteur = new Recruteur(
-        id = recruteurId,
-        version = 0,
-        events = Nil
-      )
+      val recruteur = recruteurBuilder.build
 
       // When
       val ex = intercept[RuntimeException] {
@@ -55,11 +32,12 @@ class ModifierProfilRecruteurPEConnectSpec extends WordSpec
     }
     "ne pas générer d'événement si aucun critère n'a été modifié" in {
       // Given
-      val recruteur = new Recruteur(
-        id = recruteurId,
-        version = 0,
-        events = List(recruteurInscrisEvent, profilModifieEvent)
-      )
+      val recruteur = recruteurBuilder.avecInscription(
+        nom = Some(commande.nom),
+        prenom = Some(commande.prenom),
+        email = Some(commande.email),
+        genre = Some(commande.genre)
+      ).build
 
       // When
       val result = recruteur.modifierProfilPEConnect(commande)
@@ -69,11 +47,7 @@ class ModifierProfilRecruteurPEConnectSpec extends WordSpec
     }
     "générer un événement si un critère a été saisi pour la premiere fois" in {
       // Given
-      val recruteur = new Recruteur(
-        id = recruteurId,
-        version = 0,
-        events = List(recruteurInscrisEvent)
-      )
+      val recruteur = recruteurBuilder.avecInscription().build
 
       // When
       val result = recruteur.modifierProfilPEConnect(commande)
@@ -83,13 +57,9 @@ class ModifierProfilRecruteurPEConnectSpec extends WordSpec
     }
     "générer un événement si le nom a été modifié" in {
       // Given
-      val recruteur = new Recruteur(
-        id = recruteurId,
-        version = 0,
-        events = List(recruteurInscrisEvent, profilModifieEvent.copy(
-          nom = "ancien nom"
-        ))
-      )
+      val recruteur = recruteurBuilder
+        .avecInscription(nom = Some("ancien nom"))
+        .build
 
       // When
       val result = recruteur.modifierProfilPEConnect(commande.copy(
@@ -101,17 +71,13 @@ class ModifierProfilRecruteurPEConnectSpec extends WordSpec
     }
     "générer un événement si le prénom a été modifié" in {
       // Given
-      val recruteur = new Recruteur(
-        id = recruteurId,
-        version = 0,
-        events = List(recruteurInscrisEvent, profilModifieEvent.copy(
-          nom = "ancien prénom"
-        ))
-      )
+      val recruteur = recruteurBuilder
+        .avecInscription(prenom = Some("ancien nom"))
+        .build
 
       // When
       val result = recruteur.modifierProfilPEConnect(commande.copy(
-        nom = "nouveau prénom"
+        prenom = "nouveau prénom"
       ))
 
       // Then
@@ -119,17 +85,13 @@ class ModifierProfilRecruteurPEConnectSpec extends WordSpec
     }
     "générer un événement si l'email a été modifié" in {
       // Given
-      val recruteur = new Recruteur(
-        id = recruteurId,
-        version = 0,
-        events = List(recruteurInscrisEvent, profilModifieEvent.copy(
-          nom = "ancien-email@domain.fr"
-        ))
-      )
+      val recruteur = recruteurBuilder
+        .avecInscription(email = Some("ancien-email@domain.fr"))
+        .build
 
       // When
       val result = recruteur.modifierProfilPEConnect(commande.copy(
-        nom = "nouvel-email@domain.fr"
+        email = "nouvel-email@domain.fr"
       ))
 
       // Then
@@ -137,13 +99,9 @@ class ModifierProfilRecruteurPEConnectSpec extends WordSpec
     }
     "générer un événement si le genre a été modifié" in {
       // Given
-      val recruteur = new Recruteur(
-        id = recruteurId,
-        version = 0,
-        events = List(recruteurInscrisEvent, profilModifieEvent.copy(
-          genre = Genre.HOMME
-        ))
-      )
+      val recruteur = recruteurBuilder
+        .avecInscription(genre = Some(Genre.HOMME))
+        .build
 
       // When
       val result = recruteur.modifierProfilPEConnect(commande.copy(
@@ -155,11 +113,7 @@ class ModifierProfilRecruteurPEConnectSpec extends WordSpec
     }
     "générer un événement contenant les informations modifiés" in {
       // Given
-      val recruteur = new Recruteur(
-        id = recruteurId,
-        version = 0,
-        events = List(recruteurInscrisEvent)
-      )
+      val recruteur = recruteurBuilder.avecInscription().build
 
       // When
       val result = recruteur.modifierProfilPEConnect(commande)

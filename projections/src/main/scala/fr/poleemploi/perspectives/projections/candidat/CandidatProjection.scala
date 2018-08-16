@@ -30,6 +30,7 @@ class CandidatProjection(val driver: PostgresDriver,
     case e: StatutDemandeurEmploiPEConnectModifieEvent => onStatutDemandeurEmploiPEConnectModifieEvent(e)
     case e: CVAjouteEvent => onCVAjouteEvent(e)
     case e: CVRemplaceEvent => onCVRemplaceEvent(e)
+    case e: MRSAjouteeEvent => onMRSAjouteeEvent(e)
   }
 
   import driver.api._
@@ -265,4 +266,11 @@ class CandidatProjection(val driver: PostgresDriver,
     database.run(updateAction).map(_ => ())
   }
 
+  private def onMRSAjouteeEvent(event: MRSAjouteeEvent): Future[Unit] =
+    //FIXME : est faite en une seule requete car la base va gérer le fait que deux evenements peuvent arriver très proches et que la projection n'attend pas la fin du traitement d'un event avant de passer à l'autre
+    database.run(sqlu"""
+            UPDATE candidats
+            SET metiers_evalues = ${event.metier}::text || metiers_evalues
+            WHERE candidat_id = ${event.candidatId.value}
+          """).map(_ => ())
 }

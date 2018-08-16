@@ -3,42 +3,31 @@ package fr.poleemploi.perspectives.domain.candidat
 import java.nio.file.Path
 import java.util.UUID
 
-import fr.poleemploi.perspectives.domain.Genre
 import fr.poleemploi.perspectives.domain.candidat.cv.{CVId, CVService}
 import org.mockito.Mockito.when
-import org.scalatest.{AsyncWordSpec, BeforeAndAfter, MustMatchers}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
+import org.scalatest.{AsyncWordSpec, BeforeAndAfter, MustMatchers}
 
 import scala.concurrent.Future
 
 class AjouterCVCandidatSpec extends AsyncWordSpec
   with MustMatchers with MockitoSugar with BeforeAndAfter with ScalaFutures {
 
-  val candidatId: CandidatId = CandidatId(UUID.randomUUID().toString)
+  val candidatBuilder: CandidatBuilder = new CandidatBuilder
   val cvId: CVId = CVId(UUID.randomUUID().toString)
 
   val commande: AjouterCVCommand =
     AjouterCVCommand(
-      id = candidatId,
+      id = candidatBuilder.candidatId,
       nomFichier = "cv.doc",
       typeMedia = "application/word",
       path = mock[Path]
     )
 
-  val cvAjouteEvent =
-    CVAjouteEvent(
-      candidatId = commande.id,
-      cvId = cvId
-    )
-
-  var candidatInscrisEvent: CandidatInscrisEvent = _
   var cvService: CVService = _
 
   before {
-    candidatInscrisEvent = mock[CandidatInscrisEvent]
-    when(candidatInscrisEvent.genre) thenReturn Some(Genre.HOMME)
-
     cvService = mock[CVService]
     when(cvService.nextIdentity) thenReturn cvId
   }
@@ -46,11 +35,7 @@ class AjouterCVCandidatSpec extends AsyncWordSpec
   "ajouterCV" should {
     "renvoyer une erreur lorsque le candidat n'est pas inscrit" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events = Nil
-      )
+      val candidat = candidatBuilder.build
 
       // When & Then
       recoverToExceptionIf[RuntimeException] {
@@ -61,11 +46,7 @@ class AjouterCVCandidatSpec extends AsyncWordSpec
     }
     "renvoyer une erreur lorsque le CV existe déjà" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events = List(candidatInscrisEvent, cvAjouteEvent)
-      )
+      val candidat = candidatBuilder.avecInscription().avecCV(cvId).build
 
       // When & Then
       recoverToExceptionIf[RuntimeException] {
@@ -76,11 +57,7 @@ class AjouterCVCandidatSpec extends AsyncWordSpec
     }
     "renvoyer une erreur lorsque le service externe qui enregistre le CV echoue" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events = List(candidatInscrisEvent)
-      )
+      val candidat = candidatBuilder.avecInscription().build
       when(cvService.save(cvId, commande.id, commande.nomFichier, commande.typeMedia, commande.path)) thenReturn Future.failed(new RuntimeException("erreur de service"))
 
       // When & Then
@@ -92,11 +69,7 @@ class AjouterCVCandidatSpec extends AsyncWordSpec
     }
     "generer un evenement lorsque le CV est ajouté" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events = List(candidatInscrisEvent)
-      )
+      val candidat = candidatBuilder.avecInscription().build
       when(cvService.save(cvId, commande.id, commande.nomFichier, commande.typeMedia, commande.path)) thenReturn Future.successful(())
 
       // When
@@ -107,11 +80,7 @@ class AjouterCVCandidatSpec extends AsyncWordSpec
     }
     "genere un événement contenant les informations modifiees" in {
       // Given
-      val candidat = new Candidat(
-        id = candidatId,
-        version = 0,
-        events = List(candidatInscrisEvent)
-      )
+      val candidat = candidatBuilder.avecInscription().build
       when(cvService.save(cvId, commande.id, commande.nomFichier, commande.typeMedia, commande.path)) thenReturn Future.successful(())
 
       // When
