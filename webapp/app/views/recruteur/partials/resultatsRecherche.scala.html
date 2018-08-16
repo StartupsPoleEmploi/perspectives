@@ -65,7 +65,8 @@
                 <td class="listeResultatsRecherche-mrs">
                     <div class="info--majuscule">MRS Validée</div>
                     @** FIXME : afficher le metier evalue par rapport à la recherche effectuee : metier ou secteur *@
-                    <div class="info--minuscule">@candidat.metiersEvalues.headOption.map(_.label)</div>
+                    @** FIXME : referentiel métier *@
+                    <div class="info--minuscule">@candidat.metiersEvalues.headOption.map(m => if (m.label.nonEmpty) m.label else m.value)</div>
                 </td>
                 <td class="listeResultatsRecherche-localisation">
                     <div>

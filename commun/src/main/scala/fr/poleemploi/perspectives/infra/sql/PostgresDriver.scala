@@ -66,7 +66,7 @@ trait PostgresDriver extends ExPostgresProfile
 
     implicit val listMetiersColumnType: BaseColumnType[List[Metier]] = MappedColumnType.base[List[Metier], List[String]](
       { m => m.map(_.value) },
-      { s => s.flatMap(Metier.from) }
+      { s => s.map(code => Metier.from(code).getOrElse(Metier(code, ""))) } // FIXME : referentiel métier
     )
 
     implicit val statutDemandeurEmploiColumnType: BaseColumnType[StatutDemandeurEmploi] = MappedColumnType.base[StatutDemandeurEmploi, String](
