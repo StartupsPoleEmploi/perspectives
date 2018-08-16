@@ -18,7 +18,7 @@
 
   .criteresRecherche {
     @include make-container();
-    max-width: 60%;
+    max-width: 50%;
     margin-bottom: 3em;
   }
 
@@ -36,12 +36,7 @@
   }
 
   .secteursActivites {
-    @include make-col(5);
-    margin: 20px;
-  }
-
-  .metiers {
-    @include make-col(5);
+    @include make-col(9);
     margin: 20px;
   }
 
