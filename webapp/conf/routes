@@ -1,25 +1,26 @@
-GET     /                                           controllers.candidat.LandingController.landing
-GET     /candidat/inscription                       controllers.candidat.InscriptionController.inscription
-GET     /candidat/cv/telecharger                    controllers.candidat.CVController.telecharger
-GET     /candidat/peconnect/connexion               controllers.candidat.PEConnectController.connexion
-GET     /candidat/peconnect/callback                controllers.candidat.PEConnectController.connexionCallback
-GET     /candidat/deconnexion                       controllers.candidat.AuthentificationController.deconnexion
-GET     /candidat/criteres-recherche                controllers.candidat.SaisieCriteresRechercheController.saisieCriteresRecherche
-POST    /candidat/criteres-recherche                controllers.candidat.SaisieCriteresRechercheController.modifierCriteresRecherche
+GET     /                                               controllers.candidat.LandingController.landing
+GET     /candidat/inscription                           controllers.candidat.InscriptionController.inscription
+GET     /candidat/cv/telecharger                        controllers.candidat.CVController.telecharger
+GET     /candidat/peconnect/connexion                   controllers.candidat.PEConnectController.connexion
+GET     /candidat/peconnect/callback                    controllers.candidat.PEConnectController.connexionCallback
+GET     /candidat/deconnexion                           controllers.candidat.AuthentificationController.deconnexion
+GET     /candidat/criteres-recherche                    controllers.candidat.SaisieCriteresRechercheController.saisieCriteresRecherche
+POST    /candidat/criteres-recherche                    controllers.candidat.SaisieCriteresRechercheController.modifierCriteresRecherche
 
-GET     /recruteur                                  controllers.recruteur.LandingController.landing
-GET     /recruteur/inscription                      controllers.recruteur.InscriptionController.inscription
-GET     /recruteur/peconnect/connexion              controllers.recruteur.PEConnectController.connexion
-GET     /recruteur/peconnect/callback               controllers.recruteur.PEConnectController.connexionCallback
-GET     /recruteur/deconnexion                      controllers.recruteur.AuthentificationController.deconnexion
-GET     /recruteur/profil                           controllers.recruteur.ProfilController.modificationProfil
-POST    /recruteur/profil                           controllers.recruteur.ProfilController.modifierProfil
-GET     /recruteur/matching-candidats               controllers.recruteur.MatchingController.index
-POST    /recruteur/matching-candidats               controllers.recruteur.MatchingController.rechercherCandidats
-GET     /recruteur/cv/telecharger/:candidatId       controllers.recruteur.MatchingController.telechargerCV(candidatId)
+GET     /recruteur                                      controllers.recruteur.LandingController.landing
+GET     /recruteur/inscription                          controllers.recruteur.InscriptionController.inscription
+GET     /recruteur/peconnect/connexion                  controllers.recruteur.PEConnectController.connexion
+GET     /recruteur/peconnect/callback                   controllers.recruteur.PEConnectController.connexionCallback
+GET     /recruteur/deconnexion                          controllers.recruteur.AuthentificationController.deconnexion
+GET     /recruteur/profil                               controllers.recruteur.ProfilController.modificationProfil
+POST    /recruteur/profil                               controllers.recruteur.ProfilController.modifierProfil
+GET     /recruteur/matching-candidats                   controllers.recruteur.MatchingController.index
+POST    /recruteur/matching-candidats                   controllers.recruteur.MatchingController.rechercherCandidats
+GET     /recruteur/cv/telecharger/:candidatId           controllers.recruteur.MatchingController.telechargerCV(candidatId)
 
-GET     /conseiller/candidats                       controllers.conseiller.ConseillerController.listeCandidats
-GET     /conseiller/recruteurs                      controllers.conseiller.ConseillerController.listeRecruteurs
+GET     /conseiller/candidats                           controllers.conseiller.ConseillerController.listeCandidats
+GET     /conseiller/recruteurs                          controllers.conseiller.ConseillerController.listeRecruteurs
+GET     /conseiller/declarerRepriseEmploi/:candidatId   controllers.conseiller.ConseillerController.declarerRepriseEmploi(candidatId)
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file                               controllers.Assets.versioned(path="/public", file: Asset)
+GET     /assets/*file                                   controllers.Assets.versioned(path="/public", file: Asset)

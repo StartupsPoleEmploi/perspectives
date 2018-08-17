@@ -5,6 +5,7 @@ import java.util.UUID
 import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.perspectives.domain.candidat.cv.CVId
 import fr.poleemploi.perspectives.domain.candidat.mrs.MRSValidee
+import fr.poleemploi.perspectives.domain.conseiller.ConseillerId
 import fr.poleemploi.perspectives.domain.{Genre, Metier, NumeroTelephone, RayonRecherche}
 
 import scala.collection.mutable.ListBuffer
@@ -84,6 +85,14 @@ class CandidatBuilder {
     events += NumeroTelephoneModifieEvent(
       candidatId = candidatId,
       numeroTelephone = numeroTelephone.getOrElse(NumeroTelephone("0123456789"))
+    )
+    this
+  }
+
+  def avecRepriseEmploiDeclaree(conseillerId: ConseillerId): CandidatBuilder = {
+    events += RepriseEmploiDeclareeParConseillerEvent(
+      candidatId = candidatId,
+      conseillerId =conseillerId
     )
     this
   }

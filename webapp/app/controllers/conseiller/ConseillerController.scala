@@ -2,6 +2,7 @@ package controllers.conseiller
 
 import authentification.infra.play.{ConseillerAuthentifieAction, ConseillerAuthentifieRequest}
 import conf.WebAppConfig
+import fr.poleemploi.perspectives.domain.candidat.{CandidatCommandHandler, CandidatId, DeclarerRepriseEmploiParConseillerCommand}
 import fr.poleemploi.perspectives.domain.conseiller.{AutorisationService, RoleConseiller}
 import fr.poleemploi.perspectives.projections.candidat.CandidatQueryHandler
 import fr.poleemploi.perspectives.projections.recruteur.RecruteurQueryHandler
@@ -16,6 +17,7 @@ class ConseillerController @Inject()(cc: ControllerComponents,
                                      conseillerAuthentifieAction: ConseillerAuthentifieAction,
                                      autorisationService: AutorisationService,
                                      candidatQueryHandler: CandidatQueryHandler,
+                                     candidatCommandHandler: CandidatCommandHandler,
                                      recruteurQueryHandler: RecruteurQueryHandler) extends AbstractController(cc) {
 
   def listeCandidats(): Action[AnyContent] = conseillerAuthentifieAction.async { implicit conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
@@ -24,6 +26,17 @@ class ConseillerController @Inject()(cc: ControllerComponents,
         .map(candidats =>
           Ok(views.html.conseiller.listeCandidats(candidats))
         )
+    } else Future.successful(Unauthorized)
+  }
+
+  def declarerRepriseEmploi(candidatId: String): Action[AnyContent] = conseillerAuthentifieAction.async { implicit conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
+    if (autorisationService.hasRole(conseillerRequest.conseillerId, RoleConseiller.ADMIN)) {
+      candidatCommandHandler.declarerRepriseEmploi(
+        DeclarerRepriseEmploiParConseillerCommand(
+          id = CandidatId(candidatId),
+          conseillerId = conseillerRequest.conseillerId
+        )
+      ).map(_ => NoContent)
     } else Future.successful(Unauthorized)
   }
 

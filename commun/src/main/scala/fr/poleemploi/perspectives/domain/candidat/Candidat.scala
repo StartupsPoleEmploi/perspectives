@@ -183,6 +183,20 @@ class Candidat(override val id: CandidatId,
       dateEvaluation = m.dateEvaluation
     ))
   }
+
+  def declarerRepriseEmploiParConseiller(command: DeclarerRepriseEmploiParConseillerCommand): List[Event] = {
+    if (!state.estInscrit) {
+      throw new RuntimeException(s"Le candidat ${id.value} n'est pas encore inscrit")
+    }
+    if (state.rechercheEmploi.contains(false)) {
+      throw new RuntimeException(s"Le candidat ${id.value} n'est pas en recherche d'emploi")
+    }
+
+    List(RepriseEmploiDeclareeParConseillerEvent(
+      candidatId = command.id,
+      conseillerId = command.conseillerId
+    ))
+  }
 }
 
 // APPLY
@@ -201,7 +215,8 @@ private[candidat] case class CandidatState(estInscrit: Boolean = false,
                                            etreContacteParOrganismeFormation: Option[Boolean] = None,
                                            rayonRecherche: Option[RayonRecherche] = None,
                                            numeroTelephone: Option[NumeroTelephone] = None,
-                                           cvId: Option[CVId] = None) {
+                                           cvId: Option[CVId] = None,
+                                           rechercheEmploi: Option[Boolean] = None) {
 
   def apply(event: Event): CandidatState = event match {
     case e: CandidatInscrisEvent =>
@@ -210,7 +225,9 @@ private[candidat] case class CandidatState(estInscrit: Boolean = false,
         nom = Some(e.nom),
         prenom = Some(e.prenom),
         email = Some(e.email),
-        genre = e.genre
+        genre = e.genre,
+        // Par défaut un candidat qui s'inscrit est disponible tant qu'il n'a pas renseigné ces critères, pour qu'on puisse déclarer sa reprise d'emploi s'il a été suivi manuellement
+        rechercheEmploi = Some(true)
       )
     case e: ProfilCandidatModifiePEConnectEvent =>
       copy(
@@ -226,7 +243,8 @@ private[candidat] case class CandidatState(estInscrit: Boolean = false,
         metiersRecherches = e.metiersRecherches,
         etreContacteParAgenceInterim = Some(e.etreContacteParAgenceInterim),
         etreContacteParOrganismeFormation = Some(e.etreContacteParOrganismeFormation),
-        rayonRecherche = Some(e.rayonRecherche)
+        rayonRecherche = Some(e.rayonRecherche),
+        rechercheEmploi = Some(e.rechercheMetierEvalue || e.rechercheAutreMetier)
       )
     case e: NumeroTelephoneModifieEvent =>
       copy(numeroTelephone = Some(e.numeroTelephone))
@@ -244,6 +262,8 @@ private[candidat] case class CandidatState(estInscrit: Boolean = false,
           codeMetier = e.metier,
           dateEvaluation = e.dateEvaluation) :: this.mrsValidees
       )
+    case e: RepriseEmploiDeclareeParConseillerEvent =>
+      copy(rechercheEmploi = Some(false))
     case _ => this
   }
 }

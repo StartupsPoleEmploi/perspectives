@@ -31,6 +31,9 @@ class CandidatCommandHandler(candidatRepository: CandidatRepository,
   def ajouterMRSValidees(command: AjouterMRSValideesCommand): Future[Unit] =
     execute(command.id, c => Future(c.ajouterMRSValidee(command)))
 
+  def declarerRepriseEmploi(command: DeclarerRepriseEmploiParConseillerCommand): Future[Unit] =
+    execute(command.id, c => Future(c.declarerRepriseEmploiParConseiller(command)))
+
   private def execute(candidatId: CandidatId, f: Candidat => Future[List[Event]]): Future[Unit] =
     for {
       candidat <- candidatRepository.getById(candidatId)

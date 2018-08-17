@@ -27,6 +27,7 @@
                 <th>Etre contacté par interims</th>
                 <th>Etre contacté par formations</th>
                 <th>Rayon de recherche (KM)</th>
+                <th>Disponible</th>
             </tr>
         </thead>
         <tbody>
@@ -45,9 +46,19 @@
                 <td>@getBoolean(candidat.contacteParAgenceInterim)</td>
                 <td>@getBoolean(candidat.contacteParOrganismeFormation)</td>
                 <td>@candidat.rayonRecherche.map(_.value)</td>
+                <td>
+                @if(candidat.rechercheEmploi) {
+                    <a class="js-declarerRepriseEmploi" href="/conseiller/declarerRepriseEmploi/@candidat.candidatId.value">
+                        Déclarer la reprise d'un emploi
+                    </a>
+                }
+                @if(!candidat.rechercheEmploi) {Non}
+                </td>
             </tr>
         }
         </tbody>
     </table>
 </div>
+
+<script src="@routes.Assets.versioned("javascripts/pages/conseiller/listeCandidats.js")" type="text/javascript"></script>
 }

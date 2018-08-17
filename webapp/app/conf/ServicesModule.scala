@@ -5,7 +5,7 @@ import fr.poleemploi.perspectives.domain.candidat.cv.CVService
 import fr.poleemploi.perspectives.domain.candidat.cv.infra.CVBddService
 import fr.poleemploi.perspectives.domain.candidat.mrs.ReferentielMRSCandidat
 import fr.poleemploi.perspectives.domain.candidat.mrs.infra.{MRSValideePostgreSql, ReferentielMRSCandidatLocal}
-import fr.poleemploi.perspectives.domain.conseiller.{AutorisationService, AutorisationServiceDefaut}
+import fr.poleemploi.perspectives.domain.conseiller.{AutorisationService, AutorisationServiceDefaut, ConseillerId}
 import fr.poleemploi.perspectives.infra.sql.PostgresDriver
 import slick.jdbc.JdbcBackend.Database
 
@@ -16,7 +16,7 @@ class ServicesModule extends AbstractModule {
   @Provides
   @Singleton
   def autorisationService(webAppConfig: WebAppConfig): AutorisationService = new AutorisationServiceDefaut(
-    admins = webAppConfig.admins
+    admins = webAppConfig.admins.map(ConseillerId)
   )
 
   @Provides

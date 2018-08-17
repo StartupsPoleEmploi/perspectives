@@ -1,3 +1,5 @@
 package fr.poleemploi.perspectives.domain.authentification
 
-case class ConseillerAuthentifie(conseillerId: String)
+import fr.poleemploi.perspectives.domain.conseiller.ConseillerId
+
+case class ConseillerAuthentifie(conseillerId: ConseillerId)

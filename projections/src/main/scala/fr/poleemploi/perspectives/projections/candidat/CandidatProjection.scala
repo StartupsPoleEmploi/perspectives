@@ -32,6 +32,7 @@ class CandidatProjection(val driver: PostgresDriver,
     case e: CVAjouteEvent => onCVAjouteEvent(e)
     case e: CVRemplaceEvent => onCVRemplaceEvent(e)
     case e: MRSAjouteeEvent => onMRSAjouteeEvent(e)
+    case e: RepriseEmploiDeclareeParConseillerEvent => onRepriseEmploiDeclareeParConseillerEvent(e)
   }
 
   import driver.api._
@@ -283,4 +284,19 @@ class CandidatProjection(val driver: PostgresDriver,
             SET metiers_evalues = ${event.metier}::text || metiers_evalues
             WHERE candidat_id = ${event.candidatId.value}
           """).map(_ => ())
+
+  private def onRepriseEmploiDeclareeParConseillerEvent(event: RepriseEmploiDeclareeParConseillerEvent): Future[Unit] = {
+    val query = for {
+      c <- candidatTable if c.candidatId === event.candidatId
+    } yield (c.rechercheMetierEvalue, c.rechercheAutreMetier, c.metiersRecherches, c.indexerMatching)
+    val updateAction = query.update(
+      Some(false),
+      Some(false),
+      Nil,
+      false
+    )
+
+    database.run(updateAction).map(_ => ())
+  }
+
 }

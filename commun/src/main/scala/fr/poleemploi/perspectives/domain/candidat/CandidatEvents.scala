@@ -4,6 +4,7 @@ import java.time.LocalDate
 
 import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.perspectives.domain.candidat.cv.CVId
+import fr.poleemploi.perspectives.domain.conseiller.ConseillerId
 import fr.poleemploi.perspectives.domain.{Genre, Metier, NumeroTelephone, RayonRecherche}
 
 sealed trait CandidatEvent extends Event {
@@ -49,3 +50,6 @@ case class CVRemplaceEvent(candidatId: CandidatId,
 case class MRSAjouteeEvent(candidatId: CandidatId,
                            metier: String, // FIXME : referentiel metier
                            dateEvaluation: LocalDate) extends CandidatEvent
+
+case class RepriseEmploiDeclareeParConseillerEvent(candidatId: CandidatId,
+                                                   conseillerId: ConseillerId) extends CandidatEvent
