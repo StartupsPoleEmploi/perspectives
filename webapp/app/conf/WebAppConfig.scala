@@ -39,4 +39,6 @@ class WebAppConfig(configuration: Configuration) {
   )
 
   val admins: List[String] = configuration.getOptional[Seq[String]]("admins").map(_.toList).getOrElse(Nil)
+  
+  val candidatsTesteurs: List[String] = configuration.getOptional[Seq[String]]("candidatsTesteurs").map(_.toList).getOrElse(Nil)
 }

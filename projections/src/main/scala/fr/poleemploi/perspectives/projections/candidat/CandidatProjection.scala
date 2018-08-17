@@ -15,7 +15,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class CandidatProjection(val driver: PostgresDriver,
-                         database: Database) extends Projection {
+                         database: Database,
+                         candidatsTesteurs: List[CandidatId]) extends Projection {
 
   override def listenTo: List[Class[_ <: Event]] = List(classOf[CandidatEvent])
 
@@ -75,7 +76,9 @@ class CandidatProjection(val driver: PostgresDriver,
 
     def dateInscription = column[ZonedDateTime]("date_inscription")
 
-    def * = (candidatId, nom, prenom, genre, email, statutDemandeurEmploi, codePostal, commune, rechercheMetierEvalue, metiersEvalues, rechercheAutreMetier, metiersRecherches, contacteParAgenceInterim, contacteParOrganismeFormation, rayonRecherche, numeroTelephone, cvId, dateInscription) <> (CandidatDto.tupled, CandidatDto.unapply)
+    def indexerMatching = column[Boolean]("indexer_matching")
+
+    def * = (candidatId, nom, prenom, genre, email, statutDemandeurEmploi, codePostal, commune, rechercheMetierEvalue, metiersEvalues, rechercheAutreMetier, metiersRecherches, contacteParAgenceInterim, contacteParOrganismeFormation, rayonRecherche, numeroTelephone, cvId, dateInscription, indexerMatching) <> (CandidatDto.tupled, CandidatDto.unapply)
   }
 
   val candidatTable = TableQuery[CandidatTable]
@@ -106,6 +109,7 @@ class CandidatProjection(val driver: PostgresDriver,
     val selectCandidatsEvaluesSurSecteur = candidatTable.filter { c =>
       filtreTypeRecruteur(c, query.typeRecruteur) &&
         c.numeroTelephone.isDefined &&
+        c.indexerMatching &&
         c.rechercheMetierEvalue === true &&
         c.metiersEvalues @& metiersSecteur
     }.sortBy(_.dateInscription)
@@ -114,6 +118,7 @@ class CandidatProjection(val driver: PostgresDriver,
     val selectCandidatsInteressesParAutreSecteur = candidatTable.filter { c =>
       filtreTypeRecruteur(c, query.typeRecruteur) &&
         c.numeroTelephone.isDefined &&
+        c.indexerMatching &&
         c.rechercheAutreMetier === true &&
         c.metiersRecherches @& metiersSecteur &&
         !(c.metiersEvalues @& metiersSecteur)
@@ -136,6 +141,7 @@ class CandidatProjection(val driver: PostgresDriver,
     val selectCandidatsEvaluesSurMetier = candidatTable.filter { c =>
       filtreTypeRecruteur(c, query.typeRecruteur) &&
         c.numeroTelephone.isDefined &&
+        c.indexerMatching &&
         c.rechercheMetierEvalue === true &&
         c.metiersEvalues @& metiers
     }.sortBy(_.dateInscription)
@@ -146,6 +152,7 @@ class CandidatProjection(val driver: PostgresDriver,
     val selectCandidatsInteressesParMetierMemeSecteur = candidatTable.filter { c =>
       filtreTypeRecruteur(c, query.typeRecruteur) &&
         c.numeroTelephone.isDefined &&
+        c.indexerMatching &&
         c.rechercheAutreMetier === true &&
         c.metiersRecherches @& metiers &&
         c.metiersEvalues @& metiersSecteursSansMetierChoisi
@@ -155,6 +162,7 @@ class CandidatProjection(val driver: PostgresDriver,
     val selectCandidatsInteressesParMetierAutreSecteur = candidatTable.filter { c =>
       filtreTypeRecruteur(c, query.typeRecruteur) &&
         c.numeroTelephone.isDefined &&
+        c.indexerMatching &&
         c.rechercheAutreMetier === true &&
         c.metiersRecherches @& metiers &&
         !(c.metiersEvalues @& metiersSecteur)
@@ -173,7 +181,8 @@ class CandidatProjection(val driver: PostgresDriver,
   }
 
   private def filtreCandidatAvecCriteresDeRecherche(c: CandidatTable): Rep[Boolean] =
-    c.rechercheMetierEvalue.isDefined && c.rechercheAutreMetier.isDefined && c.numeroTelephone.isDefined
+  // FIXME : faire en une seule condition + modifier toutes les requetes de matching une fois que la projection peut traiter les evenements en séquentiel pour un même candidat (en parallèle sinon)
+    (c.rechercheMetierEvalue.isDefined || c.rechercheAutreMetier.isDefined) && c.numeroTelephone.isDefined && c.indexerMatching
 
   private def filtreTypeRecruteur(c: CandidatTable,
                                   typeRecruteur: TypeRecruteur): Rep[Option[Boolean]] = typeRecruteur match {
@@ -205,14 +214,15 @@ class CandidatProjection(val driver: PostgresDriver,
   private def onCriteresRechercheModifiesEvent(event: CriteresRechercheModifiesEvent): Future[Unit] = {
     val query = for {
       c <- candidatTable if c.candidatId === event.candidatId
-    } yield (c.contacteParOrganismeFormation, c.contacteParAgenceInterim, c.rechercheMetierEvalue, c.rechercheAutreMetier, c.rayonRecherche, c.metiersRecherches)
+    } yield (c.contacteParOrganismeFormation, c.contacteParAgenceInterim, c.rechercheMetierEvalue, c.rechercheAutreMetier, c.rayonRecherche, c.metiersRecherches, c.indexerMatching)
     val updateAction = query.update((
       Some(event.etreContacteParOrganismeFormation),
       Some(event.etreContacteParAgenceInterim),
       Some(event.rechercheMetierEvalue),
       Some(event.rechercheAutreMetier),
       Some(event.rayonRecherche),
-      event.metiersRecherches.toList
+      event.metiersRecherches.toList,
+      !candidatsTesteurs.contains(event.candidatId) && (event.rechercheMetierEvalue || event.rechercheAutreMetier)
     ))
 
     database.run(updateAction).map(_ => ())

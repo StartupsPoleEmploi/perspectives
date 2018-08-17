@@ -23,7 +23,8 @@ case class CandidatDto(candidatId: CandidatId,
                        rayonRecherche: Option[RayonRecherche],
                        numeroTelephone: Option[NumeroTelephone],
                        cvId: Option[CVId],
-                       dateInscription: ZonedDateTime) {
+                       dateInscription: ZonedDateTime,
+                       indexerMatching: Boolean) {
 
   def hasCV: Boolean = cvId.isDefined
 }

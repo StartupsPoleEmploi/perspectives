@@ -2,6 +2,7 @@ package conf
 
 import com.google.inject.{AbstractModule, Inject, Provides, Singleton}
 import fr.poleemploi.eventsourcing.{EventHandler, EventPublisher}
+import fr.poleemploi.perspectives.domain.candidat.CandidatId
 import fr.poleemploi.perspectives.domain.candidat.cv.CVService
 import fr.poleemploi.perspectives.infra.sql.PostgresDriver
 import fr.poleemploi.perspectives.projections.candidat.{CandidatNotificationSlackProjection, CandidatProjection, CandidatQueryHandler}
@@ -34,10 +35,12 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
-  def candidatProjection(database: Database): CandidatProjection =
+  def candidatProjection(database: Database,
+                         webAppConfig: WebAppConfig): CandidatProjection =
     new CandidatProjection(
       driver = PostgresDriver,
-      database = database
+      database = database,
+      candidatsTesteurs = webAppConfig.candidatsTesteurs.map(CandidatId)
     )
 
   @Provides
