@@ -3,12 +3,14 @@ package conf
 import authentification.infra.peconnect.{OAuthConfig, PEConnectCandidatConfig, PEConnectRecruteurConfig}
 import fr.poleemploi.perspectives.infra.{BuildInfo, Environnement}
 import fr.poleemploi.perspectives.projections.candidat.SlackCandidatConfig
+import fr.poleemploi.perspectives.projections.infra.MailjetConfig
 import play.api.Configuration
 
 class WebAppConfig(configuration: Configuration) {
 
   val usePEConnect: Boolean = configuration.getOptional[Boolean]("usePEConnect").getOrElse(true)
   val useSlackNotificationCandidat: Boolean = configuration.getOptional[Boolean]("useSlackNotificationCandidat").getOrElse(true)
+  val useEmail: Boolean = configuration.getOptional[Boolean]("useEmail").getOrElse(true)
   val useGoogleTagManager: Boolean = configuration.getOptional[Boolean]("useGoogleTagManager").getOrElse(true)
 
   val environnement: Environnement = Environnement.from(configuration.get[String]("environnement"))
@@ -36,6 +38,13 @@ class WebAppConfig(configuration: Configuration) {
   val slackCandidatConfig = SlackCandidatConfig(
     webhookURL = configuration.get[String]("slack.notificationInscriptionCandidat.url"),
     environnement = environnement
+  )
+
+  val mailjetConfig = MailjetConfig(
+    urlApi = configuration.get[String]("mailjet.urlApi"),
+    senderAdress = configuration.get[String]("mailjet.sender"),
+    apiKeyPublic = configuration.get[String]("mailjet.apiKey.public"),
+    apiKeyPrivate = configuration.get[String]("mailjet.apiKey.private")
   )
 
   val admins: List[String] = configuration.getOptional[Seq[String]]("admins").map(_.toList).getOrElse(Nil)

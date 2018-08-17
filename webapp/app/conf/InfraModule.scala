@@ -1,5 +1,8 @@
 package conf
 
+import java.nio.file.Paths
+
+import akka.actor.ActorSystem
 import authentification.infra.peconnect.{OauthService, PEConnectFacade, PEConnectInscrisService, PEConnectWS}
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.inject.name.Named
@@ -8,9 +11,10 @@ import fr.poleemploi.eventsourcing.eventstore.{AppendOnlyStore, EventStore}
 import fr.poleemploi.eventsourcing.infra.jackson.EventStoreObjectMapperBuilder
 import fr.poleemploi.eventsourcing.infra.sql.{PostgreSQLAppendOnlyStore, PostgresDriver => EventSourcingPostgresDriver}
 import fr.poleemploi.eventsourcing.{EventHandler, EventPublisher, LocalEventHandler, LocalEventPublisher}
-import fr.poleemploi.perspectives.domain.candidat.mrs.infra.MRSValideePostgreSql
+import fr.poleemploi.perspectives.domain.candidat.mrs.infra.{MRSValideeCSVLoader, MRSValideePostgreSql}
 import fr.poleemploi.perspectives.infra.jackson.PerspectivesEventSourcingModule
 import fr.poleemploi.perspectives.infra.sql.PostgresDriver
+import fr.poleemploi.perspectives.projections.infra.MailjetEmailService
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
 import play.api.inject.ApplicationLifecycle
@@ -124,4 +128,13 @@ class InfraModule extends AbstractModule with ScalaModule {
     driver = PostgresDriver,
     database = database
   )
+
+  @Provides
+  @Singleton
+  def mailjetEmailService(wsClient: WSClient,
+                          webAppConfig: WebAppConfig): MailjetEmailService =
+    new MailjetEmailService(
+      wsClient = wsClient,
+      mailjetConfig = webAppConfig.mailjetConfig
+    )
 }
