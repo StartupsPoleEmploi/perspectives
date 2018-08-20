@@ -43,7 +43,7 @@ class EventStoreSpec extends AsyncWordSpec with MustMatchers
     }
     "retourner la version de l'evenement lorsqu'il existe" in {
       // Given
-      val datas = mockAppendOnlyDatas(1)
+      val datas = mockAppendedEvents(aggregateId.value, 1)
       when(appendOnlyStore.readRecords(aggregateId.value)) thenReturn Future.successful(datas)
 
       // When
@@ -54,7 +54,7 @@ class EventStoreSpec extends AsyncWordSpec with MustMatchers
     }
     "retourner la version du dernier evenement lorsque des evenements existent" in {
       // Given
-      val datas = mockAppendOnlyDatas(7)
+      val datas = mockAppendedEvents(aggregateId.value, 7)
       when(appendOnlyStore.readRecords(aggregateId.value)) thenReturn Future.successful(datas)
 
       // When
@@ -65,7 +65,7 @@ class EventStoreSpec extends AsyncWordSpec with MustMatchers
     }
     "retourner les evenements" in {
       // Given
-      val datas = mockAppendOnlyDatas(4)
+      val datas = mockAppendedEvents(aggregateId.value, 4)
       when(appendOnlyStore.readRecords(aggregateId.value)) thenReturn Future.successful(datas)
 
       // When
@@ -76,7 +76,7 @@ class EventStoreSpec extends AsyncWordSpec with MustMatchers
     }
     "retourner un stream d'evenements ordonnés" in {
       // Given
-      val datas = mockAppendOnlyDatas(5)
+      val datas = mockAppendedEvents(aggregateId.value, 5)
       when(appendOnlyStore.readRecords(aggregateId.value)) thenReturn Future.successful(datas)
 
       // When
@@ -121,10 +121,12 @@ class EventStoreSpec extends AsyncWordSpec with MustMatchers
     }
   }
 
-  private def mockAppendOnlyDatas(size: Int): List[AppendOnlyData] = {
-    List.tabulate[AppendOnlyData](size)(
+  private def mockAppendedEvents(streamName: String,
+                                 size: Int): List[AppendedEvent] = {
+    List.tabulate[AppendedEvent](size)(
      n => {
-        val data = mock[AppendOnlyData]
+        val data = mock[AppendedEvent]
+        when(data.streamName) thenReturn streamName
         when(data.streamVersion) thenReturn n + 1
         when(data.event) thenReturn mock[Event]
         data

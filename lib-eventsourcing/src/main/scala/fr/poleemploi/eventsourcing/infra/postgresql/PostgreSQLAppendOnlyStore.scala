@@ -1,11 +1,11 @@
-package fr.poleemploi.eventsourcing.infra.sql
+package fr.poleemploi.eventsourcing.infra.postgresql
 
 import java.sql.SQLException
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.tminglei.slickpg.JsonString
-import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.eventsourcing.eventstore.{AppendOnlyData, AppendOnlyStore, AppendOnlyStoreConcurrencyException}
+import fr.poleemploi.eventsourcing.{AppendedEvent, Event}
 import slick.jdbc.JdbcBackend.Database
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -50,28 +50,30 @@ class PostgreSQLAppendOnlyStore(val driver: PostgresDriver,
     )
 
     database.run(DBIO.sequence(actions))
-    .map(_ => ())
-    .recoverWith {
-      // TODO : uniqueConstraint n'est pas forcément une AppendOnlyStoreConcurrencyException
-      case e: SQLException if e.getSQLState == uniqueConstraintViolationCode =>
-        Future.failed(throw AppendOnlyStoreConcurrencyException(
-          expectedStreamVersion = expectedStreamVersion,
-          actualStreamVersion = getLastStreamVersion(streamName),
-          streamName = streamName
-        ))
-    }
+      .map(_ => ())
+      .recoverWith {
+        // TODO : uniqueConstraint n'est pas forcément une AppendOnlyStoreConcurrencyException
+        case e: SQLException if e.getSQLState == uniqueConstraintViolationCode =>
+          Future.failed(throw AppendOnlyStoreConcurrencyException(
+            expectedStreamVersion = expectedStreamVersion,
+            actualStreamVersion = getLastStreamVersion(streamName),
+            streamName = streamName
+          ))
+      }
   }
 
-  override def readRecords(streamName: String): Future[List[AppendOnlyData]] = {
+  override def readRecords(streamName: String): Future[List[AppendedEvent]] = {
     val query = eventsTable
       .filter(e => e.streamName === streamName)
       .sortBy(_.streamVersion.asc)
 
     database.run(query.result)
-      .map(_.toList.map(f => AppendOnlyData(
-        streamVersion = f.streamVersion,
-        eventType = f.eventType,
-        event = unserializeData(f.data.value))
+      .map(_.toList.map(eventRecord =>
+        AppendedEvent(
+          streamName = eventRecord.streamName,
+          streamVersion = eventRecord.streamVersion,
+          event = unserializeData(eventRecord.data.value)
+        )
       ))
   }
 
@@ -82,8 +84,8 @@ class PostgreSQLAppendOnlyStore(val driver: PostgresDriver,
   private def unserializeData(data: String): Event = Event.fromJson(data)(objectMapper)
 }
 
-private[sql] case class EventRecordPostgreSql(id: Long,
-                                              streamName: String,
-                                              streamVersion: Int,
-                                              data: JsonString,
-                                              eventType: String)
+private[postgresql] case class EventRecordPostgreSql(id: Long,
+                                                     streamName: String,
+                                                     streamVersion: Int,
+                                                     data: JsonString,
+                                                     eventType: String)

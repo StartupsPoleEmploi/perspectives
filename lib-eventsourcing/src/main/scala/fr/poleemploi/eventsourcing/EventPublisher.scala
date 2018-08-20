@@ -9,11 +9,12 @@ import scala.concurrent.Future
 /**
   * Structure de donnée n'exposant pas EventRecord mais juste les infos nécessaires aux EventPublisher.
   */
-case class AppendedEvent(aggregateId: AggregateId,
+case class AppendedEvent(streamName: String,
+                         streamVersion: Int,
                          event: Event)
 
 /**
-  * Publie des AppendEvent vers des listeners. (EventHandler)
+  * Publie des AppendedEvent vers des listeners. (EventHandler)
   * La publication se fait dans l'EventStore, on donne accès à un AppendedEvent pour que le publisher puisse implémenter selon ces besoins (notion d'ordre avec la sequence du stream, load balancing sur le stream name, etc) <br/>
   * L'EventPublisher publisher a aussi le choix du format pour la publication de l'event
   */
@@ -21,19 +22,21 @@ trait EventPublisher {
 
   def subscribe(eventHandler: EventHandler): Unit
 
-  def publish(publishedEvent: AppendedEvent): Future[Unit]
+  def publish(appendEvent: AppendedEvent): Future[Unit]
+
+  def replay(appendedEvent: AppendedEvent): Future[Unit]
 }
 
 /**
-  * Publie et rejoue des Event vers des Projection.
+  * Publie et rejoue des Event vers des Projections.
   */
 trait EventHandler {
 
   def subscribe(projection: Projection*): Unit
 
-  def publish(aggregateId: AggregateId, event: Event): Future[Unit]
+  def publish(event: Event): Future[Unit]
 
-  def replay(aggregateId: AggregateId, event: Event): Future[Unit]
+  def replay(event: Event): Future[Unit]
 }
 
 /**
@@ -47,9 +50,14 @@ class LocalEventPublisher extends EventPublisher {
     handlers += eventHandler
   }
 
-  override def publish(publishedEvent: AppendedEvent): Future[Unit] =
+  override def publish(appendedEvent: AppendedEvent): Future[Unit] =
     Future.sequence(
-      handlers.map(h => h.publish(publishedEvent.aggregateId, publishedEvent.event))
+      handlers.map(h => h.publish(appendedEvent.event))
+    ).map(_ => ())
+
+  override def replay(appendedEvent: AppendedEvent): Future[Unit] =
+    Future.sequence(
+      handlers.map(h => h.replay(appendedEvent.event))
     ).map(_ => ())
 }
 
@@ -65,14 +73,13 @@ class LocalEventHandler extends EventHandler {
         replayHandlers += (eventClass -> publishHandlers.getOrElse(eventClass, Set.empty).+(p))
     })
 
-  override def publish(aggregateId: AggregateId, event: Event): Future[Unit] =
-    sendEventToProjections(aggregateId, event, publishHandlers)
+  override def publish(event: Event): Future[Unit] =
+    sendEventToProjections(event, publishHandlers)
 
-  override def replay(aggregateId: AggregateId, event: Event): Future[Unit] =
-    sendEventToProjections(aggregateId, event, replayHandlers)
+  override def replay(event: Event): Future[Unit] =
+    sendEventToProjections(event, replayHandlers)
 
-  private def sendEventToProjections(aggregateId: AggregateId,
-                                     event: Event,
+  private def sendEventToProjections(event: Event,
                                      handlers: mutable.Map[Class[_ <: Event], Set[Projection]]): Future[Unit] = {
     Future.sequence(
       handlers

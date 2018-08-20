@@ -19,9 +19,9 @@ class EventStore(eventPublisher: EventPublisher,
     * @return
     */
   def loadEventStream(aggregateId: AggregateId): Future[EventStream] =
-    appendOnlyStore.readRecords(aggregateId.value).map { datas =>
-      datas.foldRight(EventStream(0, Nil))((data, es) =>
-        EventStream(if (es.version < data.streamVersion) data.streamVersion else es.version, data.event :: es.events)
+    appendOnlyStore.readRecords(aggregateId.value).map { events =>
+      events.foldRight(EventStream(0, Nil))((ev, es) =>
+        EventStream(if (es.version < ev.streamVersion) ev.streamVersion else es.version, ev.event :: es.events)
       )
     }
 
@@ -50,12 +50,13 @@ class EventStore(eventPublisher: EventPublisher,
       expectedStreamVersion = expectedVersion,
       datas = datas
     ).map { _ =>
-      events.foreach(e => {
+      datas.foreach(a => {
         // On attend pas le retour de la publication
         eventPublisher.publish(
           AppendedEvent(
-            aggregateId = aggregateId,
-            event = e
+            streamName = aggregateId.value,
+            streamVersion = a.streamVersion,
+            event = a.event
           )
         )
       })

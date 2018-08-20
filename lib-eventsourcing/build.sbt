@@ -1,6 +1,7 @@
 name := "lib-eventsourcing"
 
 libraryDependencies ++= Seq(
+  Dependencies.akkaStream,
   Dependencies.jacksonCore,
   Dependencies.jacksonAnnotations,
   Dependencies.jacksonDatabind,

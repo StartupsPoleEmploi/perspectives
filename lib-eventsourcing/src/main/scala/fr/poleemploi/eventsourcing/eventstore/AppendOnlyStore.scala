@@ -1,6 +1,6 @@
 package fr.poleemploi.eventsourcing.eventstore
 
-import fr.poleemploi.eventsourcing.Event
+import fr.poleemploi.eventsourcing.{AppendedEvent, Event}
 
 import scala.concurrent.Future
 
@@ -27,9 +27,9 @@ trait AppendOnlyStore {
     * Load records for a streamName.
     *
     * @param streamName Identifier of the stream
-    * @return List of <code>AppendOnlyData</code> : empty when there is no records
+    * @return List of <code>AppendedEvent</code> : empty when there is no records
     */
-  def readRecords(streamName: String): Future[List[AppendOnlyData]]
+  def readRecords(streamName: String): Future[List[AppendedEvent]]
 }
 
 /**

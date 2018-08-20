@@ -1,4 +1,4 @@
-package fr.poleemploi.eventsourcing.infra.sql
+package fr.poleemploi.eventsourcing.infra.postgresql
 
 import com.github.tminglei.slickpg._
 
