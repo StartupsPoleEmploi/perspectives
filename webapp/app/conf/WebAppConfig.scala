@@ -16,7 +16,7 @@ class WebAppConfig(configuration: Configuration) {
   val environnement: Environnement = Environnement.from(configuration.get[String]("environnement"))
   val version: String = BuildInfo.version
 
-  val oauthConfig = OAuthConfig(
+  val oauthConfig: OAuthConfig = OAuthConfig(
     clientId = configuration.get[String]("peconnect.oauth2.clientId"),
     clientSecret = configuration.get[String]("peconnect.oauth2.clientSecret")
   )
@@ -35,12 +35,12 @@ class WebAppConfig(configuration: Configuration) {
 
   val googleTagManagerContainerId: String = configuration.get[String]("googleTagManager.containerId")
 
-  val slackCandidatConfig = SlackCandidatConfig(
+  val slackCandidatConfig: SlackCandidatConfig = SlackCandidatConfig(
     webhookURL = configuration.get[String]("slack.notificationInscriptionCandidat.url"),
     environnement = environnement
   )
 
-  val mailjetConfig = MailjetConfig(
+  val mailjetConfig: MailjetConfig = MailjetConfig(
     urlApi = configuration.get[String]("mailjet.urlApi"),
     senderAdress = configuration.get[String]("mailjet.sender"),
     apiKeyPublic = configuration.get[String]("mailjet.apiKey.public"),
