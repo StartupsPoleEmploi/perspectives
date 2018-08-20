@@ -2,9 +2,9 @@ package fr.poleemploi.perspectives.projections.candidat
 
 import java.time.ZonedDateTime
 
+import fr.poleemploi.perspectives.domain._
 import fr.poleemploi.perspectives.domain.candidat.cv.CVId
 import fr.poleemploi.perspectives.domain.candidat.{CandidatId, StatutDemandeurEmploi}
-import fr.poleemploi.perspectives.domain.{Genre, Metier, NumeroTelephone, RayonRecherche}
 
 case class CandidatDto(candidatId: CandidatId,
                        nom: String,
@@ -34,5 +34,11 @@ case class CandidatDto(candidatId: CandidatId,
     */
   def rechercheEmploi: Boolean =
     (rechercheMetierEvalue.isEmpty && rechercheAutreMetier.isEmpty) ||
-    rechercheMetierEvalue.getOrElse(false) || rechercheAutreMetier.getOrElse(false)
+      rechercheMetierEvalue.getOrElse(false) || rechercheAutreMetier.getOrElse(false)
+
+  def metiersRecherchesParSecteur: Map[SecteurActivite, List[Metier]] =
+    metiersRecherches.groupBy(m => SecteurActivite.getSecteur(m).orNull)
+
+  def habiletes: List[Habilete] =
+    metiersEvalues.flatMap(_.habiletes).distinct
 }

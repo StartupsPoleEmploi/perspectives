@@ -5,35 +5,183 @@ import fr.poleemploi.eventsourcing.StringValueObject
 /**
   * Value Object Metier
   */
-case class Metier(value: String, label: String) extends StringValueObject
+case class Metier(value: String, label: String, habiletes: List[Habilete] = Nil) extends StringValueObject
 
 /**
   * Methodes pour construire et valider un Metier
   */
 object Metier {
 
-  val AIDE_AGRICOLE = Metier("A1401", "Aide agricole")
-  val REALISATION_ARTICLES = Metier("B1802", "Réalisation d'articles")
-  val VENTE = Metier("D1106", "Vente")
-  val CAISSE = Metier("D1505", "Caisse")
-  val MISE_EN_RAYON = Metier("D1507", "Mise en rayon")
-  val CONDUITE_ENGINS = Metier("F1301", "Conduite d’engins")
-  val ELECTRICITE = Metier("F1602", "Électricité")
-  val MACONNERIE = Metier("F1703", "Maçonnerie")
-  val PERSONNEL_POLYVALENT = Metier("G1603", "Personnel polyvalent")
-  val SERVICE = Metier("G1803", "Service")
-  val DECOUPE_VIANDE = Metier("H2101", "Découpe de viande")
-  val CONDUITE_MACHINE_AGRO = Metier("H2102", "Conduite de machines")
-  val CONDUITE_MACHINE = Metier("H2202", "Conduite de machines")
-  val MECANICIEN_CONFECTION = Metier("H2402", "Mécanicien en confection")
-  val SOUDAGE = Metier("H2913", "Soudage")
-  val FABRICATION_PIECES = Metier("H3203", "Fabrication de pièces")
-  val TRI_EMBALLAGE = Metier("H3302", "Tri et emballage")
-  val AIDE_PERSONNES_AGEES = Metier("K1302", "Aide aux personnes âgées")
-  val AIDE_DOMICILE = Metier("K1304", "Aide à domicile")
-  val NETTOYAGE_LOCAUX = Metier("K2204", "Nettoyage de locaux")
-  val PREPARATION_COMMANDE = Metier("N1103", "Préparation de commandes")
-  val MANUTENTION = Metier("N1105", "Manutention")
+  // FIXME : récupérer les habiletés pour tous les métiers proposés
+  val AIDE_AGRICOLE = Metier(
+    value = "A1401",
+    label = "Aide agricole",
+    habiletes = Nil
+  )
+  val REALISATION_ARTICLES = Metier(
+    value = "B1802",
+    label = "Réalisation d'articles",
+    habiletes = List(
+      Habilete.RESPECT_NORMES_ET_CONSIGNES,
+      Habilete.REPRESENTATION_ESPACE,
+      Habilete.DEXTERITE,
+      Habilete.MAINTIENT_ATTENTION,
+      Habilete.REPRESENTATION_PROCESSUS
+    )
+  )
+  val VENTE = Metier(
+    value = "D1106",
+    label = "Vente",
+    habiletes = Nil
+  )
+  val CAISSE = Metier(
+    value = "D1505",
+    label = "Caisse",
+    habiletes = Nil
+  )
+  val MISE_EN_RAYON = Metier(
+    value = "D1507",
+    label = "Mise en rayon",
+    habiletes = List(
+      Habilete.RESPECT_NORMES_ET_CONSIGNES,
+      Habilete.MAINTIENT_ATTENTION,
+      Habilete.ORGANISER,
+      Habilete.REPRESENTATION_ESPACE,
+      Habilete.TRAVAIL_EN_EQUIPE
+    )
+  )
+  val CONDUITE_ENGINS = Metier(
+    value = "F1301",
+    label = "Conduite d’engins",
+    habiletes = Nil
+  )
+  val ELECTRICITE = Metier(
+    value = "F1602",
+    label = "Électricité",
+    habiletes = Nil
+  )
+  val MACONNERIE = Metier(
+    value = "F1703",
+    label = "Maçonnerie",
+    habiletes = Nil
+  )
+  val PERSONNEL_POLYVALENT = Metier(
+    value = "G1603",
+    label = "Personnel polyvalent",
+    habiletes = List(
+      Habilete.RESPECT_NORMES_ET_CONSIGNES,
+      Habilete.MAINTIENT_ATTENTION,
+      Habilete.RELATION_SERVICE,
+      Habilete.TRAVAIL_EN_EQUIPE
+    )
+  )
+  val SERVICE = Metier(
+    value = "G1803",
+    label = "Service",
+    habiletes = Nil
+  )
+  val DECOUPE_VIANDE = Metier(
+    value = "H2101",
+    label = "Découpe de viande",
+    habiletes = Nil
+  )
+  val CONDUITE_MACHINE_AGRO = Metier(
+    value = "H2102",
+    label = "Conduite de machines",
+    habiletes = List(
+      Habilete.RESPECT_NORMES_ET_CONSIGNES,
+      Habilete.MAINTIENT_ATTENTION,
+      Habilete.DEXTERITE,
+      Habilete.REPRESENTATION_PROCESSUS
+    )
+  )
+  val CONDUITE_MACHINE = Metier(
+    value = "H2202",
+    label = "Conduite de machines",
+    habiletes = List(
+      Habilete.RESPECT_NORMES_ET_CONSIGNES,
+      Habilete.MAINTIENT_ATTENTION,
+      Habilete.DEXTERITE,
+      Habilete.REPRESENTATION_PROCESSUS
+    )
+  )
+  val MECANICIEN_CONFECTION = Metier(
+    value = "H2402",
+    label = "Mécanicien en confection",
+    habiletes = List(
+      Habilete.RESPECT_NORMES_ET_CONSIGNES,
+      Habilete.MAINTIENT_ATTENTION,
+      Habilete.DEXTERITE,
+      Habilete.REPRESENTATION_ESPACE,
+      Habilete.ADAPTATION
+    )
+  )
+  val SOUDAGE = Metier(
+    value = "H2913",
+    label = "Soudage",
+    habiletes = List(
+      Habilete.RESPECT_NORMES_ET_CONSIGNES,
+      Habilete.MAINTIENT_ATTENTION,
+      Habilete.DEXTERITE,
+      Habilete.REPRESENTATION_ESPACE
+    )
+  )
+  val FABRICATION_PIECES = Metier(
+    value = "H3203",
+    label = "Fabrication de pièces",
+    habiletes = List(
+      Habilete.RESPECT_NORMES_ET_CONSIGNES,
+      Habilete.MAINTIENT_ATTENTION,
+      Habilete.ORGANISER,
+      Habilete.RECEUIL_ANALYSE_DONNEES,
+      Habilete.TRAVAIL_SOUS_TENSION
+    )
+  )
+  val TRI_EMBALLAGE = Metier(
+    value = "H3302",
+    label = "Tri et emballage",
+    habiletes = List(
+      Habilete.RESPECT_NORMES_ET_CONSIGNES,
+      Habilete.MAINTIENT_ATTENTION,
+      Habilete.TRAVAIL_EN_EQUIPE,
+      Habilete.REPRESENTATION_ESPACE,
+      Habilete.REPRESENTATION_PROCESSUS
+    )
+  )
+  val AIDE_PERSONNES_AGEES = Metier(
+    value = "K1302",
+    label = "Aide aux personnes âgées",
+    habiletes = Nil
+  )
+  val AIDE_DOMICILE = Metier(
+    value = "K1304",
+    label = "Aide à domicile",
+    habiletes = Nil
+  )
+  val NETTOYAGE_LOCAUX = Metier(
+    value = "K2204",
+    label = "Nettoyage de locaux",
+    habiletes = List(
+      Habilete.RESPECT_NORMES_ET_CONSIGNES,
+      Habilete.MAINTIENT_ATTENTION,
+      Habilete.RELATION_SERVICE,
+      Habilete.PRISE_D_INITIATIVES
+    )
+  )
+  val PREPARATION_COMMANDE = Metier(
+    value = "N1103",
+    label = "Préparation de commandes",
+    habiletes = List(
+      Habilete.RESPECT_NORMES_ET_CONSIGNES,
+      Habilete.TRAVAIL_SOUS_TENSION,
+      Habilete.PRISE_D_INITIATIVES
+    )
+  )
+  val MANUTENTION = Metier(
+    value = "N1105",
+    label = "Manutention",
+    habiletes = Nil
+  )
 
   val values = Map(
     AIDE_AGRICOLE.value -> AIDE_AGRICOLE,

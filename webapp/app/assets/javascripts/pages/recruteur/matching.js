@@ -44,6 +44,10 @@ $(document).ready(function () {
     var resultatsRecherche = $("#js-resultatsRecherche");
     var titreCompteurResultats = $(".compteurResultats-titre");
 
+    $(".bouton-infoCandidat").each(function() {
+        $(this).hide();
+    });
+
     selecteurSecteursActivites.change(function () {
         var secteurActivite = $(this).val();
         rechercherCandidats().always(function () {
@@ -121,5 +125,23 @@ $(document).ready(function () {
         bouton.find("~ .js-infoBulle").each(function () {
             $(this).show().delay(1000).hide(10);
         });
+    });
+
+    body.on("click", ".listeResultatsRecherche-ligne", function () {
+        var ligneProfil = $(this).next(".listeResultatsRecherche-profilCandidat");
+
+        if (ligneProfil.hasClass("listeResultatsRecherche-profilCandidat--courant")) {
+            ligneProfil.hide();
+            ligneProfil.removeClass("listeResultatsRecherche-profilCandidat--courant");
+        } else {
+            $(".listeResultatsRecherche-profilCandidat--courant").each(function () {
+                var ligneOuverte = $(this);
+                ligneOuverte.hide();
+                ligneOuverte.removeClass("listeResultatsRecherche-profilCandidat--courant");
+            });
+            ligneProfil.slideDown("fast", function() {
+                ligneProfil.addClass("listeResultatsRecherche-profilCandidat--courant");
+            });
+        }
     });
 });
