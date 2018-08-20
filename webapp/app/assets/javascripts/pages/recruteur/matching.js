@@ -68,7 +68,7 @@ $(document).ready(function () {
             } else {
                 selecteurMetiers.html(htmlTousLesMetiers);
             }
-            var nbResultats = $(".resultatsRecherche tbody tr").length;
+            var nbResultats = $(".resultatsRecherche tbody tr.listeResultatsRecherche-ligne").length;
             if (nbResultats === 0) {
                 titreCompteurResultats.html("Nous n'avons pas de candidats à vous proposer avec ces critères");
             } else if (nbResultats === 1) {
@@ -89,7 +89,7 @@ $(document).ready(function () {
 
     selecteurMetiers.change(function () {
         rechercherCandidats().always(function () {
-            var nbResultats = $(".resultatsRecherche tbody tr").length;
+            var nbResultats = $(".resultatsRecherche tbody tr.listeResultatsRecherche-ligne").length;
             if (nbResultats === 0) {
                 titreCompteurResultats.html("Nous n'avons pas de candidats à vous proposer avec ces critères");
             } else if (nbResultats === 1) {
