@@ -3,7 +3,8 @@ package fr.poleemploi.perspectives.domain
 import fr.poleemploi.eventsourcing.StringValueObject
 
 /**
-  * Value Object Metier
+  * Value Object Metier.
+  * La valeur est le code ROME (Répertoire Opérationnel des Métiers et des Emplois)
   */
 case class Metier(value: String, label: String, habiletes: List[Habilete] = Nil) extends StringValueObject
 
