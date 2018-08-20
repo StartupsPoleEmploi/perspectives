@@ -13,6 +13,13 @@ object Dependencies {
 
   val slickPgVersion = "0.16.1"
 
+  // Doit correspondre à la version d'Akka utilisée par Play
+  val akkaVersion = "2.5.11"
+
+  val akkaActor = "com.typesafe.akka" %% "akka-actor" % akkaVersion
+
+  val akkaStream = "com.typesafe.akka" %% "akka-stream" % akkaVersion
+
   val jacksonCore = "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion
 
   val jacksonAnnotations = "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonVersion
