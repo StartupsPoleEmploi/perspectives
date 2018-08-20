@@ -47,6 +47,8 @@ class WebAppConfig(configuration: Configuration) {
     apiKeyPrivate = configuration.get[String]("mailjet.apiKey.private")
   )
 
+  val extractMrsValideesDirectory: String = configuration.get[String]("extractPoleEmploi.mrsValidees")
+
   val admins: List[String] = configuration.getOptional[Seq[String]]("admins").map(_.toList).getOrElse(Nil)
   
   val candidatsTesteurs: List[String] = configuration.getOptional[Seq[String]]("candidatsTesteurs").map(_.toList).getOrElse(Nil)

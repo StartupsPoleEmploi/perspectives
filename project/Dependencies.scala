@@ -30,6 +30,8 @@ object Dependencies {
 
   val slickHikariCp = "com.typesafe.slick" %% "slick-hikaricp" % slickVersion
 
+  val alpakka = "com.lightbend.akka" %% "akka-stream-alpakka-csv" % "0.18"
+
   val scalatestplus = "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test
 
   val mockito = "org.mockito" % "mockito-core" % "2.18.3" % "test"

@@ -123,11 +123,20 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
+  def mrsValideesCSVLoader(actorSystem: ActorSystem,
+                           webAppConfig: WebAppConfig): MRSValideeCSVLoader =
+    new MRSValideeCSVLoader(
+      directory = Paths.get(webAppConfig.extractMrsValideesDirectory),
+      actorSystem = actorSystem
+    )
+
+  @Provides
+  @Singleton
   def postgreSqlMetierEvalueService(database: Database): MRSValideePostgreSql =
     new MRSValideePostgreSql(
-    driver = PostgresDriver,
-    database = database
-  )
+      driver = PostgresDriver,
+      database = database
+    )
 
   @Provides
   @Singleton
