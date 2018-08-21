@@ -17,7 +17,9 @@ object Metier {
   val AIDE_AGRICOLE = Metier(
     value = "A1401",
     label = "Aide agricole",
-    habiletes = Nil
+    habiletes = List(
+      Habilete.RESPECT_NORMES_ET_CONSIGNES
+    )
   )
   val REALISATION_ARTICLES = Metier(
     value = "B1802",
@@ -33,12 +35,16 @@ object Metier {
   val VENTE = Metier(
     value = "D1106",
     label = "Vente",
-    habiletes = Nil
+    habiletes = List(
+      Habilete.RESPECT_NORMES_ET_CONSIGNES
+    )
   )
   val CAISSE = Metier(
     value = "D1505",
     label = "Caisse",
-    habiletes = Nil
+    habiletes = List(
+      Habilete.RESPECT_NORMES_ET_CONSIGNES
+    )
   )
   val MISE_EN_RAYON = Metier(
     value = "D1507",
@@ -54,17 +60,23 @@ object Metier {
   val CONDUITE_ENGINS = Metier(
     value = "F1301",
     label = "Conduite d’engins",
-    habiletes = Nil
+    habiletes = List(
+      Habilete.RESPECT_NORMES_ET_CONSIGNES
+    )
   )
   val ELECTRICITE = Metier(
     value = "F1602",
     label = "Électricité",
-    habiletes = Nil
+    habiletes = List(
+      Habilete.RESPECT_NORMES_ET_CONSIGNES
+    )
   )
   val MACONNERIE = Metier(
     value = "F1703",
     label = "Maçonnerie",
-    habiletes = Nil
+    habiletes = List(
+      Habilete.RESPECT_NORMES_ET_CONSIGNES
+    )
   )
   val PERSONNEL_POLYVALENT = Metier(
     value = "G1603",
@@ -79,12 +91,16 @@ object Metier {
   val SERVICE = Metier(
     value = "G1803",
     label = "Service",
-    habiletes = Nil
+    habiletes = List(
+      Habilete.RESPECT_NORMES_ET_CONSIGNES
+    )
   )
   val DECOUPE_VIANDE = Metier(
     value = "H2101",
     label = "Découpe de viande",
-    habiletes = Nil
+    habiletes = List(
+      Habilete.RESPECT_NORMES_ET_CONSIGNES
+    )
   )
   val CONDUITE_MACHINE_AGRO = Metier(
     value = "H2102",
@@ -152,12 +168,16 @@ object Metier {
   val AIDE_PERSONNES_AGEES = Metier(
     value = "K1302",
     label = "Aide aux personnes âgées",
-    habiletes = Nil
+    habiletes = List(
+      Habilete.RESPECT_NORMES_ET_CONSIGNES
+    )
   )
   val AIDE_DOMICILE = Metier(
     value = "K1304",
     label = "Aide à domicile",
-    habiletes = Nil
+    habiletes = List(
+      Habilete.RESPECT_NORMES_ET_CONSIGNES
+    )
   )
   val NETTOYAGE_LOCAUX = Metier(
     value = "K2204",
@@ -181,7 +201,9 @@ object Metier {
   val MANUTENTION = Metier(
     value = "N1105",
     label = "Manutention",
-    habiletes = Nil
+    habiletes = List(
+      Habilete.RESPECT_NORMES_ET_CONSIGNES
+    )
   )
 
   val values = Map(
