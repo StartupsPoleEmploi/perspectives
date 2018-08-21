@@ -35,7 +35,7 @@ object SaisieCriteresRechercheForm {
     )(SaisieCriteresRechercheForm.apply)(SaisieCriteresRechercheForm.unapply) verifying metiersSelectionnes
   )
 
-  val emptyForm = SaisieCriteresRechercheForm.form.fill(
+  val emptyForm: Form[SaisieCriteresRechercheForm] = SaisieCriteresRechercheForm.form.fill(
     SaisieCriteresRechercheForm(
       rechercheMetierEvalue = "",
       rechercheAutreMetier = "",
