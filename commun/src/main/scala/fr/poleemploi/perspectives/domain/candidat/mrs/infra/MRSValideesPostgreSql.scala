@@ -13,8 +13,8 @@ import scala.concurrent.Future
 /**
   * Enregistre les MRS des candidats dans Postgres
   */
-class MRSValideePostgreSql(val driver: PostgresDriver,
-                           database: Database) {
+class MRSValideesPostgreSql(val driver: PostgresDriver,
+                            database: Database) {
 
   import driver.api._
 

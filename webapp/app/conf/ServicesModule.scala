@@ -4,9 +4,12 @@ import com.google.inject.{AbstractModule, Provides, Singleton}
 import fr.poleemploi.perspectives.domain.candidat.cv.CVService
 import fr.poleemploi.perspectives.domain.candidat.cv.infra.CVBddService
 import fr.poleemploi.perspectives.domain.candidat.mrs.ReferentielMRSCandidat
-import fr.poleemploi.perspectives.domain.candidat.mrs.infra.{MRSValideeCSVLoader, MRSValideePostgreSql, ReferentielMRSCandidatLocal}
+import fr.poleemploi.perspectives.domain.candidat.mrs.infra.{MRSValideesCSVLoader, MRSValideesPostgreSql, ReferentielMRSCandidatLocal}
 import fr.poleemploi.perspectives.domain.conseiller.{AutorisationService, AutorisationServiceDefaut, ConseillerId}
+import fr.poleemploi.perspectives.domain.metier.ReferentielMetier
+import fr.poleemploi.perspectives.domain.metier.infra.ReferentielMetierWS
 import fr.poleemploi.perspectives.infra.sql.PostgresDriver
+import play.api.libs.ws.WSClient
 import slick.jdbc.JdbcBackend.Database
 
 class ServicesModule extends AbstractModule {
@@ -28,10 +31,21 @@ class ServicesModule extends AbstractModule {
 
   @Provides
   @Singleton
-  def referentielMetierEvalue(metierEvalueCSVLoader: MRSValideeCSVLoader,
-                              postgresqlMetierEvalueService: MRSValideePostgreSql): ReferentielMRSCandidat =
+  def referentielMetierEvalue(metierEvalueCSVLoader: MRSValideesCSVLoader,
+                              postgresqlMetierEvalueService: MRSValideesPostgreSql,
+                              webAppConfig: WebAppConfig): ReferentielMRSCandidat =
     new ReferentielMRSCandidatLocal(
-      mrsValideeCSVLoader = metierEvalueCSVLoader,
+      referentielMRSCandidatConfig = webAppConfig.referentielMRSCandidatConfig,
+      mrsValideesCSVLoader = metierEvalueCSVLoader,
       mrsValideesPostgresSql = postgresqlMetierEvalueService
+    )
+
+  @Provides
+  @Singleton
+  def referentielMetier(wsClient: WSClient,
+                        webAppConfig: WebAppConfig): ReferentielMetier =
+    new ReferentielMetierWS(
+      wsClient = wsClient,
+      referentielMetierWSConfig = webAppConfig.referentielMetierWSConfig
     )
 }

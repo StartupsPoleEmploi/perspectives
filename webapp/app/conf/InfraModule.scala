@@ -1,7 +1,5 @@
 package conf
 
-import java.nio.file.Paths
-
 import akka.actor.ActorSystem
 import authentification.infra.peconnect.{OauthService, PEConnectFacade, PEConnectInscrisService, PEConnectWS}
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -11,7 +9,7 @@ import fr.poleemploi.eventsourcing.eventstore.{AppendOnlyStore, EventStore}
 import fr.poleemploi.eventsourcing.infra.jackson.EventStoreObjectMapperBuilder
 import fr.poleemploi.eventsourcing.infra.postgresql.{PostgreSQLAppendOnlyStore, PostgresDriver => EventSourcingPostgresDriver}
 import fr.poleemploi.eventsourcing.{EventHandler, EventPublisher, LocalEventHandler, LocalEventPublisher}
-import fr.poleemploi.perspectives.domain.candidat.mrs.infra.{MRSValideeCSVLoader, MRSValideePostgreSql}
+import fr.poleemploi.perspectives.domain.candidat.mrs.infra.{MRSValideesCSVLoader, MRSValideesPostgreSql}
 import fr.poleemploi.perspectives.infra.jackson.PerspectivesEventSourcingModule
 import fr.poleemploi.perspectives.infra.sql.PostgresDriver
 import fr.poleemploi.perspectives.projections.infra.MailjetEmailService
@@ -123,17 +121,13 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
-  def mrsValideesCSVLoader(actorSystem: ActorSystem,
-                           webAppConfig: WebAppConfig): MRSValideeCSVLoader =
-    new MRSValideeCSVLoader(
-      directory = Paths.get(webAppConfig.extractMrsValideesDirectory),
-      actorSystem = actorSystem
-    )
+  def mrsValideesCSVLoader(actorSystem: ActorSystem): MRSValideesCSVLoader =
+    new MRSValideesCSVLoader(actorSystem = actorSystem)
 
   @Provides
   @Singleton
-  def postgreSqlMetierEvalueService(database: Database): MRSValideePostgreSql =
-    new MRSValideePostgreSql(
+  def mrsValideesPostgreSql(database: Database): MRSValideesPostgreSql =
+    new MRSValideesPostgreSql(
       driver = PostgresDriver,
       database = database
     )

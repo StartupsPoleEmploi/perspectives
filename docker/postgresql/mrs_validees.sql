@@ -1,11 +1,12 @@
--- Idealement, devrait etre un systeme externe interrogeable, car renseigné par un extract issu d'un SI externe à perspectives
+-- Idealement, devrait etre un systeme externe interrogeable, car renseigné par un extract issu du SI Pole Emploi
 CREATE TABLE mrs_validees
 (
   id             BIGSERIAL              NOT NULL,
   peconnect_id   CHARACTER VARYING(255) NOT NULL,
   code_metier CHARACTER VARYING(255) NOT NULL,
   date_evaluation DATE NOT NULL,
-  CONSTRAINT mrs_validees_pk PRIMARY KEY (id)
+  CONSTRAINT mrs_validees_pk PRIMARY KEY (id),
+  UNIQUE (peconnect_id, code_metier, date_evaluation)
 )
 WITH (
 OIDS =FALSE

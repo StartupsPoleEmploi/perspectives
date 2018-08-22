@@ -1,7 +1,6 @@
 package authentification.infra.peconnect
 
-case class OAuthConfig(clientId: String,
-                       clientSecret: String)
+import fr.poleemploi.perspectives.infra.oauth.OAuthConfig
 
 case class PEConnectRecruteurConfig(urlAuthentification: String,
                                     urlApi: String,

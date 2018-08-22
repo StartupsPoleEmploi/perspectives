@@ -1,6 +1,11 @@
 package conf
 
-import authentification.infra.peconnect.{OAuthConfig, PEConnectCandidatConfig, PEConnectRecruteurConfig}
+import java.nio.file.Paths
+
+import authentification.infra.peconnect.{PEConnectCandidatConfig, PEConnectRecruteurConfig}
+import fr.poleemploi.perspectives.domain.candidat.mrs.infra.ReferentielMRSCandidatConfig
+import fr.poleemploi.perspectives.domain.metier.infra.ReferentielMetierWSConfig
+import fr.poleemploi.perspectives.infra.oauth.OAuthConfig
 import fr.poleemploi.perspectives.infra.{BuildInfo, Environnement}
 import fr.poleemploi.perspectives.projections.candidat.SlackCandidatConfig
 import fr.poleemploi.perspectives.projections.infra.MailjetConfig
@@ -47,9 +52,18 @@ class WebAppConfig(configuration: Configuration) {
     apiKeyPrivate = configuration.get[String]("mailjet.apiKey.private")
   )
 
-  val extractMrsValideesDirectory: String = configuration.get[String]("extractPoleEmploi.mrsValidees")
+  val referentielMetierWSConfig: ReferentielMetierWSConfig = ReferentielMetierWSConfig(
+    urlAuthentification = configuration.get[String]("referentielMetier.urlAuthentification"),
+    urlApi = configuration.get[String]("referentielMetier.urlApi"),
+    oauthConfig = oauthConfig
+  )
+
+  val referentielMRSCandidatConfig: ReferentielMRSCandidatConfig = ReferentielMRSCandidatConfig(
+    importDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.mrsValidees.importDirectory")),
+    archiveDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.mrsValidees.archiveDirectory"))
+  )
 
   val admins: List[String] = configuration.getOptional[Seq[String]]("admins").map(_.toList).getOrElse(Nil)
-  
+
   val candidatsTesteurs: List[String] = configuration.getOptional[Seq[String]]("candidatsTesteurs").map(_.toList).getOrElse(Nil)
 }
