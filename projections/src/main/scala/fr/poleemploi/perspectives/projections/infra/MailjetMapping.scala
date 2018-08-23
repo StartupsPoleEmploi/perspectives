@@ -64,3 +64,31 @@ object MailjetTemplateMessage {
 case class MailjetEmail(messages: List[MailjetMessage])
 
 case class MailjetTemplateEmail(messages: List[MailjetTemplateMessage])
+
+case class ProprietesContact(nom: String,
+                             prenom: String,
+                             genre: String)
+
+object ProprietesContact {
+
+  implicit val proprietesContactWrites: Writes[ProprietesContact] = (
+    (JsPath \ "nom").write[String] and
+      (JsPath \ "prénom").write[String] and
+      (JsPath \ "genre").write[String]
+    ) (unlift(ProprietesContact.unapply))
+}
+
+case class AddContactRequest(email: String,
+                             name: String,
+                             action: String,
+                             proprietesContact: ProprietesContact)
+
+object AddContactRequest {
+
+  implicit val addContactWrites: Writes[AddContactRequest] = (
+    (JsPath \ "Email").write[String] and
+      (JsPath \ "Name").write[String] and
+      (JsPath \ "Action").write[String] and
+      (JsPath \ "Properties").write[ProprietesContact]
+    ) (unlift(AddContactRequest.unapply))
+}

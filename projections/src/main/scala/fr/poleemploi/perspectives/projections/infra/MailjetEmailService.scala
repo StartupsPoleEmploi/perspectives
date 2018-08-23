@@ -17,11 +17,13 @@ class MailjetEmailService(mailjetConfig: MailjetConfig,
   val authorization: String = Base64.getEncoder
     .encodeToString(s"${mailjetConfig.apiKeyPublic}:${mailjetConfig.apiKeyPrivate}".getBytes(StandardCharsets.UTF_8))
 
+  val idListeContactsInscrits: Int = 9908
+
   val sender: String = mailjetConfig.senderAdress
 
   def sendEmail(mailjetEmail: MailjetEmail): Future[Unit] = {
     wsClient
-      .url(s"${mailjetConfig.urlApi}/send")
+      .url(s"${mailjetConfig.urlApi}/v3.1/send")
       .addHttpHeaders(
         ("Content-Type", "application/json"),
         ("Authorization", s"Basic $authorization")
@@ -33,9 +35,8 @@ class MailjetEmailService(mailjetConfig: MailjetConfig,
   }
 
   def sendTemplateEmail(mailjetTemplateEmail: MailjetTemplateEmail): Future[Unit] = {
-    println(Json.toJson(mailjetTemplateEmail.messages))
     wsClient
-      .url(s"${mailjetConfig.urlApi}/send")
+      .url(s"${mailjetConfig.urlApi}/v3.1/send")
       .addHttpHeaders(
         ("Content-Type", "application/json"),
         ("Authorization", s"Basic $authorization")
@@ -46,9 +47,20 @@ class MailjetEmailService(mailjetConfig: MailjetConfig,
       .map(filtreStatutReponse(_))
   }
 
+  def addContactInscrit(request: AddContactRequest): Future[Unit] = {
+    wsClient
+      .url(s"${mailjetConfig.urlApi}/v3/REST/contactslist/$idListeContactsInscrits/managecontact")
+      .addHttpHeaders(
+        ("Content-Type", "application/json"),
+        ("Authorization", s"Basic $authorization")
+      )
+      .post(Json.toJson(request))
+      .map(filtreStatutReponse(_))
+  }
+
   private def filtreStatutReponse(response: WSResponse,
                                   statutErreur: Int => Boolean = s => s >= 400,
-                                  statutNonGere: Int => Boolean = s => s != 200): WSResponse = response.status match {
+                                  statutNonGere: Int => Boolean = s => s != 200 && s != 201): WSResponse = response.status match {
     case s if statutErreur(s) => throw MailjetEmailException(s"Erreur lors de l'envoi d'un email. Code: ${response.status}. Reponse : ${response.body}")
     case s if statutNonGere(s) => throw MailjetEmailException(s"Statut non géré lors de l'envoi d'un email. Code: ${response.status}. Reponse : ${response.body}")
     case _ => response

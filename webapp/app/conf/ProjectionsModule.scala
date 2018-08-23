@@ -5,7 +5,8 @@ import fr.poleemploi.eventsourcing.{EventHandler, EventPublisher}
 import fr.poleemploi.perspectives.domain.candidat.CandidatId
 import fr.poleemploi.perspectives.domain.candidat.cv.CVService
 import fr.poleemploi.perspectives.infra.sql.PostgresDriver
-import fr.poleemploi.perspectives.projections.candidat.{CandidatNotificationSlackProjection, CandidatProjection, CandidatQueryHandler}
+import fr.poleemploi.perspectives.projections.candidat.{CandidatEmailProjection, CandidatNotificationSlackProjection, CandidatProjection, CandidatQueryHandler}
+import fr.poleemploi.perspectives.projections.infra.MailjetEmailService
 import fr.poleemploi.perspectives.projections.recruteur.{RecruteurProjection, RecruteurQueryHandler}
 import net.codingwell.scalaguice.ScalaModule
 import play.api.libs.ws.WSClient
@@ -15,6 +16,7 @@ class RegisterProjections @Inject()(eventPublisher: EventPublisher,
                                     eventHandler: EventHandler,
                                     candidatProjection: CandidatProjection,
                                     candidatNotificationSlackProjection: CandidatNotificationSlackProjection,
+                                    candidatMailProjection: CandidatEmailProjection,
                                     recruteurProjection: RecruteurProjection,
                                     webAppConfig: WebAppConfig) {
   eventPublisher.subscribe(eventHandler)
@@ -24,6 +26,9 @@ class RegisterProjections @Inject()(eventPublisher: EventPublisher,
 
   if (webAppConfig.useSlackNotificationCandidat) {
     eventHandler.subscribe(candidatNotificationSlackProjection)
+  }
+  if (webAppConfig.useEmail) {
+    eventHandler.subscribe(candidatMailProjection)
   }
 }
 
@@ -61,6 +66,13 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
     new CandidatNotificationSlackProjection(
       slackCandidatConfig = webAppConfig.slackCandidatConfig,
       wsClient = wsClient
+    )
+
+  @Provides
+  @Singleton
+  def candidatEmailProjection(mailjetEmailService: MailjetEmailService): CandidatEmailProjection =
+    new CandidatEmailProjection(
+      mailjetEmailService = mailjetEmailService
     )
 
   @Provides
