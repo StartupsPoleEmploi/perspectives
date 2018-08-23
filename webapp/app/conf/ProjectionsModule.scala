@@ -7,7 +7,7 @@ import fr.poleemploi.perspectives.domain.candidat.cv.CVService
 import fr.poleemploi.perspectives.infra.sql.PostgresDriver
 import fr.poleemploi.perspectives.projections.candidat.{CandidatEmailProjection, CandidatNotificationSlackProjection, CandidatProjection, CandidatQueryHandler}
 import fr.poleemploi.perspectives.projections.infra.MailjetEmailService
-import fr.poleemploi.perspectives.projections.recruteur.{RecruteurProjection, RecruteurQueryHandler}
+import fr.poleemploi.perspectives.projections.recruteur.{RecruteurEmailProjection, RecruteurProjection, RecruteurQueryHandler}
 import net.codingwell.scalaguice.ScalaModule
 import play.api.libs.ws.WSClient
 import slick.jdbc.JdbcBackend.Database
@@ -18,6 +18,7 @@ class RegisterProjections @Inject()(eventPublisher: EventPublisher,
                                     candidatNotificationSlackProjection: CandidatNotificationSlackProjection,
                                     candidatMailProjection: CandidatEmailProjection,
                                     recruteurProjection: RecruteurProjection,
+                                    recruteurEmailProjection: RecruteurEmailProjection,
                                     webAppConfig: WebAppConfig) {
   eventPublisher.subscribe(eventHandler)
 
@@ -29,6 +30,7 @@ class RegisterProjections @Inject()(eventPublisher: EventPublisher,
   }
   if (webAppConfig.useEmail) {
     eventHandler.subscribe(candidatMailProjection)
+    eventHandler.subscribe(recruteurEmailProjection)
   }
 }
 
@@ -81,6 +83,13 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
     new RecruteurProjection(
       driver = PostgresDriver,
       database = database
+    )
+
+  @Provides
+  @Singleton
+  def recruteurEmailProjection(mailjetEmailService: MailjetEmailService): RecruteurEmailProjection =
+    new RecruteurEmailProjection(
+      mailjetEmailService = mailjetEmailService
     )
 
   @Provides

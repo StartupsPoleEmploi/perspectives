@@ -17,17 +17,15 @@ class MailjetEmailService(mailjetConfig: MailjetConfig,
   val authorization: String = Base64.getEncoder
     .encodeToString(s"${mailjetConfig.apiKeyPublic}:${mailjetConfig.apiKeyPrivate}".getBytes(StandardCharsets.UTF_8))
 
-  val idListeContactsInscrits: Int = 9908
+  val idListeCandidatsInscrits: Int = 9908
+  val idListeRecruteursInscrits: Int = 9909
 
   val sender: String = mailjetConfig.senderAdress
 
   def sendEmail(mailjetEmail: MailjetEmail): Future[Unit] = {
     wsClient
       .url(s"${mailjetConfig.urlApi}/v3.1/send")
-      .addHttpHeaders(
-        ("Content-Type", "application/json"),
-        ("Authorization", s"Basic $authorization")
-      )
+      .addHttpHeaders(jsonHttpHeader, authorizationHeader)
       .post(Json.obj(
         "Messages" -> Json.toJson(mailjetEmail.messages)
       ))
@@ -37,26 +35,26 @@ class MailjetEmailService(mailjetConfig: MailjetConfig,
   def sendTemplateEmail(mailjetTemplateEmail: MailjetTemplateEmail): Future[Unit] = {
     wsClient
       .url(s"${mailjetConfig.urlApi}/v3.1/send")
-      .addHttpHeaders(
-        ("Content-Type", "application/json"),
-        ("Authorization", s"Basic $authorization")
-      )
+      .addHttpHeaders(jsonHttpHeader, authorizationHeader)
       .post(Json.obj(
         "Messages" -> Json.toJson(mailjetTemplateEmail.messages)
       ))
       .map(filtreStatutReponse(_))
   }
 
-  def addContactInscrit(request: AddContactRequest): Future[Unit] = {
+  def addCandidatInscrit(request: AddContactRequest): Future[Unit] =
     wsClient
-      .url(s"${mailjetConfig.urlApi}/v3/REST/contactslist/$idListeContactsInscrits/managecontact")
-      .addHttpHeaders(
-        ("Content-Type", "application/json"),
-        ("Authorization", s"Basic $authorization")
-      )
+      .url(s"${mailjetConfig.urlApi}/v3/REST/contactslist/$idListeCandidatsInscrits/managecontact")
+      .addHttpHeaders(jsonHttpHeader, authorizationHeader)
       .post(Json.toJson(request))
       .map(filtreStatutReponse(_))
-  }
+
+  def addRecruteurInscrit(request: AddContactRequest): Future[Unit] =
+    wsClient
+      .url(s"${mailjetConfig.urlApi}/v3/REST/contactslist/$idListeRecruteursInscrits/managecontact")
+      .addHttpHeaders(jsonHttpHeader, authorizationHeader)
+      .post(Json.toJson(request))
+      .map(filtreStatutReponse(_))
 
   private def filtreStatutReponse(response: WSResponse,
                                   statutErreur: Int => Boolean = s => s >= 400,
@@ -65,4 +63,8 @@ class MailjetEmailService(mailjetConfig: MailjetConfig,
     case s if statutNonGere(s) => throw MailjetEmailException(s"Statut non géré lors de l'envoi d'un email. Code: ${response.status}. Reponse : ${response.body}")
     case _ => response
   }
+
+  private def jsonHttpHeader: (String, String) = ("Content-Type", "application/json")
+
+  private def authorizationHeader: (String, String) = ("Authorization", s"Basic $authorization")
 }
