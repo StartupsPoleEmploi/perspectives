@@ -4,9 +4,9 @@ import com.google.inject.{AbstractModule, Inject, Provides, Singleton}
 import fr.poleemploi.eventsourcing.{EventHandler, EventPublisher}
 import fr.poleemploi.perspectives.domain.candidat.CandidatId
 import fr.poleemploi.perspectives.domain.candidat.cv.CVService
+import fr.poleemploi.perspectives.domain.emailing.EmailingService
 import fr.poleemploi.perspectives.infra.sql.PostgresDriver
 import fr.poleemploi.perspectives.projections.candidat.{CandidatEmailProjection, CandidatNotificationSlackProjection, CandidatProjection, CandidatQueryHandler}
-import fr.poleemploi.perspectives.projections.infra.MailjetEmailService
 import fr.poleemploi.perspectives.projections.recruteur.{RecruteurEmailProjection, RecruteurProjection, RecruteurQueryHandler}
 import net.codingwell.scalaguice.ScalaModule
 import play.api.libs.ws.WSClient
@@ -72,9 +72,9 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
-  def candidatEmailProjection(mailjetEmailService: MailjetEmailService): CandidatEmailProjection =
+  def candidatEmailProjection(emailingService: EmailingService): CandidatEmailProjection =
     new CandidatEmailProjection(
-      mailjetEmailService = mailjetEmailService
+      emailingService = emailingService
     )
 
   @Provides
@@ -87,9 +87,9 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
-  def recruteurEmailProjection(mailjetEmailService: MailjetEmailService): RecruteurEmailProjection =
+  def recruteurEmailProjection(emailingService: EmailingService): RecruteurEmailProjection =
     new RecruteurEmailProjection(
-      mailjetEmailService = mailjetEmailService
+      emailingService = emailingService
     )
 
   @Provides

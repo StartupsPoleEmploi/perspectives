@@ -10,9 +10,9 @@ import fr.poleemploi.eventsourcing.infra.jackson.EventStoreObjectMapperBuilder
 import fr.poleemploi.eventsourcing.infra.postgresql.{PostgreSQLAppendOnlyStore, PostgresDriver => EventSourcingPostgresDriver}
 import fr.poleemploi.eventsourcing.{EventHandler, EventPublisher, LocalEventHandler, LocalEventPublisher}
 import fr.poleemploi.perspectives.domain.candidat.mrs.infra.{MRSValideesCSVLoader, MRSValideesPostgreSql}
+import fr.poleemploi.perspectives.domain.emailing.infra.mailjet.{MailjetContactAdapter, MailjetEmailAdapter}
 import fr.poleemploi.perspectives.infra.jackson.PerspectivesEventSourcingModule
 import fr.poleemploi.perspectives.infra.sql.PostgresDriver
-import fr.poleemploi.perspectives.projections.infra.MailjetEmailService
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
 import play.api.inject.ApplicationLifecycle
@@ -134,10 +134,18 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
-  def mailjetEmailService(wsClient: WSClient,
-                          webAppConfig: WebAppConfig): MailjetEmailService =
-    new MailjetEmailService(
+  def mailjetContactAdapter(database: Database): MailjetContactAdapter =
+    new MailjetContactAdapter(
+      driver = PostgresDriver,
+      database = database
+    )
+
+  @Provides
+  @Singleton
+  def mailjetEmailAdapter(wsClient: WSClient,
+                          webAppConfig: WebAppConfig): MailjetEmailAdapter =
+    new MailjetEmailAdapter(
       wsClient = wsClient,
-      mailjetConfig = webAppConfig.mailjetConfig
+      mailjetAdapterConfig = webAppConfig.mailjetAdapterConfig
     )
 }

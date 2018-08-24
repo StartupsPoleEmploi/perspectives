@@ -5,7 +5,9 @@ import fr.poleemploi.perspectives.domain.candidat.cv.CVService
 import fr.poleemploi.perspectives.domain.candidat.cv.infra.CVBddService
 import fr.poleemploi.perspectives.domain.candidat.mrs.ReferentielMRSCandidat
 import fr.poleemploi.perspectives.domain.candidat.mrs.infra.{MRSValideesCSVLoader, MRSValideesPostgreSql, ReferentielMRSCandidatLocal}
-import fr.poleemploi.perspectives.domain.conseiller.{AutorisationService, AutorisationServiceDefaut, ConseillerId}
+import fr.poleemploi.perspectives.domain.conseiller.{AutorisationService, ConseillerId}
+import fr.poleemploi.perspectives.domain.emailing.EmailingService
+import fr.poleemploi.perspectives.domain.emailing.infra.mailjet.{MailjetContactAdapter, MailjetEmailAdapter, MailjetEmailingService}
 import fr.poleemploi.perspectives.domain.metier.ReferentielMetier
 import fr.poleemploi.perspectives.domain.metier.infra.ReferentielMetierWS
 import fr.poleemploi.perspectives.infra.sql.PostgresDriver
@@ -18,16 +20,18 @@ class ServicesModule extends AbstractModule {
 
   @Provides
   @Singleton
-  def autorisationService(webAppConfig: WebAppConfig): AutorisationService = new AutorisationServiceDefaut(
-    admins = webAppConfig.admins.map(ConseillerId)
-  )
+  def autorisationService(webAppConfig: WebAppConfig): AutorisationService =
+    new AutorisationService(
+      admins = webAppConfig.admins.map(ConseillerId)
+    )
 
   @Provides
   @Singleton
-  def cvService(database: Database): CVService = new CVBddService(
-    database = database,
-    driver = PostgresDriver
-  )
+  def cvService(database: Database): CVService =
+    new CVBddService(
+      database = database,
+      driver = PostgresDriver
+    )
 
   @Provides
   @Singleton
@@ -47,5 +51,14 @@ class ServicesModule extends AbstractModule {
     new ReferentielMetierWS(
       wsClient = wsClient,
       referentielMetierWSConfig = webAppConfig.referentielMetierWSConfig
+    )
+
+  @Provides
+  @Singleton
+  def emailingService(mailjetContactAdapter: MailjetContactAdapter,
+                      mailjetEmailAdapter: MailjetEmailAdapter): EmailingService =
+    new MailjetEmailingService(
+      mailjetContactAdapter = mailjetContactAdapter,
+      mailjetEmailAdapter = mailjetEmailAdapter
     )
 }

@@ -5,6 +5,7 @@ import com.github.tminglei.slickpg.array.PgArrayExtensions
 import fr.poleemploi.perspectives.domain.authentification.infra.peconnect.PEConnectId
 import fr.poleemploi.perspectives.domain.candidat.cv.CVId
 import fr.poleemploi.perspectives.domain.candidat.{CandidatId, StatutDemandeurEmploi}
+import fr.poleemploi.perspectives.domain.emailing.infra.mailjet.MailjetContactId
 import fr.poleemploi.perspectives.domain.recruteur.{NumeroSiret, RecruteurId, TypeRecruteur}
 import fr.poleemploi.perspectives.domain.{Genre, Metier, NumeroTelephone, RayonRecherche}
 
@@ -37,6 +38,11 @@ trait PostgresDriver extends ExPostgresProfile
     implicit val peConnectIdColumnType: BaseColumnType[PEConnectId] = MappedColumnType.base[PEConnectId, String](
       { id => id.value },
       { s => PEConnectId(s) }
+    )
+
+    implicit val mailjetContactIdColumnType: BaseColumnType[MailjetContactId] = MappedColumnType.base[MailjetContactId, Int](
+      { id => id.value },
+      { s => MailjetContactId(s) }
     )
 
     implicit val typeRecruteurColumnType: BaseColumnType[TypeRecruteur] = MappedColumnType.base[TypeRecruteur, String](

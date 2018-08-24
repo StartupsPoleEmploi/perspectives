@@ -4,11 +4,11 @@ import java.nio.file.Paths
 
 import authentification.infra.peconnect.{PEConnectCandidatConfig, PEConnectRecruteurConfig}
 import fr.poleemploi.perspectives.domain.candidat.mrs.infra.ReferentielMRSCandidatConfig
+import fr.poleemploi.perspectives.domain.emailing.infra.mailjet.MailjetAdapterConfig
 import fr.poleemploi.perspectives.domain.metier.infra.ReferentielMetierWSConfig
 import fr.poleemploi.perspectives.infra.oauth.OAuthConfig
 import fr.poleemploi.perspectives.infra.{BuildInfo, Environnement}
 import fr.poleemploi.perspectives.projections.candidat.SlackCandidatConfig
-import fr.poleemploi.perspectives.projections.infra.MailjetConfig
 import play.api.Configuration
 
 class WebAppConfig(configuration: Configuration) {
@@ -45,11 +45,12 @@ class WebAppConfig(configuration: Configuration) {
     environnement = environnement
   )
 
-  val mailjetConfig: MailjetConfig = MailjetConfig(
+  val mailjetAdapterConfig: MailjetAdapterConfig = MailjetAdapterConfig(
     urlApi = configuration.get[String]("mailjet.urlApi"),
     senderAdress = configuration.get[String]("mailjet.sender"),
     apiKeyPublic = configuration.get[String]("mailjet.apiKey.public"),
-    apiKeyPrivate = configuration.get[String]("mailjet.apiKey.private")
+    apiKeyPrivate = configuration.get[String]("mailjet.apiKey.private"),
+    testeurs = configuration.getOptional[Seq[String]]("mailjet.testeurs").map(_.toList).getOrElse(Nil)
   )
 
   val referentielMetierWSConfig: ReferentielMetierWSConfig = ReferentielMetierWSConfig(
