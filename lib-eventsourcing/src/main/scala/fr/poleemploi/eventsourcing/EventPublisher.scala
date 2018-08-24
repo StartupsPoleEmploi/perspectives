@@ -90,7 +90,7 @@ class LocalEventHandler extends EventHandler {
             p.onEvent.apply(event) recoverWith {
               case t: Throwable => Future.successful(
                 if (eventSourcingLogger.isErrorEnabled) {
-                  eventSourcingLogger.error(s"Erreur lors de la publication de l'evenement $event par la projection ${p.getClass.getName}", t)
+                  eventSourcingLogger.error(s"Erreur lors du traitement de l'evenement $event par la projection ${p.getClass.getName}", t)
                 }
               )
             }
