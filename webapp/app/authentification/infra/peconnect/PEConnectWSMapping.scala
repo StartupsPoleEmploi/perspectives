@@ -6,6 +6,15 @@ import fr.poleemploi.perspectives.domain.candidat.{Adresse, StatutDemandeurEmplo
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsPath, Reads}
 
+private[peconnect] object PEConnectWSMapping {
+
+  def extractGender(gender: String): Genre = gender match {
+    case "male" => Genre.HOMME
+    case "female" => Genre.FEMME
+    case g@_ => throw new IllegalArgumentException(s"Gender inconnu : $g")
+  }
+}
+
 case class AccessTokenResponse(accessToken: String,
                                idToken: String,
                                nonce: String)
@@ -37,7 +46,7 @@ private[peconnect] case class CandidatUserInfos(sub: String,
       nom = familyName.toLowerCase,
       prenom = givenName.toLowerCase,
       email = email.toLowerCase,
-      genre = Gender.extractGender(gender)
+      genre = PEConnectWSMapping.extractGender(gender)
     )
 }
 
@@ -70,7 +79,7 @@ private[peconnect] case class RecruteurUserInfos(sub: String,
       nom = familyName.toLowerCase,
       prenom = givenName.toLowerCase,
       email = email.toLowerCase,
-      genre = Gender.extractGender(gender)
+      genre = PEConnectWSMapping.extractGender(gender)
     )
 }
 
@@ -83,15 +92,6 @@ object RecruteurUserInfos {
       (JsPath \ "email").read[String] and
       (JsPath \ "gender").read[String]
     ) (RecruteurUserInfos.apply _)
-}
-
-private[peconnect] object Gender {
-
-  def extractGender(gender: String): Genre = gender match {
-    case "male" => Genre.HOMME
-    case "female" => Genre.FEMME
-    case g@_ => throw new IllegalArgumentException(s"Gender inconnu : $g")
-  }
 }
 
 private[peconnect] case class CoordonneesCandidatReponse(adresse1: Option[String],
