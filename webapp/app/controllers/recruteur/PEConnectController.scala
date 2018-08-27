@@ -87,7 +87,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
         Redirect(routes.ProfilController.modificationProfil()).withSession(session)
       else
         Redirect(routes.ProfilController.modificationProfil()).withSession(session)
-          .flashing(request.flash.withRecruteurInscris)
+          .flashing(request.flash.withRecruteurInscrit)
     }).recover {
       case t: Throwable =>
         Logger.error("Erreur lors de l'authentification PEConnect", t)

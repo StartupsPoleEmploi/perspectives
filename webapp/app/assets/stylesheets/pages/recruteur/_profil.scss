@@ -14,22 +14,13 @@
     &-titre {
       @include make-col($grid-columns);
       padding-bottom: 0.5rem;
-      font-weight: lighter;
-      color: #334051;
-      font-size: 2em;
-      letter-spacing: -1px;
-      text-align: center;
+      @extend %titrePrincipal;
     }
 
     &-description {
       @include make-col($grid-columns);
       margin-bottom: 0.5rem;
-      color: #334051;
-      font-size: 1.2em;
-      letter-spacing: 1.12px;
-      font-weight: lighter;
-      line-height: 1.2;
-      text-align: center;
+      @extend %descriptionTitrePrincipal;
       max-width: 80%;
     }
   }

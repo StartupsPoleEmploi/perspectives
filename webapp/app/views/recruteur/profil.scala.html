@@ -24,6 +24,7 @@
     <section class="informations">
         @form(action = controllers.recruteur.routes.ProfilController.modifierProfil(), 'id -> "modificationProfilForm") {
         @CSRF.formField
+        <input type="hidden" name="nouveauRecruteur" value="@profilForm("nouveauRecruteur").value" />
         <dl class="informationProfil">
             <dt class="question">
                 <span class="question-puce @if(hasErrors("typeRecruteur")){question-puce--erreur}">1</span>

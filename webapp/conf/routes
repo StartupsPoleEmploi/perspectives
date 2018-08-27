@@ -1,5 +1,6 @@
 GET     /                                               controllers.candidat.LandingController.landing
 GET     /candidat/inscription                           controllers.candidat.InscriptionController.inscription
+GET     /candidat/confirmation-inscription              controllers.candidat.InscriptionController.confirmationInscription
 GET     /candidat/cv/telecharger                        controllers.candidat.CVController.telecharger
 GET     /candidat/peconnect/connexion                   controllers.candidat.PEConnectController.connexion
 GET     /candidat/peconnect/callback                    controllers.candidat.PEConnectController.connexionCallback
@@ -9,6 +10,7 @@ POST    /candidat/criteres-recherche                    controllers.candidat.Sai
 
 GET     /recruteur                                      controllers.recruteur.LandingController.landing
 GET     /recruteur/inscription                          controllers.recruteur.InscriptionController.inscription
+GET     /recruteur/confirmation-inscription             controllers.recruteur.InscriptionController.confirmationInscription
 GET     /recruteur/peconnect/connexion                  controllers.recruteur.PEConnectController.connexion
 GET     /recruteur/peconnect/callback                   controllers.recruteur.PEConnectController.connexionCallback
 GET     /recruteur/deconnexion                          controllers.recruteur.AuthentificationController.deconnexion

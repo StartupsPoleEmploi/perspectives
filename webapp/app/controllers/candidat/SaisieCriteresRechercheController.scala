@@ -26,10 +26,10 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
       def booleanToString(boolean: Boolean): String = if (boolean) "true" else "false"
 
-      if (messagesRequest.flash.candidatInscris) {
+      if (messagesRequest.flash.candidatInscrit) {
         Future.successful(
           Ok(views.html.candidat.saisieCriteresRecherche(
-            saisieCriteresRechercheForm = SaisieCriteresRechercheForm.emptyForm,
+            saisieCriteresRechercheForm = SaisieCriteresRechercheForm.nouveauCandidat,
             candidatDto = None,
             candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie)
           )
@@ -38,6 +38,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
         candidatQueryHandler.getCandidat(GetCandidatQuery(candidatAuthentifieRequest.candidatId)).map { candidatDto =>
           val filledForm = SaisieCriteresRechercheForm.form.fill(
             SaisieCriteresRechercheForm(
+              nouveauCandidat = false,
               rechercheMetierEvalue = candidatDto.rechercheMetierEvalue.map(booleanToString).getOrElse(""),
               rechercheAutreMetier = candidatDto.rechercheAutreMetier.map(booleanToString).getOrElse(""),
               metiersRecherches = candidatDto.metiersRecherches.map(_.value).toSet,
@@ -89,9 +90,14 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
                       .getOrElse(candidatCommandHandler.ajouterCV(buildAjouterCvCommand(candidatId, cv)))
                   ) getOrElse Future.successful(())
                 } yield ()).map(_ =>
-                  Redirect(routes.LandingController.landing()).flashing(
-                    messagesRequest.flash.withMessageSucces("Merci, vos criteres ont bien été pris en compte")
-                  ))
+                  if (saisieCriteresRechercheForm.nouveauCandidat) {
+                    Redirect(routes.InscriptionController.confirmationInscription())
+                  } else {
+                    Redirect(routes.LandingController.landing()).flashing(
+                      messagesRequest.flash.withMessageSucces("Merci, vos criteres ont bien été pris en compte")
+                    )
+                  }
+                )
               }
             )
           }).recoverWith {

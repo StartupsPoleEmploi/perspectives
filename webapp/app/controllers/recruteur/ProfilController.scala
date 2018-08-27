@@ -26,12 +26,13 @@ class ProfilController @Inject()(components: ControllerComponents,
       def booleanToString(boolean: Boolean): String = if (boolean) "true" else "false"
 
       val form: Future[Form[ProfilForm]] =
-        if (messagesRequest.flash.recruteurInscris) {
-          Future.successful(ProfilForm.emptyForm)
+        if (messagesRequest.flash.recruteurInscrit) {
+          Future.successful(ProfilForm.nouveauRecruteur)
         } else {
           recruteurQueryHandler.getRecruteur(GetRecruteurQuery(recruteurId = recruteurAuthentifieRequest.recruteurId)).map(recruteurDto =>
             ProfilForm.form.fill(
               ProfilForm(
+                nouveauRecruteur = false,
                 typeRecruteur = recruteurDto.typeRecruteur.map(_.value).getOrElse(""),
                 raisonSociale = recruteurDto.raisonSociale.getOrElse(""),
                 numeroSiret = recruteurDto.numeroSiret.map(_.value).getOrElse(""),
@@ -54,9 +55,8 @@ class ProfilController @Inject()(components: ControllerComponents,
           Future.successful(BadRequest(views.html.recruteur.profil(formWithErrors, recruteurAuthentifie = recruteurAuthentifieRequest.recruteurAuthentifie)))
         },
         inscriptionForm => {
-          val recruteurId = recruteurAuthentifieRequest.recruteurId
           val command = ModifierProfilCommand(
-            id = recruteurId,
+            id = recruteurAuthentifieRequest.recruteurId,
             raisonSociale = inscriptionForm.raisonSociale,
             typeRecruteur = TypeRecruteur.from(inscriptionForm.typeRecruteur).get,
             numeroSiret = NumeroSiret.from(inscriptionForm.numeroSiret).get,
@@ -65,10 +65,14 @@ class ProfilController @Inject()(components: ControllerComponents,
           )
           recruteurCommandHandler.modifierProfil(command)
             .map(_ =>
-              Redirect(routes.LandingController.landing()).flashing(
-                messagesRequest.flash.withMessageSucces("Merci, votre inscription a bien été prise en compte")
-              ))
-            .recoverWith {
+              if (inscriptionForm.nouveauRecruteur) {
+                Redirect(routes.InscriptionController.confirmationInscription())
+              } else {
+                Redirect(routes.LandingController.landing()).flashing(
+                  messagesRequest.flash.withMessageSucces("Votre profil a bien été modifié")
+                )
+              }
+            ).recoverWith {
               case t: Throwable =>
                 Logger.error("Erreur lors de l'enregistrement de l'inscription", t)
                 Future(Redirect(routes.LandingController.landing()).flashing(

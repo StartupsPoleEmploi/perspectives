@@ -1,0 +1,16 @@
+#confirmationInscriptionCandidat {
+  @include make-container();
+  @include make-container-max-widths();
+
+  text-align: center;
+
+  .confirmationTitre {
+    margin: 2rem;
+    @extend %titrePrincipal;
+  }
+
+  .confirmationTexte {
+    margin-bottom: 5rem;
+    @extend %descriptionTitrePrincipal;
+  }
+}

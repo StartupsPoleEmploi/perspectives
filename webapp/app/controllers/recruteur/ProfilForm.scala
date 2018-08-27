@@ -6,14 +6,14 @@ import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 
-case class ProfilForm(typeRecruteur: String,
+case class ProfilForm(nouveauRecruteur: Boolean,
+                      typeRecruteur: String,
                       raisonSociale: String,
                       numeroSiret: String,
                       numeroTelephone: String,
                       contactParCandidats: String)
 
 object ProfilForm {
-
 
   val numeroSiretConstraint: Constraint[String] = Constraint("constraint.numeroSiret")({
     text =>
@@ -26,6 +26,7 @@ object ProfilForm {
 
   val form = Form(
     mapping(
+      "nouveauRecruteur" -> boolean,
       "typeRecruteur" -> nonEmptyText,
       "raisonSociale" -> nonEmptyText,
       "numeroSiret" -> nonEmptyText.verifying(numeroSiretConstraint),
@@ -34,8 +35,9 @@ object ProfilForm {
     )(ProfilForm.apply)(ProfilForm.unapply)
   )
 
-  val emptyForm: Form[ProfilForm] = ProfilForm.form.fill(
+  val nouveauRecruteur: Form[ProfilForm] = ProfilForm.form.fill(
     ProfilForm(
+      nouveauRecruteur = true,
       typeRecruteur = "",
       raisonSociale = "",
       numeroSiret = "",

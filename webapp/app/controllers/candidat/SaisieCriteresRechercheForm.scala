@@ -5,7 +5,8 @@ import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 
-case class SaisieCriteresRechercheForm(numeroTelephone: String,
+case class SaisieCriteresRechercheForm(nouveauCandidat: Boolean,
+                                       numeroTelephone: String,
                                        rechercheMetierEvalue: String,
                                        rechercheAutreMetier: String,
                                        metiersRecherches: Set[String],
@@ -25,6 +26,7 @@ object SaisieCriteresRechercheForm {
 
   val form = Form(
     mapping(
+      "nouveauCandidat" -> boolean,
       "numeroTelephone" -> nonEmptyText.verifying(FormHelpers.numeroTelephoneConstraint),
       "rechercheMetierEvalue" -> nonEmptyText,
       "rechercheAutreMetier" -> nonEmptyText,
@@ -35,8 +37,9 @@ object SaisieCriteresRechercheForm {
     )(SaisieCriteresRechercheForm.apply)(SaisieCriteresRechercheForm.unapply) verifying metiersSelectionnes
   )
 
-  val emptyForm: Form[SaisieCriteresRechercheForm] = SaisieCriteresRechercheForm.form.fill(
+  val nouveauCandidat: Form[SaisieCriteresRechercheForm] = SaisieCriteresRechercheForm.form.fill(
     SaisieCriteresRechercheForm(
+      nouveauCandidat = true,
       rechercheMetierEvalue = "",
       rechercheAutreMetier = "",
       metiersRecherches = Set.empty,

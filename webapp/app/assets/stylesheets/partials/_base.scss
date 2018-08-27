@@ -11,3 +11,21 @@ body {
 .degradeGrisBlanc {
   background: $gradient-gris-blanc no-repeat no-repeat;
 }
+
+%titrePrincipal {
+  font-weight: lighter;
+  color: #334051;
+  font-size: 2em;
+  letter-spacing: -1px;
+  text-align: center;
+}
+
+%descriptionTitrePrincipal {
+  color: #334051;
+  font-size: 1.2em;
+  letter-spacing: 1.12px;
+  font-weight: lighter;
+  line-height: 1.2;
+  white-space: pre-line;
+  text-align: center;
+}

@@ -1,0 +1,16 @@
+@import conf.WebAppConfig
+@import fr.poleemploi.perspectives.domain.authentification.CandidatAuthentifie
+
+@(candidatAuthentifie: CandidatAuthentifie)(implicit flash: Flash, webAppConfig: WebAppConfig)
+
+@layout(candidatAuthentifie = Some(candidatAuthentifie), cssClassesBody = List("degradeGrisBlanc")) {
+    <div id="confirmationInscriptionCandidat">
+        <h2 class="confirmationTitre titrePrincipal">Vous avez bien été ajouté sur perspectives !</h2>
+        <p class="confirmationTexte descriptionTitrePrincipal">Les recruteurs auront désormais accès à votre profil et pourrons vous
+            contacter. De vôtre côté si vous le souhaitez vous pouvez à tout moment
+            revenir pour modifier vos critères.</p>
+        <a class="bouton bouton-actionPrincipale bouton--fondBleu" href="/">
+            Retour à la page d'accueil
+        </a>
+    </div>
+}

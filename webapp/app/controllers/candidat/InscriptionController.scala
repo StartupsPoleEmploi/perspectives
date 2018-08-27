@@ -2,7 +2,7 @@ package controllers.candidat
 
 import java.time.LocalDate
 
-import authentification.infra.play.SessionCandidatAuthentifie
+import authentification.infra.play.{CandidatAuthentifieAction, CandidatAuthentifieRequest, SessionCandidatAuthentifie}
 import conf.WebAppConfig
 import controllers.FlashMessages._
 import fr.poleemploi.perspectives.domain.authentification.CandidatAuthentifie
@@ -13,11 +13,13 @@ import javax.inject.{Inject, Singleton}
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 @Singleton
 class InscriptionController @Inject()(cc: ControllerComponents,
-                                      webappConfig: WebAppConfig,
+                                      implicit val webappConfig: WebAppConfig,
                                       candidatCommandHandler: CandidatCommandHandler,
+                                      candidatAuthentifieAction: CandidatAuthentifieAction,
                                       peConnectController: PEConnectController) extends AbstractController(cc) {
 
   def inscription(): Action[AnyContent] =
@@ -53,7 +55,11 @@ class InscriptionController @Inject()(cc: ControllerComponents,
       )
       Redirect(routes.SaisieCriteresRechercheController.saisieCriteresRecherche())
         .withSession(SessionCandidatAuthentifie.set(candidatAuthentifie, request.session))
-        .flashing(request.flash.withCandidatInscris)
+        .flashing(request.flash.withCandidatInscrit)
     }
+  }
+
+  def confirmationInscription(): Action[AnyContent] = candidatAuthentifieAction.async { implicit candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
+    Future(Ok(views.html.candidat.confirmationInscription(candidatAuthentifieRequest.candidatAuthentifie)))
   }
 }

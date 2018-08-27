@@ -94,7 +94,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
         Redirect(routes.SaisieCriteresRechercheController.saisieCriteresRecherche()).withSession(session)
       else
         Redirect(routes.SaisieCriteresRechercheController.saisieCriteresRecherche()).withSession(session)
-          .flashing(request.flash.withCandidatInscris)
+          .flashing(request.flash.withCandidatInscrit)
     }).recover {
       case t: PEConnectException =>
         Logger.error("Erreur lors du callback PEConnect", t)

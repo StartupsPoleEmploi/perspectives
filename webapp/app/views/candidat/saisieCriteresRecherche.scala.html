@@ -31,6 +31,7 @@
     <section class="criteres">
         @form(action = controllers.candidat.routes.SaisieCriteresRechercheController.modifierCriteresRecherche(), 'id -> "criteresRechercheForm", 'enctype -> "multipart/form-data") {
         @CSRF.formField
+        <input type="hidden" name="nouveauCandidat" value="@saisieCriteresRechercheForm("nouveauCandidat").value" />
         <dl class="critere">
             <dt class="question">
                 <span class="question-puce @if(hasErrors("rechercheMetierEvalue")){question-puce--erreur}">1</span>
