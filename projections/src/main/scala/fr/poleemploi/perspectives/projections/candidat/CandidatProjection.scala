@@ -83,18 +83,51 @@ class CandidatProjection(val driver: PostgresDriver,
   }
 
   val candidatTable = TableQuery[CandidatTable]
-
-  def getCandidat(query: GetCandidatQuery): Future[CandidatDto] = {
-    val select = candidatTable.filter(c => c.candidatId === query.candidatId)
-
-    database.run(select.result.head)
+  val getCandidatQuery = Compiled { candidatId: Rep[CandidatId] =>
+    candidatTable.filter(c => c.candidatId === candidatId)
+  }
+  val listerParDateInscriptionQuery = candidatTable.sortBy(_.dateInscription.desc)
+  val modifierProfilPEConnectQuery = Compiled { candidatId: Rep[CandidatId] =>
+    for {
+      c <- candidatTable if c.candidatId === candidatId
+    } yield (c.nom, c.prenom, c.email, c.genre)
+  }
+  val modifierCriteresRechercheQuery = Compiled { candidatId: Rep[CandidatId] =>
+    for {
+      c <- candidatTable if c.candidatId === candidatId
+    } yield (c.contacteParOrganismeFormation, c.contacteParAgenceInterim, c.rechercheMetierEvalue, c.rechercheAutreMetier, c.rayonRecherche, c.metiersRecherches, c.indexerMatching)
+  }
+  val modifierNumeroTelephoneQuery = Compiled { candidatId: Rep[CandidatId] =>
+    for {
+      c <- candidatTable if c.candidatId === candidatId
+    } yield c.numeroTelephone
+  }
+  val modifierStatutDemandeurEmploiQuery = Compiled { candidatId: Rep[CandidatId] =>
+    for {
+      c <- candidatTable if c.candidatId === candidatId
+    } yield c.statutDemandeurEmploi
+  }
+  val modifierCVQuery = Compiled { candidatId: Rep[CandidatId] =>
+    for {
+      c <- candidatTable if c.candidatId === candidatId
+    } yield c.cvId
+  }
+  val modifierAdresseQuery = Compiled { candidatId: Rep[CandidatId] =>
+    for {
+      c <- candidatTable if c.candidatId === candidatId
+    } yield (c.codePostal, c.commune)
+  }
+  val repriseEmploiQuery = Compiled { candidatId: Rep[CandidatId] =>
+    for {
+      c <- candidatTable if c.candidatId === candidatId
+    } yield (c.rechercheMetierEvalue, c.rechercheAutreMetier, c.metiersRecherches, c.indexerMatching)
   }
 
-  def listerParDateInscription: Future[List[CandidatDto]] = {
-    val select = candidatTable.sortBy(_.dateInscription.desc)
+  def getCandidat(query: GetCandidatQuery): Future[CandidatDto] =
+    database.run(getCandidatQuery(query.candidatId).result.head)
 
-    database.run(select.result).map(_.toList)
-  }
+  def listerParDateInscription: Future[List[CandidatDto]] =
+    database.run(listerParDateInscriptionQuery.result).map(_.toList)
 
   def rechercherCandidatParDateInscription(query: RechercherCandidatsParDateInscriptionQuery): Future[ResultatRechercheCandidatParDateInscription] =
     database.run(
@@ -198,25 +231,16 @@ class CandidatProjection(val driver: PostgresDriver,
         += (event.candidatId, event.nom, event.prenom, event.genre, event.email, event.date))
       .map(_ => ())
 
-  private def onProfilPEConnectModifieEvent(event: ProfilCandidatModifiePEConnectEvent): Future[Unit] = {
-    val query = for {
-      c <- candidatTable if c.candidatId === event.candidatId
-    } yield (c.nom, c.prenom, c.email, c.genre)
-    val updateAction = query.update((
+  private def onProfilPEConnectModifieEvent(event: ProfilCandidatModifiePEConnectEvent): Future[Unit] =
+    database.run(modifierProfilPEConnectQuery(event.candidatId).update((
       event.nom,
       event.prenom,
       event.email,
       event.genre
-    ))
+    ))).map(_ => ())
 
-    database.run(updateAction).map(_ => ())
-  }
-
-  private def onCriteresRechercheModifiesEvent(event: CriteresRechercheModifiesEvent): Future[Unit] = {
-    val query = for {
-      c <- candidatTable if c.candidatId === event.candidatId
-    } yield (c.contacteParOrganismeFormation, c.contacteParAgenceInterim, c.rechercheMetierEvalue, c.rechercheAutreMetier, c.rayonRecherche, c.metiersRecherches, c.indexerMatching)
-    val updateAction = query.update((
+  private def onCriteresRechercheModifiesEvent(event: CriteresRechercheModifiesEvent): Future[Unit] =
+    database.run(modifierCriteresRechercheQuery(event.candidatId).update((
       Some(event.etreContacteParOrganismeFormation),
       Some(event.etreContacteParAgenceInterim),
       Some(event.rechercheMetierEvalue),
@@ -224,79 +248,49 @@ class CandidatProjection(val driver: PostgresDriver,
       Some(event.rayonRecherche),
       event.metiersRecherches.toList,
       !candidatsTesteurs.contains(event.candidatId) && (event.rechercheMetierEvalue || event.rechercheAutreMetier)
-    ))
+    ))).map(_ => ())
 
-    database.run(updateAction).map(_ => ())
-  }
+  private def onNumeroTelephoneModifieEvent(event: NumeroTelephoneModifieEvent): Future[Unit] =
+    database.run(modifierNumeroTelephoneQuery(event.candidatId).update(
+      Some(event.numeroTelephone)
+    )).map(_ => ())
 
-  private def onNumeroTelephoneModifieEvent(event: NumeroTelephoneModifieEvent): Future[Unit] = {
-    val query = for {
-      c <- candidatTable if c.candidatId === event.candidatId
-    } yield c.numeroTelephone
-    val updateAction = query.update(Some(event.numeroTelephone))
+  private def onStatutDemandeurEmploiPEConnectModifieEvent(event: StatutDemandeurEmploiPEConnectModifieEvent): Future[Unit] =
+    database.run(modifierStatutDemandeurEmploiQuery(event.candidatId).update(
+      Some(event.statutDemandeurEmploi)
+    )).map(_ => ())
 
-    database.run(updateAction).map(_ => ())
-  }
+  private def onCVAjouteEvent(event: CVAjouteEvent): Future[Unit] =
+    database.run(modifierCVQuery(event.candidatId).update(
+      Some(event.cvId)
+    )).map(_ => ())
 
-  private def onStatutDemandeurEmploiPEConnectModifieEvent(event: StatutDemandeurEmploiPEConnectModifieEvent): Future[Unit] = {
-    val query = for {
-      c <- candidatTable if c.candidatId === event.candidatId
-    } yield c.statutDemandeurEmploi
-    val updateAction = query.update(Some(event.statutDemandeurEmploi))
+  private def onCVRemplaceEvent(event: CVRemplaceEvent): Future[Unit] =
+    database.run(modifierCVQuery(event.candidatId).update(
+      Some(event.cvId)
+    )).map(_ => ())
 
-    database.run(updateAction).map(_ => ())
-  }
-
-  private def onCVAjouteEvent(event: CVAjouteEvent): Future[Unit] = {
-    val query = for {
-      c <- candidatTable if c.candidatId === event.candidatId
-    } yield c.cvId
-    val updateAction = query.update(Some(event.cvId))
-
-    database.run(updateAction).map(_ => ())
-  }
-
-  private def onCVRemplaceEvent(event: CVRemplaceEvent): Future[Unit] = {
-    val query = for {
-      c <- candidatTable if c.candidatId === event.candidatId
-    } yield c.cvId
-    val updateAction = query.update(Some(event.cvId))
-
-    database.run(updateAction).map(_ => ())
-  }
-
-  private def onAdressePEConnectModifieeEvent(event: AdressePEConnectModifieeEvent): Future[Unit] = {
-    val query = for {
-      c <- candidatTable if c.candidatId === event.candidatId
-    } yield (c.codePostal, c.commune)
-    val updateAction = query.update(
+  private def onAdressePEConnectModifieeEvent(event: AdressePEConnectModifieeEvent): Future[Unit] =
+    database.run(modifierAdresseQuery(event.candidatId).update((
       Some(event.adresse.codePostal),
       Some(event.adresse.libelleCommune)
-    )
-
-    database.run(updateAction).map(_ => ())
-  }
+    ))).map(_ => ())
 
   private def onMRSAjouteeEvent(event: MRSAjouteeEvent): Future[Unit] =
-    //FIXME : est faite en une seule requete car la base va gérer le fait que deux evenements peuvent arriver très proches et que la projection n'attend pas la fin du traitement d'un event avant de passer à l'autre
-    database.run(sqlu"""
+  //FIXME : est faite en une seule requete car la base va gérer le fait que deux evenements peuvent arriver très proches et que la projection n'attend pas la fin du traitement d'un event avant de passer à l'autre
+    database.run(
+      sqlu"""
             UPDATE candidats
             SET metiers_evalues = ${event.metier}::text || metiers_evalues
             WHERE candidat_id = ${event.candidatId.value}
           """).map(_ => ())
 
-  private def onRepriseEmploiDeclareeParConseillerEvent(event: RepriseEmploiDeclareeParConseillerEvent): Future[Unit] = {
-    val query = for {
-      c <- candidatTable if c.candidatId === event.candidatId
-    } yield (c.rechercheMetierEvalue, c.rechercheAutreMetier, c.metiersRecherches, c.indexerMatching)
-    val updateAction = query.update(
+  private def onRepriseEmploiDeclareeParConseillerEvent(event: RepriseEmploiDeclareeParConseillerEvent): Future[Unit] =
+    database.run(repriseEmploiQuery(event.candidatId).update((
       Some(false),
       Some(false),
       Nil,
       false
-    )
-
-    database.run(updateAction).map(_ => ())
-  }
+    ))).map(_ => ())
 
 }

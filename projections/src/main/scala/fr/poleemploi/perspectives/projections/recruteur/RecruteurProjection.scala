@@ -57,18 +57,26 @@ class RecruteurProjection(val driver: PostgresDriver,
   }
 
   val recruteurTable = TableQuery[RecruteurTable]
-
-  def getRecruteur(query: GetRecruteurQuery): Future[RecruteurDto] = {
-    val select = recruteurTable.filter(r => r.recruteurId === query.recruteurId)
-
-    database.run(select.result.head)
+  val getRecruteurQuery = Compiled { recruteurId: Rep[RecruteurId] =>
+    recruteurTable.filter(r => r.recruteurId === recruteurId)
+  }
+  val listerParDateInscriptionQuery = recruteurTable.sortBy(_.dateInscription.desc)
+  val modifierProfilQuery = Compiled { recruteurId: Rep[RecruteurId] =>
+    for {
+      r <- recruteurTable if r.recruteurId === recruteurId
+    } yield (r.typeRecruteur, r.raisonSociale, r.numeroSiret, r.numeroTelephone, r.contactParCandidats)
+  }
+  val modifierProfilPEConnectQuery = Compiled { recruteurId: Rep[RecruteurId] =>
+    for {
+      r <- recruteurTable if r.recruteurId === recruteurId
+    } yield (r.nom, r.prenom, r.email, r.genre)
   }
 
-  def listerParDateInscription: Future[List[RecruteurDto]] = {
-    val select = recruteurTable.sortBy(_.dateInscription.desc)
+  def getRecruteur(query: GetRecruteurQuery): Future[RecruteurDto] =
+    database.run(getRecruteurQuery(query.recruteurId).result.head)
 
-    database.run(select.result).map(_.toList)
-  }
+  def listerParDateInscription: Future[List[RecruteurDto]] =
+    database.run(listerParDateInscriptionQuery.result).map(_.toList)
 
   private def onRecruteurInscrisEvent(event: RecruteurInscrisEvent): Future[Unit] =
     database
@@ -76,32 +84,20 @@ class RecruteurProjection(val driver: PostgresDriver,
         += (event.recruteurId, event.nom, event.prenom, event.genre, event.email, event.date))
       .map(_ => ())
 
-  private def onProfilModifieEvent(event: ProfilModifieEvent): Future[Unit] = {
-    val query = for {
-      r <- recruteurTable if r.recruteurId === event.recruteurId
-    } yield (r.typeRecruteur, r.raisonSociale, r.numeroSiret, r.numeroTelephone, r.contactParCandidats)
-    val updateAction = query.update((
+  private def onProfilModifieEvent(event: ProfilModifieEvent): Future[Unit] =
+    database.run(modifierProfilQuery(event.recruteurId).update((
       Some(event.typeRecruteur),
       Some(event.raisonSociale),
       Some(event.numeroSiret),
       Some(event.numeroTelephone),
       Some(event.contactParCandidats)
-    ))
+    ))).map(_ => ())
 
-    database.run(updateAction).map(_ => ())
-  }
-
-  private def onProfilPEConnectModifieEvent(event: ProfilRecruteurModifiePEConnectEvent): Future[Unit] = {
-    val query = for {
-      r <- recruteurTable if r.recruteurId === event.recruteurId
-    } yield (r.nom, r.prenom, r.email, r.genre)
-    val updateAction = query.update((
+  private def onProfilPEConnectModifieEvent(event: ProfilRecruteurModifiePEConnectEvent): Future[Unit] =
+    database.run(modifierProfilPEConnectQuery(event.recruteurId).update((
       event.nom,
       event.prenom,
       event.email,
       event.genre
-    ))
-
-    database.run(updateAction).map(_ => ())
-  }
+    ))).map(_ => ())
 }

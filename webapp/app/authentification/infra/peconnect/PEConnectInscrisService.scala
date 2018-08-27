@@ -32,6 +32,9 @@ class PEConnectInscrisService(val driver: PostgresDriver,
   }
 
   val candidatsPEConnectTable = TableQuery[CandidatPEConnectTable]
+  val findCandidatQuery = Compiled { peConnectId: Rep[PEConnectId] =>
+    candidatsPEConnectTable.filter(c => c.peConnectId === peConnectId)
+  }
 
   class RecruteurPEConnectTable(tag: Tag) extends Table[RecruteurPEConnect](tag, "recruteurs_peconnect") {
 
@@ -45,12 +48,12 @@ class PEConnectInscrisService(val driver: PostgresDriver,
   }
 
   val recruteursPEConnectTable = TableQuery[RecruteurPEConnectTable]
-
-  def findCandidat(peConnectId: PEConnectId): Future[Option[CandidatPEConnect]] = {
-    val query = candidatsPEConnectTable.filter(u => u.peConnectId === peConnectId)
-
-    database.run(query.result.headOption)
+  val findRecruteurQuery = Compiled { peConnectId: Rep[PEConnectId] =>
+    recruteursPEConnectTable.filter(r => r.peConnectId === peConnectId)
   }
+
+  def findCandidat(peConnectId: PEConnectId): Future[Option[CandidatPEConnect]] =
+    database.run(findCandidatQuery(peConnectId).result.headOption)
 
   def saveCandidat(candidat: CandidatPEConnect): Future[Unit] =
     database
@@ -58,11 +61,8 @@ class PEConnectInscrisService(val driver: PostgresDriver,
         += (candidat.candidatId, candidat.peConnectId))
       .map(_ => ())
 
-  def findRecruteur(peConnectId: PEConnectId): Future[Option[RecruteurPEConnect]] = {
-    val query = recruteursPEConnectTable.filter(u => u.peConnectId === peConnectId)
-
-    database.run(query.result.headOption)
-  }
+  def findRecruteur(peConnectId: PEConnectId): Future[Option[RecruteurPEConnect]] =
+    database.run(findRecruteurQuery(peConnectId).result.headOption)
 
   def saveRecruteur(recruteur: RecruteurPEConnect): Future[Unit] =
     database

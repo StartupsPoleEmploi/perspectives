@@ -27,6 +27,9 @@ class MailjetContactAdapter(val driver: PostgresDriver,
   }
 
   val candidatsMailjetTable = TableQuery[CandidatMailjetTable]
+  val getCandidatQuery = Compiled { candidatId: Rep[CandidatId] =>
+    candidatsMailjetTable.filter(c => c.candidatId === candidatId)
+  }
 
   class RecruteurMailjetTable(tag: Tag) extends Table[RecruteurMailjet](tag, "recruteurs_mailjet") {
 
@@ -42,12 +45,12 @@ class MailjetContactAdapter(val driver: PostgresDriver,
   }
 
   val recruteursMailjetTable = TableQuery[RecruteurMailjetTable]
-
-  def getCandidat(candidatId: CandidatId): Future[CandidatMailjet] = {
-    val query = candidatsMailjetTable.filter(c => c.candidatId === candidatId)
-
-    database.run(query.result.head)
+  val getRecruteurQuery = Compiled { recruteurId: Rep[RecruteurId] =>
+    recruteursMailjetTable.filter(r => r.recruteurId === recruteurId)
   }
+
+  def getCandidat(candidatId: CandidatId): Future[CandidatMailjet] =
+    database.run(getCandidatQuery(candidatId).result.head)
 
   def saveCandidat(candidat: CandidatMailjet): Future[Unit] =
     database
@@ -55,11 +58,8 @@ class MailjetContactAdapter(val driver: PostgresDriver,
         += (candidat.candidatId, candidat.mailjetContactId, candidat.email))
       .map(_ => ())
 
-  def findRecruteur(recruteurId: RecruteurId): Future[RecruteurMailjet] = {
-    val query = recruteursMailjetTable.filter(r => r.recruteurId === recruteurId)
-
-    database.run(query.result.head)
-  }
+  def getRecruteur(recruteurId: RecruteurId): Future[RecruteurMailjet] =
+    database.run(getRecruteurQuery(recruteurId).result.head)
 
   def saveRecruteur(recruteur: RecruteurMailjet): Future[Unit] =
     database

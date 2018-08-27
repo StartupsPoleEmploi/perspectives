@@ -19,7 +19,7 @@ class CandidatQueryHandler(candidatProjection: CandidatProjection,
     candidatProjection.listerParDateInscription
 
   def getCVParCandidat(query: GetCVParCandidatQuery): Future[CV] =
-    cvService.getCvByCandidat(query.candidatId)
+    cvService.getCVByCandidat(query.candidatId)
 
   def getCVPourRecruteurParCandidat(query: GetCVPourRecruteurParCandidatQuery): Future[CV] = {
     val autorisation = for {
@@ -34,7 +34,7 @@ class CandidatQueryHandler(candidatProjection: CandidatProjection,
       if (!estAutorise) throw UnauthorizedQueryException(s"Le recruteur ${query.recruteurId.value} de type ${recruteur.typeRecruteur} n'est pas autorisé à récupérer le cv du candidat ${query.candidatId.value}")
     }
 
-    autorisation.flatMap(_ => cvService.getCvByCandidat(query.candidatId))
+    autorisation.flatMap(_ => cvService.getCVByCandidat(query.candidatId))
   }
 
   def rechercheCandidatsParDateInscription(query: RechercherCandidatsParDateInscriptionQuery): Future[ResultatRechercheCandidatParDateInscription] =

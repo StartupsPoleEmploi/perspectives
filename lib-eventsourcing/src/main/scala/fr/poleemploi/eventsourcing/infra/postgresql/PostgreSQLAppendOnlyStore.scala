@@ -40,6 +40,12 @@ class PostgreSQLAppendOnlyStore(val driver: PostgresDriver,
 
   val uniqueConstraintViolationCode = "23505"
 
+  val readRecordsQuery = Compiled { streamName: Rep[String] =>
+    eventsTable
+      .filter(e => e.streamName === streamName)
+      .sortBy(_.streamVersion.asc)
+  }
+
   override def append(streamName: String,
                       expectedStreamVersion: Int,
                       datas: List[AppendOnlyData]): Future[Unit] = {
@@ -62,12 +68,8 @@ class PostgreSQLAppendOnlyStore(val driver: PostgresDriver,
       }
   }
 
-  override def readRecords(streamName: String): Future[List[AppendedEvent]] = {
-    val query = eventsTable
-      .filter(e => e.streamName === streamName)
-      .sortBy(_.streamVersion.asc)
-
-    database.run(query.result)
+  override def readRecords(streamName: String): Future[List[AppendedEvent]] =
+    database.run(readRecordsQuery(streamName).result)
       .map(_.toList.map(eventRecord =>
         AppendedEvent(
           streamName = eventRecord.streamName,
@@ -75,7 +77,6 @@ class PostgreSQLAppendOnlyStore(val driver: PostgresDriver,
           event = unserializeData(eventRecord.data.value)
         )
       ))
-  }
 
   private def getLastStreamVersion(streamName: String): Int = 0
 

@@ -21,7 +21,7 @@ trait CVService {
              typeMedia: String,
              path: Path): Future[Unit]
 
-  def findDetailsCvByCandidat(candidatId: CandidatId): Future[Option[DetailsCV]]
+  def findDetailsCVByCandidat(candidatId: CandidatId): Future[Option[DetailsCV]]
 
-  def getCvByCandidat(candidatId: CandidatId): Future[CV]
+  def getCVByCandidat(candidatId: CandidatId): Future[CV]
 }

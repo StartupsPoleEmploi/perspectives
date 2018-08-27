@@ -32,6 +32,9 @@ class MRSValideesPostgreSql(val driver: PostgresDriver,
   }
 
   val mrsValideesTable = TableQuery[MRSValideeTable]
+  val metiersEvaluesQuery = Compiled { peConnectId: Rep[PEConnectId] =>
+    mrsValideesTable.filter(m => m.peConnectId === peConnectId)
+  }
 
   def ajouter(mrsValidees: Stream[MRSValideeCandidatPEConnect]): Future[Int] = {
     val bulkInsert: DBIO[Option[Int]] = mrsValideesTable.map(
@@ -43,13 +46,10 @@ class MRSValideesPostgreSql(val driver: PostgresDriver,
     database.run(bulkInsert).map(_.getOrElse(0))
   }
 
-  def metiersEvaluesParCandidat(peConnectId: PEConnectId): Future[List[MRSValidee]] = {
-    val select = mrsValideesTable.filter(m => m.peConnectId === peConnectId)
-
-    database.run(select.result).map(_.toList.map(m => MRSValidee(
+  def metiersEvaluesParCandidat(peConnectId: PEConnectId): Future[List[MRSValidee]] =
+    database.run(metiersEvaluesQuery(peConnectId).result).map(_.toList.map(m => MRSValidee(
       codeMetier = m.codeMetier,
       dateEvaluation = m.dateEvaluation
     )))
-  }
 
 }

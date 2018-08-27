@@ -2,7 +2,7 @@ package conf
 
 import com.google.inject.{AbstractModule, Provides, Singleton}
 import fr.poleemploi.perspectives.domain.candidat.cv.CVService
-import fr.poleemploi.perspectives.domain.candidat.cv.infra.CVBddService
+import fr.poleemploi.perspectives.domain.candidat.cv.infra.PostgresqlCVService
 import fr.poleemploi.perspectives.domain.candidat.mrs.ReferentielMRSCandidat
 import fr.poleemploi.perspectives.domain.candidat.mrs.infra.{MRSValideesCSVLoader, MRSValideesPostgreSql, ReferentielMRSCandidatLocal}
 import fr.poleemploi.perspectives.domain.conseiller.{AutorisationService, ConseillerId}
@@ -28,7 +28,7 @@ class ServicesModule extends AbstractModule {
   @Provides
   @Singleton
   def cvService(database: Database): CVService =
-    new CVBddService(
+    new PostgresqlCVService(
       database = database,
       driver = PostgresDriver
     )
