@@ -7,5 +7,5 @@ case class CandidatInscrit(candidatId: CandidatId,
                            nom: String,
                            prenom: String,
                            email: String,
-                           genre: Option[Genre],
+                           genre: Genre,
                            cv: Boolean)

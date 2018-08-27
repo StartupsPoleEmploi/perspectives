@@ -30,7 +30,7 @@ class Candidat(override val id: CandidatId,
         nom = command.nom,
         prenom = command.prenom,
         email = command.email,
-        genre = Some(command.genre)
+        genre = command.genre
       ),
       AdressePEConnectModifieeEvent(
         candidatId = command.id,
@@ -225,7 +225,7 @@ private[candidat] case class CandidatState(estInscrit: Boolean = false,
         nom = Some(e.nom),
         prenom = Some(e.prenom),
         email = Some(e.email),
-        genre = e.genre,
+        genre = Some(e.genre),
         // Par défaut un candidat qui s'inscrit est disponible tant qu'il n'a pas renseigné ces critères, pour qu'on puisse déclarer sa reprise d'emploi s'il a été suivi manuellement
         rechercheEmploi = Some(true)
       )

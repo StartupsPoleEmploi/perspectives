@@ -25,7 +25,7 @@ class CandidatBuilder {
       nom = nom.getOrElse("planteur"),
       prenom = prenom.getOrElse("jacques"),
       email = email.getOrElse("jacques.planteur@mail.com"),
-      genre = genre.orElse(Some(Genre.HOMME))
+      genre = genre.getOrElse(Genre.HOMME)
     )
     this
   }

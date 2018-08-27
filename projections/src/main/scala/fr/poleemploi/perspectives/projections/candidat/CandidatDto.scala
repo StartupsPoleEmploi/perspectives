@@ -9,7 +9,7 @@ import fr.poleemploi.perspectives.domain.candidat.{CandidatId, StatutDemandeurEm
 case class CandidatDto(candidatId: CandidatId,
                        nom: String,
                        prenom: String,
-                       genre: Option[Genre],
+                       genre: Genre,
                        email: String,
                        statutDemandeurEmploi: Option[StatutDemandeurEmploi],
                        codePostal: Option[String],

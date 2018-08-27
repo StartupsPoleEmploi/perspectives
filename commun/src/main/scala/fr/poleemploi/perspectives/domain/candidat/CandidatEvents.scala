@@ -16,7 +16,7 @@ case class CandidatInscrisEvent(candidatId: CandidatId,
                                 nom: String,
                                 prenom: String,
                                 email: String,
-                                genre: Option[Genre]) extends CandidatEvent
+                                genre: Genre) extends CandidatEvent
 
 case class CriteresRechercheModifiesEvent(candidatId: CandidatId,
                                           rechercheMetierEvalue: Boolean,

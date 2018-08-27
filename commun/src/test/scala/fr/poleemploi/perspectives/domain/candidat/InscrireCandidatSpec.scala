@@ -66,7 +66,7 @@ class InscrireCandidatSpec extends WordSpec with MustMatchers with MockitoSugar 
       candidatInscrisEvent.nom mustBe commande.nom
       candidatInscrisEvent.prenom mustBe commande.prenom
       candidatInscrisEvent.email mustBe commande.email
-      candidatInscrisEvent.genre mustBe Some(commande.genre)
+      candidatInscrisEvent.genre mustBe commande.genre
     }
     "générer un événement contenant l'adresse" in {
       // Given

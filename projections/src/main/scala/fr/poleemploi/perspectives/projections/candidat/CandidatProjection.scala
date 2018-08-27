@@ -47,7 +47,7 @@ class CandidatProjection(val driver: PostgresDriver,
 
     def prenom = column[String]("prenom")
 
-    def genre = column[Option[Genre]]("genre")
+    def genre = column[Genre]("genre")
 
     def email = column[String]("email")
 
@@ -206,7 +206,7 @@ class CandidatProjection(val driver: PostgresDriver,
       event.nom,
       event.prenom,
       event.email,
-      Some(event.genre)
+      event.genre
     ))
 
     database.run(updateAction).map(_ => ())

@@ -1,7 +1,7 @@
 package fr.poleemploi.perspectives.domain.emailing.infra.mailjet
 
 import fr.poleemploi.perspectives.domain.emailing.{CandidatInscrit, EmailingService, MiseAJourCVCandidat, RecruteurInscrit}
-import play.api.libs.json.{JsString, Json}
+import play.api.libs.json.Json
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -19,7 +19,7 @@ class MailjetEmailingService(mailjetContactAdapter: MailjetContactAdapter,
           properties = Json.obj(
             "nom" -> candidatInscrit.nom.capitalize,
             "prénom" -> candidatInscrit.prenom.capitalize, // doit comporter l'accent
-            "genre" -> JsString(candidatInscrit.genre.map(MailjetMapping.serializeGenre).getOrElse("")),
+            "genre" -> MailjetMapping.serializeGenre(candidatInscrit.genre),
             "cv" -> false
           )
         )
