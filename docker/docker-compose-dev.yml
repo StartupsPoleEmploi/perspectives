@@ -27,6 +27,8 @@ services:
       - nginx
     env_file:
       - dev.env
+    volumes:
+      - export_poleemploi:/var/perspectives/export_poleemploi
     deploy:
       replicas: 1
     ports:
@@ -39,3 +41,4 @@ networks:
 
 volumes:
   postgresql:
+  export_poleemploi:
