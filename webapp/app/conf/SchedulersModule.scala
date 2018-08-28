@@ -2,7 +2,7 @@ package conf
 
 import akka.actor.ActorSystem
 import com.google.inject.{AbstractModule, Inject, Provides, Singleton}
-import fr.poleemploi.perspectives.domain.candidat.mrs.ReferentielMRSCandidat
+import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielMRSCandidat
 import net.codingwell.scalaguice.ScalaModule
 import schedulers.MRSValideesScheduler
 

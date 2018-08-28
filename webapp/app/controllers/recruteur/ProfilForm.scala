@@ -1,7 +1,7 @@
 package controllers.recruteur
 
 import controllers.FormHelpers
-import fr.poleemploi.perspectives.domain.recruteur.NumeroSiret
+import fr.poleemploi.perspectives.recruteur.NumeroSiret
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}

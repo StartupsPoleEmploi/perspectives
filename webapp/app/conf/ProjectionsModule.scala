@@ -2,10 +2,10 @@ package conf
 
 import com.google.inject.{AbstractModule, Inject, Provides, Singleton}
 import fr.poleemploi.eventsourcing.{EventHandler, EventPublisher}
-import fr.poleemploi.perspectives.domain.candidat.CandidatId
-import fr.poleemploi.perspectives.domain.candidat.cv.CVService
-import fr.poleemploi.perspectives.domain.emailing.EmailingService
-import fr.poleemploi.perspectives.infra.sql.PostgresDriver
+import fr.poleemploi.perspectives.candidat.CandidatId
+import fr.poleemploi.perspectives.candidat.cv.domain.CVService
+import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
+import fr.poleemploi.perspectives.emailing.domain.EmailingService
 import fr.poleemploi.perspectives.projections.candidat.{CandidatEmailProjection, CandidatNotificationSlackProjection, CandidatProjection, CandidatQueryHandler}
 import fr.poleemploi.perspectives.projections.recruteur.{RecruteurEmailProjection, RecruteurProjection, RecruteurQueryHandler}
 import net.codingwell.scalaguice.ScalaModule

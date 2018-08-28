@@ -1,9 +1,9 @@
 package fr.poleemploi.perspectives.projections.candidat
 
 import fr.poleemploi.cqrs.projection.{QueryHandler, UnauthorizedQueryException}
-import fr.poleemploi.perspectives.domain.candidat.cv.{CV, CVService}
-import fr.poleemploi.perspectives.domain.recruteur.TypeRecruteur
+import fr.poleemploi.perspectives.candidat.cv.domain.{CV, CVService}
 import fr.poleemploi.perspectives.projections.recruteur.{GetRecruteurQuery, RecruteurProjection}
+import fr.poleemploi.perspectives.recruteur.TypeRecruteur
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

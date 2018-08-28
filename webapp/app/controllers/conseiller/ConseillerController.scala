@@ -2,8 +2,8 @@ package controllers.conseiller
 
 import authentification.infra.play.{ConseillerAuthentifieAction, ConseillerAuthentifieRequest}
 import conf.WebAppConfig
-import fr.poleemploi.perspectives.domain.candidat.{CandidatCommandHandler, CandidatId, DeclarerRepriseEmploiParConseillerCommand}
-import fr.poleemploi.perspectives.domain.conseiller.{AutorisationService, RoleConseiller}
+import fr.poleemploi.perspectives.candidat.{CandidatCommandHandler, CandidatId, DeclarerRepriseEmploiParConseillerCommand}
+import fr.poleemploi.perspectives.conseiller.{AutorisationService, RoleConseiller}
 import fr.poleemploi.perspectives.projections.candidat.CandidatQueryHandler
 import fr.poleemploi.perspectives.projections.recruteur.RecruteurQueryHandler
 import javax.inject.Inject

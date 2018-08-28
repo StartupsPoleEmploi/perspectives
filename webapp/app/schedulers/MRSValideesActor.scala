@@ -3,7 +3,7 @@ package schedulers
 import akka.actor.Status.Failure
 import akka.actor.{Actor, ActorLogging, Props}
 import akka.pattern.pipe
-import fr.poleemploi.perspectives.domain.candidat.mrs.ReferentielMRSCandidat
+import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielMRSCandidat
 
 import scala.concurrent.ExecutionContextExecutor
 

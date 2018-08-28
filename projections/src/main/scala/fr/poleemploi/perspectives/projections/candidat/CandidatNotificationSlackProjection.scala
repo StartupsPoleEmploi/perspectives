@@ -2,8 +2,8 @@ package fr.poleemploi.perspectives.projections.candidat
 
 import fr.poleemploi.cqrs.projection.Projection
 import fr.poleemploi.eventsourcing.Event
-import fr.poleemploi.perspectives.domain.candidat.CandidatInscrisEvent
-import fr.poleemploi.perspectives.infra.Environnement
+import fr.poleemploi.perspectives.candidat.CandidatInscrisEvent
+import fr.poleemploi.perspectives.commun.infra.Environnement
 import play.api.libs.json.Json
 import play.api.libs.ws.WSClient
 

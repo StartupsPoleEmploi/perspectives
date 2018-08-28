@@ -1,9 +1,9 @@
 package fr.poleemploi.perspectives.projections.candidat
 
 import fr.poleemploi.cqrs.projection.Query
-import fr.poleemploi.perspectives.domain.candidat.CandidatId
-import fr.poleemploi.perspectives.domain.recruteur.{RecruteurId, TypeRecruteur}
-import fr.poleemploi.perspectives.domain.{Metier, SecteurActivite}
+import fr.poleemploi.perspectives.candidat.CandidatId
+import fr.poleemploi.perspectives.commun.domain.{Metier, SecteurActivite}
+import fr.poleemploi.perspectives.recruteur.{RecruteurId, TypeRecruteur}
 
 sealed trait CandidatQuery extends Query
 

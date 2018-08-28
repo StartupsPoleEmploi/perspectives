@@ -2,9 +2,9 @@ package fr.poleemploi.perspectives.projections.candidat
 
 import java.time.ZonedDateTime
 
-import fr.poleemploi.perspectives.domain._
-import fr.poleemploi.perspectives.domain.candidat.cv.CVId
-import fr.poleemploi.perspectives.domain.candidat.{CandidatId, StatutDemandeurEmploi}
+import fr.poleemploi.perspectives.candidat.cv.domain.CVId
+import fr.poleemploi.perspectives.candidat.{CandidatId, StatutDemandeurEmploi}
+import fr.poleemploi.perspectives.commun.domain._
 
 case class CandidatDto(candidatId: CandidatId,
                        nom: String,

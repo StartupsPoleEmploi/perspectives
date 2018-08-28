@@ -3,9 +3,9 @@ package controllers.recruteur
 import authentification.infra.play.{RecruteurAuthentifieAction, RecruteurAuthentifieRequest}
 import conf.WebAppConfig
 import controllers.FlashMessages._
-import fr.poleemploi.perspectives.domain.NumeroTelephone
-import fr.poleemploi.perspectives.domain.recruteur._
+import fr.poleemploi.perspectives.commun.domain.NumeroTelephone
 import fr.poleemploi.perspectives.projections.recruteur.{GetRecruteurQuery, RecruteurQueryHandler}
+import fr.poleemploi.perspectives.recruteur._
 import javax.inject.Inject
 import play.api.Logger
 import play.api.data.Form

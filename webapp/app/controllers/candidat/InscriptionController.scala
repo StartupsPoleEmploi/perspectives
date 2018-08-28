@@ -5,10 +5,10 @@ import java.time.LocalDate
 import authentification.infra.play.{CandidatAuthentifieAction, CandidatAuthentifieRequest, SessionCandidatAuthentifie}
 import conf.WebAppConfig
 import controllers.FlashMessages._
-import fr.poleemploi.perspectives.domain.authentification.CandidatAuthentifie
-import fr.poleemploi.perspectives.domain.candidat._
-import fr.poleemploi.perspectives.domain.candidat.mrs.MRSValidee
-import fr.poleemploi.perspectives.domain.{Genre, Metier}
+import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
+import fr.poleemploi.perspectives.candidat._
+import fr.poleemploi.perspectives.candidat.mrs.domain.MRSValidee
+import fr.poleemploi.perspectives.commun.domain.{Genre, Metier}
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
 

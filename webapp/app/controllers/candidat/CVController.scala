@@ -4,7 +4,7 @@ import akka.stream.scaladsl.Source
 import akka.util.ByteString
 import authentification.infra.play.{CandidatAuthentifieAction, CandidatAuthentifieRequest}
 import conf.WebAppConfig
-import fr.poleemploi.perspectives.domain.candidat.CandidatCommandHandler
+import fr.poleemploi.perspectives.candidat.CandidatCommandHandler
 import fr.poleemploi.perspectives.projections.candidat.{CandidatQueryHandler, GetCVParCandidatQuery}
 import javax.inject.Inject
 import play.api.http.HttpEntity

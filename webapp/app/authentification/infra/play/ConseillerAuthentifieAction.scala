@@ -1,7 +1,7 @@
 package authentification.infra.play
 
-import fr.poleemploi.perspectives.domain.authentification.ConseillerAuthentifie
-import fr.poleemploi.perspectives.domain.conseiller.ConseillerId
+import fr.poleemploi.perspectives.authentification.domain.ConseillerAuthentifie
+import fr.poleemploi.perspectives.conseiller.ConseillerId
 import javax.inject.Inject
 import play.api.http.Status.UNAUTHORIZED
 import play.api.mvc._

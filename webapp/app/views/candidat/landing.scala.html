@@ -1,6 +1,6 @@
 @import conf.WebAppConfig
-@import fr.poleemploi.perspectives.domain.SecteurActivite
-@import fr.poleemploi.perspectives.domain.authentification.CandidatAuthentifie
+@import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
+@import fr.poleemploi.perspectives.commun.domain.SecteurActivite
 
 @(candidatAuthentifie: Option[CandidatAuthentifie])(implicit flash: Flash, webAppConfig: WebAppConfig)
 

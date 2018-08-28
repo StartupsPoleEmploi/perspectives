@@ -1,6 +1,6 @@
 package controllers
 
-import fr.poleemploi.perspectives.domain.NumeroTelephone
+import fr.poleemploi.perspectives.commun.domain.NumeroTelephone
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 
 object FormHelpers {

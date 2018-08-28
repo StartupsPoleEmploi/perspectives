@@ -4,7 +4,7 @@ import java.util.Date
 
 import akka.actor.{ActorRef, ActorSystem}
 import com.typesafe.akka.extension.quartz.QuartzSchedulerExtension
-import fr.poleemploi.perspectives.domain.candidat.mrs.ReferentielMRSCandidat
+import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielMRSCandidat
 
 class MRSValideesScheduler(actorSystem: ActorSystem,
                            referentielMRSCandidat: ReferentielMRSCandidat) {

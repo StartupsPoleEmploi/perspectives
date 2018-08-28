@@ -6,11 +6,11 @@ import authentification.infra.play.{RecruteurAuthentifieAction, RecruteurAuthent
 import conf.WebAppConfig
 import controllers.FlashMessages._
 import fr.poleemploi.cqrs.projection.UnauthorizedQueryException
-import fr.poleemploi.perspectives.domain.candidat.CandidatId
-import fr.poleemploi.perspectives.domain.recruteur.RecruteurId
-import fr.poleemploi.perspectives.domain.{Metier, SecteurActivite}
+import fr.poleemploi.perspectives.candidat.CandidatId
+import fr.poleemploi.perspectives.commun.domain.{Metier, SecteurActivite}
 import fr.poleemploi.perspectives.projections.candidat._
 import fr.poleemploi.perspectives.projections.recruteur._
+import fr.poleemploi.perspectives.recruteur.RecruteurId
 import javax.inject.{Inject, Singleton}
 import play.api.http.HttpEntity
 import play.api.mvc.{Action, _}

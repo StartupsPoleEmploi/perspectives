@@ -3,9 +3,9 @@ package controllers.recruteur
 import authentification.infra.play.{RecruteurAuthentifieAction, RecruteurAuthentifieRequest, SessionRecruteurAuthentifie}
 import conf.WebAppConfig
 import controllers.FlashMessages._
-import fr.poleemploi.perspectives.domain.Genre
-import fr.poleemploi.perspectives.domain.authentification.RecruteurAuthentifie
-import fr.poleemploi.perspectives.domain.recruteur.{InscrireRecruteurCommand, RecruteurCommandHandler}
+import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
+import fr.poleemploi.perspectives.commun.domain.Genre
+import fr.poleemploi.perspectives.recruteur.{InscrireRecruteurCommand, RecruteurCommandHandler}
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
 

@@ -3,9 +3,9 @@ package controllers.candidat
 import authentification.infra.play.{CandidatAuthentifieAction, CandidatAuthentifieRequest}
 import conf.WebAppConfig
 import controllers.FlashMessages._
-import fr.poleemploi.perspectives.domain.candidat._
-import fr.poleemploi.perspectives.domain.candidat.cv.CVId
-import fr.poleemploi.perspectives.domain.{Metier, NumeroTelephone, RayonRecherche}
+import fr.poleemploi.perspectives.candidat._
+import fr.poleemploi.perspectives.candidat.cv.domain.CVId
+import fr.poleemploi.perspectives.commun.domain.{Metier, NumeroTelephone, RayonRecherche}
 import fr.poleemploi.perspectives.projections.candidat.{CandidatQueryHandler, GetCandidatQuery}
 import javax.inject.Inject
 import play.api.Logger

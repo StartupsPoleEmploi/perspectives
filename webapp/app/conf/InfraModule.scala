@@ -1,7 +1,7 @@
 package conf
 
 import akka.actor.ActorSystem
-import authentification.infra.peconnect.{OauthService, PEConnectFacade, PEConnectInscrisService, PEConnectWS}
+import authentification.infra.play.PlayOauthService
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.inject.name.Named
 import com.google.inject.{AbstractModule, Provider, Provides, Singleton}
@@ -9,10 +9,16 @@ import fr.poleemploi.eventsourcing.eventstore.{AppendOnlyStore, EventStore}
 import fr.poleemploi.eventsourcing.infra.jackson.EventStoreObjectMapperBuilder
 import fr.poleemploi.eventsourcing.infra.postgresql.{PostgreSQLAppendOnlyStore, PostgresDriver => EventSourcingPostgresDriver}
 import fr.poleemploi.eventsourcing.{EventHandler, EventPublisher, LocalEventHandler, LocalEventPublisher}
-import fr.poleemploi.perspectives.domain.candidat.mrs.infra.{MRSValideesCSVLoader, MRSValideesPostgreSql}
-import fr.poleemploi.perspectives.domain.emailing.infra.mailjet.{MailjetContactAdapter, MailjetEmailAdapter}
-import fr.poleemploi.perspectives.infra.jackson.PerspectivesEventSourcingModule
-import fr.poleemploi.perspectives.infra.sql.PostgresDriver
+import fr.poleemploi.perspectives.authentification.infra.PEConnectService
+import fr.poleemploi.perspectives.authentification.infra.sql.PEConnectSqlAdapter
+import fr.poleemploi.perspectives.authentification.infra.ws.PEConnectWSAdapter
+import fr.poleemploi.perspectives.candidat.mrs.infra.csv.MRSValideesCSVAdapter
+import fr.poleemploi.perspectives.candidat.mrs.infra.sql.MRSValideesSqlAdapter
+import fr.poleemploi.perspectives.commun.infra.jackson.PerspectivesEventSourcingModule
+import fr.poleemploi.perspectives.commun.infra.oauth.OauthService
+import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
+import fr.poleemploi.perspectives.emailing.infra.sql.MailjetSqlAdapter
+import fr.poleemploi.perspectives.emailing.infra.ws.MailjetEmailAdapter
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
 import play.api.inject.ApplicationLifecycle
@@ -88,12 +94,12 @@ class InfraModule extends AbstractModule with ScalaModule {
   @Provides
   @Singleton
   def oauthService(tokenProvider: TokenProvider): OauthService =
-    new OauthService(tokenProvider = tokenProvider)
+    new PlayOauthService(tokenProvider = tokenProvider)
 
   @Provides
   @Singleton
-  def peConnectInscrisService(database: Database): PEConnectInscrisService =
-    new PEConnectInscrisService(
+  def peConnectInscrisService(database: Database): PEConnectSqlAdapter =
+    new PEConnectSqlAdapter(
       driver = PostgresDriver,
       database = database
     )
@@ -101,8 +107,8 @@ class InfraModule extends AbstractModule with ScalaModule {
   @Provides
   @Singleton
   def peConnectWS(webAppConfig: WebAppConfig,
-                  wsClient: WSClient): PEConnectWS =
-    new PEConnectWS(
+                  wsClient: WSClient): PEConnectWSAdapter =
+    new PEConnectWSAdapter(
       wsClient = wsClient,
       peConnectRecruteurConfig = webAppConfig.peConnectRecruteurConfig,
       peConnectCandidatConfig = webAppConfig.peConnectCandidatConfig
@@ -111,9 +117,9 @@ class InfraModule extends AbstractModule with ScalaModule {
   @Provides
   @Singleton
   def peConnectFacade(oauthService: OauthService,
-                      peConnectWS: PEConnectWS,
-                      peConnectInscrisService: PEConnectInscrisService): PEConnectFacade =
-    new PEConnectFacade(
+                      peConnectWS: PEConnectWSAdapter,
+                      peConnectInscrisService: PEConnectSqlAdapter): PEConnectService =
+    new PEConnectService(
       oauthService = oauthService,
       peConnectWS = peConnectWS,
       peConnectInscrisService = peConnectInscrisService
@@ -121,21 +127,21 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
-  def mrsValideesCSVLoader(actorSystem: ActorSystem): MRSValideesCSVLoader =
-    new MRSValideesCSVLoader(actorSystem = actorSystem)
+  def mrsValideesCSVLoader(actorSystem: ActorSystem): MRSValideesCSVAdapter =
+    new MRSValideesCSVAdapter(actorSystem = actorSystem)
 
   @Provides
   @Singleton
-  def mrsValideesPostgreSql(database: Database): MRSValideesPostgreSql =
-    new MRSValideesPostgreSql(
+  def mrsValideesPostgreSql(database: Database): MRSValideesSqlAdapter =
+    new MRSValideesSqlAdapter(
       driver = PostgresDriver,
       database = database
     )
 
   @Provides
   @Singleton
-  def mailjetContactAdapter(database: Database): MailjetContactAdapter =
-    new MailjetContactAdapter(
+  def mailjetContactAdapter(database: Database): MailjetSqlAdapter =
+    new MailjetSqlAdapter(
       driver = PostgresDriver,
       database = database
     )
@@ -146,6 +152,6 @@ class InfraModule extends AbstractModule with ScalaModule {
                           webAppConfig: WebAppConfig): MailjetEmailAdapter =
     new MailjetEmailAdapter(
       wsClient = wsClient,
-      mailjetAdapterConfig = webAppConfig.mailjetAdapterConfig
+      mailjetAdapterConfig = webAppConfig.mailjetWSAdapterConfig
     )
 }

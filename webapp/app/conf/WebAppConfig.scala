@@ -2,12 +2,13 @@ package conf
 
 import java.nio.file.Paths
 
-import authentification.infra.peconnect.{PEConnectCandidatConfig, PEConnectRecruteurConfig}
-import fr.poleemploi.perspectives.domain.candidat.mrs.infra.ReferentielMRSCandidatConfig
-import fr.poleemploi.perspectives.domain.emailing.infra.mailjet.MailjetAdapterConfig
-import fr.poleemploi.perspectives.domain.metier.infra.ReferentielMetierWSConfig
-import fr.poleemploi.perspectives.infra.oauth.OAuthConfig
-import fr.poleemploi.perspectives.infra.{BuildInfo, Environnement}
+import fr.poleemploi.perspectives.authentification.infra.ws.PEConnectWSAdapterConfig
+import fr.poleemploi.perspectives.candidat.mrs.infra.ReferentielMRSCandidatConfig
+import fr.poleemploi.perspectives.commun.infra.Environnement
+import fr.poleemploi.perspectives.commun.infra.oauth.OauthConfig
+import fr.poleemploi.perspectives.emailing.infra.ws.MailjetWSAdapterConfig
+import fr.poleemploi.perspectives.infra.BuildInfo
+import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapterConfig
 import fr.poleemploi.perspectives.projections.candidat.SlackCandidatConfig
 import play.api.Configuration
 
@@ -21,20 +22,20 @@ class WebAppConfig(configuration: Configuration) {
   val environnement: Environnement = Environnement.from(configuration.get[String]("environnement"))
   val version: String = BuildInfo.version
 
-  val oauthConfig: OAuthConfig = OAuthConfig(
+  val oauthConfig: OauthConfig = OauthConfig(
     clientId = configuration.get[String]("peconnect.oauth2.clientId"),
     clientSecret = configuration.get[String]("peconnect.oauth2.clientSecret")
   )
 
-  val peConnectRecruteurConfig: PEConnectRecruteurConfig = PEConnectRecruteurConfig(
+  val peConnectRecruteurConfig: PEConnectWSAdapterConfig = PEConnectWSAdapterConfig(
     urlAuthentification = configuration.get[String]("peconnect.recruteur.urlAuthentification"),
-    urlApi = configuration.get[String]("peconnect.recruteur.urlApi"),
+    urlApi = configuration.get[String]("peconnect.urlApi"),
     oauthConfig = oauthConfig,
   )
 
-  val peConnectCandidatConfig: PEConnectCandidatConfig = PEConnectCandidatConfig(
+  val peConnectCandidatConfig: PEConnectWSAdapterConfig = PEConnectWSAdapterConfig(
     urlAuthentification = configuration.get[String]("peconnect.candidat.urlAuthentification"),
-    urlApi = configuration.get[String]("peconnect.candidat.urlApi"),
+    urlApi = configuration.get[String]("peconnect.urlApi"),
     oauthConfig = oauthConfig
   )
 
@@ -45,7 +46,7 @@ class WebAppConfig(configuration: Configuration) {
     environnement = environnement
   )
 
-  val mailjetAdapterConfig: MailjetAdapterConfig = MailjetAdapterConfig(
+  val mailjetWSAdapterConfig: MailjetWSAdapterConfig = MailjetWSAdapterConfig(
     urlApi = configuration.get[String]("mailjet.urlApi"),
     senderAdress = configuration.get[String]("mailjet.sender"),
     apiKeyPublic = configuration.get[String]("mailjet.apiKey.public"),
@@ -53,7 +54,7 @@ class WebAppConfig(configuration: Configuration) {
     testeurs = configuration.getOptional[Seq[String]]("mailjet.testeurs").map(_.toList).getOrElse(Nil)
   )
 
-  val referentielMetierWSConfig: ReferentielMetierWSConfig = ReferentielMetierWSConfig(
+  val referentielMetierWSAdapterConfig: ReferentielMetierWSAdapterConfig = ReferentielMetierWSAdapterConfig(
     urlAuthentification = configuration.get[String]("referentielMetier.urlAuthentification"),
     urlApi = configuration.get[String]("referentielMetier.urlApi"),
     oauthConfig = oauthConfig

@@ -2,8 +2,8 @@ package fr.poleemploi.perspectives.projections.recruteur
 
 import fr.poleemploi.cqrs.projection.Projection
 import fr.poleemploi.eventsourcing.Event
-import fr.poleemploi.perspectives.domain.emailing.{EmailingService, RecruteurInscrit}
-import fr.poleemploi.perspectives.domain.recruteur.RecruteurInscrisEvent
+import fr.poleemploi.perspectives.emailing.domain.{EmailingService, RecruteurInscrit}
+import fr.poleemploi.perspectives.recruteur.RecruteurInscrisEvent
 
 import scala.concurrent.Future
 

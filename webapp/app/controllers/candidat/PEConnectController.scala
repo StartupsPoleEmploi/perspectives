@@ -1,12 +1,14 @@
 package controllers.candidat
 
-import authentification.infra.peconnect._
 import authentification.infra.play._
 import conf.WebAppConfig
 import controllers.FlashMessages._
-import fr.poleemploi.perspectives.domain.authentification.CandidatAuthentifie
-import fr.poleemploi.perspectives.domain.candidat._
-import fr.poleemploi.perspectives.domain.candidat.mrs.{MRSValidee, ReferentielMRSCandidat}
+import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
+import fr.poleemploi.perspectives.authentification.infra.PEConnectService
+import fr.poleemploi.perspectives.authentification.infra.sql.CandidatPEConnect
+import fr.poleemploi.perspectives.authentification.infra.ws.{PEConnectCandidatInfos, PEConnectException, PEConnectWSAdapterConfig}
+import fr.poleemploi.perspectives.candidat._
+import fr.poleemploi.perspectives.candidat.mrs.domain.{MRSValidee, ReferentielMRSCandidat}
 import javax.inject.{Inject, Singleton}
 import play.api.Logger
 import play.api.mvc._
@@ -20,16 +22,16 @@ class PEConnectController @Inject()(cc: ControllerComponents,
                                     webAppConfig: WebAppConfig,
                                     candidatCommandHandler: CandidatCommandHandler,
                                     candidatPEConnectAction: CandidatPEConnectAction,
-                                    peConnectFacade: PEConnectFacade,
+                                    peConnectService: PEConnectService,
                                     referentielMRSCandidat: ReferentielMRSCandidat) extends AbstractController(cc) {
 
   val oauthTokenSessionStorage = new OauthTokenSessionStorage("candidat")
   val redirectUri: Call = routes.PEConnectController.connexionCallback()
-  val peConnectConfig: PEConnectCandidatConfig = webAppConfig.peConnectCandidatConfig
+  val peConnectConfig: PEConnectWSAdapterConfig = webAppConfig.peConnectCandidatConfig
 
   def inscription(): Action[AnyContent] = Action { request =>
     Redirect(routes.PEConnectController.connexion()).withSession(
-      oauthTokenSessionStorage.set(peConnectFacade.generateTokens(), request.session)
+      oauthTokenSessionStorage.set(peConnectService.generateTokens(), request.session)
     )
   }
 
@@ -63,18 +65,18 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       authorizationCode <- request.getQueryString("code").toRight("Aucun code d'autorisation n'a été retourné").toFuture
       stateCallback <- request.getQueryString("state").toRight("Aucun state n'a été retourné").toFuture
       oauthTokens <- oauthTokenSessionStorage.get(request.session).toRight("Aucun token n'a été stocké en session").toFuture
-      accessTokenResponse <- peConnectFacade.getAccessTokenCandidat(
+      accessTokenResponse <- peConnectService.getAccessTokenCandidat(
         authorizationCode = authorizationCode,
         redirectUri = redirectUri.absoluteURL()
       )
-      _ <- Either.cond(peConnectFacade.verifyState(oauthTokens, stateCallback), (), "La comparaison du state a échoué").toFuture
-      _ <- Either.cond(peConnectFacade.verifyNonce(oauthTokens, accessTokenResponse.nonce), (), "La comparaison du nonce a échoué").toFuture
-      _ <- peConnectFacade.validateAccessToken(accessTokenResponse)
-      infosCandidat <- peConnectFacade.getInfosCandidat(accessTokenResponse.accessToken)
-      adresse <- peConnectFacade.getAdresseCandidat(accessTokenResponse.accessToken)
-      statutDemandeurEmploi <- peConnectFacade.getStatutDemandeurEmploiCandidat(accessTokenResponse.accessToken)
+      _ <- Either.cond(peConnectService.verifyState(oauthTokens, stateCallback), (), "La comparaison du state a échoué").toFuture
+      _ <- Either.cond(peConnectService.verifyNonce(oauthTokens, accessTokenResponse.nonce), (), "La comparaison du nonce a échoué").toFuture
+      _ <- peConnectService.validateAccessToken(accessTokenResponse)
+      infosCandidat <- peConnectService.getInfosCandidat(accessTokenResponse.accessToken)
+      adresse <- peConnectService.getAdresseCandidat(accessTokenResponse.accessToken)
+      statutDemandeurEmploi <- peConnectService.getStatutDemandeurEmploiCandidat(accessTokenResponse.accessToken)
       mrsValidees <- referentielMRSCandidat.metiersValidesParCandidat(infosCandidat.peConnectId)
-      optCandidat <- peConnectFacade.findCandidat(infosCandidat.peConnectId)
+      optCandidat <- peConnectService.findCandidat(infosCandidat.peConnectId)
       candidatId <- optCandidat.map(c => mettreAJour(c, infosCandidat, adresse, statutDemandeurEmploi))
         .getOrElse(inscrire(
           peConnectCandidatInfos = infosCandidat,
@@ -112,7 +114,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
   }
 
   def deconnexion(): Action[AnyContent] = candidatPEConnectAction.async { implicit request: CandidatPEConnectRequest[AnyContent] =>
-    peConnectFacade.deconnexionCandidat(
+    peConnectService.deconnexionCandidat(
       idToken = request.idTokenPEConnect,
       redirectUri = routes.LandingController.landing().absoluteURL()
     ).map { _ =>
@@ -146,7 +148,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       mrsValidees = mrsValidees
     )
     candidatCommandHandler.inscrire(command)
-      .flatMap(_ => peConnectFacade.saveCandidat(CandidatPEConnect(
+      .flatMap(_ => peConnectService.saveCandidat(CandidatPEConnect(
         candidatId = candidatId,
         peConnectId = peConnectCandidatInfos.peConnectId
       )))
