@@ -30,7 +30,7 @@ case class CandidatDto(candidatId: CandidatId,
 
   /**
     * Ne se base pas sur statutDemandeurEmploi car il n'est pas forcément actualisé tout de suite
-    * par le candidat et cela implique une reconnexion au service via PEConnect.
+    * par le candidat et cela implique une reconnexion du candidat via un service externe.
     */
   def rechercheEmploi: Boolean =
     (rechercheMetierEvalue.isEmpty && rechercheAutreMetier.isEmpty) ||

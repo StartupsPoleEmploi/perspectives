@@ -8,7 +8,7 @@ import fr.poleemploi.perspectives.authentification.infra.PEConnectService
 import fr.poleemploi.perspectives.authentification.infra.sql.RecruteurPEConnect
 import fr.poleemploi.perspectives.authentification.infra.ws.{PEConnectRecruteurInfos, PEConnectWSAdapterConfig}
 import fr.poleemploi.perspectives.projections.recruteur.{GetRecruteurQuery, RecruteurQueryHandler}
-import fr.poleemploi.perspectives.recruteur.{InscrireRecruteurCommand, ModifierProfilPEConnectCommand, RecruteurCommandHandler, RecruteurId}
+import fr.poleemploi.perspectives.recruteur.{InscrireRecruteurCommand, ModifierProfilGerantCommand, RecruteurCommandHandler, RecruteurId}
 import javax.inject.{Inject, Singleton}
 import play.api.Logger
 import play.api.mvc._
@@ -139,13 +139,13 @@ class PEConnectController @Inject()(cc: ControllerComponents,
   private def mettreAJour(recruteurPEConnect: RecruteurPEConnect,
                           peConnectRecruteurInfos: PEConnectRecruteurInfos): Future[RecruteurId] = {
     val recruteurId = recruteurPEConnect.recruteurId
-    val command = ModifierProfilPEConnectCommand(
+    val command = ModifierProfilGerantCommand(
       id = recruteurId,
       nom = peConnectRecruteurInfos.nom,
       prenom = peConnectRecruteurInfos.prenom,
       email = peConnectRecruteurInfos.email,
       genre = peConnectRecruteurInfos.genre
     )
-    recruteurCommandHandler.modifierProfilPEConnect(command).map(_ => recruteurId)
+    recruteurCommandHandler.modifierProfilGerant(command).map(_ => recruteurId)
   }
 }

@@ -7,8 +7,8 @@ object FlashMessages {
   val keyMessageSucces = "message_succes"
   val keyMessageErreur = "message_erreur"
 
-  val keyInscriptionRecruteur = "recruteur_inscris"
-  val keyInscriptionCandidat = "candidat_inscris"
+  val keyInscriptionRecruteur = "recruteur_inscrit"
+  val keyInscriptionCandidat = "candidat_inscrit"
 
   implicit class FlashMessage[T](f: Flash) {
 

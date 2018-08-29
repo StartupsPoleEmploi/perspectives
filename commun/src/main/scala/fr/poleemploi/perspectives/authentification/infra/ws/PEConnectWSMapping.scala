@@ -11,7 +11,7 @@ private[ws] object PEConnectWSMapping {
   def extractGender(gender: String): Genre = gender match {
     case "male" => Genre.HOMME
     case "female" => Genre.FEMME
-    case g@_ => throw new IllegalArgumentException(s"Gender inconnu : $g")
+    case g@_ => throw new IllegalArgumentException(s"Gender non géré : $g")
   }
 }
 
@@ -34,11 +34,17 @@ case class PEConnectCandidatInfos(peConnectId: PEConnectId,
                                   email: String,
                                   genre: Genre)
 
-private[ws] case class CandidatUserInfos(sub: String,
-                                                familyName: String,
-                                                givenName: String,
-                                                email: String,
-                                                gender: String) {
+case class PEConnectRecruteurInfos(peConnectId: PEConnectId,
+                                   nom: String,
+                                   prenom: String,
+                                   email: String,
+                                   genre: Genre)
+
+private[ws] case class UserInfosResponse(sub: String,
+                                         familyName: String,
+                                         givenName: String,
+                                         email: String,
+                                         gender: String) {
 
   def toPEConnectCandidatInfos: PEConnectCandidatInfos =
     PEConnectCandidatInfos(
@@ -48,30 +54,6 @@ private[ws] case class CandidatUserInfos(sub: String,
       email = email.toLowerCase,
       genre = PEConnectWSMapping.extractGender(gender)
     )
-}
-
-object CandidatUserInfos {
-
-  implicit val candidatUserInfosReads: Reads[CandidatUserInfos] = (
-    (JsPath \ "sub").read[String] and
-      (JsPath \ "family_name").read[String] and
-      (JsPath \ "given_name").read[String] and
-      (JsPath \ "email").read[String] and
-      (JsPath \ "gender").read[String]
-    ) (CandidatUserInfos.apply _)
-}
-
-case class PEConnectRecruteurInfos(peConnectId: PEConnectId,
-                                   nom: String,
-                                   prenom: String,
-                                   email: String,
-                                   genre: Genre)
-
-private[ws] case class RecruteurUserInfos(sub: String,
-                                                 familyName: String,
-                                                 givenName: String,
-                                                 email: String,
-                                                 gender: String) {
 
   def toPEConnectRecruteurInfos: PEConnectRecruteurInfos =
     PEConnectRecruteurInfos(
@@ -83,26 +65,26 @@ private[ws] case class RecruteurUserInfos(sub: String,
     )
 }
 
-object RecruteurUserInfos {
+object UserInfosResponse {
 
-  implicit val recruteurUserInfosReads: Reads[RecruteurUserInfos] = (
+  implicit val userInfoResponseReads: Reads[UserInfosResponse] = (
     (JsPath \ "sub").read[String] and
       (JsPath \ "family_name").read[String] and
       (JsPath \ "given_name").read[String] and
       (JsPath \ "email").read[String] and
       (JsPath \ "gender").read[String]
-    ) (RecruteurUserInfos.apply _)
+    ) (UserInfosResponse.apply _)
 }
 
 private[ws] case class CoordonneesCandidatReponse(adresse1: Option[String],
-                                                         adresse2: Option[String],
-                                                         adresse3: Option[String],
-                                                         adresse4: String,
-                                                         codePostal: String,
-                                                         codeINSEE: String,
-                                                         libelleCommune: String,
-                                                         codePays: String,
-                                                         libellePays: String) {
+                                                  adresse2: Option[String],
+                                                  adresse3: Option[String],
+                                                  adresse4: String,
+                                                  codePostal: String,
+                                                  codeINSEE: String,
+                                                  libelleCommune: String,
+                                                  codePays: String,
+                                                  libellePays: String) {
 
   def toAdresse: Adresse =
     Adresse(
@@ -129,7 +111,7 @@ private[ws] object CoordonneesCandidatReponse {
 }
 
 private[ws] case class StatutCandidatReponse(codeStatutIndividu: String,
-                                                    libelleStatutIndividu: String) {
+                                             libelleStatutIndividu: String) {
 
   def toStatutDemandeurEmploi: StatutDemandeurEmploi =
     codeStatutIndividu match {

@@ -25,18 +25,18 @@ class Candidat(override val id: CandidatId,
     }
 
     List(
-      CandidatInscrisEvent(
+      CandidatInscritEvent(
         candidatId = command.id,
         nom = command.nom,
         prenom = command.prenom,
         email = command.email,
         genre = command.genre
       ),
-      AdressePEConnectModifieeEvent(
+      AdresseModifieeEvent(
         candidatId = command.id,
         adresse = command.adresse
       ),
-      StatutDemandeurEmploiPEConnectModifieEvent(
+      StatutDemandeurEmploiModifieEvent(
         candidatId = command.id,
         statutDemandeurEmploi = command.statutDemandeurEmploi
       )
@@ -83,17 +83,17 @@ class Candidat(override val id: CandidatId,
     List(criteresRechercheModifiesEvent, numeroTelephoneModifieEvent).flatten
   }
 
-  def modifierProfilPEConnect(command: ModifierProfilPEConnectCommand): List[Event] = {
+  def modifierProfil(command: ModifierProfilCommand): List[Event] = {
     if (!state.estInscrit) {
       throw new RuntimeException(s"Le candidat ${id.value} n'est pas encore inscrit")
     }
 
-    val profilCandidatModifiePEConnectEvent =
+    val profilCandidatModifieEvent =
       if (!state.nom.contains(command.nom) ||
         !state.prenom.contains(command.prenom) ||
         !state.email.contains(command.email) ||
         !state.genre.contains(command.genre)) {
-        Some(ProfilCandidatModifiePEConnectEvent(
+        Some(ProfilCandidatModifieEvent(
           candidatId = command.id,
           nom = command.nom,
           prenom = command.prenom,
@@ -102,23 +102,23 @@ class Candidat(override val id: CandidatId,
         ))
       } else None
 
-    val adressePEConnectModifieeEvent =
+    val adresseModifieeEvent =
       if (!state.adresse.contains(command.adresse)) {
-        Some(AdressePEConnectModifieeEvent(
+        Some(AdresseModifieeEvent(
           candidatId = command.id,
           adresse = command.adresse
         ))
       } else None
 
-    val statutDemandeurEmploiPEConnectModifieEvent =
+    val statutDemandeurEmploiModifieEvent =
       if (!state.statutDemandeurEmploi.contains(command.statutDemandeurEmploi)) {
-        Some(StatutDemandeurEmploiPEConnectModifieEvent(
+        Some(StatutDemandeurEmploiModifieEvent(
           candidatId = command.id,
           statutDemandeurEmploi = command.statutDemandeurEmploi
         ))
       } else None
 
-    List(profilCandidatModifiePEConnectEvent, adressePEConnectModifieeEvent, statutDemandeurEmploiPEConnectModifieEvent).flatten
+    List(profilCandidatModifieEvent, adresseModifieeEvent, statutDemandeurEmploiModifieEvent).flatten
   }
 
   def ajouterCV(command: AjouterCVCommand,
@@ -219,7 +219,7 @@ private[candidat] case class CandidatState(estInscrit: Boolean = false,
                                            rechercheEmploi: Option[Boolean] = None) {
 
   def apply(event: Event): CandidatState = event match {
-    case e: CandidatInscrisEvent =>
+    case e: CandidatInscritEvent =>
       copy(
         estInscrit = true,
         nom = Some(e.nom),
@@ -229,7 +229,7 @@ private[candidat] case class CandidatState(estInscrit: Boolean = false,
         // Par défaut un candidat qui s'inscrit est disponible tant qu'il n'a pas renseigné ces critères, pour qu'on puisse déclarer sa reprise d'emploi s'il a été suivi manuellement
         rechercheEmploi = Some(true)
       )
-    case e: ProfilCandidatModifiePEConnectEvent =>
+    case e: ProfilCandidatModifieEvent =>
       copy(
         nom = Some(e.nom),
         prenom = Some(e.prenom),
@@ -248,9 +248,9 @@ private[candidat] case class CandidatState(estInscrit: Boolean = false,
       )
     case e: NumeroTelephoneModifieEvent =>
       copy(numeroTelephone = Some(e.numeroTelephone))
-    case e: AdressePEConnectModifieeEvent =>
+    case e: AdresseModifieeEvent =>
       copy(adresse = Some(e.adresse))
-    case e: StatutDemandeurEmploiPEConnectModifieEvent =>
+    case e: StatutDemandeurEmploiModifieEvent =>
       copy(statutDemandeurEmploi = Some(e.statutDemandeurEmploi))
     case e: CVAjouteEvent =>
       copy(cvId = Some(e.cvId))

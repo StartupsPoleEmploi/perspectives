@@ -27,13 +27,13 @@ case class ModifierCriteresRechercheCommand(id: CandidatId,
                                             rayonRecherche: RayonRecherche,
                                             numeroTelephone: NumeroTelephone) extends Command
 
-case class ModifierProfilPEConnectCommand(id: CandidatId,
-                                          nom: String,
-                                          prenom: String,
-                                          email: String,
-                                          genre: Genre,
-                                          adresse: Adresse,
-                                          statutDemandeurEmploi: StatutDemandeurEmploi) extends Command
+case class ModifierProfilCommand(id: CandidatId,
+                                 nom: String,
+                                 prenom: String,
+                                 email: String,
+                                 genre: Genre,
+                                 adresse: Adresse,
+                                 statutDemandeurEmploi: StatutDemandeurEmploi) extends Command
 
 case class AjouterCVCommand(id: CandidatId,
                             nomFichier: String,

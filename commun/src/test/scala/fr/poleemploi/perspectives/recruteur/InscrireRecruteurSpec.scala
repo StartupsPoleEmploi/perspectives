@@ -49,12 +49,12 @@ class InscrireRecruteurSpec extends WordSpec with MustMatchers with MockitoSugar
       val results = recruteur.inscrire(inscrireCommande)
 
       // Then
-      val event = results.head.asInstanceOf[RecruteurInscrisEvent]
-      event.recruteurId mustBe inscrireCommande.id
-      event.nom mustBe inscrireCommande.nom
-      event.prenom mustBe inscrireCommande.prenom
-      event.email mustBe inscrireCommande.email
-      event.genre mustBe inscrireCommande.genre
+      val recruteurInscritEvent = results.head.asInstanceOf[RecruteurInscritEvent]
+      recruteurInscritEvent.recruteurId mustBe inscrireCommande.id
+      recruteurInscritEvent.nom mustBe inscrireCommande.nom
+      recruteurInscritEvent.prenom mustBe inscrireCommande.prenom
+      recruteurInscritEvent.email mustBe inscrireCommande.email
+      recruteurInscritEvent.genre mustBe inscrireCommande.genre
     }
   }
 

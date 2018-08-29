@@ -160,7 +160,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
                           adresse: Adresse,
                           statutDemandeurEmploi: StatutDemandeurEmploi): Future[CandidatId] = {
     val candidatId = candidatPEConnect.candidatId
-    val command = ModifierProfilPEConnectCommand(
+    val command = ModifierProfilCommand(
       id = candidatId,
       nom = peConnectCandidatInfos.nom,
       prenom = peConnectCandidatInfos.prenom,

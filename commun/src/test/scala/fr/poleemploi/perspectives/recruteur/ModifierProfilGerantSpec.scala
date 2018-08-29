@@ -4,12 +4,12 @@ import fr.poleemploi.perspectives.commun.domain.Genre
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, MustMatchers, WordSpec}
 
-class ModifierProfilRecruteurPEConnectSpec extends WordSpec
+class ModifierProfilGerantSpec extends WordSpec
   with MustMatchers with MockitoSugar with BeforeAndAfter {
 
   val recruteurBuilder = new RecruteurBuilder
 
-  val commande: ModifierProfilPEConnectCommand = ModifierProfilPEConnectCommand(
+  val commande: ModifierProfilGerantCommand = ModifierProfilGerantCommand(
     id = recruteurBuilder.recruteurId,
     nom = "nom",
     prenom = "prenom",
@@ -17,14 +17,14 @@ class ModifierProfilRecruteurPEConnectSpec extends WordSpec
     genre = Genre.HOMME
   )
 
-  "modifierProfilPEConnect" should {
+  "modifierProfilGerant" should {
     "renvoyer une erreur lorsque le candidat n'est pas inscrit" in {
       // Given
       val recruteur = recruteurBuilder.build
 
       // When
       val ex = intercept[RuntimeException] {
-        recruteur.modifierProfilPEConnect(commande)
+        recruteur.modifierProfilGerant(commande)
       }
 
       // Then
@@ -40,7 +40,7 @@ class ModifierProfilRecruteurPEConnectSpec extends WordSpec
       ).build
 
       // When
-      val result = recruteur.modifierProfilPEConnect(commande)
+      val result = recruteur.modifierProfilGerant(commande)
 
       // Then
       result.isEmpty mustBe true
@@ -50,7 +50,7 @@ class ModifierProfilRecruteurPEConnectSpec extends WordSpec
       val recruteur = recruteurBuilder.avecInscription().build
 
       // When
-      val result = recruteur.modifierProfilPEConnect(commande)
+      val result = recruteur.modifierProfilGerant(commande)
 
       // Then
       result.size mustBe 1
@@ -62,7 +62,7 @@ class ModifierProfilRecruteurPEConnectSpec extends WordSpec
         .build
 
       // When
-      val result = recruteur.modifierProfilPEConnect(commande.copy(
+      val result = recruteur.modifierProfilGerant(commande.copy(
         nom = "nouveau nom"
       ))
 
@@ -76,7 +76,7 @@ class ModifierProfilRecruteurPEConnectSpec extends WordSpec
         .build
 
       // When
-      val result = recruteur.modifierProfilPEConnect(commande.copy(
+      val result = recruteur.modifierProfilGerant(commande.copy(
         prenom = "nouveau prénom"
       ))
 
@@ -90,7 +90,7 @@ class ModifierProfilRecruteurPEConnectSpec extends WordSpec
         .build
 
       // When
-      val result = recruteur.modifierProfilPEConnect(commande.copy(
+      val result = recruteur.modifierProfilGerant(commande.copy(
         email = "nouvel-email@domain.fr"
       ))
 
@@ -104,7 +104,7 @@ class ModifierProfilRecruteurPEConnectSpec extends WordSpec
         .build
 
       // When
-      val result = recruteur.modifierProfilPEConnect(commande.copy(
+      val result = recruteur.modifierProfilGerant(commande.copy(
         genre = Genre.FEMME
       ))
 
@@ -116,15 +116,15 @@ class ModifierProfilRecruteurPEConnectSpec extends WordSpec
       val recruteur = recruteurBuilder.avecInscription().build
 
       // When
-      val result = recruteur.modifierProfilPEConnect(commande)
+      val result = recruteur.modifierProfilGerant(commande)
 
       // Then
-      val event = result.head.asInstanceOf[ProfilRecruteurModifiePEConnectEvent]
-      event.recruteurId mustBe commande.id
-      event.nom mustBe commande.nom
-      event.prenom mustBe commande.prenom
-      event.email mustBe commande.email
-      event.genre mustBe commande.genre
+      val profilGerantModifieEvent = result.head.asInstanceOf[ProfilGerantModifieEvent]
+      profilGerantModifieEvent.recruteurId mustBe commande.id
+      profilGerantModifieEvent.nom mustBe commande.nom
+      profilGerantModifieEvent.prenom mustBe commande.prenom
+      profilGerantModifieEvent.email mustBe commande.email
+      profilGerantModifieEvent.genre mustBe commande.genre
     }
   }
 }

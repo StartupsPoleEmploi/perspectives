@@ -8,7 +8,7 @@ sealed trait RecruteurEvent extends Event {
   def recruteurId: RecruteurId
 }
 
-case class RecruteurInscrisEvent(recruteurId: RecruteurId,
+case class RecruteurInscritEvent(recruteurId: RecruteurId,
                                  nom: String,
                                  prenom: String,
                                  email: String,
@@ -21,8 +21,8 @@ case class ProfilModifieEvent(recruteurId: RecruteurId,
                               numeroTelephone: NumeroTelephone,
                               contactParCandidats: Boolean) extends RecruteurEvent
 
-case class ProfilRecruteurModifiePEConnectEvent(recruteurId: RecruteurId,
-                                                nom: String,
-                                                prenom: String,
-                                                email: String,
-                                                genre: Genre) extends RecruteurEvent
+case class ProfilGerantModifieEvent(recruteurId: RecruteurId,
+                                    nom: String,
+                                    prenom: String,
+                                    email: String,
+                                    genre: Genre) extends RecruteurEvent

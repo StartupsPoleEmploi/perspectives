@@ -59,14 +59,14 @@ class InscrireCandidatSpec extends WordSpec with MustMatchers with MockitoSugar 
       val result = candidat.inscrire(commande)
 
       // Then
-      val event = result.filter(_.isInstanceOf[CandidatInscrisEvent])
+      val event = result.filter(_.isInstanceOf[CandidatInscritEvent])
       event.size mustBe 1
-      val candidatInscrisEvent = event.head.asInstanceOf[CandidatInscrisEvent]
-      candidatInscrisEvent.candidatId mustBe commande.id
-      candidatInscrisEvent.nom mustBe commande.nom
-      candidatInscrisEvent.prenom mustBe commande.prenom
-      candidatInscrisEvent.email mustBe commande.email
-      candidatInscrisEvent.genre mustBe commande.genre
+      val candidatInscritEvent = event.head.asInstanceOf[CandidatInscritEvent]
+      candidatInscritEvent.candidatId mustBe commande.id
+      candidatInscritEvent.nom mustBe commande.nom
+      candidatInscritEvent.prenom mustBe commande.prenom
+      candidatInscritEvent.email mustBe commande.email
+      candidatInscritEvent.genre mustBe commande.genre
     }
     "générer un événement contenant l'adresse" in {
       // Given
@@ -76,11 +76,11 @@ class InscrireCandidatSpec extends WordSpec with MustMatchers with MockitoSugar 
       val result = candidat.inscrire(commande)
 
       // Then
-      val event = result.filter(_.isInstanceOf[AdressePEConnectModifieeEvent])
+      val event = result.filter(_.isInstanceOf[AdresseModifieeEvent])
       event.size mustBe 1
-      val adressePEConnectModifieeEvent = event.head.asInstanceOf[AdressePEConnectModifieeEvent]
-      adressePEConnectModifieeEvent.candidatId mustBe commande.id
-      adressePEConnectModifieeEvent.adresse mustBe commande.adresse
+      val adresseModifieeEvent = event.head.asInstanceOf[AdresseModifieeEvent]
+      adresseModifieeEvent.candidatId mustBe commande.id
+      adresseModifieeEvent.adresse mustBe commande.adresse
     }
     "générer un événement contenant le statut de demandeur d'emploi" in {
       // Given
@@ -90,11 +90,11 @@ class InscrireCandidatSpec extends WordSpec with MustMatchers with MockitoSugar 
       val result = candidat.inscrire(commande)
 
       // Then
-      val event = result.filter(_.isInstanceOf[StatutDemandeurEmploiPEConnectModifieEvent])
+      val event = result.filter(_.isInstanceOf[StatutDemandeurEmploiModifieEvent])
       event.size mustBe 1
-      val statutDemandeurEmploiPEConnectModifieEvent = event.head.asInstanceOf[StatutDemandeurEmploiPEConnectModifieEvent]
-      statutDemandeurEmploiPEConnectModifieEvent.candidatId mustBe commande.id
-      statutDemandeurEmploiPEConnectModifieEvent.statutDemandeurEmploi mustBe commande.statutDemandeurEmploi
+      val statutDemandeurEmploiModifieEvent = event.head.asInstanceOf[StatutDemandeurEmploiModifieEvent]
+      statutDemandeurEmploiModifieEvent.candidatId mustBe commande.id
+      statutDemandeurEmploiModifieEvent.statutDemandeurEmploi mustBe commande.statutDemandeurEmploi
     }
     "générer un événement contenant la liste des MRS validées" in {
       // Given

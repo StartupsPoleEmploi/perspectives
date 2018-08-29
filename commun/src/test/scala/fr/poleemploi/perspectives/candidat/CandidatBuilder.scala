@@ -20,7 +20,7 @@ class CandidatBuilder {
                       prenom: Option[String] = None,
                       email: Option[String] = None,
                       genre: Option[Genre] = None): CandidatBuilder = {
-    events += CandidatInscrisEvent(
+    events += CandidatInscritEvent(
       candidatId = candidatId,
       nom = nom.getOrElse("planteur"),
       prenom = prenom.getOrElse("jacques"),
@@ -48,7 +48,7 @@ class CandidatBuilder {
   }
 
   def avecAdresse(adresse: Adresse): CandidatBuilder = {
-    events += AdressePEConnectModifieeEvent(
+    events += AdresseModifieeEvent(
       candidatId = candidatId,
       adresse = adresse
     )
@@ -56,7 +56,7 @@ class CandidatBuilder {
   }
 
   def avecStatutDemandeurEmploi(statutDemandeurEmploi: StatutDemandeurEmploi): CandidatBuilder = {
-    events += StatutDemandeurEmploiPEConnectModifieEvent(
+    events += StatutDemandeurEmploiModifieEvent(
       candidatId = candidatId,
       statutDemandeurEmploi = statutDemandeurEmploi
     )

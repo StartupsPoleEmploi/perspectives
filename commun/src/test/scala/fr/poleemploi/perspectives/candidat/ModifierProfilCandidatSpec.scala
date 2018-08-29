@@ -4,7 +4,7 @@ import fr.poleemploi.perspectives.commun.domain.Genre
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, MustMatchers, WordSpec}
 
-class ModifierProfilCandidatPEConnectSpec extends WordSpec
+class ModifierProfilCandidatSpec extends WordSpec
   with MustMatchers with MockitoSugar with BeforeAndAfter {
 
   val candidatBuilder = new CandidatBuilder
@@ -18,8 +18,8 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
     )
   val statutDemandeurEmploi: StatutDemandeurEmploi = StatutDemandeurEmploi.DEMANDEUR_EMPLOI
 
-  val commande: ModifierProfilPEConnectCommand =
-    ModifierProfilPEConnectCommand(
+  val commande: ModifierProfilCommand =
+    ModifierProfilCommand(
       id = candidatBuilder.candidatId,
       nom = "nouveau nom",
       prenom = "nouveau prenom",
@@ -29,14 +29,14 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
       statutDemandeurEmploi = StatutDemandeurEmploi.DEMANDEUR_EMPLOI
     )
 
-  "modifierProfilPEConnect" should {
+  "modifierProfil" should {
     "renvoyer une erreur lorsque le candidat n'est pas inscrit" in {
       // Given
       val candidat = candidatBuilder.build
 
       // When
       val ex = intercept[RuntimeException] {
-        candidat.modifierProfilPEConnect(commande)
+        candidat.modifierProfil(commande)
       }
 
       // Then
@@ -56,7 +56,7 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
         .build
 
       // When
-      val result = candidat.modifierProfilPEConnect(commande)
+      val result = candidat.modifierProfil(commande)
 
       // Then
       result.isEmpty mustBe true
@@ -69,7 +69,7 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
         .build
 
       // When
-      val result = candidat.modifierProfilPEConnect(commande)
+      val result = candidat.modifierProfil(commande)
 
       // Then
       result.size mustBe 1
@@ -83,7 +83,7 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
         .build
 
       // When
-      val result = candidat.modifierProfilPEConnect(commande.copy(
+      val result = candidat.modifierProfil(commande.copy(
         nom = "nouveau nom"
       ))
 
@@ -99,7 +99,7 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
         .build
 
       // When
-      val result = candidat.modifierProfilPEConnect(commande.copy(
+      val result = candidat.modifierProfil(commande.copy(
         nom = "nouveau prénom"
       ))
 
@@ -115,7 +115,7 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
         .build
 
       // When
-      val result = candidat.modifierProfilPEConnect(commande.copy(
+      val result = candidat.modifierProfil(commande.copy(
         nom = "nouvel-email@domain.fr"
       ))
 
@@ -131,7 +131,7 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
         .build
 
       // When
-      val result = candidat.modifierProfilPEConnect(commande.copy(
+      val result = candidat.modifierProfil(commande.copy(
         genre = Genre.FEMME
       ))
 
@@ -147,10 +147,10 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
         .build
 
       // When
-      val result = candidat.modifierProfilPEConnect(commande)
+      val result = candidat.modifierProfil(commande)
 
       // Then
-      val event = result.head.asInstanceOf[ProfilCandidatModifiePEConnectEvent]
+      val event = result.head.asInstanceOf[ProfilCandidatModifieEvent]
       event.candidatId mustBe commande.id
       event.nom mustBe commande.nom
       event.prenom mustBe commande.prenom
@@ -171,7 +171,7 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
         .build
 
       // When
-      val result = candidat.modifierProfilPEConnect(commande.copy(
+      val result = candidat.modifierProfil(commande.copy(
         adresse = adresse.copy(voie = "nouvelle voie")
       ))
 
@@ -192,12 +192,12 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
         .build
 
       // When
-      val result = candidat.modifierProfilPEConnect(commande.copy(
+      val result = candidat.modifierProfil(commande.copy(
         adresse = adresse.copy(voie = "nouvelle voie")
       ))
 
       // Then
-      val event = result.head.asInstanceOf[AdressePEConnectModifieeEvent]
+      val event = result.head.asInstanceOf[AdresseModifieeEvent]
       event.candidatId mustBe commande.id
       event.adresse.voie mustBe "nouvelle voie"
     }
@@ -215,12 +215,12 @@ class ModifierProfilCandidatPEConnectSpec extends WordSpec
         .build
 
       // When
-      val result = candidat.modifierProfilPEConnect(commande.copy(
+      val result = candidat.modifierProfil(commande.copy(
         statutDemandeurEmploi = StatutDemandeurEmploi.NON_DEMANDEUR_EMPLOI
       ))
 
       // Then
-      val event = result.head.asInstanceOf[StatutDemandeurEmploiPEConnectModifieEvent]
+      val event = result.head.asInstanceOf[StatutDemandeurEmploiModifieEvent]
       event.candidatId mustBe commande.id
       event.statutDemandeurEmploi mustBe StatutDemandeurEmploi.NON_DEMANDEUR_EMPLOI
     }

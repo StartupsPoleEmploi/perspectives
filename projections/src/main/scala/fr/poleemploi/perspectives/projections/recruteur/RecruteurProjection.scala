@@ -20,9 +20,9 @@ class RecruteurProjection(val driver: PostgresDriver,
   override def isReplayable: Boolean = true
 
   override def onEvent: ReceiveEvent = {
-    case e: RecruteurInscrisEvent => onRecruteurInscrisEvent(e)
+    case e: RecruteurInscritEvent => onRecruteurInscritEvent(e)
     case e: ProfilModifieEvent => onProfilModifieEvent(e)
-    case e: ProfilRecruteurModifiePEConnectEvent => onProfilPEConnectModifieEvent(e)
+    case e: ProfilGerantModifieEvent => onProfilGerantModifieEvent(e)
   }
 
   import driver.api._
@@ -66,7 +66,7 @@ class RecruteurProjection(val driver: PostgresDriver,
       r <- recruteurTable if r.recruteurId === recruteurId
     } yield (r.typeRecruteur, r.raisonSociale, r.numeroSiret, r.numeroTelephone, r.contactParCandidats)
   }
-  val modifierProfilPEConnectQuery = Compiled { recruteurId: Rep[RecruteurId] =>
+  val modifierProfilGerantQuery = Compiled { recruteurId: Rep[RecruteurId] =>
     for {
       r <- recruteurTable if r.recruteurId === recruteurId
     } yield (r.nom, r.prenom, r.email, r.genre)
@@ -78,7 +78,7 @@ class RecruteurProjection(val driver: PostgresDriver,
   def listerParDateInscription: Future[List[RecruteurDto]] =
     database.run(listerParDateInscriptionQuery.result).map(_.toList)
 
-  private def onRecruteurInscrisEvent(event: RecruteurInscrisEvent): Future[Unit] =
+  private def onRecruteurInscritEvent(event: RecruteurInscritEvent): Future[Unit] =
     database
       .run(recruteurTable.map(r => (r.recruteurId, r.nom, r.prenom, r.genre, r.email, r.dateInscription))
         += (event.recruteurId, event.nom, event.prenom, event.genre, event.email, event.date))
@@ -93,8 +93,8 @@ class RecruteurProjection(val driver: PostgresDriver,
       Some(event.contactParCandidats)
     ))).map(_ => ())
 
-  private def onProfilPEConnectModifieEvent(event: ProfilRecruteurModifiePEConnectEvent): Future[Unit] =
-    database.run(modifierProfilPEConnectQuery(event.recruteurId).update((
+  private def onProfilGerantModifieEvent(event: ProfilGerantModifieEvent): Future[Unit] =
+    database.run(modifierProfilGerantQuery(event.recruteurId).update((
       event.nom,
       event.prenom,
       event.email,

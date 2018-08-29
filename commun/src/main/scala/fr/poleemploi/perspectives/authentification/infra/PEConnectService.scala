@@ -12,8 +12,8 @@ import scala.concurrent.Future
   * Façade pour gérer les interactions complexes avec PEConnect (tokens, verification d'un candidat existant, appels WS)
   */
 class PEConnectService(oauthService: OauthService,
-                       peConnectWS: PEConnectWSAdapter,
-                       peConnectInscrisService: PEConnectSqlAdapter) {
+                       peConnectWSAdapter: PEConnectWSAdapter,
+                       peConnectSqlAdapter: PEConnectSqlAdapter) {
 
   def generateTokens(): OauthTokens =
     oauthService.generateTokens()
@@ -30,42 +30,42 @@ class PEConnectService(oauthService: OauthService,
   }
 
   def findCandidat(peConnectId: PEConnectId): Future[Option[CandidatPEConnect]] =
-    peConnectInscrisService.findCandidat(peConnectId)
+    peConnectSqlAdapter.findCandidat(peConnectId)
 
   def saveCandidat(candidatPEConnect: CandidatPEConnect): Future[Unit] =
-    peConnectInscrisService.saveCandidat(candidatPEConnect)
+    peConnectSqlAdapter.saveCandidat(candidatPEConnect)
 
   def findRecruteur(peConnectId: PEConnectId): Future[Option[RecruteurPEConnect]] =
-    peConnectInscrisService.findRecruteur(peConnectId)
+    peConnectSqlAdapter.findRecruteur(peConnectId)
 
   def saveRecruteur(recruteurPEConnect: RecruteurPEConnect): Future[Unit] =
-    peConnectInscrisService.saveRecruteur(recruteurPEConnect)
+    peConnectSqlAdapter.saveRecruteur(recruteurPEConnect)
 
   def getInfosRecruteur(accessToken: String): Future[PEConnectRecruteurInfos] =
-    peConnectWS.getInfosRecruteur(accessToken)
+    peConnectWSAdapter.getInfosRecruteur(accessToken)
 
   def getInfosCandidat(accessToken: String): Future[PEConnectCandidatInfos] =
-    peConnectWS.getInfosCandidat(accessToken)
+    peConnectWSAdapter.getInfosCandidat(accessToken)
 
   def getAdresseCandidat(accessToken: String): Future[Adresse] =
-    peConnectWS.getCoordonneesCandidat(accessToken)
+    peConnectWSAdapter.getCoordonneesCandidat(accessToken)
 
   def getStatutDemandeurEmploiCandidat(accessToken: String): Future[StatutDemandeurEmploi] =
-    peConnectWS.getStatutDemandeurEmploiCandidat(accessToken)
+    peConnectWSAdapter.getStatutDemandeurEmploiCandidat(accessToken)
 
   def getAccessTokenCandidat(authorizationCode: String,
                              redirectUri: String): Future[AccessTokenResponse] =
-    peConnectWS.getAccessTokenCandidat(authorizationCode = authorizationCode, redirectUri = redirectUri)
+    peConnectWSAdapter.getAccessTokenCandidat(authorizationCode = authorizationCode, redirectUri = redirectUri)
 
   def getAccessTokenRecruteur(authorizationCode: String,
                               redirectUri: String): Future[AccessTokenResponse] =
-    peConnectWS.getAccessTokenRecruteur(authorizationCode = authorizationCode, redirectUri = redirectUri)
+    peConnectWSAdapter.getAccessTokenRecruteur(authorizationCode = authorizationCode, redirectUri = redirectUri)
 
   def deconnexionCandidat(idToken: String,
                           redirectUri: String): Future[Unit] =
-    peConnectWS.deconnexionCandidat(idToken = idToken, redirectUri = redirectUri)
+    peConnectWSAdapter.deconnexionCandidat(idToken = idToken, redirectUri = redirectUri)
 
   def deconnexionRecruteur(idToken: String,
                            redirectUri: String): Future[Unit] =
-    peConnectWS.deconnexionRecruteur(idToken = idToken, redirectUri = redirectUri)
+    peConnectWSAdapter.deconnexionRecruteur(idToken = idToken, redirectUri = redirectUri)
 }

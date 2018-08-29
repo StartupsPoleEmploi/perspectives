@@ -16,8 +16,8 @@ case class ModifierProfilCommand(id: RecruteurId,
                                  numeroTelephone: NumeroTelephone,
                                  contactParCandidats: Boolean) extends Command
 
-case class ModifierProfilPEConnectCommand(id: RecruteurId,
-                                          nom: String,
-                                          prenom: String,
-                                          email: String,
-                                          genre: Genre) extends Command
+case class ModifierProfilGerantCommand(id: RecruteurId,
+                                       nom: String,
+                                       prenom: String,
+                                       email: String,
+                                       genre: Genre) extends Command

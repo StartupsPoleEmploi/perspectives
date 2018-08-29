@@ -98,7 +98,7 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
-  def peConnectInscrisService(database: Database): PEConnectSqlAdapter =
+  def peConnectSqlAdapter(database: Database): PEConnectSqlAdapter =
     new PEConnectSqlAdapter(
       driver = PostgresDriver,
       database = database
@@ -106,8 +106,8 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
-  def peConnectWS(webAppConfig: WebAppConfig,
-                  wsClient: WSClient): PEConnectWSAdapter =
+  def peConnectWSAdapter(webAppConfig: WebAppConfig,
+                         wsClient: WSClient): PEConnectWSAdapter =
     new PEConnectWSAdapter(
       wsClient = wsClient,
       peConnectRecruteurConfig = webAppConfig.peConnectRecruteurConfig,
@@ -116,23 +116,23 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
-  def peConnectFacade(oauthService: OauthService,
-                      peConnectWS: PEConnectWSAdapter,
-                      peConnectInscrisService: PEConnectSqlAdapter): PEConnectService =
+  def peConnectService(oauthService: OauthService,
+                       peConnectWSAdapter: PEConnectWSAdapter,
+                       peConnectSqlAdapter: PEConnectSqlAdapter): PEConnectService =
     new PEConnectService(
       oauthService = oauthService,
-      peConnectWS = peConnectWS,
-      peConnectInscrisService = peConnectInscrisService
+      peConnectWSAdapter = peConnectWSAdapter,
+      peConnectSqlAdapter = peConnectSqlAdapter
     )
 
   @Provides
   @Singleton
-  def mrsValideesCSVLoader(actorSystem: ActorSystem): MRSValideesCSVAdapter =
+  def mrsValideesCSVAdapter(actorSystem: ActorSystem): MRSValideesCSVAdapter =
     new MRSValideesCSVAdapter(actorSystem = actorSystem)
 
   @Provides
   @Singleton
-  def mrsValideesPostgreSql(database: Database): MRSValideesSqlAdapter =
+  def mrsValideesSqlAdapter(database: Database): MRSValideesSqlAdapter =
     new MRSValideesSqlAdapter(
       driver = PostgresDriver,
       database = database
@@ -140,7 +140,7 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
-  def mailjetContactAdapter(database: Database): MailjetSqlAdapter =
+  def mailjetSqlAdapter(database: Database): MailjetSqlAdapter =
     new MailjetSqlAdapter(
       driver = PostgresDriver,
       database = database

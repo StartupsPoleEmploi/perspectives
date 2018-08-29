@@ -17,7 +17,7 @@ class RecruteurBuilder {
                       prenom: Option[String] = None,
                       email: Option[String] = None,
                       genre: Option[Genre] = None): RecruteurBuilder = {
-    events += RecruteurInscrisEvent(
+    events += RecruteurInscritEvent(
       recruteurId = recruteurId,
       nom = nom.getOrElse("recruteur"),
       prenom = prenom.getOrElse("cool"),

@@ -12,7 +12,7 @@ sealed trait CandidatEvent extends Event {
   def candidatId: CandidatId
 }
 
-case class CandidatInscrisEvent(candidatId: CandidatId,
+case class CandidatInscritEvent(candidatId: CandidatId,
                                 nom: String,
                                 prenom: String,
                                 email: String,
@@ -26,20 +26,20 @@ case class CriteresRechercheModifiesEvent(candidatId: CandidatId,
                                           etreContacteParAgenceInterim: Boolean,
                                           rayonRecherche: RayonRecherche) extends CandidatEvent
 
-case class ProfilCandidatModifiePEConnectEvent(candidatId: CandidatId,
-                                               nom: String,
-                                               prenom: String,
-                                               email: String,
-                                               genre: Genre) extends CandidatEvent
+case class ProfilCandidatModifieEvent(candidatId: CandidatId,
+                                      nom: String,
+                                      prenom: String,
+                                      email: String,
+                                      genre: Genre) extends CandidatEvent
 
 case class NumeroTelephoneModifieEvent(candidatId: CandidatId,
                                        numeroTelephone: NumeroTelephone) extends CandidatEvent
 
-case class AdressePEConnectModifieeEvent(candidatId: CandidatId,
-                                         adresse: Adresse) extends CandidatEvent
+case class AdresseModifieeEvent(candidatId: CandidatId,
+                                adresse: Adresse) extends CandidatEvent
 
-case class StatutDemandeurEmploiPEConnectModifieEvent(candidatId: CandidatId,
-                                                      statutDemandeurEmploi: StatutDemandeurEmploi) extends CandidatEvent
+case class StatutDemandeurEmploiModifieEvent(candidatId: CandidatId,
+                                             statutDemandeurEmploi: StatutDemandeurEmploi) extends CandidatEvent
 
 case class CVAjouteEvent(candidatId: CandidatId,
                          cvId: CVId) extends CandidatEvent

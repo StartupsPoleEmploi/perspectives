@@ -23,12 +23,12 @@ class CandidatProjection(val driver: PostgresDriver,
   override def isReplayable: Boolean = true
 
   override def onEvent: ReceiveEvent = {
-    case e: CandidatInscrisEvent => onCandidatInscrisEvent(e)
-    case e: ProfilCandidatModifiePEConnectEvent => onProfilPEConnectModifieEvent(e)
+    case e: CandidatInscritEvent => onCandidatInscritEvent(e)
+    case e: ProfilCandidatModifieEvent => onProfilModifieEvent(e)
     case e: CriteresRechercheModifiesEvent => onCriteresRechercheModifiesEvent(e)
     case e: NumeroTelephoneModifieEvent => onNumeroTelephoneModifieEvent(e)
-    case e: AdressePEConnectModifieeEvent => onAdressePEConnectModifieeEvent(e)
-    case e: StatutDemandeurEmploiPEConnectModifieEvent => onStatutDemandeurEmploiPEConnectModifieEvent(e)
+    case e: AdresseModifieeEvent => onAdresseModifieeEvent(e)
+    case e: StatutDemandeurEmploiModifieEvent => onStatutDemandeurEmploiModifieEvent(e)
     case e: CVAjouteEvent => onCVAjouteEvent(e)
     case e: CVRemplaceEvent => onCVRemplaceEvent(e)
     case e: MRSAjouteeEvent => onMRSAjouteeEvent(e)
@@ -87,7 +87,7 @@ class CandidatProjection(val driver: PostgresDriver,
     candidatTable.filter(c => c.candidatId === candidatId)
   }
   val listerParDateInscriptionQuery = candidatTable.sortBy(_.dateInscription.desc)
-  val modifierProfilPEConnectQuery = Compiled { candidatId: Rep[CandidatId] =>
+  val modifierProfilQuery = Compiled { candidatId: Rep[CandidatId] =>
     for {
       c <- candidatTable if c.candidatId === candidatId
     } yield (c.nom, c.prenom, c.email, c.genre)
@@ -225,14 +225,14 @@ class CandidatProjection(val driver: PostgresDriver,
     case _ => Some(true)
   }
 
-  private def onCandidatInscrisEvent(event: CandidatInscrisEvent): Future[Unit] =
+  private def onCandidatInscritEvent(event: CandidatInscritEvent): Future[Unit] =
     database
       .run(candidatTable.map(c => (c.candidatId, c.nom, c.prenom, c.genre, c.email, c.dateInscription))
         += (event.candidatId, event.nom, event.prenom, event.genre, event.email, event.date))
       .map(_ => ())
 
-  private def onProfilPEConnectModifieEvent(event: ProfilCandidatModifiePEConnectEvent): Future[Unit] =
-    database.run(modifierProfilPEConnectQuery(event.candidatId).update((
+  private def onProfilModifieEvent(event: ProfilCandidatModifieEvent): Future[Unit] =
+    database.run(modifierProfilQuery(event.candidatId).update((
       event.nom,
       event.prenom,
       event.email,
@@ -255,7 +255,7 @@ class CandidatProjection(val driver: PostgresDriver,
       Some(event.numeroTelephone)
     )).map(_ => ())
 
-  private def onStatutDemandeurEmploiPEConnectModifieEvent(event: StatutDemandeurEmploiPEConnectModifieEvent): Future[Unit] =
+  private def onStatutDemandeurEmploiModifieEvent(event: StatutDemandeurEmploiModifieEvent): Future[Unit] =
     database.run(modifierStatutDemandeurEmploiQuery(event.candidatId).update(
       Some(event.statutDemandeurEmploi)
     )).map(_ => ())
@@ -270,7 +270,7 @@ class CandidatProjection(val driver: PostgresDriver,
       Some(event.cvId)
     )).map(_ => ())
 
-  private def onAdressePEConnectModifieeEvent(event: AdressePEConnectModifieeEvent): Future[Unit] =
+  private def onAdresseModifieeEvent(event: AdresseModifieeEvent): Future[Unit] =
     database.run(modifierAdresseQuery(event.candidatId).update((
       Some(event.adresse.codePostal),
       Some(event.adresse.libelleCommune)

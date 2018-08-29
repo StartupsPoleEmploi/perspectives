@@ -17,7 +17,7 @@ class Recruteur(override val id: RecruteurId,
       throw new RuntimeException(s"Le recruteur ${id.value} est déjà inscrit")
     }
 
-    List(RecruteurInscrisEvent(
+    List(RecruteurInscritEvent(
       recruteurId = command.id,
       nom = command.nom,
       prenom = command.prenom,
@@ -47,7 +47,7 @@ class Recruteur(override val id: RecruteurId,
     } else Nil
   }
 
-  def modifierProfilPEConnect(command: ModifierProfilPEConnectCommand): List[Event] = {
+  def modifierProfilGerant(command: ModifierProfilGerantCommand): List[Event] = {
     if (!state.estInscrit) {
       throw new RuntimeException(s"Le recruteur ${id.value} n'est pas encore inscrit")
     }
@@ -56,7 +56,7 @@ class Recruteur(override val id: RecruteurId,
       !state.prenom.contains(command.prenom) ||
       !state.email.contains(command.email) ||
       !state.genre.contains(command.genre)) {
-      List(ProfilRecruteurModifiePEConnectEvent(
+      List(ProfilGerantModifieEvent(
         recruteurId = command.id,
         nom = command.nom,
         prenom = command.prenom,
@@ -79,7 +79,7 @@ private[recruteur] case class RecruteurState(estInscrit: Boolean = false,
                                              numeroTelephone: Option[NumeroTelephone] = None) {
 
   def apply(event: Event): RecruteurState = event match {
-    case e: RecruteurInscrisEvent =>
+    case e: RecruteurInscritEvent =>
       copy(
         estInscrit = true,
         nom = Some(e.nom),
@@ -95,7 +95,7 @@ private[recruteur] case class RecruteurState(estInscrit: Boolean = false,
         contactParCandidats = Some(e.contactParCandidats),
         numeroTelephone = Some(e.numeroTelephone)
       )
-    case e: ProfilRecruteurModifiePEConnectEvent =>
+    case e: ProfilGerantModifieEvent =>
       copy(
         nom = Some(e.nom),
         prenom = Some(e.prenom),
