@@ -1,11 +1,10 @@
-package fr.poleemploi.perspectives.candidat.mrs.infra
+package fr.poleemploi.perspectives.candidat.mrs.infra.csv
 
 import java.time.LocalDate
 
 import akka.actor.ActorSystem
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
-import fr.poleemploi.perspectives.candidat.mrs.infra.csv.MRSValideesCSVAdapter
 import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar

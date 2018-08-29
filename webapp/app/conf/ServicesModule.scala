@@ -4,8 +4,8 @@ import com.google.inject.{AbstractModule, Provides, Singleton}
 import fr.poleemploi.perspectives.candidat.cv.domain.CVService
 import fr.poleemploi.perspectives.candidat.cv.infra.sql.CVSqlAdapter
 import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielMRSCandidat
-import fr.poleemploi.perspectives.candidat.mrs.infra.ReferentielMRSCandidatLocal
 import fr.poleemploi.perspectives.candidat.mrs.infra.csv.MRSValideesCSVAdapter
+import fr.poleemploi.perspectives.candidat.mrs.infra.file.ReferentielMRSCandidatFile
 import fr.poleemploi.perspectives.candidat.mrs.infra.sql.MRSValideesSqlAdapter
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
 import fr.poleemploi.perspectives.conseiller.{AutorisationService, ConseillerId}
@@ -14,8 +14,8 @@ import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetEmailingService
 import fr.poleemploi.perspectives.emailing.infra.sql.MailjetSqlAdapter
 import fr.poleemploi.perspectives.emailing.infra.ws.MailjetEmailAdapter
 import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
-import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWS
-import play.api.libs.ws.WSClient
+import fr.poleemploi.perspectives.metier.infra.cache.ReferentielMetierCacheAdapter
+import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapter
 import slick.jdbc.JdbcBackend.Database
 
 class ServicesModule extends AbstractModule {
@@ -39,13 +39,13 @@ class ServicesModule extends AbstractModule {
 
   @Provides
   @Singleton
-  def referentielMetierEvalue(metierEvalueCSVLoader: MRSValideesCSVAdapter,
-                              postgresqlMetierEvalueService: MRSValideesSqlAdapter,
+  def referentielMetierEvalue(mrsValideesCSVAdapter: MRSValideesCSVAdapter,
+                              mrsValideesSqlAdapter: MRSValideesSqlAdapter,
                               webAppConfig: WebAppConfig): ReferentielMRSCandidat =
-    new ReferentielMRSCandidatLocal(
-      referentielMRSCandidatConfig = webAppConfig.referentielMRSCandidatConfig,
-      mrsValideesCSVLoader = metierEvalueCSVLoader,
-      mrsValideesPostgresSql = postgresqlMetierEvalueService
+    new ReferentielMRSCandidatFile(
+      referentielMRSCandidatFileConfig = webAppConfig.referentielMRSCandidatFileConfig,
+      mrsValideesCSVLoader = mrsValideesCSVAdapter,
+      mrsValideesPostgresSql = mrsValideesSqlAdapter
     )
 
   @Provides
