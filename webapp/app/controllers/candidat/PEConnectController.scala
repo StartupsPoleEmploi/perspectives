@@ -75,6 +75,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       infosCandidat <- peConnectService.getInfosCandidat(accessTokenResponse.accessToken)
       adresse <- peConnectService.getAdresseCandidat(accessTokenResponse.accessToken)
       statutDemandeurEmploi <- peConnectService.getStatutDemandeurEmploiCandidat(accessTokenResponse.accessToken)
+      // FIXME : à faire uniquement lors d'une inscription PEConnect : renommer event + intégrer peCOnnectId + saga
       mrsValidees <- referentielMRSCandidat.metiersValidesParCandidat(infosCandidat.peConnectId)
       optCandidat <- peConnectService.findCandidat(infosCandidat.peConnectId)
       candidatId <- optCandidat.map(c => mettreAJour(c, infosCandidat, adresse, statutDemandeurEmploi))
