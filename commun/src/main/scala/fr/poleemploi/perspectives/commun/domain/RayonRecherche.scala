@@ -5,7 +5,7 @@ import fr.poleemploi.eventsourcing.IntValueObject
 import scala.collection.immutable.ListMap
 
 /**
-  * Value Object Metier.
+  * Value Object RayonRecherche.
   * La valeur est en Kilomètre
   */
 case class RayonRecherche(value: Int) extends IntValueObject
