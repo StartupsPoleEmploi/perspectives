@@ -1,16 +1,15 @@
 @import fr.poleemploi.perspectives.commun.domain.Metier
 
-@** index utile si le meme metier se retrouve dans plusieurs secteurs **@
-@(form: Form[_], metier: Metier, index: Option[Int] = None)
+@(form: Form[_], metier: Metier)
 
 @containsMetier(value: String) = @{
     if (form("listeMetiersRecherches").indexes.flatMap(i => form("listeMetiersRecherches[%s]".format(i)).value).toSet.contains(value)) "checked" else ""
 }
 
-<input id="listeMetiersRecherches-@index.getOrElse(1)-@metier.codeROME.value"
+<input id="listeMetiersRecherches-@metier.codeROME.value"
     name="listeMetiersRecherches[]"
     type="checkbox" value="@metier.codeROME.value" @containsMetier(metier.codeROME.value)/>
-<label class="labelMetierCheckbox" for="listeMetiersRecherches-@index.getOrElse(1)-@metier.codeROME.value">
+<label class="labelMetierCheckbox" for="listeMetiersRecherches-@metier.codeROME.value">
     <span class="checkmark"></span>
     @metier.label
 </label>
