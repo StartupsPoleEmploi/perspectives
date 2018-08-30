@@ -55,6 +55,11 @@ trait PostgresDriver extends ExPostgresProfile
       { s => Genre.from(s).get }
     )
 
+    implicit val emailColumnType: BaseColumnType[Email] = MappedColumnType.base[Email, String](
+      { e => e.value },
+      { s => Email(s) }
+    )
+
     implicit val numeroSiretColumnType: BaseColumnType[NumeroSiret] = MappedColumnType.base[NumeroSiret, String](
       { n => n.value },
       { s => NumeroSiret.from(s).get }

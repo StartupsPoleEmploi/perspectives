@@ -49,7 +49,7 @@ class CandidatProjection(val driver: PostgresDriver,
 
     def genre = column[Genre]("genre")
 
-    def email = column[String]("email")
+    def email = column[Email]("email")
 
     def statutDemandeurEmploi = column[Option[StatutDemandeurEmploi]]("statut_demandeur_emploi")
 

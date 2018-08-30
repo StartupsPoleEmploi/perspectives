@@ -3,7 +3,7 @@ package fr.poleemploi.perspectives.candidat
 import java.time.LocalDate
 
 import fr.poleemploi.perspectives.candidat.mrs.domain.MRSValidee
-import fr.poleemploi.perspectives.commun.domain.{CodeROME, Genre}
+import fr.poleemploi.perspectives.commun.domain.{CodeROME, Email, Genre}
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{MustMatchers, WordSpec}
 
@@ -21,7 +21,7 @@ class InscrireCandidatSpec extends WordSpec with MustMatchers with MockitoSugar 
       id = candidatBuilder.candidatId,
       nom = "nom",
       prenom = "prenom",
-      email = "email@domain.com",
+      email = Email("email@domain.com"),
       genre = Genre.HOMME,
       adresse = mock[Adresse],
       statutDemandeurEmploi = StatutDemandeurEmploi.DEMANDEUR_EMPLOI,

@@ -1,12 +1,12 @@
 package fr.poleemploi.perspectives.recruteur
 
 import fr.poleemploi.cqrs.command.Command
-import fr.poleemploi.perspectives.commun.domain.{Genre, NumeroTelephone}
+import fr.poleemploi.perspectives.commun.domain.{Email, Genre, NumeroTelephone}
 
 case class InscrireRecruteurCommand(id: RecruteurId,
                                     nom: String,
                                     prenom: String,
-                                    email: String,
+                                    email: Email,
                                     genre: Genre) extends Command
 
 case class ModifierProfilCommand(id: RecruteurId,
@@ -19,5 +19,5 @@ case class ModifierProfilCommand(id: RecruteurId,
 case class ModifierProfilGerantCommand(id: RecruteurId,
                                        nom: String,
                                        prenom: String,
-                                       email: String,
+                                       email: Email,
                                        genre: Genre) extends Command

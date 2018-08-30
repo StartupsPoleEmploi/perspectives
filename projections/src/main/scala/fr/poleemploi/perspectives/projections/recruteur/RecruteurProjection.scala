@@ -4,7 +4,7 @@ import java.time.ZonedDateTime
 
 import fr.poleemploi.cqrs.projection.Projection
 import fr.poleemploi.eventsourcing.Event
-import fr.poleemploi.perspectives.commun.domain.{Genre, NumeroTelephone}
+import fr.poleemploi.perspectives.commun.domain.{Email, Genre, NumeroTelephone}
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
 import fr.poleemploi.perspectives.recruteur._
 import slick.jdbc.JdbcBackend.Database
@@ -37,7 +37,7 @@ class RecruteurProjection(val driver: PostgresDriver,
 
     def prenom = column[String]("prenom")
 
-    def email = column[String]("email")
+    def email = column[Email]("email")
 
     def genre = column[Genre]("genre")
 

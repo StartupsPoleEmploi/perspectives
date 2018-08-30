@@ -1,7 +1,7 @@
 package fr.poleemploi.perspectives.recruteur
 
 import fr.poleemploi.eventsourcing.Event
-import fr.poleemploi.perspectives.commun.domain.Genre
+import fr.poleemploi.perspectives.commun.domain.{Email, Genre}
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{MustMatchers, WordSpec}
 
@@ -14,7 +14,7 @@ class InscrireRecruteurSpec extends WordSpec with MustMatchers with MockitoSugar
       id = recruteurBuilder.recruteurId,
       nom = "nom",
       prenom = "prenom",
-      email = "email@domain.com",
+      email = Email("email@domain.com"),
       genre = Genre.HOMME
     )
 

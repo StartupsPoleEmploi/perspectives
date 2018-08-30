@@ -15,7 +15,7 @@ class MailjetEmailingService(mailjetContactAdapter: MailjetSqlAdapter,
     for {
       manageContactResponse <- mailjetEmailAdapter.ajouterCandidatInscrit(
         ManageContactRequest(
-          email = candidatInscrit.email,
+          email = candidatInscrit.email.value,
           name = Some(s"${candidatInscrit.nom.capitalize} ${candidatInscrit.prenom.capitalize}"),
           action = "addnoforce",
           properties = Json.obj(
@@ -38,7 +38,7 @@ class MailjetEmailingService(mailjetContactAdapter: MailjetSqlAdapter,
       candidatMailjet <- mailjetContactAdapter.getCandidat(miseAJourCVCandidat.candidatId)
       _ <- mailjetEmailAdapter.mettreAJourCandidat(
         ManageContactRequest(
-          email = candidatMailjet.email,
+          email = candidatMailjet.email.value,
           action = "addnoforce",
           properties = Json.obj(
             "cv" -> miseAJourCVCandidat.possedeCV
@@ -51,7 +51,7 @@ class MailjetEmailingService(mailjetContactAdapter: MailjetSqlAdapter,
     for {
       manageContactResponse <- mailjetEmailAdapter.ajouterRecruteurInscrit(
         ManageContactRequest(
-          email = recruteurInscrit.email,
+          email = recruteurInscrit.email.value,
           name = Some(s"${recruteurInscrit.nom.capitalize} ${recruteurInscrit.prenom.capitalize}"),
           action = "addnoforce",
           properties = Json.obj(

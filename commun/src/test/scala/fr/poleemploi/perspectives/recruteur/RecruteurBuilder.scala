@@ -3,7 +3,7 @@ package fr.poleemploi.perspectives.recruteur
 import java.util.UUID
 
 import fr.poleemploi.eventsourcing.Event
-import fr.poleemploi.perspectives.commun.domain.{Genre, NumeroTelephone}
+import fr.poleemploi.perspectives.commun.domain.{Email, Genre, NumeroTelephone}
 
 import scala.collection.mutable.ListBuffer
 
@@ -15,13 +15,13 @@ class RecruteurBuilder {
 
   def avecInscription(nom: Option[String] = None,
                       prenom: Option[String] = None,
-                      email: Option[String] = None,
+                      email: Option[Email] = None,
                       genre: Option[Genre] = None): RecruteurBuilder = {
     events += RecruteurInscritEvent(
       recruteurId = recruteurId,
       nom = nom.getOrElse("recruteur"),
       prenom = prenom.getOrElse("cool"),
-      email = email.getOrElse("cool.recruteur@mail.com"),
+      email = email.getOrElse(Email("cool.recruteur@mail.com")),
       genre = genre.getOrElse(Genre.HOMME)
     )
     this

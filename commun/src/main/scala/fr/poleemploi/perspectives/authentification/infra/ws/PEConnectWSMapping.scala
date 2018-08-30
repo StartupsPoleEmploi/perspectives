@@ -1,7 +1,7 @@
 package fr.poleemploi.perspectives.authentification.infra.ws
 
 import fr.poleemploi.perspectives.candidat.{Adresse, StatutDemandeurEmploi}
-import fr.poleemploi.perspectives.commun.domain.Genre
+import fr.poleemploi.perspectives.commun.domain.{Email, Genre}
 import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsPath, Reads}
@@ -31,13 +31,13 @@ object AccessTokenResponse {
 case class PEConnectCandidatInfos(peConnectId: PEConnectId,
                                   nom: String,
                                   prenom: String,
-                                  email: String,
+                                  email: Email,
                                   genre: Genre)
 
 case class PEConnectRecruteurInfos(peConnectId: PEConnectId,
                                    nom: String,
                                    prenom: String,
-                                   email: String,
+                                   email: Email,
                                    genre: Genre)
 
 private[ws] case class UserInfosResponse(sub: String,
@@ -51,7 +51,7 @@ private[ws] case class UserInfosResponse(sub: String,
       peConnectId = PEConnectId(sub),
       nom = familyName.toLowerCase,
       prenom = givenName.toLowerCase,
-      email = email.toLowerCase,
+      email = Email(email.toLowerCase), // on fait confiance à PEConnect pour avoir un email valide
       genre = PEConnectWSMapping.extractGender(gender)
     )
 
@@ -60,7 +60,7 @@ private[ws] case class UserInfosResponse(sub: String,
       peConnectId = PEConnectId(sub),
       nom = familyName.toLowerCase,
       prenom = givenName.toLowerCase,
-      email = email.toLowerCase,
+      email = Email(email.toLowerCase), // on fait confiance à PEConnect pour avoir un email valide
       genre = PEConnectWSMapping.extractGender(gender)
     )
 }

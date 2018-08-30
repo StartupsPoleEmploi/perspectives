@@ -8,7 +8,7 @@ import controllers.FlashMessages._
 import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
 import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.candidat.mrs.domain.MRSValidee
-import fr.poleemploi.perspectives.commun.domain.{Genre, Metier}
+import fr.poleemploi.perspectives.commun.domain.{Email, Genre, Metier}
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
 
@@ -33,7 +33,7 @@ class InscriptionController @Inject()(cc: ControllerComponents,
       id = candidatId,
       nom = "perspectives",
       prenom = "mickael",
-      email = "mickael.perspectives@mail.com",
+      email = Email("mickael.perspectives@mail.com"),
       genre = Genre.HOMME,
       adresse = Adresse(
         voie = "3 rue des oursons",

@@ -1,7 +1,7 @@
 package fr.poleemploi.perspectives.recruteur
 
 import fr.poleemploi.eventsourcing.{Aggregate, Event}
-import fr.poleemploi.perspectives.commun.domain.{Genre, NumeroTelephone}
+import fr.poleemploi.perspectives.commun.domain.{Email, Genre, NumeroTelephone}
 
 class Recruteur(override val id: RecruteurId,
                 override val version: Int,
@@ -70,7 +70,7 @@ class Recruteur(override val id: RecruteurId,
 private[recruteur] case class RecruteurState(estInscrit: Boolean = false,
                                              nom: Option[String] = None,
                                              prenom: Option[String] = None,
-                                             email: Option[String] = None,
+                                             email: Option[Email] = None,
                                              genre: Option[Genre] = None,
                                              raisonSociale: Option[String] = None,
                                              numeroSiret: Option[NumeroSiret] = None,

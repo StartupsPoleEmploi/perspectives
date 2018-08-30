@@ -15,7 +15,7 @@ sealed trait CandidatEvent extends Event {
 case class CandidatInscritEvent(candidatId: CandidatId,
                                 nom: String,
                                 prenom: String,
-                                email: String, // FIXME : ValueObject
+                                email: Email,
                                 genre: Genre) extends CandidatEvent
 
 case class CriteresRechercheModifiesEvent(candidatId: CandidatId,
@@ -29,7 +29,7 @@ case class CriteresRechercheModifiesEvent(candidatId: CandidatId,
 case class ProfilCandidatModifieEvent(candidatId: CandidatId,
                                       nom: String,
                                       prenom: String,
-                                      email: String, // FIXME : ValueObject
+                                      email: Email,
                                       genre: Genre) extends CandidatEvent
 
 case class NumeroTelephoneModifieEvent(candidatId: CandidatId,

@@ -18,13 +18,13 @@ class CandidatBuilder {
 
   def avecInscription(nom: Option[String] = None,
                       prenom: Option[String] = None,
-                      email: Option[String] = None,
+                      email: Option[Email] = None,
                       genre: Option[Genre] = None): CandidatBuilder = {
     events += CandidatInscritEvent(
       candidatId = candidatId,
       nom = nom.getOrElse("planteur"),
       prenom = prenom.getOrElse("jacques"),
-      email = email.getOrElse("jacques.planteur@mail.com"),
+      email = email.getOrElse(Email("jacques.planteur@mail.com")),
       genre = genre.getOrElse(Genre.HOMME)
     )
     this

@@ -1,6 +1,6 @@
 package fr.poleemploi.perspectives.candidat
 
-import fr.poleemploi.perspectives.commun.domain.Genre
+import fr.poleemploi.perspectives.commun.domain.{Email, Genre}
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, MustMatchers, WordSpec}
 
@@ -23,7 +23,7 @@ class ModifierProfilCandidatSpec extends WordSpec
       id = candidatBuilder.candidatId,
       nom = "nouveau nom",
       prenom = "nouveau prenom",
-      email = "nouveau email",
+      email = Email("nouveau email"),
       genre = Genre.HOMME,
       adresse = adresse,
       statutDemandeurEmploi = StatutDemandeurEmploi.DEMANDEUR_EMPLOI
@@ -100,7 +100,7 @@ class ModifierProfilCandidatSpec extends WordSpec
 
       // When
       val result = candidat.modifierProfil(commande.copy(
-        nom = "nouveau prénom"
+        prenom = "nouveau prénom"
       ))
 
       // Then
@@ -109,14 +109,14 @@ class ModifierProfilCandidatSpec extends WordSpec
     "générer un événement si l'email a été modifié" in {
       // Given
       val candidat = candidatBuilder
-        .avecInscription(email = Some("ancien-email@domain.fr"))
+        .avecInscription(email = Some(Email("ancien-email@domain.fr")))
         .avecAdresse(adresse)
         .avecStatutDemandeurEmploi(statutDemandeurEmploi)
         .build
 
       // When
       val result = candidat.modifierProfil(commande.copy(
-        nom = "nouvel-email@domain.fr"
+        email = Email("nouvel-email@domain.fr")
       ))
 
       // Then

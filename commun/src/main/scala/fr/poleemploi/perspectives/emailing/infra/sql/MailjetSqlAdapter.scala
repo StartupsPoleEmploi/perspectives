@@ -1,6 +1,7 @@
 package fr.poleemploi.perspectives.emailing.infra.sql
 
 import fr.poleemploi.perspectives.candidat.CandidatId
+import fr.poleemploi.perspectives.commun.domain.Email
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
 import fr.poleemploi.perspectives.emailing.infra.mailjet.{CandidatMailjet, MailjetContactId, RecruteurMailjet}
 import fr.poleemploi.perspectives.recruteur.RecruteurId
@@ -22,7 +23,7 @@ class MailjetSqlAdapter(val driver: PostgresDriver,
 
     def mailjetContactId = column[MailjetContactId]("mailjet_id")
 
-    def email = column[String]("email")
+    def email = column[Email]("email")
 
     def * = (candidatId, mailjetContactId, email) <> (CandidatMailjet.tupled, CandidatMailjet.unapply)
   }
@@ -40,7 +41,7 @@ class MailjetSqlAdapter(val driver: PostgresDriver,
 
     def mailjetContactId = column[MailjetContactId]("mailjet_id")
 
-    def email = column[String]("email")
+    def email = column[Email]("email")
 
     def * = (recruteurId, mailjetContactId, email) <> (RecruteurMailjet.tupled, RecruteurMailjet.unapply)
   }

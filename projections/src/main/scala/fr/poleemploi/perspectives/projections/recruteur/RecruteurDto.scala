@@ -2,13 +2,13 @@ package fr.poleemploi.perspectives.projections.recruteur
 
 import java.time.ZonedDateTime
 
-import fr.poleemploi.perspectives.commun.domain.{Genre, NumeroTelephone}
+import fr.poleemploi.perspectives.commun.domain.{Email, Genre, NumeroTelephone}
 import fr.poleemploi.perspectives.recruteur.{NumeroSiret, RecruteurId, TypeRecruteur}
 
 case class RecruteurDto(recruteurId: RecruteurId,
                         nom: String,
                         prenom: String,
-                        email: String,
+                        email: Email,
                         genre: Genre,
                         typeRecruteur: Option[TypeRecruteur],
                         raisonSociale: Option[String],
