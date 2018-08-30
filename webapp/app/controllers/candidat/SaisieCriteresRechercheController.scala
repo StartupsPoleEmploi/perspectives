@@ -5,7 +5,7 @@ import conf.WebAppConfig
 import controllers.FlashMessages._
 import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.candidat.cv.domain.CVId
-import fr.poleemploi.perspectives.commun.domain.{Metier, NumeroTelephone, RayonRecherche}
+import fr.poleemploi.perspectives.commun.domain.{CodeROME, NumeroTelephone, RayonRecherche, SecteurActivite}
 import fr.poleemploi.perspectives.projections.candidat.{CandidatQueryHandler, GetCandidatQuery}
 import javax.inject.Inject
 import play.api.Logger
@@ -24,36 +24,21 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
 
   def saisieCriteresRecherche(): Action[AnyContent] = candidatAuthentifieAction.async { candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
-      def booleanToString(boolean: Boolean): String = if (boolean) "true" else "false"
+      for {
+        candidatDto <-
+          if (messagesRequest.flash.candidatInscrit) Future.successful(None)
+          else candidatQueryHandler.getCandidat(GetCandidatQuery(candidatAuthentifieRequest.candidatId)).map(Some(_))
+      } yield {
+        val form = candidatDto
+          .map(SaisieCriteresRechercheForm.fromCandidat)
+          .getOrElse(SaisieCriteresRechercheForm.nouveauCandidat)
 
-      if (messagesRequest.flash.candidatInscrit) {
-        Future.successful(
-          Ok(views.html.candidat.saisieCriteresRecherche(
-            saisieCriteresRechercheForm = SaisieCriteresRechercheForm.nouveauCandidat,
-            candidatDto = None,
-            candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie)
-          )
-        )
-      } else {
-        candidatQueryHandler.getCandidat(GetCandidatQuery(candidatAuthentifieRequest.candidatId)).map { candidatDto =>
-          val filledForm = SaisieCriteresRechercheForm.form.fill(
-            SaisieCriteresRechercheForm(
-              nouveauCandidat = false,
-              rechercheMetierEvalue = candidatDto.rechercheMetierEvalue.map(booleanToString).getOrElse(""),
-              rechercheAutreMetier = candidatDto.rechercheAutreMetier.map(booleanToString).getOrElse(""),
-              metiersRecherches = candidatDto.metiersRecherches.map(_.value).toSet,
-              etreContacteParAgenceInterim = candidatDto.contacteParAgenceInterim.map(booleanToString).getOrElse(""),
-              etreContacteParOrganismeFormation = candidatDto.contacteParOrganismeFormation.map(booleanToString).getOrElse(""),
-              rayonRecherche = candidatDto.rayonRecherche.map(_.value).getOrElse(0),
-              numeroTelephone = candidatDto.numeroTelephone.map(_.value).getOrElse("")
-            )
-          )
-          Ok(views.html.candidat.saisieCriteresRecherche(
-            saisieCriteresRechercheForm = filledForm,
-            candidatDto = Some(candidatDto),
-            candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie)
-          )
-        }
+        Ok(views.html.candidat.saisieCriteresRecherche(
+          saisieCriteresRechercheForm = form,
+          candidatDto = candidatDto,
+          candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie,
+          secteursActivites = SecteurActivite.values
+        ))
       }
     }(candidatAuthentifieRequest)
   }
@@ -75,8 +60,9 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
                 Future.successful(BadRequest(views.html.candidat.saisieCriteresRecherche(
                   saisieCriteresRechercheForm = formWithErrors,
                   candidatDto = Some(candidatDto),
-                  candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie)
-                ))
+                  candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie,
+                  secteursActivites = SecteurActivite.values
+                )))
               },
               saisieCriteresRechercheForm => {
                 val candidatId = candidatAuthentifieRequest.candidatId
@@ -119,7 +105,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
       rechercheAutreMetier = stringToBoolean(saisieCriteresRechercheForm.rechercheAutreMetier),
       metiersRecherches =
         if (stringToBoolean(saisieCriteresRechercheForm.rechercheAutreMetier))
-          saisieCriteresRechercheForm.metiersRecherches.flatMap(Metier.from)
+          saisieCriteresRechercheForm.metiersRecherches.map(CodeROME)
         else Set.empty,
       etreContacteParOrganismeFormation = stringToBoolean(saisieCriteresRechercheForm.etreContacteParOrganismeFormation),
       etreContacteParAgenceInterim = stringToBoolean(saisieCriteresRechercheForm.etreContacteParAgenceInterim),

@@ -6,7 +6,8 @@
 @import helper._
 
 @(saisieCriteresRechercheForm: Form[SaisieCriteresRechercheForm],
-        candidatDto: Option[CandidatDto],
+        candidatDto: Option[CandidatDto], // FIXME : juste besoin pour le CV
+        secteursActivites: List[SecteurActivite],
         candidatAuthentifie: CandidatAuthentifie)(implicit request: MessagesRequestHeader, flash: Flash, webAppConfig: WebAppConfig)
 
 @hasErrors(field:String) = @{
@@ -82,150 +83,26 @@
             <dd class="choixMetiers">
                 <span class="ligneVerticaleSecteurs"></span>
                 <ul class="secteursActivites">
-                    <li>
-                        <input id="secteurActivite-1"
-                        name="secteurActivite"
-                        type="checkbox" value="" />
-                        <label class="labelSecteurActivite" for="secteurActivite-1">
-                            <span class="checkmark"></span>
-                            @SecteurActivite.INDUSTRIE.label
-                            <span class="compteur-metiers-selectionnes"></span>
-                        </label>
-                        <div class="conteneurMetiers">
-                            <span class="ligneVerticaleMetiers"></span>
-                            <ul class="metiers">
-                            @for(metier <- SecteurActivite.INDUSTRIE.metiers) {
-                                <li class="metiers-item">@components.checkboxMetier(saisieCriteresRechercheForm, metier)</li>
-                            }
-                            </ul>
-                        </div>
-                    </li>
-                    <li>
-                        <input id="secteurActivite-2"
-                               name="secteurActivite"
-                               type="checkbox" value="" />
-                        <label class="labelSecteurActivite" for="secteurActivite-2">
-                            <span class="checkmark"></span>
-                            @SecteurActivite.COMMERCE.label
-                            <span class="compteur-metiers-selectionnes"></span>
-                        </label>
-                        <div class="conteneurMetiers">
-                            <span class="ligneVerticaleMetiers"></span>
-                            <ul class="metiers">
-                                @for(metier <- SecteurActivite.COMMERCE.metiers) {
+                    @for(secteurActivite <- secteursActivites) {
+                        <li>
+                            <input id="secteurActivite-@secteurActivite.code.value"
+                                    name="secteurActivite"
+                                    type="checkbox" value="" />
+                            <label class="labelSecteurActivite" for="secteurActivite-@secteurActivite.code.value">
+                                <span class="checkmark"></span>
+                                @secteurActivite.label
+                                <span class="compteur-metiers-selectionnes"></span>
+                            </label>
+                            <div class="conteneurMetiers">
+                                <span class="ligneVerticaleMetiers"></span>
+                                <ul class="metiers">
+                                @for(metier <- secteurActivite.metiers) {
                                     <li class="metiers-item">@components.checkboxMetier(saisieCriteresRechercheForm, metier)</li>
                                 }
-                            </ul>
-                        </div>
-                    </li>
-                    <li>
-                        <input id="secteurActivite-3"
-                               name="secteurActivite"
-                               type="checkbox" value="" />
-                        <label class="labelSecteurActivite" for="secteurActivite-3">
-                            <span class="checkmark"></span>
-                            @SecteurActivite.BATIMENT.label
-                            <span class="compteur-metiers-selectionnes"></span>
-                        </label>
-                        <div class="conteneurMetiers">
-                            <span class="ligneVerticaleMetiers"></span>
-                            <ul class="metiers">
-                                @for(metier <- SecteurActivite.BATIMENT.metiers) {
-                                    <li class="metiers-item">@components.checkboxMetier(saisieCriteresRechercheForm, metier)</li>
-                                }
-                            </ul>
-                        </div>
-                    </li>
-                    <li>
-                        <input id="secteurActivite-4"
-                               name="secteurActivite"
-                               type="checkbox" value="" />
-                        <label class="labelSecteurActivite" for="secteurActivite-4">
-                            <span class="checkmark"></span>
-                            @SecteurActivite.HOTELLERIE_RESTAURATION.label
-                            <span class="compteur-metiers-selectionnes"></span>
-                        </label>
-                        <div class="conteneurMetiers">
-                            <span class="ligneVerticaleMetiers"></span>
-                            <ul class="metiers">
-                                @for(metier <- SecteurActivite.HOTELLERIE_RESTAURATION.metiers) {
-                                    <li class="metiers-item">@components.checkboxMetier(saisieCriteresRechercheForm, metier)</li>
-                                }
-                            </ul>
-                        </div>
-                    </li>
-                    <li>
-                        <input id="secteurActivite-5"
-                               name="secteurActivite"
-                               type="checkbox" value="" />
-                        <label class="labelSecteurActivite" for="secteurActivite-5">
-                            <span class="checkmark"></span>
-                            @SecteurActivite.AGRICULTURE.label
-                            <span class="compteur-metiers-selectionnes"></span>
-                        </label>
-                        <div class="conteneurMetiers">
-                            <span class="ligneVerticaleMetiers"></span>
-                            <ul class="metiers">
-                                @for(metier <- SecteurActivite.AGRICULTURE.metiers) {
-                                    <li class="metiers-item">@components.checkboxMetier(saisieCriteresRechercheForm, metier)</li>
-                                }
-                            </ul>
-                        </div>
-                    </li>
-                    <li>
-                        <input id="secteurActivite-6"
-                               name="secteurActivite"
-                               type="checkbox" value="" />
-                        <label class="labelSecteurActivite" for="secteurActivite-6">
-                            <span class="checkmark"></span>
-                            @SecteurActivite.TEXTILE.label
-                            <span class="compteur-metiers-selectionnes"></span>
-                        </label>
-                        <div class="conteneurMetiers">
-                            <span class="ligneVerticaleMetiers"></span>
-                            <ul class="metiers">
-                                @for(metier <- SecteurActivite.TEXTILE.metiers) {
-                                    <li class="metiers-item">@components.checkboxMetier(saisieCriteresRechercheForm, metier)</li>
-                                }
-                            </ul>
-                        </div>
-                    </li>
-                    <li>
-                        <input id="secteurActivite-7"
-                               name="secteurActivite"
-                               type="checkbox" value="" />
-                        <label class="labelSecteurActivite" for="secteurActivite-7">
-                            <span class="checkmark"></span>
-                            @SecteurActivite.SERVICES_A_LA_PERSONNE.label
-                            <span class="compteur-metiers-selectionnes"></span>
-                        </label>
-                        <div class="conteneurMetiers">
-                            <span class="ligneVerticaleMetiers"></span>
-                            <ul class="metiers">
-                                @for(metier <- SecteurActivite.SERVICES_A_LA_PERSONNE.metiers) {
-                                    <li class="metiers-item">@components.checkboxMetier(saisieCriteresRechercheForm, metier)</li>
-                                }
-                            </ul>
-                        </div>
-                    </li>
-                    <li>
-                        <input id="secteurActivite-8"
-                               name="secteurActivite"
-                               type="checkbox" value="" />
-                        <label class="labelSecteurActivite" for="secteurActivite-8">
-                            <span class="checkmark"></span>
-                            @SecteurActivite.TRANSPORT_LOGISTIQUE.label
-                            <span class="compteur-metiers-selectionnes"></span>
-                        </label>
-                        <div class="conteneurMetiers">
-                            <span class="ligneVerticaleMetiers"></span>
-                            <ul class="metiers">
-                                @for(metier <- SecteurActivite.TRANSPORT_LOGISTIQUE.metiers) {
-                                    <li class="metiers-item">@components.checkboxMetier(saisieCriteresRechercheForm, metier)</li>
-                                }
-                            </ul>
-                        </div>
-                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                    }
                 </ul>
             </dd>
             @if(hasErrors("listeMetiersRecherches")) {

@@ -4,7 +4,7 @@ import com.github.tminglei.slickpg._
 import com.github.tminglei.slickpg.array.PgArrayExtensions
 import fr.poleemploi.perspectives.candidat.cv.domain.CVId
 import fr.poleemploi.perspectives.candidat.{CandidatId, StatutDemandeurEmploi}
-import fr.poleemploi.perspectives.commun.domain.{Genre, Metier, NumeroTelephone, RayonRecherche}
+import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetContactId
 import fr.poleemploi.perspectives.recruteur.{NumeroSiret, RecruteurId, TypeRecruteur}
@@ -65,14 +65,14 @@ trait PostgresDriver extends ExPostgresProfile
       { s => NumeroTelephone.from(s).get }
     )
 
-    implicit val metierColumnType: BaseColumnType[Metier] = MappedColumnType.base[Metier, String](
-      { m => m.value },
-      { s => Metier.from(s).get }
+    implicit val codeROMEColumnType: BaseColumnType[CodeROME] = MappedColumnType.base[CodeROME, String](
+      { c => c.value },
+      { s => CodeROME(s) }
     )
 
-    implicit val listMetiersColumnType: BaseColumnType[List[Metier]] = MappedColumnType.base[List[Metier], List[String]](
-      { m => m.map(_.value) },
-      { s => s.map(code => Metier.from(code).getOrElse(Metier(code, ""))) } // FIXME : referentiel métier
+    implicit val listCodeROMEColumnType: BaseColumnType[List[CodeROME]] = MappedColumnType.base[List[CodeROME], List[String]](
+      { c => c.map(_.value) },
+      { s => s.map(CodeROME) }
     )
 
     implicit val statutDemandeurEmploiColumnType: BaseColumnType[StatutDemandeurEmploi] = MappedColumnType.base[StatutDemandeurEmploi, String](

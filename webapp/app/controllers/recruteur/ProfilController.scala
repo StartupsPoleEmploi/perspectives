@@ -23,23 +23,12 @@ class ProfilController @Inject()(components: ControllerComponents,
 
   def modificationProfil(): Action[AnyContent] = recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
-      def booleanToString(boolean: Boolean): String = if (boolean) "true" else "false"
-
       val form: Future[Form[ProfilForm]] =
         if (messagesRequest.flash.recruteurInscrit) {
           Future.successful(ProfilForm.nouveauRecruteur)
         } else {
-          recruteurQueryHandler.getRecruteur(GetRecruteurQuery(recruteurId = recruteurAuthentifieRequest.recruteurId)).map(recruteurDto =>
-            ProfilForm.form.fill(
-              ProfilForm(
-                nouveauRecruteur = false,
-                typeRecruteur = recruteurDto.typeRecruteur.map(_.value).getOrElse(""),
-                raisonSociale = recruteurDto.raisonSociale.getOrElse(""),
-                numeroSiret = recruteurDto.numeroSiret.map(_.value).getOrElse(""),
-                numeroTelephone = recruteurDto.numeroTelephone.map(_.value).getOrElse(""),
-                contactParCandidats = recruteurDto.contactParCandidats.map(booleanToString).getOrElse("")
-              )
-            ))
+          recruteurQueryHandler.getRecruteur(GetRecruteurQuery(recruteurId = recruteurAuthentifieRequest.recruteurId))
+            .map(ProfilForm.fromRecruteur)
         }
 
       form.map(f => Ok(views.html.recruteur.profil(f, recruteurAuthentifie = recruteurAuthentifieRequest.recruteurAuthentifie)))

@@ -7,7 +7,7 @@ import conf.WebAppConfig
 import controllers.FlashMessages._
 import fr.poleemploi.cqrs.projection.UnauthorizedQueryException
 import fr.poleemploi.perspectives.candidat.CandidatId
-import fr.poleemploi.perspectives.commun.domain.{Metier, SecteurActivite}
+import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite, SecteurActivite}
 import fr.poleemploi.perspectives.projections.candidat._
 import fr.poleemploi.perspectives.projections.recruteur._
 import fr.poleemploi.perspectives.recruteur.RecruteurId
@@ -32,10 +32,14 @@ class MatchingController @Inject()(cc: ControllerComponents,
         secteurActivite = None,
         metier = None
       )
-      rechercher(matchingForm = matchingForm, recruteurId = recruteurAuthentifieRequest.recruteurId).map { resultatRechercheCandidatDto =>
-        MatchingForm.form.fill(matchingForm)
-        Ok(views.html.recruteur.matching(MatchingForm.form.fill(matchingForm), recruteurAuthentifieRequest.recruteurAuthentifie, resultatRechercheCandidatDto))
-      }.recover {
+      rechercher(matchingForm = matchingForm, recruteurId = recruteurAuthentifieRequest.recruteurId).map(resultatRechercheCandidatDto =>
+        Ok(views.html.recruteur.matching(
+          matchingForm = MatchingForm.form.fill(matchingForm),
+          recruteurAuthentifie = recruteurAuthentifieRequest.recruteurAuthentifie,
+          resultatRechercheCandidat = resultatRechercheCandidatDto,
+          secteursActivites = SecteurActivite.values
+        ))
+      ).recover {
         case _: ProfilRecruteurIncompletException =>
           Redirect(routes.ProfilController.modificationProfil())
             .flashing(messagesRequest.flash.withMessageErreur("Vous devez renseigner votre profil avant de pouvoir effectuer une recherche"))
@@ -64,12 +68,12 @@ class MatchingController @Inject()(cc: ControllerComponents,
     getRecruteurAvecProfilComplet(recruteurId).flatMap(recruteurDto =>
       if (matchingForm.metier.exists(_.nonEmpty)) {
         candidatQueryHandler.rechercherCandidatsParMetier(RechercherCandidatsParMetierQuery(
-          metier = matchingForm.metier.flatMap(Metier.from).get,
+          codeROME = matchingForm.metier.map(CodeROME).get,
           typeRecruteur = recruteurDto.typeRecruteur.get
         ))
       } else if (matchingForm.secteurActivite.exists(_.nonEmpty)) {
-        candidatQueryHandler.rechercherCandidatsParSecteur(RechercheCandidatsParSecteurQuery(
-          secteurActivite = matchingForm.secteurActivite.flatMap(SecteurActivite.from).get,
+        candidatQueryHandler.rechercherCandidatsParSecteur(RechercherCandidatsParSecteurQuery(
+          codeSecteurActivite = matchingForm.secteurActivite.map(CodeSecteurActivite(_)).get,
           typeRecruteur = recruteurDto.typeRecruteur.get
         ))
       } else {

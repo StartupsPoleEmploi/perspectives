@@ -2,37 +2,42 @@ package fr.poleemploi.perspectives.commun.domain
 
 import fr.poleemploi.eventsourcing.StringValueObject
 
-import scala.collection.immutable.ListMap
-
 /**
-  * Value Object SecteurActivite
+  * Value Object permettant d'identifier un secteur d'activité
   */
-case class SecteurActivite(value: String,
-                           label: String,
-                           metiers: List[Metier]) extends StringValueObject
+case class CodeSecteurActivite(value: String) extends StringValueObject
 
-/**
-  * Methodes pour construire et valider un SecteurActivite
-  */
+object CodeSecteurActivite {
+
+  /**
+    * Le code du secteur d'activité d'un métier correspond à la première lettre de son code ROME
+    */
+  def fromCodeROME(codeROME: CodeROME): CodeSecteurActivite =
+    CodeSecteurActivite(codeROME.value.take(1).toUpperCase)
+}
+
+class SecteurActivite(val code: CodeSecteurActivite,
+                      val label: String,
+                      val metiers: List[Metier])
+
 object SecteurActivite {
-
-  val AGRICULTURE: SecteurActivite = SecteurActivite(
-    value = "A",
+  val AGRICULTURE: SecteurActivite = new SecteurActivite(
+    code = CodeSecteurActivite("A"),
     label = "Agriculture",
     metiers = List(
       Metier.AIDE_AGRICOLE
     ))
 
-  val HOTELLERIE_RESTAURATION: SecteurActivite = SecteurActivite(
-    value = "G",
+  val HOTELLERIE_RESTAURATION: SecteurActivite = new SecteurActivite(
+    code = CodeSecteurActivite("G"),
     label = "Hôtellerie restauration",
     metiers = List(
       Metier.PERSONNEL_POLYVALENT,
       Metier.SERVICE
     ))
 
-  val BATIMENT: SecteurActivite = SecteurActivite(
-    value = "F",
+  val BATIMENT: SecteurActivite = new SecteurActivite(
+    code = CodeSecteurActivite("F"),
     label = "Bâtiment",
     metiers = List(
       Metier.ELECTRICITE,
@@ -40,8 +45,8 @@ object SecteurActivite {
       Metier.CONDUITE_ENGINS
     ))
 
-  val COMMERCE: SecteurActivite = SecteurActivite(
-    value = "D",
+  val COMMERCE: SecteurActivite = new SecteurActivite(
+    code = CodeSecteurActivite("D"),
     label = "Commerce",
     metiers = List(
       Metier.MISE_EN_RAYON,
@@ -49,8 +54,8 @@ object SecteurActivite {
       Metier.VENTE
     ))
 
-  val SERVICES_A_LA_PERSONNE: SecteurActivite = SecteurActivite(
-    value = "K",
+  val SERVICES_A_LA_PERSONNE: SecteurActivite = new SecteurActivite(
+    code = CodeSecteurActivite("K"),
     label = "Services à la personne",
     metiers = List(
       Metier.AIDE_PERSONNES_AGEES,
@@ -58,16 +63,16 @@ object SecteurActivite {
       Metier.NETTOYAGE_LOCAUX
     ))
 
-  val TEXTILE: SecteurActivite = SecteurActivite(
-    value = "B",
+  val TEXTILE: SecteurActivite = new SecteurActivite(
+    code = CodeSecteurActivite("B"),
     label = "Textile",
     metiers = List(
       Metier.REALISATION_ARTICLES,
       Metier.MECANICIEN_CONFECTION
     ))
 
-  val INDUSTRIE: SecteurActivite = SecteurActivite(
-    value = "H",
+  val INDUSTRIE: SecteurActivite = new SecteurActivite(
+    code = CodeSecteurActivite("H"),
     label = "Industrie",
     metiers = List(
       Metier.CONDUITE_MACHINE,
@@ -77,25 +82,31 @@ object SecteurActivite {
       Metier.PREPARATION_COMMANDE
     ))
 
-  val TRANSPORT_LOGISTIQUE: SecteurActivite = SecteurActivite(
-    value = "N",
+  val TRANSPORT_LOGISTIQUE: SecteurActivite = new SecteurActivite(
+    code = CodeSecteurActivite("N"),
     label = "Transport et logistique",
     metiers = List(
       Metier.MANUTENTION
     ))
 
-  val values = ListMap(
-    AGRICULTURE.value -> AGRICULTURE,
-    HOTELLERIE_RESTAURATION.value -> HOTELLERIE_RESTAURATION,
-    BATIMENT.value -> BATIMENT,
-    COMMERCE.value -> COMMERCE,
-    SERVICES_A_LA_PERSONNE.value -> SERVICES_A_LA_PERSONNE,
-    TEXTILE.value -> TEXTILE,
-    INDUSTRIE.value -> INDUSTRIE,
-    TRANSPORT_LOGISTIQUE.value -> TRANSPORT_LOGISTIQUE
+  val values = List(
+    SecteurActivite.INDUSTRIE,
+    SecteurActivite.COMMERCE,
+    SecteurActivite.BATIMENT,
+    SecteurActivite.HOTELLERIE_RESTAURATION,
+    SecteurActivite.AGRICULTURE,
+    SecteurActivite.TEXTILE,
+    SecteurActivite.SERVICES_A_LA_PERSONNE,
+    SecteurActivite.TRANSPORT_LOGISTIQUE
   )
 
-  def from(value: String): Option[SecteurActivite] = values.get(value)
+  def parCode(codeSecteurActivite: CodeSecteurActivite): SecteurActivite =
+    values
+      .find(_.code == codeSecteurActivite)
+      .getOrElse(throw new IllegalArgumentException(s"Aucun secteur avec le code $codeSecteurActivite"))
 
-  def getSecteur(metier: Metier): Option[SecteurActivite] = values.get(metier.value.take(1).toUpperCase)
+  def parMetier(codeROME: CodeROME): SecteurActivite =
+    values
+      .find(_.code == CodeSecteurActivite.fromCodeROME(codeROME))
+      .getOrElse(throw new IllegalArgumentException(s"Aucun secteur pour le code ROME $codeROME"))
 }

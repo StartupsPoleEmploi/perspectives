@@ -15,12 +15,6 @@ trait EventSourcingModule extends SimpleModule {
     addDeserializer(clazz, new StringValueDeserializer[T](clazz, deserialize))
   }
 
-  def addEntityId[T <: EntityId](clazz: Class[T],
-                                 deserialize: String => T): Unit = {
-    addSerializer(clazz, new StringValueSerializer[T](clazz))
-    addDeserializer(clazz, new StringValueDeserializer[T](clazz, deserialize))
-  }
-
   def addStringValueObject[T <: StringValueObject](clazz: Class[T],
                                                    deserialize: String => T): Unit = {
     addSerializer(clazz, new StringValueSerializer[T](clazz))

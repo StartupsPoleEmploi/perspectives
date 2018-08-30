@@ -5,7 +5,7 @@ import java.util.UUID
 import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.perspectives.candidat.cv.domain.CVId
 import fr.poleemploi.perspectives.candidat.mrs.domain.MRSValidee
-import fr.poleemploi.perspectives.commun.domain.{Genre, Metier, NumeroTelephone, RayonRecherche}
+import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.conseiller.ConseillerId
 
 import scala.collection.mutable.ListBuffer
@@ -41,7 +41,7 @@ class CandidatBuilder {
   def avecMRSValidee(mrsValidee: MRSValidee): CandidatBuilder = {
     events += MRSAjouteeEvent(
       candidatId = candidatId,
-      metier = mrsValidee.codeMetier,
+      metier = mrsValidee.codeROME,
       dateEvaluation = mrsValidee.dateEvaluation
     )
     this
@@ -65,7 +65,7 @@ class CandidatBuilder {
 
   def avecCriteresRecherche(rechercheMetierEvalue: Option[Boolean] = None,
                             rechercheAutreMetier: Option[Boolean] = None,
-                            metiersRecherches: Option[Set[Metier]] = None,
+                            metiersRecherches: Option[Set[CodeROME]] = None,
                             etreContacteParAgenceInterim: Option[Boolean] = None,
                             etreContacteParOrganismeFormation: Option[Boolean] = None,
                             rayonRecherche: Option[RayonRecherche] = None): CandidatBuilder = {

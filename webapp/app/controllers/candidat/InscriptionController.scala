@@ -43,7 +43,7 @@ class InscriptionController @Inject()(cc: ControllerComponents,
       ),
       statutDemandeurEmploi = StatutDemandeurEmploi.DEMANDEUR_EMPLOI,
       mrsValidees = List(MRSValidee(
-        codeMetier = Metier.MACONNERIE.value,
+        codeROME = Metier.MACONNERIE.codeROME,
         dateEvaluation = LocalDate.now()
       ))
     )

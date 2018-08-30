@@ -5,7 +5,7 @@ import java.nio.file.Path
 import fr.poleemploi.cqrs.command.Command
 import fr.poleemploi.perspectives.candidat.cv.domain.CVId
 import fr.poleemploi.perspectives.candidat.mrs.domain.MRSValidee
-import fr.poleemploi.perspectives.commun.domain.{Genre, Metier, NumeroTelephone, RayonRecherche}
+import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.conseiller.ConseillerId
 
 case class InscrireCandidatCommand(id: CandidatId,
@@ -21,7 +21,7 @@ case class InscrireCandidatCommand(id: CandidatId,
 case class ModifierCriteresRechercheCommand(id: CandidatId,
                                             rechercheMetierEvalue: Boolean,
                                             rechercheAutreMetier: Boolean,
-                                            metiersRecherches: Set[Metier],
+                                            metiersRecherches: Set[CodeROME],
                                             etreContacteParOrganismeFormation: Boolean,
                                             etreContacteParAgenceInterim: Boolean,
                                             rayonRecherche: RayonRecherche,

@@ -2,7 +2,7 @@ package fr.poleemploi.perspectives.projections.candidat
 
 import fr.poleemploi.cqrs.projection.Query
 import fr.poleemploi.perspectives.candidat.CandidatId
-import fr.poleemploi.perspectives.commun.domain.{Metier, SecteurActivite}
+import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite}
 import fr.poleemploi.perspectives.recruteur.{RecruteurId, TypeRecruteur}
 
 sealed trait CandidatQuery extends Query
@@ -16,8 +16,8 @@ case class GetCVPourRecruteurParCandidatQuery(candidatId: CandidatId,
 
 case class RechercherCandidatsParDateInscriptionQuery(typeRecruteur: TypeRecruteur) extends CandidatQuery
 
-case class RechercheCandidatsParSecteurQuery(typeRecruteur: TypeRecruteur,
-                                             secteurActivite: SecteurActivite) extends CandidatQuery
+case class RechercherCandidatsParSecteurQuery(typeRecruteur: TypeRecruteur,
+                                              codeSecteurActivite: CodeSecteurActivite) extends CandidatQuery
 
 case class RechercherCandidatsParMetierQuery(typeRecruteur: TypeRecruteur,
-                                             metier: Metier) extends CandidatQuery
+                                             codeROME: CodeROME) extends CandidatQuery

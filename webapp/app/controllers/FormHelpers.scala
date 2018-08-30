@@ -13,4 +13,6 @@ object FormHelpers {
         Invalid(Seq(ValidationError("constraint.numeroTelephone")))
       }
   })
+
+  def booleanToString(boolean: Boolean): String = if (boolean) "true" else "false"
 }

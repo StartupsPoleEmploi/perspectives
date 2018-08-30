@@ -2,7 +2,8 @@
 @import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
 @import fr.poleemploi.perspectives.commun.domain.SecteurActivite
 
-@(candidatAuthentifie: Option[CandidatAuthentifie])(implicit flash: Flash, webAppConfig: WebAppConfig)
+@(candidatAuthentifie: Option[CandidatAuthentifie],
+        secteursActivites: List[SecteurActivite])(implicit flash: Flash, webAppConfig: WebAppConfig)
 
 @layout(candidatAuthentifie = candidatAuthentifie, cssClassesBody = List("degradeGrisBlanc")) {
     <div id="landingCandidat">
@@ -87,7 +88,7 @@
         <section class="metiers">
             <h2 class="metiers-titre">Accédez à de nouveaux emplois !</h2>
             <ul class="secteursActivites">
-                @for(secteurActivite <- SecteurActivite.values.values) {
+                @for(secteurActivite <- secteursActivites) {
                     <li class="secteursActivites-item">
                         <span class="secteurActivite-intitule">@secteurActivite.label</span>
                         <ul class="metiersSecteur">

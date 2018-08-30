@@ -3,26 +3,27 @@ package fr.poleemploi.perspectives.commun.domain
 import fr.poleemploi.eventsourcing.StringValueObject
 
 /**
-  * Value Object Metier.
-  * La valeur est le code ROME (Répertoire Opérationnel des Métiers et des Emplois)
+  * Value Object permettant d'identifier un métier par son code.
+  * ROME : Répertoire Opérationnel des Métiers et des Emplois
   */
-case class Metier(value: String, label: String, habiletes: List[Habilete] = Nil) extends StringValueObject
+case class CodeROME(value: String) extends StringValueObject
 
-/**
-  * Methodes pour construire et valider un Metier
-  */
+class Metier(val codeROME: CodeROME,
+             val label: String,
+             val habiletes: List[Habilete])
+
 object Metier {
 
   // FIXME : récupérer les habiletés pour tous les métiers proposés
-  val AIDE_AGRICOLE = Metier(
-    value = "A1401",
+  val AIDE_AGRICOLE = new Metier(
+    codeROME = CodeROME("A1401"),
     label = "Aide agricole",
     habiletes = List(
       Habilete.RESPECT_NORMES_ET_CONSIGNES
     )
   )
-  val REALISATION_ARTICLES = Metier(
-    value = "B1802",
+  val REALISATION_ARTICLES = new Metier(
+    codeROME = CodeROME("B1802"),
     label = "Réalisation d'articles",
     habiletes = List(
       Habilete.RESPECT_NORMES_ET_CONSIGNES,
@@ -32,22 +33,22 @@ object Metier {
       Habilete.REPRESENTATION_PROCESSUS
     )
   )
-  val VENTE = Metier(
-    value = "D1106",
+  val VENTE = new Metier(
+    codeROME = CodeROME("D1106"),
     label = "Vente",
     habiletes = List(
       Habilete.RESPECT_NORMES_ET_CONSIGNES
     )
   )
-  val CAISSE = Metier(
-    value = "D1505",
+  val CAISSE = new Metier(
+    codeROME = CodeROME("D1505"),
     label = "Caisse",
     habiletes = List(
       Habilete.RESPECT_NORMES_ET_CONSIGNES
     )
   )
-  val MISE_EN_RAYON = Metier(
-    value = "D1507",
+  val MISE_EN_RAYON = new Metier(
+    codeROME = CodeROME("D1507"),
     label = "Mise en rayon",
     habiletes = List(
       Habilete.RESPECT_NORMES_ET_CONSIGNES,
@@ -57,29 +58,29 @@ object Metier {
       Habilete.TRAVAIL_EN_EQUIPE
     )
   )
-  val CONDUITE_ENGINS = Metier(
-    value = "F1301",
+  val CONDUITE_ENGINS = new Metier(
+    codeROME = CodeROME("F1301"),
     label = "Conduite d’engins",
     habiletes = List(
       Habilete.RESPECT_NORMES_ET_CONSIGNES
     )
   )
-  val ELECTRICITE = Metier(
-    value = "F1602",
+  val ELECTRICITE = new Metier(
+    codeROME = CodeROME("F1602"),
     label = "Électricité",
     habiletes = List(
       Habilete.RESPECT_NORMES_ET_CONSIGNES
     )
   )
-  val MACONNERIE = Metier(
-    value = "F1703",
+  val MACONNERIE = new Metier(
+    codeROME = CodeROME("F1703"),
     label = "Maçonnerie",
     habiletes = List(
       Habilete.RESPECT_NORMES_ET_CONSIGNES
     )
   )
-  val PERSONNEL_POLYVALENT = Metier(
-    value = "G1603",
+  val PERSONNEL_POLYVALENT = new Metier(
+    codeROME = CodeROME("G1603"),
     label = "Personnel polyvalent",
     habiletes = List(
       Habilete.RESPECT_NORMES_ET_CONSIGNES,
@@ -88,22 +89,22 @@ object Metier {
       Habilete.TRAVAIL_EN_EQUIPE
     )
   )
-  val SERVICE = Metier(
-    value = "G1803",
+  val SERVICE = new Metier(
+    codeROME = CodeROME("G1803"),
     label = "Service",
     habiletes = List(
       Habilete.RESPECT_NORMES_ET_CONSIGNES
     )
   )
-  val DECOUPE_VIANDE = Metier(
-    value = "H2101",
+  val DECOUPE_VIANDE = new Metier(
+    codeROME = CodeROME("H2101"),
     label = "Découpe de viande",
     habiletes = List(
       Habilete.RESPECT_NORMES_ET_CONSIGNES
     )
   )
-  val CONDUITE_MACHINE_AGRO = Metier(
-    value = "H2102",
+  val CONDUITE_MACHINE_AGRO = new Metier(
+    codeROME = CodeROME("H2102"),
     label = "Conduite de machines",
     habiletes = List(
       Habilete.RESPECT_NORMES_ET_CONSIGNES,
@@ -112,8 +113,8 @@ object Metier {
       Habilete.REPRESENTATION_PROCESSUS
     )
   )
-  val CONDUITE_MACHINE = Metier(
-    value = "H2202",
+  val CONDUITE_MACHINE = new Metier(
+    codeROME = CodeROME("H2202"),
     label = "Conduite de machines",
     habiletes = List(
       Habilete.RESPECT_NORMES_ET_CONSIGNES,
@@ -122,8 +123,8 @@ object Metier {
       Habilete.REPRESENTATION_PROCESSUS
     )
   )
-  val MECANICIEN_CONFECTION = Metier(
-    value = "H2402",
+  val MECANICIEN_CONFECTION = new Metier(
+    codeROME = CodeROME("H2402"),
     label = "Mécanicien en confection",
     habiletes = List(
       Habilete.RESPECT_NORMES_ET_CONSIGNES,
@@ -133,8 +134,8 @@ object Metier {
       Habilete.ADAPTATION
     )
   )
-  val SOUDAGE = Metier(
-    value = "H2913",
+  val SOUDAGE = new Metier(
+    codeROME = CodeROME("H2913"),
     label = "Soudage",
     habiletes = List(
       Habilete.RESPECT_NORMES_ET_CONSIGNES,
@@ -143,8 +144,8 @@ object Metier {
       Habilete.REPRESENTATION_ESPACE
     )
   )
-  val FABRICATION_PIECES = Metier(
-    value = "H3203",
+  val FABRICATION_PIECES = new Metier(
+    codeROME = CodeROME("H3203"),
     label = "Fabrication de pièces",
     habiletes = List(
       Habilete.RESPECT_NORMES_ET_CONSIGNES,
@@ -154,8 +155,8 @@ object Metier {
       Habilete.TRAVAIL_SOUS_TENSION
     )
   )
-  val TRI_EMBALLAGE = Metier(
-    value = "H3302",
+  val TRI_EMBALLAGE = new Metier(
+    codeROME = CodeROME("H3302"),
     label = "Tri et emballage",
     habiletes = List(
       Habilete.RESPECT_NORMES_ET_CONSIGNES,
@@ -165,22 +166,22 @@ object Metier {
       Habilete.REPRESENTATION_PROCESSUS
     )
   )
-  val AIDE_PERSONNES_AGEES = Metier(
-    value = "K1302",
+  val AIDE_PERSONNES_AGEES = new Metier(
+    codeROME = CodeROME("K1302"),
     label = "Aide aux personnes âgées",
     habiletes = List(
       Habilete.RESPECT_NORMES_ET_CONSIGNES
     )
   )
-  val AIDE_DOMICILE = Metier(
-    value = "K1304",
+  val AIDE_DOMICILE = new Metier(
+    codeROME = CodeROME("K1304"),
     label = "Aide à domicile",
     habiletes = List(
       Habilete.RESPECT_NORMES_ET_CONSIGNES
     )
   )
-  val NETTOYAGE_LOCAUX = Metier(
-    value = "K2204",
+  val NETTOYAGE_LOCAUX = new Metier(
+    codeROME = CodeROME("K2204"),
     label = "Nettoyage de locaux",
     habiletes = List(
       Habilete.RESPECT_NORMES_ET_CONSIGNES,
@@ -189,8 +190,8 @@ object Metier {
       Habilete.PRISE_D_INITIATIVES
     )
   )
-  val PREPARATION_COMMANDE = Metier(
-    value = "N1103",
+  val PREPARATION_COMMANDE = new Metier(
+    codeROME = CodeROME("N1103"),
     label = "Préparation de commandes",
     habiletes = List(
       Habilete.RESPECT_NORMES_ET_CONSIGNES,
@@ -198,8 +199,8 @@ object Metier {
       Habilete.PRISE_D_INITIATIVES
     )
   )
-  val MANUTENTION = Metier(
-    value = "N1105",
+  val MANUTENTION = new Metier(
+    codeROME = CodeROME("N1105"),
     label = "Manutention",
     habiletes = List(
       Habilete.RESPECT_NORMES_ET_CONSIGNES
@@ -207,30 +208,29 @@ object Metier {
   )
 
   val values = Map(
-    AIDE_AGRICOLE.value -> AIDE_AGRICOLE,
-    REALISATION_ARTICLES.value -> REALISATION_ARTICLES,
-    CAISSE.value -> CAISSE,
-    VENTE.value -> VENTE,
-    MISE_EN_RAYON.value -> MISE_EN_RAYON,
-    CONDUITE_ENGINS.value -> CONDUITE_ENGINS,
-    ELECTRICITE.value -> ELECTRICITE,
-    MACONNERIE.value -> MACONNERIE,
-    PERSONNEL_POLYVALENT.value -> PERSONNEL_POLYVALENT,
-    SERVICE.value -> SERVICE,
-    DECOUPE_VIANDE.value -> DECOUPE_VIANDE,
-    CONDUITE_MACHINE_AGRO.value -> CONDUITE_MACHINE_AGRO,
-    CONDUITE_MACHINE.value -> CONDUITE_MACHINE,
-    MECANICIEN_CONFECTION.value -> MECANICIEN_CONFECTION,
-    SOUDAGE.value -> SOUDAGE,
-    FABRICATION_PIECES.value -> FABRICATION_PIECES,
-    TRI_EMBALLAGE.value -> TRI_EMBALLAGE,
-    AIDE_PERSONNES_AGEES.value -> AIDE_PERSONNES_AGEES,
-    AIDE_DOMICILE.value -> AIDE_DOMICILE,
-    NETTOYAGE_LOCAUX.value -> NETTOYAGE_LOCAUX,
-    MANUTENTION.value -> MANUTENTION,
-    PREPARATION_COMMANDE.value -> PREPARATION_COMMANDE
+    AIDE_AGRICOLE.codeROME -> AIDE_AGRICOLE,
+    REALISATION_ARTICLES.codeROME -> REALISATION_ARTICLES,
+    CAISSE.codeROME -> CAISSE,
+    VENTE.codeROME -> VENTE,
+    MISE_EN_RAYON.codeROME -> MISE_EN_RAYON,
+    CONDUITE_ENGINS.codeROME -> CONDUITE_ENGINS,
+    ELECTRICITE.codeROME -> ELECTRICITE,
+    MACONNERIE.codeROME -> MACONNERIE,
+    PERSONNEL_POLYVALENT.codeROME -> PERSONNEL_POLYVALENT,
+    SERVICE.codeROME -> SERVICE,
+    DECOUPE_VIANDE.codeROME -> DECOUPE_VIANDE,
+    CONDUITE_MACHINE_AGRO.codeROME -> CONDUITE_MACHINE_AGRO,
+    CONDUITE_MACHINE.codeROME -> CONDUITE_MACHINE,
+    MECANICIEN_CONFECTION.codeROME -> MECANICIEN_CONFECTION,
+    SOUDAGE.codeROME -> SOUDAGE,
+    FABRICATION_PIECES.codeROME -> FABRICATION_PIECES,
+    TRI_EMBALLAGE.codeROME -> TRI_EMBALLAGE,
+    AIDE_PERSONNES_AGEES.codeROME -> AIDE_PERSONNES_AGEES,
+    AIDE_DOMICILE.codeROME -> AIDE_DOMICILE,
+    NETTOYAGE_LOCAUX.codeROME -> NETTOYAGE_LOCAUX,
+    MANUTENTION.codeROME -> MANUTENTION,
+    PREPARATION_COMMANDE.codeROME -> PREPARATION_COMMANDE
   )
 
-  def from(value: String): Option[Metier] = values.get(value)
-
+  def from(codeROME: CodeROME): Option[Metier] = values.get(codeROME)
 }

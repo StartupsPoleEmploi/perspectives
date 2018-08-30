@@ -66,7 +66,7 @@
                     <td class="listeResultatsRecherche-mrs">
                         <div class="info--majuscule info--principale">Potentiel validé</div>
                         @** FIXME : referentiel métier *@
-                        <div class="info--minuscule info--principale">@candidat.metiersEvalues.map(m => if (m.label.nonEmpty) m.label else m.value).mkString(", ")</div>
+                        <div class="info--minuscule info--principale">@candidat.metiersEvalues.map(_.value).mkString(", ")</div>
                     </td>
                     <td class="listeResultatsRecherche-localisation">
                     @if(candidat.commune.isDefined) {

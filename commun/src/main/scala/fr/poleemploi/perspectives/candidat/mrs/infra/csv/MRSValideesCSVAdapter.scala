@@ -8,6 +8,7 @@ import akka.stream.alpakka.csv.scaladsl.{CsvParsing, CsvToMap}
 import akka.stream.scaladsl.{Sink, Source}
 import akka.util.ByteString
 import fr.poleemploi.perspectives.candidat.mrs.infra.MRSValideeCandidatPEConnect
+import fr.poleemploi.perspectives.commun.domain.CodeROME
 import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
 
 import scala.concurrent.Future
@@ -30,7 +31,7 @@ class MRSValideesCSVAdapter(val actorSystem: ActorSystem) {
       )
       .map(data => MRSValideeCandidatPEConnect(
         peConnectId = PEConnectId(data("dc_ididentiteexterne")),
-        codeMetier = data("dc_commandepresta"),
+        codeROME = CodeROME(data("dc_commandepresta")), // Pas de validation du code ROME, on fait confiance au SI Pole Emploi
         dateEvaluation = data.get("dd_datecreationbeneficiaire").map(s => LocalDate.parse(s.take(10))).get
       ))
       .runWith(Sink.collection)

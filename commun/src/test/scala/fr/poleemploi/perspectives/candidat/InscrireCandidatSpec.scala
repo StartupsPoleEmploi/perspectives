@@ -3,7 +3,7 @@ package fr.poleemploi.perspectives.candidat
 import java.time.LocalDate
 
 import fr.poleemploi.perspectives.candidat.mrs.domain.MRSValidee
-import fr.poleemploi.perspectives.commun.domain.Genre
+import fr.poleemploi.perspectives.commun.domain.{CodeROME, Genre}
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{MustMatchers, WordSpec}
 
@@ -12,7 +12,7 @@ class InscrireCandidatSpec extends WordSpec with MustMatchers with MockitoSugar 
   val candidatBuilder = new CandidatBuilder
 
   val mrsValidee = MRSValidee(
-    codeMetier = "H083",
+    codeROME = CodeROME("H3203"),
     dateEvaluation = LocalDate.now()
   )
 
@@ -110,7 +110,7 @@ class InscrireCandidatSpec extends WordSpec with MustMatchers with MockitoSugar 
       event.size mustBe 1
       val mrsAjouteeEvent = event.head.asInstanceOf[MRSAjouteeEvent]
       mrsAjouteeEvent.candidatId mustBe commande.id
-      mrsAjouteeEvent.metier mustBe mrsValidee.codeMetier
+      mrsAjouteeEvent.metier mustBe mrsValidee.codeROME
       mrsAjouteeEvent.dateEvaluation mustBe mrsValidee.dateEvaluation
     }
   }

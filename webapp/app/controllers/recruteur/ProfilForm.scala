@@ -1,6 +1,7 @@
 package controllers.recruteur
 
 import controllers.FormHelpers
+import fr.poleemploi.perspectives.projections.recruteur.RecruteurDto
 import fr.poleemploi.perspectives.recruteur.NumeroSiret
 import play.api.data.Form
 import play.api.data.Forms._
@@ -43,6 +44,17 @@ object ProfilForm {
       numeroSiret = "",
       numeroTelephone = "",
       contactParCandidats = ""
+    )
+  )
+
+  def fromRecruteur(recruteurDto: RecruteurDto): Form[ProfilForm] = ProfilForm.form.fill(
+    ProfilForm(
+      nouveauRecruteur = false,
+      typeRecruteur = recruteurDto.typeRecruteur.map(_.value).getOrElse(""),
+      raisonSociale = recruteurDto.raisonSociale.getOrElse(""),
+      numeroSiret = recruteurDto.numeroSiret.map(_.value).getOrElse(""),
+      numeroTelephone = recruteurDto.numeroTelephone.map(_.value).getOrElse(""),
+      contactParCandidats = recruteurDto.contactParCandidats.map(FormHelpers.booleanToString).getOrElse("")
     )
   )
 }

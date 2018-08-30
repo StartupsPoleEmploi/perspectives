@@ -42,7 +42,7 @@
                 <td>@candidat.statutDemandeurEmploi.map(_.label)</td>
                 <td>@getBoolean(candidat.rechercheMetierEvalue)</td>
                 <td>@getBoolean(candidat.rechercheAutreMetier)</td>
-                <td>@candidat.metiersRecherches.map(_.label).mkString(", ")</td>
+                <td>@candidat.metiersRecherches.map(_.value).mkString(", ")</td>@** FIXME : referentiel métier *@
                 <td>@getBoolean(candidat.contacteParAgenceInterim)</td>
                 <td>@getBoolean(candidat.contacteParOrganismeFormation)</td>
                 <td>@candidat.rayonRecherche.map(_.value)</td>

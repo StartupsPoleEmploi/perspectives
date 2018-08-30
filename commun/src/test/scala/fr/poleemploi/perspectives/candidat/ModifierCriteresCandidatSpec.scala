@@ -1,6 +1,6 @@
 package fr.poleemploi.perspectives.candidat
 
-import fr.poleemploi.perspectives.commun.domain.{Metier, NumeroTelephone, RayonRecherche}
+import fr.poleemploi.perspectives.commun.domain.{CodeROME, NumeroTelephone, RayonRecherche}
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, MustMatchers, WordSpec}
 
@@ -191,7 +191,7 @@ class ModifierCriteresCandidatSpec extends WordSpec
 
       // When
       val result = candidat.modifierCriteres(commande.copy(
-        metiersRecherches = commande.metiersRecherches + Metier.SERVICE
+        metiersRecherches = commande.metiersRecherches + CodeROME("H3203")
       ))
 
       // Then
@@ -202,14 +202,14 @@ class ModifierCriteresCandidatSpec extends WordSpec
       val candidat = candidatBuilder
         .avecInscription()
         .avecCriteresRecherche(
-          metiersRecherches = Some(Set(Metier.SERVICE))
+          metiersRecherches = Some(Set(CodeROME("H3203")))
         )
         .avecNumeroTelephone(numeroTelephone = Some(commande.numeroTelephone))
         .build
 
       // When
       val result = candidat.modifierCriteres(commande.copy(
-        metiersRecherches = commande.metiersRecherches - Metier.SERVICE
+        metiersRecherches = commande.metiersRecherches - CodeROME("H3203")
       ))
 
       // Then

@@ -4,7 +4,7 @@ import java.time.LocalDate
 
 import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.perspectives.candidat.cv.domain.CVId
-import fr.poleemploi.perspectives.commun.domain.{Genre, Metier, NumeroTelephone, RayonRecherche}
+import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.conseiller.ConseillerId
 
 sealed trait CandidatEvent extends Event {
@@ -15,13 +15,13 @@ sealed trait CandidatEvent extends Event {
 case class CandidatInscritEvent(candidatId: CandidatId,
                                 nom: String,
                                 prenom: String,
-                                email: String,
+                                email: String, // FIXME : ValueObject
                                 genre: Genre) extends CandidatEvent
 
 case class CriteresRechercheModifiesEvent(candidatId: CandidatId,
                                           rechercheMetierEvalue: Boolean,
                                           rechercheAutreMetier: Boolean,
-                                          metiersRecherches: Set[Metier],
+                                          metiersRecherches: Set[CodeROME],
                                           etreContacteParOrganismeFormation: Boolean,
                                           etreContacteParAgenceInterim: Boolean,
                                           rayonRecherche: RayonRecherche) extends CandidatEvent
@@ -29,7 +29,7 @@ case class CriteresRechercheModifiesEvent(candidatId: CandidatId,
 case class ProfilCandidatModifieEvent(candidatId: CandidatId,
                                       nom: String,
                                       prenom: String,
-                                      email: String,
+                                      email: String, // FIXME : ValueObject
                                       genre: Genre) extends CandidatEvent
 
 case class NumeroTelephoneModifieEvent(candidatId: CandidatId,
@@ -48,7 +48,7 @@ case class CVRemplaceEvent(candidatId: CandidatId,
                            cvId: CVId) extends CandidatEvent
 
 case class MRSAjouteeEvent(candidatId: CandidatId,
-                           metier: String, // FIXME : referentiel metier
+                           metier: CodeROME,
                            dateEvaluation: LocalDate) extends CandidatEvent
 
 case class RepriseEmploiDeclareeParConseillerEvent(candidatId: CandidatId,

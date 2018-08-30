@@ -6,6 +6,7 @@
 @import helper._
 
 @(matchingForm: Form[MatchingForm],
+        secteursActivites: List[SecteurActivite],
         recruteurAuthentifie: RecruteurAuthentifie,
         resultatRechercheCandidat: ResultatRechercheCandidat)(implicit request: MessagesRequestHeader, flash: Flash, webAppConfig: WebAppConfig)
 
@@ -33,8 +34,8 @@
                         <label for="js-secteursActivites-selecteur" class="conteneurSelecteur-label">Choisissez un secteur d'activité</label>
                         <select class="conteneurSelecteur-selecteur" id="js-secteursActivites-selecteur" name="secteurActivite">
                             <option value="">Tous les secteurs</option>
-                            @for(secteurActivite <- SecteurActivite.values.values) {
-                                <option value="@secteurActivite.value">@secteurActivite.label</option>
+                            @for(secteurActivite <- secteursActivites) {
+                                <option value="@secteurActivite.code.value">@secteurActivite.label</option>
                             }
                         </select>
                     </div>
@@ -43,7 +44,7 @@
                         <label for="js-metiers-selecteur" class="conteneurSelecteur-label">Chosissez un métier</label>
                         <select class="conteneurSelecteur-selecteur" id="js-metiers-selecteur" name="metier">
                             <option value="">Tous les métiers</option>
-                            @for(metier <- SecteurActivite.values.flatMap(_._2.metiers)) {
+                            @for(metier <- secteurActivites.flatMap(_._2.metiers)) {
                                 <option value="@metier.value">@metier.label</option>
                             }
                         </select>

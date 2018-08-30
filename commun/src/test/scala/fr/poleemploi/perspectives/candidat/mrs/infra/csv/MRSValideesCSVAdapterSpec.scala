@@ -5,6 +5,7 @@ import java.time.LocalDate
 import akka.actor.ActorSystem
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
+import fr.poleemploi.perspectives.commun.domain.CodeROME
 import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
@@ -135,7 +136,7 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       val future = mrsValideesCSVAdapter.load(source)
 
       // Then
-      future.map(s => s.toList.head.codeMetier mustBe "H0084")
+      future.map(s => s.toList.head.codeROME mustBe CodeROME("H0084"))
     }
   }
 }

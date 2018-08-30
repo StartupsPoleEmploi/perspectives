@@ -2,6 +2,7 @@ package controllers.candidat
 
 import authentification.infra.play.{OptionalCandidatAuthentifieAction, OptionalCandidatAuthentifieRequest}
 import conf.WebAppConfig
+import fr.poleemploi.perspectives.commun.domain.SecteurActivite
 import javax.inject._
 import play.api.mvc._
 
@@ -11,6 +12,9 @@ class LandingController @Inject()(cc: ControllerComponents,
                                   optionalCandidatAuthentifieAction: OptionalCandidatAuthentifieAction) extends AbstractController(cc) {
 
   def landing() = optionalCandidatAuthentifieAction { implicit request: OptionalCandidatAuthentifieRequest[AnyContent] =>
-    Ok(views.html.candidat.landing(request.candidatAuthentifie))
+    Ok(views.html.candidat.landing(
+      candidatAuthentifie = request.candidatAuthentifie,
+      secteursActivites = SecteurActivite.values
+    ))
   }
 }

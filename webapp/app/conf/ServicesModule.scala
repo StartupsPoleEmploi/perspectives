@@ -13,9 +13,6 @@ import fr.poleemploi.perspectives.emailing.domain.EmailingService
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetEmailingService
 import fr.poleemploi.perspectives.emailing.infra.sql.MailjetSqlAdapter
 import fr.poleemploi.perspectives.emailing.infra.ws.MailjetEmailAdapter
-import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
-import fr.poleemploi.perspectives.metier.infra.cache.ReferentielMetierCacheAdapter
-import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapter
 import slick.jdbc.JdbcBackend.Database
 
 class ServicesModule extends AbstractModule {
@@ -46,15 +43,6 @@ class ServicesModule extends AbstractModule {
       referentielMRSCandidatFileConfig = webAppConfig.referentielMRSCandidatFileConfig,
       mrsValideesCSVLoader = mrsValideesCSVAdapter,
       mrsValideesPostgresSql = mrsValideesSqlAdapter
-    )
-
-  @Provides
-  @Singleton
-  def referentielMetier(wsClient: WSClient,
-                        webAppConfig: WebAppConfig): ReferentielMetier =
-    new ReferentielMetierWS(
-      wsClient = wsClient,
-      referentielMetierWSConfig = webAppConfig.referentielMetierWSAdapterConfig
     )
 
   @Provides

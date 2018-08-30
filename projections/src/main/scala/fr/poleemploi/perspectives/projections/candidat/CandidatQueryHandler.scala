@@ -40,7 +40,7 @@ class CandidatQueryHandler(candidatProjection: CandidatProjection,
   def rechercheCandidatsParDateInscription(query: RechercherCandidatsParDateInscriptionQuery): Future[ResultatRechercheCandidatParDateInscription] =
     candidatProjection.rechercherCandidatParDateInscription(query)
 
-  def rechercherCandidatsParSecteur(query: RechercheCandidatsParSecteurQuery): Future[ResultatRechercheCandidat] =
+  def rechercherCandidatsParSecteur(query: RechercherCandidatsParSecteurQuery): Future[ResultatRechercheCandidat] =
     candidatProjection.rechercherCandidatParSecteur(query)
 
   def rechercherCandidatsParMetier(query: RechercherCandidatsParMetierQuery): Future[ResultatRechercheCandidatParMetier] =

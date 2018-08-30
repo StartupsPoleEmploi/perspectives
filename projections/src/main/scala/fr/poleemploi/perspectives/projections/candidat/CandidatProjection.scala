@@ -59,11 +59,11 @@ class CandidatProjection(val driver: PostgresDriver,
 
     def rechercheMetierEvalue = column[Option[Boolean]]("recherche_metier_evalue")
 
-    def metiersEvalues = column[List[Metier]]("metiers_evalues")
+    def metiersEvalues = column[List[CodeROME]]("metiers_evalues")
 
     def rechercheAutreMetier = column[Option[Boolean]]("recherche_autre_metier")
 
-    def metiersRecherches = column[List[Metier]]("metiers_recherches")
+    def metiersRecherches = column[List[CodeROME]]("metiers_recherches")
 
     def contacteParAgenceInterim = column[Option[Boolean]]("contacte_par_agence_interim")
 
@@ -136,8 +136,8 @@ class CandidatProjection(val driver: PostgresDriver,
         .sortBy(_.dateInscription.desc).result
     ).map(r => ResultatRechercheCandidatParDateInscription(r.toList))
 
-  def rechercherCandidatParSecteur(query: RechercheCandidatsParSecteurQuery): Future[ResultatRechercheCandidatParSecteur] = {
-    val metiersSecteur = query.secteurActivite.metiers // métiers du secteur
+  def rechercherCandidatParSecteur(query: RechercherCandidatsParSecteurQuery): Future[ResultatRechercheCandidatParSecteur] = {
+    val metiersSecteur = SecteurActivite.parCode(query.codeSecteurActivite).metiers.map(_.codeROME)
 
     // Candidats qui recherchent parmis leurs métiers évalués et qui ont été évalués sur un métier du secteur
     val selectCandidatsEvaluesSurSecteur = candidatTable.filter { c =>
@@ -169,7 +169,7 @@ class CandidatProjection(val driver: PostgresDriver,
   }
 
   def rechercherCandidatParMetier(query: RechercherCandidatsParMetierQuery): Future[ResultatRechercheCandidatParMetier] = {
-    val metiers = List(query.metier)
+    val metiers = List(query.codeROME)
 
     // Candidats qui recherchent parmis leurs métiers évalués et qui ont été évalués sur le métier
     val selectCandidatsEvaluesSurMetier = candidatTable.filter { c =>
@@ -181,15 +181,15 @@ class CandidatProjection(val driver: PostgresDriver,
     }.sortBy(_.dateInscription)
 
     // Candidats qui sont intéréssés par ce métier et qui ont été évalués sur un métier du meme secteur
-    val metiersSecteur = SecteurActivite.getSecteur(query.metier).get.metiers
-    val metiersSecteursSansMetierChoisi = metiersSecteur.filter(_ != query.metier)
+    val metiersSecteur = SecteurActivite.parMetier(query.codeROME).metiers.map(_.codeROME)
+    val metiersSecteurSansMetierChoisi = metiersSecteur.filter(_ != query.codeROME)
     val selectCandidatsInteressesParMetierMemeSecteur = candidatTable.filter { c =>
       filtreTypeRecruteur(c, query.typeRecruteur) &&
         c.numeroTelephone.isDefined &&
         c.indexerMatching &&
         c.rechercheAutreMetier === true &&
         c.metiersRecherches @& metiers &&
-        c.metiersEvalues @& metiersSecteursSansMetierChoisi
+        c.metiersEvalues @& metiersSecteurSansMetierChoisi
     }.sortBy(_.dateInscription)
 
     // Candidats qui sont intéréssés par ce métier et qui ont été évalués sur un métier d'un autre secteur
@@ -281,7 +281,7 @@ class CandidatProjection(val driver: PostgresDriver,
     database.run(
       sqlu"""
             UPDATE candidats
-            SET metiers_evalues = ${event.metier}::text || metiers_evalues
+            SET metiers_evalues = ${event.metier.value}::text || metiers_evalues
             WHERE candidat_id = ${event.candidatId.value}
           """).map(_ => ())
 

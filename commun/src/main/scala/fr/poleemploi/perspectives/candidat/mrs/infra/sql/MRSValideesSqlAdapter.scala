@@ -4,6 +4,7 @@ import java.time.LocalDate
 
 import fr.poleemploi.perspectives.candidat.mrs.domain.MRSValidee
 import fr.poleemploi.perspectives.candidat.mrs.infra.MRSValideeCandidatPEConnect
+import fr.poleemploi.perspectives.commun.domain.CodeROME
 import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
 import slick.jdbc.JdbcBackend.Database
@@ -25,11 +26,11 @@ class MRSValideesSqlAdapter(val driver: PostgresDriver,
 
     def peConnectId = column[PEConnectId]("peconnect_id")
 
-    def codeMetier = column[String]("code_metier")
+    def codeROME = column[CodeROME]("code_rome")
 
     def dateEvaluation = column[LocalDate]("date_evaluation")
 
-    def * = (peConnectId, codeMetier, dateEvaluation) <> (MRSValideeCandidatPEConnect.tupled, MRSValideeCandidatPEConnect.unapply)
+    def * = (peConnectId, codeROME, dateEvaluation) <> (MRSValideeCandidatPEConnect.tupled, MRSValideeCandidatPEConnect.unapply)
   }
 
   val mrsValideesTable = TableQuery[MRSValideeTable]
@@ -39,18 +40,21 @@ class MRSValideesSqlAdapter(val driver: PostgresDriver,
 
   def ajouter(mrsValidees: Stream[MRSValideeCandidatPEConnect]): Future[Int] = {
     val bulkInsert: DBIO[Option[Int]] = mrsValideesTable.map(
-      m => (m.peConnectId, m.codeMetier, m.dateEvaluation)
+      m => (m.peConnectId, m.codeROME, m.dateEvaluation)
     ) ++= mrsValidees.map(
-      m => (m.peConnectId, m.codeMetier, m.dateEvaluation)
+      m => (m.peConnectId, m.codeROME, m.dateEvaluation)
     )
 
     database.run(bulkInsert).map(_.getOrElse(0))
   }
 
   def metiersEvaluesParCandidat(peConnectId: PEConnectId): Future[List[MRSValidee]] =
-    database.run(metiersEvaluesQuery(peConnectId).result).map(_.toList.map(m => MRSValidee(
-      codeMetier = m.codeMetier,
-      dateEvaluation = m.dateEvaluation
-    )))
+    database.run(metiersEvaluesQuery(peConnectId).result)
+      .map(_.toList.map(m =>
+        MRSValidee(
+          codeROME = m.codeROME,
+          dateEvaluation = m.dateEvaluation
+        ))
+      )
 
 }

@@ -1,6 +1,7 @@
 package controllers.candidat
 
 import controllers.FormHelpers
+import fr.poleemploi.perspectives.projections.candidat.CandidatDto
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
@@ -47,6 +48,19 @@ object SaisieCriteresRechercheForm {
       etreContacteParOrganismeFormation = "",
       rayonRecherche = 0,
       numeroTelephone = ""
+    )
+  )
+
+  def fromCandidat(candidatDto: CandidatDto): Form[SaisieCriteresRechercheForm] = SaisieCriteresRechercheForm.form.fill(
+    SaisieCriteresRechercheForm(
+      nouveauCandidat = false,
+      rechercheMetierEvalue = candidatDto.rechercheMetierEvalue.map(FormHelpers.booleanToString).getOrElse(""),
+      rechercheAutreMetier = candidatDto.rechercheAutreMetier.map(FormHelpers.booleanToString).getOrElse(""),
+      metiersRecherches = candidatDto.metiersRecherches.map(_.value).toSet,
+      etreContacteParAgenceInterim = candidatDto.contacteParAgenceInterim.map(FormHelpers.booleanToString).getOrElse(""),
+      etreContacteParOrganismeFormation = candidatDto.contacteParOrganismeFormation.map(FormHelpers.booleanToString).getOrElse(""),
+      rayonRecherche = candidatDto.rayonRecherche.map(_.value).getOrElse(0),
+      numeroTelephone = candidatDto.numeroTelephone.map(_.value).getOrElse("")
     )
   )
 

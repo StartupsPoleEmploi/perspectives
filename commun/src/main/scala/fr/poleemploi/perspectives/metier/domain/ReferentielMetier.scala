@@ -1,9 +1,9 @@
 package fr.poleemploi.perspectives.metier.domain
 
-import scala.concurrent.Future
+import fr.poleemploi.perspectives.commun.domain._
 
 // TODO : à implémenter
 trait ReferentielMetier {
 
-  def getMetiers: Future[Unit]
+  def metierParCode(code: CodeROME): Metier
 }

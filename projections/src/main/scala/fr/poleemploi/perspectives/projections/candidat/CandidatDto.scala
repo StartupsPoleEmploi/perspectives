@@ -15,9 +15,9 @@ case class CandidatDto(candidatId: CandidatId,
                        codePostal: Option[String],
                        commune: Option[String],
                        rechercheMetierEvalue: Option[Boolean],
-                       metiersEvalues: List[Metier],
+                       metiersEvalues: List[CodeROME],
                        rechercheAutreMetier: Option[Boolean],
-                       metiersRecherches: List[Metier],
+                       metiersRecherches: List[CodeROME],
                        contacteParAgenceInterim: Option[Boolean],
                        contacteParOrganismeFormation: Option[Boolean],
                        rayonRecherche: Option[RayonRecherche],
@@ -37,8 +37,7 @@ case class CandidatDto(candidatId: CandidatId,
       rechercheMetierEvalue.getOrElse(false) || rechercheAutreMetier.getOrElse(false)
 
   def metiersRecherchesParSecteur: Map[SecteurActivite, List[Metier]] =
-    metiersRecherches.groupBy(m => SecteurActivite.getSecteur(m).orNull)
+    metiersRecherches.flatMap(Metier.from).groupBy(m => SecteurActivite.parMetier(m.codeROME))
 
-  def habiletes: List[Habilete] =
-    metiersEvalues.flatMap(_.habiletes).distinct
+  def habiletes: List[Habilete] = metiersEvalues.flatMap(Metier.from).flatMap(_.habiletes).distinct
 }
