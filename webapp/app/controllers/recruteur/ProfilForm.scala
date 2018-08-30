@@ -2,7 +2,7 @@ package controllers.recruteur
 
 import controllers.FormHelpers
 import fr.poleemploi.perspectives.projections.recruteur.RecruteurDto
-import fr.poleemploi.perspectives.recruteur.NumeroSiret
+import fr.poleemploi.perspectives.recruteur.{NumeroSiret, TypeRecruteur}
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
@@ -22,6 +22,15 @@ object ProfilForm {
         Valid
       } else {
         Invalid(Seq(ValidationError("constraint.numeroSiret")))
+      }
+  })
+
+  val typeRecruteurConstraint: Constraint[String] = Constraint("constraint.typeRecruteur")({
+    text =>
+      if (TypeRecruteur.from(text).isDefined) {
+        Valid
+      } else {
+        Invalid(Seq(ValidationError("constraint.typeRecruteur")))
       }
   })
 

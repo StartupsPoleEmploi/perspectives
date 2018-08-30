@@ -2,28 +2,36 @@ package fr.poleemploi.perspectives.recruteur
 
 import fr.poleemploi.eventsourcing.StringValueObject
 
-import scala.collection.immutable.ListMap
-
 /**
   * Value Object TypeRecruteur
   */
-case class TypeRecruteur(value: String, label: String) extends StringValueObject
+case class TypeRecruteur(value: String) extends StringValueObject
 
-/**
-  * Methodes pour construire et valider un TypeRecruteur
-  */
 object TypeRecruteur {
 
-  val ENTREPRISE = TypeRecruteur("ENTREPRISE", "Entreprise")
-  val AGENCE_INTERIM = TypeRecruteur("AGENCE_INTERIM", "Agence d'interim")
-  val ORGANISME_FORMATION = TypeRecruteur("ORGANISME_FORMATION", "Organisme de formation")
+  val ENTREPRISE = TypeRecruteur("ENTREPRISE")
+  val AGENCE_INTERIM = TypeRecruteur("AGENCE_INTERIM")
+  val ORGANISME_FORMATION = TypeRecruteur("ORGANISME_FORMATION")
 
-  val values = ListMap(
+  val values = List(
+    ENTREPRISE,
+    AGENCE_INTERIM,
+    ORGANISME_FORMATION
+  )
+
+  private val typeRecruteurParValue = Map(
     ENTREPRISE.value -> ENTREPRISE,
     AGENCE_INTERIM.value -> AGENCE_INTERIM,
     ORGANISME_FORMATION.value -> ORGANISME_FORMATION
   )
 
-  def from(value: String): Option[TypeRecruteur] = values.get(value)
+  def from(value: String): Option[TypeRecruteur] = typeRecruteurParValue.get(value)
 
+  def getLabel(typeRecruteur: TypeRecruteur): String =
+    typeRecruteur match {
+      case ENTREPRISE => "Entreprise"
+      case AGENCE_INTERIM => "Agence d'interim"
+      case ORGANISME_FORMATION => "Organisme de formation"
+      case _ => ""
+    }
 }

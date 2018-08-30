@@ -47,12 +47,12 @@ trait PostgresDriver extends ExPostgresProfile
 
     implicit val typeRecruteurColumnType: BaseColumnType[TypeRecruteur] = MappedColumnType.base[TypeRecruteur, String](
       { t => t.value },
-      { s => TypeRecruteur.from(s).get }
+      { s => TypeRecruteur(s) }
     )
 
     implicit val genreColumnType: BaseColumnType[Genre] = MappedColumnType.base[Genre, String](
       { g => g.value },
-      { s => Genre.from(s).get }
+      { s => Genre(s) }
     )
 
     implicit val emailColumnType: BaseColumnType[Email] = MappedColumnType.base[Email, String](
@@ -62,12 +62,12 @@ trait PostgresDriver extends ExPostgresProfile
 
     implicit val numeroSiretColumnType: BaseColumnType[NumeroSiret] = MappedColumnType.base[NumeroSiret, String](
       { n => n.value },
-      { s => NumeroSiret.from(s).get }
+      { s => NumeroSiret(s) }
     )
 
     implicit val numeroTelephoneColumnType: BaseColumnType[NumeroTelephone] = MappedColumnType.base[NumeroTelephone, String](
       { n => n.value },
-      { s => NumeroTelephone.from(s).get }
+      { s => NumeroTelephone(s) }
     )
 
     implicit val codeROMEColumnType: BaseColumnType[CodeROME] = MappedColumnType.base[CodeROME, String](
@@ -82,12 +82,12 @@ trait PostgresDriver extends ExPostgresProfile
 
     implicit val statutDemandeurEmploiColumnType: BaseColumnType[StatutDemandeurEmploi] = MappedColumnType.base[StatutDemandeurEmploi, String](
       { st => st.value },
-      { s => StatutDemandeurEmploi.from(s).get }
+      { s => StatutDemandeurEmploi(s) }
     )
 
     implicit val rayonRechercheColumnType: BaseColumnType[RayonRecherche] = MappedColumnType.base[RayonRecherche, Int](
       { r => r.value },
-      { s => RayonRecherche.from(s).get }
+      { i => RayonRecherche(i) }
     )
   }
 

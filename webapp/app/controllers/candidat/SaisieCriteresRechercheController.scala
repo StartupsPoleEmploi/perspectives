@@ -109,8 +109,8 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
         else Set.empty,
       etreContacteParOrganismeFormation = stringToBoolean(saisieCriteresRechercheForm.etreContacteParOrganismeFormation),
       etreContacteParAgenceInterim = stringToBoolean(saisieCriteresRechercheForm.etreContacteParAgenceInterim),
-      rayonRecherche = RayonRecherche.from(saisieCriteresRechercheForm.rayonRecherche).get,
-      numeroTelephone = NumeroTelephone.from(saisieCriteresRechercheForm.numeroTelephone).get
+      rayonRecherche = RayonRecherche(saisieCriteresRechercheForm.rayonRecherche),
+      numeroTelephone = NumeroTelephone(saisieCriteresRechercheForm.numeroTelephone)
     )
   }
 

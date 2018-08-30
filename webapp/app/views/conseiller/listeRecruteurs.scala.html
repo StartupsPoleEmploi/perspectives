@@ -1,7 +1,9 @@
 @import java.time.format.DateTimeFormatter
 
 @import conf.WebAppConfig
+@import fr.poleemploi.perspectives.commun.domain.Genre
 @import fr.poleemploi.perspectives.projections.recruteur.RecruteurDto
+@import fr.poleemploi.perspectives.recruteur.TypeRecruteur
 
 @(recruteurs: List[RecruteurDto])(implicit flash: Flash, webAppConfig: WebAppConfig)
 
@@ -30,9 +32,9 @@
         @for(recruteur <- recruteurs) {
             <tr>
                 <td>@recruteur.dateInscription.format(DateTimeFormatter.ofPattern("d MMM yyyy hh:mm"))</td>
-                <td>@recruteur.typeRecruteur.map(_.label)</td>
+                <td>@recruteur.typeRecruteur.map(TypeRecruteur.getLabel)</td>
                 <td>@recruteur.raisonSociale</td>
-                <td>@recruteur.genre.label</td>
+                <td><td>@Genre.getLabel(recruteur.genre)</td></td>
                 <td>@recruteur.nom</td>
                 <td>@recruteur.prenom</td>
                 <td>@recruteur.email</td>

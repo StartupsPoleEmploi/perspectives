@@ -47,9 +47,9 @@ class ProfilController @Inject()(components: ControllerComponents,
           val command = ModifierProfilCommand(
             id = recruteurAuthentifieRequest.recruteurId,
             raisonSociale = inscriptionForm.raisonSociale,
-            typeRecruteur = TypeRecruteur.from(inscriptionForm.typeRecruteur).get,
-            numeroSiret = NumeroSiret.from(inscriptionForm.numeroSiret).get,
-            numeroTelephone = NumeroTelephone.from(inscriptionForm.numeroTelephone).get,
+            typeRecruteur = TypeRecruteur(inscriptionForm.typeRecruteur),
+            numeroSiret = NumeroSiret(inscriptionForm.numeroSiret),
+            numeroTelephone = NumeroTelephone(inscriptionForm.numeroTelephone),
             contactParCandidats = stringToBoolean(inscriptionForm.contactParCandidats)
           )
           recruteurCommandHandler.modifierProfil(command)

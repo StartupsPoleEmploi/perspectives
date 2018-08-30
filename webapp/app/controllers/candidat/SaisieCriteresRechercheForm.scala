@@ -1,6 +1,7 @@
 package controllers.candidat
 
 import controllers.FormHelpers
+import fr.poleemploi.perspectives.commun.domain.RayonRecherche
 import fr.poleemploi.perspectives.projections.candidat.CandidatDto
 import play.api.data.Form
 import play.api.data.Forms._
@@ -25,6 +26,15 @@ object SaisieCriteresRechercheForm {
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
   )
 
+  val rayonRechercheConstraint: Constraint[Int] = Constraint("constraint.rayonRecherche")({
+    n =>
+      if (RayonRecherche.from(n).isDefined) {
+        Valid
+      } else {
+        Invalid(Seq(ValidationError("constraint.rayonRecherche")))
+      }
+  })
+
   val form = Form(
     mapping(
       "nouveauCandidat" -> boolean,
@@ -34,7 +44,7 @@ object SaisieCriteresRechercheForm {
       "listeMetiersRecherches" -> set(nonEmptyText),
       "contactFormation" -> nonEmptyText,
       "contactInterim" -> nonEmptyText,
-      "rayonRecherche" -> number
+      "rayonRecherche" -> number.verifying(rayonRechercheConstraint)
     )(SaisieCriteresRechercheForm.apply)(SaisieCriteresRechercheForm.unapply) verifying metiersSelectionnes
   )
 

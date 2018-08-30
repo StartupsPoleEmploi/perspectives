@@ -34,36 +34,18 @@
                 </div>
             </dt>
             <dd class="choix">
+                @for(typeRecruteur <- TypeRecruteur.values) {
                 <span class="choix-item">
-                    <input id="typeRecruteur-entreprise"
-                           name="typeRecruteur"
-                           type="radio"
-                           value="@TypeRecruteur.ENTREPRISE.value"
-                    @if(profilForm("typeRecruteur").value.contains(TypeRecruteur.ENTREPRISE.value)){checked}/>
-                    <label class="labelRadio" for="typeRecruteur-entreprise">Une entreprise
+                    <input id="typeRecruteur-@typeRecruteur.value"
+                            name="typeRecruteur"
+                            type="radio"
+                            value="@typeRecruteur.value"
+                            @if(profilForm("typeRecruteur").value.contains(typeRecruteur.value)){checked}/>
+                    <label class="labelRadio" for="typeRecruteur-@typeRecruteur.value">@TypeRecruteur.getLabel(typeRecruteur)
                         <span class="labelRadio-circle"></span>
                     </label>
                 </span>
-                <span class="choix-item">
-                    <input id="typeRecruteur-interim"
-                           name="typeRecruteur"
-                           type="radio"
-                           value="@TypeRecruteur.AGENCE_INTERIM.value"
-                    @if(profilForm("typeRecruteur").value.contains(TypeRecruteur.AGENCE_INTERIM.value)){checked}/>
-                    <label class="labelRadio" for="typeRecruteur-interim">Une agence d'interim
-                        <span class="labelRadio-circle"></span>
-                    </label>
-                </span>
-                <span class="choix-item">
-                    <input id="typeRecruteur-formation"
-                           name="typeRecruteur"
-                           type="radio"
-                           value="@TypeRecruteur.ORGANISME_FORMATION.value"
-                    @if(profilForm("typeRecruteur").value.contains(TypeRecruteur.ORGANISME_FORMATION.value)){checked}/>
-                    <label class="labelRadio" for="typeRecruteur-formation">Un organisme de formation
-                        <span class="labelRadio-circle"></span>
-                    </label>
-                </span>
+                }
             </dd>
             @if(hasErrors("typeRecruteur")) {
             <dd class="erreurs">

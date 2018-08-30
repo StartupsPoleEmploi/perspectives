@@ -15,13 +15,13 @@ object PerspectivesEventSourcingModule extends EventSourcingModule {
 
   addStringValueObject(classOf[NumeroTelephone], NumeroTelephone(_))
   addStringValueObject(classOf[NumeroSiret], NumeroSiret(_))
-  addStringValueObject(classOf[Genre], Genre.from(_).get)
+  addStringValueObject(classOf[Genre], Genre(_))
   addStringValueObject(classOf[Email], Email)
   addStringValueObject(classOf[CodeROME], CodeROME)
   addStringValueObject(classOf[CodeSecteurActivite], CodeSecteurActivite(_))
-  addStringValueObject(classOf[TypeRecruteur], TypeRecruteur.from(_).get)
-  addStringValueObject(classOf[StatutDemandeurEmploi], StatutDemandeurEmploi.from(_).get)
+  addStringValueObject(classOf[TypeRecruteur], TypeRecruteur(_))
+  addStringValueObject(classOf[StatutDemandeurEmploi], StatutDemandeurEmploi(_))
   addStringValueObject(classOf[CVId], CVId)
 
-  addIntValueObject(classOf[RayonRecherche], RayonRecherche.from(_).get)
+  addIntValueObject(classOf[RayonRecherche], RayonRecherche(_))
 }

@@ -1,6 +1,8 @@
 @import java.time.format.DateTimeFormatter
 
 @import conf.WebAppConfig
+@import fr.poleemploi.perspectives.candidat.StatutDemandeurEmploi
+@import fr.poleemploi.perspectives.commun.domain.Genre
 @import fr.poleemploi.perspectives.projections.candidat.CandidatDto
 
 @(candidats: List[CandidatDto])(implicit flash: Flash, webAppConfig: WebAppConfig)
@@ -36,10 +38,10 @@
                 <td>@candidat.dateInscription.format(DateTimeFormatter.ofPattern("d MMM yyyy hh:mm"))</td>
                 <td>@candidat.nom</td>
                 <td>@candidat.prenom</td>
-                <td>@candidat.genre.label</td>
+                <td>@Genre.getLabel(candidat.genre)</td>
                 <td>@candidat.email.value</td>
                 <td>@candidat.numeroTelephone.map(_.value)</td>
-                <td>@candidat.statutDemandeurEmploi.map(_.label)</td>
+                <td>@candidat.statutDemandeurEmploi.map(StatutDemandeurEmploi.getLabel)</td>
                 <td>@getBoolean(candidat.rechercheMetierEvalue)</td>
                 <td>@getBoolean(candidat.rechercheAutreMetier)</td>
                 <td>@candidat.metiersRecherches.map(_.value).mkString(", ")</td>@** FIXME : referentiel métier *@
