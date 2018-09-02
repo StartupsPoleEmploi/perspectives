@@ -8,6 +8,7 @@ import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.candidat.cv.domain.CVId
 import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
+import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
 import fr.poleemploi.perspectives.recruteur.TypeRecruteur
 import slick.jdbc.JdbcBackend.Database
 
@@ -16,7 +17,8 @@ import scala.concurrent.Future
 
 class CandidatProjection(val driver: PostgresDriver,
                          database: Database,
-                         candidatsTesteurs: List[CandidatId]) extends Projection {
+                         candidatsTesteurs: List[CandidatId],
+                         referentielMetier: ReferentielMetier) extends Projection {
 
   override def listenTo: List[Class[_ <: Event]] = List(classOf[CandidatEvent])
 
@@ -133,38 +135,38 @@ class CandidatProjection(val driver: PostgresDriver,
     database.run(
       candidatTable
         .filter(c => filtreCandidatAvecCriteresDeRecherche(c) && filtreTypeRecruteur(c, query.typeRecruteur))
-        .sortBy(_.dateInscription.desc).result
-    ).map(r => ResultatRechercheCandidatParDateInscription(r.toList))
+        .sortBy(_.dateInscription.desc).map(rechercheCandidatDtoShape).result
+    ).map(r => ResultatRechercheCandidatParDateInscription(r.toList.map(toRechercheCandidatDto)))
 
   def rechercherCandidatParSecteur(query: RechercherCandidatsParSecteurQuery): Future[ResultatRechercheCandidatParSecteur] = {
-    val metiersSecteur = SecteurActivite.parCode(query.codeSecteurActivite).metiers.map(_.codeROME)
+    val metiersSecteur = referentielMetier.secteurActiviteParCode(query.codeSecteurActivite).metiers.map(_.codeROME)
 
     // Candidats qui recherchent parmis leurs métiers évalués et qui ont été évalués sur un métier du secteur
-    val selectCandidatsEvaluesSurSecteur = candidatTable.filter { c =>
+    val selectCandidatsEvaluesSurSecteur = candidatTable.filter(c =>
       filtreTypeRecruteur(c, query.typeRecruteur) &&
         c.numeroTelephone.isDefined &&
         c.indexerMatching &&
         c.rechercheMetierEvalue === true &&
         c.metiersEvalues @& metiersSecteur
-    }.sortBy(_.dateInscription)
+    ).sortBy(_.dateInscription).map(rechercheCandidatDtoShape)
 
     // Candidats qui sont intéréssés par un metier du secteur et qui ont été évalués sur un metier d'un autre secteur
-    val selectCandidatsInteressesParAutreSecteur = candidatTable.filter { c =>
+    val selectCandidatsInteressesParAutreSecteur = candidatTable.filter(c =>
       filtreTypeRecruteur(c, query.typeRecruteur) &&
         c.numeroTelephone.isDefined &&
         c.indexerMatching &&
         c.rechercheAutreMetier === true &&
         c.metiersRecherches @& metiersSecteur &&
         !(c.metiersEvalues @& metiersSecteur)
-    }.sortBy(_.dateInscription)
+    ).sortBy(_.dateInscription).map(rechercheCandidatDtoShape)
 
     for {
       candidatsEvaluesSurSecteur <- database.run(selectCandidatsEvaluesSurSecteur.result)
       candidatsInteressesParAutreSecteur <- database.run(selectCandidatsInteressesParAutreSecteur.result)
     } yield
       ResultatRechercheCandidatParSecteur(
-        candidatsEvaluesSurSecteur = candidatsEvaluesSurSecteur.toList,
-        candidatsInteressesParAutreSecteur = candidatsInteressesParAutreSecteur.toList
+        candidatsEvaluesSurSecteur = candidatsEvaluesSurSecteur.toList.map(toRechercheCandidatDto),
+        candidatsInteressesParAutreSecteur = candidatsInteressesParAutreSecteur.toList.map(toRechercheCandidatDto)
       )
   }
 
@@ -172,35 +174,35 @@ class CandidatProjection(val driver: PostgresDriver,
     val metiers = List(query.codeROME)
 
     // Candidats qui recherchent parmis leurs métiers évalués et qui ont été évalués sur le métier
-    val selectCandidatsEvaluesSurMetier = candidatTable.filter { c =>
+    val selectCandidatsEvaluesSurMetier = candidatTable.filter(c =>
       filtreTypeRecruteur(c, query.typeRecruteur) &&
         c.numeroTelephone.isDefined &&
         c.indexerMatching &&
         c.rechercheMetierEvalue === true &&
         c.metiersEvalues @& metiers
-    }.sortBy(_.dateInscription)
+    ).sortBy(_.dateInscription).map(rechercheCandidatDtoShape)
 
     // Candidats qui sont intéréssés par ce métier et qui ont été évalués sur un métier du meme secteur
-    val metiersSecteur = SecteurActivite.parMetier(query.codeROME).metiers.map(_.codeROME)
+    val metiersSecteur = referentielMetier.secteurActivitePourCodeROME(query.codeROME).metiers.map(_.codeROME)
     val metiersSecteurSansMetierChoisi = metiersSecteur.filter(_ != query.codeROME)
-    val selectCandidatsInteressesParMetierMemeSecteur = candidatTable.filter { c =>
+    val selectCandidatsInteressesParMetierMemeSecteur = candidatTable.filter(c =>
       filtreTypeRecruteur(c, query.typeRecruteur) &&
         c.numeroTelephone.isDefined &&
         c.indexerMatching &&
         c.rechercheAutreMetier === true &&
         c.metiersRecherches @& metiers &&
         c.metiersEvalues @& metiersSecteurSansMetierChoisi
-    }.sortBy(_.dateInscription)
+    ).sortBy(_.dateInscription).map(rechercheCandidatDtoShape)
 
     // Candidats qui sont intéréssés par ce métier et qui ont été évalués sur un métier d'un autre secteur
-    val selectCandidatsInteressesParMetierAutreSecteur = candidatTable.filter { c =>
+    val selectCandidatsInteressesParMetierAutreSecteur = candidatTable.filter(c =>
       filtreTypeRecruteur(c, query.typeRecruteur) &&
         c.numeroTelephone.isDefined &&
         c.indexerMatching &&
         c.rechercheAutreMetier === true &&
         c.metiersRecherches @& metiers &&
         !(c.metiersEvalues @& metiersSecteur)
-    }.sortBy(_.dateInscription)
+    ).sortBy(_.dateInscription).map(rechercheCandidatDtoShape)
 
     for {
       candidatsEvaluesSurMetier <- database.run(selectCandidatsEvaluesSurMetier.result)
@@ -208,10 +210,35 @@ class CandidatProjection(val driver: PostgresDriver,
       candidatsInteressesParMetierAutreSecteur <- database.run(selectCandidatsInteressesParMetierAutreSecteur.result)
     } yield
       ResultatRechercheCandidatParMetier(
-        candidatsEvaluesSurMetier = candidatsEvaluesSurMetier.toList,
-        candidatsInteressesParMetierMemeSecteur = candidatsInteressesParMetierMemeSecteur.toList,
-        candidatsInteressesParMetierAutreSecteur = candidatsInteressesParMetierAutreSecteur.toList
+        candidatsEvaluesSurMetier = candidatsEvaluesSurMetier.toList.map(toRechercheCandidatDto),
+        candidatsInteressesParMetierMemeSecteur = candidatsInteressesParMetierMemeSecteur.toList.map(toRechercheCandidatDto),
+        candidatsInteressesParMetierAutreSecteur = candidatsInteressesParMetierAutreSecteur.toList.map(toRechercheCandidatDto)
       )
+  }
+
+  private def rechercheCandidatDtoShape(c: CandidatTable) =
+    (c.candidatId, c.nom, c.prenom, c.email, c.commune, c.metiersEvalues, c.metiersRecherches, c.rayonRecherche, c.numeroTelephone, c.cvId)
+
+  // FIXME : faire une vraie Shape slick
+  private def toRechercheCandidatDto(tuple: (CandidatId, String, String, Email, Option[String], List[CodeROME], List[CodeROME],
+    Option[RayonRecherche], Option[NumeroTelephone], Option[CVId])): RechercheCandidatDto = {
+    val metiersEvalues = tuple._6.map(referentielMetier.metierParCode)
+
+    RechercheCandidatDto(
+      candidatId = tuple._1,
+      nom = tuple._2,
+      prenom = tuple._3,
+      email = tuple._4,
+      commune = tuple._5,
+      metiersEvalues = metiersEvalues,
+      habiletes = metiersEvalues.flatMap(_.habiletes).distinct,
+      metiersRecherchesParSecteur =
+        tuple._7.flatMap(referentielMetier.metierProposePourRechercheParCode)
+        .groupBy(m => referentielMetier.secteurActivitePourCodeROME(m.codeROME)),
+      rayonRecherche = tuple._8,
+      numeroTelephone = tuple._9,
+      cvId = tuple._10
+    )
   }
 
   private def filtreCandidatAvecCriteresDeRecherche(c: CandidatTable): Rep[Boolean] =

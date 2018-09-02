@@ -19,6 +19,8 @@ import fr.poleemploi.perspectives.commun.infra.oauth.OauthService
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
 import fr.poleemploi.perspectives.emailing.infra.sql.MailjetSqlAdapter
 import fr.poleemploi.perspectives.emailing.infra.ws.MailjetEmailAdapter
+import fr.poleemploi.perspectives.metier.infra.file.ReferentielMetierFileAdapter
+import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapter
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
 import play.api.inject.ApplicationLifecycle
@@ -154,4 +156,18 @@ class InfraModule extends AbstractModule with ScalaModule {
       wsClient = wsClient,
       mailjetAdapterConfig = webAppConfig.mailjetWSAdapterConfig
     )
+
+  @Provides
+  @Singleton
+  def referentielMetierWSAdapter(wsClient: WSClient,
+                                 webAppConfig: WebAppConfig): ReferentielMetierWSAdapter =
+    new ReferentielMetierWSAdapter(
+      config = webAppConfig.referentielMetierWSAdapterConfig,
+      wsClient = wsClient
+    )
+
+  @Provides
+  @Singleton
+  def referentielMetierFileAdapter(): ReferentielMetierFileAdapter =
+    new ReferentielMetierFileAdapter()
 }

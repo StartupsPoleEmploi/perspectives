@@ -35,9 +35,4 @@ case class CandidatDto(candidatId: CandidatId,
   def rechercheEmploi: Boolean =
     (rechercheMetierEvalue.isEmpty && rechercheAutreMetier.isEmpty) ||
       rechercheMetierEvalue.getOrElse(false) || rechercheAutreMetier.getOrElse(false)
-
-  def metiersRecherchesParSecteur: Map[SecteurActivite, List[Metier]] =
-    metiersRecherches.flatMap(Metier.from).groupBy(m => SecteurActivite.parMetier(m.codeROME))
-
-  def habiletes: List[Habilete] = metiersEvalues.flatMap(Metier.from).flatMap(_.habiletes).distinct
 }

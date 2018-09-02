@@ -6,7 +6,9 @@ import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.candidat.cv.domain.CVService
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
 import fr.poleemploi.perspectives.emailing.domain.EmailingService
+import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
 import fr.poleemploi.perspectives.projections.candidat.{CandidatEmailProjection, CandidatNotificationSlackProjection, CandidatProjection, CandidatQueryHandler}
+import fr.poleemploi.perspectives.projections.metier.MetierQueryHandler
 import fr.poleemploi.perspectives.projections.recruteur.{RecruteurEmailProjection, RecruteurProjection, RecruteurQueryHandler}
 import net.codingwell.scalaguice.ScalaModule
 import play.api.libs.ws.WSClient
@@ -43,11 +45,13 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
   @Provides
   @Singleton
   def candidatProjection(database: Database,
+                         referentielMetier: ReferentielMetier,
                          webAppConfig: WebAppConfig): CandidatProjection =
     new CandidatProjection(
       driver = PostgresDriver,
       database = database,
-      candidatsTesteurs = webAppConfig.candidatsTesteurs.map(CandidatId)
+      candidatsTesteurs = webAppConfig.candidatsTesteurs.map(CandidatId),
+      referentielMetier = referentielMetier
     )
 
   @Provides
@@ -97,6 +101,13 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
   def recruteurQueryHandler(recruteurProjection: RecruteurProjection): RecruteurQueryHandler =
     new RecruteurQueryHandler(
       recruteurProjection = recruteurProjection
+    )
+
+  @Provides
+  @Singleton
+  def metierQueryHandler(referentielMetier: ReferentielMetier): MetierQueryHandler =
+    new MetierQueryHandler(
+      referentielMetier = referentielMetier
     )
 
 }

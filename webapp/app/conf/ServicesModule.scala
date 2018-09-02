@@ -1,6 +1,6 @@
 package conf
 
-import com.google.inject.{AbstractModule, Provides, Singleton}
+import com.google.inject.{AbstractModule, Provider, Provides, Singleton}
 import fr.poleemploi.perspectives.candidat.cv.domain.CVService
 import fr.poleemploi.perspectives.candidat.cv.infra.sql.CVSqlAdapter
 import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielMRSCandidat
@@ -13,6 +13,9 @@ import fr.poleemploi.perspectives.emailing.domain.EmailingService
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetEmailingService
 import fr.poleemploi.perspectives.emailing.infra.sql.MailjetSqlAdapter
 import fr.poleemploi.perspectives.emailing.infra.ws.MailjetEmailAdapter
+import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
+import fr.poleemploi.perspectives.metier.infra.file.ReferentielMetierFileAdapter
+import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapter
 import slick.jdbc.JdbcBackend.Database
 
 class ServicesModule extends AbstractModule {
@@ -53,4 +56,14 @@ class ServicesModule extends AbstractModule {
       mailjetContactAdapter = mailjetContactAdapter,
       mailjetEmailAdapter = mailjetEmailAdapter
     )
+
+  @Provides
+  @Singleton
+  def referentielMetier(referentielMetierWSAdapter: Provider[ReferentielMetierWSAdapter],
+                        referentielMetierFileAdapter: Provider[ReferentielMetierFileAdapter],
+                        webAppConfig: WebAppConfig): ReferentielMetier =
+    if (webAppConfig.useReferentielMetierWS)
+      referentielMetierWSAdapter.get()
+    else
+      referentielMetierFileAdapter.get()
 }

@@ -5,8 +5,9 @@ import conf.WebAppConfig
 import controllers.FlashMessages._
 import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.candidat.cv.domain.CVId
-import fr.poleemploi.perspectives.commun.domain.{CodeROME, NumeroTelephone, RayonRecherche, SecteurActivite}
+import fr.poleemploi.perspectives.commun.domain.{CodeROME, NumeroTelephone, RayonRecherche}
 import fr.poleemploi.perspectives.projections.candidat.{CandidatQueryHandler, GetCandidatQuery}
+import fr.poleemploi.perspectives.projections.metier.MetierQueryHandler
 import javax.inject.Inject
 import play.api.Logger
 import play.api.libs.Files
@@ -20,6 +21,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
                                                   messagesAction: MessagesActionBuilder,
                                                   candidatCommandHandler: CandidatCommandHandler,
                                                   candidatQueryHandler: CandidatQueryHandler,
+                                                  metierQueryHandler: MetierQueryHandler,
                                                   candidatAuthentifieAction: CandidatAuthentifieAction) extends AbstractController(components) {
 
   def saisieCriteresRecherche(): Action[AnyContent] = candidatAuthentifieAction.async { candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
@@ -37,7 +39,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
           saisieCriteresRechercheForm = form,
           candidatDto = candidatDto,
           candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie,
-          secteursActivites = SecteurActivite.values
+          secteursActivites = metierQueryHandler.secteursProposesPourRecherche
         ))
       }
     }(candidatAuthentifieRequest)
@@ -61,7 +63,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
                   saisieCriteresRechercheForm = formWithErrors,
                   candidatDto = Some(candidatDto),
                   candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie,
-                  secteursActivites = SecteurActivite.values
+                  secteursActivites = metierQueryHandler.secteursProposesPourRecherche
                 )))
               },
               saisieCriteresRechercheForm => {

@@ -7,8 +7,9 @@ import conf.WebAppConfig
 import controllers.FlashMessages._
 import fr.poleemploi.cqrs.projection.UnauthorizedQueryException
 import fr.poleemploi.perspectives.candidat.CandidatId
-import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite, SecteurActivite}
+import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite}
 import fr.poleemploi.perspectives.projections.candidat._
+import fr.poleemploi.perspectives.projections.metier.MetierQueryHandler
 import fr.poleemploi.perspectives.projections.recruteur._
 import fr.poleemploi.perspectives.recruteur.RecruteurId
 import javax.inject.{Inject, Singleton}
@@ -24,6 +25,7 @@ class MatchingController @Inject()(cc: ControllerComponents,
                                    messagesAction: MessagesActionBuilder,
                                    candidatQueryHandler: CandidatQueryHandler,
                                    recruteurQueryHandler: RecruteurQueryHandler,
+                                   metierQueryHandler: MetierQueryHandler,
                                    recruteurAuthentifieAction: RecruteurAuthentifieAction) extends AbstractController(cc) {
 
   def index(): Action[AnyContent] = recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
@@ -37,7 +39,7 @@ class MatchingController @Inject()(cc: ControllerComponents,
           matchingForm = MatchingForm.form.fill(matchingForm),
           recruteurAuthentifie = recruteurAuthentifieRequest.recruteurAuthentifie,
           resultatRechercheCandidat = resultatRechercheCandidatDto,
-          secteursActivites = SecteurActivite.values
+          secteursActivites = metierQueryHandler.secteursProposesPourRecherche
         ))
       ).recover {
         case _: ProfilRecruteurIncompletException =>

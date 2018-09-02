@@ -1,6 +1,7 @@
 "use strict";
 
 $(document).ready(function () {
+    // FIXME : reçus depuis le back
     var secteursActivites = Object.freeze({
         'A': ['A1401'],
         'G': ['G1603', 'G1803'],

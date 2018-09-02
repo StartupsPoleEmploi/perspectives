@@ -18,25 +18,26 @@ class WebAppConfig(configuration: Configuration) {
   val useSlackNotificationCandidat: Boolean = configuration.getOptional[Boolean]("useSlackNotificationCandidat").getOrElse(true)
   val useEmail: Boolean = configuration.getOptional[Boolean]("useEmail").getOrElse(true)
   val useGoogleTagManager: Boolean = configuration.getOptional[Boolean]("useGoogleTagManager").getOrElse(true)
+  val useReferentielMetierWS: Boolean = configuration.getOptional[Boolean]("useReferentielMetierWS").getOrElse(true)
 
   val environnement: Environnement = Environnement.from(configuration.get[String]("environnement"))
   val version: String = BuildInfo.version
 
-  val oauthConfig: OauthConfig = OauthConfig(
-    clientId = configuration.get[String]("peconnect.oauth2.clientId"),
-    clientSecret = configuration.get[String]("peconnect.oauth2.clientSecret")
+  val emploiStoreOauthConfig: OauthConfig = OauthConfig(
+    clientId = configuration.get[String]("emploiStore.oauth2.clientId"),
+    clientSecret = configuration.get[String]("emploiStore.oauth2.clientSecret")
   )
 
   val peConnectRecruteurConfig: PEConnectWSAdapterConfig = PEConnectWSAdapterConfig(
-    urlAuthentification = configuration.get[String]("peconnect.recruteur.urlAuthentification"),
-    urlApi = configuration.get[String]("peconnect.urlApi"),
-    oauthConfig = oauthConfig,
+    urlAuthentification = configuration.get[String]("emploiStore.entreprise.urlAuthentification"),
+    urlApi = configuration.get[String]("emploiStore.urlApi"),
+    oauthConfig = emploiStoreOauthConfig,
   )
 
   val peConnectCandidatConfig: PEConnectWSAdapterConfig = PEConnectWSAdapterConfig(
-    urlAuthentification = configuration.get[String]("peconnect.candidat.urlAuthentification"),
-    urlApi = configuration.get[String]("peconnect.urlApi"),
-    oauthConfig = oauthConfig
+    urlAuthentification = configuration.get[String]("emploiStore.candidat.urlAuthentification"),
+    urlApi = configuration.get[String]("emploiStore.urlApi"),
+    oauthConfig = emploiStoreOauthConfig
   )
 
   val googleTagManagerContainerId: String = configuration.get[String]("googleTagManager.containerId")
@@ -55,9 +56,9 @@ class WebAppConfig(configuration: Configuration) {
   )
 
   val referentielMetierWSAdapterConfig: ReferentielMetierWSAdapterConfig = ReferentielMetierWSAdapterConfig(
-    urlAuthentification = configuration.get[String]("referentielMetier.urlAuthentification"),
-    urlApi = configuration.get[String]("referentielMetier.urlApi"),
-    oauthConfig = oauthConfig
+    urlAuthentification = configuration.get[String]("emploiStore.entreprise.urlAuthentification"),
+    urlApi = configuration.get[String]("emploiStore.urlApi"),
+    oauthConfig = emploiStoreOauthConfig
   )
 
   val referentielMRSCandidatFileConfig: ReferentielMRSCandidatFileConfig = ReferentielMRSCandidatFileConfig(

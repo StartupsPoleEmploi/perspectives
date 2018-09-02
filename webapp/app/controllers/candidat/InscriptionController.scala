@@ -8,7 +8,7 @@ import controllers.FlashMessages._
 import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
 import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.candidat.mrs.domain.MRSValidee
-import fr.poleemploi.perspectives.commun.domain.{Email, Genre, Metier}
+import fr.poleemploi.perspectives.commun.domain.{CodeROME, Email, Genre}
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
 
@@ -43,7 +43,7 @@ class InscriptionController @Inject()(cc: ControllerComponents,
       ),
       statutDemandeurEmploi = StatutDemandeurEmploi.DEMANDEUR_EMPLOI,
       mrsValidees = List(MRSValidee(
-        codeROME = Metier.MACONNERIE.codeROME,
+        codeROME = CodeROME("F1703"),
         dateEvaluation = LocalDate.now()
       ))
     )

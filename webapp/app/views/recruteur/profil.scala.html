@@ -41,7 +41,13 @@
                             type="radio"
                             value="@typeRecruteur.value"
                             @if(profilForm("typeRecruteur").value.contains(typeRecruteur.value)){checked}/>
-                    <label class="labelRadio" for="typeRecruteur-@typeRecruteur.value">@TypeRecruteur.getLabel(typeRecruteur)
+                    <label class="labelRadio" for="typeRecruteur-@typeRecruteur.value">
+                        @(typeRecruteur match {
+                            case TypeRecruteur.ENTREPRISE => "Une entreprise"
+                            case TypeRecruteur.AGENCE_INTERIM => "Une agence d'interim"
+                            case TypeRecruteur.ORGANISME_FORMATION => "Un organisme de formation"
+                            case r@_ => s"Moins de ${r.value}km"
+                        })
                         <span class="labelRadio-circle"></span>
                     </label>
                 </span>
