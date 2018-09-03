@@ -1,6 +1,7 @@
 @import conf.WebAppConfig
 @import controllers.candidat.SaisieCriteresRechercheForm
 @import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
+@import fr.poleemploi.perspectives.candidat.cv.domain.TypeMedia
 @import fr.poleemploi.perspectives.commun.domain.{RayonRecherche, SecteurActivite}
 @import fr.poleemploi.perspectives.projections.candidat.CandidatDto
 @import helper._
@@ -205,10 +206,10 @@
                 <span class="question-puce @if(hasErrors("cv")){question-puce--erreur}">7</span>
                 <div class="question-texte">
                     @if(candidatDto.exists(_.hasCV)) {
-                        Remplacez votre dernier CV envoyé (pdf, doc, docx, jpg) :
+                        Remplacez votre dernier CV envoyé (@TypeMedia.extensionsCV.mkString(", ")) :
                         <a class="telechargerCV" href="/candidat/cv/telecharger" target="_blank">Voir mon CV</a>
                     } else {
-                        Ajoutez votre CV pour obtenir plus de visibilité auprès des recruteurs (pdf, doc, docx, jpg) :
+                        Ajoutez votre CV pour obtenir plus de visibilité auprès des recruteurs (@TypeMedia.extensionsCV.mkString(", ")) :
                     }
                 </div>
             </dt>
@@ -221,7 +222,7 @@
                         <span class="uploadActions-boutonParcourir">Parcourir</span>
                     </span>
                     <span class="labelUploadFichier-indicationTailleMax">(poids maximum du document 5mo)</span>
-                    <input id="js-input-cv" class="labelUploadFichier-input" name="cv" type="file" accept="application/pdf,application/vnd.oasis.opendocument.text,image/jpeg,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"/>
+                    <input id="js-input-cv" class="labelUploadFichier-input" name="cv" type="file" accept="@TypeMedia.typesMediasCV.mkString(",")"/>
                 </label>
             </dd>
             <dd class="erreurs">

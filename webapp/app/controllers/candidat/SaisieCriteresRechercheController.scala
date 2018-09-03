@@ -4,7 +4,7 @@ import authentification.infra.play.{CandidatAuthentifieAction, CandidatAuthentif
 import conf.WebAppConfig
 import controllers.FlashMessages._
 import fr.poleemploi.perspectives.candidat._
-import fr.poleemploi.perspectives.candidat.cv.domain.CVId
+import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
 import fr.poleemploi.perspectives.commun.domain.{CodeROME, NumeroTelephone, RayonRecherche}
 import fr.poleemploi.perspectives.projections.candidat.{CandidatQueryHandler, GetCandidatQuery}
 import fr.poleemploi.perspectives.projections.metier.MetierQueryHandler
@@ -49,9 +49,9 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
     candidatAuthentifieAction.async(parse.multipartFormData(5L * 1024 * 1024)) { candidatAuthentifieRequest: CandidatAuthentifieRequest[MultipartFormData[Files.TemporaryFile]] =>
       messagesAction.async(parse.multipartFormData) { implicit messagesRequest: MessagesRequest[MultipartFormData[Files.TemporaryFile]] =>
         val cv = messagesRequest.body.file("cv").filter(_.ref.path.toFile.length() > 0)
-        val typeMediaValide = messagesRequest.body.file("cv").flatMap(_.contentType).exists(SaisieCriteresRechercheForm.mediaTypesValides.contains)
+        val typeMedia = messagesRequest.body.file("cv").flatMap(_.contentType).flatMap(TypeMedia.typeMediaCV)
 
-        val form = if (cv.isDefined && !typeMediaValide) {
+        val form = if (cv.isDefined && typeMedia.isEmpty) {
           SaisieCriteresRechercheForm.form.withError("cv", "error.typeMediaInvalide")
         } else SaisieCriteresRechercheForm.form
 
@@ -74,8 +74,8 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
                   _ <- candidatCommandHandler.modifierCriteresRecherche(modifierCriteresCommand)
                   _ <- cv.map(cv =>
                     candidatDto.cvId
-                      .map(cvId => candidatCommandHandler.remplacerCV(buildRemplacerCvCommand(candidatId, cvId, cv)))
-                      .getOrElse(candidatCommandHandler.ajouterCV(buildAjouterCvCommand(candidatId, cv)))
+                      .map(cvId => candidatCommandHandler.remplacerCV(buildRemplacerCvCommand(candidatId, cvId, typeMedia.get, cv)))
+                      .getOrElse(candidatCommandHandler.ajouterCV(buildAjouterCvCommand(candidatId, typeMedia.get, cv)))
                   ) getOrElse Future.successful(())
                 } yield ()).map(_ =>
                   if (saisieCriteresRechercheForm.nouveauCandidat) {
@@ -117,22 +117,24 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
   }
 
   private def buildAjouterCvCommand(candidatId: CandidatId,
+                                    typeMedia: TypeMedia,
                                     cv: MultipartFormData.FilePart[Files.TemporaryFile]): AjouterCVCommand =
     AjouterCVCommand(
       id = candidatId,
       nomFichier = cv.filename,
-      typeMedia = cv.contentType.getOrElse(""),
+      typeMedia = typeMedia,
       path = cv.ref.path
     )
 
   private def buildRemplacerCvCommand(candidatId: CandidatId,
                                       cvId: CVId,
+                                      typeMedia: TypeMedia,
                                       cv: MultipartFormData.FilePart[Files.TemporaryFile]): RemplacerCVCommand =
     RemplacerCVCommand(
       id = candidatId,
       cvId = cvId,
       nomFichier = cv.filename,
-      typeMedia = cv.contentType.getOrElse(""),
+      typeMedia = typeMedia,
       path = cv.ref.path
     )
 }

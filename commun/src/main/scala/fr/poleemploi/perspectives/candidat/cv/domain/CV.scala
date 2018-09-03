@@ -8,11 +8,11 @@ case class CVId(value: String) extends StringValueObject
 
 case class CV(id: CVId,
               nomFichier: String,
-              typeMedia: String,
+              typeMedia: TypeMedia,
               data: Array[Byte],
               date: ZonedDateTime)
 
 case class DetailsCV(id: CVId,
                      nomFichier: String,
-                     typeMedia: String,
+                     typeMedia: TypeMedia,
                      date: ZonedDateTime)

@@ -5,7 +5,7 @@ import java.time.ZonedDateTime
 import java.util.UUID
 
 import fr.poleemploi.perspectives.candidat.CandidatId
-import fr.poleemploi.perspectives.candidat.cv.domain.{CV, CVId, CVService, DetailsCV}
+import fr.poleemploi.perspectives.candidat.cv.domain._
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
 import slick.jdbc.JdbcBackend.Database
 
@@ -15,7 +15,7 @@ import scala.concurrent.Future
 private[infra] case class CVRecord(candidatId: CandidatId,
                                    cvId: CVId,
                                    nomFichier: String,
-                                   typeMedia: String,
+                                   typeMedia: TypeMedia,
                                    fichier: Array[Byte],
                                    date: ZonedDateTime)
 
@@ -34,7 +34,7 @@ class CVSqlAdapter(val driver: PostgresDriver,
 
     def nomFichier = column[String]("nom_fichier")
 
-    def typeMedia = column[String]("type_media")
+    def typeMedia = column[TypeMedia]("type_media")
 
     def fichier = column[Array[Byte]]("fichier")
 
@@ -63,7 +63,7 @@ class CVSqlAdapter(val driver: PostgresDriver,
   override def save(cvId: CVId,
                     candidatId: CandidatId,
                     nomFichier: String,
-                    typeMedia: String,
+                    typeMedia: TypeMedia,
                     path: Path): Future[Unit] =
     database
       .run(cvCandidatTable.map(
@@ -73,7 +73,7 @@ class CVSqlAdapter(val driver: PostgresDriver,
 
   override def update(cvId: CVId,
                       nomFichier: String,
-                      typeMedia: String,
+                      typeMedia: TypeMedia,
                       path: Path): Future[Unit] =
     database.run(updateCVQuery(cvId).update((
       nomFichier,

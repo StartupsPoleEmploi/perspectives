@@ -13,12 +13,12 @@ trait CVService {
   def save(cvId: CVId,
            candidatId: CandidatId,
            nomFichier: String,
-           typeMedia: String,
+           typeMedia: TypeMedia,
            path: Path): Future[Unit]
 
   def update(cvId: CVId,
              nomFichier: String,
-             typeMedia: String,
+             typeMedia: TypeMedia,
              path: Path): Future[Unit]
 
   def findDetailsCVByCandidat(candidatId: CandidatId): Future[Option[DetailsCV]]

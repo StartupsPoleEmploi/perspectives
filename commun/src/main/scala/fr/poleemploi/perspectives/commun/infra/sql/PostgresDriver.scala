@@ -2,7 +2,7 @@ package fr.poleemploi.perspectives.commun.infra.sql
 
 import com.github.tminglei.slickpg._
 import com.github.tminglei.slickpg.array.PgArrayExtensions
-import fr.poleemploi.perspectives.candidat.cv.domain.CVId
+import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
 import fr.poleemploi.perspectives.candidat.{CandidatId, StatutDemandeurEmploi}
 import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
@@ -88,6 +88,11 @@ trait PostgresDriver extends ExPostgresProfile
     implicit val rayonRechercheColumnType: BaseColumnType[RayonRecherche] = MappedColumnType.base[RayonRecherche, Int](
       { r => r.value },
       { i => RayonRecherche(i) }
+    )
+
+    implicit val typeMediaColumnType: BaseColumnType[TypeMedia] = MappedColumnType.base[TypeMedia, String](
+      { t => t.value },
+      { s => TypeMedia(s) }
     )
   }
 

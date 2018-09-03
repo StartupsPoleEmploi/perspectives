@@ -103,7 +103,7 @@ class MatchingController @Inject()(cc: ControllerComponents,
         body = HttpEntity.Streamed(
           data = source,
           contentLength = Some(fichierCv.data.length.toLong),
-          contentType = Some(fichierCv.typeMedia))
+          contentType = Some(fichierCv.typeMedia.value))
       )
     }).recover {
       case _: UnauthorizedQueryException =>

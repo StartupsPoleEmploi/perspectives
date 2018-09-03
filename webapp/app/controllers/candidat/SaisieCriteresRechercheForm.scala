@@ -18,14 +18,6 @@ case class SaisieCriteresRechercheForm(nouveauCandidat: Boolean,
 
 object SaisieCriteresRechercheForm {
 
-  val mediaTypesValides = List(
-    "application/pdf",
-    "application/vnd.oasis.opendocument.text",
-    "image/jpeg",
-    "application/msword",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-  )
-
   val rayonRechercheConstraint: Constraint[Int] = Constraint("constraint.rayonRecherche")({
     n =>
       if (RayonRecherche.from(n).isDefined) {

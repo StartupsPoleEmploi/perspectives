@@ -34,7 +34,7 @@ class CVController @Inject()(components: ControllerComponents,
             body = HttpEntity.Streamed(
               data = source,
               contentLength = Some(fichierCv.data.length.toLong),
-              contentType = Some(fichierCv.typeMedia))
+              contentType = Some(fichierCv.typeMedia.value))
           )
         })
     }(candidatAuthentifieRequest)

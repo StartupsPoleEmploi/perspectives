@@ -3,7 +3,7 @@ package fr.poleemploi.perspectives.candidat
 import java.nio.file.Path
 import java.util.UUID
 
-import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, CVService}
+import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, CVService, TypeMedia}
 import org.mockito.Mockito.when
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
@@ -21,7 +21,7 @@ class AjouterCVCandidatSpec extends AsyncWordSpec
     AjouterCVCommand(
       id = candidatBuilder.candidatId,
       nomFichier = "cv.doc",
-      typeMedia = "application/word",
+      typeMedia = TypeMedia.DOC,
       path = mock[Path]
     )
 

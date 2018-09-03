@@ -3,7 +3,7 @@ package fr.poleemploi.perspectives.candidat
 import java.nio.file.Path
 
 import fr.poleemploi.cqrs.command.Command
-import fr.poleemploi.perspectives.candidat.cv.domain.CVId
+import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
 import fr.poleemploi.perspectives.candidat.mrs.domain.MRSValidee
 import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.conseiller.ConseillerId
@@ -37,13 +37,13 @@ case class ModifierProfilCommand(id: CandidatId,
 
 case class AjouterCVCommand(id: CandidatId,
                             nomFichier: String,
-                            typeMedia: String,
+                            typeMedia: TypeMedia,
                             path: Path) extends Command
 
 case class RemplacerCVCommand(id: CandidatId,
                               cvId: CVId,
                               nomFichier: String,
-                              typeMedia: String,
+                              typeMedia: TypeMedia,
                               path: Path) extends Command
 
 case class AjouterMRSValideesCommand(id: CandidatId,
