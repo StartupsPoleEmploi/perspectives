@@ -27,12 +27,4 @@ case class CandidatDto(candidatId: CandidatId,
                        indexerMatching: Boolean) {
 
   def hasCV: Boolean = cvId.isDefined
-
-  /**
-    * Ne se base pas sur statutDemandeurEmploi car il n'est pas forcément actualisé tout de suite
-    * par le candidat et cela implique une reconnexion du candidat via un service externe.
-    */
-  def rechercheEmploi: Boolean =
-    (rechercheMetierEvalue.isEmpty && rechercheAutreMetier.isEmpty) ||
-      rechercheMetierEvalue.getOrElse(false) || rechercheAutreMetier.getOrElse(false)
 }

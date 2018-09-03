@@ -128,8 +128,9 @@ class CandidatProjection(val driver: PostgresDriver,
   def getCandidat(query: GetCandidatQuery): Future[CandidatDto] =
     database.run(getCandidatQuery(query.candidatId).result.head)
 
-  def listerParDateInscription: Future[List[CandidatDto]] =
-    database.run(listerParDateInscriptionQuery.result).map(_.toList)
+  def listerParDateInscriptionPourConseiller: Future[List[CandidatPourConseillerDto]] =
+    database.run(listerParDateInscriptionQuery.map(candidatPourConseillerDtoShape).result)
+      .map(_.toList.map(toCandidatPourConseillerDto))
 
   def rechercherCandidatParDateInscription(query: RechercherCandidatsParDateInscriptionQuery): Future[ResultatRechercheCandidatParDateInscription] =
     database.run(
@@ -216,10 +217,10 @@ class CandidatProjection(val driver: PostgresDriver,
       )
   }
 
+  // FIXME : faire une vraie Shape slick
   private def rechercheCandidatDtoShape(c: CandidatTable) =
     (c.candidatId, c.nom, c.prenom, c.email, c.commune, c.metiersEvalues, c.metiersRecherches, c.rayonRecherche, c.numeroTelephone, c.cvId)
 
-  // FIXME : faire une vraie Shape slick
   private def toRechercheCandidatDto(tuple: (CandidatId, String, String, Email, Option[String], List[CodeROME], List[CodeROME],
     Option[RayonRecherche], Option[NumeroTelephone], Option[CVId])): RechercheCandidatDto = {
     val metiersEvalues = tuple._6.map(referentielMetier.metierParCode)
@@ -238,6 +239,32 @@ class CandidatProjection(val driver: PostgresDriver,
       rayonRecherche = tuple._8,
       numeroTelephone = tuple._9,
       cvId = tuple._10
+    )
+  }
+
+  // FIXME : faire une vraie Shape slick
+  private def candidatPourConseillerDtoShape(c: CandidatTable) =
+    (c.candidatId, c.nom, c.prenom, c.genre, c.email, c.statutDemandeurEmploi, c.rechercheMetierEvalue, c.rechercheAutreMetier, c.metiersRecherches, c.contacteParAgenceInterim, c.contacteParOrganismeFormation, c.rayonRecherche, c.numeroTelephone, c.dateInscription)
+
+  private def toCandidatPourConseillerDto(tuple: (CandidatId, String, String, Genre, Email, Option[StatutDemandeurEmploi], Option[Boolean], Option[Boolean],
+    List[CodeROME], Option[Boolean], Option[Boolean], Option[RayonRecherche], Option[NumeroTelephone], ZonedDateTime)): CandidatPourConseillerDto = {
+    val metiersRecherches = tuple._9.flatMap(referentielMetier.metierProposePourRechercheParCode)
+
+    CandidatPourConseillerDto(
+      candidatId = tuple._1,
+      nom = tuple._2,
+      prenom = tuple._3,
+      genre = tuple._4,
+      email = tuple._5,
+      statutDemandeurEmploi = tuple._6,
+      rechercheMetierEvalue = tuple._7,
+      rechercheAutreMetier = tuple._8,
+      metiersRecherches = metiersRecherches,
+      contacteParAgenceInterim = tuple._10,
+      contacteParOrganismeFormation = tuple._11,
+      rayonRecherche = tuple._12,
+      numeroTelephone = tuple._13,
+      dateInscription = tuple._14
     )
   }
 

@@ -22,7 +22,7 @@ class ConseillerController @Inject()(cc: ControllerComponents,
 
   def listeCandidats(): Action[AnyContent] = conseillerAuthentifieAction.async { implicit conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
     if (autorisationService.hasRole(conseillerRequest.conseillerId, RoleConseiller.ADMIN)) {
-      candidatQueryHandler.listerParDateInscription()
+      candidatQueryHandler.listerParDateInscriptionPourConseiller()
         .map(candidats =>
           Ok(views.html.conseiller.listeCandidats(candidats))
         )

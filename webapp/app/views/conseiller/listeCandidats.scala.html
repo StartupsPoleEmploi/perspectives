@@ -3,9 +3,9 @@
 @import conf.WebAppConfig
 @import fr.poleemploi.perspectives.candidat.StatutDemandeurEmploi
 @import fr.poleemploi.perspectives.commun.domain.Genre
-@import fr.poleemploi.perspectives.projections.candidat.CandidatDto
+@import fr.poleemploi.perspectives.projections.candidat.CandidatPourConseillerDto
 
-@(candidats: List[CandidatDto])(implicit flash: Flash, webAppConfig: WebAppConfig)
+@(candidats: List[CandidatPourConseillerDto])(implicit flash: Flash, webAppConfig: WebAppConfig)
 
 @getBoolean(boolean: Option[Boolean]) = @{
     if (boolean.getOrElse(false)) "Oui" else "Non"
@@ -44,7 +44,7 @@
                 <td>@candidat.statutDemandeurEmploi.map(StatutDemandeurEmploi.getLabel)</td>
                 <td>@getBoolean(candidat.rechercheMetierEvalue)</td>
                 <td>@getBoolean(candidat.rechercheAutreMetier)</td>
-                <td>@candidat.metiersRecherches.map(_.value).mkString(", ")</td>@** FIXME : referentiel métier *@
+                <td>@candidat.metiersRecherches.map(_.label).mkString(", ")</td>
                 <td>@getBoolean(candidat.contacteParAgenceInterim)</td>
                 <td>@getBoolean(candidat.contacteParOrganismeFormation)</td>
                 <td>@candidat.rayonRecherche.map(_.value)</td>
