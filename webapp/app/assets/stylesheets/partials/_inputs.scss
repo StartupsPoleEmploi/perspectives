@@ -98,6 +98,11 @@
     }
   }
 
+  &--noirSurGris {
+    color: #2C4054;
+    background-color: #EAEBED;
+  }
+
   &--bleu {
     color: white;
     background-color: #82CCDD;
@@ -213,5 +218,43 @@ input[type="text"] {
     height: 17px;
     border: 1.5px solid #334051;
     border-radius: 1px;
+  }
+}
+
+.telechargementFichier {
+  display: inline-block;
+  font-size: 1em;
+
+  &-indicationTaille {
+    color: #0F415A;
+
+    @include media-breakpoint-down(md) {
+      display: block;
+      margin-top: 1em;
+    }
+  }
+
+  &-bouton {
+    border-radius: 4px;
+    padding: 0.5em 1em;
+  }
+
+  &-input {
+    position: absolute;
+    opacity: 0;
+  }
+
+  &-item {
+    margin-left: 1em;
+  }
+}
+
+.parcourirFichier {
+  display: inline-flex;
+  align-items: center;
+
+  &-nom {
+    border-radius: 4px 0 0 4px;
+    padding: 0.5em 2em;
   }
 }

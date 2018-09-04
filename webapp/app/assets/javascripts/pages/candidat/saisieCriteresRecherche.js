@@ -71,40 +71,90 @@ $(document).ready(function () {
     });
 
     if (window.FileReader) {
-        var nomFichier = $("#js-nom-fichier");
+        var validerCriteres = $("#js-validerCriteres");
+        var inputCV = $("#js-inputCV");
+        var validerCV = $("#js-validerCV");
+        var texteInitialValiderCV = validerCV.text();
+        var erreursCV = $("#js-erreursCV");
+        var nomFichier = $("#js-nomFichier");
         var nomFichierInitial = nomFichier.text();
-        var erreurCv = $("#js-erreur-cv");
+        var indicationTailleMax = $("#js-indicationTaille");
+        var progressionUpload = $("#js-progression");
+        validerCV.hide();
         var tailleMaximumFichierBytes = 5 * 1000 * 1000;
+        // FIXME : recupérer du back
         var mediaTypesValides = ["application/pdf", "application/vnd.oasis.opendocument.text", "image/jpeg", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
 
-        $('#js-input-cv').bind('change', function() {
-            var fichier = this.files[0];
-            var erreurs = [];
-            viderErreursPrecedentes(erreurCv);
+        inputCV.fileupload({
+            url: '/candidat/modifierCV', // on utilise pas l'url du formulaire qui gère tous les champs en plus du CV
+            dataType: 'json',
+            formData: function (form) { // on envoit juste le token CSRF
+                return form.serializeArray().filter(e => e.name === "csrfToken");
+            },
+            dropZone: null, // pas de drag and drop
+            limitMultiFileUploads: 1,
+            autoUpload: false,
+            add: function (event, data) {
+                var fichier = data.files[0];
+                viderErreurs();
+                var erreurs = [];
 
-            if (fichier !== undefined) {
-                if (fichier.size > tailleMaximumFichierBytes) {
-                    erreurs.push("Le fichier dépasse la taille maximale autorisée");
+                if (fichier !== undefined) {
+                    if (fichier.size > tailleMaximumFichierBytes) {
+                        erreurs.push("Le fichier dépasse la taille maximale autorisée");
+                    }
+                    if (!mediaTypesValides.includes(fichier.type)) {
+                        erreurs.push("Le type de fichier n'est pas valide");
+                    }
+                    nomFichier.text(fichier.name);
+                } else {
+                    nomFichier.text(nomFichierInitial);
                 }
-                if (!mediaTypesValides.includes(fichier.type)) {
-                    erreurs.push("Le type de fichier n'est pas valide");
-                }
-                nomFichier.text(fichier.name);
-            } else {
-                nomFichier.text(nomFichierInitial);
-            }
 
-            if (erreurs.length > 0) {
-                erreurCv.text(erreurs.join(", "));
-            } else {
-                erreurCv.text("");
+                if (erreurs.length > 0) {
+                    erreurs.forEach(function(e) {
+                        addErreur(e);
+                    });
+                    reinitialiser();
+                } else {
+                    validerCV.show();
+                    indicationTailleMax.hide();
+                    validerCV.click(function () {
+                        validerCV.html("Envoi du CV...");
+                        data.submit();
+                        validerCriteres.prop("disabled", "disabled");
+                    });
+                }
+            },
+            progressall: function (event, data) {
+                var progress = parseInt(data.loaded / data.total * 100, 10);
+                progressionUpload.text(progress + "%");
+            },
+            fail: function (event, data) {
+                reinitialiser();
+                addErreur("Une erreur est survenue pendant le téléchargement");
+            },
+            done: function (event, data) {
+                reinitialiser();
+                viderErreurs();
             }
         });
     }
 
-    function viderErreursPrecedentes(erreurCv) {
-        erreurCv.parent().find(".erreurs-item").each(function() {
-            $(this).text("");
-        });
+    function addErreur(text) {
+        erreursCV.append("<div class='erreurs-item'>" + text + "</div>");
+    }
+
+    function viderErreurs() {
+        erreursCV.html("");
+    }
+
+    function reinitialiser() {
+        progressionUpload.text("");
+        validerCV.unbind("click");
+        validerCV.hide();
+        validerCV.html(texteInitialValiderCV);
+        indicationTailleMax.show();
+        validerCriteres.prop("disabled", "");
     }
 });

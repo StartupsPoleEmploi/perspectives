@@ -31,7 +31,7 @@
         </div>
     </section>
     <section class="criteres">
-        @form(action = controllers.candidat.routes.SaisieCriteresRechercheController.modifierCriteresRecherche(), 'id -> "criteresRechercheForm", 'enctype -> "multipart/form-data") {
+        @form(action = controllers.candidat.routes.SaisieCriteresRechercheController.modifierCriteresRecherche(), 'id -> "criteresRechercheForm") {
         @CSRF.formField
         <input type="hidden" name="nouveauCandidat" value="@saisieCriteresRechercheForm("nouveauCandidat").value" />
         <dl class="critere">
@@ -216,31 +216,34 @@
                 </div>
             </dt>
             <dd class="choix">
-                <label class="labelUploadFichier" for="js-input-cv">
-                    <span class="uploadActions">
-                        <span id="js-nom-fichier" class="uploadActions-nomFichier">
+                <div class="telechargementFichier">
+                    <label class="parcourirFichier telechargementFichier-item" for="js-inputCV">
+                        <span id="js-nomFichier" class="parcourirFichier-nom bouton bouton--noirSurGris">
                             @candidat.flatMap(_.cvId).map(_ => "Remplacer mon CV").getOrElse("Ajouter mon CV")
                         </span>
-                        <span class="uploadActions-boutonParcourir">Parcourir</span>
-                    </span>
-                    <span class="labelUploadFichier-indicationTailleMax">(poids maximum du document 5mo)</span>
-                    <input id="js-input-cv" class="labelUploadFichier-input" name="cv" type="file" accept="@TypeMedia.typesMediasCV.mkString(",")"/>
-                </label>
+                        <span class="telechargementFichier-bouton bouton bouton--blancSurNoir">Parcourir</span>
+                        <input id="js-inputCV" class="telechargementFichier-input" name="cv" type="file" accept="@TypeMedia.typesMediasCV.mkString(",")"/>
+                    </label>
+                    <span id="js-validerCV" class="telechargementFichier-item telechargementFichier-bouton bouton bouton--fondBleu">Valider mon CV</span>
+                    <span id="js-indicationTaille" class="telechargementFichier-item telechargementFichier-indicationTaille">(poids maximum du document 5mo)</span>
+                    <span id="js-progression" class="telechargementFichier-item"></span>
+                </div>
             </dd>
-            <dd class="erreurs">
-                <span id="js-erreur-cv" class="erreurs-item"></span>
-                @if(hasErrors("cv")) {
-                <span class="erreurs-item">@saisieCriteresRechercheForm("cv").errors.map(_.format).mkString(", ")</span>
+            <dd id="js-erreursCV" class="erreurs">
+                @for(erreur <- saisieCriteresRechercheForm("cv").errors.map(_.format)) {
+                    <div class="erreurs-item">@erreur</div>
                 }
             </dd>
         </dl>
         <div class="validerCriteres">
-            <button class="bouton bouton-actionPrincipale bouton--fondBleu" type="submit">
+            <button id="js-validerCriteres" class="bouton bouton-actionPrincipale bouton--fondBleu" type="submit">
                 Valider mes critères
             </button>
         </div>
         }
     </section>
 </div>
+<script src="@routes.Assets.versioned("javascripts/vendor/jquery.ui.widget.js")" type="text/javascript"></script>
+<script src="@routes.Assets.versioned("javascripts/vendor/jquery.fileupload.js")" type="text/javascript"></script>
 <script src="@routes.Assets.versioned("javascripts/pages/candidat/saisieCriteresRecherche.js")" type="text/javascript"></script>
 }

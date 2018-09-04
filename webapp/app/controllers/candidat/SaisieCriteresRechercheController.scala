@@ -4,7 +4,7 @@ import authentification.infra.play.{CandidatAuthentifieAction, CandidatAuthentif
 import conf.WebAppConfig
 import controllers.FlashMessages._
 import fr.poleemploi.perspectives.candidat._
-import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
+import fr.poleemploi.perspectives.candidat.cv.domain.CVId
 import fr.poleemploi.perspectives.commun.domain.{CodeROME, NumeroTelephone, RayonRecherche}
 import fr.poleemploi.perspectives.projections.candidat.{CandidatQueryHandler, CriteresRechercheQuery}
 import fr.poleemploi.perspectives.projections.metier.MetierQueryHandler
@@ -45,57 +45,56 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
     }(candidatAuthentifieRequest)
   }
 
-  def modifierCriteresRecherche(): Action[MultipartFormData[Files.TemporaryFile]] =
-    candidatAuthentifieAction.async(parse.multipartFormData(5L * 1024 * 1024)) { candidatAuthentifieRequest: CandidatAuthentifieRequest[MultipartFormData[Files.TemporaryFile]] =>
-      messagesAction.async(parse.multipartFormData) { implicit messagesRequest: MessagesRequest[MultipartFormData[Files.TemporaryFile]] =>
-        val cv = messagesRequest.body.file("cv").filter(_.ref.path.toFile.length() > 0)
-        val typeMedia = messagesRequest.body.file("cv").flatMap(_.contentType).flatMap(TypeMedia.typeMediaCV)
+  def modifierCriteresRecherche: Action[AnyContent] = candidatAuthentifieAction.async { candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
+    messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
+      candidatQueryHandler.criteresRecherche(CriteresRechercheQuery(candidatAuthentifieRequest.candidatId))
+        .flatMap(candidat => {
+          SaisieCriteresRechercheForm.form.bindFromRequest.fold(
+            formWithErrors => {
+              Future.successful(BadRequest(views.html.candidat.saisieCriteresRecherche(
+                saisieCriteresRechercheForm = formWithErrors,
+                candidat = Some(candidat),
+                candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie,
+                secteursActivites = metierQueryHandler.secteursProposesPourRecherche
+              )))
+            },
+            saisieCriteresRechercheForm => {
+              val modifierCriteresCommand = buildModifierCriteresRechercheCommand(candidat.candidatId, saisieCriteresRechercheForm)
 
-        val form = if (cv.isDefined && typeMedia.isEmpty) {
-          SaisieCriteresRechercheForm.form.withError("cv", "error.typeMediaInvalide")
-        } else SaisieCriteresRechercheForm.form
+              candidatCommandHandler.modifierCriteresRecherche(modifierCriteresCommand).map(_ =>
+                if (saisieCriteresRechercheForm.nouveauCandidat) {
+                  Redirect(routes.InscriptionController.confirmationInscription())
+                } else {
+                  Redirect(routes.LandingController.landing()).flashing(
+                    messagesRequest.flash.withMessageSucces("Merci, vos criteres ont bien été pris en compte")
+                  )
+                }
+              )
+            }
+          )
+        }).recoverWith {
+        case t: Throwable =>
+          Logger.error("Erreur lors de l'enregistrement des critères", t)
+          Future(Redirect(routes.LandingController.landing()).flashing(
+            messagesRequest.flash.withMessageErreur("Une erreur s'est produite lors de l'enregistrement, veuillez réessayer ultérieurement")
+          ))
+      }
+    }(candidatAuthentifieRequest)
+  }
 
-        candidatQueryHandler.criteresRecherche(CriteresRechercheQuery(candidatAuthentifieRequest.candidatId))
-          .flatMap(candidat => {
-            form.bindFromRequest.fold(
-              formWithErrors => {
-                Future.successful(BadRequest(views.html.candidat.saisieCriteresRecherche(
-                  saisieCriteresRechercheForm = formWithErrors,
-                  candidat = Some(candidat),
-                  candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie,
-                  secteursActivites = metierQueryHandler.secteursProposesPourRecherche
-                )))
-              },
-              saisieCriteresRechercheForm => {
-                val candidatId = candidatAuthentifieRequest.candidatId
-                val modifierCriteresCommand = buildModifierCriteresRechercheCommand(candidatId, saisieCriteresRechercheForm)
-
-                (for {
-                  _ <- candidatCommandHandler.modifierCriteresRecherche(modifierCriteresCommand)
-                  _ <- cv.map(cv =>
-                    candidat.cvId
-                      .map(cvId => candidatCommandHandler.remplacerCV(buildRemplacerCvCommand(candidatId, cvId, typeMedia.get, cv)))
-                      .getOrElse(candidatCommandHandler.ajouterCV(buildAjouterCvCommand(candidatId, typeMedia.get, cv)))
-                  ) getOrElse Future.successful(())
-                } yield ()).map(_ =>
-                  if (saisieCriteresRechercheForm.nouveauCandidat) {
-                    Redirect(routes.InscriptionController.confirmationInscription())
-                  } else {
-                    Redirect(routes.LandingController.landing()).flashing(
-                      messagesRequest.flash.withMessageSucces("Merci, vos criteres ont bien été pris en compte")
-                    )
-                  }
-                )
-              }
-            )
-          }).recoverWith {
-          case t: Throwable =>
-            Logger.error("Erreur lors de l'enregistrement des critères", t)
-            Future(Redirect(routes.LandingController.landing()).flashing(
-              messagesRequest.flash.withMessageErreur("Une erreur s'est produite lors de l'enregistrement, veuillez réessayer ultérieurement")
-            ))
+  def modifierCV: Action[MultipartFormData[Files.TemporaryFile]] =
+    candidatAuthentifieAction.async(parse.multipartFormData(CVForm.maxLength)) { implicit candidatAuthentifieRequest: CandidatAuthentifieRequest[MultipartFormData[Files.TemporaryFile]] =>
+      CVForm.bindFromMultipart(candidatAuthentifieRequest.body).fold(
+        erreur => Future.successful(BadRequest(erreur)),
+        cvForm => {
+          candidatQueryHandler.criteresRecherche(CriteresRechercheQuery(candidatAuthentifieRequest.candidatId))
+            .flatMap(candidat =>
+              candidat.cvId
+                .map(cvId => candidatCommandHandler.remplacerCV(buildRemplacerCvCommand(candidat.candidatId, cvId, cvForm)))
+                .getOrElse(candidatCommandHandler.ajouterCV(buildAjouterCvCommand(candidat.candidatId, cvForm)))
+            ).map(_ => NoContent)
         }
-      }(candidatAuthentifieRequest)
+      )
     }
 
   private def buildModifierCriteresRechercheCommand(candidatId: CandidatId, saisieCriteresRechercheForm: SaisieCriteresRechercheForm): ModifierCriteresRechercheCommand = {
@@ -117,24 +116,22 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
   }
 
   private def buildAjouterCvCommand(candidatId: CandidatId,
-                                    typeMedia: TypeMedia,
-                                    cv: MultipartFormData.FilePart[Files.TemporaryFile]): AjouterCVCommand =
+                                    cvForm: CVForm): AjouterCVCommand =
     AjouterCVCommand(
       id = candidatId,
-      nomFichier = cv.filename,
-      typeMedia = typeMedia,
-      path = cv.ref.path
+      nomFichier = cvForm.nomFichier,
+      typeMedia = cvForm.typeMedia,
+      path = cvForm.path
     )
 
   private def buildRemplacerCvCommand(candidatId: CandidatId,
                                       cvId: CVId,
-                                      typeMedia: TypeMedia,
-                                      cv: MultipartFormData.FilePart[Files.TemporaryFile]): RemplacerCVCommand =
+                                      cvForm: CVForm): RemplacerCVCommand =
     RemplacerCVCommand(
       id = candidatId,
       cvId = cvId,
-      nomFichier = cv.filename,
-      typeMedia = typeMedia,
-      path = cv.ref.path
+      nomFichier = cvForm.nomFichier,
+      typeMedia = cvForm.typeMedia,
+      path = cvForm.path
     )
 }
