@@ -87,10 +87,10 @@
                     @for(secteurActivite <- secteursActivites) {
                         <li>
                             <input id="secteurActivite-@secteurActivite.code.value"
-                                    name="secteurActivite"
+                                    name="secteurActivite" class="checkbox-input"
                                     type="checkbox" value="" />
-                            <label class="labelSecteurActivite" for="secteurActivite-@secteurActivite.code.value">
-                                <span class="checkmark"></span>
+                            <label class="checkbox labelSecteurActivite" for="secteurActivite-@secteurActivite.code.value">
+                                <span class="checkbox-checkmark"></span>
                                 @secteurActivite.label
                                 <span class="compteur-metiers-selectionnes"></span>
                             </label>

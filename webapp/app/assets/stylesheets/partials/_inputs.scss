@@ -166,6 +166,62 @@
   }
 }
 
+.checkbox {
+  position: relative;
+  padding-left: 35px;
+  padding-right: 35px;
+  min-height: 36px;
+  padding-top: 5px;
+  cursor: pointer;
+  border: 1px solid #334051;
+  border-radius: 4px;
+  @include userSelect(none);
+
+  &-input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+
+    &:checked ~ .checkbox {
+      color: white;
+      background-color: #364252;
+
+      .checkbox-checkmark:after {
+        display: block;
+      }
+    }
+
+    &:not(:checked) ~ .checkbox {
+      color: #334051;
+      background-color: #f3f3f3;
+    }
+  }
+
+  &-checkmark {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    height: 36px;
+    width: 36px;
+
+    &:after {
+      content: "";
+      position: absolute;
+      display: none;
+
+      left: 9px;
+      top: 5px;
+      width: 10px;
+      height: 15px;
+      border: solid #82CCDD;
+      border-width: 0 3px 3px 0;
+      -webkit-transform: rotate(40deg);
+      -ms-transform: rotate(40deg);
+      transform: rotate(40deg);
+    }
+  }
+}
+
 input[type="text"] {
   min-width: 40%;
   padding: 10px;

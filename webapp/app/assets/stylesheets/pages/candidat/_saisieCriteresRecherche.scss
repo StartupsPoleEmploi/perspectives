@@ -205,98 +205,27 @@
     right: 5px;
   }
 
-  .labelMetierCheckbox {
-    position: relative;
-    padding-left: 35px;
-    padding-right: 35px;
-    min-height: 36px;
-    padding-top: 5px;
-    cursor: pointer;
-    border: 1px solid #334051;
-    border-radius: 4px;
-    @include userSelect(none);
-  }
-
   .labelSecteurActivite {
-    position: relative;
     margin-bottom: 1rem;
-    padding-left: 35px;
-    padding-right: 35px;
-    min-height: 36px;
-    padding-top: 5px;
-    cursor: pointer;
-    color: #334051;
-    border: 1px solid #334051;
-    border-radius: 4px;
-    @include userSelect(none);
 
+    // FIXME : déjà ce comportement dans checkbox
     &-avec-focus {
       color: white;
       background-color: #87a0d5;
+
+      .checkbox-checkmark:after {
+        display: none;
+      }
     }
 
     &-sans-focus-avec-metiers {
       color: white;
       background-color: #364252;
 
-      .checkmark:after {
+      .checkbox-checkmark:after {
         display: block;
       }
     }
-  }
-
-  & input[type="checkbox"][name="secteurActivite"] {
-    /* Hide the browser's default checkbox */
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-  }
-
-  & input[type="checkbox"][name="listeMetiersRecherches[]"] {
-    /* Hide the browser's default checkbox */
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-
-    &:checked ~ .labelMetierCheckbox {
-      color: white;
-      background-color: #364252;
-
-      .checkmark:after {
-        display: block;
-      }
-    }
-
-    &:not(:checked) ~ .labelMetierCheckbox {
-      color: #334051;
-      background-color: #f3f3f3;
-    }
-  }
-
-  .checkmark {
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    height: 36px;
-    width: 36px;
-  }
-
-  .checkmark:after {
-    content: "";
-    position: absolute;
-    display: none;
-  }
-
-  .checkmark:after {
-    left: 9px;
-    top: 5px;
-    width: 10px;
-    height: 15px;
-    border: solid #82CCDD;
-    border-width: 0 3px 3px 0;
-    -webkit-transform: rotate(40deg);
-    -ms-transform: rotate(40deg);
-    transform: rotate(40deg);
   }
 
   .telechargerCV {

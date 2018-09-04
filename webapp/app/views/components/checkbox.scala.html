@@ -5,9 +5,9 @@
 }
 
 <input id="@name-@value"
-        name="@(s"$name[]")"
+        name="@(s"$name[]")" class="checkbox-input"
         type="checkbox" value="@value" @containsValue />
-<label class="labelMetierCheckbox" for="@name-@value">
-    <span class="checkmark"></span>
+<label class="checkbox" for="@name-@value">
+    <span class="checkbox-checkmark"></span>
     @label
 </label>
