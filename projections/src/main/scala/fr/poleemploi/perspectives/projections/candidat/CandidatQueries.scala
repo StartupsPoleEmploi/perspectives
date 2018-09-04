@@ -7,12 +7,12 @@ import fr.poleemploi.perspectives.recruteur.{RecruteurId, TypeRecruteur}
 
 sealed trait CandidatQuery extends Query
 
-case class GetCandidatQuery(candidatId: CandidatId) extends CandidatQuery
+case class CriteresRechercheQuery(candidatId: CandidatId) extends CandidatQuery
 
-case class GetCVParCandidatQuery(candidatId: CandidatId) extends CandidatQuery
+case class CVCandidatQuery(candidatId: CandidatId) extends CandidatQuery
 
-case class GetCVPourRecruteurParCandidatQuery(candidatId: CandidatId,
-                                              recruteurId: RecruteurId) extends CandidatQuery
+case class CVCandidatPourRecruteurQuery(candidatId: CandidatId,
+                                        recruteurId: RecruteurId) extends CandidatQuery
 
 case class RechercherCandidatsParDateInscriptionQuery(typeRecruteur: TypeRecruteur) extends CandidatQuery
 

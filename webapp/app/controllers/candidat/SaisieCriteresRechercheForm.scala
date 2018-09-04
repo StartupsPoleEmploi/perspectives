@@ -2,7 +2,7 @@ package controllers.candidat
 
 import controllers.FormHelpers
 import fr.poleemploi.perspectives.commun.domain.RayonRecherche
-import fr.poleemploi.perspectives.projections.candidat.CandidatDto
+import fr.poleemploi.perspectives.projections.candidat.CandidatCriteresRechercheDto
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
@@ -53,16 +53,16 @@ object SaisieCriteresRechercheForm {
     )
   )
 
-  def fromCandidat(candidatDto: CandidatDto): Form[SaisieCriteresRechercheForm] = SaisieCriteresRechercheForm.form.fill(
+  def fromCandidatCriteresRechercheDto(candidat: CandidatCriteresRechercheDto): Form[SaisieCriteresRechercheForm] = SaisieCriteresRechercheForm.form.fill(
     SaisieCriteresRechercheForm(
       nouveauCandidat = false,
-      rechercheMetierEvalue = candidatDto.rechercheMetierEvalue.map(FormHelpers.booleanToString).getOrElse(""),
-      rechercheAutreMetier = candidatDto.rechercheAutreMetier.map(FormHelpers.booleanToString).getOrElse(""),
-      metiersRecherches = candidatDto.metiersRecherches.map(_.value).toSet,
-      etreContacteParAgenceInterim = candidatDto.contacteParAgenceInterim.map(FormHelpers.booleanToString).getOrElse(""),
-      etreContacteParOrganismeFormation = candidatDto.contacteParOrganismeFormation.map(FormHelpers.booleanToString).getOrElse(""),
-      rayonRecherche = candidatDto.rayonRecherche.map(_.value).getOrElse(0),
-      numeroTelephone = candidatDto.numeroTelephone.map(_.value).getOrElse("")
+      rechercheMetierEvalue = candidat.rechercheMetierEvalue.map(FormHelpers.booleanToString).getOrElse(""),
+      rechercheAutreMetier = candidat.rechercheAutreMetier.map(FormHelpers.booleanToString).getOrElse(""),
+      metiersRecherches = candidat.metiersRecherches.map(_.value).toSet,
+      etreContacteParAgenceInterim = candidat.contacteParAgenceInterim.map(FormHelpers.booleanToString).getOrElse(""),
+      etreContacteParOrganismeFormation = candidat.contacteParOrganismeFormation.map(FormHelpers.booleanToString).getOrElse(""),
+      rayonRecherche = candidat.rayonRecherche.map(_.value).getOrElse(0),
+      numeroTelephone = candidat.numeroTelephone.map(_.value).getOrElse("")
     )
   )
 

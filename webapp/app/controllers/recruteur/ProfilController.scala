@@ -4,7 +4,7 @@ import authentification.infra.play.{RecruteurAuthentifieAction, RecruteurAuthent
 import conf.WebAppConfig
 import controllers.FlashMessages._
 import fr.poleemploi.perspectives.commun.domain.NumeroTelephone
-import fr.poleemploi.perspectives.projections.recruteur.{GetRecruteurQuery, RecruteurQueryHandler}
+import fr.poleemploi.perspectives.projections.recruteur.{ProfilRecruteurQuery, RecruteurQueryHandler}
 import fr.poleemploi.perspectives.recruteur._
 import javax.inject.Inject
 import play.api.Logger
@@ -27,8 +27,9 @@ class ProfilController @Inject()(components: ControllerComponents,
         if (messagesRequest.flash.recruteurInscrit) {
           Future.successful(ProfilForm.nouveauRecruteur)
         } else {
-          recruteurQueryHandler.getRecruteur(GetRecruteurQuery(recruteurId = recruteurAuthentifieRequest.recruteurId))
-            .map(ProfilForm.fromRecruteur)
+          recruteurQueryHandler
+            .profilRecruteur(ProfilRecruteurQuery(recruteurId = recruteurAuthentifieRequest.recruteurId))
+            .map(ProfilForm.fromProfilRecruteur)
         }
 
       form.map(f => Ok(views.html.recruteur.profil(f, recruteurAuthentifie = recruteurAuthentifieRequest.recruteurAuthentifie)))

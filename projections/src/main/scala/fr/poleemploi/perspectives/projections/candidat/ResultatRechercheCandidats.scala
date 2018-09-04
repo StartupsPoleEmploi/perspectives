@@ -16,7 +16,7 @@ case class RechercheCandidatDto(candidatId: CandidatId,
                                 numeroTelephone: Option[NumeroTelephone],
                                 cvId: Option[CVId]) {
 
-  def hasCV: Boolean = cvId.isDefined
+  def possedeCV: Boolean = cvId.isDefined
 }
 
 sealed trait ResultatRechercheCandidat {

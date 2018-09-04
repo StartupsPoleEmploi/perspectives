@@ -79,16 +79,16 @@ class MatchingController @Inject()(cc: ControllerComponents,
           typeRecruteur = recruteurDto.typeRecruteur.get
         ))
       } else {
-        candidatQueryHandler.rechercheCandidatsParDateInscription(RechercherCandidatsParDateInscriptionQuery(
+        candidatQueryHandler.rechercherCandidatsParDateInscription(RechercherCandidatsParDateInscriptionQuery(
           typeRecruteur = recruteurDto.typeRecruteur.get
         ))
       })
 
-  private def getRecruteurAvecProfilComplet(recruteurId: RecruteurId): Future[RecruteurDto] =
-    recruteurQueryHandler.getRecruteur(GetRecruteurQuery(recruteurId)).map(r => if (!r.profilComplet) throw ProfilRecruteurIncompletException() else r)
+  private def getRecruteurAvecProfilComplet(recruteurId: RecruteurId): Future[ProfilRecruteurDto] =
+    recruteurQueryHandler.profilRecruteur(ProfilRecruteurQuery(recruteurId)).map(r => if (!r.profilComplet) throw ProfilRecruteurIncompletException() else r)
 
-  def telechargerCV(candidatId: String): Action[AnyContent] = recruteurAuthentifieAction.async { implicit recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
-    candidatQueryHandler.getCVPourRecruteurParCandidat(GetCVPourRecruteurParCandidatQuery(
+  def telechargerCV(candidatId: String, nomFichier: String): Action[AnyContent] = recruteurAuthentifieAction.async { implicit recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
+    candidatQueryHandler.cvCandidatPourRecruteur(CVCandidatPourRecruteurQuery(
       candidatId = CandidatId(candidatId),
       recruteurId = recruteurAuthentifieRequest.recruteurId
     )).map(fichierCv => {

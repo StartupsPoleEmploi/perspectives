@@ -5,4 +5,4 @@ import fr.poleemploi.perspectives.recruteur.RecruteurId
 
 sealed trait RecruteurQuery extends Query
 
-case class GetRecruteurQuery(recruteurId: RecruteurId) extends RecruteurQuery
+case class ProfilRecruteurQuery(recruteurId: RecruteurId) extends RecruteurQuery

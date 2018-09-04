@@ -7,7 +7,7 @@ import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
 import fr.poleemploi.perspectives.authentification.infra.PEConnectService
 import fr.poleemploi.perspectives.authentification.infra.sql.RecruteurPEConnect
 import fr.poleemploi.perspectives.authentification.infra.ws.{PEConnectRecruteurInfos, PEConnectWSAdapterConfig}
-import fr.poleemploi.perspectives.projections.recruteur.{GetRecruteurQuery, RecruteurQueryHandler}
+import fr.poleemploi.perspectives.projections.recruteur.{ProfilRecruteurQuery, RecruteurQueryHandler}
 import fr.poleemploi.perspectives.recruteur.{InscrireRecruteurCommand, ModifierProfilGerantCommand, RecruteurCommandHandler, RecruteurId}
 import javax.inject.{Inject, Singleton}
 import play.api.Logger
@@ -73,7 +73,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       _ <- peConnectService.validateAccessToken(accessTokenResponse)
       recruteurInfos <- peConnectService.getInfosRecruteur(accessTokenResponse.accessToken)
       optRecruteurPEConnnect <- peConnectService.findRecruteur(recruteurInfos.peConnectId)
-      optRecruteur <- optRecruteurPEConnnect.map(r => recruteurQueryHandler.getRecruteur(GetRecruteurQuery(r.recruteurId)).map(Some(_))).getOrElse(Future.successful(None))
+      optProfilRecruteur <- optRecruteurPEConnnect.map(r => recruteurQueryHandler.profilRecruteur(ProfilRecruteurQuery(r.recruteurId)).map(Some(_))).getOrElse(Future.successful(None))
       recruteurId <- optRecruteurPEConnnect.map(r => mettreAJour(r, recruteurInfos)).getOrElse(inscrire(recruteurInfos))
     } yield {
       val recruteurAuthentifie = RecruteurAuthentifie(
@@ -83,9 +83,9 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       )
       val session = SessionRecruteurPEConnect.set(accessTokenResponse.idToken, SessionRecruteurAuthentifie.set(recruteurAuthentifie, oauthTokenSessionStorage.remove(request.session)))
       // FIXME : en attente de la finalisation du matching
-      /**if (optRecruteur.exists(_.profilComplet))
+      /**if (optProfilRecruteur.exists(_.profilComplet))
         Redirect(routes.MatchingController.rechercherCandidats()).withSession(session)*/
-      if (optRecruteur.isDefined)
+      if (optProfilRecruteur.isDefined)
         Redirect(routes.ProfilController.modificationProfil()).withSession(session)
       else
         Redirect(routes.ProfilController.modificationProfil()).withSession(session)

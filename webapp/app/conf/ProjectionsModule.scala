@@ -4,11 +4,12 @@ import com.google.inject.{AbstractModule, Inject, Provides, Singleton}
 import fr.poleemploi.eventsourcing.{EventHandler, EventPublisher}
 import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.candidat.cv.domain.CVService
-import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
 import fr.poleemploi.perspectives.emailing.domain.EmailingService
 import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
+import fr.poleemploi.perspectives.projections.candidat.infra.sql.CandidatProjectionSqlAdapter
 import fr.poleemploi.perspectives.projections.candidat.{CandidatEmailProjection, CandidatNotificationSlackProjection, CandidatProjection, CandidatQueryHandler}
 import fr.poleemploi.perspectives.projections.metier.MetierQueryHandler
+import fr.poleemploi.perspectives.projections.recruteur.infra.sql.RecruteurProjectionSqlAdapter
 import fr.poleemploi.perspectives.projections.recruteur.{RecruteurEmailProjection, RecruteurProjection, RecruteurQueryHandler}
 import net.codingwell.scalaguice.ScalaModule
 import play.api.libs.ws.WSClient
@@ -44,14 +45,20 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
-  def candidatProjection(database: Database,
-                         referentielMetier: ReferentielMetier,
-                         webAppConfig: WebAppConfig): CandidatProjection =
-    new CandidatProjection(
-      driver = PostgresDriver,
+  def candidatProjectionSqlAdapter(database: Database,
+                                   referentielMetier: ReferentielMetier,
+                                   webAppConfig: WebAppConfig): CandidatProjectionSqlAdapter =
+    new CandidatProjectionSqlAdapter(
       database = database,
-      candidatsTesteurs = webAppConfig.candidatsTesteurs.map(CandidatId),
-      referentielMetier = referentielMetier
+      referentielMetier = referentielMetier,
+      candidatsTesteurs = webAppConfig.candidatsTesteurs.map(CandidatId)
+    )
+
+  @Provides
+  @Singleton
+  def candidatProjection(candidatProjectionSqlAdapter: CandidatProjectionSqlAdapter): CandidatProjection =
+    new CandidatProjection(
+      adapter = candidatProjectionSqlAdapter
     )
 
   @Provides
@@ -83,10 +90,16 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
-  def recruteurProjection(database: Database): RecruteurProjection =
-    new RecruteurProjection(
-      driver = PostgresDriver,
+  def recruteurProjectionSqlAdapter(database: Database): RecruteurProjectionSqlAdapter =
+    new RecruteurProjectionSqlAdapter(
       database = database
+    )
+
+  @Provides
+  @Singleton
+  def recruteurProjection(recruteurProjectionSqlAdapter: RecruteurProjectionSqlAdapter): RecruteurProjection =
+    new RecruteurProjection(
+      adapter = recruteurProjectionSqlAdapter
     )
 
   @Provides

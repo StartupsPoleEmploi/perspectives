@@ -6,9 +6,9 @@ import scala.concurrent.Future
 
 class RecruteurQueryHandler(recruteurProjection: RecruteurProjection) extends QueryHandler {
 
-  def getRecruteur(query: GetRecruteurQuery): Future[RecruteurDto] =
-    recruteurProjection.getRecruteur(query)
+  def profilRecruteur(query: ProfilRecruteurQuery): Future[ProfilRecruteurDto] =
+    recruteurProjection.profilRecruteur(query)
 
-  def listerParDateInscription(): Future[List[RecruteurDto]] =
-    recruteurProjection.listerParDateInscription
+  def listerParDateInscriptionPourConseiller: Future[List[RecruteurPourConseillerDto]] =
+    recruteurProjection.listerParDateInscriptionPourConseiller
 }

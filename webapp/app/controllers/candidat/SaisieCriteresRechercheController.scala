@@ -6,7 +6,7 @@ import controllers.FlashMessages._
 import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
 import fr.poleemploi.perspectives.commun.domain.{CodeROME, NumeroTelephone, RayonRecherche}
-import fr.poleemploi.perspectives.projections.candidat.{CandidatQueryHandler, GetCandidatQuery}
+import fr.poleemploi.perspectives.projections.candidat.{CandidatQueryHandler, CriteresRechercheQuery}
 import fr.poleemploi.perspectives.projections.metier.MetierQueryHandler
 import javax.inject.Inject
 import play.api.Logger
@@ -27,17 +27,17 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
   def saisieCriteresRecherche(): Action[AnyContent] = candidatAuthentifieAction.async { candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
       for {
-        candidatDto <-
+        candidat <-
           if (messagesRequest.flash.candidatInscrit) Future.successful(None)
-          else candidatQueryHandler.getCandidat(GetCandidatQuery(candidatAuthentifieRequest.candidatId)).map(Some(_))
+          else candidatQueryHandler.criteresRecherche(CriteresRechercheQuery(candidatAuthentifieRequest.candidatId)).map(Some(_))
       } yield {
-        val form = candidatDto
-          .map(SaisieCriteresRechercheForm.fromCandidat)
+        val form = candidat
+          .map(SaisieCriteresRechercheForm.fromCandidatCriteresRechercheDto)
           .getOrElse(SaisieCriteresRechercheForm.nouveauCandidat)
 
         Ok(views.html.candidat.saisieCriteresRecherche(
           saisieCriteresRechercheForm = form,
-          candidatDto = candidatDto,
+          candidat = candidat,
           candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie,
           secteursActivites = metierQueryHandler.secteursProposesPourRecherche
         ))
@@ -55,13 +55,13 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
           SaisieCriteresRechercheForm.form.withError("cv", "error.typeMediaInvalide")
         } else SaisieCriteresRechercheForm.form
 
-        candidatQueryHandler.getCandidat(GetCandidatQuery(candidatAuthentifieRequest.candidatId))
-          .flatMap(candidatDto => {
+        candidatQueryHandler.criteresRecherche(CriteresRechercheQuery(candidatAuthentifieRequest.candidatId))
+          .flatMap(candidat => {
             form.bindFromRequest.fold(
               formWithErrors => {
                 Future.successful(BadRequest(views.html.candidat.saisieCriteresRecherche(
                   saisieCriteresRechercheForm = formWithErrors,
-                  candidatDto = Some(candidatDto),
+                  candidat = Some(candidat),
                   candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie,
                   secteursActivites = metierQueryHandler.secteursProposesPourRecherche
                 )))
@@ -73,7 +73,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
                 (for {
                   _ <- candidatCommandHandler.modifierCriteresRecherche(modifierCriteresCommand)
                   _ <- cv.map(cv =>
-                    candidatDto.cvId
+                    candidat.cvId
                       .map(cvId => candidatCommandHandler.remplacerCV(buildRemplacerCvCommand(candidatId, cvId, typeMedia.get, cv)))
                       .getOrElse(candidatCommandHandler.ajouterCV(buildAjouterCvCommand(candidatId, typeMedia.get, cv)))
                   ) getOrElse Future.successful(())
