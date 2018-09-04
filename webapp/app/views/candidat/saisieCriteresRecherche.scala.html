@@ -98,7 +98,7 @@
                                 <span class="ligneVerticaleMetiers"></span>
                                 <ul class="metiers">
                                 @for(metier <- secteurActivite.metiers) {
-                                    <li class="metiers-item">@components.checkboxMetier(saisieCriteresRechercheForm, metier)</li>
+                                    <li class="metiers-item">@components.checkbox(form = saisieCriteresRechercheForm, name = "listeMetiersRecherches", value = metier.codeROME.value, label = metier.label)</li>
                                 }
                                 </ul>
                             </div>
@@ -158,17 +158,17 @@
             @for(rayonRecherche <- RayonRecherche.values.values) {
                 <span class="choix-item">
                     <input id="rayonRecherche-@rayonRecherche.value"
-                           name="rayonRecherche"
+                           name="rayonRecherche" class="boutonRadio-input"
                            type="radio" value="@rayonRecherche.value"
                     @if(saisieCriteresRechercheForm("rayonRecherche").value.contains(rayonRecherche.value.toString)) {
                         checked
                     }/>
-                    <label class="labelRadio" for="rayonRecherche-@rayonRecherche.value">
+                    <label class="boutonRadio" for="rayonRecherche-@rayonRecherche.value">
                         @(rayonRecherche match {
                             case RayonRecherche.MAX_100 => "Plus de 50km"
                             case r@_ => s"Moins de ${r.value}km"
                         })
-                        <span class="labelRadio-circle"></span>
+                        <span class="boutonRadio-cercle"></span>
                     </label>
                 </span>
             }

@@ -3,18 +3,18 @@
 <span>
     <input id="@name-oui"
     name="@name"
-    type="radio" value="true"
+    type="radio" value="true" class="boutonRadio-input"
     @if(form(name).value.contains("true")){checked}/>
-    <label class="labelRadio" for="@name-oui">Oui
-        <span class="labelRadio-circle"></span>
+    <label class="boutonRadio" for="@name-oui">Oui
+        <span class="boutonRadio-cercle"></span>
     </label>
 </span>
 <span>
     <input id="@name-non"
     name="@name"
-    type="radio" value="false"
+    type="radio" value="false" class="boutonRadio-input"
     @if(form(name).value.contains("false")){checked}/>
-    <label class="labelRadio" for="@name-non">Non
-        <span class="labelRadio-circle"></span>
+    <label class="boutonRadio" for="@name-non">Non
+        <span class="boutonRadio-cercle"></span>
     </label>
 </span>

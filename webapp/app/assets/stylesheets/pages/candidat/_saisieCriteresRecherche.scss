@@ -217,14 +217,6 @@
     @include userSelect(none);
   }
 
-  .checkmark {
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    height: 36px;
-    width: 36px;
-  }
-
   .labelSecteurActivite {
     position: relative;
     margin-bottom: 1rem;
@@ -281,14 +273,20 @@
     }
   }
 
-  /* checkmark/indicator hidden when not checked */
+  .checkmark {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    height: 36px;
+    width: 36px;
+  }
+
   .checkmark:after {
     content: "";
     position: absolute;
     display: none;
   }
 
-  /* checkmark indicator */
   .checkmark:after {
     left: 9px;
     top: 5px;
