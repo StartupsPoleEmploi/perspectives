@@ -52,15 +52,14 @@ case class RomeCardResponse(romeProfessionCardName: String,
 
   def toMetier: Metier = new Metier(
     codeROME = CodeROME(romeProfessionCardCode),
-    label = romeProfessionCardName,
-    habiletes = Nil
+    label = romeProfessionCardName
   )
 }
 
 object RomeCardResponse {
 
   implicit val romeCardResponseReads: Reads[RomeCardResponse] = (
-    (JsPath \ "ROME_PROFESSION_CARD_NAME").read[String] and
+    (JsPath \ "ROME_PROFESSION_CARD_NAME").read[String].map(_.replaceAll("''", "'")) and
       (JsPath \ "ROME_PROFESSION_CARD_CODE").read[String]
     ) (RomeCardResponse.apply _)
 }

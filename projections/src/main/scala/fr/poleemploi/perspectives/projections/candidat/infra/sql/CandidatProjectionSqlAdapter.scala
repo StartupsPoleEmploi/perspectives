@@ -234,7 +234,7 @@ class CandidatProjectionSqlAdapter(database: Database,
       email = record.email,
       commune = record.commune,
       metiersEvalues = metiersEvalues,
-      habiletes = metiersEvalues.flatMap(_.habiletes).distinct,
+      habiletes = metiersEvalues.flatMap(m => referentielMetier.habiletesParMetier(m.codeROME)).distinct,
       metiersRecherchesParSecteur =
         record.metiersRecherches.flatMap(referentielMetier.metierProposePourRechercheParCode)
           .groupBy(m => referentielMetier.secteurActivitePourCodeROME(m.codeROME)),

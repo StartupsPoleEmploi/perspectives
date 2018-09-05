@@ -18,6 +18,7 @@ class ReferentielMetierWSAdapter(config: ReferentielMetierWSAdapterConfig,
 
   val metiersResourceId = "767d0c4a-277b-493c-84b7-00143933efce"
 
+  // FIXME : charger en non bloquant
   val metiers: Map[CodeROME, Metier] = Await.result(genererAccessToken.flatMap(listerMetiers), 10.seconds)
 
   /**

@@ -42,10 +42,16 @@ class InscriptionController @Inject()(cc: ControllerComponents,
         libellePays = "France"
       ),
       statutDemandeurEmploi = StatutDemandeurEmploi.DEMANDEUR_EMPLOI,
-      mrsValidees = List(MRSValidee(
-        codeROME = CodeROME("F1703"),
-        dateEvaluation = LocalDate.now()
-      ))
+      mrsValidees = List(
+        MRSValidee(
+          codeROME = CodeROME("B1802"),
+          dateEvaluation = LocalDate.now()
+        ),
+        MRSValidee(
+          codeROME = CodeROME("I1307"),
+          dateEvaluation = LocalDate.now()
+        )
+      )
     )
     candidatCommandHandler.inscrire(command).map { _ =>
       val candidatAuthentifie = CandidatAuthentifie(
