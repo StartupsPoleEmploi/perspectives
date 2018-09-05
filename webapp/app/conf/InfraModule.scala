@@ -158,7 +158,6 @@ class InfraModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
-  @Singleton
   def referentielMetierWSAdapter(wsClient: WSClient,
                                  webAppConfig: WebAppConfig): ReferentielMetierWSAdapter =
     new ReferentielMetierWSAdapter(
@@ -167,7 +166,6 @@ class InfraModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
-  @Singleton
-  def referentielMetierFileAdapter(): ReferentielMetierFileAdapter =
+  def referentielMetierFileAdapter: ReferentielMetierFileAdapter =
     new ReferentielMetierFileAdapter()
 }

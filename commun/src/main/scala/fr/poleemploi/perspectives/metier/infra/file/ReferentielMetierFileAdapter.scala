@@ -8,7 +8,7 @@ import scala.io.{BufferedSource, Source}
 
 /**
   * Charge le fichier contenant les métiers en json. <br />
-  * Implémentation qui peut être utilisée pendant le développement ou en backup si on ne veut pas appeler le webservice à chaque démarrage d'application.
+  * Implémentation qui peut être utilisée pendant le développement si on ne veut pas appeler le webservice à chaque démarrage d'application.
   */
 class ReferentielMetierFileAdapter extends ReferentielMetier {
 

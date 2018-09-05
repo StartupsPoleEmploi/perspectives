@@ -278,16 +278,17 @@ object ReferentielMetier {
       MANUTENTION
     ))
 
-  val secteursProposesPourRecherche = List(
-    INDUSTRIE,
-    COMMERCE,
-    BATIMENT,
-    HOTELLERIE_RESTAURATION,
-    AGRICULTURE,
-    TEXTILE,
-    SERVICES_A_LA_PERSONNE,
-    TRANSPORT_LOGISTIQUE
-  )
+  private val secteursProposesPourRecherche =
+    List(
+      INDUSTRIE,
+      COMMERCE,
+      BATIMENT,
+      HOTELLERIE_RESTAURATION,
+      AGRICULTURE,
+      TEXTILE,
+      SERVICES_A_LA_PERSONNE,
+      TRANSPORT_LOGISTIQUE
+    )
 
   val metiersProposesPourRecherche: Map[CodeROME, Metier] =
     secteursProposesPourRecherche
