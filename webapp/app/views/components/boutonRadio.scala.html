@@ -1,0 +1,13 @@
+@(form: Form[_], name: String, values: List[(String, String)], cssClass: Option[String] = None)
+
+@for(value <- values) {
+<span @if(cssClass.nonEmpty){class="@cssClass"}>
+    <input id="@name-@value._1"
+            name="@name"
+            type="radio" value="@value._1" class="boutonRadio-input"
+            @if(form(name).value.contains(value._1)){checked}/>
+    <label class="boutonRadio" for="@name-@value._1">@value._2
+        <span class="boutonRadio-cercle"></span>
+    </label>
+</span>
+}

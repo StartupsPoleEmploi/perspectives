@@ -121,6 +121,7 @@
     margin-left: 2.5rem;
 
     &-item {
+      display: inline;
       @include media-breakpoint-down(md) {
         display: block;
         margin-bottom: 1em;

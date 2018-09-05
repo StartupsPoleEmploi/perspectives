@@ -34,24 +34,17 @@
                 </div>
             </dt>
             <dd class="choix">
-                @for(typeRecruteur <- TypeRecruteur.values) {
-                <span class="choix-item">
-                    <input id="typeRecruteur-@typeRecruteur.value"
-                            name="typeRecruteur"
-                            type="radio" class="boutonRadio-input"
-                            value="@typeRecruteur.value"
-                            @if(profilForm("typeRecruteur").value.contains(typeRecruteur.value)){checked}/>
-                    <label class="boutonRadio" for="typeRecruteur-@typeRecruteur.value">
-                        @(typeRecruteur match {
-                            case TypeRecruteur.ENTREPRISE => "Une entreprise"
-                            case TypeRecruteur.AGENCE_INTERIM => "Une agence d'interim"
-                            case TypeRecruteur.ORGANISME_FORMATION => "Un organisme de formation"
-                            case r@_ => s"Moins de ${r.value}km"
-                        })
-                        <span class="boutonRadio-cercle"></span>
-                    </label>
-                </span>
-                }
+                @components.boutonRadio(
+                    form = profilForm,
+                    name = "typeRecruteur",
+                    cssClass = Some("choix-item"),
+                    values = TypeRecruteur.values.map(t => (t.value, t match {
+                        case TypeRecruteur.ENTREPRISE => "Une entreprise"
+                        case TypeRecruteur.AGENCE_INTERIM => "Une agence d'interim"
+                        case TypeRecruteur.ORGANISME_FORMATION => "Un organisme de formation"
+                        case t@_ => ""
+                    }))
+                )
             </dd>
             @if(hasErrors("typeRecruteur")) {
             <dd class="erreurs">
@@ -133,7 +126,7 @@
                     </div>
                 </dt>
                 <dd class="choix">
-                    @components.radioOuiNon(profilForm, "contactParCandidats")
+                    @components.boutonRadio(form = profilForm, name = "contactParCandidats", values = List("true" -> "Oui", "false" -> "Non"))
                 </dd>
                 @if(hasErrors("contactParCandidats")) {
                 <dd class="erreurs">

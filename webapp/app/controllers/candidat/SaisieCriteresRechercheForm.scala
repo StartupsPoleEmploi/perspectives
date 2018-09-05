@@ -20,11 +20,9 @@ object SaisieCriteresRechercheForm {
 
   val rayonRechercheConstraint: Constraint[Int] = Constraint("constraint.rayonRecherche")({
     n =>
-      if (RayonRecherche.from(n).isDefined) {
-        Valid
-      } else {
-        Invalid(Seq(ValidationError("constraint.rayonRecherche")))
-      }
+      RayonRecherche.from(n)
+        .map(_ => Valid)
+        .getOrElse(Invalid(Seq(ValidationError("constraint.rayonRecherche"))))
   })
 
   val form = Form(

@@ -43,7 +43,7 @@
                 </div>
             </dt>
             <dd class="choix">
-                @components.radioOuiNon(saisieCriteresRechercheForm, "rechercheMetierEvalue")
+                @components.boutonRadio(form = saisieCriteresRechercheForm, name = "rechercheMetierEvalue", values = List("true" -> "Oui", "false" -> "Non"))
             </dd>
             @if(hasErrors("rechercheMetierEvalue")) {
             <dd class="erreurs">
@@ -60,7 +60,7 @@
                 </div>
             </dt>
             <dd class="choix">
-                @components.radioOuiNon(saisieCriteresRechercheForm, "rechercheAutreMetier")
+                @components.boutonRadio(form = saisieCriteresRechercheForm, name = "rechercheAutreMetier", values = List("true" -> "Oui", "false" -> "Non"))
             </dd>
             @if(hasErrors("rechercheAutreMetier")) {
             <dd class="erreurs">
@@ -121,7 +121,7 @@
                 </div>
             </dt>
             <dd class="choix">
-                @components.radioOuiNon(saisieCriteresRechercheForm, "contactInterim")
+                @components.boutonRadio(form = saisieCriteresRechercheForm, name = "contactInterim", values = List("true" -> "Oui", "false" -> "Non"))
             </dd>
             @if(hasErrors("contactInterim")) {
             <dd class="erreurs">
@@ -138,7 +138,7 @@
                 </div>
             </dt>
             <dd class="choix">
-                @components.radioOuiNon(saisieCriteresRechercheForm, "contactFormation")
+                @components.boutonRadio(form = saisieCriteresRechercheForm, name = "contactFormation", values = List("true" -> "Oui", "false" -> "Non"))
             </dd>
             @if(hasErrors("contactFormation")) {
             <dd class="erreurs">
@@ -155,23 +155,15 @@
                 </div>
             </dt>
             <dd class="choix">
-            @for(rayonRecherche <- RayonRecherche.values.values) {
-                <span class="choix-item">
-                    <input id="rayonRecherche-@rayonRecherche.value"
-                           name="rayonRecherche" class="boutonRadio-input"
-                           type="radio" value="@rayonRecherche.value"
-                    @if(saisieCriteresRechercheForm("rayonRecherche").value.contains(rayonRecherche.value.toString)) {
-                        checked
-                    }/>
-                    <label class="boutonRadio" for="rayonRecherche-@rayonRecherche.value">
-                        @(rayonRecherche match {
-                            case RayonRecherche.MAX_100 => "Plus de 50km"
-                            case r@_ => s"Moins de ${r.value}km"
-                        })
-                        <span class="boutonRadio-cercle"></span>
-                    </label>
-                </span>
-            }
+            @components.boutonRadio(
+                form = saisieCriteresRechercheForm,
+                name = "rayonRecherche",
+                cssClass = Some("choix-item"),
+                values = RayonRecherche.values.toList.map(r => (r._1.toString, r._2 match {
+                    case RayonRecherche.MAX_100 => "Plus de 50km"
+                    case r@_ => s"Moins de ${r.value}km"
+                }))
+            )
             </dd>
             @if(hasErrors("rayonRecherche")) {
             <dd class="erreurs">

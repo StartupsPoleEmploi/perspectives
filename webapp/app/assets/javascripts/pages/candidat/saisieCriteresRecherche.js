@@ -6,7 +6,7 @@ $(document).ready(function () {
     // On cache les métiers : on affiche uniquement les secteurs d'activité
     $(".conteneurMetiers").hide();
 
-    $("#rechercheAutreMetier-oui").each(function () {
+    $("#rechercheAutreMetier-true").each(function () {
         $('#js-critere-metiers').toggle($(this).prop("checked"));
     });
 
