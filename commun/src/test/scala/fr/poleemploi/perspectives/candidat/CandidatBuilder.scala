@@ -3,7 +3,7 @@ package fr.poleemploi.perspectives.candidat
 import java.util.UUID
 
 import fr.poleemploi.eventsourcing.Event
-import fr.poleemploi.perspectives.candidat.cv.domain.CVId
+import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
 import fr.poleemploi.perspectives.candidat.mrs.domain.MRSValidee
 import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.conseiller.ConseillerId
@@ -30,10 +30,11 @@ class CandidatBuilder {
     this
   }
 
-  def avecCV(cvId: CVId): CandidatBuilder = {
+  def avecCV(cvId: CVId, typeMedia: Option[TypeMedia] = None): CandidatBuilder = {
     events += CVAjouteEvent(
       candidatId = candidatId,
-      cvId = cvId
+      cvId = cvId,
+      typeMedia = typeMedia.getOrElse(TypeMedia.PDF)
     )
     this
   }

@@ -91,6 +91,7 @@ class RemplacerCVCandidatSpec extends AsyncWordSpec
         val event = events.head.asInstanceOf[CVRemplaceEvent]
         event.candidatId mustBe commande.id
         event.cvId mustBe commande.cvId
+        event.typeMedia mustBe commande.typeMedia
       })
     }
   }

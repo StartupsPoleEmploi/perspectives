@@ -3,7 +3,7 @@ package fr.poleemploi.perspectives.candidat
 import java.time.LocalDate
 
 import fr.poleemploi.eventsourcing.Event
-import fr.poleemploi.perspectives.candidat.cv.domain.CVId
+import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
 import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.conseiller.ConseillerId
 
@@ -42,10 +42,12 @@ case class StatutDemandeurEmploiModifieEvent(candidatId: CandidatId,
                                              statutDemandeurEmploi: StatutDemandeurEmploi) extends CandidatEvent
 
 case class CVAjouteEvent(candidatId: CandidatId,
-                         cvId: CVId) extends CandidatEvent
+                         cvId: CVId,
+                         typeMedia: TypeMedia) extends CandidatEvent
 
 case class CVRemplaceEvent(candidatId: CandidatId,
-                           cvId: CVId) extends CandidatEvent
+                           cvId: CVId,
+                           typeMedia: TypeMedia) extends CandidatEvent
 
 case class MRSAjouteeEvent(candidatId: CandidatId,
                            metier: CodeROME,

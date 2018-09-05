@@ -141,7 +141,8 @@ class Candidat(override val id: CandidatId,
     ).map(_ => List(
       CVAjouteEvent(
         candidatId = command.id,
-        cvId = cvId
+        cvId = cvId,
+        typeMedia = command.typeMedia
       )
     ))
   }
@@ -162,7 +163,8 @@ class Candidat(override val id: CandidatId,
     ).map(_ => List(
       CVRemplaceEvent(
         candidatId = command.id,
-        cvId = command.cvId
+        cvId = command.cvId,
+        typeMedia = command.typeMedia
       )
     ))
   }

@@ -91,6 +91,7 @@ class AjouterCVCandidatSpec extends AsyncWordSpec
         val event = events.head.asInstanceOf[CVAjouteEvent]
         event.candidatId mustBe commande.id
         event.cvId mustBe cvId
+        event.typeMedia mustBe commande.typeMedia
       })
     }
   }

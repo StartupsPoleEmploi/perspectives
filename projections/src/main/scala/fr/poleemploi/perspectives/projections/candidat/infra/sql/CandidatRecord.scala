@@ -2,7 +2,7 @@ package fr.poleemploi.perspectives.projections.candidat.infra.sql
 
 import java.time.ZonedDateTime
 
-import fr.poleemploi.perspectives.candidat.cv.domain.CVId
+import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
 import fr.poleemploi.perspectives.candidat.{CandidatId, StatutDemandeurEmploi}
 import fr.poleemploi.perspectives.commun.domain._
 
@@ -23,5 +23,6 @@ case class CandidatRecord(candidatId: CandidatId,
                           rayonRecherche: Option[RayonRecherche],
                           numeroTelephone: Option[NumeroTelephone],
                           cvId: Option[CVId],
+                          cvTypeMedia: Option[TypeMedia],
                           dateInscription: ZonedDateTime,
                           indexerMatching: Boolean)

@@ -1,7 +1,7 @@
 package fr.poleemploi.perspectives.projections.candidat
 
 import fr.poleemploi.perspectives.candidat.CandidatId
-import fr.poleemploi.perspectives.candidat.cv.domain.CVId
+import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
 import fr.poleemploi.perspectives.commun.domain._
 
 case class RechercheCandidatDto(candidatId: CandidatId,
@@ -14,9 +14,12 @@ case class RechercheCandidatDto(candidatId: CandidatId,
                                 metiersRecherchesParSecteur: Map[SecteurActivite, List[Metier]],
                                 rayonRecherche: Option[RayonRecherche],
                                 numeroTelephone: Option[NumeroTelephone],
-                                cvId: Option[CVId]) {
+                                cvId: Option[CVId],
+                                cvTypeMedia: Option[TypeMedia]) {
 
   def possedeCV: Boolean = cvId.isDefined
+
+  def nomCV: Option[String] = cvTypeMedia.map(t => s"$nom-$prenom.${TypeMedia.getExtensionFichier(t)}")
 }
 
 sealed trait ResultatRechercheCandidat {

@@ -3,7 +3,7 @@ package fr.poleemploi.perspectives.projections.candidat.infra.sql
 import java.time.ZonedDateTime
 
 import fr.poleemploi.perspectives.candidat._
-import fr.poleemploi.perspectives.candidat.cv.domain.CVId
+import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
 import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
 import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
@@ -58,11 +58,13 @@ class CandidatProjectionSqlAdapter(database: Database,
 
     def cvId = column[Option[CVId]]("cv_id")
 
+    def cvTypeMedia = column[Option[TypeMedia]]("cv_type_media")
+
     def dateInscription = column[ZonedDateTime]("date_inscription")
 
     def indexerMatching = column[Boolean]("indexer_matching")
 
-    def * = (candidatId, nom, prenom, genre, email, statutDemandeurEmploi, codePostal, commune, rechercheMetierEvalue, metiersEvalues, rechercheAutreMetier, metiersRecherches, contacteParAgenceInterim, contacteParOrganismeFormation, rayonRecherche, numeroTelephone, cvId, dateInscription, indexerMatching) <> (CandidatRecord.tupled, CandidatRecord.unapply)
+    def * = (candidatId, nom, prenom, genre, email, statutDemandeurEmploi, codePostal, commune, rechercheMetierEvalue, metiersEvalues, rechercheAutreMetier, metiersRecherches, contacteParAgenceInterim, contacteParOrganismeFormation, rayonRecherche, numeroTelephone, cvId, cvTypeMedia, dateInscription, indexerMatching) <> (CandidatRecord.tupled, CandidatRecord.unapply)
   }
 
   val candidatTable = TableQuery[CandidatTable]
@@ -78,7 +80,7 @@ class CandidatProjectionSqlAdapter(database: Database,
   val criteresRechercheQuery = Compiled { candidatId: Rep[CandidatId] =>
     candidatTable
       .filter(_.candidatId === candidatId)
-      .map(c => CandidatCriteresRechercheLifted(c.candidatId, c.nom, c.prenom, c.rechercheMetierEvalue, c.rechercheAutreMetier, c.metiersRecherches, c.contacteParAgenceInterim, c.contacteParOrganismeFormation, c.rayonRecherche, c.numeroTelephone, c.cvId))
+      .map(c => CandidatCriteresRechercheLifted(c.candidatId, c.nom, c.prenom, c.rechercheMetierEvalue, c.rechercheAutreMetier, c.metiersRecherches, c.contacteParAgenceInterim, c.contacteParOrganismeFormation, c.rayonRecherche, c.numeroTelephone, c.cvId, c.cvTypeMedia))
   }
   val candidatContactRecruteurQuery = Compiled { candidatId: Rep[CandidatId] =>
     candidatTable
@@ -113,7 +115,7 @@ class CandidatProjectionSqlAdapter(database: Database,
   val modifierCVQuery = Compiled { candidatId: Rep[CandidatId] =>
     for {
       c <- candidatTable if c.candidatId === candidatId
-    } yield c.cvId
+    } yield (c.cvId, c.cvTypeMedia)
   }
   val modifierAdresseQuery = Compiled { candidatId: Rep[CandidatId] =>
     for {
@@ -222,7 +224,7 @@ class CandidatProjectionSqlAdapter(database: Database,
   }
 
   private def rechercheCandidatDtoShape(c: CandidatTable) =
-    RechercheCandidatLifted(c.candidatId, c.nom, c.prenom, c.email, c.commune, c.metiersEvalues, c.metiersRecherches, c.rayonRecherche, c.numeroTelephone, c.cvId)
+    RechercheCandidatLifted(c.candidatId, c.nom, c.prenom, c.email, c.commune, c.metiersEvalues, c.metiersRecherches, c.rayonRecherche, c.numeroTelephone, c.cvId, c.cvTypeMedia)
 
   private def toRechercheCandidatDto(record: RechercheCandidatRecord): RechercheCandidatDto = {
     val metiersEvalues = record.metiersEvalues.map(referentielMetier.metierParCode)
@@ -240,7 +242,8 @@ class CandidatProjectionSqlAdapter(database: Database,
           .groupBy(m => referentielMetier.secteurActivitePourCodeROME(m.codeROME)),
       rayonRecherche = record.rayonRecherche,
       numeroTelephone = record.numeroTelephone,
-      cvId = record.cvId
+      cvId = record.cvId,
+      cvTypeMedia = record.cvTypeMedia
     )
   }
 
@@ -313,12 +316,14 @@ class CandidatProjectionSqlAdapter(database: Database,
 
   def onCVAjouteEvent(event: CVAjouteEvent): Future[Unit] =
     database.run(modifierCVQuery(event.candidatId).update(
-      Some(event.cvId)
+      Some(event.cvId),
+      Some(event.typeMedia)
     )).map(_ => ())
 
   def onCVRemplaceEvent(event: CVRemplaceEvent): Future[Unit] =
     database.run(modifierCVQuery(event.candidatId).update(
-      Some(event.cvId)
+      Some(event.cvId),
+      Some(event.typeMedia)
     )).map(_ => ())
 
   def onAdresseModifieeEvent(event: AdresseModifieeEvent): Future[Unit] =

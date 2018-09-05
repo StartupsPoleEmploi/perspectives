@@ -102,7 +102,7 @@
                         <ul class="listeActions">
                             @if(rechercheCandidatDto.possedeCV) {
                                 <li class="listeActions-item">
-                                    <a class="bouton bouton-actionCandidat bouton-actionCandidat--large bouton--noirSurBlanc" target="_blank" href="/recruteur/cv/telecharger/@rechercheCandidatDto.candidatId.value/@(s"${rechercheCandidatDto.nom.toLowerCase}-${rechercheCandidatDto.prenom.toLowerCase}")">
+                                    <a class="bouton bouton-actionCandidat bouton-actionCandidat--large bouton--noirSurBlanc" target="_blank" href="/recruteur/cv/telecharger/@rechercheCandidatDto.candidatId.value/@rechercheCandidatDto.nomCV">
                                         CV
                                     </a>
                                 </li>

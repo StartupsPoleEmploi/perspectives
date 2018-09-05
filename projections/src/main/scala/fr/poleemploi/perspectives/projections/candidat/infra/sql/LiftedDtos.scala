@@ -2,7 +2,7 @@ package fr.poleemploi.perspectives.projections.candidat.infra.sql
 
 import java.time.ZonedDateTime
 
-import fr.poleemploi.perspectives.candidat.cv.domain.CVId
+import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
 import fr.poleemploi.perspectives.candidat.{CandidatId, StatutDemandeurEmploi}
 import fr.poleemploi.perspectives.commun.domain._
 import slick.lifted.Rep
@@ -35,7 +35,8 @@ case class CandidatCriteresRechercheLifted(candidatId: Rep[CandidatId],
                                            contacteParOrganismeFormation: Rep[Option[Boolean]],
                                            rayonRecherche: Rep[Option[RayonRecherche]],
                                            numeroTelephone: Rep[Option[NumeroTelephone]],
-                                           cvId: Rep[Option[CVId]])
+                                           cvId: Rep[Option[CVId]],
+                                           cvTypeMedia: Rep[Option[TypeMedia]])
 
 case class RechercheCandidatLifted(candidatId: Rep[CandidatId],
                                    nom: Rep[String],
@@ -46,4 +47,5 @@ case class RechercheCandidatLifted(candidatId: Rep[CandidatId],
                                    metiersRecherches: Rep[List[CodeROME]],
                                    rayonRecherche: Rep[Option[RayonRecherche]],
                                    numeroTelephone: Rep[Option[NumeroTelephone]],
-                                   cvId: Rep[Option[CVId]])
+                                   cvId: Rep[Option[CVId]],
+                                   cvTypeMedia: Rep[Option[TypeMedia]])
