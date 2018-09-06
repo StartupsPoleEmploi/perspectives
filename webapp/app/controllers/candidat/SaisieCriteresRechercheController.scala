@@ -4,9 +4,9 @@ import authentification.infra.play.{CandidatAuthentifieAction, CandidatAuthentif
 import conf.WebAppConfig
 import controllers.FlashMessages._
 import fr.poleemploi.perspectives.candidat._
-import fr.poleemploi.perspectives.candidat.cv.domain.CVId
+import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
 import fr.poleemploi.perspectives.commun.domain.{CodeROME, NumeroTelephone, RayonRecherche}
-import fr.poleemploi.perspectives.projections.candidat.{CandidatQueryHandler, CriteresRechercheQuery}
+import fr.poleemploi.perspectives.projections.candidat.{CandidatCriteresRechercheDto, CandidatQueryHandler, CriteresRechercheQuery}
 import fr.poleemploi.perspectives.projections.metier.MetierQueryHandler
 import javax.inject.Inject
 import play.api.Logger
@@ -90,8 +90,8 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
           candidatQueryHandler.criteresRecherche(CriteresRechercheQuery(candidatAuthentifieRequest.candidatId))
             .flatMap(candidat =>
               candidat.cvId
-                .map(cvId => candidatCommandHandler.remplacerCV(buildRemplacerCvCommand(candidat.candidatId, cvId, cvForm)))
-                .getOrElse(candidatCommandHandler.ajouterCV(buildAjouterCvCommand(candidat.candidatId, cvForm)))
+                .map(cvId => candidatCommandHandler.remplacerCV(buildRemplacerCvCommand(candidat, cvId, cvForm)))
+                .getOrElse(candidatCommandHandler.ajouterCV(buildAjouterCvCommand(candidat, cvForm)))
             ).map(_ => NoContent)
         }
       )
@@ -115,22 +115,22 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
     )
   }
 
-  private def buildAjouterCvCommand(candidatId: CandidatId,
+  private def buildAjouterCvCommand(candidat: CandidatCriteresRechercheDto,
                                     cvForm: CVForm): AjouterCVCommand =
     AjouterCVCommand(
-      id = candidatId,
-      nomFichier = cvForm.nomFichier,
+      id = candidat.candidatId,
+      nomFichier = s"${candidat.nom.toLowerCase}-${candidat.prenom.toLowerCase}.${TypeMedia.getExtensionFichier(cvForm.typeMedia)}",
       typeMedia = cvForm.typeMedia,
       path = cvForm.path
     )
 
-  private def buildRemplacerCvCommand(candidatId: CandidatId,
+  private def buildRemplacerCvCommand(candidat: CandidatCriteresRechercheDto,
                                       cvId: CVId,
                                       cvForm: CVForm): RemplacerCVCommand =
     RemplacerCVCommand(
-      id = candidatId,
+      id = candidat.candidatId,
       cvId = cvId,
-      nomFichier = cvForm.nomFichier,
+      nomFichier = s"${candidat.nom.toLowerCase}-${candidat.prenom.toLowerCase}.${TypeMedia.getExtensionFichier(cvForm.typeMedia)}",
       typeMedia = cvForm.typeMedia,
       path = cvForm.path
     )
