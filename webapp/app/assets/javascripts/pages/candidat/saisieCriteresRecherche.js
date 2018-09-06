@@ -106,7 +106,7 @@ $(document).ready(function () {
                     if (!mediaTypesValides.includes(fichier.type)) {
                         erreurs.push("Le type de fichier n'est pas valide");
                     }
-                    nomFichier.text(fichier.name);
+                    nomFichier.text(fichier.name.length > 30 ? fichier.name.substring(0, 30) + "..." : fichier.name);
                 } else {
                     nomFichier.text(nomFichierInitial);
                 }
