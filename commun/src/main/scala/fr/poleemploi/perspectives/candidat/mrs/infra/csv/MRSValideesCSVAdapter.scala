@@ -1,6 +1,7 @@
 package fr.poleemploi.perspectives.candidat.mrs.infra.csv
 
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
@@ -20,20 +21,26 @@ class MRSValideesCSVAdapter(val actorSystem: ActorSystem) {
 
   implicit val materializer: ActorMaterializer = ActorMaterializer()(actorSystem)
 
+  val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+
+  val resultatsBeneficiairesValides = List("VSL", "VEF", "VEM")
+
   def load(source: Source[ByteString, _]): Future[Stream[MRSValideeCandidatPEConnect]] = {
     source
-      .via(CsvParsing.lineScanner(delimiter = ';'))
+      .via(CsvParsing.lineScanner(delimiter = ','))
       .via(CsvToMap.toMapAsStrings())
       .filter(
-        m => m.get("dc_ididentiteexterne").exists(_.nonEmpty) &&
-        m.get("dc_commandepresta").exists(_.nonEmpty) &&
-        m.get("dd_datecreationbeneficiaire").exists(_.nonEmpty)
+        m => m.get("DC_IDENTITEEXTERNE").exists(_.nonEmpty) &&
+          m.get("DC_ROME_ID").exists(_.nonEmpty) &&
+          m.get("DD_DATESORTIEPRESTATIONPREVUE").exists(_.nonEmpty) &&
+          m.get("KC_RESULTATSBENEFICIAIRE_ID").exists(resultatsBeneficiairesValides.contains)
       )
-      .map(data => MRSValideeCandidatPEConnect(
-        peConnectId = PEConnectId(data("dc_ididentiteexterne")),
-        codeROME = CodeROME(data("dc_commandepresta")), // Pas de validation du code ROME, on fait confiance au SI Pole Emploi
-        dateEvaluation = data.get("dd_datecreationbeneficiaire").map(s => LocalDate.parse(s.take(10))).get
-      ))
-      .runWith(Sink.collection)
+      .map(data => {
+        MRSValideeCandidatPEConnect(
+          peConnectId = PEConnectId(data("DC_IDENTITEEXTERNE")),
+          codeROME = CodeROME(data("DC_ROME_ID")), // Pas de validation du code ROME, on fait confiance au SI Pole Emploi
+          dateEvaluation = data.get("DD_DATESORTIEPRESTATIONPREVUE").map(s => LocalDate.parse(s.take(10), dateTimeFormatter)).get
+        )
+      }).runWith(Sink.collection)
   }
 }

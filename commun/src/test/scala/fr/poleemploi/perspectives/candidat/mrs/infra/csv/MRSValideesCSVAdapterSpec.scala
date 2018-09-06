@@ -22,7 +22,7 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-        """dc_commandepresta;dc_individu_local;dn_individu_national;dc_nom;dc_prenom;dc_telephone;dd_datecreationbeneficiaire;dc_ididentiteexterne;dc_romev3_1_id;dc_dureeexperience_1;dc_romev3_2_id;dc_dureeexperience_2""".stripMargin)
+        """KN_IDCOMMANDEPRESTA,KN_COMMANDEBENEFICIAIRE,DN_INDIVIDU_NATIONAL,DC_IDENTITEEXTERNE,DC_ROME_ID,DC_NOM,DC_PRENOM,DD_DATESORTIEPRESTATIONPREVUE,KC_RESULTATSBENEFICIAIRE_ID,DC_LBLRESULTATBENEFICIAIRE,DC_TOPSORTIEANTICIPEPOSITIVE,C_ROME_1_ID,C_ROME_2_ID""".stripMargin)
       )
 
       // When
@@ -35,8 +35,8 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-        """dc_commandepresta;dc_individu_local;dn_individu_national;dc_nom;dc_prenom;dc_telephone;dd_datecreationbeneficiaire;dc_ididentiteexterne;dc_romev3_1_id;dc_dureeexperience_1;dc_romev3_2_id;dc_dureeexperience_2
-          |"H0084";"01371827194";1025354611;"ABANCOURT";"JEAN-LOUIS";"0658917580";2018-02-06 00:00:00.0;"";"J1305";"08";"N1101";"00"
+        """KN_IDCOMMANDEPRESTA,KN_COMMANDEBENEFICIAIRE,DN_INDIVIDU_NATIONAL,DC_IDENTITEEXTERNE,DC_ROME_ID,DC_NOM,DC_PRENOM,DD_DATESORTIEPRESTATIONPREVUE,KC_RESULTATSBENEFICIAIRE_ID,DC_LBLRESULTATBENEFICIAIRE,DC_TOPSORTIEANTICIPEPOSITIVE,C_ROME_1_ID,C_ROME_2_ID
+          |5717975,19859698,1212591397,,H2909,ZIDANE,SABAH,09/01/2018 00:00,VSL,SELECTIONNE,N,K1302,K1302
           |""".stripMargin)
       )
 
@@ -46,12 +46,12 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       // Then
       future.map(s => s.isEmpty mustBe true)
     }
-    "ignorer la ligne si elle ne contient pas de date pour la mrs validée" in {
+    "ignorer la ligne si elle ne contient pas la date de la MRS" in {
       // Given
       val source = Source.single(
         ByteString(
-          """dc_commandepresta;dc_individu_local;dn_individu_national;dc_nom;dc_prenom;dc_telephone;dd_datecreationbeneficiaire;dc_ididentiteexterne;dc_romev3_1_id;dc_dureeexperience_1;dc_romev3_2_id;dc_dureeexperience_2
-            |"H0084";"01371827194";1025354611;"ABANCOURT";"JEAN-LOUIS";"0658917580";;"28d0b75a-b694-4de3-8849-b618184bcf10";"J1305";"08";"N1101";"00"
+          """KN_IDCOMMANDEPRESTA,KN_COMMANDEBENEFICIAIRE,DN_INDIVIDU_NATIONAL,DC_IDENTITEEXTERNE,DC_ROME_ID,DC_NOM,DC_PRENOM,DD_DATESORTIEPRESTATIONPREVUE,KC_RESULTATSBENEFICIAIRE_ID,DC_LBLRESULTATBENEFICIAIRE,DC_TOPSORTIEANTICIPEPOSITIVE,C_ROME_1_ID,C_ROME_2_ID
+            |5717975,19859698,1212591397,28d0b75a-b694-4de3-8849-b618184bcf10,H2909,ZIDANE,SABAH,,VSL,SELECTIONNE,N,K1302,K1302
             |""".stripMargin)
       )
 
@@ -61,12 +61,27 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       // Then
       future.map(s => s.isEmpty mustBe true)
     }
-    "ignorer la ligne si elle ne contient pas de code ROME de mrs validée" in {
+    "ignorer la ligne si elle ne contient pas le code ROME de la MRS" in {
       // Given
       val source = Source.single(
         ByteString(
-          """dc_commandepresta;dc_individu_local;dn_individu_national;dc_nom;dc_prenom;dc_telephone;dd_datecreationbeneficiaire;dc_ididentiteexterne;dc_romev3_1_id;dc_dureeexperience_1;dc_romev3_2_id;dc_dureeexperience_2
-            |"H0084";"01371827194";1025354611;"ABANCOURT";"JEAN-LOUIS";"0658917580";;"28d0b75a-b694-4de3-8849-b618184bcf10";"J1305";"08";"N1101";"00"
+          """KN_IDCOMMANDEPRESTA,KN_COMMANDEBENEFICIAIRE,DN_INDIVIDU_NATIONAL,DC_IDENTITEEXTERNE,DC_ROME_ID,DC_NOM,DC_PRENOM,DD_DATESORTIEPRESTATIONPREVUE,KC_RESULTATSBENEFICIAIRE_ID,DC_LBLRESULTATBENEFICIAIRE,DC_TOPSORTIEANTICIPEPOSITIVE,C_ROME_1_ID,C_ROME_2_ID
+            |5717975,19859698,1212591397,28d0b75a-b694-4de3-8849-b618184bcf10,,ZIDANE,SABAH,09/01/2018 00:00,VSL,SELECTIONNE,N,K1302,K1302
+            |""".stripMargin)
+      )
+
+      // When
+      val future = mrsValideesCSVAdapter.load(source)
+
+      // Then
+      future.map(s => s.isEmpty mustBe true)
+    }
+    "ignorer la ligne si elle ne contient pas le statut de la MRS" in {
+      // Given
+      val source = Source.single(
+        ByteString(
+          """KN_IDCOMMANDEPRESTA,KN_COMMANDEBENEFICIAIRE,DN_INDIVIDU_NATIONAL,DC_IDENTITEEXTERNE,DC_ROME_ID,DC_NOM,DC_PRENOM,DD_DATESORTIEPRESTATIONPREVUE,KC_RESULTATSBENEFICIAIRE_ID,DC_LBLRESULTATBENEFICIAIRE,DC_TOPSORTIEANTICIPEPOSITIVE,C_ROME_1_ID,C_ROME_2_ID
+            |5717975,19859698,1212591397,28d0b75a-b694-4de3-8849-b618184bcf10,H2909,ZIDANE,SABAH,09/01/2018 00:00,,SELECTIONNE,N,K1302,K1302
             |""".stripMargin)
       )
 
@@ -80,9 +95,8 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """dc_commandepresta;dc_individu_local;dn_individu_national;dc_nom;dc_prenom;dc_telephone;dd_datecreationbeneficiaire;dc_ididentiteexterne;dc_romev3_1_id;dc_dureeexperience_1;dc_romev3_2_id;dc_dureeexperience_2
-            |"H0084";"01371827194";1025354611;"ABANCOURT";"JEAN-LOUIS";"0658917580";2018-02-06 00:00:00.0;"28d0b75a-b694-4de3-8849-b618184bcf10";"J1305";"08";"N1101";"00"
-            |""".stripMargin)
+          """KN_IDCOMMANDEPRESTA,KN_COMMANDEBENEFICIAIRE,DN_INDIVIDU_NATIONAL,DC_IDENTITEEXTERNE,DC_ROME_ID,DC_NOM,DC_PRENOM,DD_DATESORTIEPRESTATIONPREVUE,KC_RESULTATSBENEFICIAIRE_ID,DC_LBLRESULTATBENEFICIAIRE,DC_TOPSORTIEANTICIPEPOSITIVE,C_ROME_1_ID,C_ROME_2_ID
+            |5717975,19859698,1212591397,28d0b75a-b694-4de3-8849-b618184bcf10,H2909,ZIDANE,SABAH,09/01/2018 00:00,VSL,SELECTIONNE,N,K1302,K1302""".stripMargin)
       )
 
       // When
@@ -95,8 +109,8 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """dc_commandepresta;dc_individu_local;dn_individu_national;dc_nom;dc_prenom;dc_telephone;dd_datecreationbeneficiaire;dc_ididentiteexterne;dc_romev3_1_id;dc_dureeexperience_1;dc_romev3_2_id;dc_dureeexperience_2
-            |"H0084";"01371827194";1025354611;"ABANCOURT";"JEAN-LOUIS";"0658917580";2018-02-06 00:00:00.0;"28d0b75a-b694-4de3-8849-b618184bcf10";"J1305";"08";"N1101";"00"
+          """KN_IDCOMMANDEPRESTA,KN_COMMANDEBENEFICIAIRE,DN_INDIVIDU_NATIONAL,DC_IDENTITEEXTERNE,DC_ROME_ID,DC_NOM,DC_PRENOM,DD_DATESORTIEPRESTATIONPREVUE,KC_RESULTATSBENEFICIAIRE_ID,DC_LBLRESULTATBENEFICIAIRE,DC_TOPSORTIEANTICIPEPOSITIVE,C_ROME_1_ID,C_ROME_2_ID
+            |5717975,19859698,1212591397,28d0b75a-b694-4de3-8849-b618184bcf10,H2909,ZIDANE,SABAH,09/01/2018 00:00,VSL,SELECTIONNE,N,K1302,K1302
             |""".stripMargin)
       )
 
@@ -112,8 +126,8 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """dc_commandepresta;dc_individu_local;dn_individu_national;dc_nom;dc_prenom;dc_telephone;dd_datecreationbeneficiaire;dc_ididentiteexterne;dc_romev3_1_id;dc_dureeexperience_1;dc_romev3_2_id;dc_dureeexperience_2
-            |"H0084";"01371827194";1025354611;"ABANCOURT";"JEAN-LOUIS";"0658917580";2018-02-06 00:00:00.0;"28d0b75a-b694-4de3-8849-b618184bcf10";"J1305";"08";"N1101";"00"
+          """KN_IDCOMMANDEPRESTA,KN_COMMANDEBENEFICIAIRE,DN_INDIVIDU_NATIONAL,DC_IDENTITEEXTERNE,DC_ROME_ID,DC_NOM,DC_PRENOM,DD_DATESORTIEPRESTATIONPREVUE,KC_RESULTATSBENEFICIAIRE_ID,DC_LBLRESULTATBENEFICIAIRE,DC_TOPSORTIEANTICIPEPOSITIVE,C_ROME_1_ID,C_ROME_2_ID
+            |5717975,19859698,1212591397,28d0b75a-b694-4de3-8849-b618184bcf10,H2909,ZIDANE,SABAH,09/01/2018 00:00,VSL,SELECTIONNE,N,K1302,K1302
             |""".stripMargin)
       )
 
@@ -121,14 +135,14 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       val future = mrsValideesCSVAdapter.load(source)
 
       // Then
-      future.map(s => s.toList.head.dateEvaluation mustBe LocalDate.parse("2018-02-06"))
+      future.map(s => s.toList.head.dateEvaluation mustBe LocalDate.parse("2018-01-09"))
     }
-    "integrer le code metier de la ligne" in {
+    "integrer le code ROME de la ligne lorsqu'elle représente une mrs validée" in {
       // Given
       val source = Source.single(
         ByteString(
-          """dc_commandepresta;dc_individu_local;dn_individu_national;dc_nom;dc_prenom;dc_telephone;dd_datecreationbeneficiaire;dc_ididentiteexterne;dc_romev3_1_id;dc_dureeexperience_1;dc_romev3_2_id;dc_dureeexperience_2
-            |"H0084";"01371827194";1025354611;"ABANCOURT";"JEAN-LOUIS";"0658917580";2018-02-06 00:00:00.0;"28d0b75a-b694-4de3-8849-b618184bcf10";"J1305";"08";"N1101";"00"
+          """KN_IDCOMMANDEPRESTA,KN_COMMANDEBENEFICIAIRE,DN_INDIVIDU_NATIONAL,DC_IDENTITEEXTERNE,DC_ROME_ID,DC_NOM,DC_PRENOM,DD_DATESORTIEPRESTATIONPREVUE,KC_RESULTATSBENEFICIAIRE_ID,DC_LBLRESULTATBENEFICIAIRE,DC_TOPSORTIEANTICIPEPOSITIVE,C_ROME_1_ID,C_ROME_2_ID
+            |5717975,19859698,1212591397,28d0b75a-b694-4de3-8849-b618184bcf10,H2909,ZIDANE,SABAH,09/01/2018 00:00,VSL,SELECTIONNE,N,K1302,K1302
             |""".stripMargin)
       )
 
@@ -136,7 +150,37 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       val future = mrsValideesCSVAdapter.load(source)
 
       // Then
-      future.map(s => s.toList.head.codeROME mustBe CodeROME("H0084"))
+      future.map(s => s.toList.head.codeROME mustBe CodeROME("H2909"))
+    }
+    "integrer le code ROME de la ligne lorsqu'elle représente l'entrée en formation du candidat (mrs validée puis entrée en formation)" in {
+      // Given
+      val source = Source.single(
+        ByteString(
+          """KN_IDCOMMANDEPRESTA,KN_COMMANDEBENEFICIAIRE,DN_INDIVIDU_NATIONAL,DC_IDENTITEEXTERNE,DC_ROME_ID,DC_NOM,DC_PRENOM,DD_DATESORTIEPRESTATIONPREVUE,KC_RESULTATSBENEFICIAIRE_ID,DC_LBLRESULTATBENEFICIAIRE,DC_TOPSORTIEANTICIPEPOSITIVE,C_ROME_1_ID,C_ROME_2_ID
+            |5717975,19859698,1212591397,28d0b75a-b694-4de3-8849-b618184bcf10,H2909,ZIDANE,SABAH,09/01/2018 00:00,VEF,ENTREE EN FORMATION,N,K1302,K1302
+            |""".stripMargin)
+      )
+
+      // When
+      val future = mrsValideesCSVAdapter.load(source)
+
+      // Then
+      future.map(s => s.toList.head.codeROME mustBe CodeROME("H2909"))
+    }
+    "integrer le code ROME de la ligne lorsqu'elle représente l'embauche d'un candidat (mrs validée suivie d'une embauche)" in {
+      // Given
+      val source = Source.single(
+        ByteString(
+          """KN_IDCOMMANDEPRESTA,KN_COMMANDEBENEFICIAIRE,DN_INDIVIDU_NATIONAL,DC_IDENTITEEXTERNE,DC_ROME_ID,DC_NOM,DC_PRENOM,DD_DATESORTIEPRESTATIONPREVUE,KC_RESULTATSBENEFICIAIRE_ID,DC_LBLRESULTATBENEFICIAIRE,DC_TOPSORTIEANTICIPEPOSITIVE,C_ROME_1_ID,C_ROME_2_ID
+            |5717975,19859698,1212591397,28d0b75a-b694-4de3-8849-b618184bcf10,H2909,ZIDANE,SABAH,09/01/2018 00:00,VEM,EMBAUCHE,N,K1302,K1302
+            |""".stripMargin)
+      )
+
+      // When
+      val future = mrsValideesCSVAdapter.load(source)
+
+      // Then
+      future.map(s => s.toList.head.codeROME mustBe CodeROME("H2909"))
     }
   }
 }
