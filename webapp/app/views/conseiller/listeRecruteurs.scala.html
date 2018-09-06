@@ -37,7 +37,7 @@
                 <td>@Genre.getLabel(recruteur.genre)</td>
                 <td>@recruteur.nom</td>
                 <td>@recruteur.prenom</td>
-                <td>@recruteur.email</td>
+                <td>@recruteur.email.value</td>
                 <td>@recruteur.numeroTelephone.map(_.value)</td>
                 <td>@recruteur.numeroSiret.map(_.value)</td>
                 <td>@getBoolean(recruteur.contactParCandidats)</td>
