@@ -2,6 +2,7 @@ package fr.poleemploi.perspectives.candidat.mrs.infra.csv
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.regex.Pattern
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
@@ -21,23 +22,25 @@ class MRSValideesCSVAdapter(val actorSystem: ActorSystem) {
 
   implicit val materializer: ActorMaterializer = ActorMaterializer()(actorSystem)
 
-  val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+  val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ISO_DATE
 
   val resultatsBeneficiairesValides = List("VSL", "VEF", "VEM")
+
+  val idPEConnectPattern: Pattern = Pattern.compile("^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$")
 
   def load(source: Source[ByteString, _]): Future[Stream[MRSValideeCandidatPEConnect]] = {
     source
       .via(CsvParsing.lineScanner(delimiter = ','))
       .via(CsvToMap.toMapAsStrings())
       .filter(
-        m => m.get("DC_IDENTITEEXTERNE").exists(_.nonEmpty) &&
+        m => m.get("Identifiant PE connect").exists(s => idPEConnectPattern.matcher(s).matches()) &&
           m.get("DC_ROME_ID").exists(_.nonEmpty) &&
           m.get("DD_DATESORTIEPRESTATIONPREVUE").exists(_.nonEmpty) &&
           m.get("KC_RESULTATSBENEFICIAIRE_ID").exists(resultatsBeneficiairesValides.contains)
       )
       .map(data => {
         MRSValideeCandidatPEConnect(
-          peConnectId = PEConnectId(data("DC_IDENTITEEXTERNE")),
+          peConnectId = PEConnectId(data("Identifiant PE connect")),
           codeROME = CodeROME(data("DC_ROME_ID")), // Pas de validation du code ROME, on fait confiance au SI Pole Emploi
           dateEvaluation = data.get("DD_DATESORTIEPRESTATIONPREVUE").map(s => LocalDate.parse(s.take(10), dateTimeFormatter)).get
         )
