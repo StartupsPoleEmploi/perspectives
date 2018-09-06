@@ -45,10 +45,6 @@ $(document).ready(function () {
     var resultatsRecherche = $("#js-resultatsRecherche");
     var titreCompteurResultats = $(".compteurResultats-titre");
 
-    $(".bouton-infoCandidat").each(function() {
-        $(this).hide();
-    });
-
     selecteurSecteursActivites.change(function () {
         var secteurActivite = $(this).val();
         rechercherCandidats().always(function () {
@@ -69,7 +65,7 @@ $(document).ready(function () {
             } else {
                 selecteurMetiers.html(htmlTousLesMetiers);
             }
-            var nbResultats = $(".resultatsRecherche tbody tr.listeResultatsRecherche-ligne").length;
+            var nbResultats = $(".listeResultatsRecherche-ligne").length;
             if (nbResultats === 0) {
                 titreCompteurResultats.html("Nous n'avons pas de candidats à vous proposer avec ces critères");
             } else if (nbResultats === 1) {
@@ -90,7 +86,7 @@ $(document).ready(function () {
 
     selecteurMetiers.change(function () {
         rechercherCandidats().always(function () {
-            var nbResultats = $(".resultatsRecherche tbody tr.listeResultatsRecherche-ligne").length;
+            var nbResultats = $(".listeResultatsRecherche-ligne").length;
             if (nbResultats === 0) {
                 titreCompteurResultats.html("Nous n'avons pas de candidats à vous proposer avec ces critères");
             } else if (nbResultats === 1) {
@@ -109,9 +105,15 @@ $(document).ready(function () {
             dataType: 'text'
         }).done(function (data) {
             resultatsRecherche.html(data);
+            $(".js-infoCandidat").each(function() {
+                $(this).hide();
+            });
         });
     }
 
+    $(".js-infoCandidat").each(function() {
+        $(this).hide();
+    });
     body.on("click", ".js-boutonCandidat", function () {
         var bouton = $(this);
         bouton.toggle();
