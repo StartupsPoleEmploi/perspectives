@@ -76,10 +76,13 @@ $(document).ready(function () {
         var validerCV = $("#js-validerCV");
         var texteInitialValiderCV = validerCV.text();
         var erreursCV = $("#js-erreursCV");
+        var succesCV = $("#js-succesCV");
         var nomFichier = $("#js-nomFichier");
         var nomFichierInitial = nomFichier.text();
         var indicationTailleMax = $("#js-indicationTaille");
-        var progressionUpload = $("#js-progression");
+        var progression = $("#js-progression");
+        progression.hide();
+        var barreProgression = $("#js-barreProgression");
         validerCV.hide();
         var tailleMaximumFichierBytes = 5 * 1000 * 1000;
         // FIXME : recupérer du back
@@ -97,6 +100,7 @@ $(document).ready(function () {
             add: function (event, data) {
                 var fichier = data.files[0];
                 viderErreurs();
+                viderSucces();
                 var erreurs = [];
 
                 if (fichier !== undefined) {
@@ -112,7 +116,7 @@ $(document).ready(function () {
                 }
 
                 if (erreurs.length > 0) {
-                    erreurs.forEach(function(e) {
+                    erreurs.forEach(function (e) {
                         addErreur(e);
                     });
                     reinitialiser();
@@ -120,7 +124,8 @@ $(document).ready(function () {
                     validerCV.show();
                     indicationTailleMax.hide();
                     validerCV.click(function () {
-                        validerCV.html("Envoi du CV...");
+                        validerCV.hide();
+                        progression.show();
                         data.submit();
                         validerCriteres.prop("disabled", "disabled");
                     });
@@ -128,7 +133,8 @@ $(document).ready(function () {
             },
             progressall: function (event, data) {
                 var progress = parseInt(data.loaded / data.total * 100, 10);
-                progressionUpload.text(progress + "%");
+                barreProgression.text(progress + "%");
+                barreProgression.css({"width": progress + "%"});
             },
             fail: function (event, data) {
                 reinitialiser();
@@ -136,7 +142,7 @@ $(document).ready(function () {
             },
             done: function (event, data) {
                 reinitialiser();
-                viderErreurs();
+                addSucces("Votre fichier a bien été envoyé");
             }
         });
     }
@@ -149,8 +155,18 @@ $(document).ready(function () {
         erreursCV.html("");
     }
 
+    function addSucces(text) {
+        succesCV.append("<div class='succes-item'>" + text + "</div>");
+    }
+
+    function viderSucces() {
+        succesCV.html("");
+    }
+
     function reinitialiser() {
-        progressionUpload.text("");
+        progression.hide();
+        barreProgression.text("");
+        barreProgression.css({"width": 0});
         validerCV.unbind("click");
         validerCV.hide();
         validerCV.html(texteInitialValiderCV);

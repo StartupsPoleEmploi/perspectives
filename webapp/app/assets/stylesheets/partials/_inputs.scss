@@ -277,8 +277,10 @@ input[type="text"] {
 }
 
 .telechargementFichier {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   font-size: 1em;
+  margin-bottom: 0.5rem;
 
   &-indicationTaille {
     color: #0F415A;
@@ -289,8 +291,14 @@ input[type="text"] {
     }
   }
 
+  &-block {
+    border-radius: 4px;
+    height: 40px;
+  }
+
   &-bouton {
     border-radius: 4px;
+    height: 40px;
     padding: 0.5em 1em;
   }
 
@@ -300,13 +308,27 @@ input[type="text"] {
   }
 
   &-item {
-    margin-left: 1em;
+    display: inline-block;
+    margin: 0 1em;
+  }
+
+  &-progression {
+    width: 200px;
+    background-color: #6A89CC;
+  }
+
+  &-barreProgression {
+    width: 0;
+    color: white;
+    background-color: #334051;
+    text-align: center;
   }
 }
 
 .parcourirFichier {
   display: inline-flex;
   align-items: center;
+  margin: 0;
 
   &-nom {
     border-radius: 4px 0 0 4px;

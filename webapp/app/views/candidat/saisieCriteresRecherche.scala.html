@@ -218,9 +218,12 @@
                     </label>
                     <span id="js-validerCV" class="telechargementFichier-item telechargementFichier-bouton bouton bouton--fondBleu">Valider mon CV</span>
                     <span id="js-indicationTaille" class="telechargementFichier-item telechargementFichier-indicationTaille">(poids maximum du document 5mo)</span>
-                    <span id="js-progression" class="telechargementFichier-item"></span>
+                    <div id="js-progression" class="telechargementFichier-item telechargementFichier-block telechargementFichier-progression">
+                        <div id="js-barreProgression" class="telechargementFichier-bouton telechargementFichier-barreProgression"></div>
+                    </div>
                 </div>
             </dd>
+            <dd id="js-succesCV" class="succes"></dd>
             <dd id="js-erreursCV" class="erreurs">
                 @for(erreur <- saisieCriteresRechercheForm("cv").errors.map(_.format)) {
                     <div class="erreurs-item">@erreur</div>

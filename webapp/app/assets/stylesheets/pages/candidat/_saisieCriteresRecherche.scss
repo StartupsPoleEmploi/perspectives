@@ -138,6 +138,15 @@
     }
   }
 
+  .succes {
+    margin-left: 2.5rem;
+
+    &-item {
+      color: green;
+      font-weight: bold;
+    }
+  }
+
   .choixMetiers {
     @include make-row();
 
