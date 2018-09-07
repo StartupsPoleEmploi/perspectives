@@ -99,7 +99,7 @@ class EventStoreSpec extends AsyncWordSpec with MustMatchers
           expectedVersion = 0,
           events = List(mock[Event])
         )
-      } map {_ =>
+      } map { _ =>
         verify(eventPublisher, never()).publish(any[AppendedEvent])
         Succeeded
       }
@@ -117,14 +117,14 @@ class EventStoreSpec extends AsyncWordSpec with MustMatchers
       )
 
       // Then
-      future map(_ => Succeeded)
+      future map (_ => Succeeded)
     }
   }
 
   private def mockAppendedEvents(streamName: String,
                                  size: Int): List[AppendedEvent] = {
     List.tabulate[AppendedEvent](size)(
-     n => {
+      n => {
         val data = mock[AppendedEvent]
         when(data.streamName) thenReturn streamName
         when(data.streamVersion) thenReturn n + 1
