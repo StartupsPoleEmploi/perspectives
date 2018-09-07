@@ -44,7 +44,7 @@ trait EventHandler {
   */
 class LocalEventPublisher extends EventPublisher {
 
-  private val handlers: mutable.MutableList[EventHandler] = mutable.MutableList.empty
+  private val handlers: mutable.Set[EventHandler] = mutable.Set.empty
 
   override def subscribe(eventHandler: EventHandler): Unit = {
     handlers += eventHandler
@@ -52,12 +52,28 @@ class LocalEventPublisher extends EventPublisher {
 
   override def publish(appendedEvent: AppendedEvent): Future[Unit] =
     Future.sequence(
-      handlers.map(h => h.publish(appendedEvent.event))
+      handlers.map(h =>
+        h.publish(appendedEvent.event).recoverWith {
+          case t: Throwable => Future.successful(
+            if (eventSourcingLogger.isErrorEnabled) {
+              eventSourcingLogger.error(s"Erreur lors de la publication de l'evenement $appendedEvent pour l'event handler ${h.getClass.getName}", t)
+            }
+          )
+        }
+      )
     ).map(_ => ())
 
   override def replay(appendedEvent: AppendedEvent): Future[Unit] =
     Future.sequence(
-      handlers.map(h => h.replay(appendedEvent.event))
+      handlers.map(h =>
+        h.replay(appendedEvent.event).recoverWith {
+          case t: Throwable => Future.successful(
+            if (eventSourcingLogger.isErrorEnabled) {
+              eventSourcingLogger.error(s"Erreur lors du rejeu de l'evenement $appendedEvent pour l'event handler ${h.getClass.getName}", t)
+            }
+          )
+        }
+      )
     ).map(_ => ())
 }
 
