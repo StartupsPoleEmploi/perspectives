@@ -12,7 +12,7 @@
 
 @layout(recruteurAuthentifie = Some(recruteurAuthentifie)) {
     <div id="matchingCandidats">
-        <section class="compteurResultats"> @** Utilisation de ifs car si on fait du pattern matching twirl generent des lignes inutiles et le bloc prend alors plus de place sur l'écran... *@
+        <section class="compteurResultats"> @** Utilisation de if car si on fait du pattern matching twirl generent des lignes inutiles et le bloc prend alors plus de place sur l'écran... *@
             @if(resultatRechercheCandidat.nbCandidats == 0) {
                 <h2 class="compteurResultats-titre">Nous n'avons pas de candidats à vous proposer</h2>
             }

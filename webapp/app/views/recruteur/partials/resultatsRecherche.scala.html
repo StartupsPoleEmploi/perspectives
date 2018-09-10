@@ -1,5 +1,6 @@
 @import fr.poleemploi.perspectives.commun.domain.RayonRecherche
 @import fr.poleemploi.perspectives.projections.candidat.{RechercheCandidatDto, ResultatRechercheCandidat, ResultatRechercheCandidatParDateInscription, ResultatRechercheCandidatParMetier, ResultatRechercheCandidatParSecteur}
+
 @(resultatRechercheCandidat: ResultatRechercheCandidat)
 
 @getTitreForCandidats(rechercheCandidatDtos: List[RechercheCandidatDto], finTitre: String) = @{
