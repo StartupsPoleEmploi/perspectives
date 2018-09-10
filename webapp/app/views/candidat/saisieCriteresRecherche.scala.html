@@ -83,26 +83,29 @@
                 <p class="sousQuestion-aide">Choisissez-en autant que vous le souhaitez</p>
             </dt>
             <dd class="choixMetiers">
-                <span class="ligneVerticaleSecteurs"></span>
                 <ul class="secteursActivites">
                     @for(secteurActivite <- secteursActivites) {
-                        <li>
+                        <li class="secteursActivites-item">
                             <input id="secteurActivite-@secteurActivite.code.value"
                                     name="secteurActivite" class="checkbox-input"
                                     type="checkbox" value="" />
-                            <label class="checkbox labelSecteurActivite" for="secteurActivite-@secteurActivite.code.value">
-                                <span class="checkbox-checkmark"></span>
+                            <label class="checkbox secteurActivite" for="secteurActivite-@secteurActivite.code.value">
+                                <span class="checkbox-checkmark checkbox-checkmark--grande"></span>
                                 @secteurActivite.label
-                                <span class="compteur-metiers-selectionnes"></span>
                             </label>
-                            <div class="conteneurMetiers">
-                                <span class="ligneVerticaleMetiers"></span>
-                                <ul class="metiers">
-                                @for(metier <- secteurActivite.metiers) {
-                                    <li class="metiers-item">@components.checkbox(form = saisieCriteresRechercheForm, name = "listeMetiersRecherches", value = metier.codeROME.value, label = metier.label)</li>
-                                }
-                                </ul>
-                            </div>
+                            <ul class="metiers">
+                            @for(metier <- secteurActivite.metiers) {
+                                <li class="metiers-item">
+                                @components.checkbox(
+                                    form = saisieCriteresRechercheForm,
+                                    name = "listeMetiersRecherches",
+                                    value = metier.codeROME.value,
+                                    label = metier.label,
+                                    cssClasses = List("checkbox-checkmark--petite")
+                                )
+                                </li>
+                            }
+                            </ul>
                         </li>
                     }
                 </ul>
