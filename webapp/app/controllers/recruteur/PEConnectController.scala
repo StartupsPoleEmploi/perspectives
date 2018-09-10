@@ -74,7 +74,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       recruteurInfos <- peConnectService.getInfosRecruteur(accessTokenResponse.accessToken)
       optRecruteurPEConnnect <- peConnectService.findRecruteur(recruteurInfos.peConnectId)
       optProfilRecruteur <- optRecruteurPEConnnect.map(r => recruteurQueryHandler.profilRecruteur(ProfilRecruteurQuery(r.recruteurId)).map(Some(_))).getOrElse(Future.successful(None))
-      recruteurId <- optRecruteurPEConnnect.map(r => mettreAJour(r, recruteurInfos)).getOrElse(inscrire(recruteurInfos))
+      recruteurId <- optRecruteurPEConnnect.map(r => modifierProfilGerant(r, recruteurInfos)).getOrElse(inscrire(recruteurInfos))
     } yield {
       val recruteurAuthentifie = RecruteurAuthentifie(
         recruteurId = recruteurId,
@@ -82,10 +82,9 @@ class PEConnectController @Inject()(cc: ControllerComponents,
         prenom = recruteurInfos.prenom
       )
       val session = SessionRecruteurPEConnect.set(accessTokenResponse.idToken, SessionRecruteurAuthentifie.set(recruteurAuthentifie, oauthTokenSessionStorage.remove(request.session)))
-      // FIXME : en attente de la finalisation du matching
-      /**if (optProfilRecruteur.exists(_.profilComplet))
-        Redirect(routes.MatchingController.rechercherCandidats()).withSession(session)*/
-      if (optProfilRecruteur.isDefined)
+      if (optProfilRecruteur.exists(_.profilComplet))
+        Redirect(routes.MatchingController.rechercherCandidats()).withSession(session)
+      else if (optProfilRecruteur.isDefined)
         Redirect(routes.ProfilController.modificationProfil()).withSession(session)
       else
         Redirect(routes.ProfilController.modificationProfil()).withSession(session)
@@ -128,16 +127,17 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       email = peConnectRecruteurInfos.email,
       genre = peConnectRecruteurInfos.genre
     )
-    recruteurCommandHandler.inscrire(command)
-      .flatMap(_ => peConnectService.saveRecruteur(RecruteurPEConnect(
+    for {
+      _ <- peConnectService.saveRecruteur(RecruteurPEConnect(
         recruteurId = recruteurId,
         peConnectId = peConnectRecruteurInfos.peConnectId
-      )))
-      .map(_ => recruteurId)
+      ))
+      _ <- recruteurCommandHandler.inscrire(command)
+    } yield recruteurId
   }
 
-  private def mettreAJour(recruteurPEConnect: RecruteurPEConnect,
-                          peConnectRecruteurInfos: PEConnectRecruteurInfos): Future[RecruteurId] = {
+  private def modifierProfilGerant(recruteurPEConnect: RecruteurPEConnect,
+                                   peConnectRecruteurInfos: PEConnectRecruteurInfos): Future[RecruteurId] = {
     val recruteurId = recruteurPEConnect.recruteurId
     val command = ModifierProfilGerantCommand(
       id = recruteurId,
