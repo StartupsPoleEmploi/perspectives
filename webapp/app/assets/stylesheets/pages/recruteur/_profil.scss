@@ -1,44 +1,5 @@
 #inscriptionRecruteur {
 
-  .presentation {
-    @include make-container();
-    @include make-container-max-widths();
-  }
-
-  .presentationTitres {
-    @include make-row();
-
-    padding-top: 3rem;
-    justify-content: center;
-
-    &-titre {
-      @include make-col($grid-columns);
-      padding-bottom: 0.5rem;
-      @extend %titrePrincipal;
-    }
-
-    &-description {
-      @include make-col($grid-columns);
-      margin-bottom: 0.5rem;
-      @extend %descriptionTitrePrincipal;
-      max-width: 80%;
-    }
-  }
-
-  .separation {
-    @include make-row();
-    justify-content: center;
-
-    padding: 3rem 0;
-
-    &-ligne {
-      box-sizing: border-box;
-      border: 0.5px solid #334051;
-      opacity: 0.6;
-      width: 16.5%;
-    }
-  }
-
   .informations {
     @include make-container();
     @include make-container-max-widths();
@@ -49,58 +10,6 @@
 
     @include media-breakpoint-up(md) {
       @include make-col-offset(1);
-    }
-  }
-
-  .question {
-    @include make-row();
-    margin: 0 0 1.5rem 0;
-
-    &-puce {
-      height: 22px;
-      width: 22px;
-      color: white;
-      background-color: #334051;
-      border-radius: 50%;
-      display: inline-block;
-      text-align: center;
-
-      &--erreur {
-        background-color: $perspectives-text-required;
-      }
-    }
-
-    &-texte {
-      @include make-col-ready();
-      @include make-col(11);
-
-      color: #334051;
-      font-size: 1em;
-      font-weight: 700;
-    }
-
-    &-requise {
-      color: $perspectives-text-required;
-    }
-  }
-
-  .choix {
-    margin-left: 2.5rem;
-
-    &-item {
-      @include media-breakpoint-down(md) {
-        display: block;
-        margin-bottom: 1em;
-      }
-    }
-  }
-
-  .erreurs {
-    margin-left: 2.5rem;
-
-    &-item {
-      color: $perspectives-text-required;
-      font-weight: bold;
     }
   }
 
