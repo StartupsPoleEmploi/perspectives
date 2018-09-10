@@ -136,16 +136,15 @@
             </dl>
             <div class="validerInscription">
                 <div class="conditions">
-                    <input id="js-formerCandidats"
-                    name="formerCandidats"
-                    type="checkbox" value="true" @if(profilForm("formerCandidats").value.contains("true")){checked} />
-                    <label class="labelCheckbox" for="js-formerCandidats">
-                        <span class="checkmark"></span>
-                        <span class="labelCheckbox-text">
-                            Nous sommes prêts à former le(s) candidat(s) recherché(s)
-                            <span class="question-requise">*</span>
-                        </span>
-                    </label>
+                    @components.checkbox(
+                        form = profilForm,
+                        name = "formerCandidats",
+                        value = "true",
+                        label = "Nous sommes prêts à former le(s) candidat(s) recherché(s)",
+                        slotLabel = Some(Html("<span class=\"question-requise\">*</span>")),
+                        checkboxClasses = List("checkbox-checkmark--grande"),
+                        labelClasses = List("formerCandidats")
+                    )
                 </div>
                 <button id="js-boutonInscription" class="bouton bouton-actionPrincipale bouton--fondBleu" type="submit">
                     J'inscris mon entreprise

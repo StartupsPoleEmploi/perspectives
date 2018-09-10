@@ -113,57 +113,8 @@
     margin: 4rem 0;
   }
 
-  .labelCheckbox {
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    justify-content: center;
-    cursor: pointer;
-    @include userSelect(none);
-
-    &-text {
-      font-size: 1em;
-      font-weight: 600;
-      padding-left: 15px;
-      padding-right: 15px;
-      max-width: 90%;
-    }
-  }
-
-  input[type="checkbox"] {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-
-    &:checked ~ .labelCheckbox {
-      .checkmark:after {
-        display: block;
-      }
-    }
-  }
-
-  .checkmark {
-    display: inline-block;
-    height: 18px;
-    width: 18px;
-    border: 2px solid #334051;
-    border-radius: 2px;
-    margin: 3px;
-  }
-
-  .checkmark:after {
-    content: "";
-    display: none;
-  }
-
-  .checkmark:after {
-    margin-left: 3px;
-    width: 7px;
-    height: 12px;
-    border: solid #82CCDD;
-    border-width: 0 3px 3px 0;
-    -webkit-transform: rotate(40deg);
-    -ms-transform: rotate(40deg);
-    transform: rotate(40deg);
+  .formerCandidats {
+    font-weight: 600;
+    font-size: 1em;
   }
 }

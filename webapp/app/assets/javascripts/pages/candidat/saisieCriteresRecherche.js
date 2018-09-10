@@ -1,7 +1,7 @@
 "use strict";
 
 $(document).ready(function () {
-    var secteursActivites = $("input[type='checkbox'][name='secteurActivite']");
+    var secteursActivites = $("input[type='checkbox'][name='secteurActivite[]']");
 
     $("#rechercheAutreMetier-true").each(function () {
         $('#js-critere-metiers').toggle($(this).prop("checked"));

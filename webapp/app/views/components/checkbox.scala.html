@@ -1,4 +1,10 @@
-@(form: Form[_], name: String, value: String, label: String, cssClasses: List[String] = Nil)
+@(form: Form[_],
+        name: String,
+        value: String,
+        label: String,
+        slotLabel: Option[Html] = None,
+        checkboxClasses: List[String] = Nil,
+        labelClasses: List[String]= Nil)
 
 @containsValue = @{
     if (form(name).indexes.flatMap(i => form(s"$name[%s]".format(i)).value).toSet.contains(value)) "checked" else ""
@@ -7,7 +13,8 @@
 <input id="@name-@value"
         name="@(s"$name[]")" class="checkbox-input"
         type="checkbox" value="@value" @containsValue />
-<label class="checkbox" for="@name-@value">
-    <span class="checkbox-checkmark @cssClasses.mkString(" ")"></span>
+<label class="checkbox @labelClasses.mkString(" ")" for="@name-@value">
+    <span class="checkbox-checkmark @checkboxClasses.mkString(" ")"></span>
     @label
+    @slotLabel
 </label>

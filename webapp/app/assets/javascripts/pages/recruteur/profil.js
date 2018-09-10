@@ -1,7 +1,7 @@
 "use strict";
 
 $(document).ready(function() {
-    var formerCandidats = $("#js-formerCandidats");
+    var formerCandidats = $("#formerCandidats-true");
     var boutonInscription = $("#js-boutonInscription");
 
     // Initialisation
