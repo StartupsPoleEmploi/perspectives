@@ -3,7 +3,7 @@ package conf
 import java.nio.file.Paths
 
 import fr.poleemploi.perspectives.authentification.infra.ws.PEConnectWSAdapterConfig
-import fr.poleemploi.perspectives.candidat.mrs.infra.file.ReferentielMRSCandidatFileConfig
+import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.ReferentielMRSCandidatPEConnectConfig
 import fr.poleemploi.perspectives.commun.infra.Environnement
 import fr.poleemploi.perspectives.commun.infra.oauth.OauthConfig
 import fr.poleemploi.perspectives.emailing.infra.ws.MailjetWSAdapterConfig
@@ -61,7 +61,7 @@ class WebAppConfig(configuration: Configuration) {
     oauthConfig = emploiStoreOauthConfig
   )
 
-  val referentielMRSCandidatFileConfig: ReferentielMRSCandidatFileConfig = ReferentielMRSCandidatFileConfig(
+  val referentielMRSCandidatPEConnectConfig: ReferentielMRSCandidatPEConnectConfig = ReferentielMRSCandidatPEConnectConfig(
     importDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.mrsValidees.importDirectory")),
     archiveDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.mrsValidees.archiveDirectory"))
   )

@@ -13,6 +13,8 @@ import fr.poleemploi.perspectives.authentification.infra.PEConnectService
 import fr.poleemploi.perspectives.authentification.infra.sql.PEConnectSqlAdapter
 import fr.poleemploi.perspectives.authentification.infra.ws.PEConnectWSAdapter
 import fr.poleemploi.perspectives.candidat.mrs.infra.csv.MRSValideesCSVAdapter
+import fr.poleemploi.perspectives.candidat.mrs.infra.local.ReferentielMRSCandidatLocal
+import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.ReferentielMRSCandidatPEConnect
 import fr.poleemploi.perspectives.candidat.mrs.infra.sql.MRSValideesSqlAdapter
 import fr.poleemploi.perspectives.commun.infra.jackson.PerspectivesEventSourcingModule
 import fr.poleemploi.perspectives.commun.infra.oauth.OauthService
@@ -168,4 +170,20 @@ class InfraModule extends AbstractModule with ScalaModule {
   @Provides
   def referentielMetierFileAdapter: ReferentielMetierFileAdapter =
     new ReferentielMetierFileAdapter()
+
+  @Provides
+  def referentielMRSCandidatPEConnect(mrsValideesCSVAdapter: MRSValideesCSVAdapter,
+                                      mrsValideesSqlAdapter: MRSValideesSqlAdapter,
+                                      peConnectService: PEConnectService,
+                                      webAppConfig: WebAppConfig): ReferentielMRSCandidatPEConnect =
+    new ReferentielMRSCandidatPEConnect(
+      config = webAppConfig.referentielMRSCandidatPEConnectConfig,
+      mrsValideesCSVLoader = mrsValideesCSVAdapter,
+      mrsValideesPostgresSql = mrsValideesSqlAdapter,
+      peConnectService = peConnectService
+    )
+
+  @Provides
+  def referentielMRSCandidatLocal: ReferentielMRSCandidatLocal =
+    new ReferentielMRSCandidatLocal()
 }

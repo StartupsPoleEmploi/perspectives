@@ -15,6 +15,7 @@ class WebappApplicationLoader extends GuiceApplicationLoader() {
         new EventSourcingModule(),
         new SchedulersModule(),
         new ProjectionsModule(),
+        new ProcessManagersModule(),
         new ServicesModule()
       )
   }

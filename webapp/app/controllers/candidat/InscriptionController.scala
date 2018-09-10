@@ -1,14 +1,11 @@
 package controllers.candidat
 
-import java.time.LocalDate
-
 import authentification.infra.play.{CandidatAuthentifieAction, CandidatAuthentifieRequest, SessionCandidatAuthentifie}
 import conf.WebAppConfig
 import controllers.FlashMessages._
 import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
 import fr.poleemploi.perspectives.candidat._
-import fr.poleemploi.perspectives.candidat.mrs.domain.MRSValidee
-import fr.poleemploi.perspectives.commun.domain.{CodeROME, Email, Genre}
+import fr.poleemploi.perspectives.commun.domain.{Email, Genre}
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
 
@@ -41,17 +38,7 @@ class InscriptionController @Inject()(cc: ControllerComponents,
         libelleCommune = "Paris",
         libellePays = "France"
       ),
-      statutDemandeurEmploi = StatutDemandeurEmploi.DEMANDEUR_EMPLOI,
-      mrsValidees = List(
-        MRSValidee(
-          codeROME = CodeROME("B1802"),
-          dateEvaluation = LocalDate.now()
-        ),
-        MRSValidee(
-          codeROME = CodeROME("I1307"),
-          dateEvaluation = LocalDate.now()
-        )
-      )
+      statutDemandeurEmploi = StatutDemandeurEmploi.DEMANDEUR_EMPLOI
     )
     candidatCommandHandler.inscrire(command).map { _ =>
       val candidatAuthentifie = CandidatAuthentifie(

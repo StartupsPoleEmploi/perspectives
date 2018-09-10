@@ -8,7 +8,6 @@ import fr.poleemploi.perspectives.authentification.infra.PEConnectService
 import fr.poleemploi.perspectives.authentification.infra.sql.CandidatPEConnect
 import fr.poleemploi.perspectives.authentification.infra.ws.{PEConnectCandidatInfos, PEConnectException, PEConnectWSAdapterConfig}
 import fr.poleemploi.perspectives.candidat._
-import fr.poleemploi.perspectives.candidat.mrs.domain.{MRSValidee, ReferentielMRSCandidat}
 import javax.inject.{Inject, Singleton}
 import play.api.Logger
 import play.api.mvc._
@@ -22,8 +21,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
                                     webAppConfig: WebAppConfig,
                                     candidatCommandHandler: CandidatCommandHandler,
                                     candidatPEConnectAction: CandidatPEConnectAction,
-                                    peConnectService: PEConnectService,
-                                    referentielMRSCandidat: ReferentielMRSCandidat) extends AbstractController(cc) {
+                                    peConnectService: PEConnectService) extends AbstractController(cc) {
 
   val oauthTokenSessionStorage = new OauthTokenSessionStorage("candidat")
   val redirectUri: Call = routes.PEConnectController.connexionCallback()
@@ -75,15 +73,13 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       infosCandidat <- peConnectService.getInfosCandidat(accessTokenResponse.accessToken)
       adresse <- peConnectService.getAdresseCandidat(accessTokenResponse.accessToken)
       statutDemandeurEmploi <- peConnectService.getStatutDemandeurEmploiCandidat(accessTokenResponse.accessToken)
-      // FIXME : à faire uniquement lors d'une inscription PEConnect : renommer event + intégrer peCOnnectId + saga
-      mrsValidees <- referentielMRSCandidat.metiersValidesParCandidat(infosCandidat.peConnectId)
+      // FIXME : saga pour l'adresse et le statut (l'inscription est prioritaire)
       optCandidat <- peConnectService.findCandidat(infosCandidat.peConnectId)
-      candidatId <- optCandidat.map(c => mettreAJour(c, infosCandidat, adresse, statutDemandeurEmploi))
+      candidatId <- optCandidat.map(c => modifierProfil(c, infosCandidat, adresse, statutDemandeurEmploi))
         .getOrElse(inscrire(
           peConnectCandidatInfos = infosCandidat,
           adresse = adresse,
-          statutDemandeurEmploi = statutDemandeurEmploi,
-          mrsValidees = mrsValidees
+          statutDemandeurEmploi = statutDemandeurEmploi
         ))
     } yield {
       val candidatAuthentifie = CandidatAuthentifie(
@@ -135,8 +131,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
 
   private def inscrire(peConnectCandidatInfos: PEConnectCandidatInfos,
                        adresse: Adresse,
-                       statutDemandeurEmploi: StatutDemandeurEmploi,
-                       mrsValidees: List[MRSValidee]): Future[CandidatId] = {
+                       statutDemandeurEmploi: StatutDemandeurEmploi): Future[CandidatId] = {
     val candidatId = candidatCommandHandler.newCandidatId
     val command = InscrireCandidatCommand(
       id = candidatId,
@@ -145,21 +140,21 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       genre = peConnectCandidatInfos.genre,
       email = peConnectCandidatInfos.email,
       adresse = adresse,
-      statutDemandeurEmploi = statutDemandeurEmploi,
-      mrsValidees = mrsValidees
+      statutDemandeurEmploi = statutDemandeurEmploi
     )
-    candidatCommandHandler.inscrire(command)
-      .flatMap(_ => peConnectService.saveCandidat(CandidatPEConnect(
+    for {
+      _ <- peConnectService.saveCandidat(CandidatPEConnect(
         candidatId = candidatId,
         peConnectId = peConnectCandidatInfos.peConnectId
-      )))
-      .map(_ => candidatId)
+      ))
+      _ <- candidatCommandHandler.inscrire(command)
+    } yield candidatId
   }
 
-  private def mettreAJour(candidatPEConnect: CandidatPEConnect,
-                          peConnectCandidatInfos: PEConnectCandidatInfos,
-                          adresse: Adresse,
-                          statutDemandeurEmploi: StatutDemandeurEmploi): Future[CandidatId] = {
+  private def modifierProfil(candidatPEConnect: CandidatPEConnect,
+                             peConnectCandidatInfos: PEConnectCandidatInfos,
+                             adresse: Adresse,
+                             statutDemandeurEmploi: StatutDemandeurEmploi): Future[CandidatId] = {
     val candidatId = candidatPEConnect.candidatId
     val command = ModifierProfilCommand(
       id = candidatId,

@@ -40,12 +40,7 @@ class Candidat(override val id: CandidatId,
         candidatId = command.id,
         statutDemandeurEmploi = command.statutDemandeurEmploi
       )
-    ) ++ command.mrsValidees.map(mrsValidee =>
-      MRSAjouteeEvent(
-        candidatId = command.id,
-        metier = mrsValidee.codeROME,
-        dateEvaluation = mrsValidee.dateEvaluation
-      ))
+    )
   }
 
   // FIXME : vérification de l'existence des codes ROME dans le référentiel

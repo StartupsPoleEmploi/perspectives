@@ -24,8 +24,7 @@ class InscrireCandidatSpec extends WordSpec with MustMatchers with MockitoSugar 
       email = Email("email@domain.com"),
       genre = Genre.HOMME,
       adresse = mock[Adresse],
-      statutDemandeurEmploi = StatutDemandeurEmploi.DEMANDEUR_EMPLOI,
-      mrsValidees = Nil
+      statutDemandeurEmploi = StatutDemandeurEmploi.DEMANDEUR_EMPLOI
     )
 
   "inscrire" should {
@@ -95,23 +94,6 @@ class InscrireCandidatSpec extends WordSpec with MustMatchers with MockitoSugar 
       val statutDemandeurEmploiModifieEvent = event.head.asInstanceOf[StatutDemandeurEmploiModifieEvent]
       statutDemandeurEmploiModifieEvent.candidatId mustBe commande.id
       statutDemandeurEmploiModifieEvent.statutDemandeurEmploi mustBe commande.statutDemandeurEmploi
-    }
-    "générer un événement contenant la liste des MRS validées" in {
-      // Given
-      val candidat = candidatBuilder.build
-
-      // When
-      val result = candidat.inscrire(commande.copy(
-        mrsValidees = List(mrsValidee)
-      ))
-
-      // Then
-      val event = result.filter(_.isInstanceOf[MRSAjouteeEvent])
-      event.size mustBe 1
-      val mrsAjouteeEvent = event.head.asInstanceOf[MRSAjouteeEvent]
-      mrsAjouteeEvent.candidatId mustBe commande.id
-      mrsAjouteeEvent.metier mustBe mrsValidee.codeROME
-      mrsAjouteeEvent.dateEvaluation mustBe mrsValidee.dateEvaluation
     }
   }
 

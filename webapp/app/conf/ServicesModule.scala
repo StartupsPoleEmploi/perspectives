@@ -4,9 +4,8 @@ import com.google.inject.{AbstractModule, Provider, Provides, Singleton}
 import fr.poleemploi.perspectives.candidat.cv.domain.CVService
 import fr.poleemploi.perspectives.candidat.cv.infra.sql.CVSqlAdapter
 import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielMRSCandidat
-import fr.poleemploi.perspectives.candidat.mrs.infra.csv.MRSValideesCSVAdapter
-import fr.poleemploi.perspectives.candidat.mrs.infra.file.ReferentielMRSCandidatFile
-import fr.poleemploi.perspectives.candidat.mrs.infra.sql.MRSValideesSqlAdapter
+import fr.poleemploi.perspectives.candidat.mrs.infra.local.ReferentielMRSCandidatLocal
+import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.ReferentielMRSCandidatPEConnect
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
 import fr.poleemploi.perspectives.conseiller.{AutorisationService, ConseillerId}
 import fr.poleemploi.perspectives.emailing.domain.EmailingService
@@ -39,14 +38,13 @@ class ServicesModule extends AbstractModule {
 
   @Provides
   @Singleton
-  def referentielMetierEvalue(mrsValideesCSVAdapter: MRSValideesCSVAdapter,
-                              mrsValideesSqlAdapter: MRSValideesSqlAdapter,
-                              webAppConfig: WebAppConfig): ReferentielMRSCandidat =
-    new ReferentielMRSCandidatFile(
-      referentielMRSCandidatFileConfig = webAppConfig.referentielMRSCandidatFileConfig,
-      mrsValideesCSVLoader = mrsValideesCSVAdapter,
-      mrsValideesPostgresSql = mrsValideesSqlAdapter
-    )
+  def referentielMRSCandidat(referentielMRSCandidatPEConnect: Provider[ReferentielMRSCandidatPEConnect],
+                             referentielMRSCandidatLocal: Provider[ReferentielMRSCandidatLocal],
+                             webAppConfig: WebAppConfig): ReferentielMRSCandidat =
+    if (webAppConfig.usePEConnect)
+      referentielMRSCandidatPEConnect.get()
+    else
+      referentielMRSCandidatLocal.get()
 
   @Provides
   @Singleton

@@ -1,29 +1,31 @@
-package fr.poleemploi.perspectives.candidat.mrs.infra.file
+package fr.poleemploi.perspectives.candidat.mrs.infra.peconnect
 
 import java.nio.file._
 
 import akka.stream.scaladsl.FileIO
+import fr.poleemploi.perspectives.authentification.infra.PEConnectService
+import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.candidat.mrs.domain.{MRSValidee, ReferentielMRSCandidat}
 import fr.poleemploi.perspectives.candidat.mrs.infra.csv.MRSValideesCSVAdapter
 import fr.poleemploi.perspectives.candidat.mrs.infra.referentielMrsCandidatLogger
 import fr.poleemploi.perspectives.candidat.mrs.infra.sql.MRSValideesSqlAdapter
-import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
 
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 /**
-  * Referentiel qui intègre les MRS validées depuis un fichier CSV vers une table dans la base de l'application perspectives.
+  * Referentiel qui intègre les MRS validées depuis un fichier CSV contenant les identifiants PEConnect vers une table dans la base de l'application perspectives.
   */
-class ReferentielMRSCandidatFile(referentielMRSCandidatFileConfig: ReferentielMRSCandidatFileConfig,
-                                 mrsValideesCSVLoader: MRSValideesCSVAdapter,
-                                 mrsValideesPostgresSql: MRSValideesSqlAdapter) extends ReferentielMRSCandidat {
+class ReferentielMRSCandidatPEConnect(config: ReferentielMRSCandidatPEConnectConfig,
+                                      mrsValideesCSVLoader: MRSValideesCSVAdapter,
+                                      mrsValideesPostgresSql: MRSValideesSqlAdapter,
+                                      peConnectService: PEConnectService) extends ReferentielMRSCandidat {
 
   /** Intègre les full et les delta */
   val pattern: String = "DE_MRS_VALIDES_*.csv"
-  val importDirectory: Path = referentielMRSCandidatFileConfig.importDirectory
-  val archiveDirectory: Path = referentielMRSCandidatFileConfig.archiveDirectory
+  val importDirectory: Path = config.importDirectory
+  val archiveDirectory: Path = config.archiveDirectory
 
   override def integrerMRSValidees: Future[Unit] = {
     if (!importDirectory.toFile.exists()) {
@@ -42,8 +44,11 @@ class ReferentielMRSCandidatFile(referentielMRSCandidatFileConfig: ReferentielMR
       })).map(_ => ())
   }
 
-  override def metiersValidesParCandidat(peConnectId: PEConnectId): Future[List[MRSValidee]] =
-    mrsValideesPostgresSql.metiersEvaluesParCandidat(peConnectId)
+  override def mrsValideesParCandidat(candidatId: CandidatId): Future[List[MRSValidee]] =
+    for {
+      candidatPEConnect <- peConnectService.getCandidat(candidatId)
+      mrsValidees <- mrsValideesPostgresSql.metiersEvaluesParCandidat(candidatPEConnect.peConnectId)
+    } yield mrsValidees
 
   private def integrerFichier(fichier: Path): Future[Unit] = {
     for {

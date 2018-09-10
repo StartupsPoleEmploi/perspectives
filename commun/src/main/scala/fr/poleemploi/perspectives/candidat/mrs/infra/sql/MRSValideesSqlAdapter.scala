@@ -3,7 +3,7 @@ package fr.poleemploi.perspectives.candidat.mrs.infra.sql
 import java.time.LocalDate
 
 import fr.poleemploi.perspectives.candidat.mrs.domain.MRSValidee
-import fr.poleemploi.perspectives.candidat.mrs.infra.MRSValideeCandidatPEConnect
+import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.MRSValideeCandidatPEConnect
 import fr.poleemploi.perspectives.commun.domain.CodeROME
 import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver

@@ -14,8 +14,7 @@ case class InscrireCandidatCommand(id: CandidatId,
                                    email: Email,
                                    genre: Genre,
                                    adresse: Adresse,
-                                   statutDemandeurEmploi: StatutDemandeurEmploi,
-                                   mrsValidees: List[MRSValidee]) extends Command
+                                   statutDemandeurEmploi: StatutDemandeurEmploi) extends Command
 
 // FIXME : Le numéro de téléphone est sur le formulaire des critères de recherche pour l'instant
 case class ModifierCriteresRechercheCommand(id: CandidatId,

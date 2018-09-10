@@ -2,7 +2,7 @@ package fr.poleemploi.perspectives.authentification.infra
 
 import fr.poleemploi.perspectives.authentification.infra.sql.{CandidatPEConnect, PEConnectSqlAdapter, RecruteurPEConnect}
 import fr.poleemploi.perspectives.authentification.infra.ws.{AccessTokenResponse, PEConnectCandidatInfos, PEConnectRecruteurInfos, PEConnectWSAdapter}
-import fr.poleemploi.perspectives.candidat.{Adresse, StatutDemandeurEmploi}
+import fr.poleemploi.perspectives.candidat.{Adresse, CandidatId, StatutDemandeurEmploi}
 import fr.poleemploi.perspectives.commun.infra.oauth.{OauthService, OauthTokens}
 import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
 
@@ -31,6 +31,9 @@ class PEConnectService(oauthService: OauthService,
 
   def findCandidat(peConnectId: PEConnectId): Future[Option[CandidatPEConnect]] =
     peConnectSqlAdapter.findCandidat(peConnectId)
+
+  def getCandidat(candidatId: CandidatId): Future[CandidatPEConnect] =
+    peConnectSqlAdapter.getCandidat(candidatId)
 
   def saveCandidat(candidatPEConnect: CandidatPEConnect): Future[Unit] =
     peConnectSqlAdapter.saveCandidat(candidatPEConnect)
