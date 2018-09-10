@@ -22,7 +22,7 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-        """KN_IDCOMMANDEPRESTA,KN_COMMANDEBENEFICIAIRE,DN_INDIVIDU_NATIONAL,DC_ROME_ID,DC_NOM,DC_PRENOM,DD_DATESORTIEPRESTATIONPREVUE,KC_RESULTATSBENEFICIAIRE_ID,DC_LBLRESULTATBENEFICIAIRE,DC_TOPSORTIEANTICIPEPOSITIVE,C_ROME_1_ID,C_ROME_2_ID,Identifiant PE connect,Ville habitation DE,Site Prescripteur""".stripMargin)
+        """a.kn_idcommandepresta,kn_commandebeneficiaire,dn_individu_national,dc_rome_id,a.dc_nom,a.dc_prenom,dd_datesortieprestationprevue,kc_resultatsbeneficiaire_id,dc_lblresultatbeneficiaire,dc_topsortieanticipepositive,dc_romev3_1_id,dc_romev3_2_id,dc_ididentiteexterne,dc_codepostallocalite,dc_siteprescripteur,pr00_ppx005_refh_individu.dc_individu_local,dc_adresseemail""".stripMargin)
       )
 
       // When
@@ -35,7 +35,7 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-        """KN_IDCOMMANDEPRESTA,KN_COMMANDEBENEFICIAIRE,DN_INDIVIDU_NATIONAL,DC_ROME_ID,DC_NOM,DC_PRENOM,DD_DATESORTIEPRESTATIONPREVUE,KC_RESULTATSBENEFICIAIRE_ID,DC_LBLRESULTATBENEFICIAIRE,DC_TOPSORTIEANTICIPEPOSITIVE,C_ROME_1_ID,C_ROME_2_ID,Identifiant PE connect,Ville habitation DE,Site Prescripteur
+        """a.kn_idcommandepresta,kn_commandebeneficiaire,dn_individu_national,dc_rome_id,a.dc_nom,a.dc_prenom,dd_datesortieprestationprevue,kc_resultatsbeneficiaire_id,dc_lblresultatbeneficiaire,dc_topsortieanticipepositive,dc_romev3_1_id,dc_romev3_2_id,dc_ididentiteexterne,dc_codepostallocalite,dc_siteprescripteur,pr00_ppx005_refh_individu.dc_individu_local,dc_adresseemail
           |5717975,19859698,1234556789,H2909,NOM,PRENOM,2018-01-09 00:00:00.000,VSL,SELECTIONNE,N,K1302,K1302,,44210 PORNIC,44021
           |""".stripMargin)
       )
@@ -50,7 +50,7 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """KN_IDCOMMANDEPRESTA,KN_COMMANDEBENEFICIAIRE,DN_INDIVIDU_NATIONAL,DC_ROME_ID,DC_NOM,DC_PRENOM,DD_DATESORTIEPRESTATIONPREVUE,KC_RESULTATSBENEFICIAIRE_ID,DC_LBLRESULTATBENEFICIAIRE,DC_TOPSORTIEANTICIPEPOSITIVE,C_ROME_1_ID,C_ROME_2_ID,Identifiant PE connect,Ville habitation DE,Site Prescripteur
+          """a.kn_idcommandepresta,kn_commandebeneficiaire,dn_individu_national,dc_rome_id,a.dc_nom,a.dc_prenom,dd_datesortieprestationprevue,kc_resultatsbeneficiaire_id,dc_lblresultatbeneficiaire,dc_topsortieanticipepositive,dc_romev3_1_id,dc_romev3_2_id,dc_ididentiteexterne,dc_codepostallocalite,dc_siteprescripteur,pr00_ppx005_refh_individu.dc_individu_local,dc_adresseemail
             |5717975,19859698,1234556789,H2909,NOM,PRENOM,2018-01-09 00:00:00.000,VSL,SELECTIONNE,N,K1302,K1302,NULL,44210 PORNIC,44021
             |""".stripMargin)
       )
@@ -65,7 +65,7 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """KN_IDCOMMANDEPRESTA,KN_COMMANDEBENEFICIAIRE,DN_INDIVIDU_NATIONAL,DC_ROME_ID,DC_NOM,DC_PRENOM,DD_DATESORTIEPRESTATIONPREVUE,KC_RESULTATSBENEFICIAIRE_ID,DC_LBLRESULTATBENEFICIAIRE,DC_TOPSORTIEANTICIPEPOSITIVE,C_ROME_1_ID,C_ROME_2_ID,Identifiant PE connect,Ville habitation DE,Site Prescripteur
+          """a.kn_idcommandepresta,kn_commandebeneficiaire,dn_individu_national,dc_rome_id,a.dc_nom,a.dc_prenom,dd_datesortieprestationprevue,kc_resultatsbeneficiaire_id,dc_lblresultatbeneficiaire,dc_topsortieanticipepositive,dc_romev3_1_id,dc_romev3_2_id,dc_ididentiteexterne,dc_codepostallocalite,dc_siteprescripteur,pr00_ppx005_refh_individu.dc_individu_local,dc_adresseemail
             |5717975,19859698,1234556789,H2909,NOM,PRENOM,,VSL,SELECTIONNE,N,K1302,K1302,28d0b75a-b694-4de3-8849-18bfbfebd729,44210 PORNIC,44021
             |""".stripMargin)
       )
@@ -80,7 +80,7 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """KN_IDCOMMANDEPRESTA,KN_COMMANDEBENEFICIAIRE,DN_INDIVIDU_NATIONAL,DC_ROME_ID,DC_NOM,DC_PRENOM,DD_DATESORTIEPRESTATIONPREVUE,KC_RESULTATSBENEFICIAIRE_ID,DC_LBLRESULTATBENEFICIAIRE,DC_TOPSORTIEANTICIPEPOSITIVE,C_ROME_1_ID,C_ROME_2_ID,Identifiant PE connect,Ville habitation DE,Site Prescripteur
+          """a.kn_idcommandepresta,kn_commandebeneficiaire,dn_individu_national,dc_rome_id,a.dc_nom,a.dc_prenom,dd_datesortieprestationprevue,kc_resultatsbeneficiaire_id,dc_lblresultatbeneficiaire,dc_topsortieanticipepositive,dc_romev3_1_id,dc_romev3_2_id,dc_ididentiteexterne,dc_codepostallocalite,dc_siteprescripteur,pr00_ppx005_refh_individu.dc_individu_local,dc_adresseemail
             |5717975,19859698,1234556789,,NOM,PRENOM,2018-01-09 00:00:00.000,VSL,SELECTIONNE,N,K1302,K1302,28d0b75a-b694-4de3-8849-18bfbfebd729,44210 PORNIC,44021
             |""".stripMargin)
       )
@@ -95,7 +95,7 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """KN_IDCOMMANDEPRESTA,KN_COMMANDEBENEFICIAIRE,DN_INDIVIDU_NATIONAL,DC_ROME_ID,DC_NOM,DC_PRENOM,DD_DATESORTIEPRESTATIONPREVUE,KC_RESULTATSBENEFICIAIRE_ID,DC_LBLRESULTATBENEFICIAIRE,DC_TOPSORTIEANTICIPEPOSITIVE,C_ROME_1_ID,C_ROME_2_ID,Identifiant PE connect,Ville habitation DE,Site Prescripteur
+          """a.kn_idcommandepresta,kn_commandebeneficiaire,dn_individu_national,dc_rome_id,a.dc_nom,a.dc_prenom,dd_datesortieprestationprevue,kc_resultatsbeneficiaire_id,dc_lblresultatbeneficiaire,dc_topsortieanticipepositive,dc_romev3_1_id,dc_romev3_2_id,dc_ididentiteexterne,dc_codepostallocalite,dc_siteprescripteur,pr00_ppx005_refh_individu.dc_individu_local,dc_adresseemail
             |5717975,19859698,1234556789,H2909,NOM,PRENOM,2018-01-09 00:00:00.000,,SELECTIONNE,N,K1302,K1302,28d0b75a-b694-4de3-8849-18bfbfebd729,44210 PORNIC,44021
             |""".stripMargin)
       )
@@ -110,7 +110,7 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """KN_IDCOMMANDEPRESTA,KN_COMMANDEBENEFICIAIRE,DN_INDIVIDU_NATIONAL,DC_ROME_ID,DC_NOM,DC_PRENOM,DD_DATESORTIEPRESTATIONPREVUE,KC_RESULTATSBENEFICIAIRE_ID,DC_LBLRESULTATBENEFICIAIRE,DC_TOPSORTIEANTICIPEPOSITIVE,C_ROME_1_ID,C_ROME_2_ID,Identifiant PE connect,Ville habitation DE,Site Prescripteur
+          """a.kn_idcommandepresta,kn_commandebeneficiaire,dn_individu_national,dc_rome_id,a.dc_nom,a.dc_prenom,dd_datesortieprestationprevue,kc_resultatsbeneficiaire_id,dc_lblresultatbeneficiaire,dc_topsortieanticipepositive,dc_romev3_1_id,dc_romev3_2_id,dc_ididentiteexterne,dc_codepostallocalite,dc_siteprescripteur,pr00_ppx005_refh_individu.dc_individu_local,dc_adresseemail
             |5717975,19859698,1234556789,H2909,NOM,PRENOM,2018-01-09 00:00:00.000,VSL,SELECTIONNE,N,K1302,K1302,28d0b75a-b694-4de3-8849-18bfbfebd729,44210 PORNIC,44021""".stripMargin)
       )
 
@@ -124,7 +124,7 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """KN_IDCOMMANDEPRESTA,KN_COMMANDEBENEFICIAIRE,DN_INDIVIDU_NATIONAL,DC_ROME_ID,DC_NOM,DC_PRENOM,DD_DATESORTIEPRESTATIONPREVUE,KC_RESULTATSBENEFICIAIRE_ID,DC_LBLRESULTATBENEFICIAIRE,DC_TOPSORTIEANTICIPEPOSITIVE,C_ROME_1_ID,C_ROME_2_ID,Identifiant PE connect,Ville habitation DE,Site Prescripteur
+          """a.kn_idcommandepresta,kn_commandebeneficiaire,dn_individu_national,dc_rome_id,a.dc_nom,a.dc_prenom,dd_datesortieprestationprevue,kc_resultatsbeneficiaire_id,dc_lblresultatbeneficiaire,dc_topsortieanticipepositive,dc_romev3_1_id,dc_romev3_2_id,dc_ididentiteexterne,dc_codepostallocalite,dc_siteprescripteur,pr00_ppx005_refh_individu.dc_individu_local,dc_adresseemail
             |5717975,19859698,1234556789,H2909,NOM,PRENOM,2018-01-09 00:00:00.000,VSL,SELECTIONNE,N,K1302,K1302,28d0b75a-b694-4de3-8849-18bfbfebd729,44210 PORNIC,44021
             |""".stripMargin)
       )
@@ -141,7 +141,7 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """KN_IDCOMMANDEPRESTA,KN_COMMANDEBENEFICIAIRE,DN_INDIVIDU_NATIONAL,DC_ROME_ID,DC_NOM,DC_PRENOM,DD_DATESORTIEPRESTATIONPREVUE,KC_RESULTATSBENEFICIAIRE_ID,DC_LBLRESULTATBENEFICIAIRE,DC_TOPSORTIEANTICIPEPOSITIVE,C_ROME_1_ID,C_ROME_2_ID,Identifiant PE connect,Ville habitation DE,Site Prescripteur
+          """a.kn_idcommandepresta,kn_commandebeneficiaire,dn_individu_national,dc_rome_id,a.dc_nom,a.dc_prenom,dd_datesortieprestationprevue,kc_resultatsbeneficiaire_id,dc_lblresultatbeneficiaire,dc_topsortieanticipepositive,dc_romev3_1_id,dc_romev3_2_id,dc_ididentiteexterne,dc_codepostallocalite,dc_siteprescripteur,pr00_ppx005_refh_individu.dc_individu_local,dc_adresseemail
             |5717975,19859698,1234556789,H2909,NOM,PRENOM,2018-01-09 00:00:00.000,VSL,SELECTIONNE,N,K1302,K1302,28d0b75a-b694-4de3-8849-18bfbfebd729,44210 PORNIC,44021
             |""".stripMargin)
       )
@@ -156,7 +156,7 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """KN_IDCOMMANDEPRESTA,KN_COMMANDEBENEFICIAIRE,DN_INDIVIDU_NATIONAL,DC_ROME_ID,DC_NOM,DC_PRENOM,DD_DATESORTIEPRESTATIONPREVUE,KC_RESULTATSBENEFICIAIRE_ID,DC_LBLRESULTATBENEFICIAIRE,DC_TOPSORTIEANTICIPEPOSITIVE,C_ROME_1_ID,C_ROME_2_ID,Identifiant PE connect,Ville habitation DE,Site Prescripteur
+          """a.kn_idcommandepresta,kn_commandebeneficiaire,dn_individu_national,dc_rome_id,a.dc_nom,a.dc_prenom,dd_datesortieprestationprevue,kc_resultatsbeneficiaire_id,dc_lblresultatbeneficiaire,dc_topsortieanticipepositive,dc_romev3_1_id,dc_romev3_2_id,dc_ididentiteexterne,dc_codepostallocalite,dc_siteprescripteur,pr00_ppx005_refh_individu.dc_individu_local,dc_adresseemail
             |5717975,19859698,1234556789,H2909,NOM,PRENOM,2018-01-09 00:00:00.000,VSL,SELECTIONNE,N,K1302,K1302,28d0b75a-b694-4de3-8849-18bfbfebd729,44210 PORNIC,44021
             |""".stripMargin)
       )
@@ -171,7 +171,7 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """KN_IDCOMMANDEPRESTA,KN_COMMANDEBENEFICIAIRE,DN_INDIVIDU_NATIONAL,DC_ROME_ID,DC_NOM,DC_PRENOM,DD_DATESORTIEPRESTATIONPREVUE,KC_RESULTATSBENEFICIAIRE_ID,DC_LBLRESULTATBENEFICIAIRE,DC_TOPSORTIEANTICIPEPOSITIVE,C_ROME_1_ID,C_ROME_2_ID,Identifiant PE connect,Ville habitation DE,Site Prescripteur
+          """a.kn_idcommandepresta,kn_commandebeneficiaire,dn_individu_national,dc_rome_id,a.dc_nom,a.dc_prenom,dd_datesortieprestationprevue,kc_resultatsbeneficiaire_id,dc_lblresultatbeneficiaire,dc_topsortieanticipepositive,dc_romev3_1_id,dc_romev3_2_id,dc_ididentiteexterne,dc_codepostallocalite,dc_siteprescripteur,pr00_ppx005_refh_individu.dc_individu_local,dc_adresseemail
             |5717975,19859698,1234556789,H2909,NOM,PRENOM,2018-01-09 00:00:00.000,VEF,ENTREE EN FORMATION,N,K1302,K1302,28d0b75a-b694-4de3-8849-18bfbfebd729,44210 PORNIC,44021
             |""".stripMargin)
       )
@@ -186,7 +186,7 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """KN_IDCOMMANDEPRESTA,KN_COMMANDEBENEFICIAIRE,DN_INDIVIDU_NATIONAL,DC_ROME_ID,DC_NOM,DC_PRENOM,DD_DATESORTIEPRESTATIONPREVUE,KC_RESULTATSBENEFICIAIRE_ID,DC_LBLRESULTATBENEFICIAIRE,DC_TOPSORTIEANTICIPEPOSITIVE,C_ROME_1_ID,C_ROME_2_ID,Identifiant PE connect,Ville habitation DE,Site Prescripteur
+          """a.kn_idcommandepresta,kn_commandebeneficiaire,dn_individu_national,dc_rome_id,a.dc_nom,a.dc_prenom,dd_datesortieprestationprevue,kc_resultatsbeneficiaire_id,dc_lblresultatbeneficiaire,dc_topsortieanticipepositive,dc_romev3_1_id,dc_romev3_2_id,dc_ididentiteexterne,dc_codepostallocalite,dc_siteprescripteur,pr00_ppx005_refh_individu.dc_individu_local,dc_adresseemail
             |5717975,19859698,1234556789,H2909,NOM,PRENOM,2018-01-09 00:00:00.000,VEM,EMBAUCHE,N,K1302,K1302,28d0b75a-b694-4de3-8849-18bfbfebd729,44210 PORNIC,44021
             |""".stripMargin)
       )

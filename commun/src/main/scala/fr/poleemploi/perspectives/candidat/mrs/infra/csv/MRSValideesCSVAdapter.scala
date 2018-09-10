@@ -33,16 +33,16 @@ class MRSValideesCSVAdapter(val actorSystem: ActorSystem) {
       .via(CsvParsing.lineScanner(delimiter = ','))
       .via(CsvToMap.toMapAsStrings())
       .filter(
-        m => m.get("Identifiant PE connect").exists(s => idPEConnectPattern.matcher(s).matches()) &&
-          m.get("DC_ROME_ID").exists(_.nonEmpty) &&
-          m.get("DD_DATESORTIEPRESTATIONPREVUE").exists(_.nonEmpty) &&
-          m.get("KC_RESULTATSBENEFICIAIRE_ID").exists(resultatsBeneficiairesValides.contains)
+        m => m.get("dc_ididentiteexterne").exists(s => idPEConnectPattern.matcher(s).matches()) &&
+          m.get("dc_rome_id").exists(_.nonEmpty) &&
+          m.get("dd_datesortieprestationprevue").exists(_.nonEmpty) &&
+          m.get("kc_resultatsbeneficiaire_id").exists(resultatsBeneficiairesValides.contains)
       )
       .map(data => {
         MRSValideeCandidatPEConnect(
-          peConnectId = PEConnectId(data("Identifiant PE connect")),
-          codeROME = CodeROME(data("DC_ROME_ID")), // Pas de validation du code ROME, on fait confiance au SI Pole Emploi
-          dateEvaluation = data.get("DD_DATESORTIEPRESTATIONPREVUE").map(s => LocalDate.parse(s.take(10), dateTimeFormatter)).get
+          peConnectId = PEConnectId(data("dc_ididentiteexterne")),
+          codeROME = CodeROME(data("dc_rome_id")), // Pas de validation du code ROME, on fait confiance au SI Pole Emploi
+          dateEvaluation = data.get("dd_datesortieprestationprevue").map(s => LocalDate.parse(s.take(10), dateTimeFormatter)).get
         )
       }).runWith(Sink.collection)
   }
