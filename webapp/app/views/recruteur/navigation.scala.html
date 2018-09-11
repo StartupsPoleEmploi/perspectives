@@ -3,7 +3,7 @@
 @(recruteurAuthentifie: Option[RecruteurAuthentifie])
 
 <div class="navigation">
-    @components.headerPrincipal()
+    @components.headerPrincipal(lienLogo = Some("/recruteur"))
     @recruteurAuthentifie.map(r => components.menuRecruteur(r)).getOrElse {
         <nav class="accesLanding">
             <a class="accesLanding-lien" href="/">Accès candidat</a>
