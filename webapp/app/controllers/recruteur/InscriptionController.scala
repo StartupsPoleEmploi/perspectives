@@ -1,6 +1,6 @@
 package controllers.recruteur
 
-import authentification.infra.play.{RecruteurAuthentifieAction, RecruteurAuthentifieRequest, SessionRecruteurAuthentifie}
+import authentification.infra.play.{RecruteurAuthentifieAction, SessionRecruteurAuthentifie}
 import conf.WebAppConfig
 import controllers.FlashMessages._
 import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
@@ -10,7 +10,6 @@ import javax.inject.{Inject, Singleton}
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 @Singleton
 class InscriptionController @Inject()(cc: ControllerComponents,
@@ -43,9 +42,5 @@ class InscriptionController @Inject()(cc: ControllerComponents,
         .withSession(SessionRecruteurAuthentifie.set(recruteurAuthentifie, request.session))
         .flashing(request.flash.withRecruteurInscrit)
     }
-  }
-
-  def confirmationInscription(): Action[AnyContent] = recruteurAuthentifieAction.async { implicit recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
-    Future(Ok(views.html.recruteur.confirmationInscription(recruteurAuthentifieRequest.recruteurAuthentifie)))
   }
 }

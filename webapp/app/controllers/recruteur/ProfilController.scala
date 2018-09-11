@@ -55,20 +55,16 @@ class ProfilController @Inject()(components: ControllerComponents,
           )
           recruteurCommandHandler.modifierProfil(command)
             .map(_ =>
-              if (inscriptionForm.nouveauRecruteur) {
-                Redirect(routes.InscriptionController.confirmationInscription())
-              } else {
-                Redirect(routes.LandingController.landing()).flashing(
-                  messagesRequest.flash.withMessageSucces("Votre profil a bien été modifié")
-                )
-              }
+              Redirect(routes.MatchingController.index()).flashing(
+                messagesRequest.flash.withTypeRecruteur(command.typeRecruteur)
+              )
             ).recoverWith {
-              case t: Throwable =>
-                Logger.error("Erreur lors de l'enregistrement de l'inscription", t)
-                Future(Redirect(routes.LandingController.landing()).flashing(
-                  messagesRequest.flash.withMessageErreur("Une erreur s'est produite lors de l'enregistrement, veuillez réessayer ultérieurement")
-                ))
-            }
+            case t: Throwable =>
+              Logger.error("Erreur lors de l'enregistrement de l'inscription", t)
+              Future(Redirect(routes.LandingController.landing()).flashing(
+                messagesRequest.flash.withMessageErreur("Une erreur s'est produite lors de l'enregistrement, veuillez réessayer ultérieurement")
+              ))
+          }
         }
       )
     }(recruteurAuthentifieRequest)

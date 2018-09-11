@@ -1,5 +1,6 @@
 package controllers
 
+import fr.poleemploi.perspectives.recruteur.TypeRecruteur
 import play.api.mvc.Flash
 
 object FlashMessages {
@@ -8,6 +9,7 @@ object FlashMessages {
   val keyMessageErreur = "message_erreur"
 
   val keyInscriptionRecruteur = "recruteur_inscrit"
+  val keyTypeRecruteur = "type_recruteur"
   val keyInscriptionCandidat = "candidat_inscrit"
 
   implicit class FlashMessage[T](f: Flash) {
@@ -22,6 +24,9 @@ object FlashMessages {
 
     def recruteurInscrit: Boolean = f.get(keyInscriptionRecruteur).contains("true")
     def withRecruteurInscrit: Flash = f + (keyInscriptionRecruteur -> "true")
+
+    def getTypeRecruteur: Option[TypeRecruteur] = f.get(keyTypeRecruteur).map(TypeRecruteur(_))
+    def withTypeRecruteur(typeRecruteur: TypeRecruteur): Flash = f + (keyTypeRecruteur -> typeRecruteur.value)
 
     def candidatInscrit: Boolean = f.get(keyInscriptionCandidat).contains("true")
     def withCandidatInscrit: Flash = f + (keyInscriptionCandidat -> "true")

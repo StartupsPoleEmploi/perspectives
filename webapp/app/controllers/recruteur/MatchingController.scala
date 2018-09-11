@@ -11,7 +11,7 @@ import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite}
 import fr.poleemploi.perspectives.projections.candidat._
 import fr.poleemploi.perspectives.projections.metier.MetierQueryHandler
 import fr.poleemploi.perspectives.projections.recruteur._
-import fr.poleemploi.perspectives.recruteur.RecruteurId
+import fr.poleemploi.perspectives.recruteur.{RecruteurId, TypeRecruteur}
 import javax.inject.{Inject, Singleton}
 import play.api.http.HttpEntity
 import play.api.mvc.{Action, _}
@@ -34,7 +34,7 @@ class MatchingController @Inject()(cc: ControllerComponents,
         secteurActivite = None,
         metier = None
       )
-      rechercher(matchingForm = matchingForm, recruteurId = recruteurAuthentifieRequest.recruteurId).map(resultatRechercheCandidatDto =>
+      rechercher(request = messagesRequest, matchingForm = matchingForm, recruteurId = recruteurAuthentifieRequest.recruteurId).map(resultatRechercheCandidatDto =>
         Ok(views.html.recruteur.matching(
           matchingForm = MatchingForm.form.fill(matchingForm),
           recruteurAuthentifie = recruteurAuthentifieRequest.recruteurAuthentifie,
@@ -56,7 +56,7 @@ class MatchingController @Inject()(cc: ControllerComponents,
           Future.successful(BadRequest(formWithErrors.errorsAsJson))
         },
         matchingForm => {
-          rechercher(matchingForm = matchingForm, recruteurId = recruteurAuthentifieRequest.recruteurId).map(resultatRechercheCandidatDto =>
+          rechercher(request = messagesRequest, matchingForm = matchingForm, recruteurId = recruteurAuthentifieRequest.recruteurId).map(resultatRechercheCandidatDto =>
             Ok(views.html.recruteur.partials.resultatsRecherche(resultatRechercheCandidatDto))
           ).recover {
             case _: ProfilRecruteurIncompletException => BadRequest("Vous devez renseigner votre profil avant de pouvoir effectuer une recherche")
@@ -66,26 +66,32 @@ class MatchingController @Inject()(cc: ControllerComponents,
     }(recruteurAuthentifieRequest)
   }
 
-  private def rechercher(matchingForm: MatchingForm, recruteurId: RecruteurId): Future[ResultatRechercheCandidat] =
-    getRecruteurAvecProfilComplet(recruteurId).flatMap(recruteurDto =>
+  private def rechercher(request: Request[AnyContent],
+                         matchingForm: MatchingForm,
+                         recruteurId: RecruteurId): Future[ResultatRechercheCandidat] =
+    getTypeRecruteur(request, recruteurId).flatMap(typeRecruteur =>
       if (matchingForm.metier.exists(_.nonEmpty)) {
         candidatQueryHandler.rechercherCandidatsParMetier(RechercherCandidatsParMetierQuery(
           codeROME = matchingForm.metier.map(CodeROME).get,
-          typeRecruteur = recruteurDto.typeRecruteur.get
+          typeRecruteur = typeRecruteur
         ))
       } else if (matchingForm.secteurActivite.exists(_.nonEmpty)) {
         candidatQueryHandler.rechercherCandidatsParSecteur(RechercherCandidatsParSecteurQuery(
           codeSecteurActivite = matchingForm.secteurActivite.map(CodeSecteurActivite(_)).get,
-          typeRecruteur = recruteurDto.typeRecruteur.get
+          typeRecruteur = typeRecruteur
         ))
       } else {
         candidatQueryHandler.rechercherCandidatsParDateInscription(RechercherCandidatsParDateInscriptionQuery(
-          typeRecruteur = recruteurDto.typeRecruteur.get
+          typeRecruteur = typeRecruteur
         ))
       })
 
-  private def getRecruteurAvecProfilComplet(recruteurId: RecruteurId): Future[ProfilRecruteurDto] =
-    recruteurQueryHandler.profilRecruteur(ProfilRecruteurQuery(recruteurId)).map(r => if (!r.profilComplet) throw ProfilRecruteurIncompletException() else r)
+  private def getTypeRecruteur(request: Request[AnyContent], recruteurId: RecruteurId): Future[TypeRecruteur] =
+    request.flash.getTypeRecruteur
+      .map(t => Future.successful(t))
+        .getOrElse {
+          recruteurQueryHandler.typeRecruteur(recruteurId).map(_.getOrElse(throw ProfilRecruteurIncompletException()))
+        }
 
   def telechargerCV(candidatId: String, nomFichier: String): Action[AnyContent] = recruteurAuthentifieAction.async { implicit recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
     candidatQueryHandler.cvCandidatPourRecruteur(CVCandidatPourRecruteurQuery(
