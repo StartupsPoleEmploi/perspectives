@@ -54,11 +54,11 @@ object SaisieCriteresRechercheForm {
   def fromCandidatCriteresRechercheDto(candidat: CandidatCriteresRechercheDto): Form[SaisieCriteresRechercheForm] = SaisieCriteresRechercheForm.form.fill(
     SaisieCriteresRechercheForm(
       nouveauCandidat = false,
-      rechercheMetierEvalue = candidat.rechercheMetierEvalue.map(FormHelpers.booleanToString).getOrElse(""),
-      rechercheAutreMetier = candidat.rechercheAutreMetier.map(FormHelpers.booleanToString).getOrElse(""),
+      rechercheMetierEvalue = FormHelpers.optBooleanToString(candidat.rechercheMetierEvalue),
+      rechercheAutreMetier = FormHelpers.optBooleanToString(candidat.rechercheAutreMetier),
       metiersRecherches = candidat.metiersRecherches.map(_.value).toSet,
-      etreContacteParAgenceInterim = candidat.contacteParAgenceInterim.map(FormHelpers.booleanToString).getOrElse(""),
-      etreContacteParOrganismeFormation = candidat.contacteParOrganismeFormation.map(FormHelpers.booleanToString).getOrElse(""),
+      etreContacteParAgenceInterim = FormHelpers.optBooleanToString(candidat.contacteParAgenceInterim),
+      etreContacteParOrganismeFormation = FormHelpers.optBooleanToString(candidat.contacteParOrganismeFormation),
       rayonRecherche = candidat.rayonRecherche.map(_.value).getOrElse(0),
       numeroTelephone = candidat.numeroTelephone.map(_.value).getOrElse("")
     )

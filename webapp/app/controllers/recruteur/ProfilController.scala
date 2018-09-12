@@ -3,6 +3,7 @@ package controllers.recruteur
 import authentification.infra.play.{RecruteurAuthentifieAction, RecruteurAuthentifieRequest}
 import conf.WebAppConfig
 import controllers.FlashMessages._
+import controllers.FormHelpers
 import fr.poleemploi.perspectives.commun.domain.NumeroTelephone
 import fr.poleemploi.perspectives.projections.recruteur.{ProfilRecruteurQuery, RecruteurQueryHandler}
 import fr.poleemploi.perspectives.recruteur._
@@ -38,8 +39,6 @@ class ProfilController @Inject()(components: ControllerComponents,
 
   def modifierProfil(): Action[AnyContent] = recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
-      def stringToBoolean(string: String): Boolean = if ("true".equalsIgnoreCase(string)) true else false
-
       ProfilForm.form.bindFromRequest.fold(
         formWithErrors => {
           Future.successful(BadRequest(views.html.recruteur.profil(formWithErrors, recruteurAuthentifie = recruteurAuthentifieRequest.recruteurAuthentifie)))
@@ -51,7 +50,7 @@ class ProfilController @Inject()(components: ControllerComponents,
             typeRecruteur = TypeRecruteur(inscriptionForm.typeRecruteur),
             numeroSiret = NumeroSiret(inscriptionForm.numeroSiret),
             numeroTelephone = NumeroTelephone(inscriptionForm.numeroTelephone),
-            contactParCandidats = stringToBoolean(inscriptionForm.contactParCandidats)
+            contactParCandidats = FormHelpers.stringToBoolean(inscriptionForm.contactParCandidats)
           )
           recruteurCommandHandler.modifierProfil(command)
             .map(_ =>

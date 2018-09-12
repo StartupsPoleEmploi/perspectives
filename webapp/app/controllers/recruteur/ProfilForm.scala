@@ -63,7 +63,7 @@ object ProfilForm {
       raisonSociale = recruteur.raisonSociale.getOrElse(""),
       numeroSiret = recruteur.numeroSiret.map(_.value).getOrElse(""),
       numeroTelephone = recruteur.numeroTelephone.map(_.value).getOrElse(""),
-      contactParCandidats = recruteur.contactParCandidats.map(FormHelpers.booleanToString).getOrElse("")
+      contactParCandidats = FormHelpers.optBooleanToString(recruteur.contactParCandidats)
     )
   )
 }

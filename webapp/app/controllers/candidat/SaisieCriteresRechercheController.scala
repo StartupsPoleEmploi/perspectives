@@ -3,6 +3,7 @@ package controllers.candidat
 import authentification.infra.play.{CandidatAuthentifieAction, CandidatAuthentifieRequest}
 import conf.WebAppConfig
 import controllers.FlashMessages._
+import controllers.FormHelpers
 import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
 import fr.poleemploi.perspectives.commun.domain.{CodeROME, NumeroTelephone, RayonRecherche}
@@ -98,18 +99,16 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
     }
 
   private def buildModifierCriteresRechercheCommand(candidatId: CandidatId, saisieCriteresRechercheForm: SaisieCriteresRechercheForm): ModifierCriteresRechercheCommand = {
-    def stringToBoolean(string: String): Boolean = if ("true".equalsIgnoreCase(string)) true else false
-
     ModifierCriteresRechercheCommand(
       id = candidatId,
-      rechercheMetierEvalue = stringToBoolean(saisieCriteresRechercheForm.rechercheMetierEvalue),
-      rechercheAutreMetier = stringToBoolean(saisieCriteresRechercheForm.rechercheAutreMetier),
+      rechercheMetierEvalue = FormHelpers.stringToBoolean(saisieCriteresRechercheForm.rechercheMetierEvalue),
+      rechercheAutreMetier = FormHelpers.stringToBoolean(saisieCriteresRechercheForm.rechercheAutreMetier),
       metiersRecherches =
-        if (stringToBoolean(saisieCriteresRechercheForm.rechercheAutreMetier))
+        if (FormHelpers.stringToBoolean(saisieCriteresRechercheForm.rechercheAutreMetier))
           saisieCriteresRechercheForm.metiersRecherches.map(CodeROME)
         else Set.empty,
-      etreContacteParOrganismeFormation = stringToBoolean(saisieCriteresRechercheForm.etreContacteParOrganismeFormation),
-      etreContacteParAgenceInterim = stringToBoolean(saisieCriteresRechercheForm.etreContacteParAgenceInterim),
+      etreContacteParOrganismeFormation = FormHelpers.stringToBoolean(saisieCriteresRechercheForm.etreContacteParOrganismeFormation),
+      etreContacteParAgenceInterim = FormHelpers.stringToBoolean(saisieCriteresRechercheForm.etreContacteParAgenceInterim),
       rayonRecherche = RayonRecherche(saisieCriteresRechercheForm.rayonRecherche),
       numeroTelephone = NumeroTelephone(saisieCriteresRechercheForm.numeroTelephone)
     )
