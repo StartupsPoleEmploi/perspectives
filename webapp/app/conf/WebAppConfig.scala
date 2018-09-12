@@ -16,7 +16,7 @@ class WebAppConfig(configuration: Configuration) {
 
   val usePEConnect: Boolean = configuration.getOptional[Boolean]("usePEConnect").getOrElse(true)
   val useSlackNotificationCandidat: Boolean = configuration.getOptional[Boolean]("useSlackNotificationCandidat").getOrElse(true)
-  val useEmail: Boolean = configuration.getOptional[Boolean]("useEmail").getOrElse(true)
+  val useMailjet: Boolean = configuration.getOptional[Boolean]("useMailjet").getOrElse(true)
   val useGoogleTagManager: Boolean = configuration.getOptional[Boolean]("useGoogleTagManager").getOrElse(true)
   val useReferentielMetierWS: Boolean = configuration.getOptional[Boolean]("useReferentielMetierWS").getOrElse(true)
 

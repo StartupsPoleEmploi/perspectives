@@ -9,9 +9,8 @@ import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.ReferentielMRSCan
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
 import fr.poleemploi.perspectives.conseiller.{AutorisationService, ConseillerId}
 import fr.poleemploi.perspectives.emailing.domain.EmailingService
+import fr.poleemploi.perspectives.emailing.infra.local.LocalEmailingService
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetEmailingService
-import fr.poleemploi.perspectives.emailing.infra.sql.MailjetSqlAdapter
-import fr.poleemploi.perspectives.emailing.infra.ws.MailjetEmailAdapter
 import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
 import fr.poleemploi.perspectives.metier.infra.file.ReferentielMetierFileAdapter
 import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapter
@@ -48,12 +47,13 @@ class ServicesModule extends AbstractModule {
 
   @Provides
   @Singleton
-  def emailingService(mailjetContactAdapter: MailjetSqlAdapter,
-                      mailjetEmailAdapter: MailjetEmailAdapter): EmailingService =
-    new MailjetEmailingService(
-      mailjetContactAdapter = mailjetContactAdapter,
-      mailjetEmailAdapter = mailjetEmailAdapter
-    )
+  def emailingService(mailjetEmailingService: Provider[MailjetEmailingService],
+                      localEmailingService: Provider[LocalEmailingService],
+                      webAppConfig: WebAppConfig): EmailingService =
+    if (webAppConfig.useMailjet)
+      mailjetEmailingService.get()
+    else
+      localEmailingService.get()
 
   @Provides
   @Singleton

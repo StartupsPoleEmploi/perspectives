@@ -19,6 +19,8 @@ import fr.poleemploi.perspectives.candidat.mrs.infra.sql.MRSValideesSqlAdapter
 import fr.poleemploi.perspectives.commun.infra.jackson.PerspectivesEventSourcingModule
 import fr.poleemploi.perspectives.commun.infra.oauth.OauthService
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
+import fr.poleemploi.perspectives.emailing.infra.local.LocalEmailingService
+import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetEmailingService
 import fr.poleemploi.perspectives.emailing.infra.sql.MailjetSqlAdapter
 import fr.poleemploi.perspectives.emailing.infra.ws.MailjetEmailAdapter
 import fr.poleemploi.perspectives.metier.infra.file.ReferentielMetierFileAdapter
@@ -152,6 +154,18 @@ class InfraModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
+  def mailjetEmailingService(mailjetContactAdapter: MailjetSqlAdapter,
+                             mailjetEmailAdapter: MailjetEmailAdapter): MailjetEmailingService =
+    new MailjetEmailingService(
+      mailjetContactAdapter = mailjetContactAdapter,
+      mailjetEmailAdapter = mailjetEmailAdapter
+    )
+
+  @Provides
+  def localEmailingService: LocalEmailingService =
+    new LocalEmailingService
+
+  @Provides
   def referentielMetierWSAdapter(wsClient: WSClient,
                                  webAppConfig: WebAppConfig): ReferentielMetierWSAdapter =
     new ReferentielMetierWSAdapter(
@@ -177,5 +191,5 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   def referentielMRSCandidatLocal: ReferentielMRSCandidatLocal =
-    new ReferentielMRSCandidatLocal()
+    new ReferentielMRSCandidatLocal
 }
