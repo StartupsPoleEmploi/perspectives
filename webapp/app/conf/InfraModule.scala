@@ -58,7 +58,6 @@ class InfraModule extends AbstractModule with ScalaModule {
   def eventHandler: EventHandler = new LocalEventHandler
 
   @Provides
-  @Singleton
   def postgreSqlAppendOnlyStore(database: Database,
                                 @Named("eventStoreObjectMapper") objectMapper: ObjectMapper): PostgreSQLAppendOnlyStore =
     new PostgreSQLAppendOnlyStore(
@@ -96,12 +95,10 @@ class InfraModule extends AbstractModule with ScalaModule {
   }
 
   @Provides
-  @Singleton
   def oauthService(tokenProvider: TokenProvider): OauthService =
     new PlayOauthService(tokenProvider = tokenProvider)
 
   @Provides
-  @Singleton
   def peConnectSqlAdapter(database: Database): PEConnectSqlAdapter =
     new PEConnectSqlAdapter(
       driver = PostgresDriver,
@@ -109,7 +106,6 @@ class InfraModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
-  @Singleton
   def peConnectWSAdapter(webAppConfig: WebAppConfig,
                          wsClient: WSClient): PEConnectWSAdapter =
     new PEConnectWSAdapter(
@@ -130,12 +126,10 @@ class InfraModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
-  @Singleton
   def mrsValideesCSVAdapter(actorSystem: ActorSystem): MRSValideesCSVAdapter =
     new MRSValideesCSVAdapter(actorSystem = actorSystem)
 
   @Provides
-  @Singleton
   def mrsValideesSqlAdapter(database: Database): MRSValideesSqlAdapter =
     new MRSValideesSqlAdapter(
       driver = PostgresDriver,
@@ -143,7 +137,6 @@ class InfraModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
-  @Singleton
   def mailjetSqlAdapter(database: Database): MailjetSqlAdapter =
     new MailjetSqlAdapter(
       driver = PostgresDriver,
@@ -151,7 +144,6 @@ class InfraModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
-  @Singleton
   def mailjetEmailAdapter(wsClient: WSClient,
                           webAppConfig: WebAppConfig): MailjetEmailAdapter =
     new MailjetEmailAdapter(
