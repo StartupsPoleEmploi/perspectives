@@ -112,6 +112,10 @@ object ReferentielMetier {
     codeROME = CodeROME("N1105"),
     label = "Manutention"
   )
+  val CONDUITE_POIDS_LOURDS = new Metier(
+    codeROME = CodeROME("N4101"),
+    label = "Conduite de poids lourds"
+  )
 
   val AGRICULTURE: SecteurActivite = new SecteurActivite(
     code = CodeSecteurActivite("A"),
@@ -170,15 +174,16 @@ object ReferentielMetier {
       CONDUITE_MACHINE,
       SOUDAGE,
       FABRICATION_PIECES,
-      TRI_EMBALLAGE,
-      PREPARATION_COMMANDE
+      TRI_EMBALLAGE
     ))
 
   val TRANSPORT_LOGISTIQUE: SecteurActivite = new SecteurActivite(
     code = CodeSecteurActivite("N"),
     label = "Transport et logistique",
     metiers = List(
-      MANUTENTION
+      MANUTENTION,
+      PREPARATION_COMMANDE,
+      CONDUITE_POIDS_LOURDS
     ))
 
   private val secteursProposesPourRecherche =
