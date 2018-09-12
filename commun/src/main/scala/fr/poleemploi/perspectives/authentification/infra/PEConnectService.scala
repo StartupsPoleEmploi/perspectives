@@ -10,6 +10,7 @@ import scala.concurrent.Future
 
 /**
   * Façade pour gérer les interactions complexes avec PEConnect (tokens, verification d'un candidat existant, appels WS)
+  * FIXME : Séparer en ConnexionService et InscriptionService
   */
 class PEConnectService(oauthService: OauthService,
                        peConnectWSAdapter: PEConnectWSAdapter,
