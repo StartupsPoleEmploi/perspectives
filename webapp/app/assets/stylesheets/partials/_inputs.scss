@@ -281,18 +281,18 @@ input[type="text"] {
 }
 
 .telechargementFichier {
-  display: inline-flex;
-  align-items: center;
+  @include media-breakpoint-up(sm) {
+    display: inline-flex;
+    align-items: center;
+  }
+  @include media-breakpoint-down(sm) {
+    display: block;
+  }
   font-size: 1em;
   margin-bottom: 0.5rem;
 
   &-indicationTaille {
     color: #0F415A;
-
-    @include media-breakpoint-down(md) {
-      display: block;
-      margin-top: 1em;
-    }
   }
 
   &-block {
@@ -313,7 +313,13 @@ input[type="text"] {
 
   &-item {
     display: inline-block;
-    margin: 0 1em;
+
+    @include media-breakpoint-up(sm) {
+      margin: 0 1em;
+    }
+    @include media-breakpoint-down(sm) {
+      margin: 0.5em 0 0 0;
+    }
   }
 
   &-progression {
