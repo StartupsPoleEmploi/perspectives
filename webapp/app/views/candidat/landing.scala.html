@@ -86,12 +86,10 @@
             <ul class="secteursActivites">
                 @for(secteurActivite <- secteursActivites) {
                     <li class="secteursActivites-item">
+                        <img class="secteurActivite-icone"
+                             width="50" height="50" alt="@secteurActivite.label"
+                             src="@routes.Assets.versioned(s"images/pages/candidat/landing/secteurs/${secteurActivite.code.value}.svg")"/>
                         <span class="secteurActivite-intitule">@secteurActivite.label</span>
-                        <ul class="metiersSecteur">
-                        @for(metier <- secteurActivite.metiers) {
-                            <li class="metiersSecteur-item">@metier.label</li>
-                        }
-                        </ul>
                     </li>
                 }
             </ul>

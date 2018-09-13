@@ -251,10 +251,17 @@
   .temoignage {
     @include make-container();
     @include make-container-max-widths();
+
+    @include media-breakpoint-up(md) {
+      padding: 3rem 9rem;
+      text-align: left;
+    }
+    @include media-breakpoint-down(md) {
+      padding: 3rem 4rem;
+      text-align: center;
+    }
+    font-size: 1.3em;
     color: #334051;
-    padding: 3rem 5rem;
-    text-align: left;
-    font-size: 1.5em;
 
     &-texte {
       position: relative;
@@ -309,78 +316,25 @@
       }
 
       @include media-breakpoint-up(md) {
-        @include make-col(4);
+        @include make-col(3);
       }
       text-align: center;
       margin-bottom: 4em;
-
-      &:last-child {
-        @include media-breakpoint-up(md) {
-          @include make-col-offset(4);
-        }
-      }
     }
   }
 
-  .secteurActivite-intitule {
-    font-size: 1.1em;
-    font-weight: bolder;
-    letter-spacing: 0.5px;
-    color: #304052;
-    text-transform: uppercase;
-  }
-
-  .metiersSecteur {
-    list-style-type: none;
-    padding: 1.3em 0 0 0;
-
-    &-item {
-      display: inline;
+  .secteurActivite {
+    &-icone {
+      display: block;
+      margin: 0 auto 1em auto;
+    }
+    &-intitule {
+      font-size: 1.1em;
+      font-weight: bolder;
+      letter-spacing: 0.5px;
       color: #304052;
-      font-size: 1em;
-      letter-spacing: 0.57px;
-      &:after {
-        content: ", ";
-      }
-      &:last-child:after {
-        content: "";
-      }
+      text-transform: uppercase;
     }
   }
 
-  .caVousTente {
-    @include make-container();
-    @include make-container-max-widths();
-
-    margin-top: 1em;
-    margin-bottom: 3em;
-
-    &-titre {
-      color: #334051;
-      font-size: 2em;
-      font-weight: 700;
-      text-align: center;
-      letter-spacing: 0.2px;
-      padding: 10px;
-      margin-bottom: 1em;
-    }
-
-    &-sponsorLogo {
-      height: 66px;
-      width: 82px;
-    }
-
-    @include media-breakpoint-down(sm) {
-      margin-bottom: 1em;
-    }
-  }
-
-  .caVousTenteAction {
-    text-align: center;
-    margin-bottom: 2em;
-  }
-
-  .caVousTenteSponsor {
-    text-align: center;
-  }
 }
