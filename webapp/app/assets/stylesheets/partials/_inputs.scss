@@ -14,13 +14,10 @@
 
   &-small {
     display: block;
+    font-weight: normal;
 
     &--opaque {
       opacity: 0.6;
-    }
-
-    &--gras {
-      font-weight: 700;
     }
   }
 

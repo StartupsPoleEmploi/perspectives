@@ -43,13 +43,11 @@
     @include make-col-ready();
 
     @include media-breakpoint-up(lg) {
-      @include make-col-offset(1);
-      @include make-col(5);
+      @include make-col(6);
     }
 
     @include media-breakpoint-down(lg) {
       @include make-col(12);
-      @include make-col-offset(0);
     }
   }
 
@@ -61,17 +59,9 @@
     &-item {
       margin-bottom: 2em;
       color: #2C4054;
-      font-size: 1.1em;
+      font-size: 1.3em;
       letter-spacing: 1px;
-      line-height: 28px;
-    }
-
-    &-item:before {
-      content: "";
-      position: absolute;
-      left: 15px;
-      border-left: 1px solid #6A89CC;
-      height: 24px;
+      line-height: 32px;
     }
   }
 
@@ -79,10 +69,11 @@
     text-align: center;
 
     &-sponsor {
-      color: #334051;
+      color: #888;
       padding-top: 0.7em;
       letter-spacing: -0.8px;
       font-size: 1.1em;
+      white-space: pre-line;
     }
   }
 
