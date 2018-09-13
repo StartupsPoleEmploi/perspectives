@@ -11,9 +11,10 @@
       text-align: center;
       letter-spacing: -0.94px;
       line-height: 1.2;
+      white-space: pre-line;
 
-      &--surbrillance {
-        color: #6A89CC;
+      &--gras {
+        font-weight: 700;
       }
     }
   }
@@ -62,6 +63,7 @@
       font-size: 1.3em;
       letter-spacing: 1px;
       line-height: 32px;
+      white-space: pre-line;
     }
   }
 
