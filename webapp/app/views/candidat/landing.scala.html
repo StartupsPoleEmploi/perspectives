@@ -95,23 +95,45 @@
                     </li>
                 }
             </ul>
-        </section>
-        <section class="caVousTente">
-            <h2 class="caVousTente-titre">Ça vous tente ?</h2>
-            <div class="caVousTenteAction">
-                @if(candidatAuthentifie.isDefined) {
-                <a class="bouton bouton-actionSecondaire bouton--fondBlanc" href="/candidat/criteres-recherche">
-                    Modifier mes critères
-                </a>
-                } else {
+            <div class="metiersAction">
+            @if(candidatAuthentifie.isEmpty) {
                 <a class="bouton bouton-actionPrincipale bouton--fondBleu" href="/candidat/inscription">
                     Je m'inscris !
                     <small class="bouton-small bouton-small--opaque">en moins de 30 secondes</small>
                 </a>
-                }
+            }
             </div>
-            <div class="caVousTenteSponsor">
-                <img class="caVousTente-sponsorLogo" src="@routes.Assets.versioned("images/logo-pole-emploi.png")" />
+        </section>
+        <section class="temoignages">
+            <h2 class="temoignages-titre">Témoignages</h2>
+            <div class="temoignage">
+                <div class="temoignage-texte">
+                    <img class="temoignage-image" src="@routes.Assets.versioned("images/modules/temoignage/quote.png")" />
+                    Le lendemain de mon inscription, j'ai été contactée par un employeur ainsi qu'une agence d’intérim. On m'a déjà proposé un essai !
+                </div>
+                <span class="temoignage-source">Rebecca S.</span>
+            </div>
+            <div class="temoignage">
+                <div class="temoignage-texte">
+                    <img class="temoignage-image" src="@routes.Assets.versioned("images/modules/temoignage/quote.png")" />
+                    Je reprends un emploi cet été en espérant plus pour la suite. Je suis très contente. Merci
+                </div>
+                <span class="temoignage-source">Géraldine R.</span>
+            </div>
+            <div class="temoignage">
+                <div class="temoignage-texte">
+                    <img class="temoignage-image" src="@routes.Assets.versioned("images/modules/temoignage/quote.png")" />
+                    Je viens de décrocher un poste aux Sables d'olonne en tant qu'aide à domicile. Je vous remercie pour votre investissement !
+                </div>
+                <span class="temoignage-source">Jessica H.</span>
+            </div>
+            <div class="temoignagesAction">
+            @if(candidatAuthentifie.isEmpty) {
+                <a class="bouton bouton-actionPrincipale bouton--fondBleu" href="/candidat/inscription">
+                    Je m'inscris !
+                    <small class="bouton-small bouton-small--opaque">en moins de 30 secondes</small>
+                </a>
+            }
             </div>
         </section>
     </div>

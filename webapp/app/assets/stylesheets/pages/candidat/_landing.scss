@@ -161,7 +161,7 @@
 
       @include media-breakpoint-down(lg) {
         position: relative;
-        left: 0%;
+        left: 0;
       }
     }
   }
@@ -189,7 +189,7 @@
     }
 
     @include media-breakpoint-down(md) {
-      padding-top: 0px;
+      padding-top: 0;
     }
 
     &-texte {
@@ -199,7 +199,7 @@
 
       @include media-breakpoint-down(md) {
         position: relative;
-        left: 0%;
+        left: 0;
         width: 100%;
       }
     }
@@ -239,6 +239,43 @@
     }
   }
 
+  .temoignages {
+    background-color: #FAFAFA;
+
+    &-titre {
+      padding: 4rem 0;
+      @extend %titrePrincipal;
+    }
+  }
+
+  .temoignage {
+    @include make-container();
+    @include make-container-max-widths();
+    color: #334051;
+    padding: 3rem 5rem;
+    text-align: left;
+    font-size: 1.5em;
+
+    &-texte {
+      position: relative;
+      font-weight: 300;
+      margin-bottom: 2rem;
+    }
+    &-image {
+      position: absolute;
+      top: -45px;
+      left: 0;
+    }
+    &-source {
+      font-weight: 700;
+    }
+  }
+
+  .temoignagesAction {
+    padding-bottom: 2em;
+    text-align: center;
+  }
+
   .metiers {
     @include make-container();
     @include make-container-max-widths();
@@ -249,9 +286,14 @@
       font-weight: 300;
       text-align: center;
       letter-spacing: 1px;
-      padding: 4rem 0 4rem 0;
+      padding: 4rem 0;
       margin: 0;
     }
+  }
+
+  .metiersAction {
+    margin-bottom: 2em;
+    text-align: center;
   }
 
   .secteursActivites {
