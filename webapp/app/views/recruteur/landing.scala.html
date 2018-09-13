@@ -87,7 +87,23 @@
                     <li class="etapes-item">Je contacte les candidats</li>
                 </ol>
             </section>
-            <section class="caVousTente">
+            <section class="temoignages">
+                <h2 class="temoignages-titre">Témoignages</h2>
+                <div class="temoignage">
+                    <div class="temoignage-texte">
+                        <img class="temoignage-image" width="115" height="82" src="@routes.Assets.versioned("images/modules/temoignage/quote.svg")" />
+                        Ce nouveau dispositif nous a permis de mettre plusieurs candidats en poste et de pouvoir satisfaire nos clients.
+                    </div>
+                    <span class="temoignage-source">Yvan B. - Synergie</span>
+                </div>
+                <div class="temoignage">
+                    <div class="temoignage-texte">
+                        <img class="temoignage-image" width="115" height="82" src="@routes.Assets.versioned("images/modules/temoignage/quote.svg")" />
+                        Les profils correspondent, en termes d'aptitudes, au profils que je recherche. Cela me permet d'être plus efficient. Je suis très satisfait de votre service.
+                    </div>
+                    <span class="temoignage-source">Matthieu V. - Manufacture Baizet</span>
+                </div>
+                <div class="temoignagesAction">
                 @if(recruteurAuthentifie.isDefined) {
                     <a class="bouton bouton-actionSecondaire bouton--degradeBleu" href="/recruteur/profil">Modifier mon profil</a>
                 } else {
@@ -96,6 +112,7 @@
                         <small class="bouton-small">en moins de 30 secondes</small>
                     </a>
                 }
+                </div>
             </section>
         </div>
 
