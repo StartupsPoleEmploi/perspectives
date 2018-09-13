@@ -90,7 +90,7 @@
   @include media-breakpoint-up(md) {
     @include make-col-ready();
     @include make-col(3);
-    @include make-col-offset(3);
+    @include make-col-offset(4);
   }
   @include media-breakpoint-down(md) {
     @include make-col(12);
@@ -112,7 +112,7 @@
     cursor: pointer;
 
     @include media-breakpoint-up(md) {
-      text-align: left;
+      text-align: center;
       padding-left: 3em;
       color: #334051;
     }
@@ -163,7 +163,7 @@
 
     @include media-breakpoint-up(md) {
       position: absolute;
-      left: 1em;
+      left: 2em;
       margin: 0.5em 0 0 0;
       border: 1px solid rgba(51, 64, 81, 0.1);
       border-radius: 3.6px;
