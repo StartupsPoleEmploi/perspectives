@@ -86,7 +86,7 @@
                 @for(secteurActivite <- secteursActivites) {
                     <li class="secteursActivites-item">
                         <img class="secteurActivite-icone"
-                             width="50" height="50" alt="@secteurActivite.label"
+                             width="100" height="100" alt="@secteurActivite.label"
                              src="@routes.Assets.versioned(s"images/pages/candidat/landing/secteurs/${secteurActivite.code.value}.svg")"/>
                         <span class="secteurActivite-intitule">@secteurActivite.label</span>
                     </li>
