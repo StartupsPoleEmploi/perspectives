@@ -9,7 +9,7 @@ import fr.poleemploi.cqrs.projection.UnauthorizedQueryException
 import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite}
 import fr.poleemploi.perspectives.projections.candidat._
-import fr.poleemploi.perspectives.projections.metier.MetierQueryHandler
+import fr.poleemploi.perspectives.projections.rechercheCandidat.RechercheCandidatQueryHandler
 import fr.poleemploi.perspectives.projections.recruteur._
 import fr.poleemploi.perspectives.recruteur.{RecruteurId, TypeRecruteur}
 import javax.inject.{Inject, Singleton}
@@ -25,21 +25,23 @@ class MatchingController @Inject()(cc: ControllerComponents,
                                    messagesAction: MessagesActionBuilder,
                                    candidatQueryHandler: CandidatQueryHandler,
                                    recruteurQueryHandler: RecruteurQueryHandler,
-                                   metierQueryHandler: MetierQueryHandler,
+                                   rechercheCandidatQueryHandler: RechercheCandidatQueryHandler,
                                    recruteurAuthentifieAction: RecruteurAuthentifieAction) extends AbstractController(cc) {
 
   def index(): Action[AnyContent] = recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
       val matchingForm = MatchingForm(
         secteurActivite = None,
-        metier = None
+        metier = None,
+        departement = None
       )
       rechercher(request = messagesRequest, matchingForm = matchingForm, recruteurId = recruteurAuthentifieRequest.recruteurId).map(resultatRechercheCandidatDto =>
         Ok(views.html.recruteur.matching(
           matchingForm = MatchingForm.form.fill(matchingForm),
           recruteurAuthentifie = recruteurAuthentifieRequest.recruteurAuthentifie,
           resultatRechercheCandidat = resultatRechercheCandidatDto,
-          secteursActivites = metierQueryHandler.secteursProposesPourRecherche
+          secteursActivites = rechercheCandidatQueryHandler.secteursProposes,
+          departements = rechercheCandidatQueryHandler.departementsProposes
         ))
       ).recover {
         case _: ProfilRecruteurIncompletException =>
@@ -73,25 +75,28 @@ class MatchingController @Inject()(cc: ControllerComponents,
       if (matchingForm.metier.exists(_.nonEmpty)) {
         candidatQueryHandler.rechercherCandidatsParMetier(RechercherCandidatsParMetierQuery(
           codeROME = matchingForm.metier.map(CodeROME).get,
-          typeRecruteur = typeRecruteur
+          typeRecruteur = typeRecruteur,
+          codeDepartement = matchingForm.departement
         ))
       } else if (matchingForm.secteurActivite.exists(_.nonEmpty)) {
         candidatQueryHandler.rechercherCandidatsParSecteur(RechercherCandidatsParSecteurQuery(
           codeSecteurActivite = matchingForm.secteurActivite.map(CodeSecteurActivite(_)).get,
-          typeRecruteur = typeRecruteur
+          typeRecruteur = typeRecruteur,
+          codeDepartement = matchingForm.departement
         ))
       } else {
         candidatQueryHandler.rechercherCandidatsParDateInscription(RechercherCandidatsParDateInscriptionQuery(
-          typeRecruteur = typeRecruteur
+          typeRecruteur = typeRecruteur,
+          codeDepartement = matchingForm.departement
         ))
       })
 
   private def getTypeRecruteur(request: Request[AnyContent], recruteurId: RecruteurId): Future[TypeRecruteur] =
     request.flash.getTypeRecruteur
       .map(t => Future.successful(t))
-        .getOrElse {
-          recruteurQueryHandler.typeRecruteur(recruteurId).map(_.getOrElse(throw ProfilRecruteurIncompletException()))
-        }
+      .getOrElse {
+        recruteurQueryHandler.typeRecruteur(recruteurId).map(_.getOrElse(throw ProfilRecruteurIncompletException()))
+      }
 
   def telechargerCV(candidatId: String, nomFichier: String): Action[AnyContent] = recruteurAuthentifieAction.async { implicit recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
     candidatQueryHandler.cvCandidatPourRecruteur(CVCandidatPourRecruteurQuery(

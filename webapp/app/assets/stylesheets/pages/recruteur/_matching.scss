@@ -18,7 +18,7 @@
 
   .criteresRecherche {
     @include make-container();
-    max-width: 50%;
+    max-width: 75%;
     margin-bottom: 3em;
   }
 
@@ -33,11 +33,11 @@
     justify-content: center;
     border-radius: 4px;
     background-color: #82CCDD;
-  }
 
-  .secteursActivites {
-    @include make-col(9);
-    margin: 20px;
+    &-item {
+      @include make-col(4);
+      margin: 20px;
+    }
   }
 
   .resultatsRecherche {
@@ -126,7 +126,7 @@
     }
   }
 
-  .listingDetailProfil {
+  .detailsProfils {
     padding: 10px;
     position: relative;
 

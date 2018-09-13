@@ -8,7 +8,7 @@ import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
 import fr.poleemploi.perspectives.commun.domain.{CodeROME, NumeroTelephone, RayonRecherche}
 import fr.poleemploi.perspectives.projections.candidat.{CandidatCriteresRechercheDto, CandidatQueryHandler, CriteresRechercheQuery}
-import fr.poleemploi.perspectives.projections.metier.MetierQueryHandler
+import fr.poleemploi.perspectives.projections.rechercheCandidat.RechercheCandidatQueryHandler
 import javax.inject.Inject
 import play.api.Logger
 import play.api.libs.Files
@@ -22,7 +22,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
                                                   messagesAction: MessagesActionBuilder,
                                                   candidatCommandHandler: CandidatCommandHandler,
                                                   candidatQueryHandler: CandidatQueryHandler,
-                                                  metierQueryHandler: MetierQueryHandler,
+                                                  rechercheCandidatQueryHandler: RechercheCandidatQueryHandler,
                                                   candidatAuthentifieAction: CandidatAuthentifieAction) extends AbstractController(components) {
 
   def saisieCriteresRecherche(): Action[AnyContent] = candidatAuthentifieAction.async { candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
@@ -40,7 +40,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
           saisieCriteresRechercheForm = form,
           candidat = candidat,
           candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie,
-          secteursActivites = metierQueryHandler.secteursProposesPourRecherche
+          secteursActivites = rechercheCandidatQueryHandler.secteursProposes
         ))
       }
     }(candidatAuthentifieRequest)
@@ -56,7 +56,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
                 saisieCriteresRechercheForm = formWithErrors,
                 candidat = Some(candidat),
                 candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie,
-                secteursActivites = metierQueryHandler.secteursProposesPourRecherche
+                secteursActivites = rechercheCandidatQueryHandler.secteursProposes
               )))
             },
             saisieCriteresRechercheForm => {

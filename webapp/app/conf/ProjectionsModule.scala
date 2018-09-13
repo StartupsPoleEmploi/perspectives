@@ -8,9 +8,10 @@ import fr.poleemploi.perspectives.emailing.domain.EmailingService
 import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
 import fr.poleemploi.perspectives.projections.candidat.infra.sql.CandidatProjectionSqlAdapter
 import fr.poleemploi.perspectives.projections.candidat.{CandidatEmailProjection, CandidatNotificationSlackProjection, CandidatProjection, CandidatQueryHandler}
-import fr.poleemploi.perspectives.projections.metier.MetierQueryHandler
+import fr.poleemploi.perspectives.projections.rechercheCandidat.RechercheCandidatQueryHandler
 import fr.poleemploi.perspectives.projections.recruteur.infra.sql.RecruteurProjectionSqlAdapter
 import fr.poleemploi.perspectives.projections.recruteur.{RecruteurEmailProjection, RecruteurProjection, RecruteurQueryHandler}
+import fr.poleemploi.perspectives.rechercheCandidat.domain.RechercheCandidatService
 import net.codingwell.scalaguice.ScalaModule
 import play.api.libs.ws.WSClient
 import slick.jdbc.JdbcBackend.Database
@@ -45,10 +46,12 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
   @Singleton
   def candidatProjectionSqlAdapter(database: Database,
                                    referentielMetier: ReferentielMetier,
+                                   rechercheCandidatService: RechercheCandidatService,
                                    webAppConfig: WebAppConfig): CandidatProjectionSqlAdapter =
     new CandidatProjectionSqlAdapter(
       database = database,
       referentielMetier = referentielMetier,
+      rechercheCandidatService = rechercheCandidatService,
       candidatsTesteurs = webAppConfig.candidatsTesteurs.map(CandidatId)
     )
 
@@ -116,9 +119,9 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
-  def metierQueryHandler(referentielMetier: ReferentielMetier): MetierQueryHandler =
-    new MetierQueryHandler(
-      referentielMetier = referentielMetier
+  def rechercheCandidatQueryHandler(rechercheCandidatService: RechercheCandidatService): RechercheCandidatQueryHandler =
+    new RechercheCandidatQueryHandler(
+      rechercheCandidatService = rechercheCandidatService
     )
 
 }

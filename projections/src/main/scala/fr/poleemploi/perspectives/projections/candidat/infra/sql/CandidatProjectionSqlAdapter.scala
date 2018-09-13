@@ -8,6 +8,7 @@ import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
 import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
 import fr.poleemploi.perspectives.projections.candidat._
+import fr.poleemploi.perspectives.rechercheCandidat.domain.RechercheCandidatService
 import fr.poleemploi.perspectives.recruteur.TypeRecruteur
 import slick.jdbc.JdbcBackend.Database
 
@@ -16,7 +17,8 @@ import scala.concurrent.Future
 
 class CandidatProjectionSqlAdapter(database: Database,
                                    candidatsTesteurs: List[CandidatId],
-                                   referentielMetier: ReferentielMetier) {
+                                   referentielMetier: ReferentielMetier,
+                                   rechercheCandidatService: RechercheCandidatService) {
 
   import PostgresDriver.api._
 
@@ -141,27 +143,23 @@ class CandidatProjectionSqlAdapter(database: Database,
   def rechercherCandidatParDateInscription(query: RechercherCandidatsParDateInscriptionQuery): Future[ResultatRechercheCandidatParDateInscription] =
     database.run(
       candidatTable
-        .filter(c => filtreCandidatAvecCriteresDeRecherche(c) && filtreTypeRecruteur(c, query.typeRecruteur))
+        .filter(c => filtreMatching(c, query.typeRecruteur, query.codeDepartement))
         .sortBy(_.dateInscription.desc).map(rechercheCandidatDtoShape).result
     ).map(r => ResultatRechercheCandidatParDateInscription(r.toList.map(toRechercheCandidatDto)))
 
   def rechercherCandidatParSecteur(query: RechercherCandidatsParSecteurQuery): Future[ResultatRechercheCandidatParSecteur] = {
-    val metiersSecteur = referentielMetier.secteurActiviteParCode(query.codeSecteurActivite).metiers.map(_.codeROME)
+    val metiersSecteur = rechercheCandidatService.secteurActiviteParCode(query.codeSecteurActivite).metiers.map(_.codeROME)
 
     // Candidats qui recherchent parmis leurs métiers évalués et qui ont été évalués sur un métier du secteur
     val selectCandidatsEvaluesSurSecteur = candidatTable.filter(c =>
-      filtreTypeRecruteur(c, query.typeRecruteur) &&
-        c.numeroTelephone.isDefined &&
-        c.indexerMatching &&
+      filtreMatching(c, query.typeRecruteur, query.codeDepartement) &&
         c.rechercheMetierEvalue === true &&
         c.metiersEvalues @& metiersSecteur
     ).sortBy(_.dateInscription).map(rechercheCandidatDtoShape)
 
     // Candidats qui sont intéréssés par un metier du secteur et qui ont été évalués sur un metier d'un autre secteur
     val selectCandidatsInteressesParAutreSecteur = candidatTable.filter(c =>
-      filtreTypeRecruteur(c, query.typeRecruteur) &&
-        c.numeroTelephone.isDefined &&
-        c.indexerMatching &&
+      filtreMatching(c, query.typeRecruteur, query.codeDepartement) &&
         c.rechercheAutreMetier === true &&
         c.metiersRecherches @& metiersSecteur &&
         !(c.metiersEvalues @& metiersSecteur)
@@ -182,20 +180,16 @@ class CandidatProjectionSqlAdapter(database: Database,
 
     // Candidats qui recherchent parmis leurs métiers évalués et qui ont été évalués sur le métier
     val selectCandidatsEvaluesSurMetier = candidatTable.filter(c =>
-      filtreTypeRecruteur(c, query.typeRecruteur) &&
-        c.numeroTelephone.isDefined &&
-        c.indexerMatching &&
+      filtreMatching(c, query.typeRecruteur, query.codeDepartement) &&
         c.rechercheMetierEvalue === true &&
         c.metiersEvalues @& metiers
     ).sortBy(_.dateInscription).map(rechercheCandidatDtoShape)
 
     // Candidats qui sont intéréssés par ce métier et qui ont été évalués sur un métier du meme secteur
-    val metiersSecteur = referentielMetier.secteurActivitePourCodeROME(query.codeROME).metiers.map(_.codeROME)
+    val metiersSecteur = rechercheCandidatService.secteurActivitePourCodeROME(query.codeROME).metiers.map(_.codeROME)
     val metiersSecteurSansMetierChoisi = metiersSecteur.filter(_ != query.codeROME)
     val selectCandidatsInteressesParMetierMemeSecteur = candidatTable.filter(c =>
-      filtreTypeRecruteur(c, query.typeRecruteur) &&
-        c.numeroTelephone.isDefined &&
-        c.indexerMatching &&
+      filtreMatching(c, query.typeRecruteur, query.codeDepartement) &&
         c.rechercheAutreMetier === true &&
         c.metiersRecherches @& metiers &&
         c.metiersEvalues @& metiersSecteurSansMetierChoisi
@@ -203,7 +197,7 @@ class CandidatProjectionSqlAdapter(database: Database,
 
     // Candidats qui sont intéréssés par ce métier et qui ont été évalués sur un métier d'un autre secteur
     val selectCandidatsInteressesParMetierAutreSecteur = candidatTable.filter(c =>
-      filtreTypeRecruteur(c, query.typeRecruteur) &&
+      filtreMatching(c, query.typeRecruteur, query.codeDepartement) &&
         c.numeroTelephone.isDefined &&
         c.indexerMatching &&
         c.rechercheAutreMetier === true &&
@@ -238,8 +232,8 @@ class CandidatProjectionSqlAdapter(database: Database,
       metiersEvalues = metiersEvalues,
       habiletes = metiersEvalues.flatMap(m => referentielMetier.habiletesParMetier(m.codeROME)).distinct,
       metiersRecherchesParSecteur =
-        record.metiersRecherches.flatMap(referentielMetier.metierProposePourRechercheParCode)
-          .groupBy(m => referentielMetier.secteurActivitePourCodeROME(m.codeROME)),
+        record.metiersRecherches.flatMap(rechercheCandidatService.metierProposeParCode)
+          .groupBy(m => rechercheCandidatService.secteurActivitePourCodeROME(m.codeROME)),
       rayonRecherche = record.rayonRecherche,
       numeroTelephone = record.numeroTelephone,
       cvId = record.cvId,
@@ -248,7 +242,7 @@ class CandidatProjectionSqlAdapter(database: Database,
   }
 
   private def toCandidatPourConseillerDto(record: CandidatPourConseillerRecord): CandidatPourConseillerDto = {
-    val metiersRecherches = record.metiersRecherches.flatMap(referentielMetier.metierProposePourRechercheParCode)
+    val metiersRecherches = record.metiersRecherches.flatMap(rechercheCandidatService.metierProposeParCode)
 
     CandidatPourConseillerDto(
       candidatId = record.candidatId,
@@ -268,15 +262,21 @@ class CandidatProjectionSqlAdapter(database: Database,
     )
   }
 
-  private def filtreCandidatAvecCriteresDeRecherche(c: CandidatTable): Rep[Boolean] =
-    // FIXME : faire en une condition sur un seul champ + modifier toutes les requetes de matching une fois que la projection peut traiter les evenements en séquentiel pour un même candidat (select avant mise à jour)
-    c.numeroTelephone.isDefined && c.indexerMatching
+  private def filtreMatching(c: CandidatTable, typeRecruteur: TypeRecruteur, codeDepartement: Option[String]): Rep[Option[Boolean]] =
+  // FIXME : faire en une condition sur un seul champ + modifier toutes les requetes de matching une fois que la projection peut traiter les evenements en séquentiel pour un même candidat (select avant mise à jour)
+    c.numeroTelephone.isDefined && c.indexerMatching && filtreTypeRecruteur(c, typeRecruteur) && filtreDepartement(c, codeDepartement)
 
   private def filtreTypeRecruteur(c: CandidatTable,
                                   typeRecruteur: TypeRecruteur): Rep[Option[Boolean]] = typeRecruteur match {
     case TypeRecruteur.AGENCE_INTERIM => c.contacteParAgenceInterim === true
     case TypeRecruteur.ORGANISME_FORMATION => c.contacteParOrganismeFormation === true
     case _ => Some(true)
+  }
+
+  private def filtreDepartement(c: CandidatTable,
+                                 codeDepartement: Option[String]): Rep[Option[Boolean]] = codeDepartement match {
+    case Some(code) => c.codePostal startsWith code
+    case None => Some(true)
   }
 
   def onCandidatInscritEvent(event: CandidatInscritEvent): Future[Unit] =

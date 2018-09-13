@@ -14,6 +14,7 @@ import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetEmailingService
 import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
 import fr.poleemploi.perspectives.metier.infra.file.ReferentielMetierFileAdapter
 import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapter
+import fr.poleemploi.perspectives.rechercheCandidat.domain.RechercheCandidatService
 import slick.jdbc.JdbcBackend.Database
 
 class ServicesModule extends AbstractModule {
@@ -64,4 +65,9 @@ class ServicesModule extends AbstractModule {
       referentielMetierWSAdapter.get()
     else
       referentielMetierFileAdapter.get()
+
+  @Provides
+  @Singleton
+  def rechercheCandidatService: RechercheCandidatService =
+    new RechercheCandidatService
 }

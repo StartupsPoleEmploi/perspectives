@@ -1,12 +1,13 @@
 @import conf.WebAppConfig
 @import controllers.recruteur.MatchingForm
 @import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
-@import fr.poleemploi.perspectives.commun.domain.SecteurActivite
+@import fr.poleemploi.perspectives.commun.domain.{Departement, SecteurActivite}
 @import fr.poleemploi.perspectives.projections.candidat.ResultatRechercheCandidat
 @import helper._
 
 @(matchingForm: Form[MatchingForm],
         secteursActivites: List[SecteurActivite],
+        departements: List[Departement],
         recruteurAuthentifie: RecruteurAuthentifie,
         resultatRechercheCandidat: ResultatRechercheCandidat)(implicit request: MessagesRequestHeader, flash: Flash, webAppConfig: WebAppConfig)
 
@@ -22,7 +23,7 @@
             }
             @if(resultatRechercheCandidat.nbCandidats > 1) {
                 <h2 class="compteurResultats-titre"><b>@resultatRechercheCandidat.nbCandidats candidat(s) perspectives</b>
-                    ont validés la Méthode de Recrutement par Simulation</h2>
+                    ont validé la Méthode de Recrutement par Simulation</h2>
             }
         </section>
 
@@ -30,25 +31,34 @@
             @form(action = controllers.recruteur.routes.MatchingController.rechercherCandidats(), 'id -> "criteresRechercheForm") {
                 @CSRF.formField
                 <div class="criteres">
-                    <div class="secteursActivites conteneurSelecteur">
+                    <div class="criteres-item conteneurSelecteur">
                         <label for="js-secteursActivites-selecteur" class="conteneurSelecteur-label">Choisissez un secteur d'activité</label>
-                        <select class="conteneurSelecteur-selecteur" id="js-secteursActivites-selecteur" name="secteurActivite">
+                        <select id="js-secteursActivites-selecteur" class="conteneurSelecteur-selecteur" name="secteurActivite">
                             <option value="">Tous les secteurs</option>
                             @for(secteurActivite <- secteursActivites) {
                                 <option value="@secteurActivite.code.value">@secteurActivite.label</option>
                             }
                         </select>
                     </div>
-                    @** FIXME : En attente de plus de candidats pour proposer le filtre
-                    <div class="metiers conteneurSelecteur">
-                        <label for="js-metiers-selecteur" class="conteneurSelecteur-label">Chosissez un métier</label>
-                        <select class="conteneurSelecteur-selecteur" id="js-metiers-selecteur" name="metier">
-                            <option value="">Tous les métiers</option>
-                            @for(metier <- secteurActivites.flatMap(_._2.metiers)) {
-                                <option value="@metier.value">@metier.label</option>
+                    <div class="criteres-item  conteneurSelecteur">
+                        <label for="js-departements-selecteur" class="conteneurSelecteur-label">Choisissez un département</label>
+                        <select id="js-departements-selecteur" class="conteneurSelecteur-selecteur" name="departement">
+                            <option value="">Tous les départements</option>
+                            @for(departement <- departements) {
+                                <option value="@departement.code">@departement.label</option>
                             }
                         </select>
-                    </div>**@
+                    </div>
+                    @** FIXME : En attente de plus de candidats pour proposer le filtre
+                    <div class="criteres-item conteneurSelecteur">
+                        <label for="js-metiers-selecteur" class="conteneurSelecteur-label">Chosissez un métier</label>
+                        <select id="js-metiers-selecteur" class="conteneurSelecteur-selecteur" name="metier">
+                            <option value="">Tous les métiers</option>
+                            @for(metier <- secteursActivites.flatMap(_.metiers)) {
+                                <option value="@metier.codeROME.value">@metier.label</option>
+                            }
+                        </select>
+                    </div>*@
                 </div>
             }
         </section>

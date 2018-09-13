@@ -85,17 +85,17 @@
                 <tr class="listeResultatsRecherche-profilCandidat">
                     <td colspan="2">
                         <div class="info--majuscule info--detaillee">Habiletés validées</div>
-                        <ul class="listingDetailProfil">
+                        <ul class="detailsProfils">
                         @for(habilete <- rechercheCandidatDto.habiletes) {
-                            <li class="listingDetailProfil-item">@habilete.label</li>
+                            <li class="detailsProfils-item">@habilete.label</li>
                         }
                         </ul>
                     </td>
                     <td>
                         <div class="info--majuscule info--detaillee">Intéréssé par</div>
-                        <ul class="listingDetailProfil">
+                        <ul class="detailsProfils">
                         @for(metiersParSecteur <- rechercheCandidatDto.metiersRecherchesParSecteur) {
-                            <li class="listingDetailProfil-item">@metiersParSecteur._1.label : @metiersParSecteur._2.map(_.label).mkString(", ")</li>
+                            <li class="detailsProfils-item">@metiersParSecteur._1.label : @metiersParSecteur._2.map(_.label).mkString(", ")</li>
                         }
                         </ul>
                     </td>

@@ -8,9 +8,9 @@ $(document).ready(function () {
         'F': ['F1602', 'F1703', 'F1301'],
         'D': ['D1507', 'D1505', 'D1106'],
         'K': ['K1302', 'K1304', 'K2204'],
-        'B': ['B1802', 'H2402'],
-        'H': ['H2202', 'H2913', 'H3203', 'H3302'],
-        'N': ['N1105']
+        'B': ['B1802'],
+        'H': ['H2202', 'H2913', 'H3203', 'H3302', 'H2402'],
+        'N': ['N1103', 'N1105', 'N4101']
     });
     var metiers = Object.freeze({
         'A1401': 'Aide agricole',
@@ -34,13 +34,15 @@ $(document).ready(function () {
         'K1304': 'Aide à domicile',
         'K2204': 'Nettoyage de locaux',
         'N1103': 'Préparation de commandes',
-        'N1105': 'Manutention'
+        'N1105': 'Manutention',
+        'N4101': 'Conduite de poids lourds'
     });
 
     var body = $("body");
     var criteresRechercheForm = $("#criteresRechercheForm");
     var selecteurSecteursActivites = $("#js-secteursActivites-selecteur");
     var selecteurMetiers = $("#js-metiers-selecteur");
+    var selecteurDepartements = $("#js-departements-selecteur");
     var htmlTousLesMetiers = selecteurMetiers.html();
     var resultatsRecherche = $("#js-resultatsRecherche");
     var titreCompteurResultats = $(".compteurResultats-titre");
@@ -65,35 +67,22 @@ $(document).ready(function () {
             } else {
                 selecteurMetiers.html(htmlTousLesMetiers);
             }
-            var nbResultats = $(".listeResultatsRecherche-ligne").length;
-            if (nbResultats === 0) {
-                titreCompteurResultats.html("Nous n'avons pas de candidats à vous proposer avec ces critères");
-            } else if (nbResultats === 1) {
-                if (secteurActivite !== '') {
-                    titreCompteurResultats.html("<b>1 candidat intéressé pour ce secteur d'activité</b><br/>a validé la Méthode de Recrutement par Simulation");
-                } else {
-                    titreCompteurResultats.html("<b>1 candidat perspectives</b><br/>a validé la Méthode de Recrutement par Simulation");
-                }
-            } else {
-                if (secteurActivite !== '') {
-                    titreCompteurResultats.html("<b>" + nbResultats + " candidats intéréssés pour ce secteur d'activité</b><br/>ont validé la Méthode de Recrutement par Simulation");
-                } else {
-                    titreCompteurResultats.html("<b>" + nbResultats + " candidats perspectives</b><br/>ont validé la Méthode de Recrutement par Simulation");
-                }
-            }
+
+            modifierTitreCompteurResultats(secteurActivite, selecteurMetiers.val(), selecteurDepartements.val());
+        });
+    });
+
+    selecteurDepartements.change(function() {
+        var codeDepartement = $(this).val();
+        rechercherCandidats().always(function () {
+            modifierTitreCompteurResultats(selecteurSecteursActivites.val(), selecteurMetiers.val(), codeDepartement);
         });
     });
 
     selecteurMetiers.change(function () {
+        var metier = $(this).val();
         rechercherCandidats().always(function () {
-            var nbResultats = $(".listeResultatsRecherche-ligne").length;
-            if (nbResultats === 0) {
-                titreCompteurResultats.html("Nous n'avons pas de candidats à vous proposer avec ces critères");
-            } else if (nbResultats === 1) {
-                titreCompteurResultats.html("<b>1 candidat intéressé pour ce métier</b><br/>a validé la Méthode de Recrutement par Simulation");
-            } else {
-                titreCompteurResultats.html("<b>" + nbResultats + " candidats intéréssés pour ce métier</b><br/>ont validé la Méthode de Recrutement par Simulation");
-            }
+            modifierTitreCompteurResultats(selecteurSecteursActivites.val(), metier, selecteurDepartements.val());
         });
     });
 
@@ -109,6 +98,30 @@ $(document).ready(function () {
                 $(this).hide();
             });
         });
+    }
+
+    function modifierTitreCompteurResultats(secteurActivite, metier, codeDepartement) {
+        var nbResultats = $(".listeResultatsRecherche-ligne").length;
+        if (nbResultats === 0) {
+            titreCompteurResultats.html("Nous n'avons pas de candidats à vous proposer avec ces critères");
+        } else {
+            if (metier !== undefined && metier !== '') {
+                titreCompteurResultats.html("<b>" + getIntituleCandidats(nbResultats) + " intéréssés pour ce métier</b><br/>" + getSuffixeCandidats(nbResultats));
+            } else if (secteurActivite !== undefined && secteurActivite !== '') {
+                titreCompteurResultats.html("<b>" + getIntituleCandidats(nbResultats) + " intéréssés pour ce secteur d'activité</b><br/>" + getSuffixeCandidats(nbResultats));
+            } else if (codeDepartement !== undefined && codeDepartement !== '') {
+                titreCompteurResultats.html("<b>" + getIntituleCandidats(nbResultats) + " intéréssés pour ce département</b><br/>" + getSuffixeCandidats(nbResultats));
+            } else {
+                titreCompteurResultats.html("<b>" + getIntituleCandidats(nbResultats) + " perspectives</b><br/>" + getSuffixeCandidats(nbResultats));
+            }
+        }
+    }
+
+    function getIntituleCandidats(nbCandidats) {
+        return nbCandidats === 1 ? "1 candidat" : nbCandidats + " candidats";
+    }
+    function getSuffixeCandidats(nbCandidats) {
+        return nbCandidats === 1 ? "a validé la Méthode de Recrutement par Simulation" : "ont validé la Méthode de Recrutement par Simulation";
     }
 
     $(".js-infoCandidat").each(function() {

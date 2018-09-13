@@ -14,10 +14,13 @@ case class CVCandidatQuery(candidatId: CandidatId) extends CandidatQuery
 case class CVCandidatPourRecruteurQuery(candidatId: CandidatId,
                                         recruteurId: RecruteurId) extends CandidatQuery
 
-case class RechercherCandidatsParDateInscriptionQuery(typeRecruteur: TypeRecruteur) extends CandidatQuery
+case class RechercherCandidatsParDateInscriptionQuery(typeRecruteur: TypeRecruteur,
+                                                      codeDepartement: Option[String]) extends CandidatQuery
 
 case class RechercherCandidatsParSecteurQuery(typeRecruteur: TypeRecruteur,
-                                              codeSecteurActivite: CodeSecteurActivite) extends CandidatQuery
+                                              codeSecteurActivite: CodeSecteurActivite,
+                                              codeDepartement: Option[String]) extends CandidatQuery
 
 case class RechercherCandidatsParMetierQuery(typeRecruteur: TypeRecruteur,
-                                             codeROME: CodeROME) extends CandidatQuery
+                                             codeROME: CodeROME,
+                                             codeDepartement: Option[String]) extends CandidatQuery
