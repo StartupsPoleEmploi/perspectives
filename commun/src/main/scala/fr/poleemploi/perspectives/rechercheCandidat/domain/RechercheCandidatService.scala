@@ -206,18 +206,6 @@ object RechercheCandidatService {
   private val departements: List[Departement] =
     List(
       new Departement(
-        code = "49",
-        label = "Maine-et-Loire"
-      ),
-      new Departement(
-        code = "53",
-        label = "Mayenne"
-      ),
-      new Departement(
-        code = "72",
-        label = "Sarthe"
-      ),
-      new Departement(
         code = "85",
         label = "Vendée"
       )
