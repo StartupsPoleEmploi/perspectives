@@ -64,7 +64,9 @@
       font-size: 1.3em;
       letter-spacing: 1px;
       line-height: 32px;
-      white-space: pre-line;
+      @include media-breakpoint-up(lg) {
+        white-space: pre-line;
+      }
     }
   }
 
