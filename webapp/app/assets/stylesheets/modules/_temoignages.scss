@@ -1,11 +1,12 @@
 .temoignages {
   background-color: #FAFAFA;
+  padding: 3rem 0;
 
   &-titre {
     @extend %titrePrincipal;
     color: #334051;
     text-align: center;
-    padding: 4rem 0;
+    padding-bottom: 3rem;
   }
 }
 
@@ -40,6 +41,5 @@
 }
 
 .temoignagesAction {
-  padding-bottom: 2em;
   text-align: center;
 }

@@ -17,7 +17,7 @@
   }
 
   .introTitres {
-    padding: 3em 0 3em 0;
+    padding: 3em 0;
   }
 
   .presentation {
@@ -78,8 +78,9 @@
 
   .commentCaMarcheArrierePlan {
     background: linear-gradient(323.84deg, #75a8d3 0%, #6a88cb 100%);
-    padding: 0 0 2em;
+    padding: 0 0 3rem;
   }
+
   .commentCaMarche {
     @include make-container();
     @include make-container-max-widths();
@@ -239,18 +240,18 @@
   .metiers {
     @include make-container();
     @include make-container-max-widths();
+    padding: 3rem 0;
 
     &-titre {
       @extend %titrePrincipal;
       color: #334051;
       text-align: center;
-      padding: 4rem 0;
+      padding-bottom: 3rem;
       margin: 0;
     }
   }
 
   .metiersAction {
-    margin-bottom: 2em;
     text-align: center;
   }
 

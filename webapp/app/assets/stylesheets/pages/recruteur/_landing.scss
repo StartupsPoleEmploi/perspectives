@@ -7,13 +7,13 @@
   .intro {
     @include make-container();
     @include make-container-max-widths();
-    padding-bottom: 4em;
+    padding-bottom: 3rem;
 
     &-titre {
       @extend %titrePrincipal;
       color: #334051;
       text-align: left;
-      width: 60%;
+      width: 65%;
 
       @include media-breakpoint-down(md) {
         width: 100%;
@@ -131,7 +131,8 @@
   .definition {
     @include make-container();
     @include make-container-max-widths();
-    padding: 4em 0;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
 
     &-texte {
       text-align: center;
@@ -158,7 +159,7 @@
   }
 
   .definitionTitres {
-    padding: 0 0 3em 0;
+    padding-bottom: 3rem;
   }
 
   .videoPresentation {
@@ -170,12 +171,14 @@
   .commentCaMarche {
     @include make-container();
     @include make-container-max-widths();
+    padding-bottom: 3rem;
+    padding-top: 3rem;
 
     &-titre {
       @extend %titrePrincipal;
       color: #2C4054;
       text-align: center;
-      margin: 3em 0;
+      margin-bottom: 3rem;
     }
   }
 
