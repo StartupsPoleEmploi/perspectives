@@ -5,12 +5,9 @@
     @include make-container-max-widths();
 
     &-titre {
+      @extend %titrePrincipal;
       color: #334051;
-      font-size: 1.9em;
-      font-weight: 300;
       text-align: center;
-      letter-spacing: -0.94px;
-      line-height: 1.2;
       white-space: pre-line;
 
       &--gras {
@@ -81,7 +78,7 @@
 
   .commentCaMarcheArrierePlan {
     background: linear-gradient(323.84deg, #75a8d3 0%, #6a88cb 100%);
-    padding: 0 0 50px;
+    padding: 0 0 2em;
   }
   .commentCaMarche {
     @include make-container();
@@ -90,12 +87,10 @@
     color: white;
 
     &-titre {
+      @extend %titrePrincipal;
       color: white;
-      font-size: 2.2em;
-      font-weight: 300;
       text-align: center;
-      letter-spacing: 1px;
-      padding: 3rem 0 3rem 0;
+      padding: 3rem 0;
       margin: 0;
     }
   }
@@ -246,11 +241,9 @@
     @include make-container-max-widths();
 
     &-titre {
+      @extend %titrePrincipal;
       color: #334051;
-      font-size: 2.2em;
-      font-weight: 300;
       text-align: center;
-      letter-spacing: 1px;
       padding: 4rem 0;
       margin: 0;
     }

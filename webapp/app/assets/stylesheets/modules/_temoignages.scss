@@ -2,8 +2,10 @@
   background-color: #FAFAFA;
 
   &-titre {
-    padding: 4rem 0;
     @extend %titrePrincipal;
+    color: #334051;
+    text-align: center;
+    padding: 4rem 0;
   }
 }
 
