@@ -18,6 +18,10 @@
 
   .introTitres {
     padding: 3em 0;
+
+    @include media-breakpoint-down(md) {
+      padding: 2em 0;
+    }
   }
 
   .presentation {
