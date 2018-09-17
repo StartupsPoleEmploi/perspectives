@@ -47,6 +47,8 @@ $(document).ready(function () {
     var resultatsRecherche = $("#js-resultatsRecherche");
     var titreCompteurResultats = $(".compteurResultats-titre");
 
+    initialiserTableau();
+
     selecteurSecteursActivites.change(function () {
         var secteurActivite = $(this).val();
         rechercherCandidats().always(function () {
@@ -94,9 +96,7 @@ $(document).ready(function () {
             dataType: 'text'
         }).done(function (data) {
             resultatsRecherche.html(data);
-            $(".js-infoCandidat").each(function() {
-                $(this).hide();
-            });
+            initialiserTableau();
         });
     }
 
@@ -124,9 +124,15 @@ $(document).ready(function () {
         return nbCandidats === 1 ? "a validé la Méthode de Recrutement par Simulation" : "ont validé la Méthode de Recrutement par Simulation";
     }
 
-    $(".js-infoCandidat").each(function() {
-        $(this).hide();
-    });
+    function initialiserTableau() {
+        $(".js-infoCandidat").each(function() {
+            $(this).hide();
+        });
+        $(".js-profilCandidat").each(function() {
+            $(this).hide();
+        });
+    }
+
     body.on("click", ".js-boutonCandidat", function () {
         var bouton = $(this);
         bouton.toggle();
@@ -143,20 +149,21 @@ $(document).ready(function () {
         });
     });
 
-    body.on("click", ".listeResultatsRecherche-ligne", function () {
-        var ligneProfil = $(this).next(".listeResultatsRecherche-profilCandidat");
+    body.on("click", "div[id^='js-ligne-']", function () {
+        var index = $(this).prop("id").substring("js-ligne-".length);
+        var ligneProfil = $("#js-profilCandidat-" + index);
 
-        if (ligneProfil.hasClass("listeResultatsRecherche-profilCandidat--courant")) {
+        if (ligneProfil.hasClass("profilCandidat--courant")) {
             ligneProfil.hide();
-            ligneProfil.removeClass("listeResultatsRecherche-profilCandidat--courant");
+            ligneProfil.removeClass("profilCandidat--courant");
         } else {
-            $(".listeResultatsRecherche-profilCandidat--courant").each(function () {
+            $(".profilCandidat--courant").each(function () {
                 var ligneOuverte = $(this);
                 ligneOuverte.hide();
-                ligneOuverte.removeClass("listeResultatsRecherche-profilCandidat--courant");
+                ligneOuverte.removeClass("profilCandidat--courant");
             });
             ligneProfil.slideDown("fast", function() {
-                ligneProfil.addClass("listeResultatsRecherche-profilCandidat--courant");
+                ligneProfil.addClass("profilCandidat--courant");
             });
         }
     });

@@ -41,12 +41,13 @@
   }
 
   .resultatsRecherche {
-    @include make-container();
-    @include make-container-max-widths();
-    padding: 0;
+
+    &-titreConteneur {
+      @include make-container();
+      @include make-container-max-widths();
+    }
 
     &-titre {
-      display: block;
       position: relative;
       text-transform: uppercase;
       margin: 1em;
@@ -64,48 +65,67 @@
   }
 
   .listeResultatsRecherche {
-    @include make-container();
-    @include make-container-max-widths();
-    text-align: left;
+    &-arrierePlanProfil {
+      background-color: #334051;
+    }
+
+    &-conteneur {
+      @include make-container();
+      @include make-container-max-widths();
+      text-align: left;
+    }
 
     &-ligne {
+      @include make-row();
+      align-items: center;
       cursor: pointer;
-      td {
-        padding: 15px;
-      }
     }
 
     &-candidat {
-      width: 15%;
+      @include make-col-ready();
+      @include make-col(2);
+      padding: 15px;
     }
 
     &-mrs {
-      width: 35%;
+      @include make-col-ready();
+      @include make-col(4);
+      padding: 15px;
     }
 
     &-localisation {
-      width: 25%;
+      @include make-col-ready();
+      @include make-col(3);
+      padding: 15px;
     }
 
     &-voirProfil {
-      width: 25%;
+      @include make-col-ready();
+      @include make-col(3);
+      padding: 15px;
       text-align: center;
     }
+  }
 
+  .profilCandidat {
+    @include make-row();
+    color: white;
+
+    &-habiletes {
+      @include make-col-ready();
+      @include make-col(5);
+      padding: 15px;
+    }
+    &-interessePar{
+      @include make-col-ready();
+      @include make-col(4);
+      padding: 15px;
+    }
     &-actions {
-      width: 25%;
+      @include make-col-ready();
+      @include make-col(3);
       text-align: center;
-    }
-
-    &-profilCandidat {
-      display: none;
-      background-color: #334051;
-      color: white;
-      vertical-align: top;
-
-      td {
-        padding: 25px 15px;
-      }
+      padding: 15px;
     }
   }
 
