@@ -26,7 +26,32 @@
                     ont validé la Méthode de Recrutement par Simulation</h2>
             }
         </section>
-
+        <div class="videoMRS">
+            <a id="js-infoBulleMRS" class="infoBulleMRS" href="#">
+                <img class="infoBulleMRS-iconeLecture" alt="lire vidéo MRS" width="36" height="36"
+                     src="@routes.Assets.versioned("images/pages/recruteur/matching/lecture-video.svg")" />
+                <div class="questions">
+                    <span class="questionMRS">Une MRS?</span>
+                    <span>Qu'est ce que c'est?</span>
+                </div>
+            </a>
+            <img class="definitionMRS" alt="Definition MRS" width="56" height="56"
+                 src="@routes.Assets.versioned("images/pages/recruteur/matching/mrs.svg")" />
+        </div>
+        <div id="modaleVideo" class="modal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modaleVideo-header">
+                        <h3 class="modaleVideo-titre">La méthode de recrutement par simulation</h3>
+                        <span id="js-fermerModaleVideo" class="modaleVideo-fermer">&times;</span>
+                    </div>
+                    <div class="modaleVideo-body">
+                        <iframe id="js-videoMRSYoutube" style="position:absolute;width:100%;height:100%;left:0" width="640" height="360" frameborder="0" allow="autoplay; encrypted-media">
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
         <section class="criteresRecherche">
             @form(action = controllers.recruteur.routes.MatchingController.rechercherCandidats(), 'id -> "criteresRechercheForm") {
                 @CSRF.formField
