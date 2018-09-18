@@ -27,7 +27,7 @@
             }
         </section>
         <div class="videoMRS">
-            <a id="js-infoBulleMRS" class="infoBulleMRS" href="#">
+            <a id="js-infoBulleMRS" class="infoBulleMRS" href="#" data-toggle="modal" data-target="#js-modaleVideo">
                 <img class="infoBulleMRS-iconeLecture" alt="lire vidéo MRS" width="36" height="36"
                      src="@routes.Assets.versioned("images/pages/recruteur/matching/lecture-video.svg")" />
                 <div class="questions">
@@ -38,12 +38,12 @@
             <img class="definitionMRS" alt="Definition MRS" width="56" height="56"
                  src="@routes.Assets.versioned("images/pages/recruteur/matching/mrs.svg")" />
         </div>
-        <div id="modaleVideo" class="modal" tabindex="-1">
+        <div id="js-modaleVideo" class="modal" tabindex="-1">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modaleVideo-header">
                         <h3 class="modaleVideo-titre">La méthode de recrutement par simulation</h3>
-                        <span id="js-fermerModaleVideo" class="modaleVideo-fermer">&times;</span>
+                        <span class="modaleVideo-fermer" data-dismiss="modal">&times;</span>
                     </div>
                     <div class="modaleVideo-body">
                         <iframe id="js-videoMRSYoutube" style="position:absolute;width:100%;height:100%;left:0" width="640" height="360" frameborder="0" allow="autoplay; encrypted-media">

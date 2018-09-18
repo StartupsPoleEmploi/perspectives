@@ -168,15 +168,14 @@ $(document).ready(function () {
         }
     });
 
+    var modaleVideoYoutube = $("#js-modaleVideo");
     var videoMRSYoutube = $("#js-videoMRSYoutube");
     var urlVideoMRS = "https://www.youtube.com/embed/VpQOnDxUQek?ecver=2&autoplay=1";
 
-    $('#js-infoBulleMRS').click(function () {
-        $("#modaleVideo").show();
+    modaleVideoYoutube.on("show.bs.modal", function () {
         videoMRSYoutube.attr("src", urlVideoMRS);
     });
-    $('#js-fermerModaleVideo').click(function () {
-        $("#modaleVideo").hide();
+    modaleVideoYoutube.on("hidden.bs.modal", function () {
         videoMRSYoutube.attr("src", "");
     });
 });
