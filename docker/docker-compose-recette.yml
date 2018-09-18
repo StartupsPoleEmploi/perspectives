@@ -25,7 +25,7 @@ services:
     volumes:
       - postgresql_backups:/var/opt/postgresql-cron-backup
     env_file:
-      - dev.env
+      - recette.env
     deploy:
       replicas: 1
     networks:
