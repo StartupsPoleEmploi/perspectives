@@ -264,7 +264,11 @@ class CandidatProjectionSqlAdapter(database: Database,
 
   private def filtreMatching(c: CandidatTable, typeRecruteur: TypeRecruteur, codeDepartement: Option[String]): Rep[Option[Boolean]] =
   // FIXME : faire en une condition sur un seul champ + modifier toutes les requetes de matching une fois que la projection peut traiter les evenements en séquentiel pour un même candidat (select avant mise à jour)
-    c.numeroTelephone.isDefined && c.indexerMatching && filtreTypeRecruteur(c, typeRecruteur) && filtreDepartement(c, codeDepartement)
+    c.numeroTelephone.isDefined &&
+      c.metiersEvalues.length(dim = 1) > 0 &&
+      c.indexerMatching &&
+      filtreTypeRecruteur(c, typeRecruteur) &&
+      filtreDepartement(c, codeDepartement)
 
   private def filtreTypeRecruteur(c: CandidatTable,
                                   typeRecruteur: TypeRecruteur): Rep[Option[Boolean]] = typeRecruteur match {
