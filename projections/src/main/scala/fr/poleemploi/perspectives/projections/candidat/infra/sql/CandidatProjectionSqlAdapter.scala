@@ -92,7 +92,7 @@ class CandidatProjectionSqlAdapter(database: Database,
   val listerParDateInscriptionQuery = Compiled {
     candidatTable
       .sortBy(_.dateInscription.desc)
-      .map(c => CandidatPourConseillerLifted(c.candidatId, c.nom, c.prenom, c.genre, c.email, c.statutDemandeurEmploi, c.rechercheMetierEvalue, c.rechercheAutreMetier, c.metiersRecherches, c.contacteParAgenceInterim, c.contacteParOrganismeFormation, c.rayonRecherche, c.numeroTelephone, c.dateInscription))
+      .map(c => CandidatPourConseillerLifted(c.candidatId, c.nom, c.prenom, c.genre, c.email, c.statutDemandeurEmploi, c.rechercheMetierEvalue, c.metiersEvalues, c.rechercheAutreMetier, c.metiersRecherches, c.contacteParAgenceInterim, c.contacteParOrganismeFormation, c.rayonRecherche, c.numeroTelephone, c.dateInscription))
   }
   val modifierProfilQuery = Compiled { candidatId: Rep[CandidatId] =>
     for {
@@ -243,6 +243,7 @@ class CandidatProjectionSqlAdapter(database: Database,
 
   private def toCandidatPourConseillerDto(record: CandidatPourConseillerRecord): CandidatPourConseillerDto = {
     val metiersRecherches = record.metiersRecherches.flatMap(rechercheCandidatService.metierProposeParCode)
+    val metiersEvalues = record.metiersEvalues.map(referentielMetier.metierParCode)
 
     CandidatPourConseillerDto(
       candidatId = record.candidatId,
@@ -252,6 +253,7 @@ class CandidatProjectionSqlAdapter(database: Database,
       email = record.email,
       statutDemandeurEmploi = record.statutDemandeurEmploi,
       rechercheMetierEvalue = record.rechercheMetierEvalue,
+      metiersEvalues = metiersEvalues,
       rechercheAutreMetier = record.rechercheAutreMetier,
       metiersRecherches = metiersRecherches,
       contacteParAgenceInterim = record.contacteParAgenceInterim,

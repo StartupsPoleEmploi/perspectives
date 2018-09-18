@@ -24,6 +24,7 @@
                 <th>Téléphone</th>
                 <th>Statut Demandeur d'emploi</th>
                 <th>Recherche métier évalué</th>
+                <th>Metiers évalués</th>
                 <th>Recherche autre métier</th>
                 <th>Metiers recherchés</th>
                 <th>Etre contacté par interims</th>
@@ -43,6 +44,7 @@
                 <td>@candidat.numeroTelephone.map(_.value)</td>
                 <td>@candidat.statutDemandeurEmploi.map(StatutDemandeurEmploi.getLabel)</td>
                 <td>@getBoolean(candidat.rechercheMetierEvalue)</td>
+                <td>@candidat.metiersEvalues.map(_.label).mkString(", ")</td>
                 <td>@getBoolean(candidat.rechercheAutreMetier)</td>
                 <td>@candidat.metiersRecherches.map(_.label).mkString(", ")</td>
                 <td>@getBoolean(candidat.contacteParAgenceInterim)</td>
