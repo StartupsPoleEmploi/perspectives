@@ -1,0 +1,3 @@
+0 1 * * * root /opt/postgresql-cron-backup/backup.sh >> /var/log/cron.log 2>&1
+
+#ligne vide pour avoir un fichier cron valide

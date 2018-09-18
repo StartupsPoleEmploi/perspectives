@@ -10,11 +10,22 @@ services:
       - net
 
   database:
-    image: perspectives-postgres
+    image: perspectives-postgresql
     volumes:
       - postgresql:/var/lib/postgresql/data
     env_file:
       - recette.env
+    deploy:
+      replicas: 1
+    networks:
+      - net
+
+  database_cron_backup:
+    image: perspectives-postgresql-cron-backup
+    volumes:
+      - postgresql_backups:/var/opt/postgresql-cron-backup
+    env_file:
+      - dev.env
     deploy:
       replicas: 1
     networks:
@@ -37,3 +48,4 @@ networks:
 
 volumes:
   postgresql:
+  postgresql_backups:
