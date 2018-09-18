@@ -22,7 +22,7 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-        """a.kn_idcommandepresta,kn_commandebeneficiaire,dn_individu_national,dc_rome_id,a.dc_nom,a.dc_prenom,dd_datesortieprestationprevue,kc_resultatsbeneficiaire_id,dc_lblresultatbeneficiaire,dc_topsortieanticipepositive,dc_romev3_1_id,dc_romev3_2_id,dc_ididentiteexterne,dc_codepostallocalite,dc_siteprescripteur,pr00_ppx005_refh_individu.dc_individu_local,dc_adresseemail""".stripMargin)
+        """dc_individu_local;dn_individu_national;dc_nom;dc_prenom;dc_telephone;dd_daterealisation;kc_resultatsbeneficiaire_id;dc_codepostallocalite;dc_codealeinscription;dc_adresseemail;dc_rome_id;dc_ididentiteexterne;dc_romev3_1_id;dc_dureeexperience_1;dc_romev3_2_id;dc_dureeexperience_2""".stripMargin)
       )
 
       // When
@@ -35,9 +35,8 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-        """a.kn_idcommandepresta,kn_commandebeneficiaire,dn_individu_national,dc_rome_id,a.dc_nom,a.dc_prenom,dd_datesortieprestationprevue,kc_resultatsbeneficiaire_id,dc_lblresultatbeneficiaire,dc_topsortieanticipepositive,dc_romev3_1_id,dc_romev3_2_id,dc_ididentiteexterne,dc_codepostallocalite,dc_siteprescripteur,pr00_ppx005_refh_individu.dc_individu_local,dc_adresseemail
-          |5717975,19859698,1234556789,H2909,NOM,PRENOM,2018-01-09 00:00:00.000,VSL,SELECTIONNE,N,K1302,K1302,,44210 PORNIC,44021
-          |""".stripMargin)
+        """dc_individu_local;dn_individu_national;dc_nom;dc_prenom;dc_telephone;dd_daterealisation;kc_resultatsbeneficiaire_id;dc_codepostallocalite;dc_codealeinscription;dc_adresseemail;dc_rome_id;dc_ididentiteexterne;dc_romev3_1_id;dc_dureeexperience_1;dc_romev3_2_id;dc_dureeexperience_2
+          |"12345678910";8031234567;"NOM";"PRENOM";"0701020304";2018-01-09 00:00:00.0;"VEM";"44200 NANTES";"44155";"PRENOM.NOM@gmail.com";"H2909";;"G1502";;;""".stripMargin)
       )
 
       // When
@@ -50,9 +49,8 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """a.kn_idcommandepresta,kn_commandebeneficiaire,dn_individu_national,dc_rome_id,a.dc_nom,a.dc_prenom,dd_datesortieprestationprevue,kc_resultatsbeneficiaire_id,dc_lblresultatbeneficiaire,dc_topsortieanticipepositive,dc_romev3_1_id,dc_romev3_2_id,dc_ididentiteexterne,dc_codepostallocalite,dc_siteprescripteur,pr00_ppx005_refh_individu.dc_individu_local,dc_adresseemail
-            |5717975,19859698,1234556789,H2909,NOM,PRENOM,2018-01-09 00:00:00.000,VSL,SELECTIONNE,N,K1302,K1302,NULL,44210 PORNIC,44021
-            |""".stripMargin)
+          """dc_individu_local;dn_individu_national;dc_nom;dc_prenom;dc_telephone;dd_daterealisation;kc_resultatsbeneficiaire_id;dc_codepostallocalite;dc_codealeinscription;dc_adresseemail;dc_rome_id;dc_ididentiteexterne;dc_romev3_1_id;dc_dureeexperience_1;dc_romev3_2_id;dc_dureeexperience_2
+            |"12345678910";8031234567;"NOM";"PRENOM";"0701020304";2018-01-09 00:00:00.0;"VEM";"44200 NANTES";"44155";"PRENOM.NOM@gmail.com";"H2909";NULL;"G1502";;;""".stripMargin)
       )
 
       // When
@@ -65,9 +63,8 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """a.kn_idcommandepresta,kn_commandebeneficiaire,dn_individu_national,dc_rome_id,a.dc_nom,a.dc_prenom,dd_datesortieprestationprevue,kc_resultatsbeneficiaire_id,dc_lblresultatbeneficiaire,dc_topsortieanticipepositive,dc_romev3_1_id,dc_romev3_2_id,dc_ididentiteexterne,dc_codepostallocalite,dc_siteprescripteur,pr00_ppx005_refh_individu.dc_individu_local,dc_adresseemail
-            |5717975,19859698,1234556789,H2909,NOM,PRENOM,,VSL,SELECTIONNE,N,K1302,K1302,28d0b75a-b694-4de3-8849-18bfbfebd729,44210 PORNIC,44021
-            |""".stripMargin)
+          """dc_individu_local;dn_individu_national;dc_nom;dc_prenom;dc_telephone;dd_daterealisation;kc_resultatsbeneficiaire_id;dc_codepostallocalite;dc_codealeinscription;dc_adresseemail;dc_rome_id;dc_ididentiteexterne;dc_romev3_1_id;dc_dureeexperience_1;dc_romev3_2_id;dc_dureeexperience_2
+            |"12345678910";8031234567;"NOM";"PRENOM";"0701020304";;"VEM";"44200 NANTES";"44155";"PRENOM.NOM@gmail.com";"H2909";"28d0b75a-b694-4de3-8849-18bfbfebd729";"G1502";;;""".stripMargin)
       )
 
       // When
@@ -80,9 +77,8 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """a.kn_idcommandepresta,kn_commandebeneficiaire,dn_individu_national,dc_rome_id,a.dc_nom,a.dc_prenom,dd_datesortieprestationprevue,kc_resultatsbeneficiaire_id,dc_lblresultatbeneficiaire,dc_topsortieanticipepositive,dc_romev3_1_id,dc_romev3_2_id,dc_ididentiteexterne,dc_codepostallocalite,dc_siteprescripteur,pr00_ppx005_refh_individu.dc_individu_local,dc_adresseemail
-            |5717975,19859698,1234556789,,NOM,PRENOM,2018-01-09 00:00:00.000,VSL,SELECTIONNE,N,K1302,K1302,28d0b75a-b694-4de3-8849-18bfbfebd729,44210 PORNIC,44021
-            |""".stripMargin)
+          """dc_individu_local;dn_individu_national;dc_nom;dc_prenom;dc_telephone;dd_daterealisation;kc_resultatsbeneficiaire_id;dc_codepostallocalite;dc_codealeinscription;dc_adresseemail;dc_rome_id;dc_ididentiteexterne;dc_romev3_1_id;dc_dureeexperience_1;dc_romev3_2_id;dc_dureeexperience_2
+            |"12345678910";8031234567;"NOM";"PRENOM";"0701020304";2018-01-09 00:00:00.0;"VEM";"44200 NANTES";"44155";"PRENOM.NOM@gmail.com";;"28d0b75a-b694-4de3-8849-18bfbfebd729";"G1502";;;""".stripMargin)
       )
 
       // When
@@ -95,9 +91,8 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """a.kn_idcommandepresta,kn_commandebeneficiaire,dn_individu_national,dc_rome_id,a.dc_nom,a.dc_prenom,dd_datesortieprestationprevue,kc_resultatsbeneficiaire_id,dc_lblresultatbeneficiaire,dc_topsortieanticipepositive,dc_romev3_1_id,dc_romev3_2_id,dc_ididentiteexterne,dc_codepostallocalite,dc_siteprescripteur,pr00_ppx005_refh_individu.dc_individu_local,dc_adresseemail
-            |5717975,19859698,1234556789,H2909,NOM,PRENOM,2018-01-09 00:00:00.000,,SELECTIONNE,N,K1302,K1302,28d0b75a-b694-4de3-8849-18bfbfebd729,44210 PORNIC,44021
-            |""".stripMargin)
+          """dc_individu_local;dn_individu_national;dc_nom;dc_prenom;dc_telephone;dd_daterealisation;kc_resultatsbeneficiaire_id;dc_codepostallocalite;dc_codealeinscription;dc_adresseemail;dc_rome_id;dc_ididentiteexterne;dc_romev3_1_id;dc_dureeexperience_1;dc_romev3_2_id;dc_dureeexperience_2
+            |"12345678910";8031234567;"NOM";"PRENOM";"0701020304";2018-01-09 00:00:00.0;;"44200 NANTES";"44155";"PRENOM.NOM@gmail.com";"H2909";"28d0b75a-b694-4de3-8849-18bfbfebd729";"G1502";;;""".stripMargin)
       )
 
       // When
@@ -110,8 +105,9 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """a.kn_idcommandepresta,kn_commandebeneficiaire,dn_individu_national,dc_rome_id,a.dc_nom,a.dc_prenom,dd_datesortieprestationprevue,kc_resultatsbeneficiaire_id,dc_lblresultatbeneficiaire,dc_topsortieanticipepositive,dc_romev3_1_id,dc_romev3_2_id,dc_ididentiteexterne,dc_codepostallocalite,dc_siteprescripteur,pr00_ppx005_refh_individu.dc_individu_local,dc_adresseemail
-            |5717975,19859698,1234556789,H2909,NOM,PRENOM,2018-01-09 00:00:00.000,VSL,SELECTIONNE,N,K1302,K1302,28d0b75a-b694-4de3-8849-18bfbfebd729,44210 PORNIC,44021""".stripMargin)
+          """dc_individu_local;dn_individu_national;dc_nom;dc_prenom;dc_telephone;dd_daterealisation;kc_resultatsbeneficiaire_id;dc_codepostallocalite;dc_codealeinscription;dc_adresseemail;dc_rome_id;dc_ididentiteexterne;dc_romev3_1_id;dc_dureeexperience_1;dc_romev3_2_id;dc_dureeexperience_2
+            |"12345678910";8031234567;"NOM";"PRENOM";"0701020304";2018-01-09 00:00:00.0;"VEM";"44200 NANTES";"44155";"PRENOM.NOM@gmail.com";"H2909";"28d0b75a-b694-4de3-8849-18bfbfebd729";"G1502";;;
+            |""".stripMargin)
       )
 
       // When
@@ -124,9 +120,8 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """a.kn_idcommandepresta,kn_commandebeneficiaire,dn_individu_national,dc_rome_id,a.dc_nom,a.dc_prenom,dd_datesortieprestationprevue,kc_resultatsbeneficiaire_id,dc_lblresultatbeneficiaire,dc_topsortieanticipepositive,dc_romev3_1_id,dc_romev3_2_id,dc_ididentiteexterne,dc_codepostallocalite,dc_siteprescripteur,pr00_ppx005_refh_individu.dc_individu_local,dc_adresseemail
-            |5717975,19859698,1234556789,H2909,NOM,PRENOM,2018-01-09 00:00:00.000,VSL,SELECTIONNE,N,K1302,K1302,28d0b75a-b694-4de3-8849-18bfbfebd729,44210 PORNIC,44021
-            |""".stripMargin)
+          """dc_individu_local;dn_individu_national;dc_nom;dc_prenom;dc_telephone;dd_daterealisation;kc_resultatsbeneficiaire_id;dc_codepostallocalite;dc_codealeinscription;dc_adresseemail;dc_rome_id;dc_ididentiteexterne;dc_romev3_1_id;dc_dureeexperience_1;dc_romev3_2_id;dc_dureeexperience_2
+            |"12345678910";8031234567;"NOM";"PRENOM";"0701020304";2018-01-09 00:00:00.0;"VEM";"44200 NANTES";"44155";"PRENOM.NOM@gmail.com";"H2909";"28d0b75a-b694-4de3-8849-18bfbfebd729";"G1502";;;""".stripMargin)
       )
 
       // When
@@ -141,9 +136,8 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """a.kn_idcommandepresta,kn_commandebeneficiaire,dn_individu_national,dc_rome_id,a.dc_nom,a.dc_prenom,dd_datesortieprestationprevue,kc_resultatsbeneficiaire_id,dc_lblresultatbeneficiaire,dc_topsortieanticipepositive,dc_romev3_1_id,dc_romev3_2_id,dc_ididentiteexterne,dc_codepostallocalite,dc_siteprescripteur,pr00_ppx005_refh_individu.dc_individu_local,dc_adresseemail
-            |5717975,19859698,1234556789,H2909,NOM,PRENOM,2018-01-09 00:00:00.000,VSL,SELECTIONNE,N,K1302,K1302,28d0b75a-b694-4de3-8849-18bfbfebd729,44210 PORNIC,44021
-            |""".stripMargin)
+          """dc_individu_local;dn_individu_national;dc_nom;dc_prenom;dc_telephone;dd_daterealisation;kc_resultatsbeneficiaire_id;dc_codepostallocalite;dc_codealeinscription;dc_adresseemail;dc_rome_id;dc_ididentiteexterne;dc_romev3_1_id;dc_dureeexperience_1;dc_romev3_2_id;dc_dureeexperience_2
+            |"12345678910";8031234567;"NOM";"PRENOM";"0701020304";2018-01-09 00:00:00.0;"VEM";"44200 NANTES";"44155";"PRENOM.NOM@gmail.com";"H2909";"28d0b75a-b694-4de3-8849-18bfbfebd729";"G1502";;;""".stripMargin)
       )
 
       // When
@@ -156,9 +150,8 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """a.kn_idcommandepresta,kn_commandebeneficiaire,dn_individu_national,dc_rome_id,a.dc_nom,a.dc_prenom,dd_datesortieprestationprevue,kc_resultatsbeneficiaire_id,dc_lblresultatbeneficiaire,dc_topsortieanticipepositive,dc_romev3_1_id,dc_romev3_2_id,dc_ididentiteexterne,dc_codepostallocalite,dc_siteprescripteur,pr00_ppx005_refh_individu.dc_individu_local,dc_adresseemail
-            |5717975,19859698,1234556789,H2909,NOM,PRENOM,2018-01-09 00:00:00.000,VSL,SELECTIONNE,N,K1302,K1302,28d0b75a-b694-4de3-8849-18bfbfebd729,44210 PORNIC,44021
-            |""".stripMargin)
+          """dc_individu_local;dn_individu_national;dc_nom;dc_prenom;dc_telephone;dd_daterealisation;kc_resultatsbeneficiaire_id;dc_codepostallocalite;dc_codealeinscription;dc_adresseemail;dc_rome_id;dc_ididentiteexterne;dc_romev3_1_id;dc_dureeexperience_1;dc_romev3_2_id;dc_dureeexperience_2
+            |"12345678910";8031234567;"NOM";"PRENOM";"0701020304";2018-01-09 00:00:00.0;"VEM";"44200 NANTES";"44155";"PRENOM.NOM@gmail.com";"H2909";"28d0b75a-b694-4de3-8849-18bfbfebd729";"G1502";;;""".stripMargin)
       )
 
       // When
@@ -171,9 +164,8 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """a.kn_idcommandepresta,kn_commandebeneficiaire,dn_individu_national,dc_rome_id,a.dc_nom,a.dc_prenom,dd_datesortieprestationprevue,kc_resultatsbeneficiaire_id,dc_lblresultatbeneficiaire,dc_topsortieanticipepositive,dc_romev3_1_id,dc_romev3_2_id,dc_ididentiteexterne,dc_codepostallocalite,dc_siteprescripteur,pr00_ppx005_refh_individu.dc_individu_local,dc_adresseemail
-            |5717975,19859698,1234556789,H2909,NOM,PRENOM,2018-01-09 00:00:00.000,VEF,ENTREE EN FORMATION,N,K1302,K1302,28d0b75a-b694-4de3-8849-18bfbfebd729,44210 PORNIC,44021
-            |""".stripMargin)
+          """dc_individu_local;dn_individu_national;dc_nom;dc_prenom;dc_telephone;dd_daterealisation;kc_resultatsbeneficiaire_id;dc_codepostallocalite;dc_codealeinscription;dc_adresseemail;dc_rome_id;dc_ididentiteexterne;dc_romev3_1_id;dc_dureeexperience_1;dc_romev3_2_id;dc_dureeexperience_2
+            |"12345678910";8031234567;"NOM";"PRENOM";"0701020304";2018-01-09 00:00:00.0;"VEM";"44200 NANTES";"44155";"PRENOM.NOM@gmail.com";"H2909";"28d0b75a-b694-4de3-8849-18bfbfebd729";"G1502";;;""".stripMargin)
       )
 
       // When
@@ -186,9 +178,8 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """a.kn_idcommandepresta,kn_commandebeneficiaire,dn_individu_national,dc_rome_id,a.dc_nom,a.dc_prenom,dd_datesortieprestationprevue,kc_resultatsbeneficiaire_id,dc_lblresultatbeneficiaire,dc_topsortieanticipepositive,dc_romev3_1_id,dc_romev3_2_id,dc_ididentiteexterne,dc_codepostallocalite,dc_siteprescripteur,pr00_ppx005_refh_individu.dc_individu_local,dc_adresseemail
-            |5717975,19859698,1234556789,H2909,NOM,PRENOM,2018-01-09 00:00:00.000,VEM,EMBAUCHE,N,K1302,K1302,28d0b75a-b694-4de3-8849-18bfbfebd729,44210 PORNIC,44021
-            |""".stripMargin)
+          """dc_individu_local;dn_individu_national;dc_nom;dc_prenom;dc_telephone;dd_daterealisation;kc_resultatsbeneficiaire_id;dc_codepostallocalite;dc_codealeinscription;dc_adresseemail;dc_rome_id;dc_ididentiteexterne;dc_romev3_1_id;dc_dureeexperience_1;dc_romev3_2_id;dc_dureeexperience_2
+            |"12345678910";8031234567;"NOM";"PRENOM";"0701020304";2018-01-09 00:00:00.0;"VEM";"44200 NANTES";"44155";"PRENOM.NOM@gmail.com";"H2909";"28d0b75a-b694-4de3-8849-18bfbfebd729";"G1502";;;""".stripMargin)
       )
 
       // When

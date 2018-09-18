@@ -30,19 +30,19 @@ class MRSValideesCSVAdapter(val actorSystem: ActorSystem) {
 
   def load(source: Source[ByteString, _]): Future[Stream[MRSValideeCandidatPEConnect]] = {
     source
-      .via(CsvParsing.lineScanner(delimiter = ','))
+      .via(CsvParsing.lineScanner(delimiter = ';'))
       .via(CsvToMap.toMapAsStrings())
       .filter(
         m => m.get("dc_ididentiteexterne").exists(s => idPEConnectPattern.matcher(s).matches()) &&
           m.get("dc_rome_id").exists(_.nonEmpty) &&
-          m.get("dd_datesortieprestationprevue").exists(_.nonEmpty) &&
+          m.get("dd_daterealisation").exists(_.nonEmpty) &&
           m.get("kc_resultatsbeneficiaire_id").exists(resultatsBeneficiairesValides.contains)
       )
       .map(data => {
         MRSValideeCandidatPEConnect(
           peConnectId = PEConnectId(data("dc_ididentiteexterne")),
           codeROME = CodeROME(data("dc_rome_id")), // Pas de validation du code ROME, on fait confiance au SI Pole Emploi
-          dateEvaluation = data.get("dd_datesortieprestationprevue").map(s => LocalDate.parse(s.take(10), dateTimeFormatter)).get
+          dateEvaluation = data.get("dd_daterealisation").map(s => LocalDate.parse(s.take(10), dateTimeFormatter)).get
         )
       }).runWith(Sink.collection)
   }
