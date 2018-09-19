@@ -25,7 +25,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
                                                   rechercheCandidatQueryHandler: RechercheCandidatQueryHandler,
                                                   candidatAuthentifieAction: CandidatAuthentifieAction) extends AbstractController(components) {
 
-  def saisieCriteresRecherche(): Action[AnyContent] = candidatAuthentifieAction.async { candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
+  def saisieCriteresRecherche: Action[AnyContent] = candidatAuthentifieAction.async { candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
       for {
         candidat <-

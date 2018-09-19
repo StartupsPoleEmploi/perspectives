@@ -29,13 +29,13 @@ class PEConnectController @Inject()(cc: ControllerComponents,
   val redirectUri: Call = routes.PEConnectController.connexionCallback()
   val peConnectConfig: PEConnectWSAdapterConfig = webAppConfig.peConnectRecruteurConfig
 
-  def inscription(): Action[AnyContent] = Action { request =>
+  def inscription: Action[AnyContent] = Action { request =>
     Redirect(routes.PEConnectController.connexion()).withSession(
       oauthTokenSessionStorage.set(peConnectService.generateTokens(), request.session)
     )
   }
 
-  def connexion(): Action[AnyContent] = Action.async { implicit request =>
+  def connexion: Action[AnyContent] = Action.async { implicit request =>
     oauthTokenSessionStorage.get(request.session).toRight("Aucun token n'a été stocké en session").toFuture
       .map(oauthTokens => Redirect(
         url = s"${peConnectConfig.urlAuthentification}/connexion/oauth2/authorize",
@@ -59,7 +59,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
     }
   }
 
-  def connexionCallback(): Action[AnyContent] = Action.async { implicit request =>
+  def connexionCallback: Action[AnyContent] = Action.async { implicit request =>
     (for {
       authorizationCode <- request.getQueryString("code").toRight("Aucun code d'autorisation n'a été retourné").toFuture
       stateCallback <- request.getQueryString("state").toRight("Aucun state n'a été retourné").toFuture
@@ -99,7 +99,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
     }
   }
 
-  def deconnexion(): Action[AnyContent] = recruteurPEConnectAction.async { implicit request: RecruteurPEConnectRequest[AnyContent] =>
+  def deconnexion: Action[AnyContent] = recruteurPEConnectAction.async { implicit request: RecruteurPEConnectRequest[AnyContent] =>
     peConnectService.deconnexionRecruteur(
       idToken = request.idTokenPEConnect,
       redirectUri = routes.LandingController.landing().absoluteURL()
