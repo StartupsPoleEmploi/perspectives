@@ -31,7 +31,7 @@
         <tbody>
         @for(recruteur <- recruteurs) {
             <tr>
-                <td>@recruteur.dateInscription.format(DateTimeFormatter.ofPattern("d MMM yyyy hh:mm"))</td>
+                <td>@recruteur.dateInscription.format(DateTimeFormatter.ofPattern("d MMM yyyy HH:mm"))</td>
                 <td>@recruteur.typeRecruteur.map(TypeRecruteur.getLabel)</td>
                 <td>@recruteur.raisonSociale</td>
                 <td>@Genre.getLabel(recruteur.genre)</td>

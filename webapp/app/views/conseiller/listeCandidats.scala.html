@@ -36,7 +36,7 @@
         <tbody>
         @for(candidat <- candidats) {
             <tr>
-                <td>@candidat.dateInscription.format(DateTimeFormatter.ofPattern("d MMM yyyy hh:mm"))</td>
+                <td>@candidat.dateInscription.format(DateTimeFormatter.ofPattern("d MMM yyyy HH:mm"))</td>
                 <td>@candidat.nom</td>
                 <td>@candidat.prenom</td>
                 <td>@Genre.getLabel(candidat.genre)</td>
