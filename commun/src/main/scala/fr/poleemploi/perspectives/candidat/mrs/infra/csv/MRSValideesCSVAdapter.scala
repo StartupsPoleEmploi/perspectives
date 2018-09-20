@@ -13,6 +13,7 @@ import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.MRSValideeCandida
 import fr.poleemploi.perspectives.commun.domain.CodeROME
 import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 /**
@@ -24,6 +25,11 @@ class MRSValideesCSVAdapter(val actorSystem: ActorSystem) {
 
   val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ISO_DATE
 
+  /**
+    * VSL : Selectionné
+    * VEF : Entrée en formation
+    * VEM : Embauché
+    */
   val resultatsBeneficiairesValides = List("VSL", "VEF", "VEM")
 
   val idPEConnectPattern: Pattern = Pattern.compile("^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$")
@@ -37,13 +43,14 @@ class MRSValideesCSVAdapter(val actorSystem: ActorSystem) {
           m.get("dc_rome_id").exists(_.nonEmpty) &&
           m.get("dd_daterealisation").exists(_.nonEmpty) &&
           m.get("kc_resultatsbeneficiaire_id").exists(resultatsBeneficiairesValides.contains)
+      ).map(data =>
+      MRSValideeCandidatPEConnect(
+        peConnectId = PEConnectId(data("dc_ididentiteexterne")),
+        codeROME = CodeROME(data("dc_rome_id")), // Pas de validation du code ROME, on fait confiance au SI Pole Emploi
+        dateEvaluation = data.get("dd_daterealisation").map(s => LocalDate.parse(s.take(10), dateTimeFormatter)).get
       )
-      .map(data => {
-        MRSValideeCandidatPEConnect(
-          peConnectId = PEConnectId(data("dc_ididentiteexterne")),
-          codeROME = CodeROME(data("dc_rome_id")), // Pas de validation du code ROME, on fait confiance au SI Pole Emploi
-          dateEvaluation = data.get("dd_daterealisation").map(s => LocalDate.parse(s.take(10), dateTimeFormatter)).get
-        )
-      }).runWith(Sink.collection)
+    ).runWith(Sink.collection)
+       // Il peut y avoir deux fois la même MRSValideeCandidatPEConnect avec un statut différent (VSL ou VEM par exemple : on ne prend qu'une seule fois cette MRS)
+      .map(s => s.groupBy[MRSValideeCandidatPEConnect](identity).keys.toStream)
   }
 }

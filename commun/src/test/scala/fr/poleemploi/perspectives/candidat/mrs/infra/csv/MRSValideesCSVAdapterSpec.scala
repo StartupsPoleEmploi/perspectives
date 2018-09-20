@@ -188,5 +188,20 @@ class MRSValideesCSVAdapterSpec extends AsyncWordSpec
       // Then
       future.map(s => s.toList.head.codeROME mustBe CodeROME("H2909"))
     }
+    "integrer une seule ligne lorsque la même MRS apparait en doublon (peut avoir un statut différent)" in {
+      // Given
+      val source = Source.single(
+        ByteString(
+          """dc_individu_local;dn_individu_national;dc_nom;dc_prenom;dc_telephone;dd_daterealisation;kc_resultatsbeneficiaire_id;dc_codepostallocalite;dc_codealeinscription;dc_adresseemail;dc_rome_id;dc_ididentiteexterne;dc_romev3_1_id;dc_dureeexperience_1;dc_romev3_2_id;dc_dureeexperience_2
+            |"12345678910";8031234567;"NOM";"PRENOM";"0701020304";2018-01-09 00:00:00.0;"VSL";"44200 NANTES";"44155";"PRENOM.NOM@gmail.com";"H2909";"28d0b75a-b694-4de3-8849-18bfbfebd729";"G1502";;;
+            |"12345678910";8031234567;"NOM";"PRENOM";"0701020304";2018-01-09 00:00:00.0;"VEM";"44200 NANTES";"44155";"PRENOM.NOM@gmail.com";"H2909";"28d0b75a-b694-4de3-8849-18bfbfebd729";"G1502";;;""".stripMargin)
+      )
+
+      // When
+      val future = mrsValideesCSVAdapter.load(source)
+
+      // Then
+      future.map(s => s.size mustBe 1)
+    }
   }
 }
