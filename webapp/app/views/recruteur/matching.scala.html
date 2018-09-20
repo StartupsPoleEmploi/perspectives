@@ -67,7 +67,7 @@
                     </div>
                     <div class="criteres-item  conteneurSelecteur">
                         <label for="js-departements-selecteur" class="conteneurSelecteur-label">Choisissez un département</label>
-                        <select id="js-departements-selecteur" class="conteneurSelecteur-selecteur" name="departement">
+                        <select id="js-departements-selecteur" class="conteneurSelecteur-selecteur" name="codeDepartement">
                             @for(departement <- departements) {
                                 <option value="@departement.code">@departement.label</option>
                             }

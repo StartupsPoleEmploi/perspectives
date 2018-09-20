@@ -28,12 +28,13 @@ class MatchingController @Inject()(cc: ControllerComponents,
                                    rechercheCandidatQueryHandler: RechercheCandidatQueryHandler,
                                    recruteurAuthentifieAction: RecruteurAuthentifieAction) extends AbstractController(cc) {
 
-  def index(): Action[AnyContent] = recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
+  def index: Action[AnyContent] = recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
+      val departementsProposes = rechercheCandidatQueryHandler.departementsProposes
       val matchingForm = MatchingForm(
         secteurActivite = None,
         metier = None,
-        departement = None
+        codeDepartement = departementsProposes.headOption.map(_.code)
       )
       rechercher(request = messagesRequest, matchingForm = matchingForm, recruteurId = recruteurAuthentifieRequest.recruteurId).map(resultatRechercheCandidatDto =>
         Ok(views.html.recruteur.matching(
@@ -41,7 +42,7 @@ class MatchingController @Inject()(cc: ControllerComponents,
           recruteurAuthentifie = recruteurAuthentifieRequest.recruteurAuthentifie,
           resultatRechercheCandidat = resultatRechercheCandidatDto,
           secteursActivites = rechercheCandidatQueryHandler.secteursProposes,
-          departements = rechercheCandidatQueryHandler.departementsProposes
+          departements = departementsProposes
         ))
       ).recover {
         case _: ProfilRecruteurIncompletException =>
@@ -51,7 +52,7 @@ class MatchingController @Inject()(cc: ControllerComponents,
     }(recruteurAuthentifieRequest)
   }
 
-  def rechercherCandidats(): Action[AnyContent] = recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
+  def rechercherCandidats: Action[AnyContent] = recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
       MatchingForm.form.bindFromRequest.fold(
         formWithErrors => {
@@ -76,18 +77,18 @@ class MatchingController @Inject()(cc: ControllerComponents,
         candidatQueryHandler.rechercherCandidatsParMetier(RechercherCandidatsParMetierQuery(
           codeROME = matchingForm.metier.map(CodeROME).get,
           typeRecruteur = typeRecruteur,
-          codeDepartement = matchingForm.departement
+          codeDepartement = matchingForm.codeDepartement
         ))
       } else if (matchingForm.secteurActivite.exists(_.nonEmpty)) {
         candidatQueryHandler.rechercherCandidatsParSecteur(RechercherCandidatsParSecteurQuery(
           codeSecteurActivite = matchingForm.secteurActivite.map(CodeSecteurActivite(_)).get,
           typeRecruteur = typeRecruteur,
-          codeDepartement = matchingForm.departement
+          codeDepartement = matchingForm.codeDepartement
         ))
       } else {
         candidatQueryHandler.rechercherCandidatsParDateInscription(RechercherCandidatsParDateInscriptionQuery(
           typeRecruteur = typeRecruteur,
-          codeDepartement = matchingForm.departement
+          codeDepartement = matchingForm.codeDepartement
         ))
       })
 
