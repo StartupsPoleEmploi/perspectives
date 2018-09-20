@@ -77,6 +77,14 @@
                         <iframe src="https://www.youtube.com/embed/VpQOnDxUQek?ecver=2" style="position:absolute;width:100%;height:100%;left:0" width="640" height="360" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>
                         </iframe>
                     </div>
+                    <div class="inscription">
+                    @if(recruteurAuthentifie.isEmpty) {
+                        <a class="bouton bouton-actionPrincipale bouton--degradeBleu" href="/recruteur/inscription">
+                            Je m'inscris
+                            <small class="bouton-small">en moins de 30 secondes</small>
+                        </a>
+                    }
+                    </div>
                 </div>
             </section>
             <section class="commentCaMarche">
@@ -86,6 +94,14 @@
                     <li class="etapes-item">Je saisis mes critères de recherche</li>
                     <li class="etapes-item">Je contacte les candidats</li>
                 </ol>
+                <div class="inscription">
+                @if(recruteurAuthentifie.isEmpty) {
+                    <a class="bouton bouton-actionPrincipale bouton--degradeBleu" href="/recruteur/inscription">
+                        Je m'inscris
+                        <small class="bouton-small">en moins de 30 secondes</small>
+                    </a>
+                }
+                </div>
             </section>
             <section class="temoignages">
                 <h2 class="temoignages-titre">Témoignages</h2>
@@ -103,10 +119,8 @@
                     </div>
                     <span class="temoignage-source">Matthieu V. - Manufacture Baizet</span>
                 </div>
-                <div class="temoignagesAction">
-                @if(recruteurAuthentifie.isDefined) {
-                    <a class="bouton bouton-actionSecondaire bouton--degradeBleu" href="/recruteur/profil">Modifier mon profil</a>
-                } else {
+                <div class="inscription">
+                @if(recruteurAuthentifie.isEmpty) {
                     <a class="bouton bouton-actionPrincipale bouton--degradeBleu" href="/recruteur/inscription">
                         Je m'inscris
                         <small class="bouton-small">en moins de 30 secondes</small>
