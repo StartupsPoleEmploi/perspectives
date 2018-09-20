@@ -8,16 +8,12 @@ RUN apt-get update && \
     apt-get -y install postgresql-client
 
 ARG POSTGRES_DB=perspectives
-ENV POSTGRES_DB=${POSTGRES_DB}
 
 ARG POSTGRES_USER=perspectives
-ENV POSTGRES_USER=${POSTGRES_USER}
 
 ARG POSTGRES_PASSWORD=perspectives
-ENV POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
 
 ARG POSTGRES_HOST=database
-ENV POSTGRES_HOST=${POSTGRES_HOST}
 
 RUN mkdir /opt/postgresql-cron-backup
 RUN mkdir /var/opt/postgresql-cron-backup

@@ -25,8 +25,6 @@ services:
     image: perspectives-postgresql-cron-backup
     volumes:
       - postgresql_backups:/var/opt/postgresql-cron-backup
-    env_file:
-      - prod.env
     deploy:
       replicas: 1
     networks:
