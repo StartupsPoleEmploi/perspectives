@@ -61,7 +61,7 @@
             @defining(candidatWithIndex._1) { rechercheCandidatDto =>
             <div class="listeResultatsRecherche-arrierePlan @if(candidatWithIndex._2 % 2 == 0){@cssClasse--lignePaire}">
                 <div class="listeResultatsRecherche-conteneur">
-                    <div id="js-ligne-@candidatWithIndex._2" class="listeResultatsRecherche-ligne">
+                    <div id="js-ligne-@rechercheCandidatDto.candidatId.value" class="listeResultatsRecherche-ligne">
                         <div class="listeResultatsRecherche-candidat">
                             <div class="info--majuscule info--principale">@rechercheCandidatDto.nom</div>
                             <div class="info--minuscule info--principale">@rechercheCandidatDto.prenom.capitalize</div>
@@ -89,7 +89,7 @@
             </div>
             <div class="listeResultatsRecherche-arrierePlanProfil">
                 <div class="listeResultatsRecherche-conteneur">
-                    <div id="js-profilCandidat-@candidatWithIndex._2" class="profilCandidat js-profilCandidat">
+                    <div id="js-profilCandidat-@rechercheCandidatDto.candidatId.value" class="profilCandidat js-profilCandidat">
                         <div class="profilCandidat-habiletes">
                             <div class="info--majuscule info--detaillee">Habiletés validées</div>
                             <ul class="detailsProfils">
