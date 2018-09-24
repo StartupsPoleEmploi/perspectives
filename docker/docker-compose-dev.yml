@@ -39,7 +39,7 @@ services:
     volumes:
       - export_poleemploi:/var/perspectives/export_poleemploi
     deploy:
-      replicas: 1
+      replicas: 2
     ports:
       - "9000:9000"
     networks:

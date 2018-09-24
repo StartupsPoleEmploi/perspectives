@@ -38,7 +38,7 @@ services:
     env_file:
       - prod.env
     deploy:
-      replicas: 1
+      replicas: 2
     networks:
       - net
 
