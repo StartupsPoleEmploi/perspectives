@@ -1,13 +1,15 @@
 package controllers.conseiller
 
+import java.time.ZonedDateTime
+
 import authentification.infra.play.{ConseillerAuthentifieAction, ConseillerAuthentifieRequest}
 import conf.WebAppConfig
 import fr.poleemploi.perspectives.candidat.{CandidatCommandHandler, CandidatId, DeclarerRepriseEmploiParConseillerCommand}
 import fr.poleemploi.perspectives.conseiller.{AutorisationService, RoleConseiller}
-import fr.poleemploi.perspectives.projections.candidat.CandidatQueryHandler
-import fr.poleemploi.perspectives.projections.recruteur.RecruteurQueryHandler
+import fr.poleemploi.perspectives.projections.candidat.{CandidatQueryHandler, CandidatsPourConseillerQuery}
+import fr.poleemploi.perspectives.projections.recruteur.{RecruteurQueryHandler, RecruteursPourConseillerQuery}
 import javax.inject.Inject
-import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
+import play.api.mvc._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -15,18 +17,42 @@ import scala.concurrent.Future
 class ConseillerController @Inject()(cc: ControllerComponents,
                                      implicit val webAppConfig: WebAppConfig,
                                      conseillerAuthentifieAction: ConseillerAuthentifieAction,
+                                     messagesAction: MessagesActionBuilder,
                                      autorisationService: AutorisationService,
                                      candidatQueryHandler: CandidatQueryHandler,
                                      candidatCommandHandler: CandidatCommandHandler,
                                      recruteurQueryHandler: RecruteurQueryHandler) extends AbstractController(cc) {
 
-  def listeCandidats(): Action[AnyContent] = conseillerAuthentifieAction.async { implicit conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
+  val nbCandidatsParPage = 20
+  val nbRecruteursParPage = 20
+
+  def listeCandidats: Action[AnyContent] = conseillerAuthentifieAction.async { implicit conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
     if (autorisationService.hasRole(conseillerRequest.conseillerId, RoleConseiller.ADMIN)) {
-      candidatQueryHandler.listerParDateInscriptionPourConseiller
-        .map(candidats =>
-          Ok(views.html.conseiller.listeCandidats(candidats))
+      val avantDateInscription = ZonedDateTime.now()
+      candidatQueryHandler.listerPourConseiller(
+        CandidatsPourConseillerQuery(
+          nbCandidatsParPage = nbCandidatsParPage,
+          avantDateInscription = avantDateInscription
         )
+      ).map(candidats =>
+        Ok(views.html.conseiller.listeCandidats(
+          candidats = candidats,
+          avantDateInscription = avantDateInscription,
+          nbCandidatsParPage = nbCandidatsParPage))
+      )
     } else Future.successful(Unauthorized)
+  }
+
+  def paginationCandidats(avantDateInscription: String): Action[AnyContent] = conseillerAuthentifieAction.async { implicit conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
+    if (autorisationService.hasRole(conseillerRequest.conseillerId, RoleConseiller.ADMIN)) {
+      candidatQueryHandler.listerPourConseiller(
+        CandidatsPourConseillerQuery(
+          nbCandidatsParPage = nbCandidatsParPage,
+          avantDateInscription = ZonedDateTime.parse(avantDateInscription)
+        )
+      ).map(candidats => Ok(views.html.conseiller.partials.candidats(candidats, nbCandidatsParPage)))
+    }
+    else Future.successful(Unauthorized)
   }
 
   def declarerRepriseEmploi(candidatId: String): Action[AnyContent] = conseillerAuthentifieAction.async { implicit conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
@@ -40,13 +66,33 @@ class ConseillerController @Inject()(cc: ControllerComponents,
     } else Future.successful(Unauthorized)
   }
 
-  def listeRecruteurs(): Action[AnyContent] = conseillerAuthentifieAction.async { implicit conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
+  def listeRecruteurs: Action[AnyContent] = conseillerAuthentifieAction.async { implicit conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
     if (autorisationService.hasRole(conseillerRequest.conseillerId, RoleConseiller.ADMIN)) {
-      recruteurQueryHandler.listerParDateInscriptionPourConseiller
-        .map(recruteurs =>
-          Ok(views.html.conseiller.listeRecruteurs(recruteurs))
+      val avantDateInscription = ZonedDateTime.now()
+      recruteurQueryHandler.listerPourConseiller(
+        RecruteursPourConseillerQuery(
+          nbRecruteursParPage = nbRecruteursParPage,
+          avantDateInscription = avantDateInscription
         )
+      ).map(recruteurs =>
+        Ok(views.html.conseiller.listeRecruteurs(
+          recruteurs = recruteurs,
+          avantDateInscription = avantDateInscription,
+          nbRecruteursParPage = nbRecruteursParPage))
+      )
     } else Future.successful(Unauthorized)
+  }
+
+  def paginationRecruteurs(avantDateInscription: String): Action[AnyContent] = conseillerAuthentifieAction.async { implicit conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
+    if (autorisationService.hasRole(conseillerRequest.conseillerId, RoleConseiller.ADMIN)) {
+      recruteurQueryHandler.listerPourConseiller(
+        RecruteursPourConseillerQuery(
+          nbRecruteursParPage = nbRecruteursParPage,
+          avantDateInscription = ZonedDateTime.parse(avantDateInscription)
+        )
+      ).map(recruteurs => Ok(views.html.conseiller.partials.recruteurs(recruteurs, nbRecruteursParPage)))
+    }
+    else Future.successful(Unauthorized)
   }
 
 }

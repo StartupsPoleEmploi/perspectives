@@ -21,7 +21,9 @@ POST        /recruteur/matching-candidats                            controllers
 GET         /recruteur/cv/telecharger/:candidatId/:nomFichier        controllers.recruteur.MatchingController.telechargerCV(candidatId, nomFichier)
 
 GET         /conseiller/candidats                                    controllers.conseiller.ConseillerController.listeCandidats
+GET         /conseiller/candidats/:avantDateInscription              controllers.conseiller.ConseillerController.paginationCandidats(avantDateInscription: String)
 GET         /conseiller/recruteurs                                   controllers.conseiller.ConseillerController.listeRecruteurs
+GET         /conseiller/recruteurs/:avantDateInscription             controllers.conseiller.ConseillerController.paginationRecruteurs(avantDateInscription: String)
 GET         /conseiller/declarerRepriseEmploi/:candidatId            controllers.conseiller.ConseillerController.declarerRepriseEmploi(candidatId)
 
 # Map static resources from the /public folder to the /assets URL path

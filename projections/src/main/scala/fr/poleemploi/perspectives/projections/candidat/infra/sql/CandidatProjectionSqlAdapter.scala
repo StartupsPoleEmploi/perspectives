@@ -89,9 +89,11 @@ class CandidatProjectionSqlAdapter(database: Database,
       .filter(_.candidatId === candidatId)
       .map(c => CandidatContactRecruteurLifted(c.contacteParAgenceInterim, c.contacteParOrganismeFormation))
   }
-  val listerParDateInscriptionQuery = Compiled {
+  val listerParDateInscriptionQuery = Compiled { (nbCandidatsParPage: ConstColumn[Long], avantDateInscription: Rep[ZonedDateTime]) =>
     candidatTable
+      .filter(_.dateInscription < avantDateInscription)
       .sortBy(_.dateInscription.desc)
+      .take(nbCandidatsParPage)
       .map(c => CandidatPourConseillerLifted(c.candidatId, c.nom, c.prenom, c.genre, c.email, c.statutDemandeurEmploi, c.rechercheMetierEvalue, c.metiersEvalues, c.rechercheAutreMetier, c.metiersRecherches, c.contacteParAgenceInterim, c.contacteParOrganismeFormation, c.rayonRecherche, c.numeroTelephone, c.dateInscription))
   }
   val modifierProfilQuery = Compiled { candidatId: Rep[CandidatId] =>
@@ -136,8 +138,8 @@ class CandidatProjectionSqlAdapter(database: Database,
   def candidatContactRecruteur(candidatId: CandidatId): Future[CandidatContactRecruteurDto] =
     database.run(candidatContactRecruteurQuery(candidatId).result.head)
 
-  def listerParDateInscriptionPourConseiller: Future[List[CandidatPourConseillerDto]] =
-    database.run(listerParDateInscriptionQuery.result)
+  def listerPourConseiller(query: CandidatsPourConseillerQuery): Future[List[CandidatPourConseillerDto]] =
+    database.run(listerParDateInscriptionQuery(query.nbCandidatsParPage, query.avantDateInscription).result)
       .map(_.toList.map(toCandidatPourConseillerDto))
 
   def rechercherCandidatParDateInscription(query: RechercherCandidatsParDateInscriptionQuery): Future[ResultatRechercheCandidatParDateInscription] =
@@ -280,7 +282,7 @@ class CandidatProjectionSqlAdapter(database: Database,
   }
 
   private def filtreDepartement(c: CandidatTable,
-                                 codeDepartement: Option[String]): Rep[Option[Boolean]] = codeDepartement match {
+                                codeDepartement: Option[String]): Rep[Option[Boolean]] = codeDepartement match {
     case Some(code) => c.codePostal startsWith code
     case None => Some(true)
   }

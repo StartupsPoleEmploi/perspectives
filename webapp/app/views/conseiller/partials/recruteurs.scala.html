@@ -1,0 +1,45 @@
+@import java.time.format.DateTimeFormatter
+
+@import fr.poleemploi.perspectives.commun.domain.Genre
+@import fr.poleemploi.perspectives.projections.recruteur.RecruteurPourConseillerDto
+@import fr.poleemploi.perspectives.recruteur.TypeRecruteur
+
+@(recruteurs: List[RecruteurPourConseillerDto], nbRecruteursParPage: Int)
+
+@getBoolean(boolean: Option[Boolean]) = @{
+    if (boolean.getOrElse(false)) "Oui" else "Non"
+}
+
+<input type="hidden" id="js-dernierResultat" value="@if(recruteurs.size == nbRecruteursParPage) {@recruteurs.reverse.headOption.map(_.dateInscription).map(DateTimeFormatter.ISO_ZONED_DATE_TIME.format)}"/>
+<table class="table table-responsive">
+    <thead class="thead-light">
+        <tr>
+            <th>Date d'inscription</th>
+            <th>Type</th>
+            <th>Raison sociale</th>
+            <th>Genre</th>
+            <th>Nom</th>
+            <th>Prénom</th>
+            <th>Email</th>
+            <th>Téléphone</th>
+            <th>SIRET</th>
+            <th>Etre contacté par les candidats</th>
+        </tr>
+    </thead>
+    <tbody>
+    @for(recruteur <- recruteurs) {
+        <tr>
+            <td>@recruteur.dateInscription.format(DateTimeFormatter.ofPattern("d MMM yyyy HH:mm"))</td>
+            <td>@recruteur.typeRecruteur.map(TypeRecruteur.getLabel)</td>
+            <td>@recruteur.raisonSociale</td>
+            <td>@Genre.getLabel(recruteur.genre)</td>
+            <td>@recruteur.nom</td>
+            <td>@recruteur.prenom</td>
+            <td>@recruteur.email.value</td>
+            <td>@recruteur.numeroTelephone.map(_.value)</td>
+            <td>@recruteur.numeroSiret.map(_.value)</td>
+            <td>@getBoolean(recruteur.contactParCandidats)</td>
+        </tr>
+    }
+    </tbody>
+</table>

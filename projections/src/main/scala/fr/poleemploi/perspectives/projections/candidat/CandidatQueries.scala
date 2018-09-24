@@ -1,5 +1,7 @@
 package fr.poleemploi.perspectives.projections.candidat
 
+import java.time.ZonedDateTime
+
 import fr.poleemploi.cqrs.projection.Query
 import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite}
@@ -13,6 +15,9 @@ case class CVCandidatQuery(candidatId: CandidatId) extends CandidatQuery
 
 case class CVCandidatPourRecruteurQuery(candidatId: CandidatId,
                                         recruteurId: RecruteurId) extends CandidatQuery
+
+case class CandidatsPourConseillerQuery(nbCandidatsParPage: Int,
+                                        avantDateInscription: ZonedDateTime) extends CandidatQuery
 
 case class RechercherCandidatsParDateInscriptionQuery(typeRecruteur: TypeRecruteur,
                                                       codeDepartement: Option[String]) extends CandidatQuery

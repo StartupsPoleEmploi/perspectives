@@ -4,7 +4,7 @@ import java.time.ZonedDateTime
 
 import fr.poleemploi.perspectives.commun.domain.{Email, Genre, NumeroTelephone}
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
-import fr.poleemploi.perspectives.projections.recruteur.{ProfilRecruteurDto, ProfilRecruteurQuery, RecruteurPourConseillerDto}
+import fr.poleemploi.perspectives.projections.recruteur.{ProfilRecruteurDto, ProfilRecruteurQuery, RecruteurPourConseillerDto, RecruteursPourConseillerQuery}
 import fr.poleemploi.perspectives.recruteur._
 import slick.jdbc.JdbcBackend.Database
 
@@ -59,9 +59,11 @@ class RecruteurProjectionSqlAdapter(database: Database) {
       .filter(r => r.recruteurId === recruteurId)
       .map(r => ProfilRecruteurLifted(r.recruteurId, r.typeRecruteur, r.raisonSociale, r.numeroSiret, r.numeroTelephone, r.contactParCandidats))
   }
-  val listerParDateInscriptionQuery = Compiled {
+  val listerParDateInscriptionQuery = Compiled { (nbRecruteursParPage: ConstColumn[Long], avantDateInscription: Rep[ZonedDateTime]) =>
     recruteurTable
+      .filter(_.dateInscription < avantDateInscription)
       .sortBy(_.dateInscription.desc)
+      .take(nbRecruteursParPage)
       .map(r => RecruteurPourConseillerLifted(r.recruteurId, r.nom, r.prenom, r.email, r.genre, r.typeRecruteur, r.raisonSociale, r.numeroSiret, r.numeroTelephone, r.contactParCandidats, r.dateInscription))
   }
   val modifierProfilQuery = Compiled { recruteurId: Rep[RecruteurId] =>
@@ -81,8 +83,8 @@ class RecruteurProjectionSqlAdapter(database: Database) {
   def profilRecruteur(query: ProfilRecruteurQuery): Future[ProfilRecruteurDto] =
     database.run(profilRecruteurQuery(query.recruteurId).result.head)
 
-  def listerParDateInscriptionPourConseiller: Future[List[RecruteurPourConseillerDto]] =
-    database.run(listerParDateInscriptionQuery.result).map(_.toList)
+  def listerPourConseiller(query: RecruteursPourConseillerQuery): Future[List[RecruteurPourConseillerDto]] =
+    database.run(listerParDateInscriptionQuery(query.nbRecruteursParPage, query.avantDateInscription).result).map(_.toList)
 
   def onRecruteurInscritEvent(event: RecruteurInscritEvent): Future[Unit] =
     database

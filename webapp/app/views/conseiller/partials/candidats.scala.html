@@ -1,0 +1,62 @@
+@import java.time.format.DateTimeFormatter
+
+@import fr.poleemploi.perspectives.candidat.StatutDemandeurEmploi
+@import fr.poleemploi.perspectives.commun.domain.Genre
+@import fr.poleemploi.perspectives.projections.candidat.CandidatPourConseillerDto
+
+@(candidats: List[CandidatPourConseillerDto], nbCandidatsParPage: Int)
+
+@getBoolean(boolean: Option[Boolean]) = @{
+    if (boolean.getOrElse(false)) "Oui" else "Non"
+}
+
+<input type="hidden" id="js-dernierResultat" value="@if(candidats.size == nbCandidatsParPage) {@candidats.reverse.headOption.map(_.dateInscription).map(DateTimeFormatter.ISO_ZONED_DATE_TIME.format)}"/>
+<table class="table table-responsive">
+    <thead class="thead-light">
+        <tr>
+            <th>Date d'inscription</th>
+            <th>Nom</th>
+            <th>Prenom</th>
+            <th>Genre</th>
+            <th>Email</th>
+            <th>Téléphone</th>
+            <th>Statut Demandeur d'emploi</th>
+            <th>Recherche métier évalué</th>
+            <th>Metiers évalués</th>
+            <th>Recherche autre métier</th>
+            <th>Metiers recherchés</th>
+            <th>Etre contacté par interims</th>
+            <th>Etre contacté par formations</th>
+            <th>Rayon de recherche (KM)</th>
+            <th>Disponible</th>
+        </tr>
+    </thead>
+    <tbody id="js-tbody">
+    @for(candidat <- candidats) {
+        <tr>
+            <td>@candidat.dateInscription.format(DateTimeFormatter.ofPattern("d MMM yyyy HH:mm"))</td>
+            <td>@candidat.nom</td>
+            <td>@candidat.prenom</td>
+            <td>@Genre.getLabel(candidat.genre)</td>
+            <td>@candidat.email.value</td>
+            <td>@candidat.numeroTelephone.map(_.value)</td>
+            <td>@candidat.statutDemandeurEmploi.map(StatutDemandeurEmploi.getLabel)</td>
+            <td>@getBoolean(candidat.rechercheMetierEvalue)</td>
+            <td>@candidat.metiersEvalues.map(_.label).mkString(", ")</td>
+            <td>@getBoolean(candidat.rechercheAutreMetier)</td>
+            <td>@candidat.metiersRecherches.map(_.label).mkString(", ")</td>
+            <td>@getBoolean(candidat.contacteParAgenceInterim)</td>
+            <td>@getBoolean(candidat.contacteParOrganismeFormation)</td>
+            <td>@candidat.rayonRecherche.map(_.value)</td>
+            <td>
+                @if(candidat.rechercheEmploi) {
+                    <a class="js-declarerRepriseEmploi" href="/conseiller/declarerRepriseEmploi/@candidat.candidatId.value">
+                        Déclarer la reprise d'un emploi
+                    </a>
+                }
+                @if(!candidat.rechercheEmploi) {Non}
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
