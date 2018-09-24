@@ -1,5 +1,7 @@
 #matchingCandidats {
 
+  margin-top: 3em;
+
   .compteurResultats {
     @include make-container();
     @include make-container-max-widths();
@@ -18,7 +20,7 @@
 
   .criteresRecherche {
     @include make-container();
-    max-width: 75%;
+    max-width: 90%;
     margin-bottom: 3em;
   }
 
@@ -30,13 +32,14 @@
 
   .criteres {
     @include make-row();
+    position: relative;
     justify-content: center;
     border-radius: 4px;
     background-color: #82CCDD;
 
     &-item {
-      @include make-col(4);
-      margin: 20px;
+      @include make-col(3);
+      margin: 20px 10px;
     }
   }
 
@@ -237,10 +240,9 @@
   }
 
   .videoMRS {
-    float: right;
-    position: relative;
-    top: -25px;
-    left: 10px;
+    position: absolute;
+    top: -4em;
+    right: -110px;
   }
 
   .infoBulleMRS {

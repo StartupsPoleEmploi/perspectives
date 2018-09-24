@@ -60,7 +60,11 @@ class MatchingController @Inject()(cc: ControllerComponents,
         },
         matchingForm => {
           rechercher(request = messagesRequest, matchingForm = matchingForm, recruteurId = recruteurAuthentifieRequest.recruteurId).map(resultatRechercheCandidatDto =>
-            Ok(views.html.recruteur.partials.resultatsRecherche(resultatRechercheCandidatDto))
+            Ok(views.html.recruteur.partials.resultatsRecherche(
+              resultatRechercheCandidat = resultatRechercheCandidatDto,
+              metierChoisi = matchingForm.metier.flatMap(c => rechercheCandidatQueryHandler.metierProposeParCode(CodeROME(c)).map(_.label)),
+              secteurActiviteChoisi = matchingForm.secteurActivite.map(s => rechercheCandidatQueryHandler.secteurProposeParCode(CodeSecteurActivite(s)).label)
+            ))
           ).recover {
             case _: ProfilRecruteurIncompletException => BadRequest("Vous devez renseigner votre profil avant de pouvoir effectuer une recherche")
           }

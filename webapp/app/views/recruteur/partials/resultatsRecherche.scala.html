@@ -1,13 +1,15 @@
 @import fr.poleemploi.perspectives.commun.domain.RayonRecherche
 @import fr.poleemploi.perspectives.projections.candidat.{RechercheCandidatDto, ResultatRechercheCandidat, ResultatRechercheCandidatParDateInscription, ResultatRechercheCandidatParMetier, ResultatRechercheCandidatParSecteur}
 
-@(resultatRechercheCandidat: ResultatRechercheCandidat)
+@(resultatRechercheCandidat: ResultatRechercheCandidat,
+        secteurActiviteChoisi: Option[String] = None,
+        metierChoisi: Option[String] = None)
 
 @getTitreForCandidats(rechercheCandidatDtos: List[RechercheCandidatDto], finTitre: String) = @{
     rechercheCandidatDtos match {
         case Nil => None
-        case x::Nil => Some(s"1 candidat a du potentiel $finTitre")
-        case x::xs => Some(s"${rechercheCandidatDtos.size} candidats ont du potentiel $finTitre")
+        case x::Nil => Some(s"1 candidat $finTitre")
+        case x::xs => Some(s"${rechercheCandidatDtos.size} candidats ${finTitre.replaceAll("validé", "validés").replaceAll("intéréssé", "intéréssés")}")
     }
 }
 
@@ -19,13 +21,19 @@
         @affichageResultats(
              cssClasse = "avecLignesBleues",
              styleTitre = Some("resultatsRecherche-titre--bleu"),
-             titre = getTitreForCandidats(candidatsEvaluesSurSecteur, "dans ce secteur d'activité"),
+             titre = getTitreForCandidats(
+                 rechercheCandidatDtos = candidatsEvaluesSurSecteur,
+                 finTitre = s"""validé dans le secteur "${secteurActiviteChoisi.getOrElse("")}""""
+             ),
             rechercheCandidatDtos = candidatsEvaluesSurSecteur
         )
         @affichageResultats(
             cssClasse = "avecLignesNoires",
             styleTitre = Some("resultatsRecherche-titre--noir"),
-            titre = getTitreForCandidats(candidatsInteressesParAutreSecteur, "dans un autre secteur d'activité"),
+            titre = getTitreForCandidats(
+                rechercheCandidatDtos = candidatsInteressesParAutreSecteur,
+                finTitre = s"""intéréssé par le secteur "${secteurActiviteChoisi.getOrElse("")}" et validé dans un autre secteur"""
+            ),
             rechercheCandidatDtos = candidatsInteressesParAutreSecteur
         )
     }
@@ -33,19 +41,28 @@
         @affichageResultats(
             cssClasse = "avecLignesBleues",
             styleTitre = Some("resultatsRecherche-titre--bleu"),
-            titre = getTitreForCandidats(candidatsEvaluesSurMetier, "sur ce métier"),
+            titre = getTitreForCandidats(
+                rechercheCandidatDtos = candidatsEvaluesSurMetier,
+                finTitre = s"""validé sur le métier "${metierChoisi.getOrElse("")}""""
+            ),
             rechercheCandidatDtos = candidatsEvaluesSurMetier
         )
         @affichageResultats(
             cssClasse = "avecLignesNoires",
             styleTitre = Some("resultatsRecherche-titre--noir"),
-            titre = getTitreForCandidats(candidatsInteressesParMetierMemeSecteur, "dans ce secteur d'activité"),
+            titre = getTitreForCandidats(
+                rechercheCandidatDtos = candidatsInteressesParMetierMemeSecteur,
+                finTitre = s"""intéréssé par le métier "${metierChoisi.getOrElse("")}" et validé sur un métier du même secteur"""
+            ),
             rechercheCandidatDtos = candidatsInteressesParMetierMemeSecteur
         )
         @affichageResultats(
             cssClasse = "avecLignesNoires",
             styleTitre = Some("resultatsRecherche-titre--noir"),
-            titre = getTitreForCandidats(candidatsInteressesParMetierAutreSecteur, "dans un autre secteur d'activité"),
+            titre = getTitreForCandidats(
+                rechercheCandidatDtos = candidatsInteressesParMetierAutreSecteur,
+                finTitre = s"""intéréssé par le métier "${metierChoisi.getOrElse("")}" et validé dans un autre secteur"""
+            ),
             rechercheCandidatDtos = candidatsInteressesParMetierAutreSecteur
         )
     }

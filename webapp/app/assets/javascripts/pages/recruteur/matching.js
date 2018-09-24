@@ -51,26 +51,26 @@ $(document).ready(function () {
 
     selecteurSecteursActivites.change(function () {
         var secteurActivite = $(this).val();
-        rechercherCandidats().always(function () {
-            selecteurMetiers.empty();
-            if (secteurActivite !== '') {
-                var codesMetiers = secteursActivites[secteurActivite];
+        var metier = '';
+        selecteurMetiers.empty();
+        if (secteurActivite !== '') {
+            var codesMetiers = secteursActivites[secteurActivite];
+            selecteurMetiers.append(
+                $('<option>')
+                    .val("")
+                    .text("Tous les métiers du secteur"));
+            for (var i = 0; i < codesMetiers.length; i++) {
                 selecteurMetiers.append(
                     $('<option>')
-                        .val("")
-                        .text("Tous les métiers du secteur"));
-                for (var i = 0; i < codesMetiers.length; i++) {
-                    selecteurMetiers.append(
-                        $('<option>')
-                            .val(codesMetiers[i])
-                            .text(metiers[codesMetiers[i]])
-                    )
-                }
-            } else {
-                selecteurMetiers.html(htmlTousLesMetiers);
+                        .val(codesMetiers[i])
+                        .text(metiers[codesMetiers[i]])
+                )
             }
-
-            modifierTitreCompteurResultats(secteurActivite, selecteurMetiers.val(), selecteurDepartements.val());
+        } else {
+            selecteurMetiers.html(htmlTousLesMetiers);
+        }
+        rechercherCandidats().always(function () {
+            modifierTitreCompteurResultats(secteurActivite, metier, selecteurDepartements.val());
         });
     });
 
@@ -106,11 +106,11 @@ $(document).ready(function () {
             titreCompteurResultats.html("Nous n'avons pas de candidats à vous proposer avec ces critères");
         } else {
             if (metier !== undefined && metier !== '') {
-                titreCompteurResultats.html("<b>" + getIntituleCandidats(nbResultats) + " intéréssés pour ce métier</b><br/>" + getSuffixeCandidats(nbResultats));
+                titreCompteurResultats.html("<b>" + getIntituleCandidats(nbResultats) + " pour ce métier</b><br/>" + getSuffixeCandidats(nbResultats));
             } else if (secteurActivite !== undefined && secteurActivite !== '') {
-                titreCompteurResultats.html("<b>" + getIntituleCandidats(nbResultats) + " intéréssés pour ce secteur d'activité</b><br/>" + getSuffixeCandidats(nbResultats));
+                titreCompteurResultats.html("<b>" + getIntituleCandidats(nbResultats) + " pour ce secteur d'activité</b><br/>" + getSuffixeCandidats(nbResultats));
             } else if (codeDepartement !== undefined && codeDepartement !== '') {
-                titreCompteurResultats.html("<b>" + getIntituleCandidats(nbResultats) + " intéréssés pour ce département</b><br/>" + getSuffixeCandidats(nbResultats));
+                titreCompteurResultats.html("<b>" + getIntituleCandidats(nbResultats) + " pour ce département</b><br/>" + getSuffixeCandidats(nbResultats));
             } else {
                 titreCompteurResultats.html("<b>" + getIntituleCandidats(nbResultats) + " perspectives</b><br/>" + getSuffixeCandidats(nbResultats));
             }
@@ -121,7 +121,7 @@ $(document).ready(function () {
         return nbCandidats === 1 ? "1 candidat" : nbCandidats + " candidats";
     }
     function getSuffixeCandidats(nbCandidats) {
-        return nbCandidats === 1 ? "a validé la Méthode de Recrutement par Simulation" : "ont validé la Méthode de Recrutement par Simulation";
+        return nbCandidats === 1 ? "est validé par la Méthode de Recrutement par Simulation" : "sont validés par la Méthode de Recrutement par Simulation";
     }
 
     function initialiserTableau() {
