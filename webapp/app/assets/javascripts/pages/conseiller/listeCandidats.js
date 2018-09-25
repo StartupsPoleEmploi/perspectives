@@ -1,7 +1,5 @@
 "use strict";
 
-var paginationBaseUrl = "/conseiller/candidats"; // FIXME : composant
-
 $(document).ready(function () {
     var body = $("body");
 
@@ -17,4 +15,8 @@ $(document).ready(function () {
             bouton.parent().html("Non");
         });
     });
+});
+
+var app = new Vue({
+    el: '#listeCandidats'
 });

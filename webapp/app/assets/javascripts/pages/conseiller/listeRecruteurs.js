@@ -1,3 +1,5 @@
 "use strict";
 
-var paginationBaseUrl = "/conseiller/recruteurs"; // FIXME : composant
+var app = new Vue({
+    el: '#listeRecruteurs'
+});

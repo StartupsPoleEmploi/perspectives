@@ -13,14 +13,11 @@
     <div id="js-listeResultats">
         @partials.candidats(candidats, nbCandidatsParPage)
     </div>
-    <div>
-        <input type="hidden" id="js-criterePremierePage" value="@DateTimeFormatter.ISO_ZONED_DATE_TIME.format(avantDateInscription)"/>
-        <input type="hidden" id="js-criterePageSuivante" value=""/>
-        <span id="js-pagesPrecedentes"></span>
-        <button class="bouton js-pageSuivante" type="button">Page suivante</button>
-    </div>
+    <pagination pagination-base-url="/conseiller/candidats"
+                critere-premiere-page="@DateTimeFormatter.ISO_ZONED_DATE_TIME.format(avantDateInscription)"
+                critere-premiere-page-suivante="@candidats.reverse.headOption.map(_.dateInscription).map(DateTimeFormatter.ISO_ZONED_DATE_TIME.format)"></pagination>
 </div>
 
-<script src="@routes.Assets.versioned("javascripts/pages/conseiller/listeCandidats.js")" type="text/javascript"></script>
 <script src="@routes.Assets.versioned("javascripts/modules/pagination.js")" type="text/javascript"></script>
+<script src="@routes.Assets.versioned("javascripts/pages/conseiller/listeCandidats.js")" type="text/javascript"></script>
 }
