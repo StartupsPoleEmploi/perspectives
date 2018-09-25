@@ -157,7 +157,7 @@ class CandidatProjectionSqlAdapter(database: Database,
       filtreMatching(c, query.typeRecruteur, query.codeDepartement) &&
         c.rechercheMetierEvalue === true &&
         c.metiersEvalues @& metiersSecteur
-    ).sortBy(_.dateInscription).map(rechercheCandidatDtoShape)
+    ).sortBy(_.dateInscription.desc).map(rechercheCandidatDtoShape)
 
     // Candidats qui sont intéréssés par un metier du secteur et qui ont été évalués sur un metier d'un autre secteur
     val selectCandidatsInteressesParAutreSecteur = candidatTable.filter(c =>
@@ -165,7 +165,7 @@ class CandidatProjectionSqlAdapter(database: Database,
         c.rechercheAutreMetier === true &&
         c.metiersRecherches @& metiersSecteur &&
         !(c.metiersEvalues @& metiersSecteur)
-    ).sortBy(_.dateInscription).map(rechercheCandidatDtoShape)
+    ).sortBy(_.dateInscription.desc).map(rechercheCandidatDtoShape)
 
     for {
       candidatsEvaluesSurSecteur <- database.run(selectCandidatsEvaluesSurSecteur.result)
@@ -185,7 +185,7 @@ class CandidatProjectionSqlAdapter(database: Database,
       filtreMatching(c, query.typeRecruteur, query.codeDepartement) &&
         c.rechercheMetierEvalue === true &&
         c.metiersEvalues @& metiers
-    ).sortBy(_.dateInscription).map(rechercheCandidatDtoShape)
+    ).sortBy(_.dateInscription.desc).map(rechercheCandidatDtoShape)
 
     // Candidats qui sont intéréssés par ce métier et qui ont été évalués sur un métier du meme secteur
     val metiersSecteur = rechercheCandidatService.secteurActivitePourCodeROME(query.codeROME).metiers.map(_.codeROME)
@@ -195,7 +195,7 @@ class CandidatProjectionSqlAdapter(database: Database,
         c.rechercheAutreMetier === true &&
         c.metiersRecherches @& metiers &&
         c.metiersEvalues @& metiersSecteurSansMetierChoisi
-    ).sortBy(_.dateInscription).map(rechercheCandidatDtoShape)
+    ).sortBy(_.dateInscription.desc).map(rechercheCandidatDtoShape)
 
     // Candidats qui sont intéréssés par ce métier et qui ont été évalués sur un métier d'un autre secteur
     val selectCandidatsInteressesParMetierAutreSecteur = candidatTable.filter(c =>
@@ -205,7 +205,7 @@ class CandidatProjectionSqlAdapter(database: Database,
         c.rechercheAutreMetier === true &&
         c.metiersRecherches @& metiers &&
         !(c.metiersEvalues @& metiersSecteur)
-    ).sortBy(_.dateInscription).map(rechercheCandidatDtoShape)
+    ).sortBy(_.dateInscription.desc).map(rechercheCandidatDtoShape)
 
     for {
       candidatsEvaluesSurMetier <- database.run(selectCandidatsEvaluesSurMetier.result)
