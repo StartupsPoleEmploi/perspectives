@@ -13,7 +13,7 @@
     <div id="js-listeResultats">
         @partials.candidats(candidats, nbCandidatsParPage)
     </div>
-    <pagination pagination-base-url="/conseiller/candidats"
+    <pagination pagination-base-url="@controllers.conseiller.routes.ConseillerController.listeCandidats()"
                 critere-premiere-page="@DateTimeFormatter.ISO_ZONED_DATE_TIME.format(avantDateInscription)"
                 critere-premiere-page-suivante="@candidats.reverse.headOption.map(_.dateInscription).map(DateTimeFormatter.ISO_ZONED_DATE_TIME.format)"></pagination>
 </div>
