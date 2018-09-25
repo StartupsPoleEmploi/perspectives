@@ -81,6 +81,15 @@
     border: 1px solid #334051;
   }
 
+  &--noir {
+    color: #334051;
+    border: 1px solid #EAEBED;
+
+    &:hover {
+      color: #334051;
+    }
+  }
+
   &--blancSurNoir {
     color: white;
     background-color: #334051;

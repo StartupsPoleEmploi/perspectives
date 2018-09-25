@@ -1,0 +1,23 @@
+.pagination {
+
+  text-align: center;
+
+  &-pageCourante {
+    color: #82CCDD;
+    border: 1px solid #82CCDD;
+    &:hover {
+      color: #82CCDD;
+    }
+  }
+
+  &-page {
+    border-radius: 50%;
+  }
+
+  &-item {
+    display: inline-block;
+    margin: 0.5em;
+    height: 22px;
+    width: 22px;
+  }
+}

@@ -6,7 +6,8 @@ Vue.component('pagination', {
     data: function () {
         return {
             pagesPrecedentes: this.criterePremierePage !== undefined ? [this.criterePremierePage] : [],
-            criterePageSuivante: this.criterePremierePageSuivante
+            criterePageSuivante: this.criterePremierePageSuivante,
+            pageCourante: 0
         }
     },
     methods: {
@@ -16,6 +17,7 @@ Vue.component('pagination', {
                 $("#js-listeResultats").html(response.body);
                 self.pagesPrecedentes.push(self.criterePageSuivante);
                 self.criterePageSuivante = $("#js-dernierResultat").val();
+                self.pageCourante = self.pagesPrecedentes.length - 1;
             }, function(response) {
                 // erreur
             });
@@ -24,20 +26,24 @@ Vue.component('pagination', {
             var self = this;
             self.$http.get(self.paginationBaseUrl + '/' + encodeURIComponent(self.pagesPrecedentes[index])).then(function(response) {
                 $("#js-listeResultats").html(response.body);
+                self.pageCourante = index;
             }, function(response) {
                 // erreur
             });
+        },
+        isPageCourante: function(index) {
+            return this.pageCourante === index;
         }
     },
     template:
-    '<div>' +
-        '<span>' +
-            '<button v-for="(page, index) in pagesPrecedentes" ' +
-                    'v-on:click="chargerPagePrecedente(index)" class="bouton" type="button">' +
-                '{{index + 1}}' +
-            '</button>' +
-        '</span>' +
-        '<button v-if="criterePageSuivante !== undefined && criterePageSuivante !== \'\'" ' +
-                'v-on:click="chargerPageSuivante" class="bouton" type="button">Page suivante</button>' +
+    '<div class="pagination">' +
+        '<a href="#" v-for="(page, index) in pagesPrecedentes" ' +
+            'v-on:click="chargerPagePrecedente(index)" ' +
+            'class="bouton pagination-item pagination-page" ' +
+            'v-bind:class="[isPageCourante(index) ? \'pagination-pageCourante\' : \'bouton--noir\']">' +
+            '{{index + 1}}' +
+        '</a>' +
+        '<a href="#" v-if="criterePageSuivante !== undefined && criterePageSuivante !== \'\'" ' +
+            'v-on:click="chargerPageSuivante" class="bouton bouton--noir pagination-item pagination-page">></a>' +
     '</div>'
 });
