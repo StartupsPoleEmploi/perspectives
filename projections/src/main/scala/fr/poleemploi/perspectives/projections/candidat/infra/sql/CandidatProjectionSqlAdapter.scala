@@ -200,8 +200,6 @@ class CandidatProjectionSqlAdapter(database: Database,
     // Candidats qui sont intéréssés par ce métier et qui ont été évalués sur un métier d'un autre secteur
     val selectCandidatsInteressesParMetierAutreSecteur = candidatTable.filter(c =>
       filtreMatching(c, query.typeRecruteur, query.codeDepartement) &&
-        c.numeroTelephone.isDefined &&
-        c.indexerMatching &&
         c.rechercheAutreMetier === true &&
         c.metiersRecherches @& metiers &&
         !(c.metiersEvalues @& metiersSecteur)
