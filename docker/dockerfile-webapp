@@ -47,6 +47,6 @@ COPY perspectives-webapp-${WEBAPP_VERSION}.zip .
 
 RUN unzip perspectives-webapp-${WEBAPP_VERSION}.zip
 
-HEALTHCHECK --interval=1m --timeout=10s --start-period=20s CMD curl -f http://localhost:9000 || exit 1
+HEALTHCHECK --interval=30s --timeout=10s CMD curl -f http://localhost:9000 || exit 1
 
 CMD ["sh", "-c", "./perspectives-webapp-${WEBAPP_VERSION}/bin/perspectives-webapp -Dlogger.resource=${WEBAPP_LOGBACK_RESOURCE} -Dconfig.resource=${WEBAPP_CONFIG_RESOURCE}"]
