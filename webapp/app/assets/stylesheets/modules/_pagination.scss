@@ -5,17 +5,21 @@
   &-pageCourante {
     color: white;
     background-color: #334051;
-    border: 1px solid #334051;
     &:hover {
       color: white;
     }
   }
 
   &-page {
-    border-radius: 50%;
+    color: #334051;
+    background-color: #EAEBED;
+    &:hover {
+      color: #334051;
+    }
   }
 
   &-item {
+    border-radius: 50%;
     display: inline-block;
     margin: 0.5em;
     height: 22px;

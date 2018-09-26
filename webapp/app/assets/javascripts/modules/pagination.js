@@ -39,11 +39,11 @@ Vue.component('pagination', {
     '<div class="pagination">' +
         '<a href="#" v-for="(page, index) in pagesPrecedentes" ' +
             'v-on:click="chargerPagePrecedente(index)" ' +
-            'class="bouton pagination-item pagination-page" ' +
-            'v-bind:class="[isPageCourante(index) ? \'pagination-pageCourante\' : \'bouton--noir\']">' +
+            'class="bouton pagination-item" ' +
+            'v-bind:class="[isPageCourante(index) ? \'pagination-pageCourante\' : \'pagination-page\']">' +
             '{{index + 1}}' +
         '</a>' +
         '<a href="#" v-if="criterePageSuivante !== undefined && criterePageSuivante !== \'\'" ' +
-            'v-on:click="chargerPageSuivante" class="bouton bouton--noir pagination-item pagination-page">></a>' +
+            'v-on:click="chargerPageSuivante" class="bouton pagination-item pagination-page">></a>' +
     '</div>'
 });
