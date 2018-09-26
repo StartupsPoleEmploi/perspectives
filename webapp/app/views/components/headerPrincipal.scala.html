@@ -1,4 +1,4 @@
-@(lienLogo: Option[String] = None)
+@(lienLogo: Option[String] = None)(implicit assetsFinder: AssetsFinder)
 
 <header class="headerPrincipal">
     <h1 class="headerPrincipal-titre">Perspectives</h1>
@@ -7,10 +7,10 @@
     <div class="headerPrincipal-banniere">
         @if(lienLogo.isDefined) {
             <a href="@lienLogo.get">
-                <img alt="Logo perspectives" src="@routes.Assets.versioned("images/logo-perspective.png")" width="250" />
+                <img alt="Logo perspectives" src="@assetsFinder.path("images/logo-perspective.png")" width="250" />
             </a>
         } else {
-            <img alt="Logo perspectives" src="@routes.Assets.versioned("images/logo-perspective.png")" width="250" />
+            <img alt="Logo perspectives" src="@assetsFinder.path("images/logo-perspective.png")" width="250" />
         }
     </div>
 </header>

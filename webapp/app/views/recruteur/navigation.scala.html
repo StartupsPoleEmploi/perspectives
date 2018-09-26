@@ -1,10 +1,10 @@
 @import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
 
-@(recruteurAuthentifie: Option[RecruteurAuthentifie])
+@(recruteurAuthentifie: Option[RecruteurAuthentifie])(implicit assetsFinder: AssetsFinder)
 
 <div class="navigation">
     @components.headerPrincipal(lienLogo = recruteurAuthentifie.map(r => "/recruteur/matching-candidats").orElse(Some("/recruteur")))
-    @recruteurAuthentifie.map(r => components.menuRecruteur(r)).getOrElse {
+    @recruteurAuthentifie.map(r => partials.menuRecruteur(r)).getOrElse {
         <nav class="accesLanding">
             <a class="accesLanding-lien" href="/">Accès candidat</a>
         </nav>

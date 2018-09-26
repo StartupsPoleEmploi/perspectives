@@ -1,7 +1,7 @@
 @import conf.WebAppConfig
 @import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
 
-@(candidatAuthentifie: CandidatAuthentifie)(implicit flash: Flash, webAppConfig: WebAppConfig)
+@(candidatAuthentifie: CandidatAuthentifie)(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
 @layout(candidatAuthentifie = Some(candidatAuthentifie), cssClassesBody = List("degradeGrisBlanc")) {
     <div id="confirmationInscriptionCandidat">
@@ -9,7 +9,7 @@
         <p class="confirmationTexte descriptionTitrePrincipal">Les recruteurs auront désormais accès à votre profil et pourrons vous
             contacter. De vôtre côté si vous le souhaitez vous pouvez à tout moment
             revenir pour modifier vos critères.</p>
-        <a class="bouton bouton-actionPrincipale bouton--fondBleu" href="/">
+        <a class="bouton bouton-actionPrincipale bouton--fondBleu" href="@controllers.candidat.routes.LandingController.landing().url">
             Retour à la page d'accueil
         </a>
     </div>

@@ -3,7 +3,7 @@ package controllers.recruteur
 import authentification.infra.play.{RecruteurAuthentifieAction, RecruteurAuthentifieRequest}
 import conf.WebAppConfig
 import controllers.FlashMessages._
-import controllers.FormHelpers
+import controllers.{AssetsFinder, FormHelpers}
 import fr.poleemploi.perspectives.commun.domain.NumeroTelephone
 import fr.poleemploi.perspectives.projections.recruteur.{ProfilRecruteurQuery, RecruteurQueryHandler}
 import fr.poleemploi.perspectives.recruteur._
@@ -16,6 +16,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class ProfilController @Inject()(components: ControllerComponents,
+                                 implicit val assets: AssetsFinder,
                                  implicit val webAppConfig: WebAppConfig,
                                  messagesAction: MessagesActionBuilder,
                                  recruteurCommandHandler: RecruteurCommandHandler,

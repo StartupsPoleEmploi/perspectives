@@ -3,7 +3,7 @@ package controllers.candidat
 import authentification.infra.play.{CandidatAuthentifieAction, CandidatAuthentifieRequest}
 import conf.WebAppConfig
 import controllers.FlashMessages._
-import controllers.FormHelpers
+import controllers.{AssetsFinder, FormHelpers}
 import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
 import fr.poleemploi.perspectives.commun.domain.{CodeROME, NumeroTelephone, RayonRecherche}
@@ -18,6 +18,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class SaisieCriteresRechercheController @Inject()(components: ControllerComponents,
+                                                  implicit val assets: AssetsFinder,
                                                   implicit val webAppConfig: WebAppConfig,
                                                   messagesAction: MessagesActionBuilder,
                                                   candidatCommandHandler: CandidatCommandHandler,

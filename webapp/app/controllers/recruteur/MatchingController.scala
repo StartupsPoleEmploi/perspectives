@@ -4,6 +4,7 @@ import akka.stream.scaladsl.Source
 import akka.util.ByteString
 import authentification.infra.play.{RecruteurAuthentifieAction, RecruteurAuthentifieRequest}
 import conf.WebAppConfig
+import controllers.AssetsFinder
 import controllers.FlashMessages._
 import fr.poleemploi.cqrs.projection.UnauthorizedQueryException
 import fr.poleemploi.perspectives.candidat.CandidatId
@@ -21,6 +22,7 @@ import scala.concurrent.Future
 
 @Singleton
 class MatchingController @Inject()(cc: ControllerComponents,
+                                   implicit val assets: AssetsFinder,
                                    implicit val webAppConfig: WebAppConfig,
                                    messagesAction: MessagesActionBuilder,
                                    candidatQueryHandler: CandidatQueryHandler,

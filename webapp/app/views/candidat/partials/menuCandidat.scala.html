@@ -1,0 +1,28 @@
+@import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
+
+@(candidatAuthentifie: CandidatAuthentifie)(implicit assetsFinder: AssetsFinder)
+
+<nav class="menuNavigation">
+    <span class="menuNavigation-js-responsive"></span>
+    <div class="menuNavigationHeader">
+        <img alt="Fermeture menu" class="menuNavigationHeader-iconeFermeture" src="@assetsFinder.path("images/modules/menuNavigation/fermer-menu.png")"/>
+        <img alt="Ouverture menu" class="menuNavigationHeader-iconeOuverture" src="@assetsFinder.path("images/modules/menuNavigation/ouvrir-menu.png")"/>
+        <img alt="Connecte" class="menuNavigationHeader-icone" src="@assetsFinder.path("images/modules/menuNavigation/icone-connecte.svg")" />
+        <span class="menuNavigationHeader-whois">@candidatAuthentifie.prenom.capitalize @candidatAuthentifie.nom.capitalize</span>
+        <img alt="Derouler menu" class="menuNavigationHeader-icone" src="@assetsFinder.path("images/modules/menuNavigation/derouler-menu.svg")" />
+    </div>
+    <ul class="menuNavigationActions">
+        <li class="menuNavigationActions-item">
+            <a class="menuNavigationActions-lien" href="@controllers.candidat.routes.SaisieCriteresRechercheController.saisieCriteresRecherche().url">
+                <span class="menuNavigationActions-icone iconeModifier"></span>
+                Modifier mes critères
+            </a>
+        </li>
+        <li class="menuNavigationActions-item">
+            <a class="menuNavigationActions-lien" href="@controllers.candidat.routes.AuthentificationController.deconnexion().url">
+                <span class="menuNavigationActions-icone iconeDeconnexion"></span>
+                Me déconnecter
+            </a>
+        </li>
+    </ul>
+</nav>

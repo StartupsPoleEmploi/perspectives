@@ -2,7 +2,7 @@
 @import fr.poleemploi.perspectives.commun.infra.Environnement
 
 @(title: String = "Perspectives : boostez vos opportunités !",
-        cssClassesBody: List[String] = Nil)(content: Html)(implicit flash: Flash, webAppConfig: WebAppConfig)
+        cssClassesBody: List[String] = Nil)(content: Html)(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -11,14 +11,14 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=Edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
-        <script src="@routes.Assets.versioned("javascripts/vendor/jquery-3.3.1.min.js")" type="text/javascript"></script>
+        <link rel="stylesheet" media="screen" href="@assetsFinder.path("stylesheets/main.css")">
+        <script src="@assetsFinder.path("javascripts/vendor/jquery-3.3.1.min.js")" type="text/javascript"></script>
         @if(Environnement.DEVELOPPEMENT == webAppConfig.environnement) {
-            <script src="@routes.Assets.versioned("javascripts/vendor/vuejs/vue.js")" type="text/javascript"></script>
+            <script src="@assetsFinder.path("javascripts/vendor/vuejs/vue.js")" type="text/javascript"></script>
         } else {
-            <script src="@routes.Assets.versioned("javascripts/vendor/vuejs/vue.min.js")" type="text/javascript"></script>
+            <script src="@assetsFinder.path("javascripts/vendor/vuejs/vue.min.js")" type="text/javascript"></script>
         }
-        <script src="@routes.Assets.versioned("javascripts/vendor/vuejs/vue-resource.js")" type="text/javascript"></script>
+        <script src="@assetsFinder.path("javascripts/vendor/vuejs/vue-resource.js")" type="text/javascript"></script>
     </head>
     <body @if(cssClassesBody.nonEmpty){class="@cssClassesBody.mkString(" ")"}>
         @components.headerPrincipal()

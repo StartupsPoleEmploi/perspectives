@@ -9,7 +9,7 @@
         secteursActivites: List[SecteurActivite],
         departements: List[Departement],
         recruteurAuthentifie: RecruteurAuthentifie,
-        resultatRechercheCandidat: ResultatRechercheCandidat)(implicit request: MessagesRequestHeader, flash: Flash, webAppConfig: WebAppConfig)
+        resultatRechercheCandidat: ResultatRechercheCandidat)(implicit request: MessagesRequestHeader, flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
 @layout(recruteurAuthentifie = Some(recruteurAuthentifie)) {
     <div id="matchingCandidats">
@@ -73,14 +73,14 @@
                     <div class="videoMRS">
                         <a id="js-infoBulleMRS" class="infoBulleMRS" href="#" data-toggle="modal" data-target="#js-modaleVideo">
                             <img class="infoBulleMRS-iconeLecture" alt="Lecture vidéo MRS" width="36" height="36"
-                            src="@routes.Assets.versioned("images/pages/recruteur/matching/lecture-video.svg")" />
+                            src="@assetsFinder.path("images/pages/recruteur/matching/lecture-video.svg")" />
                             <div class="questions">
                                 <span class="questionMRS">Une MRS?</span>
                                 <span>Qu'est ce que c'est?</span>
                             </div>
                         </a>
                         <img class="definitionMRS" alt="Definition MRS" width="56" height="56"
-                        src="@routes.Assets.versioned("images/pages/recruteur/matching/mrs.svg")" />
+                        src="@assetsFinder.path("images/pages/recruteur/matching/mrs.svg")" />
                     </div>
                 </div>
             }
@@ -89,5 +89,5 @@
             @partials.resultatsRecherche(resultatRechercheCandidat)
         </section>
     </div>
-    <script src="@routes.Assets.versioned("javascripts/pages/recruteur/matching.js")" type="text/javascript"></script>
+    <script src="@assetsFinder.path("javascripts/pages/recruteur/matching.js")" type="text/javascript"></script>
 }

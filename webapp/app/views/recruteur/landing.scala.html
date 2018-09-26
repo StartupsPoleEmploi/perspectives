@@ -1,7 +1,7 @@
 @import conf.WebAppConfig
 @import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
 
-@(recruteurAuthentifie: Option[RecruteurAuthentifie])(implicit flash: Flash, webAppConfig: WebAppConfig)
+@(recruteurAuthentifie: Option[RecruteurAuthentifie])(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -11,10 +11,10 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=Edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/vendor/pe-connect_html-bootstrap.css")">
-        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
-        <script src="@routes.Assets.versioned("javascripts/vendor/jquery-3.3.1.min.js")" type="text/javascript"></script>
-        @if(webAppConfig.useGoogleTagManager) {<script src="@routes.Assets.versioned("javascripts/modules/googleTagManager.js")" type="text/javascript"></script>}
+        <link rel="stylesheet" media="screen" href="@assetsFinder.path("stylesheets/vendor/pe-connect_html-bootstrap.css")">
+        <link rel="stylesheet" media="screen" href="@assetsFinder.path("stylesheets/main.css")">
+        <script src="@assetsFinder.path("javascripts/vendor/jquery-3.3.1.min.js")" type="text/javascript"></script>
+        @if(webAppConfig.useGoogleTagManager) {<script src="@assetsFinder.path("javascripts/modules/googleTagManager.js")" type="text/javascript"></script>}
     </head>
     <body>
         <div id="landingRecruteur">
@@ -41,9 +41,9 @@
                             </ul>
                             <div class="introActions">
                                 @if(recruteurAuthentifie.isDefined) {
-                                    <a class="bouton bouton-actionSecondaire bouton--degradeBleu" href="/recruteur/profil">Modifier mon profil</a>
+                                    <a class="bouton bouton-actionSecondaire bouton--degradeBleu" href="@controllers.recruteur.routes.ProfilController.modificationProfil().url">Modifier mon profil</a>
                                 } else {
-                                    <a class="bouton bouton-actionPrincipale bouton--degradeBleu" href="/recruteur/inscription">
+                                    <a class="bouton bouton-actionPrincipale bouton--degradeBleu" href="@controllers.recruteur.routes.InscriptionController.inscription().url">
                                         Je m'inscris
                                         <small class="bouton-small">en moins de 30 secondes</small>
                                     </a>
@@ -52,7 +52,7 @@
                             </div>
                         </aside>
                         <aside class="introIllustration">
-                            <img src="@routes.Assets.versioned("images/pages/recruteur/landing/intro-landing.svg")"
+                            <img src="@assetsFinder.path("images/pages/recruteur/landing/intro-landing.svg")"
                                  alt="Perspectives : recrutez des candidats"/>
                         </aside>
                     </div>
@@ -60,11 +60,11 @@
             </section>
             <section class="sponsors">
                 <ul class="listeSponsors">
-                    <li class="listeSponsors-item"><img alt="Franaud" src="@routes.Assets.versioned("images/pages/recruteur/landing/sponsor-franaud.png")" width="155" height="60"/></li>
-                    <li class="listeSponsors-item"><img alt="Afpa" src="@routes.Assets.versioned("images/pages/recruteur/landing/sponsor-afpa.png")" width="145" height="75"/></li>
-                    <li class="listeSponsors-item"><img alt="Manpower" src="@routes.Assets.versioned("images/pages/recruteur/landing/sponsor-manpower.png")" width="87" height="75"/></li>
-                    <li class="listeSponsors-item"><img alt="Supplay" src="@routes.Assets.versioned("images/pages/recruteur/landing/sponsor-supplay.png")" width="151" height="50"/></li>
-                    <li class="listeSponsors-item"><img alt="Synergy" src="@routes.Assets.versioned("images/pages/recruteur/landing/sponsor-synergy.png")" width="76" height="75"/></li>
+                    <li class="listeSponsors-item"><img alt="Franaud" src="@assetsFinder.path("images/pages/recruteur/landing/sponsor-franaud.png")" width="155" height="60"/></li>
+                    <li class="listeSponsors-item"><img alt="Afpa" src="@assetsFinder.path("images/pages/recruteur/landing/sponsor-afpa.png")" width="145" height="75"/></li>
+                    <li class="listeSponsors-item"><img alt="Manpower" src="@assetsFinder.path("images/pages/recruteur/landing/sponsor-manpower.png")" width="87" height="75"/></li>
+                    <li class="listeSponsors-item"><img alt="Supplay" src="@assetsFinder.path("images/pages/recruteur/landing/sponsor-supplay.png")" width="151" height="50"/></li>
+                    <li class="listeSponsors-item"><img alt="Synergy" src="@assetsFinder.path("images/pages/recruteur/landing/sponsor-synergy.png")" width="76" height="75"/></li>
                 </ul>
             </section>
             <section id="definitionMRS" class="definitionArrierePlan">
@@ -79,7 +79,7 @@
                     </div>
                     <div class="inscription">
                     @if(recruteurAuthentifie.isEmpty) {
-                        <a class="bouton bouton-actionPrincipale bouton--degradeBleu" href="/recruteur/inscription">
+                        <a class="bouton bouton-actionPrincipale bouton--degradeBleu" href="@controllers.recruteur.routes.InscriptionController.inscription().url">
                             Je m'inscris
                             <small class="bouton-small">en moins de 30 secondes</small>
                         </a>
@@ -96,7 +96,7 @@
                 </ol>
                 <div class="inscription">
                 @if(recruteurAuthentifie.isEmpty) {
-                    <a class="bouton bouton-actionPrincipale bouton--degradeBleu" href="/recruteur/inscription">
+                    <a class="bouton bouton-actionPrincipale bouton--degradeBleu" href="@controllers.recruteur.routes.InscriptionController.inscription().url">
                         Je m'inscris
                         <small class="bouton-small">en moins de 30 secondes</small>
                     </a>
@@ -107,21 +107,21 @@
                 <h2 class="temoignages-titre">Témoignages</h2>
                 <div class="temoignage">
                     <div class="temoignage-texte">
-                        <img alt="Citation" class="temoignage-image" width="115" height="82" src="@routes.Assets.versioned("images/modules/temoignage/quote.svg")" />
+                        <img alt="Citation" class="temoignage-image" width="115" height="82" src="@assetsFinder.path("images/modules/temoignage/quote.svg")" />
                         Ce nouveau dispositif nous a permis de mettre plusieurs candidats en poste et de pouvoir satisfaire nos clients.
                     </div>
                     <span class="temoignage-source">Yvan B. - Synergie</span>
                 </div>
                 <div class="temoignage">
                     <div class="temoignage-texte">
-                        <img alt="Citation" class="temoignage-image" width="115" height="82" src="@routes.Assets.versioned("images/modules/temoignage/quote.svg")" />
+                        <img alt="Citation" class="temoignage-image" width="115" height="82" src="@assetsFinder.path("images/modules/temoignage/quote.svg")" />
                         Les profils correspondent, en termes d'aptitudes, au profils que je recherche. Cela me permet d'être plus efficient. Je suis très satisfait de votre service.
                     </div>
                     <span class="temoignage-source">Matthieu V. - Manufacture Baizet</span>
                 </div>
                 <div class="inscription">
                 @if(recruteurAuthentifie.isEmpty) {
-                    <a class="bouton bouton-actionPrincipale bouton--degradeBleu" href="/recruteur/inscription">
+                    <a class="bouton bouton-actionPrincipale bouton--degradeBleu" href="@controllers.recruteur.routes.InscriptionController.inscription().url">
                         Je m'inscris
                         <small class="bouton-small">en moins de 30 secondes</small>
                     </a>
@@ -130,7 +130,7 @@
             </section>
         </div>
 
-        <script src="@routes.Assets.versioned("javascripts/modules/menuNavigation.js")" type="text/javascript"></script>
+        <script src="@assetsFinder.path("javascripts/modules/menuNavigation.js")" type="text/javascript"></script>
         @components.infosWebapp()
     </body>
 </html>

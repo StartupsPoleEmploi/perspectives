@@ -4,6 +4,7 @@ import java.time.ZonedDateTime
 
 import authentification.infra.play.{ConseillerAuthentifieAction, ConseillerAuthentifieRequest}
 import conf.WebAppConfig
+import controllers.AssetsFinder
 import fr.poleemploi.perspectives.candidat.{CandidatCommandHandler, CandidatId, DeclarerRepriseEmploiParConseillerCommand}
 import fr.poleemploi.perspectives.conseiller.{AutorisationService, RoleConseiller}
 import fr.poleemploi.perspectives.projections.candidat.{CandidatQueryHandler, CandidatsPourConseillerQuery}
@@ -15,6 +16,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class ConseillerController @Inject()(cc: ControllerComponents,
+                                     implicit val assets: AssetsFinder,
                                      implicit val webAppConfig: WebAppConfig,
                                      conseillerAuthentifieAction: ConseillerAuthentifieAction,
                                      messagesAction: MessagesActionBuilder,

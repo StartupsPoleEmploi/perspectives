@@ -26,5 +26,4 @@ GET         /conseiller/recruteurs                                   controllers
 GET         /conseiller/recruteurs/:avantDateInscription             controllers.conseiller.ConseillerController.paginationRecruteurs(avantDateInscription: String)
 GET         /conseiller/declarerRepriseEmploi/:candidatId            controllers.conseiller.ConseillerController.declarerRepriseEmploi(candidatId)
 
-# Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file                                            controllers.Assets.versioned(path="/public", file: Asset)
+GET         /assets/*file                                            controllers.Assets.versioned(file: String)

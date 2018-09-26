@@ -4,7 +4,7 @@
 @import fr.poleemploi.perspectives.recruteur.TypeRecruteur
 @import helper._
 
-@(profilForm: Form[ProfilForm], recruteurAuthentifie: RecruteurAuthentifie)(implicit request: MessagesRequestHeader, flash: Flash, webAppConfig: WebAppConfig)
+@(profilForm: Form[ProfilForm], recruteurAuthentifie: RecruteurAuthentifie)(implicit request: MessagesRequestHeader, flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
 @hasErrors(field:String) = @{
     profilForm(field).hasErrors
@@ -153,5 +153,5 @@
         }
     </section>
 </div>
-<script src="@routes.Assets.versioned("javascripts/pages/recruteur/profil.js")" type="text/javascript"></script>
+<script src="@assetsFinder.path("javascripts/pages/recruteur/profil.js")" type="text/javascript"></script>
 }

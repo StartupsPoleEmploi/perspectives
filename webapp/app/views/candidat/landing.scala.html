@@ -3,7 +3,7 @@
 @import fr.poleemploi.perspectives.commun.domain.SecteurActivite
 
 @(candidatAuthentifie: Option[CandidatAuthentifie],
-        secteursActivites: List[SecteurActivite])(implicit flash: Flash, webAppConfig: WebAppConfig)
+        secteursActivites: List[SecteurActivite])(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
 @layout(candidatAuthentifie = candidatAuthentifie, cssClassesBody = List("degradeGrisBlanc")) {
     <div id="landingCandidat">
@@ -22,11 +22,11 @@
                     </ul>
                     <div class="introActions">
                         @if(candidatAuthentifie.isDefined) {
-                        <a class="bouton bouton-actionSecondaire bouton--fondBlanc" href="/candidat/criteres-recherche">
+                        <a class="bouton bouton-actionSecondaire bouton--fondBlanc" href="@controllers.candidat.routes.SaisieCriteresRechercheController.saisieCriteresRecherche().url">
                             Modifier mes critères
                         </a>
                         } else {
-                        <a class="bouton bouton-actionPrincipale bouton--fondBleu" href="/candidat/inscription">
+                        <a class="bouton bouton-actionPrincipale bouton--fondBleu" href="@controllers.candidat.routes.InscriptionController.inscription().url">
                             Je m'inscris !
                             <small class="bouton-small bouton-small--opaque">en moins de 30 secondes</small>
                         </a>
@@ -36,7 +36,7 @@
                     </div>
                 </aside>
                 <aside class="introIllustration">
-                    <img alt="Illustration introduction" src="@routes.Assets.versioned("images/pages/candidat/landing/intro-landing.svg")" />
+                    <img alt="Illustration introduction" src="@assetsFinder.path("images/pages/candidat/landing/intro-landing.svg")" />
                 </aside>
             </div>
         </section>
@@ -46,27 +46,27 @@
                 <h2 class="commentCaMarche-titre">Comment ça marche ?</h2>
                 <div class="etapes">
                     <div class="etapeInscription">
-                        <img alt="Etape inscription" src="@routes.Assets.versioned("images/pages/candidat/landing/etape-inscription.svg")" />
+                        <img alt="Etape inscription" src="@assetsFinder.path("images/pages/candidat/landing/etape-inscription.svg")" />
                         <p class="etapeInscription-texte etape-texte">
                             @if(candidatAuthentifie.isDefined) {
-                                <a class="etapeInscription-lien" href="/candidat/criteres-recherche">Je m’inscris</a><br />en moins de 30 secondes
+                                <a class="etapeInscription-lien" href="@controllers.candidat.routes.SaisieCriteresRechercheController.saisieCriteresRecherche().url">Je m’inscris</a><br />en moins de 30 secondes
                             } else {
-                                <a class="etapeInscription-lien" href="/candidat/inscription">Je m’inscris</a><br />en moins de 30 secondes
+                                <a class="etapeInscription-lien" href="@controllers.candidat.routes.InscriptionController.inscription().url">Je m’inscris</a><br />en moins de 30 secondes
                             }
                         </p>
                     </div>
                     <div class="transitionMetiers transition">
-                        <img alt="Transition etape selection" src="@routes.Assets.versioned("images/pages/candidat/landing/transition-selection.svg")" />
+                        <img alt="Transition etape selection" src="@assetsFinder.path("images/pages/candidat/landing/transition-selection.svg")" />
                     </div>
                     <div class="etapeSelectionMetiers">
-                        <img alt="Etape selection metiers" src="@routes.Assets.versioned("images/pages/candidat/landing/etape-selection-metiers.svg")" />
+                        <img alt="Etape selection metiers" src="@assetsFinder.path("images/pages/candidat/landing/etape-selection-metiers.svg")" />
                         <p class="etapeSelectionMetiers-texte etape-texte">Je sélectionne les métiers qui m’intéressent</p>
                     </div>
                     <div class="transitionContact transition">
-                        <img alt="Transition etape contact" src="@routes.Assets.versioned("images/pages/candidat/landing/transition-contact.svg")" />
+                        <img alt="Transition etape contact" src="@assetsFinder.path("images/pages/candidat/landing/transition-contact.svg")" />
                     </div>
                     <div class="etapeContact">
-                        <img alt="Etape contact" src="@routes.Assets.versioned("images/pages/candidat/landing/etape-contact.svg")" />
+                        <img alt="Etape contact" src="@assetsFinder.path("images/pages/candidat/landing/etape-contact.svg")" />
                         <p class="etapeContact-texte etape-texte">Je suis contacté par des employeurs
                             ou des organismes de formation</p>
                     </div>
@@ -74,7 +74,7 @@
             </div>
             <div class="commentCaMarcheActions">
                 @if(candidatAuthentifie.isEmpty) {
-                <a class="bouton bouton-actionPrincipale bouton--fondBlanc" href="/candidat/inscription">
+                <a class="bouton bouton-actionPrincipale bouton--fondBlanc" href="@controllers.candidat.routes.InscriptionController.inscription().url">
                     Je m'inscris !
                     <small class="bouton-small bouton-small--opaque">en moins de 30 secondes</small>
                 </a>
@@ -88,14 +88,14 @@
                     <li class="secteursActivites-item">
                         <img class="secteurActivite-icone"
                              width="100" height="100" alt="@secteurActivite.label"
-                             src="@routes.Assets.versioned(s"images/pages/candidat/landing/secteurs/${secteurActivite.code.value}.svg")"/>
+                             src="@assetsFinder.path(s"images/pages/candidat/landing/secteurs/${secteurActivite.code.value}.svg")"/>
                         <span class="secteurActivite-intitule">@secteurActivite.label</span>
                     </li>
                 }
             </ul>
             <div class="metiersAction">
             @if(candidatAuthentifie.isEmpty) {
-                <a class="bouton bouton-actionPrincipale bouton--fondBleu" href="/candidat/inscription">
+                <a class="bouton bouton-actionPrincipale bouton--fondBleu" href="@controllers.candidat.routes.InscriptionController.inscription().url">
                     Je m'inscris !
                     <small class="bouton-small bouton-small--opaque">en moins de 30 secondes</small>
                 </a>
@@ -106,28 +106,28 @@
             <h2 class="temoignages-titre">Témoignages</h2>
             <div class="temoignage">
                 <div class="temoignage-texte">
-                    <img alt="Citation" class="temoignage-image" width="115" height="82" src="@routes.Assets.versioned("images/modules/temoignage/quote.svg")" />
+                    <img alt="Citation" class="temoignage-image" width="115" height="82" src="@assetsFinder.path("images/modules/temoignage/quote.svg")" />
                     Le lendemain de mon inscription, j'ai été contactée par un employeur ainsi qu'une agence d’intérim. On m'a déjà proposé un essai !
                 </div>
                 <span class="temoignage-source">Rebecca S.</span>
             </div>
             <div class="temoignage">
                 <div class="temoignage-texte">
-                    <img alt="Citation" class="temoignage-image" width="115" height="82" src="@routes.Assets.versioned("images/modules/temoignage/quote.svg")" />
+                    <img alt="Citation" class="temoignage-image" width="115" height="82" src="@assetsFinder.path("images/modules/temoignage/quote.svg")" />
                     Je reprends un emploi cet été en espérant plus pour la suite. Je suis très contente. Merci.
                 </div>
                 <span class="temoignage-source">Géraldine R.</span>
             </div>
             <div class="temoignage">
                 <div class="temoignage-texte">
-                    <img alt="Citation" class="temoignage-image" width="115" height="82" src="@routes.Assets.versioned("images/modules/temoignage/quote.svg")" />
+                    <img alt="Citation" class="temoignage-image" width="115" height="82" src="@assetsFinder.path("images/modules/temoignage/quote.svg")" />
                     Je viens de décrocher un poste aux Sables d'olonne en tant qu'aide à domicile. Je vous remercie pour votre investissement !
                 </div>
                 <span class="temoignage-source">Jessica H.</span>
             </div>
             <div class="temoignagesAction">
             @if(candidatAuthentifie.isEmpty) {
-                <a class="bouton bouton-actionPrincipale bouton--fondBleu" href="/candidat/inscription">
+                <a class="bouton bouton-actionPrincipale bouton--fondBleu" href="@controllers.candidat.routes.InscriptionController.inscription().url">
                     Je m'inscris !
                     <small class="bouton-small bouton-small--opaque">en moins de 30 secondes</small>
                 </a>
