@@ -51,7 +51,9 @@ $(document).ready(function () {
             url: '/candidat/modifierCV', // on utilise pas l'url du formulaire qui gère tous les champs en plus du CV
             dataType: 'json',
             formData: function (form) { // on envoit juste le token CSRF
-                return form.serializeArray().filter(e => e.name === "csrfToken");
+                return form.serializeArray().filter(function(field) {
+                    return field.name === "csrfToken";
+                });
             },
             dropZone: null, // pas de drag and drop
             limitMultiFileUploads: 1,

@@ -51,7 +51,6 @@ $(document).ready(function () {
 
     selecteurSecteursActivites.change(function () {
         var secteurActivite = $(this).val();
-        var metier = '';
         selecteurMetiers.empty();
         if (secteurActivite !== '') {
             var codesMetiers = secteursActivites[secteurActivite];
@@ -70,7 +69,7 @@ $(document).ready(function () {
             selecteurMetiers.html(htmlTousLesMetiers);
         }
         rechercherCandidats().always(function () {
-            modifierTitreCompteurResultats(secteurActivite, metier, selecteurDepartements.val());
+            modifierTitreCompteurResultats(secteurActivite, '', selecteurDepartements.val());
         });
     });
 

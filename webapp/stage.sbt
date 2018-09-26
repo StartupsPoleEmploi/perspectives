@@ -1,3 +1,7 @@
+import sbt.SimpleFileFilter
+
 excludeFilter in digest := "*.scss"
 
-pipelineStages := Seq(digest, gzip)
+includeFilter in uglify := new SimpleFileFilter(f => f.getAbsolutePath.contains("js") && !f.getAbsolutePath.contains("vendor"))
+
+pipelineStages := Seq(uglify, digest, gzip)
