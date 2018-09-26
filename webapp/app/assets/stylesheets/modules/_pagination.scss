@@ -3,10 +3,11 @@
   text-align: center;
 
   &-pageCourante {
-    color: #82CCDD;
-    border: 1px solid #82CCDD;
+    color: white;
+    background-color: #334051;
+    border: 1px solid #334051;
     &:hover {
-      color: #82CCDD;
+      color: white;
     }
   }
 
