@@ -4,4 +4,1560 @@
  * Released under the MIT License.
  */
 
-!function(t,e){"object"==typeof exports&&"undefined"!=typeof module?module.exports=e():"function"==typeof define&&define.amd?define(e):t.VueResource=e()}(this,function(){"use strict";function u(t){this.state=2,this.value=void 0,this.deferred=[];var e=this;try{t(function(t){e.resolve(t)},function(t){e.reject(t)})}catch(t){e.reject(t)}}u.reject=function(n){return new u(function(t,e){e(n)})},u.resolve=function(n){return new u(function(t,e){t(n)})},u.all=function(s){return new u(function(n,t){var o=0,r=[];function e(e){return function(t){r[e]=t,(o+=1)===s.length&&n(r)}}0===s.length&&n(r);for(var i=0;i<s.length;i+=1)u.resolve(s[i]).then(e(i),t)})},u.race=function(o){return new u(function(t,e){for(var n=0;n<o.length;n+=1)u.resolve(o[n]).then(t,e)})};var t=u.prototype;function c(t,e){t instanceof Promise?this.promise=t:this.promise=new Promise(t.bind(e)),this.context=e}t.resolve=function(t){var e=this;if(2===e.state){if(t===e)throw new TypeError("Promise settled with itself.");var n=!1;try{var o=t&&t.then;if(null!==t&&"object"==typeof t&&"function"==typeof o)return void o.call(t,function(t){n||e.resolve(t),n=!0},function(t){n||e.reject(t),n=!0})}catch(t){return void(n||e.reject(t))}e.state=0,e.value=t,e.notify()}},t.reject=function(t){var e=this;if(2===e.state){if(t===e)throw new TypeError("Promise settled with itself.");e.state=1,e.value=t,e.notify()}},t.notify=function(){var t,i=this;r(function(){if(2!==i.state)for(;i.deferred.length;){var t=i.deferred.shift(),e=t[0],n=t[1],o=t[2],r=t[3];try{0===i.state?o("function"==typeof e?e.call(void 0,i.value):i.value):1===i.state&&("function"==typeof n?o(n.call(void 0,i.value)):r(i.value))}catch(t){r(t)}}},t)},t.then=function(n,o){var r=this;return new u(function(t,e){r.deferred.push([n,o,t,e]),r.notify()})},t.catch=function(t){return this.then(void 0,t)},"undefined"==typeof Promise&&(window.Promise=u),c.all=function(t,e){return new c(Promise.all(t),e)},c.resolve=function(t,e){return new c(Promise.resolve(t),e)},c.reject=function(t,e){return new c(Promise.reject(t),e)},c.race=function(t,e){return new c(Promise.race(t),e)};var e=c.prototype;e.bind=function(t){return this.context=t,this},e.then=function(t,e){return t&&t.bind&&this.context&&(t=t.bind(this.context)),e&&e.bind&&this.context&&(e=e.bind(this.context)),new c(this.promise.then(t,e),this.context)},e.catch=function(t){return t&&t.bind&&this.context&&(t=t.bind(this.context)),new c(this.promise.catch(t),this.context)},e.finally=function(e){return this.then(function(t){return e.call(this),t},function(t){return e.call(this),Promise.reject(t)})};var r,i={}.hasOwnProperty,o=[].slice,a=!1,s="undefined"!=typeof window;function f(t){return t?t.replace(/^\s*|\s*$/g,""):""}function p(t){return t?t.toLowerCase():""}var h=Array.isArray;function d(t){return"string"==typeof t}function l(t){return"function"==typeof t}function m(t){return null!==t&&"object"==typeof t}function y(t){return m(t)&&Object.getPrototypeOf(t)==Object.prototype}function v(t,e,n){var o=c.resolve(t);return arguments.length<2?o:o.then(e,n)}function b(t,e,n){return l(n=n||{})&&(n=n.call(e)),T(t.bind({$vm:e,$options:n}),t,{$options:n})}function g(t,e){var n,o;if(h(t))for(n=0;n<t.length;n++)e.call(t[n],t[n],n);else if(m(t))for(o in t)i.call(t,o)&&e.call(t[o],t[o],o);return t}var w=Object.assign||function(e){return o.call(arguments,1).forEach(function(t){x(e,t)}),e};function T(e){return o.call(arguments,1).forEach(function(t){x(e,t,!0)}),e}function x(t,e,n){for(var o in e)n&&(y(e[o])||h(e[o]))?(y(e[o])&&!y(t[o])&&(t[o]={}),h(e[o])&&!h(t[o])&&(t[o]=[]),x(t[o],e[o],n)):void 0!==e[o]&&(t[o]=e[o])}function j(t,e,n){var o,u,a,r=(o=t,u=["+","#",".","/",";","?","&"],{vars:a=[],expand:function(s){return o.replace(/\{([^{}]+)\}|([^{}]+)/g,function(t,e,n){if(e){var o=null,r=[];if(-1!==u.indexOf(e.charAt(0))&&(o=e.charAt(0),e=e.substr(1)),e.split(/,/g).forEach(function(t){var e=/([^:*]*)(?::(\d+)|(\*))?/.exec(t);r.push.apply(r,function(t,e,n,o){var r=t[n],i=[];if(E(r)&&""!==r)if("string"==typeof r||"number"==typeof r||"boolean"==typeof r)r=r.toString(),o&&"*"!==o&&(r=r.substring(0,parseInt(o,10))),i.push(O(e,r,P(e)?n:null));else if("*"===o)Array.isArray(r)?r.filter(E).forEach(function(t){i.push(O(e,t,P(e)?n:null))}):Object.keys(r).forEach(function(t){E(r[t])&&i.push(O(e,r[t],t))});else{var s=[];Array.isArray(r)?r.filter(E).forEach(function(t){s.push(O(e,t))}):Object.keys(r).forEach(function(t){E(r[t])&&(s.push(encodeURIComponent(t)),s.push(O(e,r[t].toString())))}),P(e)?i.push(encodeURIComponent(n)+"="+s.join(",")):0!==s.length&&i.push(s.join(","))}else";"===e?i.push(encodeURIComponent(n)):""!==r||"&"!==e&&"?"!==e?""===r&&i.push(""):i.push(encodeURIComponent(n)+"=");return i}(s,o,e[1],e[2]||e[3])),a.push(e[1])}),o&&"+"!==o){var i=",";return"?"===o?i="&":"#"!==o&&(i=o),(0!==r.length?o:"")+r.join(i)}return r.join(",")}return C(n)})}}),i=r.expand(e);return n&&n.push.apply(n,r.vars),i}function E(t){return null!=t}function P(t){return";"===t||"&"===t||"?"===t}function O(t,e,n){return e="+"===t||"#"===t?C(e):encodeURIComponent(e),n?encodeURIComponent(n)+"="+e:e}function C(t){return t.split(/(%[0-9A-Fa-f]{2})/g).map(function(t){return/%[0-9A-Fa-f]/.test(t)||(t=encodeURI(t)),t}).join("")}function $(t,e){var r,i=this||{},n=t;return d(t)&&(n={url:t,params:e}),n=T({},$.options,i.$options,n),$.transforms.forEach(function(t){var e,n,o;d(t)&&(t=$.transform[t]),l(t)&&(e=t,n=r,o=i.$vm,r=function(t){return e.call(o,t,n)})}),r(n)}function U(i){return new c(function(o){var r=new XDomainRequest,t=function(t){var e=t.type,n=0;"load"===e?n=200:"error"===e&&(n=500),o(i.respondWith(r.responseText,{status:n}))};i.abort=function(){return r.abort()},r.open(i.method,i.getUrl()),i.timeout&&(r.timeout=i.timeout),r.onload=t,r.onabort=t,r.onerror=t,r.ontimeout=t,r.onprogress=function(){},r.send(i.getBody())})}$.options={url:"",root:null,params:{}},$.transform={template:function(e){var t=[],n=j(e.url,e.params,t);return t.forEach(function(t){delete e.params[t]}),n},query:function(t,e){var n=Object.keys($.options.params),o={},r=e(t);return g(t.params,function(t,e){-1===n.indexOf(e)&&(o[e]=t)}),(o=$.params(o))&&(r+=(-1==r.indexOf("?")?"?":"&")+o),r},root:function(t,e){var n,o,r=e(t);return d(t.root)&&!/^(https?:)?\//.test(r)&&(n=t.root,o="/",r=(n&&void 0===o?n.replace(/\s+$/,""):n&&o?n.replace(new RegExp("["+o+"]+$"),""):n)+"/"+r),r}},$.transforms=["template","query","root"],$.params=function(t){var e=[],n=encodeURIComponent;return e.add=function(t,e){l(e)&&(e=e()),null===e&&(e=""),this.push(n(t)+"="+n(e))},function n(o,t,r){var i,s=h(t),u=y(t);g(t,function(t,e){i=m(t)||h(t),r&&(e=r+"["+(u||i?e:"")+"]"),!r&&s?o.add(t.name,t.value):i?n(o,t,e):o.add(e,t)})}(e,t),e.join("&").replace(/%20/g,"+")},$.parse=function(t){var e=document.createElement("a");return document.documentMode&&(e.href=t,t=e.href),e.href=t,{href:e.href,protocol:e.protocol?e.protocol.replace(/:$/,""):"",port:e.port,host:e.host,hostname:e.hostname,pathname:"/"===e.pathname.charAt(0)?e.pathname:"/"+e.pathname,search:e.search?e.search.replace(/^\?/,""):"",hash:e.hash?e.hash.replace(/^#/,""):""}};var R=s&&"withCredentials"in new XMLHttpRequest;function n(u){return new c(function(o){var t,r,e=u.jsonp||"callback",i=u.jsonpCallback||"_jsonp"+Math.random().toString(36).substr(2),s=null;t=function(t){var e=t.type,n=0;"load"===e&&null!==s?n=200:"error"===e&&(n=500),n&&window[i]&&(delete window[i],document.body.removeChild(r)),o(u.respondWith(s,{status:n}))},window[i]=function(t){s=JSON.stringify(t)},u.abort=function(){t({type:"abort"})},u.params[e]=i,u.timeout&&setTimeout(u.abort,u.timeout),(r=document.createElement("script")).src=u.getUrl(),r.type="text/javascript",r.async=!0,r.onload=t,r.onerror=t,document.body.appendChild(r)})}function A(r){return new c(function(n){var o=new XMLHttpRequest,t=function(t){var e=r.respondWith("response"in o?o.response:o.responseText,{status:1223===o.status?204:o.status,statusText:1223===o.status?"No Content":f(o.statusText)});g(f(o.getAllResponseHeaders()).split("\n"),function(t){e.headers.append(t.slice(0,t.indexOf(":")),t.slice(t.indexOf(":")+1))}),n(e)};r.abort=function(){return o.abort()},o.open(r.method,r.getUrl(),!0),r.timeout&&(o.timeout=r.timeout),r.responseType&&"responseType"in o&&(o.responseType=r.responseType),(r.withCredentials||r.credentials)&&(o.withCredentials=!0),r.crossOrigin||r.headers.set("X-Requested-With","XMLHttpRequest"),l(r.progress)&&"GET"===r.method&&o.addEventListener("progress",r.progress),l(r.downloadProgress)&&o.addEventListener("progress",r.downloadProgress),l(r.progress)&&/^(POST|PUT)$/i.test(r.method)&&o.upload.addEventListener("progress",r.progress),l(r.uploadProgress)&&o.upload&&o.upload.addEventListener("progress",r.uploadProgress),r.headers.forEach(function(t,e){o.setRequestHeader(e,t)}),o.onload=t,o.onabort=t,o.onerror=t,o.ontimeout=t,o.send(r.getBody())})}function S(s){var u=require("got");return new c(function(e){var n,t=s.getUrl(),o=s.getBody(),r=s.method,i={};s.headers.forEach(function(t,e){i[e]=t}),u(t,{body:o,method:r,headers:i}).then(n=function(t){var n=s.respondWith(t.body,{status:t.statusCode,statusText:f(t.statusMessage)});g(t.headers,function(t,e){n.headers.set(e,t)}),e(n)},function(t){return n(t.response)})})}function k(t){return(t.client||(s?A:S))(t)}var I=function(t){var n=this;this.map={},g(t,function(t,e){return n.append(e,t)})};function L(t,n){return Object.keys(t).reduce(function(t,e){return p(n)===p(e)?e:t},null)}I.prototype.has=function(t){return null!==L(this.map,t)},I.prototype.get=function(t){var e=this.map[L(this.map,t)];return e?e.join():null},I.prototype.getAll=function(t){return this.map[L(this.map,t)]||[]},I.prototype.set=function(t,e){this.map[function(t){if(/[^a-z0-9\-#$%&'*+.^_`|~]/i.test(t))throw new TypeError("Invalid character in header field name");return f(t)}(L(this.map,t)||t)]=[f(e)]},I.prototype.append=function(t,e){var n=this.map[L(this.map,t)];n?n.push(f(e)):this.set(t,e)},I.prototype.delete=function(t){delete this.map[L(this.map,t)]},I.prototype.deleteAll=function(){this.map={}},I.prototype.forEach=function(n,o){var r=this;g(this.map,function(t,e){g(t,function(t){return n.call(o,t,e,r)})})};var q=function(t,e){var n,o,r,i=e.url,s=e.headers,u=e.status,a=e.statusText;this.url=i,this.ok=200<=u&&u<300,this.status=u||0,this.statusText=a||"",this.headers=new I(s),d(this.body=t)?this.bodyText=t:(r=t,"undefined"!=typeof Blob&&r instanceof Blob&&(this.bodyBlob=t,(0===(o=t).type.indexOf("text")||-1!==o.type.indexOf("json"))&&(this.bodyText=(n=t,new c(function(t){var e=new FileReader;e.readAsText(n),e.onload=function(){t(e.result)}})))))};q.prototype.blob=function(){return v(this.bodyBlob)},q.prototype.text=function(){return v(this.bodyText)},q.prototype.json=function(){return v(this.text(),function(t){return JSON.parse(t)})},Object.defineProperty(q.prototype,"data",{get:function(){return this.body},set:function(t){this.body=t}});var H=function(t){var e;this.body=null,this.params={},w(this,t,{method:(e=t.method||"GET",e?e.toUpperCase():"")}),this.headers instanceof I||(this.headers=new I(this.headers))};H.prototype.getUrl=function(){return $(this)},H.prototype.getBody=function(){return this.body},H.prototype.respondWith=function(t,e){return new q(t,w(e||{},{url:this.getUrl()}))};var B={"Content-Type":"application/json;charset=utf-8"};function M(t){var e=this||{},n=function(i){var s=[k],u=[];function t(t){for(;s.length;){var e=s.pop();if(l(e)){var o=void 0,n=void 0;if(m(o=e.call(i,t,function(t){return n=t})||n))return new c(function(t,n){u.forEach(function(e){o=v(o,function(t){return e.call(i,t)||t},n)}),v(o,t,n)},i);l(o)&&u.unshift(o)}else r="Invalid interceptor of type "+typeof e+", must be a function","undefined"!=typeof console&&a&&console.warn("[VueResource warn]: "+r)}var r}return m(i)||(i=null),t.use=function(t){s.push(t)},t}(e.$vm);return function(n){o.call(arguments,1).forEach(function(t){for(var e in t)void 0===n[e]&&(n[e]=t[e])})}(t||{},e.$options,M.options),M.interceptors.forEach(function(t){d(t)&&(t=M.interceptor[t]),l(t)&&n.use(t)}),n(new H(t)).then(function(t){return t.ok?t:c.reject(t)},function(t){var e;return t instanceof Error&&(e=t,"undefined"!=typeof console&&console.error(e)),c.reject(t)})}function N(n,o,t,r){var i=this||{},s={};return g(t=w({},N.actions,t),function(t,e){t=T({url:n,params:w({},o)},r,t),s[e]=function(){return(i.$http||M)(function(t,e){var n,o=w({},t),r={};switch(e.length){case 2:r=e[0],n=e[1];break;case 1:/^(POST|PUT|PATCH)$/i.test(o.method)?n=e[0]:r=e[0];break;case 0:break;default:throw"Expected up to 2 arguments [params, body], got "+e.length+" arguments"}return o.body=n,o.params=w({},o.params,r),o}(t,arguments))}}),s}function D(n){var t,e,o;D.installed||(e=(t=n).config,o=t.nextTick,r=o,a=e.debug||!e.silent,n.url=$,n.http=M,n.resource=N,n.Promise=c,Object.defineProperties(n.prototype,{$url:{get:function(){return b(n.url,this,this.$options.url)}},$http:{get:function(){return b(n.http,this,this.$options.http)}},$resource:{get:function(){return n.resource.bind(this)}},$promise:{get:function(){var e=this;return function(t){return new n.Promise(t,e)}}}}))}return M.options={},M.headers={put:B,post:B,patch:B,delete:B,common:{Accept:"application/json, text/plain, */*"},custom:{}},M.interceptor={before:function(t){l(t.before)&&t.before.call(this,t)},method:function(t){t.emulateHTTP&&/^(PUT|PATCH|DELETE)$/i.test(t.method)&&(t.headers.set("X-HTTP-Method-Override",t.method),t.method="POST")},jsonp:function(t){"JSONP"==t.method&&(t.client=n)},json:function(t){var e=t.headers.get("Content-Type")||"";return m(t.body)&&0===e.indexOf("application/json")&&(t.body=JSON.stringify(t.body)),function(o){return o.bodyText?v(o.text(),function(t){var e,n;if(0===(o.headers.get("Content-Type")||"").indexOf("application/json")||(n=(e=t).match(/^\s*(\[|\{)/))&&{"[":/]\s*$/,"{":/}\s*$/}[n[1]].test(e))try{o.body=JSON.parse(t)}catch(t){o.body=null}else o.body=t;return o}):o}},form:function(t){var e;e=t.body,"undefined"!=typeof FormData&&e instanceof FormData?t.headers.delete("Content-Type"):m(t.body)&&t.emulateJSON&&(t.body=$.params(t.body),t.headers.set("Content-Type","application/x-www-form-urlencoded"))},header:function(n){g(w({},M.headers.common,n.crossOrigin?{}:M.headers.custom,M.headers[p(n.method)]),function(t,e){n.headers.has(e)||n.headers.set(e,t)})},cors:function(t){if(s){var e=$.parse(location.href),n=$.parse(t.getUrl());n.protocol===e.protocol&&n.host===e.host||(t.crossOrigin=!0,t.emulateHTTP=!1,R||(t.client=U))}}},M.interceptors=["before","method","jsonp","json","form","header","cors"],["get","delete","head","jsonp"].forEach(function(n){M[n]=function(t,e){return this(w(e||{},{url:t,method:n}))}}),["post","put","patch"].forEach(function(o){M[o]=function(t,e,n){return this(w(n||{},{url:t,method:o,body:e}))}}),N.actions={get:{method:"GET"},save:{method:"POST"},query:{method:"GET"},update:{method:"PUT"},remove:{method:"DELETE"},delete:{method:"DELETE"}},"undefined"!=typeof window&&window.Vue&&window.Vue.use(D),D});
+(function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+        typeof define === 'function' && define.amd ? define(factory) :
+            (global.VueResource = factory());
+}(this, (function () { 'use strict';
+
+    /**
+     * Promises/A+ polyfill v1.1.4 (https://github.com/bramstein/promis)
+     */
+
+    var RESOLVED = 0;
+    var REJECTED = 1;
+    var PENDING = 2;
+
+    function Promise$1(executor) {
+
+        this.state = PENDING;
+        this.value = undefined;
+        this.deferred = [];
+
+        var promise = this;
+
+        try {
+            executor(function (x) {
+                promise.resolve(x);
+            }, function (r) {
+                promise.reject(r);
+            });
+        } catch (e) {
+            promise.reject(e);
+        }
+    }
+
+    Promise$1.reject = function (r) {
+        return new Promise$1(function (resolve, reject) {
+            reject(r);
+        });
+    };
+
+    Promise$1.resolve = function (x) {
+        return new Promise$1(function (resolve, reject) {
+            resolve(x);
+        });
+    };
+
+    Promise$1.all = function all(iterable) {
+        return new Promise$1(function (resolve, reject) {
+            var count = 0, result = [];
+
+            if (iterable.length === 0) {
+                resolve(result);
+            }
+
+            function resolver(i) {
+                return function (x) {
+                    result[i] = x;
+                    count += 1;
+
+                    if (count === iterable.length) {
+                        resolve(result);
+                    }
+                };
+            }
+
+            for (var i = 0; i < iterable.length; i += 1) {
+                Promise$1.resolve(iterable[i]).then(resolver(i), reject);
+            }
+        });
+    };
+
+    Promise$1.race = function race(iterable) {
+        return new Promise$1(function (resolve, reject) {
+            for (var i = 0; i < iterable.length; i += 1) {
+                Promise$1.resolve(iterable[i]).then(resolve, reject);
+            }
+        });
+    };
+
+    var p = Promise$1.prototype;
+
+    p.resolve = function resolve(x) {
+        var promise = this;
+
+        if (promise.state === PENDING) {
+            if (x === promise) {
+                throw new TypeError('Promise settled with itself.');
+            }
+
+            var called = false;
+
+            try {
+                var then = x && x['then'];
+
+                if (x !== null && typeof x === 'object' && typeof then === 'function') {
+                    then.call(x, function (x) {
+                        if (!called) {
+                            promise.resolve(x);
+                        }
+                        called = true;
+
+                    }, function (r) {
+                        if (!called) {
+                            promise.reject(r);
+                        }
+                        called = true;
+                    });
+                    return;
+                }
+            } catch (e) {
+                if (!called) {
+                    promise.reject(e);
+                }
+                return;
+            }
+
+            promise.state = RESOLVED;
+            promise.value = x;
+            promise.notify();
+        }
+    };
+
+    p.reject = function reject(reason) {
+        var promise = this;
+
+        if (promise.state === PENDING) {
+            if (reason === promise) {
+                throw new TypeError('Promise settled with itself.');
+            }
+
+            promise.state = REJECTED;
+            promise.value = reason;
+            promise.notify();
+        }
+    };
+
+    p.notify = function notify() {
+        var promise = this;
+
+        nextTick(function () {
+            if (promise.state !== PENDING) {
+                while (promise.deferred.length) {
+                    var deferred = promise.deferred.shift(),
+                        onResolved = deferred[0],
+                        onRejected = deferred[1],
+                        resolve = deferred[2],
+                        reject = deferred[3];
+
+                    try {
+                        if (promise.state === RESOLVED) {
+                            if (typeof onResolved === 'function') {
+                                resolve(onResolved.call(undefined, promise.value));
+                            } else {
+                                resolve(promise.value);
+                            }
+                        } else if (promise.state === REJECTED) {
+                            if (typeof onRejected === 'function') {
+                                resolve(onRejected.call(undefined, promise.value));
+                            } else {
+                                reject(promise.value);
+                            }
+                        }
+                    } catch (e) {
+                        reject(e);
+                    }
+                }
+            }
+        });
+    };
+
+    p.then = function then(onResolved, onRejected) {
+        var promise = this;
+
+        return new Promise$1(function (resolve, reject) {
+            promise.deferred.push([onResolved, onRejected, resolve, reject]);
+            promise.notify();
+        });
+    };
+
+    p.catch = function (onRejected) {
+        return this.then(undefined, onRejected);
+    };
+
+    /**
+     * Promise adapter.
+     */
+
+    if (typeof Promise === 'undefined') {
+        window.Promise = Promise$1;
+    }
+
+    function PromiseObj(executor, context) {
+
+        if (executor instanceof Promise) {
+            this.promise = executor;
+        } else {
+            this.promise = new Promise(executor.bind(context));
+        }
+
+        this.context = context;
+    }
+
+    PromiseObj.all = function (iterable, context) {
+        return new PromiseObj(Promise.all(iterable), context);
+    };
+
+    PromiseObj.resolve = function (value, context) {
+        return new PromiseObj(Promise.resolve(value), context);
+    };
+
+    PromiseObj.reject = function (reason, context) {
+        return new PromiseObj(Promise.reject(reason), context);
+    };
+
+    PromiseObj.race = function (iterable, context) {
+        return new PromiseObj(Promise.race(iterable), context);
+    };
+
+    var p$1 = PromiseObj.prototype;
+
+    p$1.bind = function (context) {
+        this.context = context;
+        return this;
+    };
+
+    p$1.then = function (fulfilled, rejected) {
+
+        if (fulfilled && fulfilled.bind && this.context) {
+            fulfilled = fulfilled.bind(this.context);
+        }
+
+        if (rejected && rejected.bind && this.context) {
+            rejected = rejected.bind(this.context);
+        }
+
+        return new PromiseObj(this.promise.then(fulfilled, rejected), this.context);
+    };
+
+    p$1.catch = function (rejected) {
+
+        if (rejected && rejected.bind && this.context) {
+            rejected = rejected.bind(this.context);
+        }
+
+        return new PromiseObj(this.promise.catch(rejected), this.context);
+    };
+
+    p$1.finally = function (callback) {
+
+        return this.then(function (value) {
+                callback.call(this);
+                return value;
+            }, function (reason) {
+                callback.call(this);
+                return Promise.reject(reason);
+            }
+        );
+    };
+
+    /**
+     * Utility functions.
+     */
+
+    var ref = {};
+    var hasOwnProperty = ref.hasOwnProperty;
+    var ref$1 = [];
+    var slice = ref$1.slice;
+    var debug = false, ntick;
+
+    var inBrowser = typeof window !== 'undefined';
+
+    function Util (ref) {
+        var config = ref.config;
+        var nextTick = ref.nextTick;
+
+        ntick = nextTick;
+        debug = config.debug || !config.silent;
+    }
+
+    function warn(msg) {
+        if (typeof console !== 'undefined' && debug) {
+            console.warn('[VueResource warn]: ' + msg);
+        }
+    }
+
+    function error(msg) {
+        if (typeof console !== 'undefined') {
+            console.error(msg);
+        }
+    }
+
+    function nextTick(cb, ctx) {
+        return ntick(cb, ctx);
+    }
+
+    function trim(str) {
+        return str ? str.replace(/^\s*|\s*$/g, '') : '';
+    }
+
+    function trimEnd(str, chars) {
+
+        if (str && chars === undefined) {
+            return str.replace(/\s+$/, '');
+        }
+
+        if (!str || !chars) {
+            return str;
+        }
+
+        return str.replace(new RegExp(("[" + chars + "]+$")), '');
+    }
+
+    function toLower(str) {
+        return str ? str.toLowerCase() : '';
+    }
+
+    function toUpper(str) {
+        return str ? str.toUpperCase() : '';
+    }
+
+    var isArray = Array.isArray;
+
+    function isString(val) {
+        return typeof val === 'string';
+    }
+
+    function isFunction(val) {
+        return typeof val === 'function';
+    }
+
+    function isObject(obj) {
+        return obj !== null && typeof obj === 'object';
+    }
+
+    function isPlainObject(obj) {
+        return isObject(obj) && Object.getPrototypeOf(obj) == Object.prototype;
+    }
+
+    function isBlob(obj) {
+        return typeof Blob !== 'undefined' && obj instanceof Blob;
+    }
+
+    function isFormData(obj) {
+        return typeof FormData !== 'undefined' && obj instanceof FormData;
+    }
+
+    function when(value, fulfilled, rejected) {
+
+        var promise = PromiseObj.resolve(value);
+
+        if (arguments.length < 2) {
+            return promise;
+        }
+
+        return promise.then(fulfilled, rejected);
+    }
+
+    function options(fn, obj, opts) {
+
+        opts = opts || {};
+
+        if (isFunction(opts)) {
+            opts = opts.call(obj);
+        }
+
+        return merge(fn.bind({$vm: obj, $options: opts}), fn, {$options: opts});
+    }
+
+    function each(obj, iterator) {
+
+        var i, key;
+
+        if (isArray(obj)) {
+            for (i = 0; i < obj.length; i++) {
+                iterator.call(obj[i], obj[i], i);
+            }
+        } else if (isObject(obj)) {
+            for (key in obj) {
+                if (hasOwnProperty.call(obj, key)) {
+                    iterator.call(obj[key], obj[key], key);
+                }
+            }
+        }
+
+        return obj;
+    }
+
+    var assign = Object.assign || _assign;
+
+    function merge(target) {
+
+        var args = slice.call(arguments, 1);
+
+        args.forEach(function (source) {
+            _merge(target, source, true);
+        });
+
+        return target;
+    }
+
+    function defaults(target) {
+
+        var args = slice.call(arguments, 1);
+
+        args.forEach(function (source) {
+
+            for (var key in source) {
+                if (target[key] === undefined) {
+                    target[key] = source[key];
+                }
+            }
+
+        });
+
+        return target;
+    }
+
+    function _assign(target) {
+
+        var args = slice.call(arguments, 1);
+
+        args.forEach(function (source) {
+            _merge(target, source);
+        });
+
+        return target;
+    }
+
+    function _merge(target, source, deep) {
+        for (var key in source) {
+            if (deep && (isPlainObject(source[key]) || isArray(source[key]))) {
+                if (isPlainObject(source[key]) && !isPlainObject(target[key])) {
+                    target[key] = {};
+                }
+                if (isArray(source[key]) && !isArray(target[key])) {
+                    target[key] = [];
+                }
+                _merge(target[key], source[key], deep);
+            } else if (source[key] !== undefined) {
+                target[key] = source[key];
+            }
+        }
+    }
+
+    /**
+     * Root Prefix Transform.
+     */
+
+    function root (options$$1, next) {
+
+        var url = next(options$$1);
+
+        if (isString(options$$1.root) && !/^(https?:)?\//.test(url)) {
+            url = trimEnd(options$$1.root, '/') + '/' + url;
+        }
+
+        return url;
+    }
+
+    /**
+     * Query Parameter Transform.
+     */
+
+    function query (options$$1, next) {
+
+        var urlParams = Object.keys(Url.options.params), query = {}, url = next(options$$1);
+
+        each(options$$1.params, function (value, key) {
+            if (urlParams.indexOf(key) === -1) {
+                query[key] = value;
+            }
+        });
+
+        query = Url.params(query);
+
+        if (query) {
+            url += (url.indexOf('?') == -1 ? '?' : '&') + query;
+        }
+
+        return url;
+    }
+
+    /**
+     * URL Template v2.0.6 (https://github.com/bramstein/url-template)
+     */
+
+    function expand(url, params, variables) {
+
+        var tmpl = parse(url), expanded = tmpl.expand(params);
+
+        if (variables) {
+            variables.push.apply(variables, tmpl.vars);
+        }
+
+        return expanded;
+    }
+
+    function parse(template) {
+
+        var operators = ['+', '#', '.', '/', ';', '?', '&'], variables = [];
+
+        return {
+            vars: variables,
+            expand: function expand(context) {
+                return template.replace(/\{([^{}]+)\}|([^{}]+)/g, function (_, expression, literal) {
+                    if (expression) {
+
+                        var operator = null, values = [];
+
+                        if (operators.indexOf(expression.charAt(0)) !== -1) {
+                            operator = expression.charAt(0);
+                            expression = expression.substr(1);
+                        }
+
+                        expression.split(/,/g).forEach(function (variable) {
+                            var tmp = /([^:*]*)(?::(\d+)|(\*))?/.exec(variable);
+                            values.push.apply(values, getValues(context, operator, tmp[1], tmp[2] || tmp[3]));
+                            variables.push(tmp[1]);
+                        });
+
+                        if (operator && operator !== '+') {
+
+                            var separator = ',';
+
+                            if (operator === '?') {
+                                separator = '&';
+                            } else if (operator !== '#') {
+                                separator = operator;
+                            }
+
+                            return (values.length !== 0 ? operator : '') + values.join(separator);
+                        } else {
+                            return values.join(',');
+                        }
+
+                    } else {
+                        return encodeReserved(literal);
+                    }
+                });
+            }
+        };
+    }
+
+    function getValues(context, operator, key, modifier) {
+
+        var value = context[key], result = [];
+
+        if (isDefined(value) && value !== '') {
+            if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+                value = value.toString();
+
+                if (modifier && modifier !== '*') {
+                    value = value.substring(0, parseInt(modifier, 10));
+                }
+
+                result.push(encodeValue(operator, value, isKeyOperator(operator) ? key : null));
+            } else {
+                if (modifier === '*') {
+                    if (Array.isArray(value)) {
+                        value.filter(isDefined).forEach(function (value) {
+                            result.push(encodeValue(operator, value, isKeyOperator(operator) ? key : null));
+                        });
+                    } else {
+                        Object.keys(value).forEach(function (k) {
+                            if (isDefined(value[k])) {
+                                result.push(encodeValue(operator, value[k], k));
+                            }
+                        });
+                    }
+                } else {
+                    var tmp = [];
+
+                    if (Array.isArray(value)) {
+                        value.filter(isDefined).forEach(function (value) {
+                            tmp.push(encodeValue(operator, value));
+                        });
+                    } else {
+                        Object.keys(value).forEach(function (k) {
+                            if (isDefined(value[k])) {
+                                tmp.push(encodeURIComponent(k));
+                                tmp.push(encodeValue(operator, value[k].toString()));
+                            }
+                        });
+                    }
+
+                    if (isKeyOperator(operator)) {
+                        result.push(encodeURIComponent(key) + '=' + tmp.join(','));
+                    } else if (tmp.length !== 0) {
+                        result.push(tmp.join(','));
+                    }
+                }
+            }
+        } else {
+            if (operator === ';') {
+                result.push(encodeURIComponent(key));
+            } else if (value === '' && (operator === '&' || operator === '?')) {
+                result.push(encodeURIComponent(key) + '=');
+            } else if (value === '') {
+                result.push('');
+            }
+        }
+
+        return result;
+    }
+
+    function isDefined(value) {
+        return value !== undefined && value !== null;
+    }
+
+    function isKeyOperator(operator) {
+        return operator === ';' || operator === '&' || operator === '?';
+    }
+
+    function encodeValue(operator, value, key) {
+
+        value = (operator === '+' || operator === '#') ? encodeReserved(value) : encodeURIComponent(value);
+
+        if (key) {
+            return encodeURIComponent(key) + '=' + value;
+        } else {
+            return value;
+        }
+    }
+
+    function encodeReserved(str) {
+        return str.split(/(%[0-9A-Fa-f]{2})/g).map(function (part) {
+            if (!/%[0-9A-Fa-f]/.test(part)) {
+                part = encodeURI(part);
+            }
+            return part;
+        }).join('');
+    }
+
+    /**
+     * URL Template (RFC 6570) Transform.
+     */
+
+    function template (options) {
+
+        var variables = [], url = expand(options.url, options.params, variables);
+
+        variables.forEach(function (key) {
+            delete options.params[key];
+        });
+
+        return url;
+    }
+
+    /**
+     * Service for URL templating.
+     */
+
+    function Url(url, params) {
+
+        var self = this || {}, options$$1 = url, transform;
+
+        if (isString(url)) {
+            options$$1 = {url: url, params: params};
+        }
+
+        options$$1 = merge({}, Url.options, self.$options, options$$1);
+
+        Url.transforms.forEach(function (handler) {
+
+            if (isString(handler)) {
+                handler = Url.transform[handler];
+            }
+
+            if (isFunction(handler)) {
+                transform = factory(handler, transform, self.$vm);
+            }
+
+        });
+
+        return transform(options$$1);
+    }
+
+    /**
+     * Url options.
+     */
+
+    Url.options = {
+        url: '',
+        root: null,
+        params: {}
+    };
+
+    /**
+     * Url transforms.
+     */
+
+    Url.transform = {template: template, query: query, root: root};
+    Url.transforms = ['template', 'query', 'root'];
+
+    /**
+     * Encodes a Url parameter string.
+     *
+     * @param {Object} obj
+     */
+
+    Url.params = function (obj) {
+
+        var params = [], escape = encodeURIComponent;
+
+        params.add = function (key, value) {
+
+            if (isFunction(value)) {
+                value = value();
+            }
+
+            if (value === null) {
+                value = '';
+            }
+
+            this.push(escape(key) + '=' + escape(value));
+        };
+
+        serialize(params, obj);
+
+        return params.join('&').replace(/%20/g, '+');
+    };
+
+    /**
+     * Parse a URL and return its components.
+     *
+     * @param {String} url
+     */
+
+    Url.parse = function (url) {
+
+        var el = document.createElement('a');
+
+        if (document.documentMode) {
+            el.href = url;
+            url = el.href;
+        }
+
+        el.href = url;
+
+        return {
+            href: el.href,
+            protocol: el.protocol ? el.protocol.replace(/:$/, '') : '',
+            port: el.port,
+            host: el.host,
+            hostname: el.hostname,
+            pathname: el.pathname.charAt(0) === '/' ? el.pathname : '/' + el.pathname,
+            search: el.search ? el.search.replace(/^\?/, '') : '',
+            hash: el.hash ? el.hash.replace(/^#/, '') : ''
+        };
+    };
+
+    function factory(handler, next, vm) {
+        return function (options$$1) {
+            return handler.call(vm, options$$1, next);
+        };
+    }
+
+    function serialize(params, obj, scope) {
+
+        var array = isArray(obj), plain = isPlainObject(obj), hash;
+
+        each(obj, function (value, key) {
+
+            hash = isObject(value) || isArray(value);
+
+            if (scope) {
+                key = scope + '[' + (plain || hash ? key : '') + ']';
+            }
+
+            if (!scope && array) {
+                params.add(value.name, value.value);
+            } else if (hash) {
+                serialize(params, value, key);
+            } else {
+                params.add(key, value);
+            }
+        });
+    }
+
+    /**
+     * XDomain client (Internet Explorer).
+     */
+
+    function xdrClient (request) {
+        return new PromiseObj(function (resolve) {
+
+            var xdr = new XDomainRequest(), handler = function (ref) {
+                var type = ref.type;
+
+
+                var status = 0;
+
+                if (type === 'load') {
+                    status = 200;
+                } else if (type === 'error') {
+                    status = 500;
+                }
+
+                resolve(request.respondWith(xdr.responseText, {status: status}));
+            };
+
+            request.abort = function () { return xdr.abort(); };
+
+            xdr.open(request.method, request.getUrl());
+
+            if (request.timeout) {
+                xdr.timeout = request.timeout;
+            }
+
+            xdr.onload = handler;
+            xdr.onabort = handler;
+            xdr.onerror = handler;
+            xdr.ontimeout = handler;
+            xdr.onprogress = function () {};
+            xdr.send(request.getBody());
+        });
+    }
+
+    /**
+     * CORS Interceptor.
+     */
+
+    var SUPPORTS_CORS = inBrowser && 'withCredentials' in new XMLHttpRequest();
+
+    function cors (request) {
+
+        if (inBrowser) {
+
+            var orgUrl = Url.parse(location.href);
+            var reqUrl = Url.parse(request.getUrl());
+
+            if (reqUrl.protocol !== orgUrl.protocol || reqUrl.host !== orgUrl.host) {
+
+                request.crossOrigin = true;
+                request.emulateHTTP = false;
+
+                if (!SUPPORTS_CORS) {
+                    request.client = xdrClient;
+                }
+            }
+        }
+
+    }
+
+    /**
+     * Form data Interceptor.
+     */
+
+    function form (request) {
+
+        if (isFormData(request.body)) {
+            request.headers.delete('Content-Type');
+        } else if (isObject(request.body) && request.emulateJSON) {
+            request.body = Url.params(request.body);
+            request.headers.set('Content-Type', 'application/x-www-form-urlencoded');
+        }
+
+    }
+
+    /**
+     * JSON Interceptor.
+     */
+
+    function json (request) {
+
+        var type = request.headers.get('Content-Type') || '';
+
+        if (isObject(request.body) && type.indexOf('application/json') === 0) {
+            request.body = JSON.stringify(request.body);
+        }
+
+        return function (response) {
+
+            return response.bodyText ? when(response.text(), function (text) {
+
+                var type = response.headers.get('Content-Type') || '';
+
+                if (type.indexOf('application/json') === 0 || isJson(text)) {
+
+                    try {
+                        response.body = JSON.parse(text);
+                    } catch (e) {
+                        response.body = null;
+                    }
+
+                } else {
+                    response.body = text;
+                }
+
+                return response;
+
+            }) : response;
+
+        };
+    }
+
+    function isJson(str) {
+
+        var start = str.match(/^\s*(\[|\{)/);
+        var end = {'[': /]\s*$/, '{': /}\s*$/};
+
+        return start && end[start[1]].test(str);
+    }
+
+    /**
+     * JSONP client (Browser).
+     */
+
+    function jsonpClient (request) {
+        return new PromiseObj(function (resolve) {
+
+            var name = request.jsonp || 'callback', callback = request.jsonpCallback || '_jsonp' + Math.random().toString(36).substr(2), body = null, handler, script;
+
+            handler = function (ref) {
+                var type = ref.type;
+
+
+                var status = 0;
+
+                if (type === 'load' && body !== null) {
+                    status = 200;
+                } else if (type === 'error') {
+                    status = 500;
+                }
+
+                if (status && window[callback]) {
+                    delete window[callback];
+                    document.body.removeChild(script);
+                }
+
+                resolve(request.respondWith(body, {status: status}));
+            };
+
+            window[callback] = function (result) {
+                body = JSON.stringify(result);
+            };
+
+            request.abort = function () {
+                handler({type: 'abort'});
+            };
+
+            request.params[name] = callback;
+
+            if (request.timeout) {
+                setTimeout(request.abort, request.timeout);
+            }
+
+            script = document.createElement('script');
+            script.src = request.getUrl();
+            script.type = 'text/javascript';
+            script.async = true;
+            script.onload = handler;
+            script.onerror = handler;
+
+            document.body.appendChild(script);
+        });
+    }
+
+    /**
+     * JSONP Interceptor.
+     */
+
+    function jsonp (request) {
+
+        if (request.method == 'JSONP') {
+            request.client = jsonpClient;
+        }
+
+    }
+
+    /**
+     * Before Interceptor.
+     */
+
+    function before (request) {
+
+        if (isFunction(request.before)) {
+            request.before.call(this, request);
+        }
+
+    }
+
+    /**
+     * HTTP method override Interceptor.
+     */
+
+    function method (request) {
+
+        if (request.emulateHTTP && /^(PUT|PATCH|DELETE)$/i.test(request.method)) {
+            request.headers.set('X-HTTP-Method-Override', request.method);
+            request.method = 'POST';
+        }
+
+    }
+
+    /**
+     * Header Interceptor.
+     */
+
+    function header (request) {
+
+        var headers = assign({}, Http.headers.common,
+            !request.crossOrigin ? Http.headers.custom : {},
+            Http.headers[toLower(request.method)]
+        );
+
+        each(headers, function (value, name) {
+            if (!request.headers.has(name)) {
+                request.headers.set(name, value);
+            }
+        });
+
+    }
+
+    /**
+     * XMLHttp client (Browser).
+     */
+
+    function xhrClient (request) {
+        return new PromiseObj(function (resolve) {
+
+            var xhr = new XMLHttpRequest(), handler = function (event) {
+
+                var response = request.respondWith(
+                    'response' in xhr ? xhr.response : xhr.responseText, {
+                        status: xhr.status === 1223 ? 204 : xhr.status, // IE9 status bug
+                        statusText: xhr.status === 1223 ? 'No Content' : trim(xhr.statusText)
+                    });
+
+                each(trim(xhr.getAllResponseHeaders()).split('\n'), function (row) {
+                    response.headers.append(row.slice(0, row.indexOf(':')), row.slice(row.indexOf(':') + 1));
+                });
+
+                resolve(response);
+            };
+
+            request.abort = function () { return xhr.abort(); };
+
+            xhr.open(request.method, request.getUrl(), true);
+
+            if (request.timeout) {
+                xhr.timeout = request.timeout;
+            }
+
+            if (request.responseType && 'responseType' in xhr) {
+                xhr.responseType = request.responseType;
+            }
+
+            if (request.withCredentials || request.credentials) {
+                xhr.withCredentials = true;
+            }
+
+            if (!request.crossOrigin) {
+                request.headers.set('X-Requested-With', 'XMLHttpRequest');
+            }
+
+            // deprecated use downloadProgress
+            if (isFunction(request.progress) && request.method === 'GET') {
+                xhr.addEventListener('progress', request.progress);
+            }
+
+            if (isFunction(request.downloadProgress)) {
+                xhr.addEventListener('progress', request.downloadProgress);
+            }
+
+            // deprecated use uploadProgress
+            if (isFunction(request.progress) && /^(POST|PUT)$/i.test(request.method)) {
+                xhr.upload.addEventListener('progress', request.progress);
+            }
+
+            if (isFunction(request.uploadProgress) && xhr.upload) {
+                xhr.upload.addEventListener('progress', request.uploadProgress);
+            }
+
+            request.headers.forEach(function (value, name) {
+                xhr.setRequestHeader(name, value);
+            });
+
+            xhr.onload = handler;
+            xhr.onabort = handler;
+            xhr.onerror = handler;
+            xhr.ontimeout = handler;
+            xhr.send(request.getBody());
+        });
+    }
+
+    /**
+     * Http client (Node).
+     */
+
+    function nodeClient (request) {
+
+        var client = require('got');
+
+        return new PromiseObj(function (resolve) {
+
+            var url = request.getUrl();
+            var body = request.getBody();
+            var method = request.method;
+            var headers = {}, handler;
+
+            request.headers.forEach(function (value, name) {
+                headers[name] = value;
+            });
+
+            client(url, {body: body, method: method, headers: headers}).then(handler = function (resp) {
+
+                var response = request.respondWith(resp.body, {
+                    status: resp.statusCode,
+                    statusText: trim(resp.statusMessage)
+                });
+
+                each(resp.headers, function (value, name) {
+                    response.headers.set(name, value);
+                });
+
+                resolve(response);
+
+            }, function (error$$1) { return handler(error$$1.response); });
+        });
+    }
+
+    /**
+     * Base client.
+     */
+
+    function Client (context) {
+
+        var reqHandlers = [sendRequest], resHandlers = [];
+
+        if (!isObject(context)) {
+            context = null;
+        }
+
+        function Client(request) {
+            while (reqHandlers.length) {
+
+                var handler = reqHandlers.pop();
+
+                if (isFunction(handler)) {
+
+                    var response = (void 0), next = (void 0);
+
+                    response = handler.call(context, request, function (val) { return next = val; }) || next;
+
+                    if (isObject(response)) {
+                        return new PromiseObj(function (resolve, reject) {
+
+                            resHandlers.forEach(function (handler) {
+                                response = when(response, function (response) {
+                                    return handler.call(context, response) || response;
+                                }, reject);
+                            });
+
+                            when(response, resolve, reject);
+
+                        }, context);
+                    }
+
+                    if (isFunction(response)) {
+                        resHandlers.unshift(response);
+                    }
+
+                } else {
+                    warn(("Invalid interceptor of type " + (typeof handler) + ", must be a function"));
+                }
+            }
+        }
+
+        Client.use = function (handler) {
+            reqHandlers.push(handler);
+        };
+
+        return Client;
+    }
+
+    function sendRequest(request) {
+
+        var client = request.client || (inBrowser ? xhrClient : nodeClient);
+
+        return client(request);
+    }
+
+    /**
+     * HTTP Headers.
+     */
+
+    var Headers = function Headers(headers) {
+        var this$1 = this;
+
+
+        this.map = {};
+
+        each(headers, function (value, name) { return this$1.append(name, value); });
+    };
+
+    Headers.prototype.has = function has (name) {
+        return getName(this.map, name) !== null;
+    };
+
+    Headers.prototype.get = function get (name) {
+
+        var list = this.map[getName(this.map, name)];
+
+        return list ? list.join() : null;
+    };
+
+    Headers.prototype.getAll = function getAll (name) {
+        return this.map[getName(this.map, name)] || [];
+    };
+
+    Headers.prototype.set = function set (name, value) {
+        this.map[normalizeName(getName(this.map, name) || name)] = [trim(value)];
+    };
+
+    Headers.prototype.append = function append (name, value) {
+
+        var list = this.map[getName(this.map, name)];
+
+        if (list) {
+            list.push(trim(value));
+        } else {
+            this.set(name, value);
+        }
+    };
+
+    Headers.prototype.delete = function delete$1 (name) {
+        delete this.map[getName(this.map, name)];
+    };
+
+    Headers.prototype.deleteAll = function deleteAll () {
+        this.map = {};
+    };
+
+    Headers.prototype.forEach = function forEach (callback, thisArg) {
+        var this$1 = this;
+
+        each(this.map, function (list, name) {
+            each(list, function (value) { return callback.call(thisArg, value, name, this$1); });
+        });
+    };
+
+    function getName(map, name) {
+        return Object.keys(map).reduce(function (prev, curr) {
+            return toLower(name) === toLower(curr) ? curr : prev;
+        }, null);
+    }
+
+    function normalizeName(name) {
+
+        if (/[^a-z0-9\-#$%&'*+.^_`|~]/i.test(name)) {
+            throw new TypeError('Invalid character in header field name');
+        }
+
+        return trim(name);
+    }
+
+    /**
+     * HTTP Response.
+     */
+
+    var Response = function Response(body, ref) {
+        var url = ref.url;
+        var headers = ref.headers;
+        var status = ref.status;
+        var statusText = ref.statusText;
+
+
+        this.url = url;
+        this.ok = status >= 200 && status < 300;
+        this.status = status || 0;
+        this.statusText = statusText || '';
+        this.headers = new Headers(headers);
+        this.body = body;
+
+        if (isString(body)) {
+
+            this.bodyText = body;
+
+        } else if (isBlob(body)) {
+
+            this.bodyBlob = body;
+
+            if (isBlobText(body)) {
+                this.bodyText = blobText(body);
+            }
+        }
+    };
+
+    Response.prototype.blob = function blob () {
+        return when(this.bodyBlob);
+    };
+
+    Response.prototype.text = function text () {
+        return when(this.bodyText);
+    };
+
+    Response.prototype.json = function json () {
+        return when(this.text(), function (text) { return JSON.parse(text); });
+    };
+
+    Object.defineProperty(Response.prototype, 'data', {
+
+        get: function get() {
+            return this.body;
+        },
+
+        set: function set(body) {
+            this.body = body;
+        }
+
+    });
+
+    function blobText(body) {
+        return new PromiseObj(function (resolve) {
+
+            var reader = new FileReader();
+
+            reader.readAsText(body);
+            reader.onload = function () {
+                resolve(reader.result);
+            };
+
+        });
+    }
+
+    function isBlobText(body) {
+        return body.type.indexOf('text') === 0 || body.type.indexOf('json') !== -1;
+    }
+
+    /**
+     * HTTP Request.
+     */
+
+    var Request = function Request(options$$1) {
+
+        this.body = null;
+        this.params = {};
+
+        assign(this, options$$1, {
+            method: toUpper(options$$1.method || 'GET')
+        });
+
+        if (!(this.headers instanceof Headers)) {
+            this.headers = new Headers(this.headers);
+        }
+    };
+
+    Request.prototype.getUrl = function getUrl () {
+        return Url(this);
+    };
+
+    Request.prototype.getBody = function getBody () {
+        return this.body;
+    };
+
+    Request.prototype.respondWith = function respondWith (body, options$$1) {
+        return new Response(body, assign(options$$1 || {}, {url: this.getUrl()}));
+    };
+
+    /**
+     * Service for sending network requests.
+     */
+
+    var COMMON_HEADERS = {'Accept': 'application/json, text/plain, */*'};
+    var JSON_CONTENT_TYPE = {'Content-Type': 'application/json;charset=utf-8'};
+
+    function Http(options$$1) {
+
+        var self = this || {}, client = Client(self.$vm);
+
+        defaults(options$$1 || {}, self.$options, Http.options);
+
+        Http.interceptors.forEach(function (handler) {
+
+            if (isString(handler)) {
+                handler = Http.interceptor[handler];
+            }
+
+            if (isFunction(handler)) {
+                client.use(handler);
+            }
+
+        });
+
+        return client(new Request(options$$1)).then(function (response) {
+
+            return response.ok ? response : PromiseObj.reject(response);
+
+        }, function (response) {
+
+            if (response instanceof Error) {
+                error(response);
+            }
+
+            return PromiseObj.reject(response);
+        });
+    }
+
+    Http.options = {};
+
+    Http.headers = {
+        put: JSON_CONTENT_TYPE,
+        post: JSON_CONTENT_TYPE,
+        patch: JSON_CONTENT_TYPE,
+        delete: JSON_CONTENT_TYPE,
+        common: COMMON_HEADERS,
+        custom: {}
+    };
+
+    Http.interceptor = {before: before, method: method, jsonp: jsonp, json: json, form: form, header: header, cors: cors};
+    Http.interceptors = ['before', 'method', 'jsonp', 'json', 'form', 'header', 'cors'];
+
+    ['get', 'delete', 'head', 'jsonp'].forEach(function (method$$1) {
+
+        Http[method$$1] = function (url, options$$1) {
+            return this(assign(options$$1 || {}, {url: url, method: method$$1}));
+        };
+
+    });
+
+    ['post', 'put', 'patch'].forEach(function (method$$1) {
+
+        Http[method$$1] = function (url, body, options$$1) {
+            return this(assign(options$$1 || {}, {url: url, method: method$$1, body: body}));
+        };
+
+    });
+
+    /**
+     * Service for interacting with RESTful services.
+     */
+
+    function Resource(url, params, actions, options$$1) {
+
+        var self = this || {}, resource = {};
+
+        actions = assign({},
+            Resource.actions,
+            actions
+        );
+
+        each(actions, function (action, name) {
+
+            action = merge({url: url, params: assign({}, params)}, options$$1, action);
+
+            resource[name] = function () {
+                return (self.$http || Http)(opts(action, arguments));
+            };
+        });
+
+        return resource;
+    }
+
+    function opts(action, args) {
+
+        var options$$1 = assign({}, action), params = {}, body;
+
+        switch (args.length) {
+
+            case 2:
+
+                params = args[0];
+                body = args[1];
+
+                break;
+
+            case 1:
+
+                if (/^(POST|PUT|PATCH)$/i.test(options$$1.method)) {
+                    body = args[0];
+                } else {
+                    params = args[0];
+                }
+
+                break;
+
+            case 0:
+
+                break;
+
+            default:
+
+                throw 'Expected up to 2 arguments [params, body], got ' + args.length + ' arguments';
+        }
+
+        options$$1.body = body;
+        options$$1.params = assign({}, options$$1.params, params);
+
+        return options$$1;
+    }
+
+    Resource.actions = {
+
+        get: {method: 'GET'},
+        save: {method: 'POST'},
+        query: {method: 'GET'},
+        update: {method: 'PUT'},
+        remove: {method: 'DELETE'},
+        delete: {method: 'DELETE'}
+
+    };
+
+    /**
+     * Install plugin.
+     */
+
+    function plugin(Vue) {
+
+        if (plugin.installed) {
+            return;
+        }
+
+        Util(Vue);
+
+        Vue.url = Url;
+        Vue.http = Http;
+        Vue.resource = Resource;
+        Vue.Promise = PromiseObj;
+
+        Object.defineProperties(Vue.prototype, {
+
+            $url: {
+                get: function get() {
+                    return options(Vue.url, this, this.$options.url);
+                }
+            },
+
+            $http: {
+                get: function get() {
+                    return options(Vue.http, this, this.$options.http);
+                }
+            },
+
+            $resource: {
+                get: function get() {
+                    return Vue.resource.bind(this);
+                }
+            },
+
+            $promise: {
+                get: function get() {
+                    var this$1 = this;
+
+                    return function (executor) { return new Vue.Promise(executor, this$1); };
+                }
+            }
+
+        });
+    }
+
+    if (typeof window !== 'undefined' && window.Vue) {
+        window.Vue.use(plugin);
+    }
+
+    return plugin;
+
+})));
