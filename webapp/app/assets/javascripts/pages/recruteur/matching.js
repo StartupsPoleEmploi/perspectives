@@ -149,7 +149,8 @@ $(document).ready(function () {
     });
 
     body.on("click", "div[id^='js-ligne-']", function () {
-        var index = $(this).prop("id").substring("js-ligne-".length);
+        var ligne = $(this);
+        var index = ligne.prop("id").substring("js-ligne-".length);
         var ligneProfil = $("#js-profilCandidat-" + index);
 
         if (ligneProfil.hasClass("profilCandidat--courant")) {
@@ -161,7 +162,8 @@ $(document).ready(function () {
                 ligneOuverte.hide();
                 ligneOuverte.removeClass("profilCandidat--courant");
             });
-            ligneProfil.slideDown("fast", function() {
+            window.location.hash = ligne.attr("id");
+            ligneProfil.slideDown(400, function() {
                 ligneProfil.addClass("profilCandidat--courant");
             });
         }
