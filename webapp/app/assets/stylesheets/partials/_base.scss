@@ -3,6 +3,7 @@ $font-family: "Open Sans", sans-serif;
 $gradient-gris-blanc: linear-gradient(339deg, rgba(255, 255, 255, 0.15) 0%, rgba(234, 239, 248, 0.15) 85%, rgba(234, 239, 248, 1) 100%);
 
 $perspectives-text-required: #FB6B6B;
+$perspectives-noir: #334051;
 
 body {
   font-family: $font-family;
@@ -27,4 +28,10 @@ body {
   line-height: 1.2;
   white-space: pre-line;
   text-align: center;
+}
+
+%liste {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
 }
