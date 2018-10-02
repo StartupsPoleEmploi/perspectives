@@ -13,18 +13,8 @@
 
 @layout(recruteurAuthentifie = Some(recruteurAuthentifie)) {
     <div id="matchingCandidats">
-        <section class="compteurResultats"> @** Utilisation de if car si on fait du pattern matching twirl generent des lignes inutiles et le bloc prend alors plus de place sur l'écran... *@
-            @if(resultatRechercheCandidat.nbCandidats == 0) {
-                <h2 class="compteurResultats-titre">Nous n'avons pas de candidats à vous proposer</h2>
-            }
-            @if(resultatRechercheCandidat.nbCandidats == 1) {
-                <h2 class="compteurResultats-titre"><b>1 candidat perspectives</b>
-                    est validé par la Méthode de Recrutement par Simulation</h2>
-            }
-            @if(resultatRechercheCandidat.nbCandidats > 1) {
-                <h2 class="compteurResultats-titre"><b>@resultatRechercheCandidat.nbCandidats candidats perspectives</b>
-                    sont validés par la Méthode de Recrutement par Simulation</h2>
-            }
+        <section class="compteurResultats">
+            <h2 class="compteurResultats-titre"></h2>
         </section>
         <div id="js-modaleVideo" class="modal" tabindex="-1">
             <div class="modal-dialog">

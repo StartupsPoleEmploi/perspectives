@@ -48,6 +48,7 @@ $(document).ready(function () {
     var titreCompteurResultats = $(".compteurResultats-titre");
 
     initialiserTableau();
+    modifierTitreCompteurResultats('', '', selecteurDepartements.val());
 
     selecteurSecteursActivites.change(function () {
         var secteurActivite = $(this).val();
