@@ -12,7 +12,7 @@ import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite}
 import fr.poleemploi.perspectives.projections.candidat._
 import fr.poleemploi.perspectives.projections.rechercheCandidat.RechercheCandidatQueryHandler
 import fr.poleemploi.perspectives.projections.recruteur._
-import fr.poleemploi.perspectives.recruteur.{RecruteurId, TypeRecruteur}
+import fr.poleemploi.perspectives.recruteur.TypeRecruteur
 import javax.inject.{Inject, Singleton}
 import play.api.http.HttpEntity
 import play.api.mvc.{Action, _}
@@ -38,7 +38,7 @@ class MatchingController @Inject()(cc: ControllerComponents,
         metier = None,
         codeDepartement = departementsProposes.headOption.map(_.code)
       )
-      rechercher(request = messagesRequest, matchingForm = matchingForm, recruteurId = recruteurAuthentifieRequest.recruteurId).map(resultatRechercheCandidatDto =>
+      rechercher(request = recruteurAuthentifieRequest, matchingForm = matchingForm).map(resultatRechercheCandidatDto =>
         Ok(views.html.recruteur.matching(
           matchingForm = MatchingForm.form.fill(matchingForm),
           recruteurAuthentifie = recruteurAuthentifieRequest.recruteurAuthentifie,
@@ -61,7 +61,7 @@ class MatchingController @Inject()(cc: ControllerComponents,
           Future.successful(BadRequest(formWithErrors.errorsAsJson))
         },
         matchingForm => {
-          rechercher(request = messagesRequest, matchingForm = matchingForm, recruteurId = recruteurAuthentifieRequest.recruteurId).map(resultatRechercheCandidatDto =>
+          rechercher(request = recruteurAuthentifieRequest, matchingForm = matchingForm).map(resultatRechercheCandidatDto =>
             Ok(views.html.recruteur.partials.resultatsRecherche(
               resultatRechercheCandidat = resultatRechercheCandidatDto,
               metierChoisi = matchingForm.metier.flatMap(c => rechercheCandidatQueryHandler.metierProposeParCode(CodeROME(c)).map(_.label)),
@@ -75,10 +75,9 @@ class MatchingController @Inject()(cc: ControllerComponents,
     }(recruteurAuthentifieRequest)
   }
 
-  private def rechercher(request: Request[AnyContent],
-                         matchingForm: MatchingForm,
-                         recruteurId: RecruteurId): Future[ResultatRechercheCandidat] =
-    getTypeRecruteur(request, recruteurId).flatMap(typeRecruteur =>
+  private def rechercher(request: RecruteurAuthentifieRequest[AnyContent],
+                         matchingForm: MatchingForm): Future[ResultatRechercheCandidat] =
+    getTypeRecruteur(request).flatMap(typeRecruteur =>
       if (matchingForm.metier.exists(_.nonEmpty)) {
         candidatQueryHandler.rechercherCandidatsParMetier(RechercherCandidatsParMetierQuery(
           codeROME = matchingForm.metier.map(CodeROME).get,
@@ -98,11 +97,11 @@ class MatchingController @Inject()(cc: ControllerComponents,
         ))
       })
 
-  private def getTypeRecruteur(request: Request[AnyContent], recruteurId: RecruteurId): Future[TypeRecruteur] =
+  private def getTypeRecruteur(request: RecruteurAuthentifieRequest[AnyContent]): Future[TypeRecruteur] =
     request.flash.getTypeRecruteur
       .map(t => Future.successful(t))
       .getOrElse {
-        recruteurQueryHandler.typeRecruteur(recruteurId).map(_.getOrElse(throw ProfilRecruteurIncompletException()))
+        recruteurQueryHandler.typeRecruteur(request.recruteurId).map(_.getOrElse(throw ProfilRecruteurIncompletException()))
       }
 
   def telechargerCV(candidatId: String, nomFichier: String): Action[AnyContent] = recruteurAuthentifieAction.async { implicit recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
