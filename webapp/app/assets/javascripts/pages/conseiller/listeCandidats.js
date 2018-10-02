@@ -15,6 +15,25 @@ $(document).ready(function () {
     });
 });
 
+// FIXME : pas de jquery pour accéder à des éléments externes au composant
 var app = new Vue({
-    el: '#listeCandidats'
+    el: '#listeCandidats',
+    methods: {
+        chargerPageSuivante: function(critere) {
+            this.$http.get('/conseiller/candidats/' + encodeURIComponent(critere)).then(function(response) {
+                app.$refs.candidats.innerHTML = response.body;
+                app.$refs.pagination.pageSuivanteChargee($("#js-nbResultats").val(), $("#js-dernierResultat").val());
+            }, function(response) {
+                // erreur
+            });
+        },
+        chargerPagePrecedente: function(critere, index) {
+            this.$http.get('/conseiller/candidats/' + encodeURIComponent(critere)).then(function(response) {
+                app.$refs.candidats.innerHTML = response.body;
+                app.$refs.pagination.pagePrecedenteChargee(index);
+            }, function(response) {
+                // erreur
+            });
+        }
+    }
 });

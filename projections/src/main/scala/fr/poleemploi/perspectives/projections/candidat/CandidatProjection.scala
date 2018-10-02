@@ -32,7 +32,7 @@ class CandidatProjection(adapter: CandidatProjectionSqlAdapter) extends Projecti
   def candidatContactRecruteur(candidatId: CandidatId): Future[CandidatContactRecruteurDto] =
     adapter.candidatContactRecruteur(candidatId)
 
-  def listerPourConseiller(query: CandidatsPourConseillerQuery): Future[List[CandidatPourConseillerDto]] =
+  def listerPourConseiller(query: CandidatsPourConseillerQuery): Future[CandidatsPourConseillerQueryResult] =
     adapter.listerPourConseiller(query)
 
   def rechercherCandidatParDateInscription(query: RechercherCandidatsParDateInscriptionQuery): Future[ResultatRechercheCandidatParDateInscription] =

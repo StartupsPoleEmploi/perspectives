@@ -1,35 +1,33 @@
 "use strict";
 
-// FIXME : pas de jquery pour accéder à des éléments externes au composant
 Vue.component('pagination', {
-    props: ['criterePremierePage', 'criterePremierePageSuivante', 'paginationBaseUrl'],
+    props: ['pagesInitiales', 'nbParPage'],
     data: function () {
         return {
-            pagesPrecedentes: this.criterePremierePage !== undefined ? [this.criterePremierePage] : [],
-            criterePageSuivante: this.criterePremierePageSuivante,
+            pagesPrecedentes: (this.pagesInitiales !== undefined && this.pagesInitiales.length > 0) ? this.pagesInitiales.slice(0, this.pagesInitiales.length - 1) : [],
+            criterePageSuivante: (this.pagesInitiales !== undefined && this.pagesInitiales.length > 1) ? this.pagesInitiales[this.pagesInitiales.length - 1] : undefined,
             pageCourante: 0
         }
     },
     methods: {
         chargerPageSuivante: function() {
-            var self = this;
-            self.$http.get(self.paginationBaseUrl + '/' + encodeURIComponent(self.criterePageSuivante)).then(function(response) {
-                $("#js-listeResultats").html(response.body);
-                self.pagesPrecedentes.push(self.criterePageSuivante);
-                self.criterePageSuivante = $("#js-dernierResultat").val();
-                self.pageCourante = self.pagesPrecedentes.length - 1;
-            }, function(response) {
-                // erreur
-            });
+            this.$emit("charger-page-suivante", this.criterePageSuivante);
         },
         chargerPagePrecedente: function(index) {
-            var self = this;
-            self.$http.get(self.paginationBaseUrl + '/' + encodeURIComponent(self.pagesPrecedentes[index])).then(function(response) {
-                $("#js-listeResultats").html(response.body);
-                self.pageCourante = index;
-            }, function(response) {
-                // erreur
-            });
+            this.$emit("charger-page-precedente", this.pagesPrecedentes[index], index);
+        },
+        pageSuivanteChargee: function(nbResultat, dernierResultat) {
+            this.pagesPrecedentes.push(this.criterePageSuivante);
+            this.pageCourante = this.pagesPrecedentes.length - 1;
+
+            if (nbResultat === this.nbParPage) {
+                this.criterePageSuivante = dernierResultat;
+            } else {
+                this.criterePageSuivante = '';
+            }
+        },
+        pagePrecedenteChargee: function(index) {
+            this.pageCourante = index;
         },
         isPageCourante: function(index) {
             return this.pageCourante === index;

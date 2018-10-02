@@ -34,12 +34,12 @@ class ConseillerController @Inject()(cc: ControllerComponents,
       candidatQueryHandler.listerPourConseiller(
         CandidatsPourConseillerQuery(
           nbCandidatsParPage = nbCandidatsParPage,
+          nbPagesACharger = 4,
           avantDateInscription = avantDateInscription
         )
-      ).map(candidats =>
+      ).map(result =>
         Ok(views.html.conseiller.listeCandidats(
-          candidats = candidats,
-          avantDateInscription = avantDateInscription,
+          resultat = result,
           nbCandidatsParPage = nbCandidatsParPage))
       )
     } else Future.successful(Unauthorized)
@@ -50,9 +50,10 @@ class ConseillerController @Inject()(cc: ControllerComponents,
       candidatQueryHandler.listerPourConseiller(
         CandidatsPourConseillerQuery(
           nbCandidatsParPage = nbCandidatsParPage,
+          nbPagesACharger = 1,
           avantDateInscription = ZonedDateTime.parse(avantDateInscription)
         )
-      ).map(candidats => Ok(views.html.conseiller.partials.candidats(candidats, nbCandidatsParPage)))
+      ).map(result => Ok(views.html.conseiller.partials.candidats(result)))
     }
     else Future.successful(Unauthorized)
   }
@@ -74,12 +75,13 @@ class ConseillerController @Inject()(cc: ControllerComponents,
       recruteurQueryHandler.listerPourConseiller(
         RecruteursPourConseillerQuery(
           nbRecruteursParPage = nbRecruteursParPage,
+          nbPagesACharger = 4,
           avantDateInscription = avantDateInscription
         )
-      ).map(recruteurs =>
+      ).map(result =>
         Ok(views.html.conseiller.listeRecruteurs(
-          recruteurs = recruteurs,
-          avantDateInscription = avantDateInscription,
+          recruteurs = result.recruteurs,
+          pagesInitiales = result.pages,
           nbRecruteursParPage = nbRecruteursParPage))
       )
     } else Future.successful(Unauthorized)
@@ -90,9 +92,10 @@ class ConseillerController @Inject()(cc: ControllerComponents,
       recruteurQueryHandler.listerPourConseiller(
         RecruteursPourConseillerQuery(
           nbRecruteursParPage = nbRecruteursParPage,
+          nbPagesACharger = 1,
           avantDateInscription = ZonedDateTime.parse(avantDateInscription)
         )
-      ).map(recruteurs => Ok(views.html.conseiller.partials.recruteurs(recruteurs, nbRecruteursParPage)))
+      ).map(result => Ok(views.html.conseiller.partials.recruteurs(result.recruteurs)))
     }
     else Future.successful(Unauthorized)
   }

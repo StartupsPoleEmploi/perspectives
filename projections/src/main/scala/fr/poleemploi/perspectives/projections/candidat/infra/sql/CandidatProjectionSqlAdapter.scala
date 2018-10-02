@@ -138,9 +138,18 @@ class CandidatProjectionSqlAdapter(database: Database,
   def candidatContactRecruteur(candidatId: CandidatId): Future[CandidatContactRecruteurDto] =
     database.run(candidatContactRecruteurQuery(candidatId).result.head)
 
-  def listerPourConseiller(query: CandidatsPourConseillerQuery): Future[List[CandidatPourConseillerDto]] =
-    database.run(listerParDateInscriptionQuery(query.nbCandidatsParPage, query.avantDateInscription).result)
-      .map(_.toList.map(toCandidatPourConseillerDto))
+  def listerPourConseiller(query: CandidatsPourConseillerQuery): Future[CandidatsPourConseillerQueryResult] =
+    database.run(listerParDateInscriptionQuery(query.nbCandidatsParPage * query.nbPagesACharger, query.avantDateInscription).result)
+      .map(r => {
+        val candidats = r.toList.map(toCandidatPourConseillerDto)
+        CandidatsPourConseillerQueryResult(
+          candidats = candidats.take(query.nbCandidatsParPage),
+          pages = query.avantDateInscription :: candidats.zipWithIndex
+            .filter(v => v._2 != 0 && (v._2 + 1) % query.nbCandidatsParPage == 0)
+            .map(_._1.dateInscription),
+          derniereDateInscription = candidats.reverse.headOption.map(_.dateInscription)
+        )
+      })
 
   def rechercherCandidatParDateInscription(query: RechercherCandidatsParDateInscriptionQuery): Future[ResultatRechercheCandidatParDateInscription] =
     database.run(

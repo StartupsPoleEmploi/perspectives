@@ -15,7 +15,7 @@ class CandidatQueryHandler(candidatProjection: CandidatProjection,
   def criteresRecherche(query: CriteresRechercheQuery): Future[CandidatCriteresRechercheDto] =
     candidatProjection.criteresRecherche(query)
 
-  def listerPourConseiller(query: CandidatsPourConseillerQuery): Future[List[CandidatPourConseillerDto]] =
+  def listerPourConseiller(query: CandidatsPourConseillerQuery): Future[CandidatsPourConseillerQueryResult] =
     candidatProjection.listerPourConseiller(query)
 
   def cvCandidat(query: CVCandidatQuery): Future[CV] =

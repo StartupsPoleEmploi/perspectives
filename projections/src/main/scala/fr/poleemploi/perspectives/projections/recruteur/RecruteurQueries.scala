@@ -10,4 +10,9 @@ sealed trait RecruteurQuery extends Query
 case class ProfilRecruteurQuery(recruteurId: RecruteurId) extends RecruteurQuery
 
 case class RecruteursPourConseillerQuery(nbRecruteursParPage: Int,
+                                         nbPagesACharger: Int,
                                          avantDateInscription: ZonedDateTime) extends RecruteurQuery
+
+case class RecruteursPourConseillerQueryResult(recruteurs: List[RecruteurPourConseillerDto],
+                                               pages: List[ZonedDateTime],
+                                               derniereDateInscription: Option[ZonedDateTime])

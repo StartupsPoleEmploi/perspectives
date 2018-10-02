@@ -17,7 +17,12 @@ case class CVCandidatPourRecruteurQuery(candidatId: CandidatId,
                                         recruteurId: RecruteurId) extends CandidatQuery
 
 case class CandidatsPourConseillerQuery(nbCandidatsParPage: Int,
+                                        nbPagesACharger: Int,
                                         avantDateInscription: ZonedDateTime) extends CandidatQuery
+
+case class CandidatsPourConseillerQueryResult(candidats: List[CandidatPourConseillerDto],
+                                              pages: List[ZonedDateTime],
+                                              derniereDateInscription: Option[ZonedDateTime])
 
 case class RechercherCandidatsParDateInscriptionQuery(typeRecruteur: TypeRecruteur,
                                                       codeDepartement: Option[String]) extends CandidatQuery

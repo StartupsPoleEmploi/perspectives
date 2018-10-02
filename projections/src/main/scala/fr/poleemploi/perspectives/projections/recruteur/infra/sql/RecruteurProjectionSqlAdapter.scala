@@ -4,7 +4,7 @@ import java.time.ZonedDateTime
 
 import fr.poleemploi.perspectives.commun.domain.{Email, Genre, NumeroTelephone}
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
-import fr.poleemploi.perspectives.projections.recruteur.{ProfilRecruteurDto, ProfilRecruteurQuery, RecruteurPourConseillerDto, RecruteursPourConseillerQuery}
+import fr.poleemploi.perspectives.projections.recruteur._
 import fr.poleemploi.perspectives.recruteur._
 import slick.jdbc.JdbcBackend.Database
 
@@ -83,8 +83,18 @@ class RecruteurProjectionSqlAdapter(database: Database) {
   def profilRecruteur(query: ProfilRecruteurQuery): Future[ProfilRecruteurDto] =
     database.run(profilRecruteurQuery(query.recruteurId).result.head)
 
-  def listerPourConseiller(query: RecruteursPourConseillerQuery): Future[List[RecruteurPourConseillerDto]] =
-    database.run(listerParDateInscriptionQuery(query.nbRecruteursParPage, query.avantDateInscription).result).map(_.toList)
+  def listerPourConseiller(query: RecruteursPourConseillerQuery): Future[RecruteursPourConseillerQueryResult] =
+    database.run(listerParDateInscriptionQuery(query.nbRecruteursParPage * query.nbPagesACharger, query.avantDateInscription).result)
+      .map(r => {
+        val recruteurs = r.toList
+        RecruteursPourConseillerQueryResult(
+          recruteurs = recruteurs.take(query.nbRecruteursParPage),
+          pages = query.avantDateInscription :: recruteurs.zipWithIndex
+            .filter(v => v._2 != 0 && (v._2 + 1) % query.nbRecruteursParPage == 0)
+            .map(_._1.dateInscription),
+          derniereDateInscription = recruteurs.reverse.headOption.map(_.dateInscription)
+        )
+      })
 
   def onRecruteurInscritEvent(event: RecruteurInscritEvent): Future[Unit] =
     database

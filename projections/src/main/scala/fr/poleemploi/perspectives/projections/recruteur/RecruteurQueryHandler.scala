@@ -13,6 +13,6 @@ class RecruteurQueryHandler(recruteurProjection: RecruteurProjection) extends Qu
   def profilRecruteur(query: ProfilRecruteurQuery): Future[ProfilRecruteurDto] =
     recruteurProjection.profilRecruteur(query)
 
-  def listerPourConseiller(query: RecruteursPourConseillerQuery): Future[List[RecruteurPourConseillerDto]] =
+  def listerPourConseiller(query: RecruteursPourConseillerQuery): Future[RecruteursPourConseillerQueryResult] =
     recruteurProjection.listerPourConseiller(query)
 }

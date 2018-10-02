@@ -25,6 +25,6 @@ class RecruteurProjection(adapter: RecruteurProjectionSqlAdapter) extends Projec
   def profilRecruteur(query: ProfilRecruteurQuery): Future[ProfilRecruteurDto] =
     adapter.profilRecruteur(query)
 
-  def listerPourConseiller(query: RecruteursPourConseillerQuery): Future[List[RecruteurPourConseillerDto]] =
+  def listerPourConseiller(query: RecruteursPourConseillerQuery): Future[RecruteursPourConseillerQueryResult] =
     adapter.listerPourConseiller(query)
 }
