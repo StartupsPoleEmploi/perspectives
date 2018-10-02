@@ -76,23 +76,23 @@
   }
 
   &--noirSurBlanc {
-    color: #334051;
+    color: $perspectives-noir;
     background-color: white;
-    border: 1px solid #334051;
+    border: 1px solid $perspectives-noir;
   }
 
   &--noir {
-    color: #334051;
+    color: $perspectives-noir;
     border: 1px solid #EAEBED;
 
     &:hover {
-      color: #334051;
+      color: $perspectives-noir;
     }
   }
 
   &--blancSurNoir {
     color: white;
-    background-color: #334051;
+    background-color: $perspectives-noir;
 
     &:hover {
       color: white;
@@ -105,7 +105,7 @@
   }
 
   &--noirSurGris {
-    color: #2C4054;
+    color: $perspectives-noir;
     background-color: #EAEBED;
   }
 
@@ -132,7 +132,7 @@
   padding-top: 5px;
   height: 36px;
   cursor: pointer;
-  border: 1px solid #334051;
+  border: 1px solid $perspectives-noir;
   border-radius: 4px;
   @include userSelect(none);
   text-align: center;
@@ -162,11 +162,11 @@
     }
 
     &:not(:checked) ~ .boutonRadio {
-      color: #334051;
+      color: $perspectives-noir;
       background-color: white;
 
       .boutonRadio-cercle {
-        border: 1px solid #334051;
+        border: 1px solid $perspectives-noir;
       }
     }
   }
@@ -198,7 +198,7 @@
     width: 20px;
 
     &--petite {
-      border: 1px solid #334051;
+      border: 1px solid $perspectives-noir;
 
       &:after {
         top: 0;
@@ -207,7 +207,7 @@
     }
 
     &--grande {
-      border: 2px solid #334051;
+      border: 2px solid $perspectives-noir;
 
       &:after {
         bottom: 2px;
@@ -236,7 +236,7 @@ input[type="text"] {
   min-width: 40%;
   padding: 10px;
   border: none;
-  border-bottom: 1px solid #334051;
+  border-bottom: 1px solid $perspectives-noir;
   box-sizing: border-box;
   caret-color: #1157F0;
 }
@@ -267,7 +267,7 @@ input[type="text"] {
     top: 15px;
     width: 12px;
     height: 12px;
-    border: solid #334051;
+    border: solid $perspectives-noir;
     border-width: 0 3px 3px 0;
     -webkit-transform: rotate(45deg);
     -ms-transform: rotate(45deg);
@@ -281,7 +281,7 @@ input[type="text"] {
     top: 15px;
     width: 2px;
     height: 17px;
-    border: 1.5px solid #334051;
+    border: 1.5px solid $perspectives-noir;
     border-radius: 1px;
   }
 }
@@ -336,7 +336,7 @@ input[type="text"] {
   &-barreProgression {
     width: 0;
     color: white;
-    background-color: #334051;
+    background-color: $perspectives-noir;
     text-align: center;
   }
 }
