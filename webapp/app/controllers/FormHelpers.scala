@@ -1,6 +1,12 @@
 package controllers
 
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+
 import fr.poleemploi.perspectives.commun.domain.NumeroTelephone
+import play.api.data.FormError
+import play.api.data.format.Formats._
+import play.api.data.format.Formatter
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 
 object FormHelpers {
@@ -25,4 +31,19 @@ object FormHelpers {
     * Utilisé pour récupérer un Boolean depuis un String (soumission de formulaire sans passer par le mapping Play boolean)
     */
   def stringToBoolean(string: String): Boolean = if ("true".equalsIgnoreCase(string)) true else false
+
+  implicit object ZonedDateTimeFormatter extends Formatter[ZonedDateTime] {
+
+    override val format = Some(("format.zonedatetime", Nil))
+
+    override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], ZonedDateTime] =
+      parsing(
+        parse = s => ZonedDateTime.parse(s),
+        errMsg = "error.zonedatetime",
+        errArgs = Nil
+      )(key, data)
+
+    override def unbind(key: String, value: ZonedDateTime) =
+      Map(key -> DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(value))
+  }
 }
