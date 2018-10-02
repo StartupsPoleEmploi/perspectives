@@ -68,21 +68,21 @@ $(document).ready(function () {
         } else {
             selecteurMetiers.html(htmlTousLesMetiers);
         }
-        rechercherCandidats().always(function () {
+        rechercherCandidats().done(function () {
             modifierTitreCompteurResultats(secteurActivite, '', selecteurDepartements.val());
         });
     });
 
     selecteurDepartements.change(function() {
         var codeDepartement = $(this).val();
-        rechercherCandidats().always(function () {
+        rechercherCandidats().done(function () {
             modifierTitreCompteurResultats(selecteurSecteursActivites.val(), selecteurMetiers.val(), codeDepartement);
         });
     });
 
     selecteurMetiers.change(function () {
         var metier = $(this).val();
-        rechercherCandidats().always(function () {
+        rechercherCandidats().done(function () {
             modifierTitreCompteurResultats(selecteurSecteursActivites.val(), metier, selecteurDepartements.val());
         });
     });
