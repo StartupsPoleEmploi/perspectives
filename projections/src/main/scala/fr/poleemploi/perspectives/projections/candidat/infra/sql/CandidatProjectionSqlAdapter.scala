@@ -77,7 +77,7 @@ class CandidatProjectionSqlAdapter(database: Database,
 
   implicit object CandidatCriteresRechercheShape extends CaseClassShape(CandidatCriteresRechercheLifted.tupled, CandidatCriteresRechercheDto.tupled)
 
-  implicit object RechercheCandidatShape extends CaseClassShape(RechercheCandidatLifted.tupled, RechercheCandidatRecord.tupled)
+  implicit object CandidatRechercheShape extends CaseClassShape(CandidatRechercheLifted.tupled, CandidatRechercheRecord.tupled)
 
   val criteresRechercheQuery = Compiled { candidatId: Rep[CandidatId] =>
     candidatTable
@@ -155,8 +155,8 @@ class CandidatProjectionSqlAdapter(database: Database,
     database.run(
       candidatTable
         .filter(c => filtreMatching(c, query.typeRecruteur, query.codeDepartement))
-        .sortBy(_.dateInscription.desc).map(rechercheCandidatDtoShape).result
-    ).map(r => ResultatRechercheCandidatParDateInscription(r.toList.map(toRechercheCandidatDto)))
+        .sortBy(_.dateInscription.desc).map(candidatRechercheDtoShape).result
+    ).map(r => ResultatRechercheCandidatParDateInscription(r.toList.map(toCandidatRechercheDto)))
 
   def rechercherCandidatParSecteur(query: RechercherCandidatsParSecteurQuery): Future[ResultatRechercheCandidatParSecteur] = {
     val metiersSecteur = rechercheCandidatService.secteurActiviteParCode(query.codeSecteurActivite).metiers.map(_.codeROME)
@@ -166,7 +166,7 @@ class CandidatProjectionSqlAdapter(database: Database,
       filtreMatching(c, query.typeRecruteur, query.codeDepartement) &&
         c.rechercheMetierEvalue === true &&
         c.metiersEvalues @& metiersSecteur
-    ).sortBy(_.dateInscription.desc).map(rechercheCandidatDtoShape)
+    ).sortBy(_.dateInscription.desc).map(candidatRechercheDtoShape)
 
     // Candidats qui sont intéréssés par un metier du secteur et qui ont été évalués sur un metier d'un autre secteur
     val selectCandidatsInteressesParAutreSecteur = candidatTable.filter(c =>
@@ -174,15 +174,15 @@ class CandidatProjectionSqlAdapter(database: Database,
         c.rechercheAutreMetier === true &&
         c.metiersRecherches @& metiersSecteur &&
         !(c.metiersEvalues @& metiersSecteur)
-    ).sortBy(_.dateInscription.desc).map(rechercheCandidatDtoShape)
+    ).sortBy(_.dateInscription.desc).map(candidatRechercheDtoShape)
 
     for {
       candidatsEvaluesSurSecteur <- database.run(selectCandidatsEvaluesSurSecteur.result)
       candidatsInteressesParAutreSecteur <- database.run(selectCandidatsInteressesParAutreSecteur.result)
     } yield
       ResultatRechercheCandidatParSecteur(
-        candidatsEvaluesSurSecteur = candidatsEvaluesSurSecteur.toList.map(toRechercheCandidatDto),
-        candidatsInteressesParAutreSecteur = candidatsInteressesParAutreSecteur.toList.map(toRechercheCandidatDto)
+        candidatsEvaluesSurSecteur = candidatsEvaluesSurSecteur.toList.map(toCandidatRechercheDto),
+        candidatsInteressesParAutreSecteur = candidatsInteressesParAutreSecteur.toList.map(toCandidatRechercheDto)
       )
   }
 
@@ -194,7 +194,7 @@ class CandidatProjectionSqlAdapter(database: Database,
       filtreMatching(c, query.typeRecruteur, query.codeDepartement) &&
         c.rechercheMetierEvalue === true &&
         c.metiersEvalues @& metiers
-    ).sortBy(_.dateInscription.desc).map(rechercheCandidatDtoShape)
+    ).sortBy(_.dateInscription.desc).map(candidatRechercheDtoShape)
 
     // Candidats qui sont intéréssés par ce métier et qui ont été évalués sur un métier du meme secteur
     val metiersSecteur = rechercheCandidatService.secteurActivitePourCodeROME(query.codeROME).metiers.map(_.codeROME)
@@ -204,7 +204,7 @@ class CandidatProjectionSqlAdapter(database: Database,
         c.rechercheAutreMetier === true &&
         c.metiersRecherches @& metiers &&
         c.metiersEvalues @& metiersSecteurSansMetierChoisi
-    ).sortBy(_.dateInscription.desc).map(rechercheCandidatDtoShape)
+    ).sortBy(_.dateInscription.desc).map(candidatRechercheDtoShape)
 
     // Candidats qui sont intéréssés par ce métier et qui ont été évalués sur un métier d'un autre secteur
     val selectCandidatsInteressesParMetierAutreSecteur = candidatTable.filter(c =>
@@ -212,7 +212,7 @@ class CandidatProjectionSqlAdapter(database: Database,
         c.rechercheAutreMetier === true &&
         c.metiersRecherches @& metiers &&
         !(c.metiersEvalues @& metiersSecteur)
-    ).sortBy(_.dateInscription.desc).map(rechercheCandidatDtoShape)
+    ).sortBy(_.dateInscription.desc).map(candidatRechercheDtoShape)
 
     for {
       candidatsEvaluesSurMetier <- database.run(selectCandidatsEvaluesSurMetier.result)
@@ -220,19 +220,19 @@ class CandidatProjectionSqlAdapter(database: Database,
       candidatsInteressesParMetierAutreSecteur <- database.run(selectCandidatsInteressesParMetierAutreSecteur.result)
     } yield
       ResultatRechercheCandidatParMetier(
-        candidatsEvaluesSurMetier = candidatsEvaluesSurMetier.toList.map(toRechercheCandidatDto),
-        candidatsInteressesParMetierMemeSecteur = candidatsInteressesParMetierMemeSecteur.toList.map(toRechercheCandidatDto),
-        candidatsInteressesParMetierAutreSecteur = candidatsInteressesParMetierAutreSecteur.toList.map(toRechercheCandidatDto)
+        candidatsEvaluesSurMetier = candidatsEvaluesSurMetier.toList.map(toCandidatRechercheDto),
+        candidatsInteressesParMetierMemeSecteur = candidatsInteressesParMetierMemeSecteur.toList.map(toCandidatRechercheDto),
+        candidatsInteressesParMetierAutreSecteur = candidatsInteressesParMetierAutreSecteur.toList.map(toCandidatRechercheDto)
       )
   }
 
-  private def rechercheCandidatDtoShape(c: CandidatTable) =
-    RechercheCandidatLifted(c.candidatId, c.nom, c.prenom, c.email, c.commune, c.metiersEvalues, c.metiersRecherches, c.rayonRecherche, c.numeroTelephone, c.cvId, c.cvTypeMedia)
+  private def candidatRechercheDtoShape(c: CandidatTable) =
+    CandidatRechercheLifted(c.candidatId, c.nom, c.prenom, c.email, c.commune, c.metiersEvalues, c.metiersRecherches, c.rayonRecherche, c.numeroTelephone, c.cvId, c.cvTypeMedia)
 
-  private def toRechercheCandidatDto(record: RechercheCandidatRecord): RechercheCandidatDto = {
+  private def toCandidatRechercheDto(record: CandidatRechercheRecord): CandidatRechercheDto = {
     val metiersEvalues = record.metiersEvalues.map(referentielMetier.metierParCode)
 
-    RechercheCandidatDto(
+    CandidatRechercheDto(
       candidatId = record.candidatId,
       nom = record.nom,
       prenom = record.prenom,

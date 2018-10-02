@@ -4,7 +4,7 @@ import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
 import fr.poleemploi.perspectives.commun.domain._
 
-case class RechercheCandidatRecord(candidatId: CandidatId,
+case class CandidatRechercheRecord(candidatId: CandidatId,
                                    nom: String,
                                    prenom: String,
                                    email: Email,

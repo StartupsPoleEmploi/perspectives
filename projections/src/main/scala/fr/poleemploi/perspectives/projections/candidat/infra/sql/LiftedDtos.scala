@@ -39,7 +39,7 @@ case class CandidatCriteresRechercheLifted(candidatId: Rep[CandidatId],
                                            cvId: Rep[Option[CVId]],
                                            cvTypeMedia: Rep[Option[TypeMedia]])
 
-case class RechercheCandidatLifted(candidatId: Rep[CandidatId],
+case class CandidatRechercheLifted(candidatId: Rep[CandidatId],
                                    nom: Rep[String],
                                    prenom: Rep[String],
                                    email: Rep[Email],
