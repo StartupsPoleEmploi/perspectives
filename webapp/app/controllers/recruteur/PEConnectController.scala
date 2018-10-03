@@ -8,7 +8,7 @@ import fr.poleemploi.perspectives.authentification.infra.PEConnectService
 import fr.poleemploi.perspectives.authentification.infra.sql.RecruteurPEConnect
 import fr.poleemploi.perspectives.authentification.infra.ws.{PEConnectRecruteurInfos, PEConnectWSAdapterConfig}
 import fr.poleemploi.perspectives.projections.recruteur.{ProfilRecruteurQuery, RecruteurQueryHandler}
-import fr.poleemploi.perspectives.recruteur.{InscrireRecruteurCommand, ModifierProfilGerantCommand, RecruteurCommandHandler, RecruteurId}
+import fr.poleemploi.perspectives.recruteur.{ConnecterRecruteurCommand, InscrireRecruteurCommand, RecruteurCommandHandler, RecruteurId}
 import javax.inject.{Inject, Singleton}
 import play.api.Logger
 import play.api.mvc._
@@ -74,7 +74,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       recruteurInfos <- peConnectService.getInfosRecruteur(accessTokenResponse.accessToken)
       optRecruteurPEConnnect <- peConnectService.findRecruteur(recruteurInfos.peConnectId)
       optProfilRecruteur <- optRecruteurPEConnnect.map(r => recruteurQueryHandler.profilRecruteur(ProfilRecruteurQuery(r.recruteurId)).map(Some(_))).getOrElse(Future.successful(None))
-      recruteurId <- optRecruteurPEConnnect.map(r => modifierProfilGerant(r, recruteurInfos)).getOrElse(inscrire(recruteurInfos))
+      recruteurId <- optRecruteurPEConnnect.map(r => connecter(r, recruteurInfos)).getOrElse(inscrire(recruteurInfos))
     } yield {
       val recruteurAuthentifie = RecruteurAuthentifie(
         recruteurId = recruteurId,
@@ -136,16 +136,16 @@ class PEConnectController @Inject()(cc: ControllerComponents,
     } yield recruteurId
   }
 
-  private def modifierProfilGerant(recruteurPEConnect: RecruteurPEConnect,
-                                   peConnectRecruteurInfos: PEConnectRecruteurInfos): Future[RecruteurId] = {
+  private def connecter(recruteurPEConnect: RecruteurPEConnect,
+                        peConnectRecruteurInfos: PEConnectRecruteurInfos): Future[RecruteurId] = {
     val recruteurId = recruteurPEConnect.recruteurId
-    val command = ModifierProfilGerantCommand(
+    val command = ConnecterRecruteurCommand(
       id = recruteurId,
       nom = peConnectRecruteurInfos.nom,
       prenom = peConnectRecruteurInfos.prenom,
       email = peConnectRecruteurInfos.email,
       genre = peConnectRecruteurInfos.genre
     )
-    recruteurCommandHandler.modifierProfilGerant(command).map(_ => recruteurId)
+    recruteurCommandHandler.connecter(command).map(_ => recruteurId)
   }
 }

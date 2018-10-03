@@ -14,6 +14,8 @@ case class RecruteurInscritEvent(recruteurId: RecruteurId,
                                  email: Email,
                                  genre: Genre) extends RecruteurEvent
 
+case class RecruteurConnecteEvent(recruteurId: RecruteurId) extends RecruteurEvent
+
 case class ProfilModifieEvent(recruteurId: RecruteurId,
                               typeRecruteur: TypeRecruteur,
                               raisonSociale: String,

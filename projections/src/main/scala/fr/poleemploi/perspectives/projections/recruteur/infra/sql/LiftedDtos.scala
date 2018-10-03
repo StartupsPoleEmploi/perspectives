@@ -23,4 +23,5 @@ case class RecruteurPourConseillerLifted(recruteurId: Rep[RecruteurId],
                                          numeroSiret: Rep[Option[NumeroSiret]],
                                          numeroTelephone: Rep[Option[NumeroTelephone]],
                                          contactParCandidats: Rep[Option[Boolean]],
-                                         dateInscription: Rep[ZonedDateTime])
+                                         dateInscription: Rep[ZonedDateTime],
+                                         dateDerniereConnexion: Rep[ZonedDateTime])

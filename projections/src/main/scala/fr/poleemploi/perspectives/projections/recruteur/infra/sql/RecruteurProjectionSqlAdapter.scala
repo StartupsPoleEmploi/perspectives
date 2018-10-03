@@ -41,7 +41,9 @@ class RecruteurProjectionSqlAdapter(database: Database) {
 
     def dateInscription = column[ZonedDateTime]("date_inscription")
 
-    def * = (recruteurId, nom, prenom, email, genre, typeRecruteur, raisonSociale, numeroSiret, numeroTelephone, contactParCandidats, dateInscription) <> (RecruteurRecord.tupled, RecruteurRecord.unapply)
+    def dateDerniereConnexion = column[ZonedDateTime]("date_derniere_connexion")
+
+    def * = (recruteurId, nom, prenom, email, genre, typeRecruteur, raisonSociale, numeroSiret, numeroTelephone, contactParCandidats, dateInscription, dateDerniereConnexion) <> (RecruteurRecord.tupled, RecruteurRecord.unapply)
   }
 
   implicit object ProfilRecruteurShape extends CaseClassShape(ProfilRecruteurLifted.tupled, ProfilRecruteurDto.tupled)
@@ -64,7 +66,7 @@ class RecruteurProjectionSqlAdapter(database: Database) {
       .filter(_.dateInscription < avantDateInscription)
       .sortBy(_.dateInscription.desc)
       .take(nbRecruteursParPage)
-      .map(r => RecruteurPourConseillerLifted(r.recruteurId, r.nom, r.prenom, r.email, r.genre, r.typeRecruteur, r.raisonSociale, r.numeroSiret, r.numeroTelephone, r.contactParCandidats, r.dateInscription))
+      .map(r => RecruteurPourConseillerLifted(r.recruteurId, r.nom, r.prenom, r.email, r.genre, r.typeRecruteur, r.raisonSociale, r.numeroSiret, r.numeroTelephone, r.contactParCandidats, r.dateInscription, r.dateDerniereConnexion))
   }
   val modifierProfilQuery = Compiled { recruteurId: Rep[RecruteurId] =>
     for {
@@ -75,6 +77,11 @@ class RecruteurProjectionSqlAdapter(database: Database) {
     for {
       r <- recruteurTable if r.recruteurId === recruteurId
     } yield (r.nom, r.prenom, r.email, r.genre)
+  }
+  val derniereConnexionQuery = Compiled { recruteurId: Rep[RecruteurId] =>
+    for {
+      r <- recruteurTable if r.recruteurId === recruteurId
+    } yield r.dateDerniereConnexion
   }
 
   def typeRecruteur(recruteurId: RecruteurId): Future[Option[TypeRecruteur]] =
@@ -98,9 +105,14 @@ class RecruteurProjectionSqlAdapter(database: Database) {
 
   def onRecruteurInscritEvent(event: RecruteurInscritEvent): Future[Unit] =
     database
-      .run(recruteurTable.map(r => (r.recruteurId, r.nom, r.prenom, r.genre, r.email, r.dateInscription))
-        += (event.recruteurId, event.nom, event.prenom, event.genre, event.email, event.date))
+      .run(recruteurTable.map(r => (r.recruteurId, r.nom, r.prenom, r.genre, r.email, r.dateInscription, r.dateDerniereConnexion))
+        += (event.recruteurId, event.nom, event.prenom, event.genre, event.email, event.date, event.date))
       .map(_ => ())
+
+  def onRecruteurConnecteEvent(event: RecruteurConnecteEvent): Future[Unit] =
+    database.run(derniereConnexionQuery(event.recruteurId).update(
+      event.date
+    )).map(_ => ())
 
   def onProfilModifieEvent(event: ProfilModifieEvent): Future[Unit] =
     database.run(modifierProfilQuery(event.recruteurId).update((

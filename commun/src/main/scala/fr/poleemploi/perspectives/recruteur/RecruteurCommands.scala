@@ -17,11 +17,11 @@ case class ModifierProfilCommand(id: RecruteurId,
                                  numeroTelephone: NumeroTelephone,
                                  contactParCandidats: Boolean) extends Command
 
-case class ModifierProfilGerantCommand(id: RecruteurId,
-                                       nom: String,
-                                       prenom: String,
-                                       email: Email,
-                                       genre: Genre) extends Command
+case class ConnecterRecruteurCommand(id: RecruteurId,
+                                     nom: String,
+                                     prenom: String,
+                                     email: Email,
+                                     genre: Genre) extends Command
 
 case class CommenterListeCandidatsCommand(id: RecruteurId,
                                           contexteRecherche: ContexteRecherche,

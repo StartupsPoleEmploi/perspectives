@@ -4,12 +4,12 @@ import fr.poleemploi.perspectives.commun.domain.{Email, Genre}
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, MustMatchers, WordSpec}
 
-class ModifierProfilGerantSpec extends WordSpec
+class ConnecterRecruteurSpec extends WordSpec
   with MustMatchers with MockitoSugar with BeforeAndAfter {
 
   val recruteurBuilder = new RecruteurBuilder
 
-  val commande: ModifierProfilGerantCommand = ModifierProfilGerantCommand(
+  val commande: ConnecterRecruteurCommand = ConnecterRecruteurCommand(
     id = recruteurBuilder.recruteurId,
     nom = "nom",
     prenom = "prenom",
@@ -17,20 +17,20 @@ class ModifierProfilGerantSpec extends WordSpec
     genre = Genre.HOMME
   )
 
-  "modifierProfilGerant" should {
+  "connecter" should {
     "renvoyer une erreur lorsque le candidat n'est pas inscrit" in {
       // Given
       val recruteur = recruteurBuilder.build
 
       // When
       val ex = intercept[RuntimeException] {
-        recruteur.modifierProfilGerant(commande)
+        recruteur.connecter(commande)
       }
 
       // Then
       ex.getMessage mustBe s"Le recruteur ${recruteur.id.value} n'est pas encore inscrit"
     }
-    "ne pas générer d'événement si aucun critère n'a été modifié" in {
+    "générer un événement de connexion" in {
       // Given
       val recruteur = recruteurBuilder.avecInscription(
         nom = Some(commande.nom),
@@ -40,20 +40,32 @@ class ModifierProfilGerantSpec extends WordSpec
       ).build
 
       // When
-      val result = recruteur.modifierProfilGerant(commande)
+      val result = recruteur.connecter(commande)
 
       // Then
-      result.isEmpty mustBe true
+      result.size mustBe 1
     }
-    "générer un événement si un critère a été saisi pour la premiere fois" in {
+    "générer un événement contenant les informations de connexion" in {
       // Given
       val recruteur = recruteurBuilder.avecInscription().build
 
       // When
-      val result = recruteur.modifierProfilGerant(commande)
+      val result = recruteur.connecter(commande)
 
       // Then
-      result.size mustBe 1
+      val recruteurConnecteEvent = result.head.asInstanceOf[RecruteurConnecteEvent]
+      recruteurConnecteEvent.recruteurId mustBe commande.id
+      recruteurConnecteEvent.date must not be null
+    }
+    "générer deux événements si un critère a été modifié" in {
+      // Given
+      val recruteur = recruteurBuilder.avecInscription().build
+
+      // When
+      val result = recruteur.connecter(commande)
+
+      // Then
+      result.size mustBe 2
     }
     "générer un événement si le nom a été modifié" in {
       // Given
@@ -62,12 +74,12 @@ class ModifierProfilGerantSpec extends WordSpec
         .build
 
       // When
-      val result = recruteur.modifierProfilGerant(commande.copy(
+      val result = recruteur.connecter(commande.copy(
         nom = "nouveau nom"
       ))
 
       // Then
-      result.size mustBe 1
+      result.exists(_.getClass == classOf[ProfilGerantModifieEvent]) mustBe true
     }
     "générer un événement si le prénom a été modifié" in {
       // Given
@@ -76,12 +88,12 @@ class ModifierProfilGerantSpec extends WordSpec
         .build
 
       // When
-      val result = recruteur.modifierProfilGerant(commande.copy(
+      val result = recruteur.connecter(commande.copy(
         prenom = "nouveau prénom"
       ))
 
       // Then
-      result.size mustBe 1
+      result.exists(_.getClass == classOf[ProfilGerantModifieEvent]) mustBe true
     }
     "générer un événement si l'email a été modifié" in {
       // Given
@@ -90,12 +102,12 @@ class ModifierProfilGerantSpec extends WordSpec
         .build
 
       // When
-      val result = recruteur.modifierProfilGerant(commande.copy(
+      val result = recruteur.connecter(commande.copy(
         email = Email("nouvel-email@domain.fr")
       ))
 
       // Then
-      result.size mustBe 1
+      result.exists(_.getClass == classOf[ProfilGerantModifieEvent]) mustBe true
     }
     "générer un événement si le genre a été modifié" in {
       // Given
@@ -104,22 +116,24 @@ class ModifierProfilGerantSpec extends WordSpec
         .build
 
       // When
-      val result = recruteur.modifierProfilGerant(commande.copy(
+      val result = recruteur.connecter(commande.copy(
         genre = Genre.FEMME
       ))
 
       // Then
-      result.size mustBe 1
+      result.exists(_.getClass == classOf[ProfilGerantModifieEvent]) mustBe true
     }
     "générer un événement contenant les informations modifiés" in {
       // Given
       val recruteur = recruteurBuilder.avecInscription().build
 
       // When
-      val result = recruteur.modifierProfilGerant(commande)
+      val result = recruteur.connecter(commande)
 
       // Then
-      val profilGerantModifieEvent = result.head.asInstanceOf[ProfilGerantModifieEvent]
+      val profilGerantModifieEvent = result
+        .filter(_.getClass == classOf[ProfilGerantModifieEvent])
+        .head.asInstanceOf[ProfilGerantModifieEvent]
       profilGerantModifieEvent.recruteurId mustBe commande.id
       profilGerantModifieEvent.nom mustBe commande.nom
       profilGerantModifieEvent.prenom mustBe commande.prenom

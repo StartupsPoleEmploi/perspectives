@@ -51,23 +51,25 @@ class Recruteur(override val id: RecruteurId,
     } else Nil
   }
 
-  def modifierProfilGerant(command: ModifierProfilGerantCommand): List[Event] = {
+  def connecter(command: ConnecterRecruteurCommand): List[Event] = {
     if (!state.estInscrit) {
       throw new RuntimeException(s"Le recruteur ${id.value} n'est pas encore inscrit")
     }
+
+    val recruteurConnecteEvent = RecruteurConnecteEvent(command.id)
 
     if (!state.nom.contains(command.nom) ||
       !state.prenom.contains(command.prenom) ||
       !state.email.contains(command.email) ||
       !state.genre.contains(command.genre)) {
-      List(ProfilGerantModifieEvent(
+      List(recruteurConnecteEvent, ProfilGerantModifieEvent(
         recruteurId = command.id,
         nom = command.nom,
         prenom = command.prenom,
         email = command.email,
         genre = command.genre
       ))
-    } else Nil
+    } else List(recruteurConnecteEvent)
   }
 
   def commenterListeCandidats(command: CommenterListeCandidatsCommand,

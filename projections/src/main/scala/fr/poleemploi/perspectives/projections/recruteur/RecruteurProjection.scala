@@ -15,6 +15,7 @@ class RecruteurProjection(adapter: RecruteurProjectionSqlAdapter) extends Projec
 
   override def onEvent: ReceiveEvent = {
     case e: RecruteurInscritEvent => adapter.onRecruteurInscritEvent(e)
+    case e: RecruteurConnecteEvent => adapter.onRecruteurConnecteEvent(e)
     case e: ProfilModifieEvent => adapter.onProfilModifieEvent(e)
     case e: ProfilGerantModifieEvent => adapter.onProfilGerantModifieEvent(e)
   }

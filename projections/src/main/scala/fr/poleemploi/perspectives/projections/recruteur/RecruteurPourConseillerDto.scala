@@ -15,4 +15,5 @@ case class RecruteurPourConseillerDto(recruteurId: RecruteurId,
                                       numeroSiret: Option[NumeroSiret],
                                       numeroTelephone: Option[NumeroTelephone],
                                       contactParCandidats: Option[Boolean],
-                                      dateInscription: ZonedDateTime)
+                                      dateInscription: ZonedDateTime,
+                                      dateDerniereConnexion: ZonedDateTime)

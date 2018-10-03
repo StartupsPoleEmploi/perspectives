@@ -12,6 +12,7 @@ CREATE TABLE recruteurs
   type_recruteur   CHARACTER VARYING(255),
   contact_par_candidats BOOL,
   date_inscription TIMESTAMP with time zone,
+  date_derniere_connexion TIMESTAMP with time zone,
   CONSTRAINT recruteurs_pk PRIMARY KEY (id),
   UNIQUE (recruteur_id)
 )

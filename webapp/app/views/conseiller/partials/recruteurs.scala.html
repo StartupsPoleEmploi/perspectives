@@ -16,6 +16,7 @@
     <thead class="thead-light">
         <tr>
             <th>Date d'inscription</th>
+            <th>Date de dernière connexion</th>
             <th>Type</th>
             <th>Raison sociale</th>
             <th>Genre</th>
@@ -31,6 +32,7 @@
     @for(recruteur <- recruteurs) {
         <tr>
             <td>@recruteur.dateInscription.format(DateTimeFormatter.ofPattern("d MMM yyyy HH:mm"))</td>
+            <td>@recruteur.dateDerniereConnexion.format(DateTimeFormatter.ofPattern("d MMM yyyy HH:mm"))</td>
             <td>@recruteur.typeRecruteur.map(TypeRecruteur.getLabel)</td>
             <td>@recruteur.raisonSociale</td>
             <td>@Genre.getLabel(recruteur.genre)</td>

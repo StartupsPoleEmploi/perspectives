@@ -18,8 +18,8 @@ class RecruteurCommandHandler(recruteurRepository: RecruteurRepository,
   def modifierProfil(command: ModifierProfilCommand): Future[Unit] =
     execute(command.id, c => Future(c.modifierProfil(command)))
 
-  def modifierProfilGerant(command: ModifierProfilGerantCommand): Future[Unit] =
-    execute(command.id, c => Future(c.modifierProfilGerant(command)))
+  def connecter(command: ConnecterRecruteurCommand): Future[Unit] =
+    execute(command.id, c => Future(c.connecter(command)))
 
   def commenterListeCandidats(command: CommenterListeCandidatsCommand): Future[Unit] =
     execute(command.id, _.commenterListeCandidats(command, commentaireService))
