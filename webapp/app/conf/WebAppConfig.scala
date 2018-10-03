@@ -10,12 +10,13 @@ import fr.poleemploi.perspectives.emailing.infra.ws.MailjetWSAdapterConfig
 import fr.poleemploi.perspectives.infra.BuildInfo
 import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapterConfig
 import fr.poleemploi.perspectives.projections.candidat.SlackCandidatConfig
+import fr.poleemploi.perspectives.recruteur.commentaire.infra.slack.SlackRecruteurConfig
 import play.api.Configuration
 
 class WebAppConfig(configuration: Configuration) {
 
   val usePEConnect: Boolean = configuration.getOptional[Boolean]("usePEConnect").getOrElse(true)
-  val useSlackNotificationCandidat: Boolean = configuration.getOptional[Boolean]("useSlackNotificationCandidat").getOrElse(true)
+  val useSlackNotification: Boolean = configuration.getOptional[Boolean]("useSlackNotification").getOrElse(true)
   val useMailjet: Boolean = configuration.getOptional[Boolean]("useMailjet").getOrElse(true)
   val useGoogleTagManager: Boolean = configuration.getOptional[Boolean]("useGoogleTagManager").getOrElse(true)
   val useReferentielMetierWS: Boolean = configuration.getOptional[Boolean]("useReferentielMetierWS").getOrElse(true)
@@ -43,8 +44,12 @@ class WebAppConfig(configuration: Configuration) {
   val googleTagManagerContainerId: String = configuration.get[String]("googleTagManager.containerId")
 
   val slackCandidatConfig: SlackCandidatConfig = SlackCandidatConfig(
-    webhookURL = configuration.get[String]("slack.notificationInscriptionCandidat.url"),
+    webhookURL = configuration.get[String]("slack.webhook.url"),
     environnement = environnement
+  )
+
+  val slackRecruteurConfig: SlackRecruteurConfig = SlackRecruteurConfig(
+    webhookURL = configuration.get[String]("slack.webhook.url")
   )
 
   val mailjetWSAdapterConfig: MailjetWSAdapterConfig = MailjetWSAdapterConfig(

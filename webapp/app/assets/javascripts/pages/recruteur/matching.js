@@ -180,4 +180,47 @@ $(document).ready(function () {
     modaleVideoYoutube.on("hidden.bs.modal", function () {
         videoMRSYoutube.attr("src", "");
     });
+
+    (function() {
+        var commentaireRecruteur = $("#commentaireRecruteur");
+        var formulaire = $("#commentaireListeCandidatsForm");
+        var titre = $("#js-titreCommentaireRecruteur");
+        var label = $("#js-labelCommentaireRecruteur");
+        var actions = $("#js-commentaireActions");
+        var commentaireEnvoye = $("#js-commentaireRecruteurEnvoye");
+
+        var initialiserFormulaire = function(labelCommentaire) {
+            titre.text('Vous êtes satisfait(e)s de la liste qui vous est proposé ?');
+            label.html(labelCommentaire);
+            actions.hide();
+            formulaire.show();
+        };
+
+        $("#js-satisfait").click(function() {
+            initialiserFormulaire('<p>Parfait!</p>Si vous le souhaitez, vous pouvez nous envoyer des suggestions :');
+        });
+        $("#js-insatisfait").click(function() {
+            initialiserFormulaire('Oups ! Nous sommes ouverts à vos retours !');
+        });
+        $("#js-envoyerCommentaire").click(function(e) {
+            e.preventDefault();
+            $("#js-commentaireSecteurActivite").val(selecteurSecteursActivites.val());
+            $("#js-commentaireMetier").val(selecteurMetiers.val());
+            $("#js-commentaireDepartement").val(selecteurDepartements.val());
+            if (commentaireRecruteur.val() !== '') {
+                $.ajax({
+                    type: "POST",
+                    url: "/recruteur/matching-candidats/commenterListeCandidats",
+                    data: formulaire.serializeArray(),
+                    dataType: 'text'
+                }).done(function () {
+                    formulaire.hide();
+                    commentaireEnvoye.show();
+                    $("#commenterListeCandidats").delay(2000).slideUp(400);
+                });
+            }
+        });
+
+        return {};
+    })();
 });

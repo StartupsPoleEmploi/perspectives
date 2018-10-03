@@ -18,6 +18,7 @@ GET         /recruteur/profil                                        controllers
 POST        /recruteur/profil                                        controllers.recruteur.ProfilController.modifierProfil
 GET         /recruteur/matching-candidats                            controllers.recruteur.MatchingController.index
 POST        /recruteur/matching-candidats                            controllers.recruteur.MatchingController.rechercherCandidats
+POST        /recruteur/matching-candidats/commenterListeCandidats    controllers.recruteur.MatchingController.commenterListeCandidats
 GET         /recruteur/cv/telecharger/:candidatId/:nomFichier        controllers.recruteur.MatchingController.telechargerCV(candidatId, nomFichier)
 
 GET         /conseiller/candidats                                    controllers.conseiller.ConseillerController.listeCandidats

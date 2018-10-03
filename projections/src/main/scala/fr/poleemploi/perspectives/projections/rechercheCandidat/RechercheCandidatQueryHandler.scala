@@ -13,4 +13,6 @@ class RechercheCandidatQueryHandler(rechercheCandidatService: RechercheCandidatS
   def metierProposeParCode(codeROME: CodeROME): Option[Metier] = rechercheCandidatService.metierProposeParCode(codeROME)
 
   def departementsProposes: List[Departement] = rechercheCandidatService.departementsProposes
+
+  def departementParCode(code: String): Departement = rechercheCandidatService.departementParCode(code)
 }

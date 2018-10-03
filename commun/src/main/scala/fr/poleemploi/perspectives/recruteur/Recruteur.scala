@@ -2,6 +2,10 @@ package fr.poleemploi.perspectives.recruteur
 
 import fr.poleemploi.eventsourcing.{Aggregate, Event}
 import fr.poleemploi.perspectives.commun.domain.{Email, Genre, NumeroTelephone}
+import fr.poleemploi.perspectives.recruteur.commentaire.domain.{CommentaireListeCandidats, CommentaireService}
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class Recruteur(override val id: RecruteurId,
                 override val version: Int,
@@ -64,6 +68,21 @@ class Recruteur(override val id: RecruteurId,
         genre = command.genre
       ))
     } else Nil
+  }
+
+  def commenterListeCandidats(command: CommenterListeCandidatsCommand,
+                              commentaireService: CommentaireService): Future[List[Event]] = {
+    if (!state.estInscrit) {
+      return Future.failed(new RuntimeException(s"Le recruteur ${id.value} n'est pas encore inscrit"))
+    }
+
+    commentaireService.commenterListeCandidats(CommentaireListeCandidats(
+      nomRecruteur = state.nom.getOrElse(""),
+      prenomRecruteur = state.prenom.getOrElse(""),
+      raisonSociale = state.raisonSociale.getOrElse(""),
+      contexteRecherche = command.contexteRecherche,
+      commentaire = command.commentaire
+    )).map(_ => Nil)
   }
 }
 

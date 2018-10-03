@@ -13,6 +13,11 @@ class RechercheCandidatService {
   def departementsProposes: List[Departement] =
     RechercheCandidatService.departements
 
+  def departementParCode(code: String): Departement =
+    departementsProposes
+      .find(_.code == code)
+      .getOrElse(throw new IllegalArgumentException(s"Aucun département avec le code $code"))
+
   def secteurActiviteParCode(codeSecteurActivite: CodeSecteurActivite): SecteurActivite =
     secteursProposes
       .find(_.code == codeSecteurActivite)

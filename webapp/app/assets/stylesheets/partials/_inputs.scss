@@ -83,7 +83,6 @@
 
   &--noir {
     color: $perspectives-noir;
-    border: 1px solid #EAEBED;
 
     &:hover {
       color: $perspectives-noir;
@@ -350,4 +349,13 @@ input[type="text"] {
     border-radius: 4px 0 0 4px;
     padding: 0.5em 2em;
   }
+}
+
+.zoneTexte {
+  box-sizing: border-box;
+  border: 1px solid lightgray;
+  box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  resize: none;
+  max-width: 95%;
 }

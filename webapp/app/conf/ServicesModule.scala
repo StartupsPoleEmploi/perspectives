@@ -6,7 +6,6 @@ import fr.poleemploi.perspectives.candidat.cv.infra.sql.CVSqlAdapter
 import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielMRSCandidat
 import fr.poleemploi.perspectives.candidat.mrs.infra.local.ReferentielMRSCandidatLocal
 import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.ReferentielMRSCandidatPEConnect
-import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
 import fr.poleemploi.perspectives.conseiller.{AutorisationService, ConseillerId}
 import fr.poleemploi.perspectives.emailing.domain.EmailingService
 import fr.poleemploi.perspectives.emailing.infra.local.LocalEmailingService
@@ -15,7 +14,9 @@ import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
 import fr.poleemploi.perspectives.metier.infra.file.ReferentielMetierFileAdapter
 import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapter
 import fr.poleemploi.perspectives.rechercheCandidat.domain.RechercheCandidatService
-import slick.jdbc.JdbcBackend.Database
+import fr.poleemploi.perspectives.recruteur.commentaire.domain.CommentaireService
+import fr.poleemploi.perspectives.recruteur.commentaire.infra.local.LocalCommentaireService
+import fr.poleemploi.perspectives.recruteur.commentaire.infra.slack.SlackCommentaireAdapter
 
 class ServicesModule extends AbstractModule {
 
@@ -30,11 +31,8 @@ class ServicesModule extends AbstractModule {
 
   @Provides
   @Singleton
-  def cvService(database: Database): CVService =
-    new CVSqlAdapter(
-      database = database,
-      driver = PostgresDriver
-    )
+  def cvService(csvSqlAdapter: CVSqlAdapter): CVService =
+    csvSqlAdapter
 
   @Provides
   @Singleton
@@ -70,4 +68,14 @@ class ServicesModule extends AbstractModule {
   @Singleton
   def rechercheCandidatService: RechercheCandidatService =
     new RechercheCandidatService
+
+  @Provides
+  @Singleton
+  def commentaireService(slackCommentaireAdapter: Provider[SlackCommentaireAdapter],
+                         localCommentaireService: Provider[LocalCommentaireService],
+                         webAppConfig: WebAppConfig): CommentaireService =
+    if (webAppConfig.useSlackNotification)
+      slackCommentaireAdapter.get()
+    else
+      localCommentaireService.get()
 }

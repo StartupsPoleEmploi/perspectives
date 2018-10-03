@@ -12,6 +12,7 @@ import fr.poleemploi.eventsourcing.{EventHandler, EventPublisher, LocalEventHand
 import fr.poleemploi.perspectives.authentification.infra.PEConnectService
 import fr.poleemploi.perspectives.authentification.infra.sql.PEConnectSqlAdapter
 import fr.poleemploi.perspectives.authentification.infra.ws.PEConnectWSAdapter
+import fr.poleemploi.perspectives.candidat.cv.infra.sql.CVSqlAdapter
 import fr.poleemploi.perspectives.candidat.mrs.infra.csv.MRSValideesCSVAdapter
 import fr.poleemploi.perspectives.candidat.mrs.infra.local.ReferentielMRSCandidatLocal
 import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.ReferentielMRSCandidatPEConnect
@@ -25,6 +26,8 @@ import fr.poleemploi.perspectives.emailing.infra.sql.MailjetSqlAdapter
 import fr.poleemploi.perspectives.emailing.infra.ws.MailjetEmailAdapter
 import fr.poleemploi.perspectives.metier.infra.file.ReferentielMetierFileAdapter
 import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapter
+import fr.poleemploi.perspectives.recruteur.commentaire.infra.local.LocalCommentaireService
+import fr.poleemploi.perspectives.recruteur.commentaire.infra.slack.SlackCommentaireAdapter
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
 import play.api.inject.ApplicationLifecycle
@@ -128,6 +131,13 @@ class InfraModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
+  def csvSqlAdapter(database: Database): CVSqlAdapter =
+    new CVSqlAdapter(
+      database = database,
+      driver = PostgresDriver
+    )
+
+  @Provides
   def mrsValideesCSVAdapter(actorSystem: ActorSystem): MRSValideesCSVAdapter =
     new MRSValideesCSVAdapter(actorSystem = actorSystem)
 
@@ -192,4 +202,16 @@ class InfraModule extends AbstractModule with ScalaModule {
   @Provides
   def referentielMRSCandidatLocal: ReferentielMRSCandidatLocal =
     new ReferentielMRSCandidatLocal
+
+  @Provides
+  def localCommentaireService: LocalCommentaireService =
+    new LocalCommentaireService
+
+  @Provides
+  def slackCommentaireAdapter(wsClient: WSClient,
+                              webAppConfig: WebAppConfig): SlackCommentaireAdapter =
+    new SlackCommentaireAdapter(
+      wsClient = wsClient,
+      config = webAppConfig.slackRecruteurConfig
+    )
 }

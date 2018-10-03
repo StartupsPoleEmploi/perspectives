@@ -12,7 +12,8 @@ import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite}
 import fr.poleemploi.perspectives.projections.candidat._
 import fr.poleemploi.perspectives.projections.rechercheCandidat.RechercheCandidatQueryHandler
 import fr.poleemploi.perspectives.projections.recruteur._
-import fr.poleemploi.perspectives.recruteur.TypeRecruteur
+import fr.poleemploi.perspectives.recruteur.commentaire.domain.ContexteRecherche
+import fr.poleemploi.perspectives.recruteur.{CommenterListeCandidatsCommand, RecruteurCommandHandler, TypeRecruteur}
 import javax.inject.{Inject, Singleton}
 import play.api.http.HttpEntity
 import play.api.mvc.{Action, _}
@@ -27,6 +28,7 @@ class MatchingController @Inject()(cc: ControllerComponents,
                                    messagesAction: MessagesActionBuilder,
                                    candidatQueryHandler: CandidatQueryHandler,
                                    recruteurQueryHandler: RecruteurQueryHandler,
+                                   recruteurCommandHandler: RecruteurCommandHandler,
                                    rechercheCandidatQueryHandler: RechercheCandidatQueryHandler,
                                    recruteurAuthentifieAction: RecruteurAuthentifieAction) extends AbstractController(cc) {
 
@@ -126,6 +128,29 @@ class MatchingController @Inject()(cc: ControllerComponents,
       case _: UnauthorizedQueryException =>
         Redirect(routes.LandingController.landing()).flashing(recruteurAuthentifieRequest.flash.withMessageErreur("Vous n'êtes pas autorisé à accéder à cette ressource"))
     }
+  }
+
+  def commenterListeCandidats: Action[AnyContent] = recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
+    messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
+      CommenterListeCandidatsForm.form.bindFromRequest.fold(
+        formWithErrors => {
+          Future.successful(BadRequest(formWithErrors.errorsAsJson))
+        },
+        commenterListeCandidatsForm => {
+          recruteurCommandHandler.commenterListeCandidats(
+            CommenterListeCandidatsCommand(
+              id = recruteurAuthentifieRequest.recruteurId,
+              contexteRecherche = ContexteRecherche(
+                secteurActivite = commenterListeCandidatsForm.secteurActiviteRecherche.map(s => rechercheCandidatQueryHandler.secteurProposeParCode(CodeSecteurActivite(s))),
+                metier = commenterListeCandidatsForm.metierRecherche.flatMap(c => rechercheCandidatQueryHandler.metierProposeParCode(CodeROME(c))),
+                departement = commenterListeCandidatsForm.departementRecherche.map(rechercheCandidatQueryHandler.departementParCode)
+              ),
+              commentaire = commenterListeCandidatsForm.commentaire
+            )
+          ).map(_ => NoContent)
+        }
+      )
+    }(recruteurAuthentifieRequest)
   }
 
 }

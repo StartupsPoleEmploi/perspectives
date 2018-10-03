@@ -305,4 +305,56 @@
       padding-bottom: 56.25%;
     }
   }
+
+  .commentaireRecruteur-arrierePlan {
+    background-color: #F2F2F2;
+  }
+
+  .commentaireRecruteur {
+    @include make-container();
+    @include make-container-max-widths();
+    text-align: center;
+    padding: 2em;
+
+    &-titre {
+      color: $perspectives-noir;
+      font-size: 1.2em;
+      padding-bottom: 2em;
+      margin: 0;
+    }
+
+    &-label {
+      display: block;
+    }
+
+    &-action {
+      border: 1px solid $perspectives-noir;
+      padding: 0.5em 2.4em;
+      margin: 0.5em;
+      border-radius: 4px;
+      text-transform: uppercase;
+      font-size: 0.8em;
+      font-weight: 600;
+    }
+
+    &-envoye {
+      display: none;
+    }
+
+    &-formulaire {
+      display: none;
+    }
+  }
+
+  .envoyerCommentaire {
+    padding-top: 1em;
+    text-align: right;
+
+    &-bouton {
+      font-size: 1.2em;
+      font-weight: 600;
+      padding: 0.5em 1em;
+      border-radius: 4px;
+    }
+  }
 }

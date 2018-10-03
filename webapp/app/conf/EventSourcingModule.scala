@@ -4,6 +4,7 @@ import com.google.inject.{AbstractModule, Provides}
 import fr.poleemploi.eventsourcing.eventstore.EventStore
 import fr.poleemploi.perspectives.candidat.cv.domain.CVService
 import fr.poleemploi.perspectives.candidat.{CandidatCommandHandler, CandidatRepository}
+import fr.poleemploi.perspectives.recruteur.commentaire.domain.CommentaireService
 import fr.poleemploi.perspectives.recruteur.{RecruteurCommandHandler, RecruteurRepository}
 import javax.inject.Singleton
 
@@ -36,8 +37,10 @@ class EventSourcingModule extends AbstractModule {
 
   @Provides
   @Singleton
-  def recruteurCommandHandler(recruteurRepository: RecruteurRepository): RecruteurCommandHandler =
+  def recruteurCommandHandler(recruteurRepository: RecruteurRepository,
+                              commentaireService: CommentaireService): RecruteurCommandHandler =
     new RecruteurCommandHandler(
-      recruteurRepository = recruteurRepository
+      recruteurRepository = recruteurRepository,
+      commentaireService = commentaireService
     )
 }

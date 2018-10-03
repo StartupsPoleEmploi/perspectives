@@ -31,7 +31,7 @@ class RegisterProjections @Inject()(eventPublisher: EventPublisher,
   eventHandler.subscribe(recruteurProjection)
   eventHandler.subscribe(recruteurEmailProjection)
 
-  if (webAppConfig.useSlackNotificationCandidat) {
+  if (webAppConfig.useSlackNotification) {
     eventHandler.subscribe(candidatNotificationSlackProjection)
   }
 }

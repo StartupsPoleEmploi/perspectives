@@ -24,7 +24,7 @@ class CandidatNotificationSlackProjection(slackCandidatConfig: SlackCandidatConf
     case e: CandidatInscritEvent => onCandidatInscritEvent
   }
 
-  private def onCandidatInscritEvent: Future[Unit] = {
+  private def onCandidatInscritEvent: Future[Unit] =
     wsClient
       .url(s"${slackCandidatConfig.webhookURL}")
       .addHttpHeaders("Content-Type" -> "application/json")
@@ -36,5 +36,4 @@ class CandidatNotificationSlackProjection(slackCandidatConfig: SlackCandidatConf
           throw new RuntimeException(s"Statut non géré lors de l'appel à la notification slack. Code: ${response.status}. Reponse : ${response.body}")
         }
       })
-  }
 }
