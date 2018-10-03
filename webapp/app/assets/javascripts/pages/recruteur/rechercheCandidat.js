@@ -92,7 +92,7 @@ $(document).ready(function () {
     function rechercherCandidats() {
         return $.ajax({
             type: "POST",
-            url: "/recruteur/matching-candidats",
+            url: "/recruteur/recherche",
             data: criteresRechercheForm.serializeArray(),
             dataType: 'text'
         }).done(function (data) {
@@ -213,7 +213,7 @@ $(document).ready(function () {
             if (commentaireRecruteur.val() !== '') {
                 $.ajax({
                     type: "POST",
-                    url: "/recruteur/matching-candidats/commenterListeCandidats",
+                    url: "/recruteur/recherche/commenterListeCandidats",
                     data: formulaire.serializeArray(),
                     dataType: 'text'
                 }).done(function () {
@@ -229,7 +229,7 @@ $(document).ready(function () {
 });
 
 var app = new Vue({
-    el: '#matchingCandidats',
+    el: '#rechercheCandidat',
     data: function() {
         return {
             nbCandidatsParPage: 25

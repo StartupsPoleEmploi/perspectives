@@ -16,10 +16,10 @@ GET         /recruteur/peconnect/callback                            controllers
 GET         /recruteur/deconnexion                                   controllers.recruteur.AuthentificationController.deconnexion
 GET         /recruteur/profil                                        controllers.recruteur.ProfilController.modificationProfil
 POST        /recruteur/profil                                        controllers.recruteur.ProfilController.modifierProfil
-GET         /recruteur/matching-candidats                            controllers.recruteur.MatchingController.index
-POST        /recruteur/matching-candidats                            controllers.recruteur.MatchingController.rechercherCandidats
-POST        /recruteur/matching-candidats/commenterListeCandidats    controllers.recruteur.MatchingController.commenterListeCandidats
-GET         /recruteur/cv/telecharger/:candidatId/:nomFichier        controllers.recruteur.MatchingController.telechargerCV(candidatId, nomFichier)
+GET         /recruteur/recherche                                     controllers.recruteur.RechercheCandidatController.index
+POST        /recruteur/recherche                                     controllers.recruteur.RechercheCandidatController.rechercherCandidats
+POST        /recruteur/recherche/commenterListeCandidats             controllers.recruteur.RechercheCandidatController.commenterListeCandidats
+GET         /recruteur/cv/telecharger/:candidatId/:nomFichier        controllers.recruteur.RechercheCandidatController.telechargerCV(candidatId, nomFichier)
 
 GET         /conseiller/candidats                                    controllers.conseiller.ConseillerController.listeCandidats
 GET         /conseiller/candidats/:avantDateInscription              controllers.conseiller.ConseillerController.paginationCandidats(avantDateInscription: String)

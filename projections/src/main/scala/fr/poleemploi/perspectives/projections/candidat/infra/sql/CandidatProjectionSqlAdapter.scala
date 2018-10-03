@@ -64,9 +64,9 @@ class CandidatProjectionSqlAdapter(database: Database,
 
     def dateInscription = column[ZonedDateTime]("date_inscription")
 
-    def indexerMatching = column[Boolean]("indexer_matching")
+    def indexerRecherche = column[Boolean]("indexer_recherche")
 
-    def * = (candidatId, nom, prenom, genre, email, statutDemandeurEmploi, codePostal, commune, rechercheMetierEvalue, metiersEvalues, rechercheAutreMetier, metiersRecherches, contacteParAgenceInterim, contacteParOrganismeFormation, rayonRecherche, numeroTelephone, cvId, cvTypeMedia, dateInscription, indexerMatching) <> (CandidatRecord.tupled, CandidatRecord.unapply)
+    def * = (candidatId, nom, prenom, genre, email, statutDemandeurEmploi, codePostal, commune, rechercheMetierEvalue, metiersEvalues, rechercheAutreMetier, metiersRecherches, contacteParAgenceInterim, contacteParOrganismeFormation, rayonRecherche, numeroTelephone, cvId, cvTypeMedia, dateInscription, indexerRecherche) <> (CandidatRecord.tupled, CandidatRecord.unapply)
   }
 
   val candidatTable = TableQuery[CandidatTable]
@@ -104,7 +104,7 @@ class CandidatProjectionSqlAdapter(database: Database,
   val modifierCriteresRechercheQuery = Compiled { candidatId: Rep[CandidatId] =>
     for {
       c <- candidatTable if c.candidatId === candidatId
-    } yield (c.contacteParOrganismeFormation, c.contacteParAgenceInterim, c.rechercheMetierEvalue, c.rechercheAutreMetier, c.rayonRecherche, c.metiersRecherches, c.indexerMatching)
+    } yield (c.contacteParOrganismeFormation, c.contacteParAgenceInterim, c.rechercheMetierEvalue, c.rechercheAutreMetier, c.rayonRecherche, c.metiersRecherches, c.indexerRecherche)
   }
   val modifierNumeroTelephoneQuery = Compiled { candidatId: Rep[CandidatId] =>
     for {
@@ -129,7 +129,7 @@ class CandidatProjectionSqlAdapter(database: Database,
   val repriseEmploiQuery = Compiled { candidatId: Rep[CandidatId] =>
     for {
       c <- candidatTable if c.candidatId === candidatId
-    } yield (c.rechercheMetierEvalue, c.rechercheAutreMetier, c.metiersRecherches, c.indexerMatching)
+    } yield (c.rechercheMetierEvalue, c.rechercheAutreMetier, c.metiersRecherches, c.indexerRecherche)
   }
 
   def criteresRecherche(query: CriteresRechercheQuery): Future[CandidatCriteresRechercheDto] =
@@ -154,7 +154,7 @@ class CandidatProjectionSqlAdapter(database: Database,
   def rechercherCandidatParDateInscription(query: RechercherCandidatsParDateInscriptionQuery): Future[ResultatRechercheCandidatParDateInscription] =
     database.run(
       candidatTable
-        .filter(c => filtreMatching(c, query.typeRecruteur, query.codeDepartement))
+        .filter(c => filtreRecherche(c, query.typeRecruteur, query.codeDepartement))
         .sortBy(_.dateInscription.desc).map(candidatRechercheDtoShape).result
     ).map(r => ResultatRechercheCandidatParDateInscription(r.toList.map(toCandidatRechercheDto)))
 
@@ -163,14 +163,14 @@ class CandidatProjectionSqlAdapter(database: Database,
 
     // Candidats qui recherchent parmis leurs métiers évalués et qui ont été évalués sur un métier du secteur
     val selectCandidatsEvaluesSurSecteur = candidatTable.filter(c =>
-      filtreMatching(c, query.typeRecruteur, query.codeDepartement) &&
+      filtreRecherche(c, query.typeRecruteur, query.codeDepartement) &&
         c.rechercheMetierEvalue === true &&
         c.metiersEvalues @& metiersSecteur
     ).sortBy(_.dateInscription.desc).map(candidatRechercheDtoShape)
 
     // Candidats qui sont intéréssés par un metier du secteur et qui ont été évalués sur un metier d'un autre secteur
     val selectCandidatsInteressesParAutreSecteur = candidatTable.filter(c =>
-      filtreMatching(c, query.typeRecruteur, query.codeDepartement) &&
+      filtreRecherche(c, query.typeRecruteur, query.codeDepartement) &&
         c.rechercheAutreMetier === true &&
         c.metiersRecherches @& metiersSecteur &&
         !(c.metiersEvalues @& metiersSecteur)
@@ -191,7 +191,7 @@ class CandidatProjectionSqlAdapter(database: Database,
 
     // Candidats qui recherchent parmis leurs métiers évalués et qui ont été évalués sur le métier
     val selectCandidatsEvaluesSurMetier = candidatTable.filter(c =>
-      filtreMatching(c, query.typeRecruteur, query.codeDepartement) &&
+      filtreRecherche(c, query.typeRecruteur, query.codeDepartement) &&
         c.rechercheMetierEvalue === true &&
         c.metiersEvalues @& metiers
     ).sortBy(_.dateInscription.desc).map(candidatRechercheDtoShape)
@@ -200,7 +200,7 @@ class CandidatProjectionSqlAdapter(database: Database,
     val metiersSecteur = rechercheCandidatService.secteurActivitePourCodeROME(query.codeROME).metiers.map(_.codeROME)
     val metiersSecteurSansMetierChoisi = metiersSecteur.filter(_ != query.codeROME)
     val selectCandidatsInteressesParMetierMemeSecteur = candidatTable.filter(c =>
-      filtreMatching(c, query.typeRecruteur, query.codeDepartement) &&
+      filtreRecherche(c, query.typeRecruteur, query.codeDepartement) &&
         c.rechercheAutreMetier === true &&
         c.metiersRecherches @& metiers &&
         c.metiersEvalues @& metiersSecteurSansMetierChoisi
@@ -208,7 +208,7 @@ class CandidatProjectionSqlAdapter(database: Database,
 
     // Candidats qui sont intéréssés par ce métier et qui ont été évalués sur un métier d'un autre secteur
     val selectCandidatsInteressesParMetierAutreSecteur = candidatTable.filter(c =>
-      filtreMatching(c, query.typeRecruteur, query.codeDepartement) &&
+      filtreRecherche(c, query.typeRecruteur, query.codeDepartement) &&
         c.rechercheAutreMetier === true &&
         c.metiersRecherches @& metiers &&
         !(c.metiersEvalues @& metiersSecteur)
@@ -273,11 +273,11 @@ class CandidatProjectionSqlAdapter(database: Database,
     )
   }
 
-  private def filtreMatching(c: CandidatTable, typeRecruteur: TypeRecruteur, codeDepartement: Option[String]): Rep[Option[Boolean]] =
-  // FIXME : faire en une condition sur un seul champ + modifier toutes les requetes de matching une fois que la projection peut traiter les evenements en séquentiel pour un même candidat (select avant mise à jour)
+  private def filtreRecherche(c: CandidatTable, typeRecruteur: TypeRecruteur, codeDepartement: Option[String]): Rep[Option[Boolean]] =
+  // FIXME : faire en une condition sur un seul champ + modifier toutes les requetes de recherche une fois que la projection peut traiter les evenements en séquentiel pour un même candidat (select avant mise à jour)
     c.numeroTelephone.isDefined &&
       c.metiersEvalues.length(dim = 1) > 0 &&
-      c.indexerMatching &&
+      c.indexerRecherche &&
       filtreTypeRecruteur(c, typeRecruteur) &&
       filtreDepartement(c, codeDepartement)
 

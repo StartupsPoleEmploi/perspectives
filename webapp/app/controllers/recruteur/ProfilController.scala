@@ -55,7 +55,7 @@ class ProfilController @Inject()(components: ControllerComponents,
           )
           recruteurCommandHandler.modifierProfil(command)
             .map(_ =>
-              Redirect(routes.MatchingController.index()).flashing(
+              Redirect(routes.RechercheCandidatController.index()).flashing(
                 messagesRequest.flash.withTypeRecruteur(command.typeRecruteur)
               )
             ).recoverWith {

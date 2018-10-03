@@ -1,18 +1,18 @@
 @import conf.WebAppConfig
-@import controllers.recruteur.MatchingForm
+@import controllers.recruteur.RechercheCandidatForm
 @import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
 @import fr.poleemploi.perspectives.commun.domain.{Departement, SecteurActivite}
 @import fr.poleemploi.perspectives.projections.candidat.ResultatRechercheCandidat
 @import helper._
 
-@(matchingForm: Form[MatchingForm],
+@(rechercheCandidatForm: Form[RechercheCandidatForm],
         secteursActivites: List[SecteurActivite],
         departements: List[Departement],
         recruteurAuthentifie: RecruteurAuthentifie,
         resultatRechercheCandidat: ResultatRechercheCandidat)(implicit request: MessagesRequestHeader, flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
 @layout(recruteurAuthentifie = Some(recruteurAuthentifie)) {
-    <div id="matchingCandidats">
+    <div id="rechercheCandidat">
         <section class="compteurResultats">
             <h2 class="compteurResultats-titre"></h2>
         </section>
@@ -31,7 +31,7 @@
             </div>
         </div>
         <section class="criteresRecherche">
-            @form(action = controllers.recruteur.routes.MatchingController.rechercherCandidats(), 'id -> "criteresRechercheForm") {
+            @form(action = controllers.recruteur.routes.RechercheCandidatController.rechercherCandidats(), 'id -> "criteresRechercheForm") {
                 @CSRF.formField
                 <div class="criteres">
                     <div class="criteres-item conteneurSelecteur">
@@ -63,11 +63,11 @@
                     <div class="videoMRS">
                         <a id="js-infoBulleMRS" class="infoBulleMRS" href="#" data-toggle="modal" data-target="#js-modaleVideo">
                             <img class="infoBulleMRS-iconeLecture" alt="Lecture vidéo MRS" width="36" height="36"
-                                 src="@assetsFinder.path("images/pages/recruteur/matching/lecture-video.svg")" />
+                                 src="@assetsFinder.path("images/pages/recruteur/rechercheCandidat/lecture-video.svg")" />
                             <div class="questionMRS">Qu'est ce qu'une MRS?</div>
                         </a>
                         <img class="definitionMRS" alt="Definition MRS" width="56" height="56"
-                             src="@assetsFinder.path("images/pages/recruteur/matching/mrs.svg")" />
+                             src="@assetsFinder.path("images/pages/recruteur/rechercheCandidat/mrs.svg")" />
                     </div>
                 </div>
             }
@@ -93,7 +93,7 @@
                         Non
                     </a>
                 </div>
-                @form(action = controllers.recruteur.routes.MatchingController.commenterListeCandidats(),
+                @form(action = controllers.recruteur.routes.RechercheCandidatController.commenterListeCandidats(),
                     'id -> "commentaireListeCandidatsForm",
                     'class -> "commentaireRecruteur-formulaire") {
                     @CSRF.formField
@@ -114,5 +114,5 @@
     </div>
 
     <script src="@assetsFinder.path("javascripts/modules/pagination.js")" type="text/javascript"></script>
-    <script src="@assetsFinder.path("javascripts/pages/recruteur/matching.js")" type="text/javascript"></script>
+    <script src="@assetsFinder.path("javascripts/pages/recruteur/rechercheCandidat.js")" type="text/javascript"></script>
 }

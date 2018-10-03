@@ -22,27 +22,27 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
-class MatchingController @Inject()(cc: ControllerComponents,
-                                   implicit val assets: AssetsFinder,
-                                   implicit val webAppConfig: WebAppConfig,
-                                   messagesAction: MessagesActionBuilder,
-                                   candidatQueryHandler: CandidatQueryHandler,
-                                   recruteurQueryHandler: RecruteurQueryHandler,
-                                   recruteurCommandHandler: RecruteurCommandHandler,
-                                   rechercheCandidatQueryHandler: RechercheCandidatQueryHandler,
-                                   recruteurAuthentifieAction: RecruteurAuthentifieAction) extends AbstractController(cc) {
+class RechercheCandidatController @Inject()(cc: ControllerComponents,
+                                            implicit val assets: AssetsFinder,
+                                            implicit val webAppConfig: WebAppConfig,
+                                            messagesAction: MessagesActionBuilder,
+                                            candidatQueryHandler: CandidatQueryHandler,
+                                            recruteurQueryHandler: RecruteurQueryHandler,
+                                            recruteurCommandHandler: RecruteurCommandHandler,
+                                            rechercheCandidatQueryHandler: RechercheCandidatQueryHandler,
+                                            recruteurAuthentifieAction: RecruteurAuthentifieAction) extends AbstractController(cc) {
 
   def index: Action[AnyContent] = recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
       val departementsProposes = rechercheCandidatQueryHandler.departementsProposes
-      val matchingForm = MatchingForm(
+      val rechercheCandidatForm = RechercheCandidatForm(
         secteurActivite = None,
         metier = None,
         codeDepartement = departementsProposes.headOption.map(_.code)
       )
-      rechercher(request = recruteurAuthentifieRequest, matchingForm = matchingForm).map(resultatRechercheCandidatDto =>
-        Ok(views.html.recruteur.matching(
-          matchingForm = MatchingForm.form.fill(matchingForm),
+      rechercher(request = recruteurAuthentifieRequest, rechercheCandidatForm = rechercheCandidatForm).map(resultatRechercheCandidatDto =>
+        Ok(views.html.recruteur.rechercheCandidat(
+          rechercheCandidatForm = RechercheCandidatForm.form.fill(rechercheCandidatForm),
           recruteurAuthentifie = recruteurAuthentifieRequest.recruteurAuthentifie,
           resultatRechercheCandidat = resultatRechercheCandidatDto,
           secteursActivites = rechercheCandidatQueryHandler.secteursProposes,
@@ -58,16 +58,16 @@ class MatchingController @Inject()(cc: ControllerComponents,
 
   def rechercherCandidats: Action[AnyContent] = recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
-      MatchingForm.form.bindFromRequest.fold(
+      RechercheCandidatForm.form.bindFromRequest.fold(
         formWithErrors => {
           Future.successful(BadRequest(formWithErrors.errorsAsJson))
         },
-        matchingForm => {
-          rechercher(request = recruteurAuthentifieRequest, matchingForm = matchingForm).map(resultatRechercheCandidatDto =>
+        rechercheCandidatForm => {
+          rechercher(request = recruteurAuthentifieRequest, rechercheCandidatForm = rechercheCandidatForm).map(resultatRechercheCandidatDto =>
             Ok(views.html.recruteur.partials.resultatsRecherche(
               resultatRechercheCandidat = resultatRechercheCandidatDto,
-              metierChoisi = matchingForm.metier.flatMap(c => rechercheCandidatQueryHandler.metierProposeParCode(CodeROME(c)).map(_.label)),
-              secteurActiviteChoisi = matchingForm.secteurActivite.map(s => rechercheCandidatQueryHandler.secteurProposeParCode(CodeSecteurActivite(s)).label)
+              metierChoisi = rechercheCandidatForm.metier.flatMap(c => rechercheCandidatQueryHandler.metierProposeParCode(CodeROME(c)).map(_.label)),
+              secteurActiviteChoisi = rechercheCandidatForm.secteurActivite.map(s => rechercheCandidatQueryHandler.secteurProposeParCode(CodeSecteurActivite(s)).label)
             ))
           ).recover {
             case _: ProfilRecruteurIncompletException => BadRequest("Vous devez renseigner votre profil avant de pouvoir effectuer une recherche")
@@ -78,24 +78,24 @@ class MatchingController @Inject()(cc: ControllerComponents,
   }
 
   private def rechercher(request: RecruteurAuthentifieRequest[AnyContent],
-                         matchingForm: MatchingForm): Future[ResultatRechercheCandidat] =
+                         rechercheCandidatForm: RechercheCandidatForm): Future[ResultatRechercheCandidat] =
     getTypeRecruteur(request).flatMap(typeRecruteur =>
-      if (matchingForm.metier.exists(_.nonEmpty)) {
+      if (rechercheCandidatForm.metier.exists(_.nonEmpty)) {
         candidatQueryHandler.rechercherCandidatsParMetier(RechercherCandidatsParMetierQuery(
-          codeROME = matchingForm.metier.map(CodeROME).get,
+          codeROME = rechercheCandidatForm.metier.map(CodeROME).get,
           typeRecruteur = typeRecruteur,
-          codeDepartement = matchingForm.codeDepartement
+          codeDepartement = rechercheCandidatForm.codeDepartement
         ))
-      } else if (matchingForm.secteurActivite.exists(_.nonEmpty)) {
+      } else if (rechercheCandidatForm.secteurActivite.exists(_.nonEmpty)) {
         candidatQueryHandler.rechercherCandidatsParSecteur(RechercherCandidatsParSecteurQuery(
-          codeSecteurActivite = matchingForm.secteurActivite.map(CodeSecteurActivite(_)).get,
+          codeSecteurActivite = rechercheCandidatForm.secteurActivite.map(CodeSecteurActivite(_)).get,
           typeRecruteur = typeRecruteur,
-          codeDepartement = matchingForm.codeDepartement
+          codeDepartement = rechercheCandidatForm.codeDepartement
         ))
       } else {
         candidatQueryHandler.rechercherCandidatsParDateInscription(RechercherCandidatsParDateInscriptionQuery(
           typeRecruteur = typeRecruteur,
-          codeDepartement = matchingForm.codeDepartement
+          codeDepartement = rechercheCandidatForm.codeDepartement
         ))
       })
 

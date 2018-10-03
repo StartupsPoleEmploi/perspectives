@@ -3,13 +3,15 @@
 @(recruteurAuthentifie: Option[RecruteurAuthentifie])(implicit assetsFinder: AssetsFinder)
 
 <div class="navigation">
-    @components.headerPrincipal(lienLogo = recruteurAuthentifie.map(r => "/recruteur/matching-candidats").orElse(Some("/recruteur")))
+    @components.headerPrincipal(lienLogo = recruteurAuthentifie
+            .map(r => controllers.recruteur.routes.RechercheCandidatController.rechercherCandidats().url)
+            .orElse(Some(controllers.recruteur.routes.LandingController.landing().url)))
     @recruteurAuthentifie.map(r => partials.menuRecruteur(r)).getOrElse {
         <nav class="accesLanding">
-            <a class="accesLanding-lien" href="/">Accès candidat</a>
+            <a class="accesLanding-lien" href="@controllers.candidat.routes.LandingController.landing().url">Accès candidat</a>
         </nav>
         <div class="conteneurPEConnect">
-        @components.peconnect("/recruteur/inscription")
+        @components.peconnect(controllers.recruteur.routes.InscriptionController.inscription().url)
         </div>
     }
 </div>

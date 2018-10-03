@@ -20,7 +20,7 @@ CREATE TABLE candidats
   rayon_recherche INT,
   numero_telephone CHARACTER VARYING(255),
   date_inscription TIMESTAMP with time zone,
-  indexer_matching BOOL DEFAULT FALSE,
+  indexer_recherche BOOL DEFAULT FALSE,
   CONSTRAINT candidats_pk PRIMARY KEY (id),
   UNIQUE (candidat_id)
 )
