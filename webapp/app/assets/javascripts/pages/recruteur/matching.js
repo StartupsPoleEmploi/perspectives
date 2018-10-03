@@ -48,6 +48,7 @@ $(document).ready(function () {
     var titreCompteurResultats = $(".compteurResultats-titre");
 
     initialiserTableau();
+    modifierPagination();
     modifierTitreCompteurResultats('', '', selecteurDepartements.val());
 
     selecteurSecteursActivites.change(function () {
@@ -97,6 +98,7 @@ $(document).ready(function () {
         }).done(function (data) {
             resultatsRecherche.html(data);
             initialiserTableau();
+            modifierPagination();
         });
     }
 
@@ -124,13 +126,14 @@ $(document).ready(function () {
         return nbCandidats === 1 ? "est validé par la Méthode de Recrutement par Simulation" : "sont validés par la Méthode de Recrutement par Simulation";
     }
 
+    function modifierPagination() {
+        app.$refs.pagination.modifierPagination(app.calculerPages());
+        app.chargerPage(0); // premiere page
+    }
+
     function initialiserTableau() {
-        $(".js-infoCandidat").each(function() {
-            $(this).hide();
-        });
-        $(".js-profilCandidat").each(function() {
-            $(this).hide();
-        });
+        $(".js-infoCandidat").hide();
+        $(".js-profilCandidat").hide();
     }
 
     body.on("click", ".js-boutonCandidat", function () {
@@ -223,4 +226,51 @@ $(document).ready(function () {
 
         return {};
     })();
+});
+
+var app = new Vue({
+    el: '#matchingCandidats',
+    data: function() {
+        return {
+            nbCandidatsParPage: 25
+        }
+    },
+    computed: {
+        pagesInitiales: function() {
+            return this.calculerPages();
+        }
+    },
+    methods: {
+        chargerPageSuivante: function(critere) {
+            this.chargerPage(critere);
+            app.$refs.pagination.pageSuivanteChargee(0, '');
+        },
+        chargerPagePrecedente: function(critere, index) {
+            this.chargerPage(critere);
+            app.$refs.pagination.pagePrecedenteChargee(index);
+        },
+        calculerPages: function() {
+            var nbCandidats = $(".listeResultatsRecherche-ligne").length;
+            var nbPages = Math.ceil(nbCandidats / this.nbCandidatsParPage);
+            var result = [];
+            for (var i = 0; i < nbPages; i++) {
+                result.push(i * this.nbCandidatsParPage);
+            }
+            return result;
+        },
+        chargerPage: function(critere) {
+            var min = critere;
+            var max = critere + this.nbCandidatsParPage;
+
+            $(".listeResultatsRecherche-ligne").each(function(e) {
+                $(this).toggle(e >= min && e < max);
+            });
+            $(".resultatsRecherche-titreConteneur").next(".listeResultatsRecherche").each(function() {
+                var nbLignes = $(this).find(".listeResultatsRecherche-ligne:visible").length;
+                $(this).prev(".resultatsRecherche-titreConteneur").toggle(nbLignes > 0);
+            });
+            $(".js-infoCandidat").hide();
+            $(".js-profilCandidat").hide();
+        }
+    }
 });

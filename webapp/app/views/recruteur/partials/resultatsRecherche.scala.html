@@ -5,11 +5,11 @@
         secteurActiviteChoisi: Option[String] = None,
         metierChoisi: Option[String] = None)
 
-@getTitreForCandidats(rechercheCandidatDtos: List[CandidatRechercheDto], finTitre: String) = @{
+@getTitreForCandidats(rechercheCandidatDtos: List[CandidatRechercheDto], titreSingulier: String) = @{
     rechercheCandidatDtos match {
         case Nil => None
-        case x::Nil => Some(s"1 candidat $finTitre")
-        case x::xs => Some(s"${rechercheCandidatDtos.size} candidats ${finTitre.replaceAll("validé", "validés").replaceAll("intéréssé", "intéréssés")}")
+        case x::Nil => Some(titreSingulier)
+        case x::xs => Some(s"${titreSingulier.replaceAll("Candidat", "Candidats").replaceAll("validé", "validés").replaceAll("intéréssé", "intéréssés")}")
     }
 }
 
@@ -23,7 +23,7 @@
              styleTitre = Some("resultatsRecherche-titre--bleu"),
              titre = getTitreForCandidats(
                  rechercheCandidatDtos = candidatsEvaluesSurSecteur,
-                 finTitre = s"""validé dans le secteur "${secteurActiviteChoisi.getOrElse("")}""""
+                 titreSingulier = s"""Candidat validé dans le secteur "${secteurActiviteChoisi.getOrElse("")}""""
              ),
             candidatRechercheDtos = candidatsEvaluesSurSecteur
         )
@@ -32,7 +32,7 @@
             styleTitre = Some("resultatsRecherche-titre--noir"),
             titre = getTitreForCandidats(
                 rechercheCandidatDtos = candidatsInteressesParAutreSecteur,
-                finTitre = s"""intéréssé par le secteur "${secteurActiviteChoisi.getOrElse("")}" et validé dans un autre secteur"""
+                titreSingulier = s"""Candidat intéréssé par le secteur "${secteurActiviteChoisi.getOrElse("")}" et validé dans un autre secteur"""
             ),
             candidatRechercheDtos = candidatsInteressesParAutreSecteur
         )
@@ -43,7 +43,7 @@
             styleTitre = Some("resultatsRecherche-titre--bleu"),
             titre = getTitreForCandidats(
                 rechercheCandidatDtos = candidatsEvaluesSurMetier,
-                finTitre = s"""validé sur le métier "${metierChoisi.getOrElse("")}""""
+                titreSingulier = s"""Candidat validé sur le métier "${metierChoisi.getOrElse("")}""""
             ),
             candidatRechercheDtos = candidatsEvaluesSurMetier
         )
@@ -52,7 +52,7 @@
             styleTitre = Some("resultatsRecherche-titre--noir"),
             titre = getTitreForCandidats(
                 rechercheCandidatDtos = candidatsInteressesParMetierMemeSecteur,
-                finTitre = s"""intéréssé par le métier "${metierChoisi.getOrElse("")}" et validé sur un métier du même secteur"""
+                titreSingulier = s"""Candidat intéréssé par le métier "${metierChoisi.getOrElse("")}" et validé sur un métier du même secteur"""
             ),
             candidatRechercheDtos = candidatsInteressesParMetierMemeSecteur
         )
@@ -61,7 +61,7 @@
             styleTitre = Some("resultatsRecherche-titre--noir"),
             titre = getTitreForCandidats(
                 rechercheCandidatDtos = candidatsInteressesParMetierAutreSecteur,
-                finTitre = s"""intéréssé par le métier "${metierChoisi.getOrElse("")}" et validé dans un autre secteur"""
+                titreSingulier = s"""Candidat intéréssé par le métier "${metierChoisi.getOrElse("")}" et validé dans un autre secteur"""
             ),
             candidatRechercheDtos = candidatsInteressesParMetierAutreSecteur
         )

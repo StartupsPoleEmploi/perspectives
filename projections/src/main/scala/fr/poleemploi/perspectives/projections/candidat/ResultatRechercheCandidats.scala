@@ -1,23 +1,12 @@
 package fr.poleemploi.perspectives.projections.candidat
 
-sealed trait ResultatRechercheCandidat {
-  def nbCandidats: Int
-}
+sealed trait ResultatRechercheCandidat
 
-case class ResultatRechercheCandidatParDateInscription(candidats: List[CandidatRechercheDto]) extends ResultatRechercheCandidat {
-
-  override val nbCandidats: Int = candidats.size
-}
+case class ResultatRechercheCandidatParDateInscription(candidats: List[CandidatRechercheDto]) extends ResultatRechercheCandidat
 
 case class ResultatRechercheCandidatParSecteur(candidatsEvaluesSurSecteur: List[CandidatRechercheDto],
-                                               candidatsInteressesParAutreSecteur: List[CandidatRechercheDto]) extends ResultatRechercheCandidat {
-
-  override val nbCandidats: Int = candidatsEvaluesSurSecteur.size + candidatsInteressesParAutreSecteur.size
-}
+                                               candidatsInteressesParAutreSecteur: List[CandidatRechercheDto]) extends ResultatRechercheCandidat
 
 case class ResultatRechercheCandidatParMetier(candidatsEvaluesSurMetier: List[CandidatRechercheDto],
                                               candidatsInteressesParMetierMemeSecteur: List[CandidatRechercheDto],
-                                              candidatsInteressesParMetierAutreSecteur: List[CandidatRechercheDto]) extends ResultatRechercheCandidat {
-
-  override val nbCandidats: Int = candidatsEvaluesSurMetier.size + candidatsInteressesParMetierMemeSecteur.size + candidatsInteressesParMetierAutreSecteur.size
-}
+                                              candidatsInteressesParMetierAutreSecteur: List[CandidatRechercheDto]) extends ResultatRechercheCandidat

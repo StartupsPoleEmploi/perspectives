@@ -31,6 +31,11 @@ Vue.component('pagination', {
         },
         isPageCourante: function(index) {
             return this.pageCourante === index;
+        },
+        modifierPagination: function(pages) {
+            this.pagesPrecedentes = (pages !== undefined && pages.length > 0) ? pages.slice(0, pages.length - 1) : [];
+            this.criterePageSuivante= (pages !== undefined && pages.length > 1) ? pages[pages.length - 1] : undefined;
+            this.pageCourante = 0;
         }
     },
     template:
