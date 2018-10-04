@@ -6,7 +6,7 @@ import scala.concurrent.Future
 
 trait ReferentielMRSCandidat {
 
-  def integrerMRSValidees: Future[Unit]
+  def integrerMRSValidees: Future[Stream[MRSValideeCandidat]]
 
   def mrsValideesParCandidat(candidatId: CandidatId): Future[List[MRSValidee]]
 }

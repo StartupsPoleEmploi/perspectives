@@ -36,6 +36,9 @@ class PEConnectService(oauthService: OauthService,
   def getCandidat(candidatId: CandidatId): Future[CandidatPEConnect] =
     peConnectSqlAdapter.getCandidat(candidatId)
 
+  def findCandidatId(peConnectId: PEConnectId): Future[Option[CandidatId]] =
+    peConnectSqlAdapter.findCandidatId(peConnectId)
+
   def saveCandidat(candidatPEConnect: CandidatPEConnect): Future[Unit] =
     peConnectSqlAdapter.saveCandidat(candidatPEConnect)
 

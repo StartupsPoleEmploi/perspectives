@@ -38,6 +38,9 @@ class PEConnectSqlAdapter(val driver: PostgresDriver,
   val getCandidatQuery = Compiled { candidatId: Rep[CandidatId] =>
     candidatsPEConnectTable.filter(c => c.candidatId === candidatId)
   }
+  val findCandidatIdQuery = Compiled { peConnectId: Rep[PEConnectId] =>
+    candidatsPEConnectTable.filter(c => c.peConnectId === peConnectId).map(_.candidatId)
+  }
 
   class RecruteurPEConnectTable(tag: Tag) extends Table[RecruteurPEConnect](tag, "recruteurs_peconnect") {
 
@@ -60,6 +63,9 @@ class PEConnectSqlAdapter(val driver: PostgresDriver,
 
   def getCandidat(candidatId: CandidatId): Future[CandidatPEConnect] =
     database.run(getCandidatQuery(candidatId).result.head)
+
+  def findCandidatId(peConnectId: PEConnectId): Future[Option[CandidatId]] =
+    database.run(findCandidatIdQuery(peConnectId).result.headOption)
 
   def saveCandidat(candidat: CandidatPEConnect): Future[Unit] =
     database

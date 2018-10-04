@@ -26,7 +26,7 @@ import fr.poleemploi.perspectives.emailing.infra.sql.MailjetSqlAdapter
 import fr.poleemploi.perspectives.emailing.infra.ws.MailjetEmailAdapter
 import fr.poleemploi.perspectives.metier.infra.file.ReferentielMetierFileAdapter
 import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapter
-import fr.poleemploi.perspectives.recruteur.commentaire.infra.local.LocalCommentaireService
+import fr.poleemploi.perspectives.recruteur.commentaire.infra.local.CommentaireServiceLocal
 import fr.poleemploi.perspectives.recruteur.commentaire.infra.slack.SlackCommentaireAdapter
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
@@ -204,8 +204,8 @@ class InfraModule extends AbstractModule with ScalaModule {
     new ReferentielMRSCandidatLocal
 
   @Provides
-  def localCommentaireService: LocalCommentaireService =
-    new LocalCommentaireService
+  def commentaireServiceLocal: CommentaireServiceLocal =
+    new CommentaireServiceLocal
 
   @Provides
   def slackCommentaireAdapter(wsClient: WSClient,
