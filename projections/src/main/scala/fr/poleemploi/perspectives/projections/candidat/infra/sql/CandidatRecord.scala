@@ -25,4 +25,5 @@ case class CandidatRecord(candidatId: CandidatId,
                           cvId: Option[CVId],
                           cvTypeMedia: Option[TypeMedia],
                           dateInscription: ZonedDateTime,
-                          indexRecherche: Boolean)
+                          dateDerniereConnexion: ZonedDateTime,
+                          indexerRecherche: Boolean)

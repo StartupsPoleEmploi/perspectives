@@ -4,7 +4,7 @@ import fr.poleemploi.perspectives.commun.domain.{Email, Genre}
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, MustMatchers, WordSpec}
 
-class ModifierProfilCandidatSpec extends WordSpec
+class ConnecterCandidatSpec extends WordSpec
   with MustMatchers with MockitoSugar with BeforeAndAfter {
 
   val candidatBuilder = new CandidatBuilder
@@ -18,15 +18,15 @@ class ModifierProfilCandidatSpec extends WordSpec
     )
   val statutDemandeurEmploi: StatutDemandeurEmploi = StatutDemandeurEmploi.DEMANDEUR_EMPLOI
 
-  val commande: ModifierProfilCommand =
-    ModifierProfilCommand(
+  val commande: ConnecterCandidatCommand =
+    ConnecterCandidatCommand(
       id = candidatBuilder.candidatId,
       nom = "nouveau nom",
       prenom = "nouveau prenom",
       email = Email("nouveau email"),
       genre = Genre.HOMME,
-      adresse = adresse,
-      statutDemandeurEmploi = StatutDemandeurEmploi.DEMANDEUR_EMPLOI
+      adresse = None,
+      statutDemandeurEmploi = None
     )
 
   "modifierProfil" should {
@@ -36,13 +36,13 @@ class ModifierProfilCandidatSpec extends WordSpec
 
       // When
       val ex = intercept[RuntimeException] {
-        candidat.modifierProfil(commande)
+        candidat.connecter(commande)
       }
 
       // Then
       ex.getMessage mustBe s"Le candidat ${candidat.id.value} n'est pas encore inscrit"
     }
-    "ne pas générer d'événement si aucune information de profil n'a été modifiée" in {
+    "générer un événement de connexion lorsqu'aucune information de profil n'est modifiée" in {
       // Given
       val candidat = candidatBuilder
         .avecInscription(
@@ -51,106 +51,92 @@ class ModifierProfilCandidatSpec extends WordSpec
           email = Some(commande.email),
           genre = Some(commande.genre)
         )
-        .avecAdresse(commande.adresse)
-        .avecStatutDemandeurEmploi(commande.statutDemandeurEmploi)
         .build
 
       // When
-      val result = candidat.modifierProfil(commande)
+      val result = candidat.connecter(commande)
 
       // Then
-      result.isEmpty mustBe true
+      result.count(_.isInstanceOf[CandidatConnecteEvent]) mustBe 1
     }
     "générer un événement si une information de profil a été saisie pour la premiere fois" in {
       // Given
       val candidat = candidatBuilder.avecInscription()
-        .avecAdresse(adresse)
-        .avecStatutDemandeurEmploi(statutDemandeurEmploi)
         .build
 
       // When
-      val result = candidat.modifierProfil(commande)
+      val result = candidat.connecter(commande)
 
       // Then
-      result.size mustBe 1
+      result.count(_.isInstanceOf[ProfilCandidatModifieEvent]) mustBe 1
     }
     "générer un événement si le nom a été modifié" in {
       // Given
       val candidat = candidatBuilder
         .avecInscription(nom = Some("ancien nom"))
-        .avecAdresse(adresse)
-        .avecStatutDemandeurEmploi(statutDemandeurEmploi)
         .build
 
       // When
-      val result = candidat.modifierProfil(commande.copy(
+      val result = candidat.connecter(commande.copy(
         nom = "nouveau nom"
       ))
 
       // Then
-      result.size mustBe 1
+      result.count(_.isInstanceOf[ProfilCandidatModifieEvent]) mustBe 1
     }
     "générer un événement si le prénom a été modifié" in {
       // Given
       val candidat = candidatBuilder
         .avecInscription(prenom = Some("ancien prénom"))
-        .avecAdresse(adresse)
-        .avecStatutDemandeurEmploi(statutDemandeurEmploi)
         .build
 
       // When
-      val result = candidat.modifierProfil(commande.copy(
+      val result = candidat.connecter(commande.copy(
         prenom = "nouveau prénom"
       ))
 
       // Then
-      result.size mustBe 1
+      result.count(_.isInstanceOf[ProfilCandidatModifieEvent]) mustBe 1
     }
     "générer un événement si l'email a été modifié" in {
       // Given
       val candidat = candidatBuilder
         .avecInscription(email = Some(Email("ancien-email@domain.fr")))
-        .avecAdresse(adresse)
-        .avecStatutDemandeurEmploi(statutDemandeurEmploi)
         .build
 
       // When
-      val result = candidat.modifierProfil(commande.copy(
+      val result = candidat.connecter(commande.copy(
         email = Email("nouvel-email@domain.fr")
       ))
 
       // Then
-      result.size mustBe 1
+      result.count(_.isInstanceOf[ProfilCandidatModifieEvent]) mustBe 1
     }
     "générer un événement si le genre a été modifié" in {
       // Given
       val candidat = candidatBuilder
         .avecInscription(genre = Some(Genre.HOMME))
-        .avecAdresse(adresse)
-        .avecStatutDemandeurEmploi(statutDemandeurEmploi)
         .build
 
       // When
-      val result = candidat.modifierProfil(commande.copy(
+      val result = candidat.connecter(commande.copy(
         genre = Genre.FEMME
       ))
 
       // Then
-      result.size mustBe 1
+      result.count(_.isInstanceOf[ProfilCandidatModifieEvent]) mustBe 1
     }
     "générer un événement contenant les informations de profil modifiées" in {
       // Given
       val candidat = candidatBuilder
         .avecInscription()
-        .avecAdresse(adresse)
-        .avecStatutDemandeurEmploi(statutDemandeurEmploi)
         .build
 
       // When
-      val result = candidat.modifierProfil(commande)
+      val result = candidat.connecter(commande)
 
       // Then
-      val event = result.head.asInstanceOf[ProfilCandidatModifieEvent]
+      val event = result.filter(_.isInstanceOf[ProfilCandidatModifieEvent]).head.asInstanceOf[ProfilCandidatModifieEvent]
       event.candidatId mustBe commande.id
       event.nom mustBe commande.nom
       event.prenom mustBe commande.prenom
@@ -160,67 +146,49 @@ class ModifierProfilCandidatSpec extends WordSpec
     "générer un événement si l'adresse a été modifiée" in {
       // Given
       val candidat = candidatBuilder
-        .avecInscription(
-          nom = Some(commande.nom),
-          prenom = Some(commande.prenom),
-          email = Some(commande.email),
-          genre = Some(commande.genre)
-        )
+        .avecInscription()
         .avecAdresse(adresse.copy(voie = "ancienne voie"))
-        .avecStatutDemandeurEmploi(statutDemandeurEmploi)
         .build
 
       // When
-      val result = candidat.modifierProfil(commande.copy(
-        adresse = adresse.copy(voie = "nouvelle voie")
+      val result = candidat.connecter(commande.copy(
+        adresse = Some(adresse.copy(voie = "nouvelle voie"))
       ))
 
       // Then
-      result.size mustBe 1
+      result.count(_.isInstanceOf[AdresseModifieeEvent]) mustBe 1
     }
     "générer un événement contenant l'adresse modifiée" in {
       // Given
       val candidat = candidatBuilder
-        .avecInscription(
-          nom = Some(commande.nom),
-          prenom = Some(commande.prenom),
-          email = Some(commande.email),
-          genre = Some(commande.genre)
-        )
+        .avecInscription()
         .avecAdresse(adresse.copy(voie = "ancienne voie"))
-        .avecStatutDemandeurEmploi(statutDemandeurEmploi)
         .build
 
       // When
-      val result = candidat.modifierProfil(commande.copy(
-        adresse = adresse.copy(voie = "nouvelle voie")
+      val result = candidat.connecter(commande.copy(
+        adresse = Some(adresse.copy(voie = "nouvelle voie"))
       ))
 
       // Then
-      val event = result.head.asInstanceOf[AdresseModifieeEvent]
+      val event = result.filter(_.isInstanceOf[AdresseModifieeEvent]).head.asInstanceOf[AdresseModifieeEvent]
       event.candidatId mustBe commande.id
       event.adresse.voie mustBe "nouvelle voie"
     }
     "générer un événement contenant le statut de demandeur d'emploi modifié" in {
       // Given
       val candidat = candidatBuilder
-        .avecInscription(
-          nom = Some(commande.nom),
-          prenom = Some(commande.prenom),
-          email = Some(commande.email),
-          genre = Some(commande.genre)
-        )
-        .avecAdresse(adresse)
+        .avecInscription()
         .avecStatutDemandeurEmploi(StatutDemandeurEmploi.DEMANDEUR_EMPLOI)
         .build
 
       // When
-      val result = candidat.modifierProfil(commande.copy(
-        statutDemandeurEmploi = StatutDemandeurEmploi.NON_DEMANDEUR_EMPLOI
+      val result = candidat.connecter(commande.copy(
+        statutDemandeurEmploi = Some(StatutDemandeurEmploi.NON_DEMANDEUR_EMPLOI)
       ))
 
       // Then
-      val event = result.head.asInstanceOf[StatutDemandeurEmploiModifieEvent]
+      val event = result.filter(_.isInstanceOf[StatutDemandeurEmploiModifieEvent]).head.asInstanceOf[StatutDemandeurEmploiModifieEvent]
       event.candidatId mustBe commande.id
       event.statutDemandeurEmploi mustBe StatutDemandeurEmploi.NON_DEMANDEUR_EMPLOI
     }

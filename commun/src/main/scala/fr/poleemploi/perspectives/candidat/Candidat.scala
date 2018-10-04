@@ -24,23 +24,28 @@ class Candidat(override val id: CandidatId,
       throw new RuntimeException(s"Le candidat ${id.value} est déjà inscrit")
     }
 
-    List(
+    val candidatInscritEvent = Some(
       CandidatInscritEvent(
         candidatId = command.id,
         nom = command.nom,
         prenom = command.prenom,
         email = command.email,
         genre = command.genre
-      ),
-      AdresseModifieeEvent(
-        candidatId = command.id,
-        adresse = command.adresse
-      ),
-      StatutDemandeurEmploiModifieEvent(
-        candidatId = command.id,
-        statutDemandeurEmploi = command.statutDemandeurEmploi
       )
     )
+    val adresseModifieeEvent = command.adresse.map(adresse =>
+      AdresseModifieeEvent(
+        candidatId = command.id,
+        adresse = adresse
+      ))
+    val statutDemandeurEmploiModifieEvent = command.statutDemandeurEmploi.map(statutDemandeurEmploi =>
+      StatutDemandeurEmploiModifieEvent(
+        candidatId = command.id,
+        statutDemandeurEmploi = statutDemandeurEmploi
+      )
+    )
+
+    List(candidatInscritEvent, adresseModifieeEvent, statutDemandeurEmploiModifieEvent).flatten
   }
 
   // FIXME : vérification de l'existence des codes ROME dans le référentiel
@@ -79,10 +84,12 @@ class Candidat(override val id: CandidatId,
     List(criteresRechercheModifiesEvent, numeroTelephoneModifieEvent).flatten
   }
 
-  def modifierProfil(command: ModifierProfilCommand): List[Event] = {
+  def connecter(command: ConnecterCandidatCommand): List[Event] = {
     if (!state.estInscrit) {
       throw new RuntimeException(s"Le candidat ${id.value} n'est pas encore inscrit")
     }
+
+    val candidatConnecteEvent = Some(CandidatConnecteEvent(command.id))
 
     val profilCandidatModifieEvent =
       if (!state.nom.contains(command.nom) ||
@@ -98,23 +105,25 @@ class Candidat(override val id: CandidatId,
         ))
       } else None
 
-    val adresseModifieeEvent =
-      if (!state.adresse.contains(command.adresse)) {
+    val adresseModifieeEvent = command.adresse.flatMap(adresse =>
+      if (command.adresse.isDefined && !state.adresse.contains(command.adresse.get)) {
         Some(AdresseModifieeEvent(
           candidatId = command.id,
-          adresse = command.adresse
+          adresse = command.adresse.get
         ))
       } else None
+    )
 
-    val statutDemandeurEmploiModifieEvent =
-      if (!state.statutDemandeurEmploi.contains(command.statutDemandeurEmploi)) {
+    val statutDemandeurEmploiModifieEvent = command.statutDemandeurEmploi.flatMap(statutDemandeurEmploi =>
+      if (!state.statutDemandeurEmploi.contains(statutDemandeurEmploi)) {
         Some(StatutDemandeurEmploiModifieEvent(
           candidatId = command.id,
-          statutDemandeurEmploi = command.statutDemandeurEmploi
+          statutDemandeurEmploi = statutDemandeurEmploi
         ))
       } else None
+    )
 
-    List(profilCandidatModifieEvent, adresseModifieeEvent, statutDemandeurEmploiModifieEvent).flatten
+    List(candidatConnecteEvent, profilCandidatModifieEvent, adresseModifieeEvent, statutDemandeurEmploiModifieEvent).flatten
   }
 
   def ajouterCV(command: AjouterCVCommand,

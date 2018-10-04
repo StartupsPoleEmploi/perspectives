@@ -19,8 +19,8 @@ class CandidatCommandHandler(candidatRepository: CandidatRepository,
   def modifierCriteresRecherche(command: ModifierCriteresRechercheCommand): Future[Unit] =
     execute(command.id, c => Future(c.modifierCriteres(command)))
 
-  def modifierProfil(command: ModifierProfilCommand): Future[Unit] =
-    execute(command.id, c => Future(c.modifierProfil(command)))
+  def connecter(command: ConnecterCandidatCommand): Future[Unit] =
+    execute(command.id, c => Future(c.connecter(command)))
 
   def ajouterCV(command: AjouterCVCommand): Future[Unit] =
     execute(command.id, _.ajouterCV(command, cvService))

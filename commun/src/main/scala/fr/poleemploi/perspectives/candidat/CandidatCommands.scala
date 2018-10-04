@@ -13,8 +13,8 @@ case class InscrireCandidatCommand(id: CandidatId,
                                    prenom: String,
                                    email: Email,
                                    genre: Genre,
-                                   adresse: Adresse,
-                                   statutDemandeurEmploi: StatutDemandeurEmploi) extends Command
+                                   adresse: Option[Adresse],
+                                   statutDemandeurEmploi: Option[StatutDemandeurEmploi]) extends Command
 
 // FIXME : Le numéro de téléphone est sur le formulaire des critères de recherche pour l'instant
 case class ModifierCriteresRechercheCommand(id: CandidatId,
@@ -26,13 +26,13 @@ case class ModifierCriteresRechercheCommand(id: CandidatId,
                                             rayonRecherche: RayonRecherche,
                                             numeroTelephone: NumeroTelephone) extends Command
 
-case class ModifierProfilCommand(id: CandidatId,
-                                 nom: String,
-                                 prenom: String,
-                                 email: Email,
-                                 genre: Genre,
-                                 adresse: Adresse,
-                                 statutDemandeurEmploi: StatutDemandeurEmploi) extends Command
+case class ConnecterCandidatCommand(id: CandidatId,
+                                    nom: String,
+                                    prenom: String,
+                                    email: Email,
+                                    genre: Genre,
+                                    adresse: Option[Adresse],
+                                    statutDemandeurEmploi: Option[StatutDemandeurEmploi]) extends Command
 
 case class AjouterCVCommand(id: CandidatId,
                             nomFichier: String,

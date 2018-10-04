@@ -1,20 +1,12 @@
 package fr.poleemploi.perspectives.candidat
 
-import java.time.LocalDate
-
-import fr.poleemploi.perspectives.candidat.mrs.domain.MRSValidee
-import fr.poleemploi.perspectives.commun.domain.{CodeROME, Email, Genre}
+import fr.poleemploi.perspectives.commun.domain.{Email, Genre}
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{MustMatchers, WordSpec}
 
 class InscrireCandidatSpec extends WordSpec with MustMatchers with MockitoSugar {
 
   val candidatBuilder = new CandidatBuilder
-
-  val mrsValidee = MRSValidee(
-    codeROME = CodeROME("H3203"),
-    dateEvaluation = LocalDate.now()
-  )
 
   val commande: InscrireCandidatCommand =
     InscrireCandidatCommand(
@@ -23,8 +15,8 @@ class InscrireCandidatSpec extends WordSpec with MustMatchers with MockitoSugar 
       prenom = "prenom",
       email = Email("email@domain.com"),
       genre = Genre.HOMME,
-      adresse = mock[Adresse],
-      statutDemandeurEmploi = StatutDemandeurEmploi.DEMANDEUR_EMPLOI
+      adresse = None,
+      statutDemandeurEmploi = None
     )
 
   "inscrire" should {
@@ -40,7 +32,7 @@ class InscrireCandidatSpec extends WordSpec with MustMatchers with MockitoSugar 
       // Then
       ex.getMessage mustBe s"Le candidat ${candidat.id.value} est déjà inscrit"
     }
-    "générer des événements lorsque le candidat n'est pas encore inscrit" in {
+    "générer un evenement lorsque le candidat n'est pas encore inscrit" in {
       // Given
       val candidat = candidatBuilder.build
 
@@ -48,7 +40,7 @@ class InscrireCandidatSpec extends WordSpec with MustMatchers with MockitoSugar 
       val result = candidat.inscrire(commande)
 
       // Then
-      result.size mustBe 3
+      result.size mustBe 1
     }
     "générer un événement contenant les informations d'inscription" in {
       // Given
@@ -67,33 +59,35 @@ class InscrireCandidatSpec extends WordSpec with MustMatchers with MockitoSugar 
       candidatInscritEvent.email mustBe commande.email
       candidatInscritEvent.genre mustBe commande.genre
     }
-    "générer un événement contenant l'adresse" in {
+    "générer un événement contenant l'adresse lorsqu'elle est renseignée" in {
       // Given
+      val adresse = mock[Adresse]
       val candidat = candidatBuilder.build
 
       // When
-      val result = candidat.inscrire(commande)
+      val result = candidat.inscrire(commande.copy(adresse = Some(adresse)))
 
       // Then
       val event = result.filter(_.isInstanceOf[AdresseModifieeEvent])
       event.size mustBe 1
       val adresseModifieeEvent = event.head.asInstanceOf[AdresseModifieeEvent]
       adresseModifieeEvent.candidatId mustBe commande.id
-      adresseModifieeEvent.adresse mustBe commande.adresse
+      adresseModifieeEvent.adresse mustBe adresse
     }
-    "générer un événement contenant le statut de demandeur d'emploi" in {
+    "générer un événement contenant le statut de demandeur d'emploi lorsqu'il est renseigné" in {
       // Given
+      val statutDemandeurEmploi = mock[StatutDemandeurEmploi]
       val candidat = candidatBuilder.build
 
       // When
-      val result = candidat.inscrire(commande)
+      val result = candidat.inscrire(commande.copy(statutDemandeurEmploi = Some(statutDemandeurEmploi)))
 
       // Then
       val event = result.filter(_.isInstanceOf[StatutDemandeurEmploiModifieEvent])
       event.size mustBe 1
       val statutDemandeurEmploiModifieEvent = event.head.asInstanceOf[StatutDemandeurEmploiModifieEvent]
       statutDemandeurEmploiModifieEvent.candidatId mustBe commande.id
-      statutDemandeurEmploiModifieEvent.statutDemandeurEmploi mustBe commande.statutDemandeurEmploi
+      statutDemandeurEmploiModifieEvent.statutDemandeurEmploi mustBe statutDemandeurEmploi
     }
   }
 

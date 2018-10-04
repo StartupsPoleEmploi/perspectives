@@ -18,6 +18,8 @@ case class CandidatInscritEvent(candidatId: CandidatId,
                                 email: Email,
                                 genre: Genre) extends CandidatEvent
 
+case class CandidatConnecteEvent(candidatId: CandidatId) extends CandidatEvent
+
 case class CriteresRechercheModifiesEvent(candidatId: CandidatId,
                                           rechercheMetierEvalue: Boolean,
                                           rechercheAutreMetier: Boolean,

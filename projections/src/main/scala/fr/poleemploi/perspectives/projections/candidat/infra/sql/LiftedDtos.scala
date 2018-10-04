@@ -24,7 +24,8 @@ case class CandidatPourConseillerLifted(candidatId: Rep[CandidatId],
                                         contacteParOrganismeFormation: Rep[Option[Boolean]],
                                         rayonRecherche: Rep[Option[RayonRecherche]],
                                         numeroTelephone: Rep[Option[NumeroTelephone]],
-                                        dateInscription: Rep[ZonedDateTime])
+                                        dateInscription: Rep[ZonedDateTime],
+                                        dateDerniereConnexion: Rep[ZonedDateTime])
 
 case class CandidatCriteresRechercheLifted(candidatId: Rep[CandidatId],
                                            nom: Rep[String],

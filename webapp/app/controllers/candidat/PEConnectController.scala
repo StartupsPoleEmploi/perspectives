@@ -6,7 +6,7 @@ import controllers.FlashMessages._
 import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
 import fr.poleemploi.perspectives.authentification.infra.PEConnectService
 import fr.poleemploi.perspectives.authentification.infra.sql.CandidatPEConnect
-import fr.poleemploi.perspectives.authentification.infra.ws.{PEConnectCandidatInfos, PEConnectException, PEConnectWSAdapterConfig}
+import fr.poleemploi.perspectives.authentification.infra.ws.{AccessTokenResponse, PEConnectCandidatInfos, PEConnectException, PEConnectWSAdapterConfig}
 import fr.poleemploi.perspectives.candidat._
 import javax.inject.{Inject, Singleton}
 import play.api.Logger
@@ -71,11 +71,10 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       _ <- Either.cond(peConnectService.verifyNonce(oauthTokens, accessTokenResponse.nonce), (), "La comparaison du nonce a échoué").toFuture
       _ <- peConnectService.validateAccessToken(accessTokenResponse)
       infosCandidat <- peConnectService.getInfosCandidat(accessTokenResponse.accessToken)
-      adresse <- peConnectService.getAdresseCandidat(accessTokenResponse.accessToken)
-      statutDemandeurEmploi <- peConnectService.getStatutDemandeurEmploiCandidat(accessTokenResponse.accessToken)
-      // FIXME : saga pour l'adresse et le statut (l'inscription est prioritaire)
+      adresse <- getAdresseCandidat(accessTokenResponse)
+      statutDemandeurEmploi <- getStatutDemandeurEmploi(accessTokenResponse)
       optCandidat <- peConnectService.findCandidat(infosCandidat.peConnectId)
-      candidatId <- optCandidat.map(c => modifierProfil(c, infosCandidat, adresse, statutDemandeurEmploi))
+      candidatId <- optCandidat.map(c => connecter(c, infosCandidat, adresse, statutDemandeurEmploi))
         .getOrElse(inscrire(
           peConnectCandidatInfos = infosCandidat,
           adresse = adresse,
@@ -130,8 +129,8 @@ class PEConnectController @Inject()(cc: ControllerComponents,
   }
 
   private def inscrire(peConnectCandidatInfos: PEConnectCandidatInfos,
-                       adresse: Adresse,
-                       statutDemandeurEmploi: StatutDemandeurEmploi): Future[CandidatId] = {
+                       adresse: Option[Adresse],
+                       statutDemandeurEmploi: Option[StatutDemandeurEmploi]): Future[CandidatId] = {
     val candidatId = candidatCommandHandler.newCandidatId
     val command = InscrireCandidatCommand(
       id = candidatId,
@@ -151,12 +150,12 @@ class PEConnectController @Inject()(cc: ControllerComponents,
     } yield candidatId
   }
 
-  private def modifierProfil(candidatPEConnect: CandidatPEConnect,
-                             peConnectCandidatInfos: PEConnectCandidatInfos,
-                             adresse: Adresse,
-                             statutDemandeurEmploi: StatutDemandeurEmploi): Future[CandidatId] = {
+  private def connecter(candidatPEConnect: CandidatPEConnect,
+                        peConnectCandidatInfos: PEConnectCandidatInfos,
+                        adresse: Option[Adresse],
+                        statutDemandeurEmploi: Option[StatutDemandeurEmploi]): Future[CandidatId] = {
     val candidatId = candidatPEConnect.candidatId
-    val command = ModifierProfilCommand(
+    val command = ConnecterCandidatCommand(
       id = candidatId,
       nom = peConnectCandidatInfos.nom,
       prenom = peConnectCandidatInfos.prenom,
@@ -165,6 +164,22 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       adresse = adresse,
       statutDemandeurEmploi = statutDemandeurEmploi
     )
-    candidatCommandHandler.modifierProfil(command).map(_ => candidatId)
+    candidatCommandHandler.connecter(command).map(_ => candidatId)
   }
+
+  private def getAdresseCandidat(accessTokenResponse: AccessTokenResponse): Future[Option[Adresse]] =
+    peConnectService.getAdresseCandidat(accessTokenResponse.accessToken).map(Some(_))
+      .recoverWith {
+        case t: Throwable =>
+          Logger.error("Erreur lors de la récupération de l'adresse", t)
+          Future.successful(None)
+      }
+
+  private def getStatutDemandeurEmploi(accessTokenResponse: AccessTokenResponse): Future[Option[StatutDemandeurEmploi]] =
+    peConnectService.getStatutDemandeurEmploiCandidat(accessTokenResponse.accessToken).map(Some(_))
+      .recoverWith {
+        case t: Throwable =>
+          Logger.error("Erreur lors de la récupération du statut demandeur d'emploi", t)
+          Future.successful(None)
+      }
 }

@@ -30,7 +30,7 @@ class ConnecterRecruteurSpec extends WordSpec
       // Then
       ex.getMessage mustBe s"Le recruteur ${recruteur.id.value} n'est pas encore inscrit"
     }
-    "générer un événement de connexion" in {
+    "générer un événement de connexion lorsqu'aucune information de profil n'est modifiée" in {
       // Given
       val recruteur = recruteurBuilder.avecInscription(
         nom = Some(commande.nom),
@@ -43,7 +43,7 @@ class ConnecterRecruteurSpec extends WordSpec
       val result = recruteur.connecter(commande)
 
       // Then
-      result.size mustBe 1
+      result.count(_.isInstanceOf[RecruteurConnecteEvent]) mustBe 1
     }
     "générer un événement contenant les informations de connexion" in {
       // Given
@@ -79,7 +79,7 @@ class ConnecterRecruteurSpec extends WordSpec
       ))
 
       // Then
-      result.exists(_.getClass == classOf[ProfilGerantModifieEvent]) mustBe true
+      result.count(_.isInstanceOf[ProfilGerantModifieEvent]) mustBe 1
     }
     "générer un événement si le prénom a été modifié" in {
       // Given
@@ -93,7 +93,7 @@ class ConnecterRecruteurSpec extends WordSpec
       ))
 
       // Then
-      result.exists(_.getClass == classOf[ProfilGerantModifieEvent]) mustBe true
+      result.count(_.isInstanceOf[ProfilGerantModifieEvent]) mustBe 1
     }
     "générer un événement si l'email a été modifié" in {
       // Given
@@ -107,7 +107,7 @@ class ConnecterRecruteurSpec extends WordSpec
       ))
 
       // Then
-      result.exists(_.getClass == classOf[ProfilGerantModifieEvent]) mustBe true
+      result.count(_.isInstanceOf[ProfilGerantModifieEvent]) mustBe 1
     }
     "générer un événement si le genre a été modifié" in {
       // Given
@@ -121,7 +121,7 @@ class ConnecterRecruteurSpec extends WordSpec
       ))
 
       // Then
-      result.exists(_.getClass == classOf[ProfilGerantModifieEvent]) mustBe true
+      result.count(_.isInstanceOf[ProfilGerantModifieEvent]) mustBe 1
     }
     "générer un événement contenant les informations modifiés" in {
       // Given

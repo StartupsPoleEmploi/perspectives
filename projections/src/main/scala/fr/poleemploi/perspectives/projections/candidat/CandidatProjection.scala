@@ -15,6 +15,7 @@ class CandidatProjection(adapter: CandidatProjectionSqlAdapter) extends Projecti
 
   override def onEvent: ReceiveEvent = {
     case e: CandidatInscritEvent => adapter.onCandidatInscritEvent(e)
+    case e: CandidatConnecteEvent => adapter.onCandidatConnecteEvent(e)
     case e: ProfilCandidatModifieEvent => adapter.onProfilModifieEvent(e)
     case e: CriteresRechercheModifiesEvent => adapter.onCriteresRechercheModifiesEvent(e)
     case e: NumeroTelephoneModifieEvent => adapter.onNumeroTelephoneModifieEvent(e)

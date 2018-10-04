@@ -34,13 +34,13 @@ class InscriptionController @Inject()(cc: ControllerComponents,
       prenom = "mickael",
       email = Email("mickael.perspectives@mail.com"),
       genre = Genre.HOMME,
-      adresse = Adresse(
+      adresse = Some(Adresse(
         voie = "3 rue des oursons",
         codePostal = "75020",
         libelleCommune = "Paris",
         libellePays = "France"
-      ),
-      statutDemandeurEmploi = StatutDemandeurEmploi.DEMANDEUR_EMPLOI
+      )),
+      statutDemandeurEmploi = Some(StatutDemandeurEmploi.DEMANDEUR_EMPLOI)
     )
     candidatCommandHandler.inscrire(command).map { _ =>
       val candidatAuthentifie = CandidatAuthentifie(

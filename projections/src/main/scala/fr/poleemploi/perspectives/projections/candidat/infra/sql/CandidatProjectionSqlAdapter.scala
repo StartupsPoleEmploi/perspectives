@@ -64,9 +64,11 @@ class CandidatProjectionSqlAdapter(database: Database,
 
     def dateInscription = column[ZonedDateTime]("date_inscription")
 
+    def dateDerniereConnexion = column[ZonedDateTime]("date_derniere_connexion")
+
     def indexerRecherche = column[Boolean]("indexer_recherche")
 
-    def * = (candidatId, nom, prenom, genre, email, statutDemandeurEmploi, codePostal, commune, rechercheMetierEvalue, metiersEvalues, rechercheAutreMetier, metiersRecherches, contacteParAgenceInterim, contacteParOrganismeFormation, rayonRecherche, numeroTelephone, cvId, cvTypeMedia, dateInscription, indexerRecherche) <> (CandidatRecord.tupled, CandidatRecord.unapply)
+    def * = (candidatId, nom, prenom, genre, email, statutDemandeurEmploi, codePostal, commune, rechercheMetierEvalue, metiersEvalues, rechercheAutreMetier, metiersRecherches, contacteParAgenceInterim, contacteParOrganismeFormation, rayonRecherche, numeroTelephone, cvId, cvTypeMedia, dateInscription, dateDerniereConnexion, indexerRecherche) <> (CandidatRecord.tupled, CandidatRecord.unapply)
   }
 
   val candidatTable = TableQuery[CandidatTable]
@@ -94,7 +96,7 @@ class CandidatProjectionSqlAdapter(database: Database,
       .filter(_.dateInscription < avantDateInscription)
       .sortBy(_.dateInscription.desc)
       .take(nbCandidatsParPage)
-      .map(c => CandidatPourConseillerLifted(c.candidatId, c.nom, c.prenom, c.genre, c.email, c.statutDemandeurEmploi, c.rechercheMetierEvalue, c.metiersEvalues, c.rechercheAutreMetier, c.metiersRecherches, c.contacteParAgenceInterim, c.contacteParOrganismeFormation, c.rayonRecherche, c.numeroTelephone, c.dateInscription))
+      .map(c => CandidatPourConseillerLifted(c.candidatId, c.nom, c.prenom, c.genre, c.email, c.statutDemandeurEmploi, c.rechercheMetierEvalue, c.metiersEvalues, c.rechercheAutreMetier, c.metiersRecherches, c.contacteParAgenceInterim, c.contacteParOrganismeFormation, c.rayonRecherche, c.numeroTelephone, c.dateInscription, c.dateDerniereConnexion))
   }
   val modifierProfilQuery = Compiled { candidatId: Rep[CandidatId] =>
     for {
@@ -130,6 +132,11 @@ class CandidatProjectionSqlAdapter(database: Database,
     for {
       c <- candidatTable if c.candidatId === candidatId
     } yield (c.rechercheMetierEvalue, c.rechercheAutreMetier, c.metiersRecherches, c.indexerRecherche)
+  }
+  val derniereConnexionQuery = Compiled { candidatId: Rep[CandidatId] =>
+    for {
+      r <- candidatTable if r.candidatId === candidatId
+    } yield r.dateDerniereConnexion
   }
 
   def criteresRecherche(query: CriteresRechercheQuery): Future[CandidatCriteresRechercheDto] =
@@ -269,7 +276,8 @@ class CandidatProjectionSqlAdapter(database: Database,
       contacteParOrganismeFormation = record.contacteParOrganismeFormation,
       rayonRecherche = record.rayonRecherche,
       numeroTelephone = record.numeroTelephone,
-      dateInscription = record.dateInscription
+      dateInscription = record.dateInscription,
+      dateDerniereConnexion = record.dateDerniereConnexion
     )
   }
 
@@ -299,6 +307,11 @@ class CandidatProjectionSqlAdapter(database: Database,
       .run(candidatTable.map(c => (c.candidatId, c.nom, c.prenom, c.genre, c.email, c.dateInscription))
         += (event.candidatId, event.nom, event.prenom, event.genre, event.email, event.date))
       .map(_ => ())
+
+  def onCandidatConnecteEvent(event: CandidatConnecteEvent): Future[Unit] =
+    database.run(derniereConnexionQuery(event.candidatId).update(
+      event.date
+    )).map(_ => ())
 
   def onProfilModifieEvent(event: ProfilCandidatModifieEvent): Future[Unit] =
     database.run(modifierProfilQuery(event.candidatId).update((

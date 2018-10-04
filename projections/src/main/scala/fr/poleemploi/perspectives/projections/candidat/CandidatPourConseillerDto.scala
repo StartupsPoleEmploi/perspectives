@@ -19,7 +19,8 @@ case class CandidatPourConseillerDto(candidatId: CandidatId,
                                      contacteParOrganismeFormation: Option[Boolean],
                                      rayonRecherche: Option[RayonRecherche],
                                      numeroTelephone: Option[NumeroTelephone],
-                                     dateInscription: ZonedDateTime) {
+                                     dateInscription: ZonedDateTime,
+                                     dateDerniereConnexion: ZonedDateTime) {
 
   /**
     * Ne se base pas sur statutDemandeurEmploi car il n'est pas forcément actualisé tout de suite

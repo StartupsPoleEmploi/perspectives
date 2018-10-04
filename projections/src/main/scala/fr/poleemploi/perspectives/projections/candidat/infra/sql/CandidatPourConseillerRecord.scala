@@ -19,4 +19,5 @@ case class CandidatPourConseillerRecord(candidatId: CandidatId,
                                         contacteParOrganismeFormation: Option[Boolean],
                                         rayonRecherche: Option[RayonRecherche],
                                         numeroTelephone: Option[NumeroTelephone],
-                                        dateInscription: ZonedDateTime)
+                                        dateInscription: ZonedDateTime,
+                                        dateDerniereConnexion: ZonedDateTime)
