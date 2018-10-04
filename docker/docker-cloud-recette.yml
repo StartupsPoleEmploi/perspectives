@@ -36,6 +36,8 @@ services:
       - nginx
     env_file:
       - recette.env
+    volumes:
+      - export_poleemploi:/var/perspectives/export_poleemploi
     deploy:
       replicas: 2
     networks:
@@ -47,3 +49,4 @@ networks:
 volumes:
   postgresql:
   postgresql_backups:
+  export_poleemploi:
