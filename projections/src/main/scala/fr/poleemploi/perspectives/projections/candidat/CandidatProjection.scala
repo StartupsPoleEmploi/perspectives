@@ -27,8 +27,8 @@ class CandidatProjection(adapter: CandidatProjectionSqlAdapter) extends Projecti
     case e: RepriseEmploiDeclareeParConseillerEvent => adapter.onRepriseEmploiDeclareeParConseillerEvent(e)
   }
 
-  def criteresRecherche(query: CriteresRechercheQuery): Future[CandidatCriteresRechercheDto] =
-    adapter.criteresRecherche(query)
+  def candidatSaisieCriteresRecherche(query: CandidatSaisieCriteresRechercheQuery): Future[CandidatSaisieCriteresRechercheDto] =
+    adapter.candidatSaisieCriteresRecherche(query)
 
   def candidatContactRecruteur(candidatId: CandidatId): Future[CandidatContactRecruteurDto] =
     adapter.candidatContactRecruteur(candidatId)

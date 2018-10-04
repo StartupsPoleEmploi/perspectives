@@ -7,7 +7,7 @@ import controllers.{AssetsFinder, FormHelpers}
 import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
 import fr.poleemploi.perspectives.commun.domain.{CodeROME, NumeroTelephone, RayonRecherche}
-import fr.poleemploi.perspectives.projections.candidat.{CandidatCriteresRechercheDto, CandidatQueryHandler, CriteresRechercheQuery}
+import fr.poleemploi.perspectives.projections.candidat.{CandidatQueryHandler, CandidatSaisieCriteresRechercheDto, CandidatSaisieCriteresRechercheQuery}
 import fr.poleemploi.perspectives.projections.rechercheCandidat.RechercheCandidatQueryHandler
 import javax.inject.Inject
 import play.api.Logger
@@ -29,17 +29,21 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
   def saisieCriteresRecherche: Action[AnyContent] = candidatAuthentifieAction.async { candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
       for {
-        candidat <-
+        candidatSaisieCriteresRecherche <-
           if (messagesRequest.flash.candidatInscrit) Future.successful(None)
-          else candidatQueryHandler.criteresRecherche(CriteresRechercheQuery(candidatAuthentifieRequest.candidatId)).map(Some(_))
+          else candidatQueryHandler.candidatSaisieCriteresRecherche(CandidatSaisieCriteresRechercheQuery(candidatAuthentifieRequest.candidatId)).map(Some(_))
+        metiersEvaluesCandidat <-
+          if (messagesRequest.flash.candidatInscrit) candidatQueryHandler.metiersEvaluesNouvelInscrit(candidatAuthentifieRequest.candidatId)
+          else Future(candidatSaisieCriteresRecherche.map(c => c.metiersEvalues).getOrElse(Nil))
       } yield {
-        val form = candidat
+        val form = candidatSaisieCriteresRecherche
           .map(SaisieCriteresRechercheForm.fromCandidatCriteresRechercheDto)
           .getOrElse(SaisieCriteresRechercheForm.nouveauCandidat)
 
         Ok(views.html.candidat.saisieCriteresRecherche(
           saisieCriteresRechercheForm = form,
-          candidat = candidat,
+          candidatSaisieCriteresRecherche = candidatSaisieCriteresRecherche,
+          metiersEvaluesCandidat = metiersEvaluesCandidat,
           candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie,
           secteursActivites = rechercheCandidatQueryHandler.secteursProposes
         ))
@@ -49,19 +53,20 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
 
   def modifierCriteresRecherche: Action[AnyContent] = candidatAuthentifieAction.async { candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
-      candidatQueryHandler.criteresRecherche(CriteresRechercheQuery(candidatAuthentifieRequest.candidatId))
-        .flatMap(candidat => {
+      candidatQueryHandler.candidatSaisieCriteresRecherche(CandidatSaisieCriteresRechercheQuery(candidatAuthentifieRequest.candidatId))
+        .flatMap(candidatSaisieCriteresRecherche => {
           SaisieCriteresRechercheForm.form.bindFromRequest.fold(
             formWithErrors => {
               Future.successful(BadRequest(views.html.candidat.saisieCriteresRecherche(
                 saisieCriteresRechercheForm = formWithErrors,
-                candidat = Some(candidat),
+                candidatSaisieCriteresRecherche = Some(candidatSaisieCriteresRecherche),
+                metiersEvaluesCandidat = candidatSaisieCriteresRecherche.metiersEvalues,
                 candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie,
                 secteursActivites = rechercheCandidatQueryHandler.secteursProposes
               )))
             },
             saisieCriteresRechercheForm => {
-              val modifierCriteresCommand = buildModifierCriteresRechercheCommand(candidat.candidatId, saisieCriteresRechercheForm)
+              val modifierCriteresCommand = buildModifierCriteresRechercheCommand(candidatSaisieCriteresRecherche.candidatId, saisieCriteresRechercheForm)
 
               candidatCommandHandler.modifierCriteresRecherche(modifierCriteresCommand).map(_ =>
                 if (saisieCriteresRechercheForm.nouveauCandidat) {
@@ -89,7 +94,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
       CVForm.bindFromMultipart(candidatAuthentifieRequest.body).fold(
         erreur => Future.successful(BadRequest(erreur)),
         cvForm => {
-          candidatQueryHandler.criteresRecherche(CriteresRechercheQuery(candidatAuthentifieRequest.candidatId))
+          candidatQueryHandler.candidatSaisieCriteresRecherche(CandidatSaisieCriteresRechercheQuery(candidatAuthentifieRequest.candidatId))
             .flatMap(candidat =>
               candidat.cvId
                 .map(cvId => candidatCommandHandler.remplacerCV(buildRemplacerCvCommand(candidat, cvId, cvForm)))
@@ -115,7 +120,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
     )
   }
 
-  private def buildAjouterCvCommand(candidat: CandidatCriteresRechercheDto,
+  private def buildAjouterCvCommand(candidat: CandidatSaisieCriteresRechercheDto,
                                     cvForm: CVForm): AjouterCVCommand =
     AjouterCVCommand(
       id = candidat.candidatId,
@@ -124,7 +129,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
       path = cvForm.path
     )
 
-  private def buildRemplacerCvCommand(candidat: CandidatCriteresRechercheDto,
+  private def buildRemplacerCvCommand(candidat: CandidatSaisieCriteresRechercheDto,
                                       cvId: CVId,
                                       cvForm: CVForm): RemplacerCVCommand =
     RemplacerCVCommand(

@@ -2,7 +2,7 @@ package controllers.candidat
 
 import controllers.FormHelpers
 import fr.poleemploi.perspectives.commun.domain.RayonRecherche
-import fr.poleemploi.perspectives.projections.candidat.CandidatCriteresRechercheDto
+import fr.poleemploi.perspectives.projections.candidat.CandidatSaisieCriteresRechercheDto
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
@@ -51,7 +51,7 @@ object SaisieCriteresRechercheForm {
     )
   )
 
-  def fromCandidatCriteresRechercheDto(candidat: CandidatCriteresRechercheDto): Form[SaisieCriteresRechercheForm] = SaisieCriteresRechercheForm.form.fill(
+  def fromCandidatCriteresRechercheDto(candidat: CandidatSaisieCriteresRechercheDto): Form[SaisieCriteresRechercheForm] = SaisieCriteresRechercheForm.form.fill(
     SaisieCriteresRechercheForm(
       nouveauCandidat = false,
       rechercheMetierEvalue = FormHelpers.optBooleanToString(candidat.rechercheMetierEvalue),

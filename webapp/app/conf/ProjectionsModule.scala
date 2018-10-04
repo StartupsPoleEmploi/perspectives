@@ -4,6 +4,7 @@ import com.google.inject.{AbstractModule, Inject, Provides, Singleton}
 import fr.poleemploi.eventsourcing.{EventHandler, EventPublisher}
 import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.candidat.cv.domain.CVService
+import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielMRSCandidat
 import fr.poleemploi.perspectives.emailing.domain.EmailingService
 import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
 import fr.poleemploi.perspectives.projections.candidat.infra.sql.CandidatProjectionSqlAdapter
@@ -66,11 +67,15 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
   @Singleton
   def candidatQueryHandler(candidatProjection: CandidatProjection,
                            recruteurProjection: RecruteurProjection,
-                           cvService: CVService): CandidatQueryHandler =
+                           cvService: CVService,
+                           referentielMRSCandidat: ReferentielMRSCandidat,
+                           referentielMetier: ReferentielMetier): CandidatQueryHandler =
     new CandidatQueryHandler(
       candidatProjection = candidatProjection,
       recruteurProjection = recruteurProjection,
-      cvService = cvService
+      cvService = cvService,
+      referentielMRSCandidat = referentielMRSCandidat,
+      referentielMetier = referentielMetier
     )
 
   @Provides

@@ -77,14 +77,14 @@ class CandidatProjectionSqlAdapter(database: Database,
 
   implicit object CandidatPourConseillerShape extends CaseClassShape(CandidatPourConseillerLifted.tupled, CandidatPourConseillerRecord.tupled)
 
-  implicit object CandidatCriteresRechercheShape extends CaseClassShape(CandidatCriteresRechercheLifted.tupled, CandidatCriteresRechercheDto.tupled)
+  implicit object CandidatSaisieCriteresRechercheShape extends CaseClassShape(CandidatSaisieCriteresRechercheLifted.tupled, CandidatSaisieCriteresRechercheRecord.tupled)
 
   implicit object CandidatRechercheShape extends CaseClassShape(CandidatRechercheLifted.tupled, CandidatRechercheRecord.tupled)
 
-  val criteresRechercheQuery = Compiled { candidatId: Rep[CandidatId] =>
+  val candidatSaisieCriteresRechercheQuery = Compiled { candidatId: Rep[CandidatId] =>
     candidatTable
       .filter(_.candidatId === candidatId)
-      .map(c => CandidatCriteresRechercheLifted(c.candidatId, c.nom, c.prenom, c.rechercheMetierEvalue, c.rechercheAutreMetier, c.metiersRecherches, c.contacteParAgenceInterim, c.contacteParOrganismeFormation, c.rayonRecherche, c.numeroTelephone, c.cvId, c.cvTypeMedia))
+      .map(c => CandidatSaisieCriteresRechercheLifted(c.candidatId, c.nom, c.prenom, c.rechercheMetierEvalue, c.metiersEvalues, c.rechercheAutreMetier, c.metiersRecherches, c.contacteParAgenceInterim, c.contacteParOrganismeFormation, c.rayonRecherche, c.numeroTelephone, c.cvId, c.cvTypeMedia))
   }
   val candidatContactRecruteurQuery = Compiled { candidatId: Rep[CandidatId] =>
     candidatTable
@@ -139,8 +139,8 @@ class CandidatProjectionSqlAdapter(database: Database,
     } yield r.dateDerniereConnexion
   }
 
-  def criteresRecherche(query: CriteresRechercheQuery): Future[CandidatCriteresRechercheDto] =
-    database.run(criteresRechercheQuery(query.candidatId).result.head)
+  def candidatSaisieCriteresRecherche(query: CandidatSaisieCriteresRechercheQuery): Future[CandidatSaisieCriteresRechercheDto] =
+    database.run(candidatSaisieCriteresRechercheQuery(query.candidatId).result.head.map(toCandidatSaisieCriteresRechercheDto))
 
   def candidatContactRecruteur(candidatId: CandidatId): Future[CandidatContactRecruteurDto] =
     database.run(candidatContactRecruteurQuery(candidatId).result.head)
@@ -278,6 +278,26 @@ class CandidatProjectionSqlAdapter(database: Database,
       numeroTelephone = record.numeroTelephone,
       dateInscription = record.dateInscription,
       dateDerniereConnexion = record.dateDerniereConnexion
+    )
+  }
+
+  private def toCandidatSaisieCriteresRechercheDto(record: CandidatSaisieCriteresRechercheRecord): CandidatSaisieCriteresRechercheDto = {
+    val metiersEvalues = record.metiersEvalues.map(referentielMetier.metierParCode)
+
+    CandidatSaisieCriteresRechercheDto(
+      candidatId = record.candidatId,
+      nom = record.nom,
+      prenom = record.prenom,
+      rechercheMetierEvalue = record.rechercheMetierEvalue,
+      metiersEvalues = metiersEvalues,
+      rechercheAutreMetier = record.rechercheAutreMetier,
+      metiersRecherches = record.metiersRecherches,
+      contacteParAgenceInterim = record.contacteParAgenceInterim,
+      contacteParOrganismeFormation = record.contacteParOrganismeFormation,
+      rayonRecherche = record.rayonRecherche,
+      numeroTelephone = record.numeroTelephone,
+      cvId = record.cvId,
+      cvTypeMedia = record.cvTypeMedia
     )
   }
 

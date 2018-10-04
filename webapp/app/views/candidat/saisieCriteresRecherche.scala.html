@@ -2,12 +2,13 @@
 @import controllers.candidat.SaisieCriteresRechercheForm
 @import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
 @import fr.poleemploi.perspectives.candidat.cv.domain.TypeMedia
-@import fr.poleemploi.perspectives.commun.domain.{RayonRecherche, SecteurActivite}
-@import fr.poleemploi.perspectives.projections.candidat.CandidatCriteresRechercheDto
+@import fr.poleemploi.perspectives.commun.domain.{RayonRecherche, SecteurActivite, Metier}
+@import fr.poleemploi.perspectives.projections.candidat.CandidatSaisieCriteresRechercheDto
 @import helper._
 
 @(saisieCriteresRechercheForm: Form[SaisieCriteresRechercheForm],
-        candidat: Option[CandidatCriteresRechercheDto],
+        candidatSaisieCriteresRecherche: Option[CandidatSaisieCriteresRechercheDto],
+        metiersEvaluesCandidat: List[Metier],
         secteursActivites: List[SecteurActivite],
         candidatAuthentifie: CandidatAuthentifie)(implicit request: MessagesRequestHeader, flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
@@ -31,6 +32,22 @@
             <span class="separation-ligne"></span>
         </div>
     </section>
+    @if(metiersEvaluesCandidat.nonEmpty) {
+    <section class="mrsValidees">
+        <span class="mrsValidees-intitule">
+            @if(metiersEvaluesCandidat.size == 1) {
+                Vous avez été évalué sur le métier suivant :
+            } else {
+                Vous avez été évalué sur les métiers suivants :
+            }
+        </span>
+        @for(metierEvalue <- metiersEvaluesCandidat) {
+            <ul class="listeMrsValidees">
+                <li class="listeMrsValidees-item">@metierEvalue.label</li>
+            </ul>
+        }
+    </section>
+    }
     <section class="criteres">
         @form(action = controllers.candidat.routes.SaisieCriteresRechercheController.modifierCriteresRecherche(), 'id -> "criteresRechercheForm") {
         @CSRF.formField
@@ -39,7 +56,11 @@
             <dt class="question">
                 <span class="question-puce @if(hasErrors("rechercheMetierEvalue")){question-puce--erreur}">1</span>
                 <div class="question-texte">
-                    Cherchez-vous toujours sur le métier pour lequel vous avez été évalué ?
+                    @if(metiersEvaluesCandidat.size <= 1) { @** Il est possible qu'on ne récupère pas tout de suite son métier, mais on affiche quand meme la question *@
+                        Cherchez-vous toujours sur le métier pour lequel vous avez été évalué ?
+                    } else {
+                        Cherchez-vous toujours sur les métiers pour lesquels vous avez été évalué ?
+                    }
                     <span class="question-requise">*</span>
                 </div>
             </dt>
@@ -202,8 +223,8 @@
             <dt class="question">
                 <span class="question-puce @if(hasErrors("cv")){question-puce--erreur}">7</span>
                 <div class="question-texte">
-                    @if(candidat.exists(_.possedeCV)) {
-                        @defining(candidat.get) { c =>
+                    @if(candidatSaisieCriteresRecherche.exists(_.possedeCV)) {
+                        @defining(candidatSaisieCriteresRecherche.get) { c =>
                             Remplacez votre dernier CV envoyé (@TypeMedia.extensionsCV.mkString(", ")) :
                             <a class="telechargerCV" href="/candidat/cv/telecharger/@c.nomCV" target="_blank">Voir mon CV</a>
                         }
@@ -216,7 +237,7 @@
                 <div class="telechargementFichier">
                     <label class="parcourirFichier telechargementFichier-item" for="js-inputCV">
                         <span id="js-nomFichier" class="parcourirFichier-nom bouton bouton--noirSurGris">
-                            @candidat.flatMap(_.cvId).map(_ => "Remplacer mon CV").getOrElse("Ajouter mon CV")
+                            @candidatSaisieCriteresRecherche.flatMap(_.cvId).map(_ => "Remplacer mon CV").getOrElse("Ajouter mon CV")
                         </span>
                         <span class="telechargementFichier-bouton bouton bouton--blancSurNoir">Parcourir</span>
                         <input id="js-inputCV" class="telechargementFichier-input" name="cv" type="file" accept="@TypeMedia.typesMediasCV.mkString(",")"/>

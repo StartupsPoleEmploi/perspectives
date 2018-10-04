@@ -1,7 +1,11 @@
 package fr.poleemploi.perspectives.projections.candidat
 
 import fr.poleemploi.cqrs.projection.{QueryHandler, UnauthorizedQueryException}
+import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.candidat.cv.domain.{CV, CVService}
+import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielMRSCandidat
+import fr.poleemploi.perspectives.commun.domain.Metier
+import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
 import fr.poleemploi.perspectives.projections.recruteur.RecruteurProjection
 import fr.poleemploi.perspectives.recruteur.TypeRecruteur
 
@@ -10,10 +14,12 @@ import scala.concurrent.Future
 
 class CandidatQueryHandler(candidatProjection: CandidatProjection,
                            recruteurProjection: RecruteurProjection,
-                           cvService: CVService) extends QueryHandler {
+                           cvService: CVService,
+                           referentielMRSCandidat: ReferentielMRSCandidat,
+                           referentielMetier: ReferentielMetier) extends QueryHandler {
 
-  def criteresRecherche(query: CriteresRechercheQuery): Future[CandidatCriteresRechercheDto] =
-    candidatProjection.criteresRecherche(query)
+  def candidatSaisieCriteresRecherche(query: CandidatSaisieCriteresRechercheQuery): Future[CandidatSaisieCriteresRechercheDto] =
+    candidatProjection.candidatSaisieCriteresRecherche(query)
 
   def listerPourConseiller(query: CandidatsPourConseillerQuery): Future[CandidatsPourConseillerQueryResult] =
     candidatProjection.listerPourConseiller(query)
@@ -45,4 +51,10 @@ class CandidatQueryHandler(candidatProjection: CandidatProjection,
 
   def rechercherCandidatsParMetier(query: RechercherCandidatsParMetierQuery): Future[ResultatRechercheCandidatParMetier] =
     candidatProjection.rechercherCandidatParMetier(query)
+
+  def metiersEvaluesNouvelInscrit(candidatId: CandidatId): Future[List[Metier]] =
+    referentielMRSCandidat
+      .mrsValideesParCandidat(candidatId)
+      .map(mrsValidees => mrsValidees.map(m => referentielMetier.metierParCode(m.codeROME)))
+
 }

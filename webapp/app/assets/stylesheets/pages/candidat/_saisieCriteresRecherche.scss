@@ -1,5 +1,22 @@
 #saisieCriteresRechercheCandidat {
 
+  .mrsValidees {
+    @include make-container();
+    @include make-container-max-widths();
+    text-align: center;
+    margin-bottom: 3rem;
+    color: $perspectives-noir;
+
+    &-intitule {
+      font-size: 1em;
+      font-weight: 700;
+    }
+  }
+
+  .listeMrsValidees {
+    @extend %liste;
+  }
+
   .criteres {
     @include make-container();
     @include make-container-max-widths();
@@ -32,7 +49,7 @@
 
   .secteurActivite {
     margin-bottom: 1rem;
-    color: #334051;
+    color: $perspectives-noir;
     font-weight: 900;
     font-size: 1.2em;
     text-transform: uppercase;
@@ -66,7 +83,7 @@
   .telechargerCV {
     font-weight: 300;
     padding-left: 15px;
-    color: #334051;
+    color: $perspectives-noir;
     text-decoration: underline;
   }
 }
