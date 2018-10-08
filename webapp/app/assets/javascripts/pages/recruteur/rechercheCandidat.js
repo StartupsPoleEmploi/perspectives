@@ -190,7 +190,7 @@ $(document).ready(function () {
         var titre = $("#js-titreCommentaireRecruteur");
         var label = $("#js-labelCommentaireRecruteur");
         var actions = $("#js-commentaireActions");
-        var commentaireEnvoye = $("#js-commentaireRecruteurEnvoye");
+        var commenterListeCandidats = $("#commenterListeCandidats");
 
         var initialiserFormulaire = function(labelCommentaire) {
             titre.text('Vous êtes satisfait(e)s de la liste qui vous est proposé ?');
@@ -217,9 +217,14 @@ $(document).ready(function () {
                     data: formulaire.serializeArray(),
                     dataType: 'text'
                 }).done(function () {
+                    commenterListeCandidats.append('<p class="alert alert-success">Merci pour votre commentaire</p>');
+                }).fail(function () {
+                    commenterListeCandidats.append('<p class="alert alert-danger">Une erreur est survenue, veuillez réessayer ultérieurement</p>');
+                }).always(function () {
                     formulaire.hide();
-                    commentaireEnvoye.show();
-                    $("#commenterListeCandidats").delay(2000).slideUp(400);
+                    commenterListeCandidats.delay(2000).slideUp(400, function() {
+                        window.location.hash = 'rechercheCandidat';
+                    });
                 });
             }
         });
