@@ -31,5 +31,4 @@ ALTER TABLE candidats OWNER TO perspectives;
 COMMENT ON TABLE candidats IS 'Table des candidats';
 COMMENT ON COLUMN candidats.candidat_id IS 'Identifiant unique du candidat';
 
-CREATE UNIQUE INDEX candidat_id_idx ON candidats (candidat_id);
 CREATE INDEX date_inscription_idx ON candidats (date_inscription);
