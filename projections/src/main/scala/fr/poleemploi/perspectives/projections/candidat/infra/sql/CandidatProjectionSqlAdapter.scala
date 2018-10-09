@@ -324,8 +324,8 @@ class CandidatProjectionSqlAdapter(database: Database,
 
   def onCandidatInscritEvent(event: CandidatInscritEvent): Future[Unit] =
     database
-      .run(candidatTable.map(c => (c.candidatId, c.nom, c.prenom, c.genre, c.email, c.dateInscription))
-        += (event.candidatId, event.nom, event.prenom, event.genre, event.email, event.date))
+      .run(candidatTable.map(c => (c.candidatId, c.nom, c.prenom, c.genre, c.email, c.dateInscription, c.dateDerniereConnexion))
+        += (event.candidatId, event.nom, event.prenom, event.genre, event.email, event.date, event.date))
       .map(_ => ())
 
   def onCandidatConnecteEvent(event: CandidatConnecteEvent): Future[Unit] =
