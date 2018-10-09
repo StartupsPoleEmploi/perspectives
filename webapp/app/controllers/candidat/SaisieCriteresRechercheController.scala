@@ -104,7 +104,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
       )
     }
 
-  private def buildModifierCriteresRechercheCommand(candidatId: CandidatId, saisieCriteresRechercheForm: SaisieCriteresRechercheForm): ModifierCriteresRechercheCommand = {
+  private def buildModifierCriteresRechercheCommand(candidatId: CandidatId, saisieCriteresRechercheForm: SaisieCriteresRechercheForm): ModifierCriteresRechercheCommand =
     ModifierCriteresRechercheCommand(
       id = candidatId,
       rechercheMetierEvalue = FormHelpers.stringToBoolean(saisieCriteresRechercheForm.rechercheMetierEvalue),
@@ -118,7 +118,6 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
       rayonRecherche = RayonRecherche(saisieCriteresRechercheForm.rayonRecherche),
       numeroTelephone = NumeroTelephone(saisieCriteresRechercheForm.numeroTelephone)
     )
-  }
 
   private def buildAjouterCvCommand(candidat: CandidatSaisieCriteresRechercheDto,
                                     cvForm: CVForm): AjouterCVCommand =

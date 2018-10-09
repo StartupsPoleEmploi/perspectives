@@ -12,7 +12,7 @@ object Genre {
   val HOMME = Genre(value = "H")
   val FEMME = Genre(value = "F")
 
-  def getLabel(genre: Genre): String =
+  def label(genre: Genre): String =
     genre match {
       case HOMME => "Homme"
       case FEMME => "Femme"

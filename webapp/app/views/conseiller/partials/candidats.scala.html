@@ -40,7 +40,7 @@
             <td>@candidat.dateDerniereConnexion.format(DateTimeFormatter.ofPattern("d MMM yyyy HH:mm"))</td>
             <td>@candidat.nom</td>
             <td>@candidat.prenom</td>
-            <td>@Genre.getLabel(candidat.genre)</td>
+            <td>@Genre.label(candidat.genre)</td>
             <td>@candidat.email.value</td>
             <td>@candidat.numeroTelephone.map(_.value)</td>
             <td>@candidat.statutDemandeurEmploi.map(StatutDemandeurEmploi.getLabel)</td>

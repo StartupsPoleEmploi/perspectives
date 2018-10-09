@@ -13,13 +13,13 @@ class RecruteurCommandHandler(recruteurRepository: RecruteurRepository,
   def newRecruteurId: RecruteurId = recruteurRepository.newRecruteurId
 
   def inscrire(command: InscrireRecruteurCommand): Future[Unit] =
-    execute(command.id, c => Future(c.inscrire(command)))
+    execute(command.id, r => Future(r.inscrire(command)))
 
   def modifierProfil(command: ModifierProfilCommand): Future[Unit] =
-    execute(command.id, c => Future(c.modifierProfil(command)))
+    execute(command.id, r => Future(r.modifierProfil(command)))
 
   def connecter(command: ConnecterRecruteurCommand): Future[Unit] =
-    execute(command.id, c => Future(c.connecter(command)))
+    execute(command.id, r => Future(r.connecter(command)))
 
   def commenterListeCandidats(command: CommenterListeCandidatsCommand): Future[Unit] =
     execute(command.id, _.commenterListeCandidats(command, commentaireService))

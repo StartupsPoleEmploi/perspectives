@@ -35,7 +35,7 @@
             <td>@recruteur.dateDerniereConnexion.format(DateTimeFormatter.ofPattern("d MMM yyyy HH:mm"))</td>
             <td>@recruteur.typeRecruteur.map(TypeRecruteur.getLabel)</td>
             <td>@recruteur.raisonSociale</td>
-            <td>@Genre.getLabel(recruteur.genre)</td>
+            <td>@Genre.label(recruteur.genre)</td>
             <td>@recruteur.nom</td>
             <td>@recruteur.prenom</td>
             <td>@recruteur.email.value</td>
