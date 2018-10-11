@@ -76,7 +76,7 @@
             @partials.resultatsRecherche(resultatRechercheCandidat)
         </section>
         <pagination ref="pagination"
-                    v:bind:nb-par-page="nbCandidatsParPage"
+                    v-bind:nb-par-page="nbCandidatsParPage"
                     v-on:charger-page-suivante="chargerPageSuivante"
                     v-on:charger-page-precedente="chargerPagePrecedente"
                     v-bind:pages-initiales="pagesInitiales"></pagination>
