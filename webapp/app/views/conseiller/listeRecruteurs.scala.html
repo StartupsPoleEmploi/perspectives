@@ -14,7 +14,7 @@
         @partials.recruteurs(recruteurs)
     </div>
     <pagination ref="pagination"
-                nb-par-page="@nbRecruteursParPage"
+                v-bind:nb-par-page="@nbRecruteursParPage"
                 v-on:charger-page-suivante="chargerPageSuivante"
                 v-on:charger-page-precedente="chargerPagePrecedente"
                 v-bind:pages-initiales="[@pagesInitiales.map(d => s"'${DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(d)}'").mkString(",")]"></pagination>

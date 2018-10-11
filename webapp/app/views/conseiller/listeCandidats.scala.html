@@ -12,7 +12,7 @@
         @partials.candidats(resultat)
     </div>
     <pagination ref="pagination"
-                nb-par-page="@nbCandidatsParPage"
+                v-bind:nb-par-page="@nbCandidatsParPage"
                 v-on:charger-page-suivante="chargerPageSuivante"
                 v-on:charger-page-precedente="chargerPagePrecedente"
                 v-bind:pages-initiales="[@resultat.pages.map(d => s"'${DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(d)}'").mkString(",")]"></pagination>

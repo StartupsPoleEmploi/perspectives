@@ -7,7 +7,7 @@ var app = new Vue({
         chargerPageSuivante: function(critere) {
              this.$http.get('/conseiller/recruteurs/' + encodeURIComponent(critere)).then(function(response) {
                 app.$refs.recruteurs.innerHTML = response.body;
-                app.$refs.pagination.pageSuivanteChargee($("#js-nbResultats").val(), $("#js-dernierResultat").val());
+                app.$refs.pagination.pageSuivanteChargee(Number($("#js-nbResultats").val()), $("#js-dernierResultat").val());
             }, function(response) {
                 // erreur
             });

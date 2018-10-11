@@ -1,7 +1,10 @@
 "use strict";
 
 Vue.component('pagination', {
-    props: ['pagesInitiales', 'nbParPage'],
+    props: {
+        pagesInitiales: Array,
+        nbParPage: Number
+    },
     data: function () {
         return {
             pagesPrecedentes: (this.pagesInitiales !== undefined && this.pagesInitiales.length > 0) ? this.pagesInitiales.slice(0, this.pagesInitiales.length - 1) : [],
