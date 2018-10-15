@@ -4,6 +4,7 @@ import java.util.UUID
 
 import fr.poleemploi.eventsourcing.AggregateRepository
 import fr.poleemploi.eventsourcing.eventstore.EventStore
+import fr.poleemploi.perspectives.recruteur.alerte.domain.AlerteId
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -12,6 +13,8 @@ class RecruteurRepository(override val eventStore: EventStore)
   extends AggregateRepository[Recruteur] {
 
   def newRecruteurId: RecruteurId = RecruteurId(UUID.randomUUID().toString)
+
+  def newAlerteId: AlerteId = AlerteId(UUID.randomUUID().toString)
 
   override def getById(recruteurId: RecruteurId): Future[Recruteur] = {
     eventStore.loadEventStream(recruteurId).map(eventStream =>

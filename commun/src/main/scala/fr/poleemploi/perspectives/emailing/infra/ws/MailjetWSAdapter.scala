@@ -3,7 +3,10 @@ package fr.poleemploi.perspectives.emailing.infra.ws
 import java.nio.charset.StandardCharsets
 import java.util.Base64
 
-import play.api.libs.json.Json
+import fr.poleemploi.perspectives.commun.domain.Email
+import fr.poleemploi.perspectives.emailing.domain._
+import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetContactId
+import play.api.libs.json._
 import play.api.libs.ws.{WSClient, WSResponse}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -12,18 +15,45 @@ import scala.concurrent.Future
 case class MailjetWSAdapterException(message: String) extends Exception(message)
 
 class MailjetWSAdapter(config: MailjetWSAdapterConfig,
+                       mailjetWSMapping: MailjetWSMapping,
                        wsClient: WSClient) {
 
   val authorization: String = Base64.getEncoder
     .encodeToString(s"${config.apiKeyPublic}:${config.apiKeyPrivate}".getBytes(StandardCharsets.UTF_8))
 
+  val sender: String = config.senderAdress
+
   val idListeCandidatsInscrits: Int = 9908
   val idListeRecruteursInscrits: Int = 9909
   val idListeTesteurs: Int = 20603
+  val alerteMailRecruteurTemplateId: Int = 570953
 
-  val sender: String = config.senderAdress
+  def ajouterCandidatInscrit(candidatInscrit: CandidatInscrit): Future[MailjetContactId] =
+    manageContact(
+      idListeContact = idListeCandidatsInscrits,
+      request = mailjetWSMapping.buildRequestCandidatInscrit(candidatInscrit)
+    ).map(_.contactId)
 
-  def envoyerTemplate(mailjetTemplateEmail: MailjetTemplateEmail): Future[Unit] =
+  def mettreAJourCandidat(email: Email, possedeCV: Boolean): Future[Unit] =
+    manageContact(
+      idListeContact = idListeCandidatsInscrits,
+      request = mailjetWSMapping.buildRequestMiseAJourCV(email, possedeCV)
+    ).map(_ => ())
+
+  def ajouterRecruteurInscrit(recruteurInscrit: RecruteurInscrit): Future[MailjetContactId] =
+    manageContact(
+      idListeContact = idListeRecruteursInscrits,
+      request = mailjetWSMapping.buildRequestRecruteurInscrit(recruteurInscrit)
+    ).map(_.contactId)
+
+  def envoyerAlerteMailRecruteur(alerteMailRecruteur: AlerteMailRecruteur): Future[Unit] =
+    sendTemplate(mailjetWSMapping.buildAlerteMailTemplateRecruteur(
+      alerteMailRecruteur = alerteMailRecruteur,
+      templateId = alerteMailRecruteurTemplateId,
+      sender = config.senderAdress
+    ))
+
+  private def sendTemplate(mailjetTemplateEmail: MailjetTemplateEmail): Future[Unit] =
     wsClient
       .url(s"${config.urlApi}/v3.1/send")
       .addHttpHeaders(jsonHttpHeader, authorizationHeader)
@@ -31,15 +61,6 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
         "Messages" -> Json.toJson(mailjetTemplateEmail.messages)
       ))
       .map(filtreStatutReponse(_))
-
-  def ajouterCandidatInscrit(request: ManageContactRequest): Future[ManageContactResponse] =
-    manageContact(idListeCandidatsInscrits, request)
-
-  def mettreAJourCandidat(request: ManageContactRequest): Future[ManageContactResponse] =
-    manageContact(idListeCandidatsInscrits, request)
-
-  def ajouterRecruteurInscrit(request: ManageContactRequest): Future[ManageContactResponse] =
-    manageContact(idListeRecruteursInscrits, request)
 
   private def manageContact(idListeContact: Int, request: ManageContactRequest): Future[ManageContactResponse] =
     wsClient

@@ -44,14 +44,8 @@ class CandidatQueryHandler(candidatProjection: CandidatProjection,
     autorisation.flatMap(_ => cvService.getCVByCandidat(query.candidatId))
   }
 
-  def rechercherCandidatParDepartement(query: RechercherCandidatsParDepartementQuery): Future[ResultatRechercheCandidatParDepartement] =
-    candidatProjection.rechercherCandidatParDepartement(query)
-
-  def rechercherCandidatsParSecteur(query: RechercherCandidatsParSecteurQuery): Future[ResultatRechercheCandidat] =
-    candidatProjection.rechercherCandidatParSecteur(query)
-
-  def rechercherCandidatsParMetier(query: RechercherCandidatsParMetierQuery): Future[ResultatRechercheCandidatParMetier] =
-    candidatProjection.rechercherCandidatParMetier(query)
+  def rechercherCandidats(query: RechercherCandidatsQuery): Future[ResultatRechercheCandidat] =
+    candidatProjection.rechercherCandidats(query)
 
   def metiersEvaluesNouvelInscrit(candidatId: CandidatId): Future[List[Metier]] =
     referentielMRSCandidat

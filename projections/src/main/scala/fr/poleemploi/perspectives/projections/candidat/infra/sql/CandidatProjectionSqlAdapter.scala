@@ -161,7 +161,7 @@ class CandidatProjectionSqlAdapter(database: Database,
   def rechercherCandidatParDepartement(query: RechercherCandidatsParDepartementQuery): Future[ResultatRechercheCandidatParDepartement] =
     database.run(
       candidatTable
-        .filter(c => filtreRecherche(c, query.typeRecruteur, Some(query.codeDepartement)))
+        .filter(c => filtreRecherche(c, query.typeRecruteur, Some(query.codeDepartement), query.apresDateInscription))
         .sortBy(_.dateInscription.desc).map(candidatRechercheDtoShape).result
     ).map(r => ResultatRechercheCandidatParDepartement(r.toList.map(toCandidatRechercheDto)))
 
@@ -170,14 +170,14 @@ class CandidatProjectionSqlAdapter(database: Database,
 
     // Candidats qui recherchent parmis leurs métiers évalués et qui ont été évalués sur un métier du secteur
     val selectCandidatsEvaluesSurSecteur = candidatTable.filter(c =>
-      filtreRecherche(c, query.typeRecruteur, query.codeDepartement) &&
+      filtreRecherche(c, query.typeRecruteur, query.codeDepartement, query.apresDateInscription) &&
         c.rechercheMetierEvalue === true &&
         c.metiersEvalues @& metiersSecteur
     ).sortBy(_.dateInscription.desc).map(candidatRechercheDtoShape)
 
     // Candidats qui sont intéréssés par un metier du secteur et qui ont été évalués sur un metier d'un autre secteur
     val selectCandidatsInteressesParAutreSecteur = candidatTable.filter(c =>
-      filtreRecherche(c, query.typeRecruteur, query.codeDepartement) &&
+      filtreRecherche(c, query.typeRecruteur, query.codeDepartement, query.apresDateInscription) &&
         c.rechercheAutreMetier === true &&
         c.metiersRecherches @& metiersSecteur &&
         !(c.metiersEvalues @& metiersSecteur)
@@ -198,7 +198,7 @@ class CandidatProjectionSqlAdapter(database: Database,
 
     // Candidats qui recherchent parmis leurs métiers évalués et qui ont été évalués sur le métier
     val selectCandidatsEvaluesSurMetier = candidatTable.filter(c =>
-      filtreRecherche(c, query.typeRecruteur, query.codeDepartement) &&
+      filtreRecherche(c, query.typeRecruteur, query.codeDepartement, query.apresDateInscription) &&
         c.rechercheMetierEvalue === true &&
         c.metiersEvalues @& metiers
     ).sortBy(_.dateInscription.desc).map(candidatRechercheDtoShape)
@@ -207,7 +207,7 @@ class CandidatProjectionSqlAdapter(database: Database,
     val metiersSecteur = rechercheCandidatService.secteurActivitePourCodeROME(query.codeROME).metiers.map(_.codeROME)
     val metiersSecteurSansMetierChoisi = metiersSecteur.filter(_ != query.codeROME)
     val selectCandidatsInteressesParMetierMemeSecteur = candidatTable.filter(c =>
-      filtreRecherche(c, query.typeRecruteur, query.codeDepartement) &&
+      filtreRecherche(c, query.typeRecruteur, query.codeDepartement, query.apresDateInscription) &&
         c.rechercheAutreMetier === true &&
         c.metiersRecherches @& metiers &&
         c.metiersEvalues @& metiersSecteurSansMetierChoisi
@@ -215,7 +215,7 @@ class CandidatProjectionSqlAdapter(database: Database,
 
     // Candidats qui sont intéréssés par ce métier et qui ont été évalués sur un métier d'un autre secteur
     val selectCandidatsInteressesParMetierAutreSecteur = candidatTable.filter(c =>
-      filtreRecherche(c, query.typeRecruteur, query.codeDepartement) &&
+      filtreRecherche(c, query.typeRecruteur, query.codeDepartement, query.apresDateInscription) &&
         c.rechercheAutreMetier === true &&
         c.metiersRecherches @& metiers &&
         !(c.metiersEvalues @& metiersSecteur)
@@ -301,13 +301,17 @@ class CandidatProjectionSqlAdapter(database: Database,
     )
   }
 
-  private def filtreRecherche(c: CandidatTable, typeRecruteur: TypeRecruteur, codeDepartement: Option[CodeDepartement]): Rep[Option[Boolean]] =
+  private def filtreRecherche(c: CandidatTable,
+                              typeRecruteur: TypeRecruteur,
+                              codeDepartement: Option[CodeDepartement] = None,
+                              apresDateInscription: Option[ZonedDateTime]): Rep[Option[Boolean]] =
   // FIXME : faire en une condition sur un seul champ + modifier toutes les requetes de recherche une fois que la projection peut traiter les evenements en séquentiel pour un même candidat (select avant mise à jour)
     c.numeroTelephone.isDefined &&
       c.metiersEvalues.length(dim = 1) > 0 &&
       c.indexerRecherche &&
       filtreTypeRecruteur(c, typeRecruteur) &&
-      filtreDepartement(c, codeDepartement)
+      filtreDepartement(c, codeDepartement) &&
+      filtreApresDateInscription(c, apresDateInscription)
 
   private def filtreTypeRecruteur(c: CandidatTable,
                                   typeRecruteur: TypeRecruteur): Rep[Option[Boolean]] = typeRecruteur match {
@@ -319,6 +323,12 @@ class CandidatProjectionSqlAdapter(database: Database,
   private def filtreDepartement(c: CandidatTable,
                                 codeDepartement: Option[CodeDepartement]): Rep[Option[Boolean]] = codeDepartement match {
     case Some(code) => c.codePostal startsWith code.value
+    case None => Some(true)
+  }
+
+  private def filtreApresDateInscription(c: CandidatTable,
+                                         apresDateInscription: Option[ZonedDateTime]): Rep[Option[Boolean]] = apresDateInscription match {
+    case Some(code) => c.dateInscription > apresDateInscription
     case None => Some(true)
   }
 

@@ -12,8 +12,9 @@ import fr.poleemploi.perspectives.commun.domain.{CodeDepartement, CodeROME, Code
 import fr.poleemploi.perspectives.projections.candidat._
 import fr.poleemploi.perspectives.projections.rechercheCandidat.RechercheCandidatQueryHandler
 import fr.poleemploi.perspectives.projections.recruteur._
+import fr.poleemploi.perspectives.recruteur._
+import fr.poleemploi.perspectives.recruteur.alerte.domain.{AlerteId, FrequenceAlerte}
 import fr.poleemploi.perspectives.recruteur.commentaire.domain.ContexteRecherche
-import fr.poleemploi.perspectives.recruteur.{CommenterListeCandidatsCommand, RecruteurCommandHandler, TypeRecruteur}
 import javax.inject.{Inject, Singleton}
 import play.api.http.HttpEntity
 import play.api.mvc.{Action, _}
@@ -32,29 +33,36 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
                                             rechercheCandidatQueryHandler: RechercheCandidatQueryHandler,
                                             recruteurAuthentifieAction: RecruteurAuthentifieAction) extends AbstractController(cc) {
 
-  def index: Action[AnyContent] = recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
-    messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
-      val departementsProposes = rechercheCandidatQueryHandler.departementsProposes
-      val rechercheCandidatForm = RechercheCandidatForm(
-        secteurActivite = None,
-        metier = None,
-        codeDepartement = departementsProposes.headOption.map(_.code.value)
-      )
-      rechercher(request = recruteurAuthentifieRequest, rechercheCandidatForm = rechercheCandidatForm).map(resultatRechercheCandidatDto =>
-        Ok(views.html.recruteur.rechercheCandidat(
-          rechercheCandidatForm = RechercheCandidatForm.form.fill(rechercheCandidatForm),
-          recruteurAuthentifie = recruteurAuthentifieRequest.recruteurAuthentifie,
-          resultatRechercheCandidat = resultatRechercheCandidatDto,
-          secteursActivites = rechercheCandidatQueryHandler.secteursProposes,
-          departements = departementsProposes
-        ))
-      ).recover {
-        case _: ProfilRecruteurIncompletException =>
-          Redirect(routes.ProfilController.modificationProfil())
-            .flashing(messagesRequest.flash.withMessageErreur("Vous devez renseigner votre profil avant de pouvoir effectuer une recherche"))
-      }
-    }(recruteurAuthentifieRequest)
-  }
+  def index(secteurActivite: Option[String], metier: Option[String], departement: Option[String]): Action[AnyContent] =
+    recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
+      messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
+        val departementsProposes = rechercheCandidatQueryHandler.departementsProposes
+        val rechercheCandidatForm = RechercheCandidatForm(
+          secteurActivite = secteurActivite,
+          metier = metier,
+          codeDepartement = departement.orElse(departementsProposes.headOption.map(_.code.value))
+        )
+        (for {
+          alertes <- recruteurQueryHandler.alertesParRecruteur(AlertesRecruteurQuery(recruteurAuthentifieRequest.recruteurId))
+          resultatRechercheCandidatDto <- rechercher(request = recruteurAuthentifieRequest, rechercheCandidatForm = rechercheCandidatForm)
+        } yield {
+          Ok(views.html.recruteur.rechercheCandidat(
+            rechercheCandidatForm = RechercheCandidatForm.form.fill(rechercheCandidatForm),
+            recruteurAuthentifie = recruteurAuthentifieRequest.recruteurAuthentifie,
+            resultatRechercheCandidat = resultatRechercheCandidatDto,
+            secteursActivites = rechercheCandidatQueryHandler.secteursProposes,
+            departements = departementsProposes,
+            alertes = alertes,
+            metierChoisi = rechercheCandidatForm.metier.flatMap(c => rechercheCandidatQueryHandler.metierProposeParCode(CodeROME(c)).map(_.label)),
+            secteurActiviteChoisi = rechercheCandidatForm.secteurActivite.map(s => rechercheCandidatQueryHandler.secteurProposeParCode(CodeSecteurActivite(s)).label)
+          ))
+        }).recover {
+          case _: ProfilRecruteurIncompletException =>
+            Redirect(routes.ProfilController.modificationProfil())
+              .flashing(messagesRequest.flash.withMessageErreur("Vous devez renseigner votre profil avant de pouvoir effectuer une recherche"))
+        }
+      }(recruteurAuthentifieRequest)
+    }
 
   def rechercherCandidats: Action[AnyContent] = recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
@@ -79,24 +87,25 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
                          rechercheCandidatForm: RechercheCandidatForm): Future[ResultatRechercheCandidat] =
     for {
       typeRecruteur <- getTypeRecruteur(request)
-      resultatRechercheCandidat <- rechercheCandidatForm.metier.filter(_.nonEmpty).map(code =>
-        candidatQueryHandler.rechercherCandidatsParMetier(RechercherCandidatsParMetierQuery(
+      rechercheCandidatQuery = rechercheCandidatForm.metier.filter(_.nonEmpty).map(code =>
+        RechercherCandidatsParMetierQuery(
           codeROME = CodeROME(code),
           typeRecruteur = typeRecruteur,
           codeDepartement = rechercheCandidatForm.codeDepartement.map(CodeDepartement)
-        ))
+        )
       ).orElse(rechercheCandidatForm.secteurActivite.filter(_.nonEmpty).map(code =>
-        candidatQueryHandler.rechercherCandidatsParSecteur(RechercherCandidatsParSecteurQuery(
+        RechercherCandidatsParSecteurQuery(
           codeSecteurActivite = CodeSecteurActivite(code),
           typeRecruteur = typeRecruteur,
           codeDepartement = rechercheCandidatForm.codeDepartement.map(CodeDepartement)
-        ))
+        )
       )).orElse(rechercheCandidatForm.codeDepartement.filter(_.nonEmpty).map(code =>
-        candidatQueryHandler.rechercherCandidatParDepartement(RechercherCandidatsParDepartementQuery(
+        RechercherCandidatsParDepartementQuery(
           typeRecruteur = typeRecruteur,
           codeDepartement = CodeDepartement(code)
-        ))
-      )).getOrElse(Future.failed(new IllegalArgumentException("Filtre de recherche non géré")))
+        )
+      )).getOrElse(throw new IllegalArgumentException("Filtre de recherche non géré"))
+      resultatRechercheCandidat <- candidatQueryHandler.rechercherCandidats(rechercheCandidatQuery)
     } yield resultatRechercheCandidat
 
   private def getTypeRecruteur(request: RecruteurAuthentifieRequest[AnyContent]): Future[TypeRecruteur] =
@@ -151,6 +160,35 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
     }(recruteurAuthentifieRequest)
   }
 
+  def creerAlerte: Action[AnyContent] = recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
+    messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
+      CreerAlerteForm.form.bindFromRequest.fold(
+        formWithErrors => Future.successful(BadRequest(formWithErrors.errorsAsJson)),
+        creerAlerteForm => {
+          val alerteId = recruteurCommandHandler.newAlerteId
+          recruteurCommandHandler.creerAlerte(
+            CreerAlerteCommand(
+              id = recruteurAuthentifieRequest.recruteurId,
+              alerteId = alerteId,
+              codeSecteurActivite = creerAlerteForm.secteurActivite.map(CodeSecteurActivite(_)),
+              codeROME = creerAlerteForm.metier.map(CodeROME),
+              codeDepartement = creerAlerteForm.codeDepartement.map(CodeDepartement),
+              frequenceAlerte = FrequenceAlerte.frequenceAlerte(creerAlerteForm.frequence).get
+            )
+          ).map(_ => Created(alerteId.value))
+        }
+      )
+    }(recruteurAuthentifieRequest)
+  }
+
+  def supprimerAlerte(alerteId: String): Action[AnyContent] = recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
+    messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
+      recruteurCommandHandler.supprimerAlerte(SupprimerAlerteCommand(
+        id = recruteurAuthentifieRequest.recruteurId,
+        alerteId = AlerteId(alerteId)
+      )).map(_ => NoContent)
+    }(recruteurAuthentifieRequest)
+  }
 }
 
 case class ProfilRecruteurIncompletException() extends Exception

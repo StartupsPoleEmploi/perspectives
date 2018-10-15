@@ -8,10 +8,13 @@ import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielMRSCandidat
 import fr.poleemploi.perspectives.emailing.domain.EmailingService
 import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
 import fr.poleemploi.perspectives.projections.candidat.infra.sql.CandidatProjectionSqlAdapter
-import fr.poleemploi.perspectives.projections.candidat.{CandidatEmailProjection, CandidatNotificationSlackProjection, CandidatProjection, CandidatQueryHandler}
+import fr.poleemploi.perspectives.projections.candidat.{CandidatNotificationSlackProjection, CandidatProjection, CandidatQueryHandler}
+import fr.poleemploi.perspectives.projections.emailing.{CandidatEmailProjection, RecruteurEmailProjection}
 import fr.poleemploi.perspectives.projections.rechercheCandidat.RechercheCandidatQueryHandler
+import fr.poleemploi.perspectives.projections.recruteur.alerte.AlerteRecruteurProjection
+import fr.poleemploi.perspectives.projections.recruteur.alerte.infra.sql.AlerteRecruteurSqlAdapter
 import fr.poleemploi.perspectives.projections.recruteur.infra.sql.RecruteurProjectionSqlAdapter
-import fr.poleemploi.perspectives.projections.recruteur.{RecruteurEmailProjection, RecruteurProjection, RecruteurQueryHandler}
+import fr.poleemploi.perspectives.projections.recruteur.{RecruteurProjection, RecruteurQueryHandler}
 import fr.poleemploi.perspectives.rechercheCandidat.domain.RechercheCandidatService
 import net.codingwell.scalaguice.ScalaModule
 import play.api.libs.ws.WSClient
@@ -24,6 +27,7 @@ class RegisterProjections @Inject()(eventPublisher: EventPublisher,
                                     candidatMailProjection: CandidatEmailProjection,
                                     recruteurProjection: RecruteurProjection,
                                     recruteurEmailProjection: RecruteurEmailProjection,
+                                    alerteRecruteurProjection: AlerteRecruteurProjection,
                                     webAppConfig: WebAppConfig) {
   eventPublisher.subscribe(eventHandler)
 
@@ -31,6 +35,7 @@ class RegisterProjections @Inject()(eventPublisher: EventPublisher,
   eventHandler.subscribe(candidatMailProjection)
   eventHandler.subscribe(recruteurProjection)
   eventHandler.subscribe(recruteurEmailProjection)
+  eventHandler.subscribe(alerteRecruteurProjection)
 
   if (webAppConfig.useSlackNotification) {
     eventHandler.subscribe(candidatNotificationSlackProjection)
@@ -117,9 +122,11 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
-  def recruteurQueryHandler(recruteurProjection: RecruteurProjection): RecruteurQueryHandler =
+  def recruteurQueryHandler(recruteurProjection: RecruteurProjection,
+                            alerteRecruteurProjection: AlerteRecruteurProjection): RecruteurQueryHandler =
     new RecruteurQueryHandler(
-      recruteurProjection = recruteurProjection
+      recruteurProjection = recruteurProjection,
+      alerteRecruteurProjection = alerteRecruteurProjection
     )
 
   @Provides
@@ -127,6 +134,13 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
   def rechercheCandidatQueryHandler(rechercheCandidatService: RechercheCandidatService): RechercheCandidatQueryHandler =
     new RechercheCandidatQueryHandler(
       rechercheCandidatService = rechercheCandidatService
+    )
+
+  @Provides
+  @Singleton
+  def alerteRecruteurProjection(alerteRecruteurSqlAdapter: AlerteRecruteurSqlAdapter): AlerteRecruteurProjection =
+    new AlerteRecruteurProjection(
+      alerteRecruteurSqlAdapter = alerteRecruteurSqlAdapter
     )
 
 }

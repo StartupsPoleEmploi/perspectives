@@ -4,10 +4,13 @@ import akka.actor.{ActorRef, ActorSystem}
 import com.google.inject.{AbstractModule, Inject, Provides, Singleton}
 import fr.poleemploi.perspectives.candidat.CandidatCommandHandler
 import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielMRSCandidat
+import fr.poleemploi.perspectives.emailing.domain.EmailingService
+import fr.poleemploi.perspectives.projections.candidat.CandidatQueryHandler
+import fr.poleemploi.perspectives.projections.recruteur.alerte.AlerteRecruteurProjection
 import javax.inject.Named
 import net.codingwell.scalaguice.ScalaModule
 import play.api.libs.concurrent.AkkaGuiceSupport
-import schedulers.{MRSValideesActor, PerspectivesScheduler}
+import schedulers.{AlerteMailRecruteurActor, MRSValideesActor, PerspectivesScheduler}
 
 class Scheduled @Inject()(mrsValideesScheduler: PerspectivesScheduler) {
 
@@ -18,6 +21,7 @@ class SchedulersModule extends AbstractModule with ScalaModule with AkkaGuiceSup
 
   override def configure(): Unit = {
     bindActor[MRSValideesActor](MRSValideesActor.name)
+    bindActor[AlerteMailRecruteurActor](AlerteMailRecruteurActor.name)
 
     bind[Scheduled].asEagerSingleton()
   }
@@ -31,12 +35,27 @@ class SchedulersModule extends AbstractModule with ScalaModule with AkkaGuiceSup
     )
 
   @Provides
+  def alerteMailRecruteurActor(emailingService: EmailingService,
+                               alerteRecruteurProjection: AlerteRecruteurProjection,
+                               candidatQueryHandler: CandidatQueryHandler,
+                               webAppConfig: WebAppConfig): AlerteMailRecruteurActor =
+    new AlerteMailRecruteurActor(
+      emailingService = emailingService,
+      candidatQueryHandler = candidatQueryHandler,
+      alerteRecruteurProjection = alerteRecruteurProjection,
+      baseURL = webAppConfig.baseURL
+    )
+
+  @Provides
   @Singleton
   def perspectivesScheduler(actorSystem: ActorSystem,
                             @Named(MRSValideesActor.name)
-                            mrsValideesActor: ActorRef): PerspectivesScheduler =
+                            mrsValideesActor: ActorRef,
+                            @Named(AlerteMailRecruteurActor.name)
+                            alerteMailRecruteurActor: ActorRef): PerspectivesScheduler =
     new PerspectivesScheduler(
       actorSystem = actorSystem,
-      mrsValideesActor = mrsValideesActor
+      mrsValideesActor = mrsValideesActor,
+      alerteMailRecruteurActor = alerteMailRecruteurActor
     )
 }

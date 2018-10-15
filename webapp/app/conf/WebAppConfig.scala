@@ -23,6 +23,7 @@ class WebAppConfig(configuration: Configuration) {
 
   val environnement: Environnement = Environnement.from(configuration.get[String]("environnement"))
   val version: String = BuildInfo.version
+  val baseURL: String = configuration.get[String]("baseURL")
 
   val emploiStoreOauthConfig: OauthConfig = OauthConfig(
     clientId = configuration.get[String]("emploiStore.oauth2.clientId"),

@@ -1,7 +1,8 @@
 package fr.poleemploi.perspectives.recruteur
 
 import fr.poleemploi.eventsourcing.Event
-import fr.poleemploi.perspectives.commun.domain.{Email, Genre, NumeroTelephone}
+import fr.poleemploi.perspectives.commun.domain._
+import fr.poleemploi.perspectives.recruteur.alerte.domain.{AlerteId, FrequenceAlerte}
 
 sealed trait RecruteurEvent extends Event {
 
@@ -28,3 +29,16 @@ case class ProfilGerantModifieEvent(recruteurId: RecruteurId,
                                     prenom: String,
                                     email: Email,
                                     genre: Genre) extends RecruteurEvent
+
+case class AlerteRecruteurCreeEvent(recruteurId: RecruteurId,
+                                    prenom: String,
+                                    typeRecruteur: TypeRecruteur,
+                                    email: Email,
+                                    alerteId: AlerteId,
+                                    frequence: FrequenceAlerte,
+                                    codeROME: Option[CodeROME],
+                                    codeSecteurActivite: Option[CodeSecteurActivite],
+                                    codeDepartement: Option[CodeDepartement]) extends RecruteurEvent
+
+case class AlerteRecruteurSupprimeeEvent(recruteurId: RecruteurId,
+                                         alerteId: AlerteId) extends RecruteurEvent

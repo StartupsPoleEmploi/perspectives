@@ -8,6 +8,7 @@ import fr.poleemploi.perspectives.candidat.{CandidatId, StatutDemandeurEmploi}
 import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetContactId
+import fr.poleemploi.perspectives.recruteur.alerte.domain.{AlerteId, FrequenceAlerte}
 import fr.poleemploi.perspectives.recruteur.{NumeroSiret, RecruteurId, TypeRecruteur}
 
 import scala.reflect.ClassTag
@@ -33,6 +34,8 @@ trait PostgresDriver extends ExPostgresProfile
 
     implicit val mailjetContactIdColumnType: BaseColumnType[MailjetContactId] = mapIntValueObject(MailjetContactId)
 
+    implicit val alerteIdColumnType: BaseColumnType[AlerteId] = mapStringValueObject(AlerteId)
+
     implicit val typeRecruteurColumnType: BaseColumnType[TypeRecruteur] = mapStringValueObject(TypeRecruteur(_))
 
     implicit val genreColumnType: BaseColumnType[Genre] = mapStringValueObject(Genre(_))
@@ -55,6 +58,8 @@ trait PostgresDriver extends ExPostgresProfile
     implicit val rayonRechercheColumnType: BaseColumnType[RayonRecherche] = mapIntValueObject(RayonRecherche(_))
 
     implicit val typeMediaColumnType: BaseColumnType[TypeMedia] = mapStringValueObject(TypeMedia(_))
+
+    implicit val frequenceAlerteColumnType: BaseColumnType[FrequenceAlerte] = mapStringValueObject(FrequenceAlerte(_))
 
     implicit val codeSecteurActiviteColumnType: BaseColumnType[CodeSecteurActivite] = mapStringValueObject(CodeSecteurActivite(_))
 

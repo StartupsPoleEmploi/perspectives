@@ -1,4 +1,4 @@
-package fr.poleemploi.perspectives.projections.recruteur
+package fr.poleemploi.perspectives.projections.emailing
 
 import fr.poleemploi.cqrs.projection.Projection
 import fr.poleemploi.eventsourcing.Event

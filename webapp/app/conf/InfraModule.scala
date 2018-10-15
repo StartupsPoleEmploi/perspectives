@@ -23,9 +23,11 @@ import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
 import fr.poleemploi.perspectives.emailing.infra.local.LocalEmailingService
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetEmailingService
 import fr.poleemploi.perspectives.emailing.infra.sql.MailjetSqlAdapter
-import fr.poleemploi.perspectives.emailing.infra.ws.MailjetWSAdapter
+import fr.poleemploi.perspectives.emailing.infra.ws.{MailjetWSAdapter, MailjetWSMapping}
 import fr.poleemploi.perspectives.metier.infra.file.ReferentielMetierFileAdapter
 import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapter
+import fr.poleemploi.perspectives.projections.recruteur.alerte.infra.sql.AlerteRecruteurSqlAdapter
+import fr.poleemploi.perspectives.rechercheCandidat.domain.RechercheCandidatService
 import fr.poleemploi.perspectives.recruteur.commentaire.infra.local.CommentaireServiceLocal
 import fr.poleemploi.perspectives.recruteur.commentaire.infra.slack.SlackCommentaireAdapter
 import net.codingwell.scalaguice.ScalaModule
@@ -157,11 +159,17 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   def mailjetWSAdapter(wsClient: WSClient,
-                       webAppConfig: WebAppConfig): MailjetWSAdapter =
+                       webAppConfig: WebAppConfig,
+                       mailjetWSMapping: MailjetWSMapping): MailjetWSAdapter =
     new MailjetWSAdapter(
       wsClient = wsClient,
-      config = webAppConfig.mailjetWSAdapterConfig
+      config = webAppConfig.mailjetWSAdapterConfig,
+      mailjetWSMapping = mailjetWSMapping
     )
+
+  @Provides
+  def mailjetWSMapping: MailjetWSMapping =
+    new MailjetWSMapping()
 
   @Provides
   def mailjetEmailingService(mailjetSqlAdapter: MailjetSqlAdapter,
@@ -213,5 +221,13 @@ class InfraModule extends AbstractModule with ScalaModule {
     new SlackCommentaireAdapter(
       wsClient = wsClient,
       config = webAppConfig.slackRecruteurConfig
+    )
+
+  @Provides
+  def alerteRecruteurSqlAdapter(database: Database,
+                                rechercheCandidatService: RechercheCandidatService): AlerteRecruteurSqlAdapter =
+    new AlerteRecruteurSqlAdapter(
+      database = database,
+      rechercheCandidatService = rechercheCandidatService
     )
 }

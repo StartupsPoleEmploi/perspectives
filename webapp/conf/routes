@@ -16,10 +16,12 @@ GET         /recruteur/peconnect/callback                            controllers
 GET         /recruteur/deconnexion                                   controllers.recruteur.AuthentificationController.deconnexion
 GET         /recruteur/profil                                        controllers.recruteur.ProfilController.modificationProfil
 POST        /recruteur/profil                                        controllers.recruteur.ProfilController.modifierProfil
-GET         /recruteur/recherche                                     controllers.recruteur.RechercheCandidatController.index
+GET         /recruteur/recherche                                     controllers.recruteur.RechercheCandidatController.index(secteurActivite: Option[String] ?= None, metier: Option[String] ?= None, departement: Option[String] ?= None)
 POST        /recruteur/recherche                                     controllers.recruteur.RechercheCandidatController.rechercherCandidats
 POST        /recruteur/recherche/commenterListeCandidats             controllers.recruteur.RechercheCandidatController.commenterListeCandidats
 GET         /recruteur/cv/telecharger/:candidatId/:nomFichier        controllers.recruteur.RechercheCandidatController.telechargerCV(candidatId, nomFichier)
+POST        /recruteur/alerte                                        controllers.recruteur.RechercheCandidatController.creerAlerte
+DELETE      /recruteur/alerte/:alerteId                              controllers.recruteur.RechercheCandidatController.supprimerAlerte(alerteId: String)
 
 GET         /conseiller/candidats                                    controllers.conseiller.ConseillerController.listeCandidats
 GET         /conseiller/candidats/:avantDateInscription              controllers.conseiller.ConseillerController.paginationCandidats(avantDateInscription: String)
