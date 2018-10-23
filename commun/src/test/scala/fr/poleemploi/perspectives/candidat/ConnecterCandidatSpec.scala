@@ -35,7 +35,7 @@ class ConnecterCandidatSpec extends WordSpec
       val candidat = candidatBuilder.build
 
       // When
-      val ex = intercept[RuntimeException] {
+      val ex = intercept[IllegalArgumentException] {
         candidat.connecter(commande)
       }
 

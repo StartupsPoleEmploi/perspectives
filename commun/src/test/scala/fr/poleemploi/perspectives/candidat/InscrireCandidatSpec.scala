@@ -25,7 +25,7 @@ class InscrireCandidatSpec extends WordSpec with MustMatchers with MockitoSugar 
       val candidat = candidatBuilder.avecInscription().build
 
       // When
-      val ex = intercept[RuntimeException] {
+      val ex = intercept[IllegalArgumentException] {
         candidat.inscrire(commande)
       }
 

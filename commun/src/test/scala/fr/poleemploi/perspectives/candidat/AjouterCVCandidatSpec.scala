@@ -38,7 +38,7 @@ class AjouterCVCandidatSpec extends AsyncWordSpec
       val candidat = candidatBuilder.build
 
       // When & Then
-      recoverToExceptionIf[RuntimeException] {
+      recoverToExceptionIf[IllegalArgumentException] {
         candidat.ajouterCV(commande, cvService)
       }.map(ex =>
         ex.getMessage mustBe s"Le candidat ${candidat.id.value} n'est pas encore inscrit"
@@ -49,7 +49,7 @@ class AjouterCVCandidatSpec extends AsyncWordSpec
       val candidat = candidatBuilder.avecInscription().avecCV(cvId).build
 
       // When & Then
-      recoverToExceptionIf[RuntimeException] {
+      recoverToExceptionIf[IllegalArgumentException] {
         candidat.ajouterCV(commande, cvService)
       }.map(ex =>
         ex.getMessage mustBe s"Impossible d'ajouter un CV au candidat ${candidat.id.value}, il existe déjà"

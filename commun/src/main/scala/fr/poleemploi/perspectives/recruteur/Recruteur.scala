@@ -18,7 +18,7 @@ class Recruteur(override val id: RecruteurId,
 
   def inscrire(command: InscrireRecruteurCommand): List[Event] = {
     if (state.estInscrit) {
-      throw new RuntimeException(s"Le recruteur ${id.value} est déjà inscrit")
+      throw new IllegalArgumentException(s"Le recruteur ${id.value} est déjà inscrit")
     }
 
     List(RecruteurInscritEvent(
@@ -32,7 +32,7 @@ class Recruteur(override val id: RecruteurId,
 
   def modifierProfil(command: ModifierProfilCommand): List[Event] = {
     if (!state.estInscrit) {
-      throw new RuntimeException(s"Le recruteur ${id.value} n'est pas encore inscrit")
+      throw new IllegalArgumentException(s"Le recruteur ${id.value} n'est pas encore inscrit")
     }
 
     if (!state.raisonSociale.contains(command.raisonSociale) ||
@@ -53,7 +53,7 @@ class Recruteur(override val id: RecruteurId,
 
   def connecter(command: ConnecterRecruteurCommand): List[Event] = {
     if (!state.estInscrit) {
-      throw new RuntimeException(s"Le recruteur ${id.value} n'est pas encore inscrit")
+      throw new IllegalArgumentException(s"Le recruteur ${id.value} n'est pas encore inscrit")
     }
 
     val recruteurConnecteEvent = RecruteurConnecteEvent(command.id)

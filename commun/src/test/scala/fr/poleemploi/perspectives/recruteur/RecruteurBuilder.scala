@@ -20,8 +20,8 @@ class RecruteurBuilder {
     events += RecruteurInscritEvent(
       recruteurId = recruteurId,
       nom = nom.getOrElse("recruteur"),
-      prenom = prenom.getOrElse("cool"),
-      email = email.getOrElse(Email("cool.recruteur@mail.com")),
+      prenom = prenom.getOrElse("bob"),
+      email = email.getOrElse(Email("bob.recruteur@mail.com")),
       genre = genre.getOrElse(Genre.HOMME)
     )
     this

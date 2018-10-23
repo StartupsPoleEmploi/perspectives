@@ -28,7 +28,7 @@ class AjouterMRSValideeSpec extends WordSpec with MustMatchers with MockitoSugar
       val candidat = candidatBuilder.build
 
       // When
-      val ex = intercept[RuntimeException] {
+      val ex = intercept[IllegalArgumentException] {
         candidat.ajouterMRSValidee(commande)
       }
 
@@ -40,7 +40,7 @@ class AjouterMRSValideeSpec extends WordSpec with MustMatchers with MockitoSugar
       val candidat = candidatBuilder.avecInscription().avecMRSValidee(mrsValidee).build
 
       // When
-      val ex = intercept[RuntimeException] {
+      val ex = intercept[IllegalArgumentException] {
         candidat.ajouterMRSValidee(commande)
       }
 

@@ -38,7 +38,7 @@ class RemplacerCVCandidatSpec extends AsyncWordSpec
       val candidat = candidatBuilder.build
 
       // When & Then
-      recoverToExceptionIf[RuntimeException] {
+      recoverToExceptionIf[IllegalArgumentException] {
         candidat.remplacerCV(commande, cvService)
       }.map(ex =>
         ex.getMessage mustBe s"Le candidat ${candidat.id.value} n'est pas encore inscrit"
@@ -49,7 +49,7 @@ class RemplacerCVCandidatSpec extends AsyncWordSpec
       val candidat = candidatBuilder.avecInscription().build
 
       // When & Then
-      recoverToExceptionIf[RuntimeException] {
+      recoverToExceptionIf[IllegalArgumentException] {
         candidat.remplacerCV(commande, cvService)
       }.map(ex =>
         ex.getMessage mustBe s"Impossible de remplacer le CV inexistant du candidat ${candidat.id.value}"

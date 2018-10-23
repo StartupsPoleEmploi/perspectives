@@ -21,7 +21,7 @@ class Candidat(override val id: CandidatId,
   // TODO : Behavior pour éviter les trop gros aggrégats
   def inscrire(command: InscrireCandidatCommand): List[Event] = {
     if (state.estInscrit) {
-      throw new RuntimeException(s"Le candidat ${id.value} est déjà inscrit")
+      throw new IllegalArgumentException(s"Le candidat ${id.value} est déjà inscrit")
     }
 
     val candidatInscritEvent = Some(
@@ -51,7 +51,7 @@ class Candidat(override val id: CandidatId,
   // FIXME : vérification de l'existence des codes ROME dans le référentiel
   def modifierCriteres(command: ModifierCriteresRechercheCommand): List[Event] = {
     if (!state.estInscrit) {
-      throw new RuntimeException(s"Le candidat ${id.value} n'est pas encore inscrit")
+      throw new IllegalArgumentException(s"Le candidat ${id.value} n'est pas encore inscrit")
     }
 
     val criteresRechercheModifiesEvent =
@@ -86,7 +86,7 @@ class Candidat(override val id: CandidatId,
 
   def connecter(command: ConnecterCandidatCommand): List[Event] = {
     if (!state.estInscrit) {
-      throw new RuntimeException(s"Le candidat ${id.value} n'est pas encore inscrit")
+      throw new IllegalArgumentException(s"Le candidat ${id.value} n'est pas encore inscrit")
     }
 
     val candidatConnecteEvent = Some(CandidatConnecteEvent(command.id))
@@ -129,10 +129,10 @@ class Candidat(override val id: CandidatId,
   def ajouterCV(command: AjouterCVCommand,
                 cvService: CVService): Future[List[Event]] = {
     if (!state.estInscrit) {
-      return Future.failed(new RuntimeException(s"Le candidat ${id.value} n'est pas encore inscrit"))
+      return Future.failed(new IllegalArgumentException(s"Le candidat ${id.value} n'est pas encore inscrit"))
     }
     if (state.cvId.isDefined) {
-      return Future.failed(new RuntimeException(s"Impossible d'ajouter un CV au candidat ${id.value}, il existe déjà"))
+      return Future.failed(new IllegalArgumentException(s"Impossible d'ajouter un CV au candidat ${id.value}, il existe déjà"))
     }
 
     val cvId = cvService.nextIdentity
@@ -154,9 +154,9 @@ class Candidat(override val id: CandidatId,
   def remplacerCV(command: RemplacerCVCommand,
                   cvService: CVService): Future[List[Event]] = {
     if (!state.estInscrit) {
-      return Future.failed(new RuntimeException(s"Le candidat ${id.value} n'est pas encore inscrit"))
+      return Future.failed(new IllegalArgumentException(s"Le candidat ${id.value} n'est pas encore inscrit"))
     } else if (state.cvId.isEmpty) {
-      return Future.failed(new RuntimeException(s"Impossible de remplacer le CV inexistant du candidat ${id.value}"))
+      return Future.failed(new IllegalArgumentException(s"Impossible de remplacer le CV inexistant du candidat ${id.value}"))
     }
 
     cvService.update(
@@ -175,11 +175,11 @@ class Candidat(override val id: CandidatId,
 
   def ajouterMRSValidee(command: AjouterMRSValideesCommand): List[Event] = {
     if (!state.estInscrit) {
-      throw new RuntimeException(s"Le candidat ${id.value} n'est pas encore inscrit")
+      throw new IllegalArgumentException(s"Le candidat ${id.value} n'est pas encore inscrit")
     }
     val mrsDejaValidees = state.mrsValidees.intersect(command.mrsValidees)
     if (mrsDejaValidees.nonEmpty) {
-      throw new RuntimeException(
+      throw new IllegalArgumentException(
         s"Le candidat ${id.value} a déjà validé les MRS suivantes : ${mrsDejaValidees.foldLeft("")((s, mrs) => s + '\n' + s"${mrs.codeROME} le ${mrs.dateEvaluation}")}"
       )
     }
@@ -193,10 +193,10 @@ class Candidat(override val id: CandidatId,
 
   def declarerRepriseEmploiParConseiller(command: DeclarerRepriseEmploiParConseillerCommand): List[Event] = {
     if (!state.estInscrit) {
-      throw new RuntimeException(s"Le candidat ${id.value} n'est pas encore inscrit")
+      throw new IllegalArgumentException(s"Le candidat ${id.value} n'est pas encore inscrit")
     }
     if (state.rechercheEmploi.contains(false)) {
-      throw new RuntimeException(s"Le candidat ${id.value} n'est pas en recherche d'emploi")
+      throw new IllegalArgumentException(s"Le candidat ${id.value} n'est pas en recherche d'emploi")
     }
 
     List(RepriseEmploiDeclareeParConseillerEvent(

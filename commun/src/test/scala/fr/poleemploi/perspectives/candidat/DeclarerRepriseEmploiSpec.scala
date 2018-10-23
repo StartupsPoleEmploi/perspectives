@@ -23,7 +23,7 @@ class DeclarerRepriseEmploiSpec extends WordSpec with MustMatchers with MockitoS
       val candidat = candidatBuilder.build
 
       // When
-      val ex = intercept[RuntimeException] {
+      val ex = intercept[IllegalArgumentException] {
         candidat.declarerRepriseEmploiParConseiller(commande)
       }
 
@@ -38,7 +38,7 @@ class DeclarerRepriseEmploiSpec extends WordSpec with MustMatchers with MockitoS
         .build
 
       // When
-      val ex = intercept[RuntimeException] {
+      val ex = intercept[IllegalArgumentException] {
         candidat.declarerRepriseEmploiParConseiller(commande)
       }
 
@@ -55,7 +55,7 @@ class DeclarerRepriseEmploiSpec extends WordSpec with MustMatchers with MockitoS
         ).build
 
       // When
-      val ex = intercept[RuntimeException] {
+      val ex = intercept[IllegalArgumentException] {
         candidat.declarerRepriseEmploiParConseiller(commande)
       }
 
