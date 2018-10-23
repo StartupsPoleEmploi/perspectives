@@ -54,7 +54,7 @@ class MailjetSqlAdapter(val driver: PostgresDriver,
   def getCandidat(candidatId: CandidatId): Future[CandidatMailjet] =
     database.run(getCandidatQuery(candidatId).result.head)
 
-  def saveCandidat(candidat: CandidatMailjet): Future[Unit] =
+  def ajouterCandidat(candidat: CandidatMailjet): Future[Unit] =
     database
       .run(candidatsMailjetTable.map(c => (c.candidatId, c.mailjetContactId, c.email))
         += (candidat.candidatId, candidat.mailjetContactId, candidat.email))
@@ -63,7 +63,7 @@ class MailjetSqlAdapter(val driver: PostgresDriver,
   def getRecruteur(recruteurId: RecruteurId): Future[RecruteurMailjet] =
     database.run(getRecruteurQuery(recruteurId).result.head)
 
-  def saveRecruteur(recruteur: RecruteurMailjet): Future[Unit] =
+  def ajouterRecruteur(recruteur: RecruteurMailjet): Future[Unit] =
     database
       .run(recruteursMailjetTable.map(r => (r.recruteurId, r.mailjetContactId, r.email))
         += (recruteur.recruteurId, recruteur.mailjetContactId, recruteur.email))

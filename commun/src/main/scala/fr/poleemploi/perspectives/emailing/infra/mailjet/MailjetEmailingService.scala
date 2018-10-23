@@ -26,7 +26,7 @@ class MailjetEmailingService(mailjetSqlAdapter: MailjetSqlAdapter,
           )
         )
       )
-      _ <- mailjetSqlAdapter.saveCandidat(CandidatMailjet(
+      _ <- mailjetSqlAdapter.ajouterCandidat(CandidatMailjet(
         candidatId = candidatInscrit.candidatId,
         mailjetContactId = manageContactResponse.contactId,
         email = candidatInscrit.email
@@ -61,7 +61,7 @@ class MailjetEmailingService(mailjetSqlAdapter: MailjetSqlAdapter,
           )
         )
       )
-      _ <- mailjetSqlAdapter.saveRecruteur(
+      _ <- mailjetSqlAdapter.ajouterRecruteur(
         RecruteurMailjet(
           recruteurId = recruteurInscrit.recruteurId,
           mailjetContactId = manageContactResponse.contactId,
