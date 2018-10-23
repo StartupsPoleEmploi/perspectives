@@ -115,8 +115,8 @@ class InfraModule extends AbstractModule with ScalaModule {
                          wsClient: WSClient): PEConnectWSAdapter =
     new PEConnectWSAdapter(
       wsClient = wsClient,
-      peConnectRecruteurConfig = webAppConfig.peConnectRecruteurConfig,
-      peConnectCandidatConfig = webAppConfig.peConnectCandidatConfig
+      recruteurConfig = webAppConfig.peConnectRecruteurConfig,
+      candidatConfig = webAppConfig.peConnectCandidatConfig
     )
 
   @Provides

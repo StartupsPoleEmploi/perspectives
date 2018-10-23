@@ -9,12 +9,12 @@ import scala.concurrent.Future
 case class PEConnectException(message: String) extends Exception(message)
 
 class PEConnectWSAdapter(wsClient: WSClient,
-                         peConnectRecruteurConfig: PEConnectWSAdapterConfig,
-                         peConnectCandidatConfig: PEConnectWSAdapterConfig) {
+                         recruteurConfig: PEConnectWSAdapterConfig,
+                         candidatConfig: PEConnectWSAdapterConfig) {
 
   def getInfosRecruteur(accessToken: String): Future[PEConnectRecruteurInfos] =
     wsClient
-      .url(s"${peConnectRecruteurConfig.urlApi}/peconnect-entreprise/v1/userinfo")
+      .url(s"${recruteurConfig.urlApi}/peconnect-entreprise/v1/userinfo")
       .addHttpHeaders(("Authorization", s"Bearer $accessToken"))
       .get()
       .map(filtreStatutReponse(_))
@@ -24,7 +24,7 @@ class PEConnectWSAdapter(wsClient: WSClient,
 
   def getInfosCandidat(accessToken: String): Future[PEConnectCandidatInfos] =
     wsClient
-      .url(s"${peConnectCandidatConfig.urlApi}/peconnect-individu/v1/userinfo")
+      .url(s"${candidatConfig.urlApi}/peconnect-individu/v1/userinfo")
       .addHttpHeaders(("Authorization", s"Bearer $accessToken"))
       .get()
       .map(filtreStatutReponse(_))
@@ -34,7 +34,7 @@ class PEConnectWSAdapter(wsClient: WSClient,
 
   def getCoordonneesCandidat(accessToken: String): Future[Adresse] =
     wsClient
-      .url(s"${peConnectCandidatConfig.urlApi}/peconnect-coordonnees/v1/coordonnees")
+      .url(s"${candidatConfig.urlApi}/peconnect-coordonnees/v1/coordonnees")
       .addHttpHeaders(("Authorization", s"Bearer $accessToken"))
       .get()
       .map(filtreStatutReponse(_))
@@ -44,7 +44,7 @@ class PEConnectWSAdapter(wsClient: WSClient,
 
   def getStatutDemandeurEmploiCandidat(accessToken: String): Future[StatutDemandeurEmploi] =
     wsClient
-      .url(s"${peConnectCandidatConfig.urlApi}/peconnect-statut/v1/statut")
+      .url(s"${candidatConfig.urlApi}/peconnect-statut/v1/statut")
       .addHttpHeaders(("Authorization", s"Bearer $accessToken"))
       .get()
       .map(filtreStatutReponse(_))
@@ -55,12 +55,12 @@ class PEConnectWSAdapter(wsClient: WSClient,
   def getAccessTokenCandidat(authorizationCode: String,
                              redirectUri: String): Future[AccessTokenResponse] =
     wsClient
-      .url(s"${peConnectCandidatConfig.urlAuthentification}/connexion/oauth2/access_token?realm=%2Findividu")
+      .url(s"${candidatConfig.urlAuthentification}/connexion/oauth2/access_token?realm=%2Findividu")
       .post(Map(
         "grant_type" -> "authorization_code",
         "code" -> authorizationCode,
-        "client_id" -> peConnectCandidatConfig.clientId,
-        "client_secret" -> peConnectCandidatConfig.clientSecret,
+        "client_id" -> candidatConfig.clientId,
+        "client_secret" -> candidatConfig.clientSecret,
         "redirect_uri" -> redirectUri
       ))
       .map(filtreStatutReponse(_))
@@ -69,12 +69,12 @@ class PEConnectWSAdapter(wsClient: WSClient,
   def getAccessTokenRecruteur(authorizationCode: String,
                               redirectUri: String): Future[AccessTokenResponse] =
     wsClient
-      .url(s"${peConnectRecruteurConfig.urlAuthentification}/connexion/oauth2/access_token?realm=%2Femployeur")
+      .url(s"${recruteurConfig.urlAuthentification}/connexion/oauth2/access_token?realm=%2Femployeur")
       .post(Map(
         "grant_type" -> "authorization_code",
         "code" -> authorizationCode,
-        "client_id" -> peConnectRecruteurConfig.clientId,
-        "client_secret" -> peConnectRecruteurConfig.clientSecret,
+        "client_id" -> recruteurConfig.clientId,
+        "client_secret" -> recruteurConfig.clientSecret,
         "redirect_uri" -> redirectUri
       ))
       .map(filtreStatutReponse(_))
@@ -83,7 +83,7 @@ class PEConnectWSAdapter(wsClient: WSClient,
   def deconnexionCandidat(idToken: String,
                           redirectUri: String): Future[Unit] =
     wsClient
-      .url(s"${peConnectCandidatConfig.urlAuthentification}/compte/deconnexion")
+      .url(s"${candidatConfig.urlAuthentification}/compte/deconnexion")
       .addQueryStringParameters(
         ("id_token_hint", idToken),
         ("redirect_uri", redirectUri: String)
@@ -94,7 +94,7 @@ class PEConnectWSAdapter(wsClient: WSClient,
   def deconnexionRecruteur(idToken: String,
                            redirectUri: String): Future[Unit] =
     wsClient
-      .url(s"${peConnectRecruteurConfig.urlAuthentification}/compte/deconnexion")
+      .url(s"${recruteurConfig.urlAuthentification}/compte/deconnexion")
       .addQueryStringParameters(
         ("id_token_hint", idToken),
         ("redirect_uri", redirectUri: String)
