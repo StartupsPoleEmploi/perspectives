@@ -29,10 +29,10 @@ class ReferentielMRSCandidatPEConnect(config: ReferentielMRSCandidatPEConnectCon
 
   override def integrerMRSValidees: Future[Stream[MRSValideeCandidat]] = {
     if (!importDirectory.toFile.exists()) {
-      return Future.failed(new RuntimeException(s"Le répertoire d'import $importDirectory n'existe pas"))
+      return Future.failed(new IllegalArgumentException(s"Le répertoire d'import $importDirectory n'existe pas"))
     }
     if (!archiveDirectory.toFile.exists()) {
-      return Future.failed(new RuntimeException(s"Le répertoire d'archive $archiveDirectory n'existe pas"))
+      return Future.failed(new IllegalArgumentException(s"Le répertoire d'archive $archiveDirectory n'existe pas"))
     }
     val stream: DirectoryStream[Path] = Files.newDirectoryStream(importDirectory, pattern)
     val fichiers = stream.asScala.toList

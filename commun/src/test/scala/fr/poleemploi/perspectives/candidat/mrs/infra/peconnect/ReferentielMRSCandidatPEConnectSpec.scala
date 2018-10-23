@@ -48,7 +48,7 @@ class ReferentielMRSCandidatPEConnectSpec extends AsyncWordSpec
       )
 
       // When & Then
-      recoverToSucceededIf[RuntimeException] {
+      recoverToSucceededIf[IllegalArgumentException] {
         referentielMRSCandidatPEConnect.integrerMRSValidees
       } map { _ =>
         Succeeded
@@ -65,7 +65,7 @@ class ReferentielMRSCandidatPEConnectSpec extends AsyncWordSpec
       )
 
       // When & Then
-      recoverToSucceededIf[RuntimeException] {
+      recoverToSucceededIf[IllegalArgumentException] {
         referentielMRSCandidatPEConnect.integrerMRSValidees
       } map { _ =>
         Succeeded
