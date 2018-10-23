@@ -1,24 +1,9 @@
-FROM ubuntu:18.04
+FROM nginx:1.14.0
 
-ARG DEBIAN_FRONTEND=noninteractive
-
-# Nginx, vim, openssl
-RUN apt-get update && \
-    apt-get -y install software-properties-common && \
-    apt-get -y install vim && \
-    apt-get -y install openssl && \
-    apt-get -y install nginx && \
-    rm -rf /var/lib/apt/lists/* # delete all the apt list files since they're big and get stale quickly
-
-EXPOSE 80
 EXPOSE 443
 
 COPY nginx/nginx-https.conf /etc/nginx/nginx.conf
 
 RUN mkdir /etc/nginx/ssl
 
-#RUN openssl dhparam -out /etc/nginx/ssl/dhparam.pem 2048
-
 COPY nginx/ssl /etc/nginx/ssl
-
-CMD ["nginx", "-g", "daemon off;"]
