@@ -13,7 +13,7 @@ import scala.concurrent.Future
 case class SlackCandidatConfig(webhookURL: String,
                                environnement: Environnement)
 
-class CandidatNotificationSlackProjection(slackCandidatConfig: SlackCandidatConfig,
+class CandidatNotificationSlackProjection(config: SlackCandidatConfig,
                                           wsClient: WSClient) extends Projection {
 
   override def listenTo: List[Class[_ <: Event]] = List(classOf[CandidatInscritEvent])
@@ -26,9 +26,9 @@ class CandidatNotificationSlackProjection(slackCandidatConfig: SlackCandidatConf
 
   private def onCandidatInscritEvent: Future[Unit] =
     wsClient
-      .url(s"${slackCandidatConfig.webhookURL}")
+      .url(s"${config.webhookURL}")
       .addHttpHeaders("Content-Type" -> "application/json")
-      .post(Json.stringify(Json.obj("text" -> s"Nouveau candidat inscrit en ${slackCandidatConfig.environnement.value}")))
+      .post(Json.stringify(Json.obj("text" -> s"Nouveau candidat inscrit en ${config.environnement.value}")))
       .map(response => {
         if (response.status >= 400) {
           throw new RuntimeException(s"Erreur lors de l'appel à la notification slack. Code: ${response.status}. Reponse : ${response.body}")

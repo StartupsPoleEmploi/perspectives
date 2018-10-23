@@ -10,7 +10,7 @@ import scala.concurrent.{ExecutionContextExecutor, Future}
 
 object MRSValideesActor {
 
-  val name: String = this.getClass.getSimpleName
+  final val name = "MRSValideesActor"
 
   case object StartImportMRSValidees
 

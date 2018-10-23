@@ -83,7 +83,7 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
   def candidatNotificationSlackProjection(webAppConfig: WebAppConfig,
                                           wsClient: WSClient): CandidatNotificationSlackProjection =
     new CandidatNotificationSlackProjection(
-      slackCandidatConfig = webAppConfig.slackCandidatConfig,
+      config = webAppConfig.slackCandidatConfig,
       wsClient = wsClient
     )
 
