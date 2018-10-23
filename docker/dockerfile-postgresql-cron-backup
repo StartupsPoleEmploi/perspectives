@@ -27,10 +27,10 @@ RUN chmod 0644 /etc/cron.d/cron-postgresql-backup
 COPY postgresql-cron-backup/*.sh /opt/postgresql-cron-backup/
 
 # Pour disposer des variables d'environnement nécessaires à pg_dump dans le contexte d'un cron
-RUN echo 'export PGUSER='${POSTGRES_USER}'\n\
-export PGPASSWORD='${POSTGRES_PASSWORD}'\n\
-export PGHOST='${POSTGRES_HOST}'\n\
-export PGDATABASE='${POSTGRES_DB}'\n\
-export BACKUP_DIR=/var/opt/postgresql-cron-backup' > /opt/postgresql-cron-backup/pgenv.sh
+RUN echo "export PGUSER=${POSTGRES_USER}\n\
+export PGPASSWORD=${POSTGRES_PASSWORD}\n\
+export PGHOST=${POSTGRES_HOST}\n\
+export PGDATABASE=${POSTGRES_DB}\n\
+export BACKUP_DIR=/var/opt/postgresql-cron-backup" > /opt/postgresql-cron-backup/pgenv.sh
 
 CMD ["cron", "-f"]
