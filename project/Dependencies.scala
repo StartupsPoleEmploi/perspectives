@@ -4,6 +4,7 @@ object Dependencies {
 
   // Doit correspondre à la version de Jackson utilisée par Play
   val jacksonVersion = "2.8.11"
+  val jacksonDatabindVersion = "2.8.11.1"
 
   // Doit correspondre à la version de Guice utilisée par Play
   val guiceVersion = "4.1.0"
@@ -14,7 +15,7 @@ object Dependencies {
   val slickPgVersion = "0.16.1"
 
   // Doit correspondre à la version d'Akka utilisée par Play
-  val akkaVersion = "2.5.11"
+  val akkaVersion = "2.5.17"
 
   val akkaActor = "com.typesafe.akka" %% "akka-actor" % akkaVersion
 
@@ -28,7 +29,7 @@ object Dependencies {
 
   val jacksonAnnotations = "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonVersion
 
-  val jacksonDatabind = "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion
+  val jacksonDatabind = "com.fasterxml.jackson.core" % "jackson-databind" % jacksonDatabindVersion
 
   /** For DateTimeModule */
   val jacksonDatatypeJSR310 = "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310" % jacksonVersion
