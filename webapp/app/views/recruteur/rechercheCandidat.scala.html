@@ -56,7 +56,7 @@
                         <label for="js-departements-selecteur" class="conteneurSelecteur-label">Choisissez un département</label>
                         <select id="js-departements-selecteur" class="conteneurSelecteur-selecteur" name="codeDepartement">
                         @for(departement <- departements) {
-                            <option value="@departement.code">@departement.label</option>
+                            <option value="@departement.code.value">@departement.label</option>
                         }
                         </select>
                     </div>

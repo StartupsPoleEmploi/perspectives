@@ -8,7 +8,7 @@ import controllers.AssetsFinder
 import controllers.FlashMessages._
 import fr.poleemploi.cqrs.projection.UnauthorizedQueryException
 import fr.poleemploi.perspectives.candidat.CandidatId
-import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite}
+import fr.poleemploi.perspectives.commun.domain.{CodeDepartement, CodeROME, CodeSecteurActivite}
 import fr.poleemploi.perspectives.projections.candidat._
 import fr.poleemploi.perspectives.projections.rechercheCandidat.RechercheCandidatQueryHandler
 import fr.poleemploi.perspectives.projections.recruteur._
@@ -38,7 +38,7 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
       val rechercheCandidatForm = RechercheCandidatForm(
         secteurActivite = None,
         metier = None,
-        codeDepartement = departementsProposes.headOption.map(_.code)
+        codeDepartement = departementsProposes.headOption.map(_.code.value)
       )
       rechercher(request = recruteurAuthentifieRequest, rechercheCandidatForm = rechercheCandidatForm).map(resultatRechercheCandidatDto =>
         Ok(views.html.recruteur.rechercheCandidat(
@@ -59,9 +59,7 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
   def rechercherCandidats: Action[AnyContent] = recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
       RechercheCandidatForm.form.bindFromRequest.fold(
-        formWithErrors => {
-          Future.successful(BadRequest(formWithErrors.errorsAsJson))
-        },
+        formWithErrors => Future.successful(BadRequest(formWithErrors.errorsAsJson)),
         rechercheCandidatForm => {
           rechercher(request = recruteurAuthentifieRequest, rechercheCandidatForm = rechercheCandidatForm).map(resultatRechercheCandidatDto =>
             Ok(views.html.recruteur.partials.resultatsRecherche(
@@ -79,25 +77,27 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
 
   private def rechercher(request: RecruteurAuthentifieRequest[AnyContent],
                          rechercheCandidatForm: RechercheCandidatForm): Future[ResultatRechercheCandidat] =
-    getTypeRecruteur(request).flatMap(typeRecruteur =>
-      if (rechercheCandidatForm.metier.exists(_.nonEmpty)) {
+    for {
+      typeRecruteur <- getTypeRecruteur(request)
+      resultatRechercheCandidat <- rechercheCandidatForm.metier.filter(_.nonEmpty).map(code =>
         candidatQueryHandler.rechercherCandidatsParMetier(RechercherCandidatsParMetierQuery(
-          codeROME = rechercheCandidatForm.metier.map(CodeROME).get,
+          codeROME = CodeROME(code),
           typeRecruteur = typeRecruteur,
-          codeDepartement = rechercheCandidatForm.codeDepartement
+          codeDepartement = rechercheCandidatForm.codeDepartement.map(CodeDepartement)
         ))
-      } else if (rechercheCandidatForm.secteurActivite.exists(_.nonEmpty)) {
+      ).orElse(rechercheCandidatForm.secteurActivite.filter(_.nonEmpty).map(code =>
         candidatQueryHandler.rechercherCandidatsParSecteur(RechercherCandidatsParSecteurQuery(
-          codeSecteurActivite = rechercheCandidatForm.secteurActivite.map(CodeSecteurActivite(_)).get,
+          codeSecteurActivite = CodeSecteurActivite(code),
           typeRecruteur = typeRecruteur,
-          codeDepartement = rechercheCandidatForm.codeDepartement
+          codeDepartement = rechercheCandidatForm.codeDepartement.map(CodeDepartement)
         ))
-      } else {
-        candidatQueryHandler.rechercherCandidatsParDateInscription(RechercherCandidatsParDateInscriptionQuery(
+      )).orElse(rechercheCandidatForm.codeDepartement.filter(_.nonEmpty).map(code =>
+        candidatQueryHandler.rechercherCandidatParDepartement(RechercherCandidatsParDepartementQuery(
           typeRecruteur = typeRecruteur,
-          codeDepartement = rechercheCandidatForm.codeDepartement
+          codeDepartement = CodeDepartement(code)
         ))
-      })
+      )).getOrElse(Future.failed(new IllegalArgumentException("Filtre de recherche non géré")))
+    } yield resultatRechercheCandidat
 
   private def getTypeRecruteur(request: RecruteurAuthentifieRequest[AnyContent]): Future[TypeRecruteur] =
     request.flash.getTypeRecruteur
@@ -133,9 +133,7 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
   def commenterListeCandidats: Action[AnyContent] = recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
       CommenterListeCandidatsForm.form.bindFromRequest.fold(
-        formWithErrors => {
-          Future.successful(BadRequest(formWithErrors.errorsAsJson))
-        },
+        formWithErrors => Future.successful(BadRequest(formWithErrors.errorsAsJson)),
         commenterListeCandidatsForm => {
           recruteurCommandHandler.commenterListeCandidats(
             CommenterListeCandidatsCommand(
@@ -143,7 +141,7 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
               contexteRecherche = ContexteRecherche(
                 secteurActivite = commenterListeCandidatsForm.secteurActiviteRecherche.map(s => rechercheCandidatQueryHandler.secteurProposeParCode(CodeSecteurActivite(s))),
                 metier = commenterListeCandidatsForm.metierRecherche.flatMap(c => rechercheCandidatQueryHandler.metierProposeParCode(CodeROME(c))),
-                departement = commenterListeCandidatsForm.departementRecherche.map(rechercheCandidatQueryHandler.departementParCode)
+                departement = commenterListeCandidatsForm.departementRecherche.map(c => rechercheCandidatQueryHandler.departementParCode(CodeDepartement(c)))
               ),
               commentaire = commenterListeCandidatsForm.commentaire
             )

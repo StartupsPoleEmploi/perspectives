@@ -58,6 +58,8 @@ trait PostgresDriver extends ExPostgresProfile
 
     implicit val codeSecteurActiviteColumnType: BaseColumnType[CodeSecteurActivite] = mapStringValueObject(CodeSecteurActivite(_))
 
+    implicit val codeDepartementColumnType: BaseColumnType[CodeDepartement] = mapStringValueObject(CodeDepartement)
+
     def mapAggregateId[T <: AggregateId](deserialize: String => T)(implicit tag: ClassTag[T]): BaseColumnType[T] =
       MappedColumnType.base[T, String](
         { t => t.value },

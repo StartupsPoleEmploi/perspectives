@@ -1,5 +1,5 @@
 @import fr.poleemploi.perspectives.commun.domain.RayonRecherche
-@import fr.poleemploi.perspectives.projections.candidat.{CandidatRechercheDto, ResultatRechercheCandidat, ResultatRechercheCandidatParDateInscription, ResultatRechercheCandidatParMetier, ResultatRechercheCandidatParSecteur}
+@import fr.poleemploi.perspectives.projections.candidat.{CandidatRechercheDto, ResultatRechercheCandidat, ResultatRechercheCandidatParDepartement, ResultatRechercheCandidatParMetier, ResultatRechercheCandidatParSecteur}
 
 @(resultatRechercheCandidat: ResultatRechercheCandidat,
         secteurActiviteChoisi: Option[String] = None,
@@ -14,7 +14,7 @@
 }
 
 @resultatRechercheCandidat match {
-    case r@ResultatRechercheCandidatParDateInscription(candidats) => {
+    case r@ResultatRechercheCandidatParDepartement(candidats) => {
         @affichageResultats(cssClasse = "avecLignesBleues", candidatRechercheDtos = candidats)
     }
     case ResultatRechercheCandidatParSecteur(candidatsEvaluesSurSecteur, candidatsInteressesParAutreSecteur) => {

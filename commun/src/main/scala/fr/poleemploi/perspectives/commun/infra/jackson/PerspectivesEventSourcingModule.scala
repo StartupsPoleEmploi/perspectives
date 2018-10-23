@@ -19,6 +19,7 @@ object PerspectivesEventSourcingModule extends EventSourcingModule {
   addStringValueObject(classOf[Email], Email)
   addStringValueObject(classOf[CodeROME], CodeROME)
   addStringValueObject(classOf[CodeSecteurActivite], CodeSecteurActivite(_))
+  addStringValueObject(classOf[CodeDepartement], CodeDepartement)
   addStringValueObject(classOf[TypeRecruteur], TypeRecruteur(_))
   addStringValueObject(classOf[StatutDemandeurEmploi], StatutDemandeurEmploi(_))
   addStringValueObject(classOf[CVId], CVId)

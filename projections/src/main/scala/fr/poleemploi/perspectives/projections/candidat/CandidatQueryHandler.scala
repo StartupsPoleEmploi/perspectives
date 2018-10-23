@@ -43,8 +43,8 @@ class CandidatQueryHandler(candidatProjection: CandidatProjection,
     autorisation.flatMap(_ => cvService.getCVByCandidat(query.candidatId))
   }
 
-  def rechercherCandidatsParDateInscription(query: RechercherCandidatsParDateInscriptionQuery): Future[ResultatRechercheCandidatParDateInscription] =
-    candidatProjection.rechercherCandidatParDateInscription(query)
+  def rechercherCandidatParDepartement(query: RechercherCandidatsParDepartementQuery): Future[ResultatRechercheCandidatParDepartement] =
+    candidatProjection.rechercherCandidatParDepartement(query)
 
   def rechercherCandidatsParSecteur(query: RechercherCandidatsParSecteurQuery): Future[ResultatRechercheCandidat] =
     candidatProjection.rechercherCandidatParSecteur(query)

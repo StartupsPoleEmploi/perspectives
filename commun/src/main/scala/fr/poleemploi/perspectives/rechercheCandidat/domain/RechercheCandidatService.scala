@@ -13,7 +13,7 @@ class RechercheCandidatService {
   def departementsProposes: List[Departement] =
     RechercheCandidatService.departements
 
-  def departementParCode(code: String): Departement =
+  def departementParCode(code: CodeDepartement): Departement =
     departementsProposes
       .find(_.code == code)
       .getOrElse(throw new IllegalArgumentException(s"Aucun département avec le code $code"))
@@ -211,7 +211,7 @@ object RechercheCandidatService {
   private val departements: List[Departement] =
     List(
       new Departement(
-        code = "85",
+        code = CodeDepartement("85"),
         label = "Vendée"
       )
     )

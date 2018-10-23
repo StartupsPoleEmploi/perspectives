@@ -158,12 +158,12 @@ class CandidatProjectionSqlAdapter(database: Database,
         )
       })
 
-  def rechercherCandidatParDateInscription(query: RechercherCandidatsParDateInscriptionQuery): Future[ResultatRechercheCandidatParDateInscription] =
+  def rechercherCandidatParDepartement(query: RechercherCandidatsParDepartementQuery): Future[ResultatRechercheCandidatParDepartement] =
     database.run(
       candidatTable
-        .filter(c => filtreRecherche(c, query.typeRecruteur, query.codeDepartement))
+        .filter(c => filtreRecherche(c, query.typeRecruteur, Some(query.codeDepartement)))
         .sortBy(_.dateInscription.desc).map(candidatRechercheDtoShape).result
-    ).map(r => ResultatRechercheCandidatParDateInscription(r.toList.map(toCandidatRechercheDto)))
+    ).map(r => ResultatRechercheCandidatParDepartement(r.toList.map(toCandidatRechercheDto)))
 
   def rechercherCandidatParSecteur(query: RechercherCandidatsParSecteurQuery): Future[ResultatRechercheCandidatParSecteur] = {
     val metiersSecteur = rechercheCandidatService.secteurActiviteParCode(query.codeSecteurActivite).metiers.map(_.codeROME)
@@ -301,7 +301,7 @@ class CandidatProjectionSqlAdapter(database: Database,
     )
   }
 
-  private def filtreRecherche(c: CandidatTable, typeRecruteur: TypeRecruteur, codeDepartement: Option[String]): Rep[Option[Boolean]] =
+  private def filtreRecherche(c: CandidatTable, typeRecruteur: TypeRecruteur, codeDepartement: Option[CodeDepartement]): Rep[Option[Boolean]] =
   // FIXME : faire en une condition sur un seul champ + modifier toutes les requetes de recherche une fois que la projection peut traiter les evenements en séquentiel pour un même candidat (select avant mise à jour)
     c.numeroTelephone.isDefined &&
       c.metiersEvalues.length(dim = 1) > 0 &&
@@ -317,8 +317,8 @@ class CandidatProjectionSqlAdapter(database: Database,
   }
 
   private def filtreDepartement(c: CandidatTable,
-                                codeDepartement: Option[String]): Rep[Option[Boolean]] = codeDepartement match {
-    case Some(code) => c.codePostal startsWith code
+                                codeDepartement: Option[CodeDepartement]): Rep[Option[Boolean]] = codeDepartement match {
+    case Some(code) => c.codePostal startsWith code.value
     case None => Some(true)
   }
 

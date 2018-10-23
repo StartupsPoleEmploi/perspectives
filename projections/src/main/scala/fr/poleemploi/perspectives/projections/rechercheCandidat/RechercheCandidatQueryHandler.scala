@@ -14,5 +14,5 @@ class RechercheCandidatQueryHandler(rechercheCandidatService: RechercheCandidatS
 
   def departementsProposes: List[Departement] = rechercheCandidatService.departementsProposes
 
-  def departementParCode(code: String): Departement = rechercheCandidatService.departementParCode(code)
+  def departementParCode(code: CodeDepartement): Departement = rechercheCandidatService.departementParCode(code)
 }
