@@ -1,3 +1,5 @@
 package fr.poleemploi.perspectives.commun.infra.peconnect
 
-case class PEConnectId(value: String)
+import fr.poleemploi.eventsourcing.StringValueObject
+
+case class PEConnectId(value: String) extends StringValueObject

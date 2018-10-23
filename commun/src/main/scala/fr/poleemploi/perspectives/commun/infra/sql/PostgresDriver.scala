@@ -2,12 +2,15 @@ package fr.poleemploi.perspectives.commun.infra.sql
 
 import com.github.tminglei.slickpg._
 import com.github.tminglei.slickpg.array.PgArrayExtensions
+import fr.poleemploi.eventsourcing.{AggregateId, IntValueObject, StringValueObject}
 import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
 import fr.poleemploi.perspectives.candidat.{CandidatId, StatutDemandeurEmploi}
 import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetContactId
 import fr.poleemploi.perspectives.recruteur.{NumeroSiret, RecruteurId, TypeRecruteur}
+
+import scala.reflect.ClassTag
 
 trait PostgresDriver extends ExPostgresProfile
   with PgArraySupport
@@ -20,80 +23,58 @@ trait PostgresDriver extends ExPostgresProfile
 
     implicit val strListTypeMapper: DriverJdbcType[List[String]] = new SimpleArrayJdbcType[String]("text").to(_.toList)
 
-    implicit val recruteurIdColumnType: BaseColumnType[RecruteurId] = MappedColumnType.base[RecruteurId, String](
-      { id => id.value },
-      { s => RecruteurId(s) }
-    )
+    implicit val recruteurIdColumnType: BaseColumnType[RecruteurId] = mapAggregateId(RecruteurId)
 
-    implicit val candidatIdColumnType: BaseColumnType[CandidatId] = MappedColumnType.base[CandidatId, String](
-      { id => id.value },
-      { s => CandidatId(s) }
-    )
+    implicit val candidatIdColumnType: BaseColumnType[CandidatId] = mapAggregateId(CandidatId)
 
-    implicit val cvIdColumnType: BaseColumnType[CVId] = MappedColumnType.base[CVId, String](
-      { id => id.value },
-      { s => CVId(s) }
-    )
+    implicit val cvIdColumnType: BaseColumnType[CVId] = mapStringValueObject(CVId)
 
-    implicit val peConnectIdColumnType: BaseColumnType[PEConnectId] = MappedColumnType.base[PEConnectId, String](
-      { id => id.value },
-      { s => PEConnectId(s) }
-    )
+    implicit val peConnectIdColumnType: BaseColumnType[PEConnectId] = mapStringValueObject(PEConnectId)
 
-    implicit val mailjetContactIdColumnType: BaseColumnType[MailjetContactId] = MappedColumnType.base[MailjetContactId, Int](
-      { id => id.value },
-      { s => MailjetContactId(s) }
-    )
+    implicit val mailjetContactIdColumnType: BaseColumnType[MailjetContactId] = mapIntValueObject(MailjetContactId)
 
-    implicit val typeRecruteurColumnType: BaseColumnType[TypeRecruteur] = MappedColumnType.base[TypeRecruteur, String](
-      { t => t.value },
-      { s => TypeRecruteur(s) }
-    )
+    implicit val typeRecruteurColumnType: BaseColumnType[TypeRecruteur] = mapStringValueObject(TypeRecruteur(_))
 
-    implicit val genreColumnType: BaseColumnType[Genre] = MappedColumnType.base[Genre, String](
-      { g => g.value },
-      { s => Genre(s) }
-    )
+    implicit val genreColumnType: BaseColumnType[Genre] = mapStringValueObject(Genre(_))
 
-    implicit val emailColumnType: BaseColumnType[Email] = MappedColumnType.base[Email, String](
-      { e => e.value },
-      { s => Email(s) }
-    )
+    implicit val emailColumnType: BaseColumnType[Email] = mapStringValueObject(Email)
 
-    implicit val numeroSiretColumnType: BaseColumnType[NumeroSiret] = MappedColumnType.base[NumeroSiret, String](
-      { n => n.value },
-      { s => NumeroSiret(s) }
-    )
+    implicit val numeroSiretColumnType: BaseColumnType[NumeroSiret] = mapStringValueObject(NumeroSiret(_))
 
-    implicit val numeroTelephoneColumnType: BaseColumnType[NumeroTelephone] = MappedColumnType.base[NumeroTelephone, String](
-      { n => n.value },
-      { s => NumeroTelephone(s) }
-    )
+    implicit val numeroTelephoneColumnType: BaseColumnType[NumeroTelephone] = mapStringValueObject(NumeroTelephone(_))
 
-    implicit val codeROMEColumnType: BaseColumnType[CodeROME] = MappedColumnType.base[CodeROME, String](
-      { c => c.value },
-      { s => CodeROME(s) }
-    )
+    implicit val codeROMEColumnType: BaseColumnType[CodeROME] = mapStringValueObject(CodeROME)
 
     implicit val listCodeROMEColumnType: BaseColumnType[List[CodeROME]] = MappedColumnType.base[List[CodeROME], List[String]](
       { c => c.map(_.value) },
       { s => s.map(CodeROME) }
     )
 
-    implicit val statutDemandeurEmploiColumnType: BaseColumnType[StatutDemandeurEmploi] = MappedColumnType.base[StatutDemandeurEmploi, String](
-      { st => st.value },
-      { s => StatutDemandeurEmploi(s) }
-    )
+    implicit val statutDemandeurEmploiColumnType: BaseColumnType[StatutDemandeurEmploi] = mapStringValueObject(StatutDemandeurEmploi(_))
 
-    implicit val rayonRechercheColumnType: BaseColumnType[RayonRecherche] = MappedColumnType.base[RayonRecherche, Int](
-      { r => r.value },
-      { i => RayonRecherche(i) }
-    )
+    implicit val rayonRechercheColumnType: BaseColumnType[RayonRecherche] = mapIntValueObject(RayonRecherche(_))
 
-    implicit val typeMediaColumnType: BaseColumnType[TypeMedia] = MappedColumnType.base[TypeMedia, String](
-      { t => t.value },
-      { s => TypeMedia(s) }
-    )
+    implicit val typeMediaColumnType: BaseColumnType[TypeMedia] = mapStringValueObject(TypeMedia(_))
+
+    implicit val codeSecteurActiviteColumnType: BaseColumnType[CodeSecteurActivite] = mapStringValueObject(CodeSecteurActivite(_))
+
+    def mapAggregateId[T <: AggregateId](deserialize: String => T)(implicit tag: ClassTag[T]): BaseColumnType[T] =
+      MappedColumnType.base[T, String](
+        { t => t.value },
+        { s => deserialize(s) }
+      )
+
+    def mapStringValueObject[T <: StringValueObject](deserialize: String => T)(implicit tag: ClassTag[T]): BaseColumnType[T] =
+      MappedColumnType.base[T, String](
+        { t => t.value },
+        { s => deserialize(s) }
+      )
+
+    def mapIntValueObject[T <: IntValueObject](deserialize: Int => T)(implicit tag: ClassTag[T]): BaseColumnType[T] =
+      MappedColumnType.base[T, Int](
+        { t => t.value },
+        { s => deserialize(s) }
+      )
   }
 
   override val api = PostgresAPI

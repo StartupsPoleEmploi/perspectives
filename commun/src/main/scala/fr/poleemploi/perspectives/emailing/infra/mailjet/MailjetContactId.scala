@@ -1,3 +1,5 @@
 package fr.poleemploi.perspectives.emailing.infra.mailjet
 
-case class MailjetContactId(value: Int)
+import fr.poleemploi.eventsourcing.IntValueObject
+
+case class MailjetContactId(value: Int) extends IntValueObject
