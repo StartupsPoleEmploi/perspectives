@@ -32,9 +32,10 @@ class CandidatQueryHandler(candidatProjection: CandidatProjection,
       typeRecruteur <- recruteurProjection.typeRecruteur(query.recruteurId)
       candidatContactRecruteur <- candidatProjection.candidatContactRecruteur(query.candidatId)
       estAutorise = typeRecruteur match {
+        case Some(TypeRecruteur.ENTREPRISE) => true
         case Some(TypeRecruteur.ORGANISME_FORMATION) => candidatContactRecruteur.contacteParOrganismeFormation.getOrElse(false)
         case Some(TypeRecruteur.AGENCE_INTERIM) => candidatContactRecruteur.contacteParAgenceInterim.getOrElse(false)
-        case _ => true
+        case _ => false
       }
     } yield {
       if (!estAutorise) throw UnauthorizedQueryException(s"Le recruteur ${query.recruteurId.value} de type ${typeRecruteur.map(_.value)} n'est pas autorisé à récupérer le cv du candidat ${query.candidatId.value}")
