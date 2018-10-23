@@ -75,7 +75,10 @@ class Recruteur(override val id: RecruteurId,
   def commenterListeCandidats(command: CommenterListeCandidatsCommand,
                               commentaireService: CommentaireService): Future[List[Event]] = {
     if (!state.estInscrit) {
-      return Future.failed(new RuntimeException(s"Le recruteur ${id.value} n'est pas encore inscrit"))
+      return Future.failed(new IllegalArgumentException(s"Le recruteur ${id.value} n'est pas encore inscrit"))
+    }
+    if (!state.avecProfilComplet) {
+      return Future.failed(new IllegalArgumentException(s"Le recruteur ${id.value} n'a pas encore complété son profil"))
     }
 
     commentaireService.commenterListeCandidats(CommentaireListeCandidats(
@@ -89,6 +92,7 @@ class Recruteur(override val id: RecruteurId,
 }
 
 private[recruteur] case class RecruteurState(estInscrit: Boolean = false,
+                                             avecProfilComplet: Boolean = false,
                                              nom: Option[String] = None,
                                              prenom: Option[String] = None,
                                              email: Option[Email] = None,
@@ -110,6 +114,7 @@ private[recruteur] case class RecruteurState(estInscrit: Boolean = false,
       )
     case e: ProfilModifieEvent =>
       copy(
+        avecProfilComplet = true,
         raisonSociale = Some(e.raisonSociale),
         numeroSiret = Some(e.numeroSiret),
         typeRecruteur = Some(e.typeRecruteur),
