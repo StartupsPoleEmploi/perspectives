@@ -2,18 +2,18 @@ package fr.poleemploi.perspectives.emailing.infra.mailjet
 
 import fr.poleemploi.perspectives.emailing.domain.{CandidatInscrit, EmailingService, MiseAJourCVCandidat, RecruteurInscrit}
 import fr.poleemploi.perspectives.emailing.infra.sql.MailjetSqlAdapter
-import fr.poleemploi.perspectives.emailing.infra.ws.{MailjetEmailAdapter, MailjetMapping, ManageContactRequest}
+import fr.poleemploi.perspectives.emailing.infra.ws.{MailjetMapping, MailjetWSAdapter, ManageContactRequest}
 import play.api.libs.json.Json
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class MailjetEmailingService(mailjetContactAdapter: MailjetSqlAdapter,
-                             mailjetEmailAdapter: MailjetEmailAdapter) extends EmailingService {
+class MailjetEmailingService(mailjetSqlAdapter: MailjetSqlAdapter,
+                             mailjetWSAdapter: MailjetWSAdapter) extends EmailingService {
 
   override def ajouterCandidatInscrit(candidatInscrit: CandidatInscrit): Future[Unit] =
     for {
-      manageContactResponse <- mailjetEmailAdapter.ajouterCandidatInscrit(
+      manageContactResponse <- mailjetWSAdapter.ajouterCandidatInscrit(
         ManageContactRequest(
           email = candidatInscrit.email.value,
           name = Some(s"${candidatInscrit.nom.capitalize} ${candidatInscrit.prenom.capitalize}"),
@@ -26,7 +26,7 @@ class MailjetEmailingService(mailjetContactAdapter: MailjetSqlAdapter,
           )
         )
       )
-      _ <- mailjetContactAdapter.saveCandidat(CandidatMailjet(
+      _ <- mailjetSqlAdapter.saveCandidat(CandidatMailjet(
         candidatId = candidatInscrit.candidatId,
         mailjetContactId = manageContactResponse.contactId,
         email = candidatInscrit.email
@@ -35,8 +35,8 @@ class MailjetEmailingService(mailjetContactAdapter: MailjetSqlAdapter,
 
   override def mettreAJourCVCandidat(miseAJourCVCandidat: MiseAJourCVCandidat): Future[Unit] =
     for {
-      candidatMailjet <- mailjetContactAdapter.getCandidat(miseAJourCVCandidat.candidatId)
-      _ <- mailjetEmailAdapter.mettreAJourCandidat(
+      candidatMailjet <- mailjetSqlAdapter.getCandidat(miseAJourCVCandidat.candidatId)
+      _ <- mailjetWSAdapter.mettreAJourCandidat(
         ManageContactRequest(
           email = candidatMailjet.email.value,
           action = "addnoforce",
@@ -49,7 +49,7 @@ class MailjetEmailingService(mailjetContactAdapter: MailjetSqlAdapter,
 
   override def ajouterRecruteurInscrit(recruteurInscrit: RecruteurInscrit): Future[Unit] = {
     for {
-      manageContactResponse <- mailjetEmailAdapter.ajouterRecruteurInscrit(
+      manageContactResponse <- mailjetWSAdapter.ajouterRecruteurInscrit(
         ManageContactRequest(
           email = recruteurInscrit.email.value,
           name = Some(s"${recruteurInscrit.nom.capitalize} ${recruteurInscrit.prenom.capitalize}"),
@@ -61,7 +61,7 @@ class MailjetEmailingService(mailjetContactAdapter: MailjetSqlAdapter,
           )
         )
       )
-      _ <- mailjetContactAdapter.saveRecruteur(
+      _ <- mailjetSqlAdapter.saveRecruteur(
         RecruteurMailjet(
           recruteurId = recruteurInscrit.recruteurId,
           mailjetContactId = manageContactResponse.contactId,

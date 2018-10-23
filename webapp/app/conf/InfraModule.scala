@@ -23,7 +23,7 @@ import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
 import fr.poleemploi.perspectives.emailing.infra.local.LocalEmailingService
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetEmailingService
 import fr.poleemploi.perspectives.emailing.infra.sql.MailjetSqlAdapter
-import fr.poleemploi.perspectives.emailing.infra.ws.MailjetEmailAdapter
+import fr.poleemploi.perspectives.emailing.infra.ws.MailjetWSAdapter
 import fr.poleemploi.perspectives.metier.infra.file.ReferentielMetierFileAdapter
 import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapter
 import fr.poleemploi.perspectives.recruteur.commentaire.infra.local.CommentaireServiceLocal
@@ -156,19 +156,19 @@ class InfraModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
-  def mailjetEmailAdapter(wsClient: WSClient,
-                          webAppConfig: WebAppConfig): MailjetEmailAdapter =
-    new MailjetEmailAdapter(
+  def mailjetWSAdapter(wsClient: WSClient,
+                       webAppConfig: WebAppConfig): MailjetWSAdapter =
+    new MailjetWSAdapter(
       wsClient = wsClient,
-      mailjetAdapterConfig = webAppConfig.mailjetWSAdapterConfig
+      config = webAppConfig.mailjetWSAdapterConfig
     )
 
   @Provides
-  def mailjetEmailingService(mailjetContactAdapter: MailjetSqlAdapter,
-                             mailjetEmailAdapter: MailjetEmailAdapter): MailjetEmailingService =
+  def mailjetEmailingService(mailjetSqlAdapter: MailjetSqlAdapter,
+                             mailjetWSAdapter: MailjetWSAdapter): MailjetEmailingService =
     new MailjetEmailingService(
-      mailjetContactAdapter = mailjetContactAdapter,
-      mailjetEmailAdapter = mailjetEmailAdapter
+      mailjetSqlAdapter = mailjetSqlAdapter,
+      mailjetWSAdapter = mailjetWSAdapter
     )
 
   @Provides
