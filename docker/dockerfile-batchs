@@ -1,0 +1,47 @@
+FROM ubuntu:18.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+# Common software : always run apt-get update et apt-get install in the same run statement
+RUN apt-get update && \
+    apt-get -y install software-properties-common && \
+    apt-get -y install unzip && \
+    apt-get -y install curl
+
+# Java8
+RUN \
+  echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | debconf-set-selections && \
+  apt-add-repository -y ppa:webupd8team/java && \
+  apt-get update && \
+  apt-get install -y oracle-java8-installer && \
+  rm -rf /var/cache/oracle-jdk8-installer && \
+  rm -rf /var/lib/apt/lists/* # delete all the apt list files since they're big and get stale quickly
+
+# Define commonly used JAVA_HOME variable
+ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
+
+WORKDIR /opt/perspectives-batchs
+
+ARG BATCHS_LOGBACK_RESOURCE=logback.xml
+ENV BATCHS_LOGBACK_RESOURCE=${BATCHS_LOGBACK_RESOURCE}
+
+ARG BATCHS_CONFIG_RESOURCE=application.conf
+ENV BATCHS_CONFIG_RESOURCE=${BATCHS_CONFIG_RESOURCE}
+
+ARG BATCHS_VERSION
+ENV BATCHS_VERSION=${BATCHS_VERSION}
+
+ARG EXPORT_MRS_VALIDEES_IMPORT_DIRECTORY=/var/perspectives/export_poleemploi/mrs_validees
+ENV EXPORT_MRS_VALIDEES_IMPORT_DIRECTORY=${EXPORT_MRS_VALIDEES_IMPORT_DIRECTORY}
+
+ARG EXPORT_MRS_VALIDEES_ARCHIVE_DIRECTORY=/var/perspectives/export_poleemploi/mrs_validees/archives
+ENV EXPORT_MRS_VALIDEES_ARCHIVE_DIRECTORY=${EXPORT_MRS_VALIDEES_ARCHIVE_DIRECTORY}
+
+RUN mkdir -pv ${EXPORT_MRS_VALIDEES_IMPORT_DIRECTORY}
+RUN mkdir -pv ${EXPORT_MRS_VALIDEES_ARCHIVE_DIRECTORY}
+
+COPY perspectives-batchs-${BATCHS_VERSION}.zip .
+
+RUN unzip perspectives-batchs-${BATCHS_VERSION}.zip
+
+CMD ["sh", "-c", "./perspectives-batchs-${BATCHS_VERSION}/bin/perspectives-batchs -Dlogger.resource=${BATCHS_LOGBACK_RESOURCE} -Dconfig.resource=${BATCHS_CONFIG_RESOURCE}"]

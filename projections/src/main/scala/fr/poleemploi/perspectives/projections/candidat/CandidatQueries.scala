@@ -4,7 +4,7 @@ import java.time.ZonedDateTime
 
 import fr.poleemploi.cqrs.projection.Query
 import fr.poleemploi.perspectives.candidat.CandidatId
-import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite}
+import fr.poleemploi.perspectives.commun.domain.{CodeDepartement, CodeROME, CodeSecteurActivite}
 import fr.poleemploi.perspectives.recruteur.{RecruteurId, TypeRecruteur}
 
 sealed trait CandidatQuery extends Query

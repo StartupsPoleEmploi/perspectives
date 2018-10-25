@@ -3,9 +3,9 @@ package conf
 import play.api.ApplicationLoader
 import play.api.inject.guice.{GuiceApplicationBuilder, GuiceApplicationLoader}
 
-class WebappApplicationLoader extends GuiceApplicationLoader() {
+class BatchsApplicationLoader extends GuiceApplicationLoader() {
 
-  override def builder(context: ApplicationLoader.Context): GuiceApplicationBuilder = {
+  override def builder(context: ApplicationLoader.Context): GuiceApplicationBuilder =
     new GuiceApplicationBuilder()
       .in(context.environment)
       .loadConfig(context.initialConfiguration)
@@ -13,10 +13,8 @@ class WebappApplicationLoader extends GuiceApplicationLoader() {
       .bindings(
         new InfraModule(),
         new EventSourcingModule(),
+        new SchedulersModule(),
         new ProjectionsModule(),
-        new ProcessManagersModule(),
         new ServicesModule()
       )
-  }
-
 }

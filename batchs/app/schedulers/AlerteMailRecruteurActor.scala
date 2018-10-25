@@ -24,21 +24,21 @@ object AlerteMailRecruteurActor {
   case object EnvoyerAlertesHebdomadaires
 
   def props(emailingService: EmailingService,
-            baseURL: String,
+            webappURL: String,
             alerteRecruteurProjection: AlerteRecruteurProjection,
-            candidatQueryHandler: CandidatQueryHandler): Props =
+            candidatProjection: CandidatProjection): Props =
     Props(new AlerteMailRecruteurActor(
       emailingService = emailingService,
-      baseURL = baseURL,
+      webappURL = webappURL,
       alerteRecruteurProjection = alerteRecruteurProjection,
-      candidatQueryHandler = candidatQueryHandler
+      candidatProjection = candidatProjection
     ))
 }
 
 class AlerteMailRecruteurActor(emailingService: EmailingService,
-                               baseURL: String,
+                               webappURL: String,
                                alerteRecruteurProjection: AlerteRecruteurProjection,
-                               candidatQueryHandler: CandidatQueryHandler) extends Actor with ActorLogging {
+                               candidatProjection: CandidatProjection) extends Actor with ActorLogging {
 
   import AlerteMailRecruteurActor._
 
@@ -64,7 +64,7 @@ class AlerteMailRecruteurActor(emailingService: EmailingService,
     alertes.runForeach(alerteRecruteurDto => {
       val rechercherCandidatsQuery = buildRechercherCandidatsQuery(alerteRecruteurDto, apresDateInscription)
       for {
-        resultatRechercheCandidat <- candidatQueryHandler.rechercherCandidats(rechercherCandidatsQuery)
+        resultatRechercheCandidat <- candidatProjection.rechercherCandidats(rechercherCandidatsQuery)
         _ <- emailingService.envoyerAlerteMailRecruteur(buildAlerteMailRecruteur(
           alerteRecruteurDto = alerteRecruteurDto,
           resultatRechercheCandidat = resultatRechercheCandidat,
@@ -111,7 +111,7 @@ class AlerteMailRecruteurActor(emailingService: EmailingService,
           apresDateInscription = apresDateInscription,
           departement = a.departement,
           secteurActivite = a.secteurActivite,
-          lienConnexion = s"$baseURL/recruteur/recherche?secteurActivite=${a.secteurActivite.code.value}${a.departement.map(c => s"&departement=${c.code.value}").getOrElse("")}"
+          lienConnexion = s"$webappURL/recruteur/recherche?secteurActivite=${a.secteurActivite.code.value}${a.departement.map(c => s"&departement=${c.code.value}").getOrElse("")}"
         )
       case a: AlerteRecruteurMetierDto =>
         AlerteMailRecruteurMetier(
@@ -122,7 +122,7 @@ class AlerteMailRecruteurActor(emailingService: EmailingService,
           apresDateInscription = apresDateInscription,
           departement = a.departement,
           metier = a.metier,
-          lienConnexion = s"$baseURL/recruteur/recherche?metier=${a.metier.codeROME.value}${a.departement.map(c => s"&departement=${c.code.value}").getOrElse("")}"
+          lienConnexion = s"$webappURL/recruteur/recherche?metier=${a.metier.codeROME.value}${a.departement.map(c => s"&departement=${c.code.value}").getOrElse("")}"
         )
       case a: AlerteRecruteurDepartementDto =>
         AlerteMailRecruteurDepartement(
@@ -132,7 +132,7 @@ class AlerteMailRecruteurActor(emailingService: EmailingService,
           nbCandidats = resultatRechercheCandidat.nbCandidats,
           apresDateInscription = apresDateInscription,
           departement = a.departement,
-          lienConnexion = s"$baseURL/recruteur/recherche?departement=${a.departement.code.value}"
+          lienConnexion = s"$webappURL/recruteur/recherche?departement=${a.departement.code.value}"
         )
     }
 }

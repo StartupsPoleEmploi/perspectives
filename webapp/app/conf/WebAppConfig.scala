@@ -1,9 +1,6 @@
 package conf
 
-import java.nio.file.Paths
-
 import fr.poleemploi.perspectives.authentification.infra.ws.PEConnectWSAdapterConfig
-import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.ReferentielMRSCandidatPEConnectConfig
 import fr.poleemploi.perspectives.commun.infra.Environnement
 import fr.poleemploi.perspectives.commun.infra.oauth.OauthConfig
 import fr.poleemploi.perspectives.emailing.infra.ws.MailjetWSAdapterConfig
@@ -23,7 +20,6 @@ class WebAppConfig(configuration: Configuration) {
 
   val environnement: Environnement = Environnement.from(configuration.get[String]("environnement"))
   val version: String = BuildInfo.version
-  val baseURL: String = configuration.get[String]("baseURL")
 
   val emploiStoreOauthConfig: OauthConfig = OauthConfig(
     clientId = configuration.get[String]("emploiStore.oauth2.clientId"),
@@ -65,11 +61,6 @@ class WebAppConfig(configuration: Configuration) {
     urlAuthentification = configuration.get[String]("emploiStore.entreprise.urlAuthentification"),
     urlApi = configuration.get[String]("emploiStore.urlApi"),
     oauthConfig = emploiStoreOauthConfig
-  )
-
-  val referentielMRSCandidatPEConnectConfig: ReferentielMRSCandidatPEConnectConfig = ReferentielMRSCandidatPEConnectConfig(
-    importDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.mrsValidees.importDirectory")),
-    archiveDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.mrsValidees.archiveDirectory"))
   )
 
   val admins: List[String] = configuration.getOptional[Seq[String]]("admins").map(_.toList).getOrElse(Nil)

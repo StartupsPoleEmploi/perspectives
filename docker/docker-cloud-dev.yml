@@ -36,12 +36,23 @@ services:
       - nginx
     env_file:
       - dev.env
-    volumes:
-      - export_poleemploi:/var/perspectives/export_poleemploi
     deploy:
       replicas: 2
     ports:
       - "9000:9000"
+    networks:
+      - net
+
+  batchs:
+    image: perspectives-batchs
+    depends_on:
+      - database
+    env_file:
+      - dev.env
+    volumes:
+      - export_poleemploi:/var/perspectives/export_poleemploi
+    deploy:
+      replicas: 1
     networks:
       - net
 

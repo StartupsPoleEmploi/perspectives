@@ -5,9 +5,9 @@ import java.util.Date
 import akka.actor.{ActorRef, ActorSystem}
 import com.typesafe.akka.extension.quartz.QuartzSchedulerExtension
 
-class PerspectivesScheduler(actorSystem: ActorSystem,
-                            mrsValideesActor: ActorRef,
-                            alerteMailRecruteurActor: ActorRef) {
+class BatchsScheduler(actorSystem: ActorSystem,
+                      mrsValideesActor: ActorRef,
+                      alerteMailRecruteurActor: ActorRef) {
 
   import AlerteMailRecruteurActor._
   import MRSValideesActor._

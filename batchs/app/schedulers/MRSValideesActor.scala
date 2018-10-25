@@ -3,7 +3,7 @@ package schedulers
 import akka.actor.Status.Failure
 import akka.actor.{Actor, ActorLogging, Props}
 import akka.pattern.pipe
-import fr.poleemploi.perspectives.candidat.mrs.domain.{MRSValidee, ReferentielMRSCandidat}
+import fr.poleemploi.perspectives.candidat.mrs.domain.{ImportMRSCandidat, MRSValidee}
 import fr.poleemploi.perspectives.candidat.{AjouterMRSValideesCommand, CandidatCommandHandler}
 
 import scala.concurrent.{ExecutionContextExecutor, Future}
@@ -16,15 +16,15 @@ object MRSValideesActor {
 
   case object ImportMRSValideesDone
 
-  def props(referentielMRSCandidat: ReferentielMRSCandidat,
+  def props(importMRSCandidat: ImportMRSCandidat,
             candidatCommandHandler: CandidatCommandHandler): Props =
     Props(new MRSValideesActor(
-      referentielMRSCandidat = referentielMRSCandidat,
+      importMRSCandidat = importMRSCandidat,
       candidatCommandHandler = candidatCommandHandler
     ))
 }
 
-class MRSValideesActor(referentielMRSCandidat: ReferentielMRSCandidat,
+class MRSValideesActor(importMRSCandidat: ImportMRSCandidat,
                        candidatCommandHandler: CandidatCommandHandler) extends Actor with ActorLogging {
 
   import MRSValideesActor._
@@ -35,7 +35,7 @@ class MRSValideesActor(referentielMRSCandidat: ReferentielMRSCandidat,
     case StartImportMRSValidees =>
       log.info("Intégration des MRS validées pour les candidats")
       (for {
-        mrsValidees <- referentielMRSCandidat.integrerMRSValidees
+        mrsValidees <- importMRSCandidat.integrerMRSValidees
         _ <- Future.sequence(mrsValidees.groupBy(_.candidatId).map(v =>
           candidatCommandHandler.ajouterMRSValidees(
             AjouterMRSValideesCommand(

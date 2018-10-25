@@ -1,4 +1,4 @@
-package fr.poleemploi.perspectives.candidat.mrs.infra.csv
+package fr.poleemploi.perspectives.candidat.mrs.infra.peconnect
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -9,7 +9,6 @@ import akka.stream.ActorMaterializer
 import akka.stream.alpakka.csv.scaladsl.{CsvParsing, CsvToMap}
 import akka.stream.scaladsl.{Sink, Source}
 import akka.util.ByteString
-import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.MRSValideeCandidatPEConnect
 import fr.poleemploi.perspectives.commun.domain.CodeROME
 import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
 
