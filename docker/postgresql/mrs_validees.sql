@@ -6,7 +6,7 @@ CREATE TABLE mrs_validees
   code_rome CHARACTER VARYING(255) NOT NULL,
   date_evaluation DATE NOT NULL,
   CONSTRAINT mrs_validees_pk PRIMARY KEY (id),
-  UNIQUE (peconnect_id, code_rome, date_evaluation)
+  UNIQUE (peconnect_id, code_rome)
 )
 WITH (
 OIDS =FALSE
