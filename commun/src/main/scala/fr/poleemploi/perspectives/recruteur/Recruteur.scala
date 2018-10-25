@@ -2,6 +2,7 @@ package fr.poleemploi.perspectives.recruteur
 
 import fr.poleemploi.eventsourcing.{Aggregate, Event}
 import fr.poleemploi.perspectives.commun.domain.{Email, Genre, NumeroTelephone}
+import fr.poleemploi.perspectives.recruteur.alerte.domain.{AlerteId, CriteresAlerte}
 import fr.poleemploi.perspectives.recruteur.commentaire.domain.{CommentaireListeCandidats, CommentaireService}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -89,6 +90,61 @@ class Recruteur(override val id: RecruteurId,
       commentaire = command.commentaire
     )).map(_ => Nil)
   }
+
+  def creerAlerte(command: CreerAlerteCommand): List[Event] = {
+    if (!state.estInscrit) {
+      throw new IllegalArgumentException(s"Le recruteur ${id.value} n'est pas encore inscrit")
+    }
+    if (!state.avecProfilComplet) {
+      throw new IllegalArgumentException(s"Le recruteur ${id.value} n'a pas encore complété son profil")
+    }
+    if (command.codeDepartement
+      .orElse(command.codeSecteurActivite)
+      .orElse(command.codeROME).isEmpty) {
+      throw new IllegalArgumentException("Au moins un critère doit être renseigné pour une alerte")
+    }
+    if (state.alertes.size == 10) {
+      throw new IllegalArgumentException(s"Le recruteur ${id.value} a atteint le nombre maximum d'alertes")
+    }
+    val criteresAlerte = CriteresAlerte(
+      command.frequenceAlerte,
+      command.codeROME,
+      command.codeSecteurActivite,
+      command.codeDepartement
+    )
+    if (state.alertes.values.toList.contains(criteresAlerte)) {
+      throw new IllegalArgumentException(s"Une alerte existe déjà pour le recruteur ${id.value} avec les critères suivants : $criteresAlerte")
+    }
+
+    List(AlerteRecruteurCreeEvent(
+      recruteurId = command.id,
+      prenom = state.prenom.get,
+      email = state.email.get,
+      typeRecruteur = state.typeRecruteur.get,
+      alerteId = command.alerteId,
+      frequence = command.frequenceAlerte,
+      codeROME = command.codeROME,
+      codeSecteurActivite = command.codeSecteurActivite,
+      codeDepartement = command.codeDepartement
+    ))
+  }
+
+  def supprimerAlerte(command: SupprimerAlerteCommand): List[Event] = {
+    if (!state.estInscrit) {
+      throw new IllegalArgumentException(s"Le recruteur ${id.value} n'est pas encore inscrit")
+    }
+    if (!state.avecProfilComplet) {
+      throw new IllegalArgumentException(s"Le recruteur ${id.value} n'a pas encore complété son profil")
+    }
+    if (state.alertes.get(command.alerteId).isEmpty) {
+      throw new IllegalArgumentException(s"L'alerte ${command.alerteId.value} n'existe pas")
+    }
+
+    List(AlerteRecruteurSupprimeeEvent(
+      recruteurId = command.id,
+      alerteId = command.alerteId
+    ))
+  }
 }
 
 private[recruteur] case class RecruteurState(estInscrit: Boolean = false,
@@ -101,7 +157,8 @@ private[recruteur] case class RecruteurState(estInscrit: Boolean = false,
                                              numeroSiret: Option[NumeroSiret] = None,
                                              typeRecruteur: Option[TypeRecruteur] = None,
                                              contactParCandidats: Option[Boolean] = None,
-                                             numeroTelephone: Option[NumeroTelephone] = None) {
+                                             numeroTelephone: Option[NumeroTelephone] = None,
+                                             alertes: Map[AlerteId, CriteresAlerte] = Map()) {
 
   def apply(event: Event): RecruteurState = event match {
     case e: RecruteurInscritEvent =>
@@ -127,6 +184,19 @@ private[recruteur] case class RecruteurState(estInscrit: Boolean = false,
         prenom = Some(e.prenom),
         email = Some(e.email),
         genre = Some(e.genre)
+      )
+    case e: AlerteRecruteurCreeEvent =>
+      copy(
+        alertes = alertes + (e.alerteId -> CriteresAlerte(
+          frequence = e.frequence,
+          codeROME = e.codeROME,
+          codeSecteurActivite = e.codeSecteurActivite,
+          codeDepartement = e.codeDepartement
+        ))
+      )
+    case e: AlerteRecruteurSupprimeeEvent =>
+      copy(
+        alertes = alertes - e.alerteId
       )
     case _ => this
   }

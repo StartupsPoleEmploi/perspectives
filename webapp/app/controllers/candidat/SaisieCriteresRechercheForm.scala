@@ -18,12 +18,11 @@ case class SaisieCriteresRechercheForm(nouveauCandidat: Boolean,
 
 object SaisieCriteresRechercheForm {
 
-  val rayonRechercheConstraint: Constraint[Int] = Constraint("constraint.rayonRecherche")({
-    n =>
-      RayonRecherche.from(n)
+  val rayonRechercheConstraint: Constraint[Int] = Constraint("constraint.rayonRecherche")(
+    n => RayonRecherche.from(n)
         .map(_ => Valid)
         .getOrElse(Invalid(Seq(ValidationError("constraint.rayonRecherche"))))
-  })
+  )
 
   val form = Form(
     mapping(

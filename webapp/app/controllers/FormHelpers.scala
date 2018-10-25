@@ -11,14 +11,11 @@ import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 
 object FormHelpers {
 
-  val numeroTelephoneConstraint: Constraint[String] = Constraint("constraint.numeroTelephone")({
-    text =>
-      if (NumeroTelephone.from(text).isDefined) {
-        Valid
-      } else {
-        Invalid(Seq(ValidationError("constraint.numeroTelephone")))
-      }
-  })
+  val numeroTelephoneConstraint: Constraint[String] = Constraint("constraint.numeroTelephone")(
+    text => NumeroTelephone.from(text)
+      .map(_ => Valid)
+      .getOrElse(Invalid(Seq(ValidationError("constraint.numeroTelephone"))))
+  )
 
   /**
     * Utilisé pour transformer un Option[Boolean] en String :

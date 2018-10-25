@@ -1,4 +1,4 @@
-package fr.poleemploi.perspectives.candidat.mrs.infra.csv
+package fr.poleemploi.perspectives.candidat.mrs.infra.peconnect
 
 import java.time.LocalDate
 

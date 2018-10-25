@@ -4,5 +4,5 @@ import org.slf4j.{Logger, LoggerFactory}
 
 package object infra {
 
-  lazy val referentielMrsCandidatLogger: Logger = LoggerFactory.getLogger("referentielMrsCandidat")
+  lazy val importMrsCandidatLogger: Logger = LoggerFactory.getLogger("importMrsCandidat")
 }

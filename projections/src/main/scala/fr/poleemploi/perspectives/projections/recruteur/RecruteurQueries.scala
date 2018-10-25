@@ -16,3 +16,5 @@ case class RecruteursPourConseillerQuery(nbRecruteursParPage: Int,
 case class RecruteursPourConseillerQueryResult(recruteurs: List[RecruteurPourConseillerDto],
                                                pages: List[ZonedDateTime],
                                                derniereDateInscription: Option[ZonedDateTime])
+
+case class AlertesRecruteurQuery(recruteurId: RecruteurId) extends RecruteurQuery

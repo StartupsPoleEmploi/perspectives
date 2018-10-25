@@ -37,10 +37,21 @@ services:
       - nginx
     env_file:
       - prod.env
+    deploy:
+      replicas: 2
+    networks:
+      - net
+
+  batchs:
+    image: perspectives-batchs
+    depends_on:
+      - database
+    env_file:
+      - prod.env
     volumes:
       - export_poleemploi:/var/perspectives/export_poleemploi
     deploy:
-      replicas: 2
+      replicas: 1
     networks:
       - net
 

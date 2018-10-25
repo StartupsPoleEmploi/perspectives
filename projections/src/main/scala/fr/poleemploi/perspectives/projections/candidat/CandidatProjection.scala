@@ -36,12 +36,10 @@ class CandidatProjection(adapter: CandidatProjectionSqlAdapter) extends Projecti
   def listerPourConseiller(query: CandidatsPourConseillerQuery): Future[CandidatsPourConseillerQueryResult] =
     adapter.listerPourConseiller(query)
 
-  def rechercherCandidatParDepartement(query: RechercherCandidatsParDepartementQuery): Future[ResultatRechercheCandidatParDepartement] =
-    adapter.rechercherCandidatParDepartement(query)
-
-  def rechercherCandidatParSecteur(query: RechercherCandidatsParSecteurQuery): Future[ResultatRechercheCandidatParSecteur] =
-    adapter.rechercherCandidatParSecteur(query)
-
-  def rechercherCandidatParMetier(query: RechercherCandidatsParMetierQuery): Future[ResultatRechercheCandidatParMetier] =
-    adapter.rechercherCandidatParMetier(query)
+  def rechercherCandidats(query: RechercherCandidatsQuery): Future[ResultatRechercheCandidat] =
+    query match {
+      case q: RechercherCandidatsParDepartementQuery => adapter.rechercherCandidatParDepartement(q)
+      case q: RechercherCandidatsParSecteurQuery => adapter.rechercherCandidatParSecteur(q)
+      case q: RechercherCandidatsParMetierQuery => adapter.rechercherCandidatParMetier(q)
+    }
 }

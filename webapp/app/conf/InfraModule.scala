@@ -13,9 +13,8 @@ import fr.poleemploi.perspectives.authentification.infra.PEConnectService
 import fr.poleemploi.perspectives.authentification.infra.sql.PEConnectSqlAdapter
 import fr.poleemploi.perspectives.authentification.infra.ws.PEConnectWSAdapter
 import fr.poleemploi.perspectives.candidat.cv.infra.sql.CVSqlAdapter
-import fr.poleemploi.perspectives.candidat.mrs.infra.csv.MRSValideesCSVAdapter
 import fr.poleemploi.perspectives.candidat.mrs.infra.local.ReferentielMRSCandidatLocal
-import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.ReferentielMRSCandidatPEConnect
+import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.{MRSValideesCSVAdapter, ReferentielMRSCandidatPEConnect}
 import fr.poleemploi.perspectives.candidat.mrs.infra.sql.MRSValideesSqlAdapter
 import fr.poleemploi.perspectives.commun.infra.jackson.PerspectivesEventSourcingModule
 import fr.poleemploi.perspectives.commun.infra.oauth.OauthService
@@ -23,7 +22,7 @@ import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
 import fr.poleemploi.perspectives.emailing.infra.local.LocalEmailingService
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetEmailingService
 import fr.poleemploi.perspectives.emailing.infra.sql.MailjetSqlAdapter
-import fr.poleemploi.perspectives.emailing.infra.ws.MailjetWSAdapter
+import fr.poleemploi.perspectives.emailing.infra.ws.{MailjetWSAdapter, MailjetWSMapping}
 import fr.poleemploi.perspectives.metier.infra.file.ReferentielMetierFileAdapter
 import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapter
 import fr.poleemploi.perspectives.recruteur.commentaire.infra.local.CommentaireServiceLocal
@@ -157,11 +156,17 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   def mailjetWSAdapter(wsClient: WSClient,
-                       webAppConfig: WebAppConfig): MailjetWSAdapter =
+                       webAppConfig: WebAppConfig,
+                       mailjetWSMapping: MailjetWSMapping): MailjetWSAdapter =
     new MailjetWSAdapter(
       wsClient = wsClient,
-      config = webAppConfig.mailjetWSAdapterConfig
+      config = webAppConfig.mailjetWSAdapterConfig,
+      mailjetWSMapping = mailjetWSMapping
     )
+
+  @Provides
+  def mailjetWSMapping: MailjetWSMapping =
+    new MailjetWSMapping()
 
   @Provides
   def mailjetEmailingService(mailjetSqlAdapter: MailjetSqlAdapter,
@@ -188,15 +193,11 @@ class InfraModule extends AbstractModule with ScalaModule {
     new ReferentielMetierFileAdapter()
 
   @Provides
-  def referentielMRSCandidatPEConnect(mrsValideesCSVAdapter: MRSValideesCSVAdapter,
-                                      mrsValideesSqlAdapter: MRSValideesSqlAdapter,
-                                      peConnectService: PEConnectService,
-                                      webAppConfig: WebAppConfig): ReferentielMRSCandidatPEConnect =
+  def referentielMRSCandidatPEConnect(mrsValideesSqlAdapter: MRSValideesSqlAdapter,
+                                      peConnectSqlAdapter: PEConnectSqlAdapter): ReferentielMRSCandidatPEConnect =
     new ReferentielMRSCandidatPEConnect(
-      config = webAppConfig.referentielMRSCandidatPEConnectConfig,
-      mrsValideesCSVLoader = mrsValideesCSVAdapter,
-      mrsValideesPostgresSql = mrsValideesSqlAdapter,
-      peConnectService = peConnectService
+      mrsValideesSqlAdapter = mrsValideesSqlAdapter,
+      peConnectSqlAdapter = peConnectSqlAdapter
     )
 
   @Provides

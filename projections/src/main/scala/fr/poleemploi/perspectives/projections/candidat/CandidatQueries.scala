@@ -24,13 +24,18 @@ case class CandidatsPourConseillerQueryResult(candidats: List[CandidatPourConsei
                                               pages: List[ZonedDateTime],
                                               derniereDateInscription: Option[ZonedDateTime])
 
+sealed trait RechercherCandidatsQuery extends CandidatQuery
+
 case class RechercherCandidatsParDepartementQuery(typeRecruteur: TypeRecruteur,
-                                                  codeDepartement: CodeDepartement) extends CandidatQuery
+                                                  codeDepartement: CodeDepartement,
+                                                  apresDateInscription: Option[ZonedDateTime] = None) extends RechercherCandidatsQuery
 
 case class RechercherCandidatsParSecteurQuery(typeRecruteur: TypeRecruteur,
                                               codeSecteurActivite: CodeSecteurActivite,
-                                              codeDepartement: Option[CodeDepartement]) extends CandidatQuery
+                                              codeDepartement: Option[CodeDepartement] = None,
+                                              apresDateInscription: Option[ZonedDateTime] = None) extends RechercherCandidatsQuery
 
 case class RechercherCandidatsParMetierQuery(typeRecruteur: TypeRecruteur,
                                              codeROME: CodeROME,
-                                             codeDepartement: Option[CodeDepartement]) extends CandidatQuery
+                                             codeDepartement: Option[CodeDepartement] = None,
+                                             apresDateInscription: Option[ZonedDateTime] = None) extends RechercherCandidatsQuery

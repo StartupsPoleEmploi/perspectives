@@ -10,4 +10,5 @@ trait EmailingService {
 
   def ajouterRecruteurInscrit(recruteurInscrit: RecruteurInscrit): Future[Unit]
 
+  def envoyerAlerteMailRecruteur(alerteMailRecruteur: AlerteMailRecruteur): Future[Unit]
 }

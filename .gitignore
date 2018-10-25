@@ -7,4 +7,6 @@ project/project/
 target/
 webapp/public/
 webapp/conf/application-*.conf
+batchs/public/
+batchs/conf/application-*.conf
 .DS_STORE

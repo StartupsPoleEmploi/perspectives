@@ -1,9 +1,9 @@
 package authentification.infra.play
 
+import controllers.recruteur.routes
 import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
 import fr.poleemploi.perspectives.recruteur.RecruteurId
 import javax.inject.Inject
-import play.api.http.Status.UNAUTHORIZED
 import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -16,14 +16,17 @@ case class RecruteurAuthentifieRequest[A](recruteurAuthentifie: RecruteurAuthent
 
 class RecruteurAuthentifieAction @Inject()(override val parser: BodyParsers.Default)
                                           (implicit val executionContext: ExecutionContext)
-  extends ActionBuilder[RecruteurAuthentifieRequest, AnyContent] {
+  extends ActionBuilder[RecruteurAuthentifieRequest, AnyContent] with Results {
 
-  override def invokeBlock[A](request: Request[A], block: RecruteurAuthentifieRequest[A] => Future[Result]): Future[Result] = {
+  override def invokeBlock[A](request: Request[A], block: RecruteurAuthentifieRequest[A] => Future[Result]): Future[Result] =
     SessionRecruteurAuthentifie
       .get(request.session)
-      .map(candidat => block(RecruteurAuthentifieRequest(candidat, request)))
-      .getOrElse(Future.successful(Results.Status(UNAUTHORIZED)))
-  }
+      .map(recruteur => block(RecruteurAuthentifieRequest(recruteur, request)))
+      .getOrElse(
+        Future.successful(Redirect(routes.InscriptionController.inscription())
+          .withSession(SessionRecruteurNonAuthentifie.setUriConnexion(request.uri, request.session))
+        )
+      )
 }
 
 case class OptionalRecruteurAuthentifieRequest[A](recruteurAuthentifie: Option[RecruteurAuthentifie],

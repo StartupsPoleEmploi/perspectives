@@ -16,23 +16,17 @@ case class ProfilForm(nouveauRecruteur: Boolean,
 
 object ProfilForm {
 
-  val numeroSiretConstraint: Constraint[String] = Constraint("constraint.numeroSiret")({
-    text =>
-      if (NumeroSiret.from(text).isDefined) {
-        Valid
-      } else {
-        Invalid(Seq(ValidationError("constraint.numeroSiret")))
-      }
-  })
+  val numeroSiretConstraint: Constraint[String] = Constraint("constraint.numeroSiret")(
+    text => NumeroSiret.from(text)
+      .map(_ => Valid)
+      .getOrElse(Invalid(Seq(ValidationError("constraint.numeroSiret"))))
+  )
 
-  val typeRecruteurConstraint: Constraint[String] = Constraint("constraint.typeRecruteur")({
-    text =>
-      if (TypeRecruteur.from(text).isDefined) {
-        Valid
-      } else {
-        Invalid(Seq(ValidationError("constraint.typeRecruteur")))
-      }
-  })
+  val typeRecruteurConstraint: Constraint[String] = Constraint("constraint.typeRecruteur")(
+    text => TypeRecruteur.from(text)
+      .map(_ => Valid)
+      .getOrElse(Invalid(Seq(ValidationError("constraint.typeRecruteur"))))
+  )
 
   val form = Form(
     mapping(

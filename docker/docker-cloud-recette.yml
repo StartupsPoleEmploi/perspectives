@@ -36,10 +36,21 @@ services:
       - nginx
     env_file:
       - recette.env
+    deploy:
+      replicas: 2
+    networks:
+      - net
+
+  batchs:
+    image: perspectives-batchs
+    depends_on:
+      - database
+    env_file:
+      - recette.env
     volumes:
       - export_poleemploi:/var/perspectives/export_poleemploi
     deploy:
-      replicas: 2
+      replicas: 1
     networks:
       - net
 
