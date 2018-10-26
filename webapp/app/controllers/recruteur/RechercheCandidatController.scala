@@ -54,7 +54,8 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
             departements = departementsProposes,
             alertes = alertes,
             metierChoisi = rechercheCandidatForm.metier.flatMap(c => rechercheCandidatQueryHandler.metierProposeParCode(CodeROME(c)).map(_.label)),
-            secteurActiviteChoisi = rechercheCandidatForm.secteurActivite.map(s => rechercheCandidatQueryHandler.secteurProposeParCode(CodeSecteurActivite(s)).label)
+            secteurActiviteChoisi = rechercheCandidatForm.secteurActivite.map(s => rechercheCandidatQueryHandler.secteurProposeParCode(CodeSecteurActivite(s)).label),
+            activerAlertes = webAppConfig.recruteursTesteurs.contains(recruteurAuthentifieRequest.recruteurId)
           ))
         }).recover {
           case _: ProfilRecruteurIncompletException =>

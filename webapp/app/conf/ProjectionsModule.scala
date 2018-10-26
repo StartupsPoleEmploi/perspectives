@@ -2,7 +2,6 @@ package conf
 
 import com.google.inject.{AbstractModule, Inject, Provides, Singleton}
 import fr.poleemploi.eventsourcing.{EventHandler, EventPublisher}
-import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.candidat.cv.domain.CVService
 import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielMRSCandidat
 import fr.poleemploi.perspectives.emailing.domain.EmailingService
@@ -58,7 +57,7 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
       database = database,
       referentielMetier = referentielMetier,
       rechercheCandidatService = rechercheCandidatService,
-      candidatsTesteurs = webAppConfig.candidatsTesteurs.map(CandidatId)
+      candidatsTesteurs = webAppConfig.candidatsTesteurs
     )
 
   @Provides

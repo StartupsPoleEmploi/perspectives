@@ -1,12 +1,14 @@
 package conf
 
 import fr.poleemploi.perspectives.authentification.infra.ws.PEConnectWSAdapterConfig
+import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.commun.infra.Environnement
 import fr.poleemploi.perspectives.commun.infra.oauth.OauthConfig
 import fr.poleemploi.perspectives.emailing.infra.ws.MailjetWSAdapterConfig
 import fr.poleemploi.perspectives.infra.BuildInfo
 import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapterConfig
 import fr.poleemploi.perspectives.projections.candidat.SlackCandidatConfig
+import fr.poleemploi.perspectives.recruteur.RecruteurId
 import fr.poleemploi.perspectives.recruteur.commentaire.infra.slack.SlackRecruteurConfig
 import play.api.Configuration
 
@@ -65,5 +67,7 @@ class WebAppConfig(configuration: Configuration) {
 
   val admins: List[String] = configuration.getOptional[Seq[String]]("admins").map(_.toList).getOrElse(Nil)
 
-  val candidatsTesteurs: List[String] = configuration.getOptional[Seq[String]]("candidatsTesteurs").map(_.toList).getOrElse(Nil)
+  val candidatsTesteurs: List[CandidatId] = configuration.getOptional[Seq[String]]("candidatsTesteurs").map(_.toList.map(CandidatId)).getOrElse(Nil)
+
+  val recruteursTesteurs: List[RecruteurId] = configuration.getOptional[Seq[String]]("recruteursTesteurs").map(_.toList.map(RecruteurId)).getOrElse(Nil)
 }
