@@ -51,7 +51,7 @@ class ConseillerController @Inject()(cc: ControllerComponents,
   }
 
   def declarerRepriseEmploi(candidatId: String): Action[AnyContent] = conseillerAdminAuthentifieAction.async { implicit conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
-    candidatCommandHandler.declarerRepriseEmploi(
+    candidatCommandHandler.handle(
       DeclarerRepriseEmploiParConseillerCommand(
         id = CandidatId(candidatId),
         conseillerId = conseillerRequest.conseillerId

@@ -136,7 +136,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
         recruteurId = recruteurId,
         peConnectId = peConnectRecruteurInfos.peConnectId
       ))
-      _ <- recruteurCommandHandler.inscrire(command)
+      _ <- recruteurCommandHandler.handle(command)
     } yield recruteurId
   }
 
@@ -150,6 +150,6 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       email = peConnectRecruteurInfos.email,
       genre = peConnectRecruteurInfos.genre
     )
-    recruteurCommandHandler.connecter(command).map(_ => recruteurId)
+    recruteurCommandHandler.handle(command).map(_ => recruteurId)
   }
 }

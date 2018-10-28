@@ -9,7 +9,6 @@ import fr.poleemploi.eventsourcing.infra.jackson.EventStoreObjectMapperBuilder
 import fr.poleemploi.eventsourcing.infra.postgresql.{PostgreSQLAppendOnlyStore, PostgresDriver => EventSourcingPostgresDriver}
 import fr.poleemploi.eventsourcing.{EventHandler, EventPublisher, LocalEventHandler, LocalEventPublisher}
 import fr.poleemploi.perspectives.authentification.infra.sql.PEConnectSqlAdapter
-import fr.poleemploi.perspectives.candidat.cv.infra.sql.CVSqlAdapter
 import fr.poleemploi.perspectives.candidat.mrs.infra.local.ImportMRSCandidatLocal
 import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.{ImportMRSCandidatPEConnect, MRSValideesCSVAdapter}
 import fr.poleemploi.perspectives.candidat.mrs.infra.sql.MRSValideesSqlAdapter
@@ -19,7 +18,6 @@ import fr.poleemploi.perspectives.emailing.infra.local.LocalEmailingService
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetEmailingService
 import fr.poleemploi.perspectives.emailing.infra.sql.MailjetSqlAdapter
 import fr.poleemploi.perspectives.emailing.infra.ws.{MailjetWSAdapter, MailjetWSMapping}
-import fr.poleemploi.perspectives.metier.infra.file.ReferentielMetierFileAdapter
 import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapter
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
@@ -92,13 +90,6 @@ class InfraModule extends AbstractModule with ScalaModule {
   }
 
   @Provides
-  def csvSqlAdapter(database: Database): CVSqlAdapter =
-    new CVSqlAdapter(
-      database = database,
-      driver = PostgresDriver
-    )
-
-  @Provides
   def peConnectSqlAdapter(database: Database): PEConnectSqlAdapter =
     new PEConnectSqlAdapter(
       driver = PostgresDriver,
@@ -164,10 +155,6 @@ class InfraModule extends AbstractModule with ScalaModule {
       mrsValideesSqlAdapter = mrsValideesSqlAdapter,
       peConnectSqlAdapter = peConnectSqlAdapter
     )
-
-  @Provides
-  def referentielMetierFileAdapter: ReferentielMetierFileAdapter =
-    new ReferentielMetierFileAdapter()
 
   @Provides
   def referentielMetierWSAdapter(wsClient: WSClient,

@@ -1,8 +1,6 @@
 package conf
 
 import com.google.inject.{AbstractModule, Provider, Provides, Singleton}
-import fr.poleemploi.perspectives.candidat.cv.domain.CVService
-import fr.poleemploi.perspectives.candidat.cv.infra.sql.CVSqlAdapter
 import fr.poleemploi.perspectives.candidat.mrs.domain.ImportMRSCandidat
 import fr.poleemploi.perspectives.candidat.mrs.infra.local.ImportMRSCandidatLocal
 import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.ImportMRSCandidatPEConnect
@@ -16,11 +14,6 @@ import fr.poleemploi.perspectives.rechercheCandidat.domain.RechercheCandidatServ
 class ServicesModule extends AbstractModule {
 
   override def configure(): Unit = {}
-
-  @Provides
-  @Singleton
-  def cvService(csvSqlAdapter: CVSqlAdapter): CVService =
-    csvSqlAdapter
 
   @Provides
   @Singleton

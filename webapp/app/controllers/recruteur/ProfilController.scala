@@ -53,7 +53,7 @@ class ProfilController @Inject()(components: ControllerComponents,
             numeroTelephone = NumeroTelephone(inscriptionForm.numeroTelephone),
             contactParCandidats = FormHelpers.stringToBoolean(inscriptionForm.contactParCandidats)
           )
-          recruteurCommandHandler.modifierProfil(command)
+          recruteurCommandHandler.handle(command)
             .map(_ =>
               Redirect(routes.RechercheCandidatController.index()).flashing(
                 messagesRequest.flash.withTypeRecruteur(command.typeRecruteur)

@@ -1,6 +1,5 @@
 package conf
 
-import akka.actor.ActorSystem
 import authentification.infra.play.PlayOauthService
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.inject.name.Named
@@ -14,7 +13,7 @@ import fr.poleemploi.perspectives.authentification.infra.sql.PEConnectSqlAdapter
 import fr.poleemploi.perspectives.authentification.infra.ws.PEConnectWSAdapter
 import fr.poleemploi.perspectives.candidat.cv.infra.sql.CVSqlAdapter
 import fr.poleemploi.perspectives.candidat.mrs.infra.local.ReferentielMRSCandidatLocal
-import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.{MRSValideesCSVAdapter, ReferentielMRSCandidatPEConnect}
+import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.ReferentielMRSCandidatPEConnect
 import fr.poleemploi.perspectives.candidat.mrs.infra.sql.MRSValideesSqlAdapter
 import fr.poleemploi.perspectives.commun.infra.jackson.PerspectivesEventSourcingModule
 import fr.poleemploi.perspectives.commun.infra.oauth.OauthService
@@ -135,10 +134,6 @@ class InfraModule extends AbstractModule with ScalaModule {
       database = database,
       driver = PostgresDriver
     )
-
-  @Provides
-  def mrsValideesCSVAdapter(actorSystem: ActorSystem): MRSValideesCSVAdapter =
-    new MRSValideesCSVAdapter(actorSystem = actorSystem)
 
   @Provides
   def mrsValideesSqlAdapter(database: Database): MRSValideesSqlAdapter =

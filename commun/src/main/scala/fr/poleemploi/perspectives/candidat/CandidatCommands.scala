@@ -14,7 +14,7 @@ case class InscrireCandidatCommand(id: CandidatId,
                                    email: Email,
                                    genre: Genre,
                                    adresse: Option[Adresse],
-                                   statutDemandeurEmploi: Option[StatutDemandeurEmploi]) extends Command
+                                   statutDemandeurEmploi: Option[StatutDemandeurEmploi]) extends Command[Candidat]
 
 // FIXME : Le numéro de téléphone est sur le formulaire des critères de recherche pour l'instant
 case class ModifierCriteresRechercheCommand(id: CandidatId,
@@ -24,7 +24,7 @@ case class ModifierCriteresRechercheCommand(id: CandidatId,
                                             etreContacteParOrganismeFormation: Boolean,
                                             etreContacteParAgenceInterim: Boolean,
                                             rayonRecherche: RayonRecherche,
-                                            numeroTelephone: NumeroTelephone) extends Command
+                                            numeroTelephone: NumeroTelephone) extends Command[Candidat]
 
 case class ConnecterCandidatCommand(id: CandidatId,
                                     nom: String,
@@ -32,21 +32,21 @@ case class ConnecterCandidatCommand(id: CandidatId,
                                     email: Email,
                                     genre: Genre,
                                     adresse: Option[Adresse],
-                                    statutDemandeurEmploi: Option[StatutDemandeurEmploi]) extends Command
+                                    statutDemandeurEmploi: Option[StatutDemandeurEmploi]) extends Command[Candidat]
 
 case class AjouterCVCommand(id: CandidatId,
                             nomFichier: String,
                             typeMedia: TypeMedia,
-                            path: Path) extends Command
+                            path: Path) extends Command[Candidat]
 
 case class RemplacerCVCommand(id: CandidatId,
                               cvId: CVId,
                               nomFichier: String,
                               typeMedia: TypeMedia,
-                              path: Path) extends Command
+                              path: Path) extends Command[Candidat]
 
 case class AjouterMRSValideesCommand(id: CandidatId,
-                                     mrsValidees: List[MRSValidee]) extends Command
+                                     mrsValidees: List[MRSValidee]) extends Command[Candidat]
 
 case class DeclarerRepriseEmploiParConseillerCommand(id: CandidatId,
-                                                     conseillerId: ConseillerId) extends Command
+                                                     conseillerId: ConseillerId) extends Command[Candidat]

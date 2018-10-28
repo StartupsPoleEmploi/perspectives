@@ -42,7 +42,7 @@ class InscriptionController @Inject()(cc: ControllerComponents,
       )),
       statutDemandeurEmploi = Some(StatutDemandeurEmploi.DEMANDEUR_EMPLOI)
     )
-    candidatCommandHandler.inscrire(command).map { _ =>
+    candidatCommandHandler.handle(command).map { _ =>
       val candidatAuthentifie = CandidatAuthentifie(
         candidatId = command.id,
         nom = command.nom,

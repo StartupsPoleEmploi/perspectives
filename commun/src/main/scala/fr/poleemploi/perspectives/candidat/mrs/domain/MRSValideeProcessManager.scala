@@ -31,7 +31,7 @@ class MRSValideeProcessManager(candidatCommandHandler: CandidatCommandHandler,
   private def onCandidatInscritEvent(event: CandidatInscritEvent): Future[Unit] =
     for {
       mrsValidees <- referentielMRSCandidat.mrsValideesParCandidat(event.candidatId)
-      _ <- candidatCommandHandler.ajouterMRSValidees(
+      _ <- candidatCommandHandler.handle(
         AjouterMRSValideesCommand(
           id = event.candidatId,
           mrsValidees = mrsValidees

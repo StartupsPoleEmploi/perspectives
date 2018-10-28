@@ -32,7 +32,7 @@ class InscriptionController @Inject()(cc: ControllerComponents,
       email = Email("robert.michu@maboite.com"),
       genre = Genre.HOMME
     )
-    recruteurCommandHandler.inscrire(command).map { _ =>
+    recruteurCommandHandler.handle(command).map { _ =>
       val recruteurAuthentifie = RecruteurAuthentifie(
         recruteurId = command.id,
         nom = command.nom,

@@ -68,7 +68,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
             saisieCriteresRechercheForm => {
               val modifierCriteresCommand = buildModifierCriteresRechercheCommand(candidatSaisieCriteresRecherche.candidatId, saisieCriteresRechercheForm)
 
-              candidatCommandHandler.modifierCriteresRecherche(modifierCriteresCommand).map(_ =>
+              candidatCommandHandler.handle(modifierCriteresCommand).map(_ =>
                 if (saisieCriteresRechercheForm.nouveauCandidat) {
                   Redirect(routes.InscriptionController.confirmationInscription())
                 } else {
@@ -97,8 +97,8 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
           candidatQueryHandler.candidatSaisieCriteresRecherche(CandidatSaisieCriteresRechercheQuery(candidatAuthentifieRequest.candidatId))
             .flatMap(candidat =>
               candidat.cvId
-                .map(cvId => candidatCommandHandler.remplacerCV(buildRemplacerCvCommand(candidat, cvId, cvForm)))
-                .getOrElse(candidatCommandHandler.ajouterCV(buildAjouterCvCommand(candidat, cvForm)))
+                .map(cvId => candidatCommandHandler.handle(buildRemplacerCvCommand(candidat, cvId, cvForm)))
+                .getOrElse(candidatCommandHandler.handle(buildAjouterCvCommand(candidat, cvForm)))
             ).map(_ => NoContent)
         }
       )

@@ -146,7 +146,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
         candidatId = candidatId,
         peConnectId = peConnectCandidatInfos.peConnectId
       ))
-      _ <- candidatCommandHandler.inscrire(command)
+      _ <- candidatCommandHandler.handle(command)
     } yield candidatId
   }
 
@@ -164,7 +164,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       adresse = adresse,
       statutDemandeurEmploi = statutDemandeurEmploi
     )
-    candidatCommandHandler.connecter(command).map(_ => candidatId)
+    candidatCommandHandler.handle(command).map(_ => candidatId)
   }
 
   private def getAdresseCandidat(accessTokenResponse: AccessTokenResponse): Future[Option[Adresse]] =

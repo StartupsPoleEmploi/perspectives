@@ -37,7 +37,7 @@ class MRSValideesActor(importMRSCandidat: ImportMRSCandidat,
       (for {
         mrsValidees <- importMRSCandidat.integrerMRSValidees
         _ <- Future.sequence(mrsValidees.groupBy(_.candidatId).map(v =>
-          candidatCommandHandler.ajouterMRSValidees(
+          candidatCommandHandler.handle(
             AjouterMRSValideesCommand(
               id = v._1,
               mrsValidees = v._2.map(m =>

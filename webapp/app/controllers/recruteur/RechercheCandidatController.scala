@@ -145,7 +145,7 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
       CommenterListeCandidatsForm.form.bindFromRequest.fold(
         formWithErrors => Future.successful(BadRequest(formWithErrors.errorsAsJson)),
         commenterListeCandidatsForm => {
-          recruteurCommandHandler.commenterListeCandidats(
+          recruteurCommandHandler.handle(
             CommenterListeCandidatsCommand(
               id = recruteurAuthentifieRequest.recruteurId,
               contexteRecherche = ContexteRecherche(
@@ -167,7 +167,7 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
         formWithErrors => Future.successful(BadRequest(formWithErrors.errorsAsJson)),
         creerAlerteForm => {
           val alerteId = recruteurCommandHandler.newAlerteId
-          recruteurCommandHandler.creerAlerte(
+          recruteurCommandHandler.handle(
             CreerAlerteCommand(
               id = recruteurAuthentifieRequest.recruteurId,
               alerteId = alerteId,
@@ -184,7 +184,7 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
 
   def supprimerAlerte(alerteId: String): Action[AnyContent] = recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
-      recruteurCommandHandler.supprimerAlerte(SupprimerAlerteCommand(
+      recruteurCommandHandler.handle(SupprimerAlerteCommand(
         id = recruteurAuthentifieRequest.recruteurId,
         alerteId = AlerteId(alerteId)
       )).map(_ => NoContent)

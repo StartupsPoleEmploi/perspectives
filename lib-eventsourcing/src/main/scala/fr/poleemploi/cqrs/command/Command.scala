@@ -1,8 +1,8 @@
 package fr.poleemploi.cqrs.command
 
-import fr.poleemploi.eventsourcing.AggregateId
+import fr.poleemploi.eventsourcing.Aggregate
 
-trait Command {
+trait Command[A <: Aggregate] {
 
-  def id: AggregateId
+  def id: A#Id
 }
