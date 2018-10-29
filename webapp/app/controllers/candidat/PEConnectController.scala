@@ -89,7 +89,9 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       val session = SessionCandidatPEConnect.set(accessTokenResponse.idToken, SessionCandidatAuthentifie.set(candidatAuthentifie, oauthTokenSessionStorage.remove(request.session)))
 
       if (optCandidat.isDefined)
-        Redirect(routes.SaisieCriteresRechercheController.saisieCriteresRecherche()).withSession(session)
+        SessionUtilisateurNonAuthentifie.getUriConnexion(request.session)
+          .map(uri => Redirect(uri).withSession(SessionUtilisateurNonAuthentifie.remove(session)))
+          .getOrElse(Redirect(routes.SaisieCriteresRechercheController.saisieCriteresRecherche()).withSession(session))
       else
         Redirect(routes.SaisieCriteresRechercheController.saisieCriteresRecherche()).withSession(session)
           .flashing(request.flash.withCandidatInscrit)

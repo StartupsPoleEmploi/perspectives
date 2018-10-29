@@ -24,7 +24,7 @@ class RecruteurAuthentifieAction @Inject()(override val parser: BodyParsers.Defa
       .map(recruteur => block(RecruteurAuthentifieRequest(recruteur, request)))
       .getOrElse(
         Future.successful(Redirect(routes.InscriptionController.inscription())
-          .withSession(SessionRecruteurNonAuthentifie.setUriConnexion(request.uri, request.session))
+          .withSession(SessionUtilisateurNonAuthentifie.setUriConnexion(request.uri, request.session))
         )
       )
 }

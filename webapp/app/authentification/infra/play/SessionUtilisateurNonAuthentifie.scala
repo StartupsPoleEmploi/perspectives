@@ -2,9 +2,9 @@ package authentification.infra.play
 
 import play.api.mvc.Session
 
-object SessionRecruteurNonAuthentifie {
+object SessionUtilisateurNonAuthentifie {
 
-  private val namespace = "recruteurNonAuthentifie"
+  private val namespace = "utilisateurNonAuthentifie"
   private val uriConnexionAttribute: String = s"$namespace.uriConnexion"
 
   def getUriConnexion(session: Session): Option[String] =

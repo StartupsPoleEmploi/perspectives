@@ -1,9 +1,9 @@
 package authentification.infra.play
 
+import controllers.candidat.routes
 import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
 import fr.poleemploi.perspectives.candidat.CandidatId
 import javax.inject.Inject
-import play.api.http.Status.UNAUTHORIZED
 import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -17,14 +17,17 @@ case class CandidatAuthentifieRequest[A](candidatAuthentifie: CandidatAuthentifi
 
 class CandidatAuthentifieAction @Inject()(override val parser: BodyParsers.Default)
                                          (implicit val executionContext: ExecutionContext)
-  extends ActionBuilder[CandidatAuthentifieRequest, AnyContent] {
+  extends ActionBuilder[CandidatAuthentifieRequest, AnyContent] with Results {
 
-  override def invokeBlock[A](request: Request[A], block: CandidatAuthentifieRequest[A] => Future[Result]): Future[Result] = {
+  override def invokeBlock[A](request: Request[A], block: CandidatAuthentifieRequest[A] => Future[Result]): Future[Result] =
     SessionCandidatAuthentifie
       .get(request.session)
       .map(candidat => block(CandidatAuthentifieRequest(candidat, request)))
-      .getOrElse(Future.successful(Results.Status(UNAUTHORIZED)))
-  }
+      .getOrElse(
+        Future.successful(Redirect(routes.InscriptionController.inscription())
+          .withSession(SessionUtilisateurNonAuthentifie.setUriConnexion(request.uri, request.session))
+        )
+      )
 }
 
 case class OptionalCandidatAuthentifieRequest[A](candidatAuthentifie: Option[CandidatAuthentifie],

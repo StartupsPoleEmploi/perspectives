@@ -84,8 +84,8 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       val session = SessionRecruteurPEConnect.set(accessTokenResponse.idToken, SessionRecruteurAuthentifie.set(recruteurAuthentifie, oauthTokenSessionStorage.remove(request.session)))
 
       if (optProfilRecruteur.exists(_.profilComplet)) {
-        SessionRecruteurNonAuthentifie.getUriConnexion(request.session)
-          .map(uri => Redirect(uri).withSession(SessionRecruteurNonAuthentifie.remove(session)))
+        SessionUtilisateurNonAuthentifie.getUriConnexion(request.session)
+          .map(uri => Redirect(uri).withSession(SessionUtilisateurNonAuthentifie.remove(session)))
           .getOrElse(Redirect(routes.RechercheCandidatController.rechercherCandidats()).withSession(session))
       }
       else if (optProfilRecruteur.isDefined)
