@@ -64,7 +64,9 @@ class EventSourcingModule extends AbstractModule {
       override def newAlerteId: AlerteId = recruteurRepository.newAlerteId
 
       override def configure: PartialFunction[Command[Recruteur], Recruteur => Future[List[Event]]] = {
+        case command: InscrireRecruteurCommand => r => Future(r.inscrire(command))
         case command: ConnecterRecruteurCommand => r => Future(r.connecter(command))
+        case command: ModifierProfilCommand => r => Future(r.modifierProfil(command))
         case command: CommenterListeCandidatsCommand => r => r.commenterListeCandidats(command, commentaireService)
         case command: CreerAlerteCommand => r => Future(r.creerAlerte(command))
         case command: SupprimerAlerteCommand => r => Future(r.supprimerAlerte(command))
