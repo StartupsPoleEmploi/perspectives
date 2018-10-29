@@ -14,8 +14,7 @@
         resultatRechercheCandidat: ResultatRechercheCandidat,
         alertes: List[AlerteDto],
         metierChoisi: Option[String] = None,
-        secteurActiviteChoisi: Option[String] = None,
-        activerAlertes: Boolean)(implicit request: MessagesRequestHeader, flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
+        secteurActiviteChoisi: Option[String] = None)(implicit request: MessagesRequestHeader, flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
 @layout(recruteurAuthentifie = Some(recruteurAuthentifie)) {
     <div id="rechercheCandidat">
@@ -77,16 +76,14 @@
                     </div>
                 </div>
             }
-            @if(activerAlertes) {
-                <alerte-recruteur ref="alertesRecruteur"
-                                  v-bind:nb-max-alertes="10"
-                                  v-bind:alertes-initiales="[@alertes.map(a => Json.stringify(Json.toJson(a))).mkString(",")]"
-                                  v-bind:frequences="frequences"
-                                  v-on:creer-alerte="creerAlerte"
-                                  v-on:supprimer-alerte="supprimerAlerte"
-                                  v-on:selectionner-alerte="selectionnerAlerte">
-                </alerte-recruteur>
-            }
+            <alerte-recruteur ref="alertesRecruteur"
+                              v-bind:nb-max-alertes="10"
+                              v-bind:alertes-initiales="[@alertes.map(a => Json.stringify(Json.toJson(a))).mkString(",")]"
+                              v-bind:frequences="frequences"
+                              v-on:creer-alerte="creerAlerte"
+                              v-on:supprimer-alerte="supprimerAlerte"
+                              v-on:selectionner-alerte="selectionnerAlerte">
+            </alerte-recruteur>
         </section>
         <section id="js-resultatsRecherche" class="resultatsRecherche">
             @partials.resultatsRecherche(

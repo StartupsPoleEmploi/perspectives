@@ -1,6 +1,7 @@
 package fr.poleemploi.perspectives.emailing.infra.ws
 
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 import fr.poleemploi.perspectives.commun.domain.{Departement, Email, Genre}
 import fr.poleemploi.perspectives.emailing.domain._
@@ -11,7 +12,7 @@ import play.api.libs.json._
 
 class MailjetWSMapping {
 
-  val dateTimeFormatterAlerteMailRecruteur: DateTimeFormatter = DateTimeFormatter.ofPattern("eeee d MMMM yyyy")
+  val dateTimeFormatterAlerteMailRecruteur: DateTimeFormatter = DateTimeFormatter.ofPattern("eeee d MMMM yyyy", Locale.FRANCE)
 
   def buildRequestCandidatInscrit(candidatInscrit: CandidatInscrit): ManageContactRequest =
     ManageContactRequest(

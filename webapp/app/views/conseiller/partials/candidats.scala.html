@@ -1,4 +1,5 @@
 @import java.time.format.DateTimeFormatter
+@import java.util.Locale
 
 @import fr.poleemploi.perspectives.candidat.StatutDemandeurEmploi
 @import fr.poleemploi.perspectives.commun.domain.Genre
@@ -36,8 +37,8 @@
     <tbody>
     @for(candidat <- resultat.candidats) {
         <tr>
-            <td>@candidat.dateInscription.format(DateTimeFormatter.ofPattern("d MMM yyyy HH:mm"))</td>
-            <td>@candidat.dateDerniereConnexion.format(DateTimeFormatter.ofPattern("d MMM yyyy HH:mm"))</td>
+            <td>@candidat.dateInscription.format(DateTimeFormatter.ofPattern("d MMM yyyy HH:mm", Locale.FRANCE))</td>
+            <td>@candidat.dateDerniereConnexion.format(DateTimeFormatter.ofPattern("d MMM yyyy HH:mm", Locale.FRANCE))</td>
             <td>@candidat.nom</td>
             <td>@candidat.prenom</td>
             <td>@Genre.label(candidat.genre)</td>
