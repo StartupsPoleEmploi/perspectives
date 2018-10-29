@@ -4,7 +4,6 @@ import akka.NotUsed
 import akka.stream.scaladsl.Source
 import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
-import fr.poleemploi.perspectives.projections.recruteur.AlertesRecruteurQuery
 import fr.poleemploi.perspectives.projections.recruteur.alerte._
 import fr.poleemploi.perspectives.rechercheCandidat.domain.RechercheCandidatService
 import fr.poleemploi.perspectives.recruteur._
@@ -73,26 +72,29 @@ class AlerteRecruteurSqlAdapter(database: Database,
   }
 
   // FIXME : logique dupliquée en front
-  def alertesParRecruteur(query: AlertesRecruteurQuery): Future[List[AlerteDto]] =
-    database.run(alertesParRecruteurQuery(query.recruteurId).result).map(_.toList.map { a =>
-      AlerteDto(
-        alerteId = a._5.value,
-        intitule =
-          s"${if (a._1.isDefined) {
-            a._1.flatMap(c => rechercheCandidatService.metierProposeParCode(c)).map(_.label).getOrElse("")
-          } else if (a._2.isDefined) {
-            a._2.map(c => rechercheCandidatService.secteurActiviteParCode(c).label).getOrElse("")
-          } else
-            "Candidats"
-          }${a._3.map(c => s" en ${rechercheCandidatService.departementParCode(c).label}").getOrElse("")}",
-        criteres = Criteres(
-          codeSecteurActivite = a._2.map(_.value).getOrElse(""),
-          codeROME = a._1.map(_.value).getOrElse(""),
-          codeDepartement = a._3.map(_.value).getOrElse("")
-        ),
-        frequence = FrequenceAlerte.label(a._4)
-      )
-    })
+  def alertesParRecruteur(query: AlertesRecruteurQuery): Future[AlertesRecruteurQueryResult] =
+    database.run(alertesParRecruteurQuery(query.recruteurId).result).map(r =>
+      AlertesRecruteurQueryResult(alertes = r.toList.map { a =>
+        AlerteDto(
+          alerteId = a._5.value,
+          intitule =
+            s"${
+              if (a._1.isDefined) {
+                a._1.flatMap(c => rechercheCandidatService.metierProposeParCode(c)).map(_.label).getOrElse("")
+              } else if (a._2.isDefined) {
+                a._2.map(c => rechercheCandidatService.secteurActiviteParCode(c).label).getOrElse("")
+              } else
+                "Candidats"
+            }${a._3.map(c => s" en ${rechercheCandidatService.departementParCode(c).label}").getOrElse("")}",
+          criteres = Criteres(
+            codeSecteurActivite = a._2.map(_.value).getOrElse(""),
+            codeROME = a._1.map(_.value).getOrElse(""),
+            codeDepartement = a._3.map(_.value).getOrElse("")
+          ),
+          frequence = FrequenceAlerte.label(a._4)
+        )
+      })
+    )
 
   def alertesQuotidiennes: Source[AlerteRecruteurDto, NotUsed] =
     streamAlertes(FrequenceAlerte.QUOTIDIENNE)

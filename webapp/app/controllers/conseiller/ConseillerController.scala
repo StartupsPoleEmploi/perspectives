@@ -61,7 +61,7 @@ class ConseillerController @Inject()(cc: ControllerComponents,
 
   def listeRecruteurs: Action[AnyContent] = conseillerAdminAuthentifieAction.async { implicit conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
     val avantDateInscription = ZonedDateTime.now()
-    recruteurQueryHandler.listerPourConseiller(
+    recruteurQueryHandler.handle(
       RecruteursPourConseillerQuery(
         nbRecruteursParPage = nbRecruteursParPage,
         nbPagesACharger = 4,
@@ -76,7 +76,7 @@ class ConseillerController @Inject()(cc: ControllerComponents,
   }
 
   def paginationRecruteurs(avantDateInscription: String): Action[AnyContent] = conseillerAdminAuthentifieAction.async { implicit conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
-    recruteurQueryHandler.listerPourConseiller(
+    recruteurQueryHandler.handle(
       RecruteursPourConseillerQuery(
         nbRecruteursParPage = nbRecruteursParPage,
         nbPagesACharger = 1,

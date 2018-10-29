@@ -22,10 +22,10 @@ class RecruteurProjection(adapter: RecruteurProjectionSqlAdapter) extends Projec
     case e: AlerteRecruteurSupprimeeEvent => Future.successful(())
   }
 
-  def typeRecruteur(recruteurId: RecruteurId): Future[Option[TypeRecruteur]] =
-    adapter.typeRecruteur(recruteurId)
+  def typeRecruteur(query: TypeRecruteurQuery): Future[TypeRecruteurQueryResult] =
+    adapter.typeRecruteur(query)
 
-  def profilRecruteur(query: ProfilRecruteurQuery): Future[ProfilRecruteurDto] =
+  def profilRecruteur(query: ProfilRecruteurQuery): Future[ProfilRecruteurQueryResult] =
     adapter.profilRecruteur(query)
 
   def listerPourConseiller(query: RecruteursPourConseillerQuery): Future[RecruteursPourConseillerQueryResult] =

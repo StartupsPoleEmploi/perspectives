@@ -1,6 +1,8 @@
 package fr.poleemploi.perspectives.projections.candidat
 
-sealed trait ResultatRechercheCandidat {
+import fr.poleemploi.cqrs.projection.QueryResult
+
+sealed trait ResultatRechercheCandidat extends QueryResult {
 
   def nbCandidats: Int
 }

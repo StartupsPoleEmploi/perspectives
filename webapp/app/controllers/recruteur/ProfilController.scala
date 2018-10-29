@@ -30,8 +30,8 @@ class ProfilController @Inject()(components: ControllerComponents,
           Future.successful(ProfilForm.nouveauRecruteur)
         } else {
           recruteurQueryHandler
-            .profilRecruteur(ProfilRecruteurQuery(recruteurId = recruteurAuthentifieRequest.recruteurId))
-            .map(ProfilForm.fromProfilRecruteur)
+            .handle(ProfilRecruteurQuery(recruteurId = recruteurAuthentifieRequest.recruteurId))
+            .map(ProfilForm.fromProfilRecruteurQueryResult)
         }
 
       form.map(f => Ok(views.html.recruteur.profil(f, recruteurAuthentifie = recruteurAuthentifieRequest.recruteurAuthentifie)))

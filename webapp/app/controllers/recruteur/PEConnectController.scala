@@ -73,7 +73,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       _ <- peConnectService.validateAccessToken(accessTokenResponse)
       recruteurInfos <- peConnectService.getInfosRecruteur(accessTokenResponse.accessToken)
       optRecruteurPEConnnect <- peConnectService.findRecruteur(recruteurInfos.peConnectId)
-      optProfilRecruteur <- optRecruteurPEConnnect.map(r => recruteurQueryHandler.profilRecruteur(ProfilRecruteurQuery(r.recruteurId)).map(Some(_))).getOrElse(Future.successful(None))
+      optProfilRecruteur <- optRecruteurPEConnnect.map(r => recruteurQueryHandler.handle(ProfilRecruteurQuery(r.recruteurId)).map(Some(_))).getOrElse(Future.successful(None))
       recruteurId <- optRecruteurPEConnnect.map(r => connecter(r, recruteurInfos)).getOrElse(inscrire(recruteurInfos))
     } yield {
       val recruteurAuthentifie = RecruteurAuthentifie(

@@ -12,6 +12,7 @@ import fr.poleemploi.perspectives.commun.domain.{CodeDepartement, CodeROME, Code
 import fr.poleemploi.perspectives.projections.candidat._
 import fr.poleemploi.perspectives.projections.rechercheCandidat.RechercheCandidatQueryHandler
 import fr.poleemploi.perspectives.projections.recruteur._
+import fr.poleemploi.perspectives.projections.recruteur.alerte.AlertesRecruteurQuery
 import fr.poleemploi.perspectives.recruteur._
 import fr.poleemploi.perspectives.recruteur.alerte.domain.{AlerteId, FrequenceAlerte}
 import fr.poleemploi.perspectives.recruteur.commentaire.domain.ContexteRecherche
@@ -43,7 +44,7 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
           codeDepartement = departement.orElse(departementsProposes.headOption.map(_.code.value))
         )
         (for {
-          alertes <- recruteurQueryHandler.alertesParRecruteur(AlertesRecruteurQuery(recruteurAuthentifieRequest.recruteurId))
+          alertesRecruteurQueryResult <- recruteurQueryHandler.handle(AlertesRecruteurQuery(recruteurAuthentifieRequest.recruteurId))
           resultatRechercheCandidatDto <- rechercher(request = recruteurAuthentifieRequest, rechercheCandidatForm = rechercheCandidatForm)
         } yield {
           Ok(views.html.recruteur.rechercheCandidat(
@@ -52,7 +53,7 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
             resultatRechercheCandidat = resultatRechercheCandidatDto,
             secteursActivites = rechercheCandidatQueryHandler.secteursProposes,
             departements = departementsProposes,
-            alertes = alertes,
+            alertes = alertesRecruteurQueryResult.alertes,
             metierChoisi = rechercheCandidatForm.metier.flatMap(c => rechercheCandidatQueryHandler.metierProposeParCode(CodeROME(c)).map(_.label)),
             secteurActiviteChoisi = rechercheCandidatForm.secteurActivite.map(s => rechercheCandidatQueryHandler.secteurProposeParCode(CodeSecteurActivite(s)).label),
             activerAlertes = webAppConfig.recruteursTesteurs.contains(recruteurAuthentifieRequest.recruteurId)
@@ -113,7 +114,7 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
     request.flash.getTypeRecruteur
       .map(t => Future.successful(t))
       .getOrElse {
-        recruteurQueryHandler.typeRecruteur(request.recruteurId).map(_.getOrElse(throw ProfilRecruteurIncompletException()))
+        recruteurQueryHandler.handle(TypeRecruteurQuery(request.recruteurId)).map(_.typeRecruteur.getOrElse(throw ProfilRecruteurIncompletException()))
       }
 
   def telechargerCV(candidatId: String, nomFichier: String): Action[AnyContent] = recruteurAuthentifieAction.async { implicit recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>

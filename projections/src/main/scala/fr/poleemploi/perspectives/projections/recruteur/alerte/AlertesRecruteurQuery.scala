@@ -1,8 +1,13 @@
 package fr.poleemploi.perspectives.projections.recruteur.alerte
 
-import fr.poleemploi.perspectives.commun.domain._
+import fr.poleemploi.cqrs.projection.{Query, QueryResult}
+import fr.poleemploi.perspectives.commun.domain.{Departement, Email, Metier, SecteurActivite}
 import fr.poleemploi.perspectives.recruteur.alerte.domain.{AlerteId, FrequenceAlerte}
 import fr.poleemploi.perspectives.recruteur.{RecruteurId, TypeRecruteur}
+
+case class AlertesRecruteurQuery(recruteurId: RecruteurId) extends Query[AlertesRecruteurQueryResult]
+
+case class AlertesRecruteurQueryResult(alertes: List[AlerteDto]) extends QueryResult
 
 sealed trait AlerteRecruteurDto {
 

@@ -4,7 +4,6 @@ import akka.NotUsed
 import akka.stream.scaladsl.Source
 import fr.poleemploi.cqrs.projection.Projection
 import fr.poleemploi.eventsourcing.Event
-import fr.poleemploi.perspectives.projections.recruteur.AlertesRecruteurQuery
 import fr.poleemploi.perspectives.projections.recruteur.alerte.infra.sql.AlerteRecruteurSqlAdapter
 import fr.poleemploi.perspectives.recruteur._
 
@@ -30,6 +29,6 @@ class AlerteRecruteurProjection(alerteRecruteurSqlAdapter: AlerteRecruteurSqlAda
   def alertesHebdomaraires: Source[AlerteRecruteurDto, NotUsed] =
     alerteRecruteurSqlAdapter.alertesHebdomaraires
 
-  def alertesParRecruteur(query: AlertesRecruteurQuery): Future[List[AlerteDto]] =
+  def alertesParRecruteur(query: AlertesRecruteurQuery): Future[AlertesRecruteurQueryResult] =
     alerteRecruteurSqlAdapter.alertesParRecruteur(query)
 }

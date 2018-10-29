@@ -46,7 +46,7 @@ class RecruteurProjectionSqlAdapter(database: Database) {
     def * = (recruteurId, nom, prenom, email, genre, typeRecruteur, raisonSociale, numeroSiret, numeroTelephone, contactParCandidats, dateInscription, dateDerniereConnexion) <> (RecruteurRecord.tupled, RecruteurRecord.unapply)
   }
 
-  implicit object ProfilRecruteurShape extends CaseClassShape(ProfilRecruteurLifted.tupled, ProfilRecruteurDto.tupled)
+  implicit object ProfilRecruteurShape extends CaseClassShape(ProfilRecruteurLifted.tupled, ProfilRecruteurQueryResult.tupled)
 
   implicit object RecruteurPourConseillerShape extends CaseClassShape(RecruteurPourConseillerLifted.tupled, RecruteurPourConseillerDto.tupled)
 
@@ -84,10 +84,10 @@ class RecruteurProjectionSqlAdapter(database: Database) {
     } yield r.dateDerniereConnexion
   }
 
-  def typeRecruteur(recruteurId: RecruteurId): Future[Option[TypeRecruteur]] =
-    database.run(typeRecruteurQuery(recruteurId).result.head)
+  def typeRecruteur(query: TypeRecruteurQuery): Future[TypeRecruteurQueryResult] =
+    database.run(typeRecruteurQuery(query.recruteurId).result.head).map(TypeRecruteurQueryResult)
 
-  def profilRecruteur(query: ProfilRecruteurQuery): Future[ProfilRecruteurDto] =
+  def profilRecruteur(query: ProfilRecruteurQuery): Future[ProfilRecruteurQueryResult] =
     database.run(profilRecruteurQuery(query.recruteurId).result.head)
 
   def listerPourConseiller(query: RecruteursPourConseillerQuery): Future[RecruteursPourConseillerQueryResult] =

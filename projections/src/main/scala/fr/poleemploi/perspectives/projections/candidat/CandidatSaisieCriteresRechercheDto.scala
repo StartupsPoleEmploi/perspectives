@@ -1,5 +1,6 @@
 package fr.poleemploi.perspectives.projections.candidat
 
+import fr.poleemploi.cqrs.projection.QueryResult
 import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
 import fr.poleemploi.perspectives.commun.domain._
@@ -16,7 +17,7 @@ case class CandidatSaisieCriteresRechercheDto(candidatId: CandidatId,
                                               rayonRecherche: Option[RayonRecherche],
                                               numeroTelephone: Option[NumeroTelephone],
                                               cvId: Option[CVId],
-                                              cvTypeMedia: Option[TypeMedia]) {
+                                              cvTypeMedia: Option[TypeMedia]) extends QueryResult {
 
   def possedeCV: Boolean = cvId.isDefined
 

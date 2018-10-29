@@ -1,6 +1,7 @@
 package conf
 
 import com.google.inject.{AbstractModule, Inject, Provides, Singleton}
+import fr.poleemploi.cqrs.projection.{Query, QueryResult}
 import fr.poleemploi.eventsourcing.{EventHandler, EventPublisher}
 import fr.poleemploi.perspectives.candidat.cv.domain.CVService
 import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielMRSCandidat
@@ -10,14 +11,16 @@ import fr.poleemploi.perspectives.projections.candidat.infra.sql.CandidatProject
 import fr.poleemploi.perspectives.projections.candidat.{CandidatNotificationSlackProjection, CandidatProjection, CandidatQueryHandler}
 import fr.poleemploi.perspectives.projections.emailing.{CandidatEmailProjection, RecruteurEmailProjection}
 import fr.poleemploi.perspectives.projections.rechercheCandidat.RechercheCandidatQueryHandler
-import fr.poleemploi.perspectives.projections.recruteur.alerte.AlerteRecruteurProjection
+import fr.poleemploi.perspectives.projections.recruteur._
 import fr.poleemploi.perspectives.projections.recruteur.alerte.infra.sql.AlerteRecruteurSqlAdapter
+import fr.poleemploi.perspectives.projections.recruteur.alerte.{AlerteRecruteurProjection, AlertesRecruteurQuery}
 import fr.poleemploi.perspectives.projections.recruteur.infra.sql.RecruteurProjectionSqlAdapter
-import fr.poleemploi.perspectives.projections.recruteur.{RecruteurProjection, RecruteurQueryHandler}
 import fr.poleemploi.perspectives.rechercheCandidat.domain.RechercheCandidatService
 import net.codingwell.scalaguice.ScalaModule
 import play.api.libs.ws.WSClient
 import slick.jdbc.JdbcBackend.Database
+
+import scala.concurrent.Future
 
 class RegisterProjections @Inject()(eventPublisher: EventPublisher,
                                     eventHandler: EventHandler,
@@ -123,10 +126,14 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
   @Singleton
   def recruteurQueryHandler(recruteurProjection: RecruteurProjection,
                             alerteRecruteurProjection: AlerteRecruteurProjection): RecruteurQueryHandler =
-    new RecruteurQueryHandler(
-      recruteurProjection = recruteurProjection,
-      alerteRecruteurProjection = alerteRecruteurProjection
-    )
+    new RecruteurQueryHandler {
+      override def configure: PartialFunction[Query[_ <: QueryResult], Future[QueryResult]] = {
+        case q: TypeRecruteurQuery => recruteurProjection.typeRecruteur(q)
+        case q: ProfilRecruteurQuery => recruteurProjection.profilRecruteur(q)
+        case q: RecruteursPourConseillerQuery => recruteurProjection.listerPourConseiller(q)
+        case q: AlertesRecruteurQuery => alerteRecruteurProjection.alertesParRecruteur(q)
+      }
+    }
 
   @Provides
   @Singleton

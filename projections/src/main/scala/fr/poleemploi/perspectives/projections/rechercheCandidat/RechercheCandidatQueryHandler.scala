@@ -1,10 +1,9 @@
 package fr.poleemploi.perspectives.projections.rechercheCandidat
 
-import fr.poleemploi.cqrs.projection.QueryHandler
 import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.rechercheCandidat.domain.RechercheCandidatService
 
-class RechercheCandidatQueryHandler(rechercheCandidatService: RechercheCandidatService) extends QueryHandler {
+class RechercheCandidatQueryHandler(rechercheCandidatService: RechercheCandidatService) {
 
   def secteursProposes: List[SecteurActivite] = rechercheCandidatService.secteursProposes
 

@@ -1,12 +1,12 @@
 package fr.poleemploi.perspectives.projections.candidat
 
-import fr.poleemploi.cqrs.projection.{QueryHandler, UnauthorizedQueryException}
+import fr.poleemploi.cqrs.projection.{Query, QueryHandler, QueryResult, UnauthorizedQueryException}
 import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.candidat.cv.domain.{CV, CVService}
 import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielMRSCandidat
 import fr.poleemploi.perspectives.commun.domain.Metier
 import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
-import fr.poleemploi.perspectives.projections.recruteur.RecruteurProjection
+import fr.poleemploi.perspectives.projections.recruteur.{RecruteurProjection, TypeRecruteurQuery}
 import fr.poleemploi.perspectives.recruteur.TypeRecruteur
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -17,6 +17,9 @@ class CandidatQueryHandler(candidatProjection: CandidatProjection,
                            cvService: CVService,
                            referentielMRSCandidat: ReferentielMRSCandidat,
                            referentielMetier: ReferentielMetier) extends QueryHandler {
+
+  // FIXME
+  override def configure: PartialFunction[Query[_], Future[QueryResult]] = ???
 
   def candidatSaisieCriteresRecherche(query: CandidatSaisieCriteresRechercheQuery): Future[CandidatSaisieCriteresRechercheDto] =
     candidatProjection.candidatSaisieCriteresRecherche(query)
@@ -29,16 +32,16 @@ class CandidatQueryHandler(candidatProjection: CandidatProjection,
 
   def cvCandidatPourRecruteur(query: CVCandidatPourRecruteurQuery): Future[CV] = {
     val autorisation = for {
-      typeRecruteur <- recruteurProjection.typeRecruteur(query.recruteurId)
+      typeRecruteurResult <- recruteurProjection.typeRecruteur(TypeRecruteurQuery(query.recruteurId))
       candidatContactRecruteur <- candidatProjection.candidatContactRecruteur(query.candidatId)
-      estAutorise = typeRecruteur match {
+      estAutorise = typeRecruteurResult.typeRecruteur match {
         case Some(TypeRecruteur.ENTREPRISE) => true
         case Some(TypeRecruteur.ORGANISME_FORMATION) => candidatContactRecruteur.contacteParOrganismeFormation.getOrElse(false)
         case Some(TypeRecruteur.AGENCE_INTERIM) => candidatContactRecruteur.contacteParAgenceInterim.getOrElse(false)
         case _ => false
       }
     } yield {
-      if (!estAutorise) throw UnauthorizedQueryException(s"Le recruteur ${query.recruteurId.value} de type ${typeRecruteur.map(_.value)} n'est pas autorisé à récupérer le cv du candidat ${query.candidatId.value}")
+      if (!estAutorise) throw UnauthorizedQueryException(s"Le recruteur ${query.recruteurId.value} de type ${typeRecruteurResult.typeRecruteur.map(_.value)} n'est pas autorisé à récupérer le cv du candidat ${query.candidatId.value}")
     }
 
     autorisation.flatMap(_ => cvService.getCVByCandidat(query.candidatId))
@@ -51,5 +54,4 @@ class CandidatQueryHandler(candidatProjection: CandidatProjection,
     referentielMRSCandidat
       .mrsValideesParCandidat(candidatId)
       .map(mrsValidees => mrsValidees.map(m => referentielMetier.metierParCode(m.codeROME)))
-
 }
