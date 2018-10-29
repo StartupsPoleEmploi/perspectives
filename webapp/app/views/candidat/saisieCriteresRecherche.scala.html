@@ -2,12 +2,12 @@
 @import controllers.candidat.SaisieCriteresRechercheForm
 @import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
 @import fr.poleemploi.perspectives.candidat.cv.domain.TypeMedia
-@import fr.poleemploi.perspectives.commun.domain.{RayonRecherche, SecteurActivite, Metier}
-@import fr.poleemploi.perspectives.projections.candidat.CandidatSaisieCriteresRechercheDto
+@import fr.poleemploi.perspectives.commun.domain.{Metier, RayonRecherche, SecteurActivite}
+@import fr.poleemploi.perspectives.projections.candidat.CandidatSaisieCriteresRechercheQueryResult
 @import helper._
 
 @(saisieCriteresRechercheForm: Form[SaisieCriteresRechercheForm],
-        candidatSaisieCriteresRecherche: Option[CandidatSaisieCriteresRechercheDto],
+        candidatSaisieCriteresRecherche: Option[CandidatSaisieCriteresRechercheQueryResult],
         metiersEvaluesCandidat: List[Metier],
         secteursActivites: List[SecteurActivite],
         candidatAuthentifie: CandidatAuthentifie)(implicit request: MessagesRequestHeader, flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)

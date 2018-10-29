@@ -7,7 +7,8 @@ import controllers.{AssetsFinder, FormHelpers}
 import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
 import fr.poleemploi.perspectives.commun.domain.{CodeROME, NumeroTelephone, RayonRecherche}
-import fr.poleemploi.perspectives.projections.candidat.{CandidatQueryHandler, CandidatSaisieCriteresRechercheDto, CandidatSaisieCriteresRechercheQuery}
+import fr.poleemploi.perspectives.projections.candidat.mrs.MetiersEvaluesNouvelInscritQuery
+import fr.poleemploi.perspectives.projections.candidat.{CandidatQueryHandler, CandidatSaisieCriteresRechercheQuery, CandidatSaisieCriteresRechercheQueryResult}
 import fr.poleemploi.perspectives.projections.rechercheCandidat.RechercheCandidatQueryHandler
 import javax.inject.Inject
 import play.api.Logger
@@ -31,9 +32,9 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
       for {
         candidatSaisieCriteresRecherche <-
           if (messagesRequest.flash.candidatInscrit) Future.successful(None)
-          else candidatQueryHandler.candidatSaisieCriteresRecherche(CandidatSaisieCriteresRechercheQuery(candidatAuthentifieRequest.candidatId)).map(Some(_))
+          else candidatQueryHandler.handle(CandidatSaisieCriteresRechercheQuery(candidatAuthentifieRequest.candidatId)).map(Some(_))
         metiersEvaluesCandidat <-
-          if (messagesRequest.flash.candidatInscrit) candidatQueryHandler.metiersEvaluesNouvelInscrit(candidatAuthentifieRequest.candidatId)
+          if (messagesRequest.flash.candidatInscrit) candidatQueryHandler.handle(MetiersEvaluesNouvelInscritQuery(candidatAuthentifieRequest.candidatId)).map(_.metiers)
           else Future(candidatSaisieCriteresRecherche.map(c => c.metiersEvalues).getOrElse(Nil))
       } yield {
         val form = candidatSaisieCriteresRecherche
@@ -53,7 +54,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
 
   def modifierCriteresRecherche: Action[AnyContent] = candidatAuthentifieAction.async { candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
-      candidatQueryHandler.candidatSaisieCriteresRecherche(CandidatSaisieCriteresRechercheQuery(candidatAuthentifieRequest.candidatId))
+      candidatQueryHandler.handle(CandidatSaisieCriteresRechercheQuery(candidatAuthentifieRequest.candidatId))
         .flatMap(candidatSaisieCriteresRecherche => {
           SaisieCriteresRechercheForm.form.bindFromRequest.fold(
             formWithErrors => {
@@ -94,7 +95,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
       CVForm.bindFromMultipart(candidatAuthentifieRequest.body).fold(
         erreur => Future.successful(BadRequest(erreur)),
         cvForm => {
-          candidatQueryHandler.candidatSaisieCriteresRecherche(CandidatSaisieCriteresRechercheQuery(candidatAuthentifieRequest.candidatId))
+          candidatQueryHandler.handle(CandidatSaisieCriteresRechercheQuery(candidatAuthentifieRequest.candidatId))
             .flatMap(candidat =>
               candidat.cvId
                 .map(cvId => candidatCommandHandler.handle(buildRemplacerCvCommand(candidat, cvId, cvForm)))
@@ -119,7 +120,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
       numeroTelephone = NumeroTelephone(saisieCriteresRechercheForm.numeroTelephone)
     )
 
-  private def buildAjouterCvCommand(candidat: CandidatSaisieCriteresRechercheDto,
+  private def buildAjouterCvCommand(candidat: CandidatSaisieCriteresRechercheQueryResult,
                                     cvForm: CVForm): AjouterCVCommand =
     AjouterCVCommand(
       id = candidat.candidatId,
@@ -128,7 +129,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
       path = cvForm.path
     )
 
-  private def buildRemplacerCvCommand(candidat: CandidatSaisieCriteresRechercheDto,
+  private def buildRemplacerCvCommand(candidat: CandidatSaisieCriteresRechercheQueryResult,
                                       cvId: CVId,
                                       cvForm: CVForm): RemplacerCVCommand =
     RemplacerCVCommand(

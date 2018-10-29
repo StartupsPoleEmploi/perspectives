@@ -27,7 +27,7 @@ class CandidatProjection(adapter: CandidatProjectionSqlAdapter) extends Projecti
     case e: RepriseEmploiDeclareeParConseillerEvent => adapter.onRepriseEmploiDeclareeParConseillerEvent(e)
   }
 
-  def candidatSaisieCriteresRecherche(query: CandidatSaisieCriteresRechercheQuery): Future[CandidatSaisieCriteresRechercheDto] =
+  def candidatSaisieCriteresRecherche(query: CandidatSaisieCriteresRechercheQuery): Future[CandidatSaisieCriteresRechercheQueryResult] =
     adapter.candidatSaisieCriteresRecherche(query)
 
   def candidatContactRecruteur(candidatId: CandidatId): Future[CandidatContactRecruteurDto] =
@@ -36,7 +36,7 @@ class CandidatProjection(adapter: CandidatProjectionSqlAdapter) extends Projecti
   def listerPourConseiller(query: CandidatsPourConseillerQuery): Future[CandidatsPourConseillerQueryResult] =
     adapter.listerPourConseiller(query)
 
-  def rechercherCandidats(query: RechercherCandidatsQuery): Future[ResultatRechercheCandidat] =
+  def rechercherCandidats(query: RechercherCandidatsQuery): Future[RechercheCandidatQueryResult] =
     query match {
       case q: RechercherCandidatsParDepartementQuery => adapter.rechercherCandidatParDepartement(q)
       case q: RechercherCandidatsParSecteurQuery => adapter.rechercherCandidatParSecteur(q)

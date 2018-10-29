@@ -10,6 +10,7 @@ import fr.poleemploi.cqrs.projection.UnauthorizedQueryException
 import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.commun.domain.{CodeDepartement, CodeROME, CodeSecteurActivite}
 import fr.poleemploi.perspectives.projections.candidat._
+import fr.poleemploi.perspectives.projections.candidat.cv.CVCandidatPourRecruteurQuery
 import fr.poleemploi.perspectives.projections.rechercheCandidat.RechercheCandidatQueryHandler
 import fr.poleemploi.perspectives.projections.recruteur._
 import fr.poleemploi.perspectives.projections.recruteur.alerte.AlertesRecruteurQuery
@@ -45,12 +46,12 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
         )
         (for {
           alertesRecruteurQueryResult <- recruteurQueryHandler.handle(AlertesRecruteurQuery(recruteurAuthentifieRequest.recruteurId))
-          resultatRechercheCandidatDto <- rechercher(request = recruteurAuthentifieRequest, rechercheCandidatForm = rechercheCandidatForm)
+          rechercheCandidatQueryResult <- rechercher(request = recruteurAuthentifieRequest, rechercheCandidatForm = rechercheCandidatForm)
         } yield {
           Ok(views.html.recruteur.rechercheCandidat(
             rechercheCandidatForm = RechercheCandidatForm.form.fill(rechercheCandidatForm),
             recruteurAuthentifie = recruteurAuthentifieRequest.recruteurAuthentifie,
-            resultatRechercheCandidat = resultatRechercheCandidatDto,
+            rechercheCandidatQueryResult = rechercheCandidatQueryResult,
             secteursActivites = rechercheCandidatQueryHandler.secteursProposes,
             departements = departementsProposes,
             alertes = alertesRecruteurQueryResult.alertes,
@@ -70,9 +71,9 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
       RechercheCandidatForm.form.bindFromRequest.fold(
         formWithErrors => Future.successful(BadRequest(formWithErrors.errorsAsJson)),
         rechercheCandidatForm => {
-          rechercher(request = recruteurAuthentifieRequest, rechercheCandidatForm = rechercheCandidatForm).map(resultatRechercheCandidatDto =>
+          rechercher(request = recruteurAuthentifieRequest, rechercheCandidatForm = rechercheCandidatForm).map(rechercheCandidatQueryResult =>
             Ok(views.html.recruteur.partials.resultatsRecherche(
-              resultatRechercheCandidat = resultatRechercheCandidatDto,
+              rechercheCandidatQueryResult = rechercheCandidatQueryResult,
               metierChoisi = rechercheCandidatForm.metier.flatMap(c => rechercheCandidatQueryHandler.metierProposeParCode(CodeROME(c)).map(_.label)),
               secteurActiviteChoisi = rechercheCandidatForm.secteurActivite.map(s => rechercheCandidatQueryHandler.secteurProposeParCode(CodeSecteurActivite(s)).label)
             ))
@@ -85,7 +86,7 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
   }
 
   private def rechercher(request: RecruteurAuthentifieRequest[AnyContent],
-                         rechercheCandidatForm: RechercheCandidatForm): Future[ResultatRechercheCandidat] =
+                         rechercheCandidatForm: RechercheCandidatForm): Future[RechercheCandidatQueryResult] =
     for {
       typeRecruteur <- getTypeRecruteur(request)
       rechercheCandidatQuery = rechercheCandidatForm.metier.filter(_.nonEmpty).map(code =>
@@ -106,8 +107,8 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
           codeDepartement = CodeDepartement(code)
         )
       )).getOrElse(throw new IllegalArgumentException("Filtre de recherche non géré"))
-      resultatRechercheCandidat <- candidatQueryHandler.rechercherCandidats(rechercheCandidatQuery)
-    } yield resultatRechercheCandidat
+      rechercheCandidatQueryResult <- candidatQueryHandler.handle(rechercheCandidatQuery)
+    } yield rechercheCandidatQueryResult
 
   private def getTypeRecruteur(request: RecruteurAuthentifieRequest[AnyContent]): Future[TypeRecruteur] =
     request.flash.getTypeRecruteur
@@ -117,12 +118,12 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
       }
 
   def telechargerCV(candidatId: String, nomFichier: String): Action[AnyContent] = recruteurAuthentifieAction.async { implicit recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
-    candidatQueryHandler.cvCandidatPourRecruteur(CVCandidatPourRecruteurQuery(
+    candidatQueryHandler.handle(CVCandidatPourRecruteurQuery(
       candidatId = CandidatId(candidatId),
       recruteurId = recruteurAuthentifieRequest.recruteurId
-    )).map(fichierCv => {
+    )).map(cvCandidat => {
       val source: Source[ByteString, _] = Source.fromIterator[ByteString](
-        () => Iterator.fill(1)(ByteString(fichierCv.data))
+        () => Iterator.fill(1)(ByteString(cvCandidat.cv.data))
       )
 
       Result(
@@ -131,8 +132,8 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
         )),
         body = HttpEntity.Streamed(
           data = source,
-          contentLength = Some(fichierCv.data.length.toLong),
-          contentType = Some(fichierCv.typeMedia.value))
+          contentLength = Some(cvCandidat.cv.data.length.toLong),
+          contentType = Some(cvCandidat.cv.typeMedia.value))
       )
     }).recover {
       case _: UnauthorizedQueryException =>

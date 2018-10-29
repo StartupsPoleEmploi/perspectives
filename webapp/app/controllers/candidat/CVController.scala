@@ -5,7 +5,8 @@ import akka.util.ByteString
 import authentification.infra.play.{CandidatAuthentifieAction, CandidatAuthentifieRequest}
 import conf.WebAppConfig
 import fr.poleemploi.perspectives.candidat.CandidatCommandHandler
-import fr.poleemploi.perspectives.projections.candidat.{CVCandidatQuery, CandidatQueryHandler}
+import fr.poleemploi.perspectives.projections.candidat.CandidatQueryHandler
+import fr.poleemploi.perspectives.projections.candidat.cv.CVCandidatQuery
 import javax.inject.Inject
 import play.api.http.HttpEntity
 import play.api.mvc._
@@ -21,10 +22,10 @@ class CVController @Inject()(components: ControllerComponents,
 
   def telecharger(nomFichier: String): Action[AnyContent] = candidatAuthentifieAction.async { candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
-      candidatQueryHandler.cvCandidat(CVCandidatQuery(candidatAuthentifieRequest.candidatId))
-        .map(fichierCv => {
+      candidatQueryHandler.handle(CVCandidatQuery(candidatAuthentifieRequest.candidatId))
+        .map(cvCandidat => {
           val source: Source[ByteString, _] = Source.fromIterator[ByteString](
-            () => Iterator.fill(1)(ByteString(fichierCv.data))
+            () => Iterator.fill(1)(ByteString(cvCandidat.cv.data))
           )
 
           Result(
@@ -33,8 +34,8 @@ class CVController @Inject()(components: ControllerComponents,
             )),
             body = HttpEntity.Streamed(
               data = source,
-              contentLength = Some(fichierCv.data.length.toLong),
-              contentType = Some(fichierCv.typeMedia.value))
+              contentLength = Some(cvCandidat.cv.data.length.toLong),
+              contentType = Some(cvCandidat.cv.typeMedia.value))
           )
         })
     }(candidatAuthentifieRequest)

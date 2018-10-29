@@ -1,11 +1,11 @@
 package fr.poleemploi.perspectives.projections.candidat
 
 import fr.poleemploi.cqrs.projection.{Query, QueryHandler, QueryResult, UnauthorizedQueryException}
-import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.candidat.cv.domain.{CV, CVService}
 import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielMRSCandidat
-import fr.poleemploi.perspectives.commun.domain.Metier
 import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
+import fr.poleemploi.perspectives.projections.candidat.cv.{CVCandidatPourRecruteurQuery, CVCandidatPourRecruteurQueryResult, CVCandidatQuery, CVCandidatQueryResult}
+import fr.poleemploi.perspectives.projections.candidat.mrs.{MetiersEvaluesNouvelInscritQuery, MetiersEvaluesNouvelInscritQueryResult}
 import fr.poleemploi.perspectives.projections.recruteur.{RecruteurProjection, TypeRecruteurQuery}
 import fr.poleemploi.perspectives.recruteur.TypeRecruteur
 
@@ -18,19 +18,16 @@ class CandidatQueryHandler(candidatProjection: CandidatProjection,
                            referentielMRSCandidat: ReferentielMRSCandidat,
                            referentielMetier: ReferentielMetier) extends QueryHandler {
 
-  // FIXME
-  override def configure: PartialFunction[Query[_], Future[QueryResult]] = ???
+  override def configure: PartialFunction[Query[_ <: QueryResult], Future[QueryResult]] = {
+    case q: CVCandidatQuery => cvService.getCVByCandidat(q.candidatId).map(CVCandidatQueryResult)
+    case q: CVCandidatPourRecruteurQuery => cvCandidatPourRecruteur(q).map(CVCandidatPourRecruteurQueryResult)
+    case q: CandidatSaisieCriteresRechercheQuery => candidatProjection.candidatSaisieCriteresRecherche(q)
+    case q: CandidatsPourConseillerQuery => candidatProjection.listerPourConseiller(q)
+    case q: RechercherCandidatsQuery => candidatProjection.rechercherCandidats(q)
+    case q: MetiersEvaluesNouvelInscritQuery => metiersEvaluesNouvelInscrit(q)
+  }
 
-  def candidatSaisieCriteresRecherche(query: CandidatSaisieCriteresRechercheQuery): Future[CandidatSaisieCriteresRechercheDto] =
-    candidatProjection.candidatSaisieCriteresRecherche(query)
-
-  def listerPourConseiller(query: CandidatsPourConseillerQuery): Future[CandidatsPourConseillerQueryResult] =
-    candidatProjection.listerPourConseiller(query)
-
-  def cvCandidat(query: CVCandidatQuery): Future[CV] =
-    cvService.getCVByCandidat(query.candidatId)
-
-  def cvCandidatPourRecruteur(query: CVCandidatPourRecruteurQuery): Future[CV] = {
+  private def cvCandidatPourRecruteur(query: CVCandidatPourRecruteurQuery): Future[CV] = {
     val autorisation = for {
       typeRecruteurResult <- recruteurProjection.typeRecruteur(TypeRecruteurQuery(query.recruteurId))
       candidatContactRecruteur <- candidatProjection.candidatContactRecruteur(query.candidatId)
@@ -47,11 +44,10 @@ class CandidatQueryHandler(candidatProjection: CandidatProjection,
     autorisation.flatMap(_ => cvService.getCVByCandidat(query.candidatId))
   }
 
-  def rechercherCandidats(query: RechercherCandidatsQuery): Future[ResultatRechercheCandidat] =
-    candidatProjection.rechercherCandidats(query)
-
-  def metiersEvaluesNouvelInscrit(candidatId: CandidatId): Future[List[Metier]] =
+  private def metiersEvaluesNouvelInscrit(query: MetiersEvaluesNouvelInscritQuery): Future[MetiersEvaluesNouvelInscritQueryResult] =
     referentielMRSCandidat
-      .mrsValideesParCandidat(candidatId)
-      .map(mrsValidees => mrsValidees.map(m => referentielMetier.metierParCode(m.codeROME)))
+      .mrsValideesParCandidat(query.candidatId)
+      .map(mrsValidees =>
+        MetiersEvaluesNouvelInscritQueryResult(mrsValidees.map(m => referentielMetier.metierParCode(m.codeROME)))
+      )
 }

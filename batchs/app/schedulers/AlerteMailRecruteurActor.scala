@@ -67,7 +67,7 @@ class AlerteMailRecruteurActor(emailingService: EmailingService,
         resultatRechercheCandidat <- candidatProjection.rechercherCandidats(rechercherCandidatsQuery)
         _ <- emailingService.envoyerAlerteMailRecruteur(buildAlerteMailRecruteur(
           alerteRecruteurDto = alerteRecruteurDto,
-          resultatRechercheCandidat = resultatRechercheCandidat,
+          rechercheCandidatQueryResult = resultatRechercheCandidat,
           apresDateInscription = apresDateInscription
         ))
       } yield ()
@@ -99,7 +99,7 @@ class AlerteMailRecruteurActor(emailingService: EmailingService,
     }
 
   private def buildAlerteMailRecruteur(alerteRecruteurDto: AlerteRecruteurDto,
-                                       resultatRechercheCandidat: ResultatRechercheCandidat,
+                                       rechercheCandidatQueryResult: RechercheCandidatQueryResult,
                                        apresDateInscription: ZonedDateTime): AlerteMailRecruteur =
     alerteRecruteurDto match {
       case a: AlerteRecruteurSecteurDto =>
@@ -107,7 +107,7 @@ class AlerteMailRecruteurActor(emailingService: EmailingService,
           prenom = a.prenom,
           email = a.email,
           frequence = a.frequence,
-          nbCandidats = resultatRechercheCandidat.nbCandidats,
+          nbCandidats = rechercheCandidatQueryResult.nbCandidats,
           apresDateInscription = apresDateInscription,
           departement = a.departement,
           secteurActivite = a.secteurActivite,
@@ -118,7 +118,7 @@ class AlerteMailRecruteurActor(emailingService: EmailingService,
           prenom = a.prenom,
           email = a.email,
           frequence = a.frequence,
-          nbCandidats = resultatRechercheCandidat.nbCandidats,
+          nbCandidats = rechercheCandidatQueryResult.nbCandidats,
           apresDateInscription = apresDateInscription,
           departement = a.departement,
           metier = a.metier,
@@ -129,7 +129,7 @@ class AlerteMailRecruteurActor(emailingService: EmailingService,
           prenom = a.prenom,
           email = a.email,
           frequence = a.frequence,
-          nbCandidats = resultatRechercheCandidat.nbCandidats,
+          nbCandidats = rechercheCandidatQueryResult.nbCandidats,
           apresDateInscription = apresDateInscription,
           departement = a.departement,
           lienConnexion = s"$webappURL/recruteur/recherche?departement=${a.departement.code.value}"

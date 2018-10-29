@@ -139,8 +139,8 @@ class CandidatProjectionSqlAdapter(database: Database,
     } yield r.dateDerniereConnexion
   }
 
-  def candidatSaisieCriteresRecherche(query: CandidatSaisieCriteresRechercheQuery): Future[CandidatSaisieCriteresRechercheDto] =
-    database.run(candidatSaisieCriteresRechercheQuery(query.candidatId).result.head.map(toCandidatSaisieCriteresRechercheDto))
+  def candidatSaisieCriteresRecherche(query: CandidatSaisieCriteresRechercheQuery): Future[CandidatSaisieCriteresRechercheQueryResult] =
+    database.run(candidatSaisieCriteresRechercheQuery(query.candidatId).result.head.map(toCandidatSaisieCriteresRechercheQueryResult))
 
   def candidatContactRecruteur(candidatId: CandidatId): Future[CandidatContactRecruteurDto] =
     database.run(candidatContactRecruteurQuery(candidatId).result.head)
@@ -158,14 +158,14 @@ class CandidatProjectionSqlAdapter(database: Database,
         )
       })
 
-  def rechercherCandidatParDepartement(query: RechercherCandidatsParDepartementQuery): Future[ResultatRechercheCandidatParDepartement] =
+  def rechercherCandidatParDepartement(query: RechercherCandidatsParDepartementQuery): Future[RechercheCandidatParDepartementQueryResult] =
     database.run(
       candidatTable
         .filter(c => filtreRecherche(c, query.typeRecruteur, Some(query.codeDepartement), query.apresDateInscription))
         .sortBy(_.dateInscription.desc).map(candidatRechercheDtoShape).result
-    ).map(r => ResultatRechercheCandidatParDepartement(r.toList.map(toCandidatRechercheDto)))
+    ).map(r => RechercheCandidatParDepartementQueryResult(r.toList.map(toCandidatRechercheDto)))
 
-  def rechercherCandidatParSecteur(query: RechercherCandidatsParSecteurQuery): Future[ResultatRechercheCandidatParSecteur] = {
+  def rechercherCandidatParSecteur(query: RechercherCandidatsParSecteurQuery): Future[RechercheCandidatParSecteurQueryResult] = {
     val metiersSecteur = rechercheCandidatService.secteurActiviteParCode(query.codeSecteurActivite).metiers.map(_.codeROME)
 
     // Candidats qui recherchent parmis leurs métiers évalués et qui ont été évalués sur un métier du secteur
@@ -187,13 +187,13 @@ class CandidatProjectionSqlAdapter(database: Database,
       candidatsEvaluesSurSecteur <- database.run(selectCandidatsEvaluesSurSecteur.result)
       candidatsInteressesParAutreSecteur <- database.run(selectCandidatsInteressesParAutreSecteur.result)
     } yield
-      ResultatRechercheCandidatParSecteur(
+      RechercheCandidatParSecteurQueryResult(
         candidatsEvaluesSurSecteur = candidatsEvaluesSurSecteur.toList.map(toCandidatRechercheDto),
         candidatsInteressesParAutreSecteur = candidatsInteressesParAutreSecteur.toList.map(toCandidatRechercheDto)
       )
   }
 
-  def rechercherCandidatParMetier(query: RechercherCandidatsParMetierQuery): Future[ResultatRechercheCandidatParMetier] = {
+  def rechercherCandidatParMetier(query: RechercherCandidatsParMetierQuery): Future[RechercheCandidatParMetierQueryResult] = {
     val metiers = List(query.codeROME)
 
     // Candidats qui recherchent parmis leurs métiers évalués et qui ont été évalués sur le métier
@@ -226,7 +226,7 @@ class CandidatProjectionSqlAdapter(database: Database,
       candidatsInteressesParMetierMemeSecteur <- database.run(selectCandidatsInteressesParMetierMemeSecteur.result)
       candidatsInteressesParMetierAutreSecteur <- database.run(selectCandidatsInteressesParMetierAutreSecteur.result)
     } yield
-      ResultatRechercheCandidatParMetier(
+      RechercheCandidatParMetierQueryResult(
         candidatsEvaluesSurMetier = candidatsEvaluesSurMetier.toList.map(toCandidatRechercheDto),
         candidatsInteressesParMetierMemeSecteur = candidatsInteressesParMetierMemeSecteur.toList.map(toCandidatRechercheDto),
         candidatsInteressesParMetierAutreSecteur = candidatsInteressesParMetierAutreSecteur.toList.map(toCandidatRechercheDto)
@@ -281,10 +281,10 @@ class CandidatProjectionSqlAdapter(database: Database,
     )
   }
 
-  private def toCandidatSaisieCriteresRechercheDto(record: CandidatSaisieCriteresRechercheRecord): CandidatSaisieCriteresRechercheDto = {
+  private def toCandidatSaisieCriteresRechercheQueryResult(record: CandidatSaisieCriteresRechercheRecord): CandidatSaisieCriteresRechercheQueryResult = {
     val metiersEvalues = record.metiersEvalues.map(referentielMetier.metierParCode)
 
-    CandidatSaisieCriteresRechercheDto(
+    CandidatSaisieCriteresRechercheQueryResult(
       candidatId = record.candidatId,
       nom = record.nom,
       prenom = record.prenom,

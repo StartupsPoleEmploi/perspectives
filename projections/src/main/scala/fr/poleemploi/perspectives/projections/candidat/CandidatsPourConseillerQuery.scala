@@ -2,8 +2,17 @@ package fr.poleemploi.perspectives.projections.candidat
 
 import java.time.ZonedDateTime
 
+import fr.poleemploi.cqrs.projection.{Query, QueryResult}
 import fr.poleemploi.perspectives.candidat.{CandidatId, StatutDemandeurEmploi}
 import fr.poleemploi.perspectives.commun.domain._
+
+case class CandidatsPourConseillerQuery(nbCandidatsParPage: Int,
+                                        nbPagesACharger: Int,
+                                        avantDateInscription: ZonedDateTime) extends Query[CandidatsPourConseillerQueryResult]
+
+case class CandidatsPourConseillerQueryResult(candidats: List[CandidatPourConseillerDto],
+                                              pages: List[ZonedDateTime],
+                                              derniereDateInscription: Option[ZonedDateTime]) extends QueryResult
 
 case class CandidatPourConseillerDto(candidatId: CandidatId,
                                      nom: String,

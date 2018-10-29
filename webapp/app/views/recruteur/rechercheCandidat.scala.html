@@ -2,7 +2,7 @@
 @import controllers.recruteur.RechercheCandidatForm
 @import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
 @import fr.poleemploi.perspectives.commun.domain.{Departement, SecteurActivite}
-@import fr.poleemploi.perspectives.projections.candidat.ResultatRechercheCandidat
+@import fr.poleemploi.perspectives.projections.candidat.RechercheCandidatQueryResult
 @import fr.poleemploi.perspectives.projections.recruteur.alerte.AlerteDto
 @import helper._
 @import play.api.libs.json.Json
@@ -11,7 +11,7 @@
         secteursActivites: List[SecteurActivite],
         departements: List[Departement],
         recruteurAuthentifie: RecruteurAuthentifie,
-        resultatRechercheCandidat: ResultatRechercheCandidat,
+        rechercheCandidatQueryResult: RechercheCandidatQueryResult,
         alertes: List[AlerteDto],
         metierChoisi: Option[String] = None,
         secteurActiviteChoisi: Option[String] = None)(implicit request: MessagesRequestHeader, flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
@@ -87,7 +87,7 @@
         </section>
         <section id="js-resultatsRecherche" class="resultatsRecherche">
             @partials.resultatsRecherche(
-                resultatRechercheCandidat = resultatRechercheCandidat,
+                rechercheCandidatQueryResult = rechercheCandidatQueryResult,
                 secteurActiviteChoisi = secteurActiviteChoisi,
                 metierChoisi = metierChoisi
             )
