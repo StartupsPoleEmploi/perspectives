@@ -19,8 +19,6 @@ object FrequenceAlerte {
     HEBDOMADAIRE.value -> HEBDOMADAIRE
   )
 
-  val frequences = List(QUOTIDIENNE, HEBDOMADAIRE)
-
   def frequenceAlerte(value: String): Option[FrequenceAlerte] = frequenceAlertesParValeur.get(value)
 
   def label(frequenceAlerte: FrequenceAlerte): String = frequenceAlerte match {

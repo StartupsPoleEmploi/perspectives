@@ -16,7 +16,7 @@ object CodeSecteurActivite {
     CodeSecteurActivite(codeROME.value.take(1).toUpperCase)
 }
 
-class SecteurActivite(val code: CodeSecteurActivite,
-                      val label: String,
-                      val metiers: List[Metier])
+case class SecteurActivite(code: CodeSecteurActivite,
+                           label: String,
+                           metiers: List[Metier])
 

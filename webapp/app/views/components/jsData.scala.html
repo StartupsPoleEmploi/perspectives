@@ -1,0 +1,8 @@
+@import play.api.libs.json.{JsObject, Json}
+
+@(jsData: JsObject = Json.obj())
+
+<script>
+    var jsData = @Html(Json.stringify(jsData));
+    Object.freeze(jsData);
+</script>

@@ -1,158 +1,13 @@
 "use strict";
 
-// FIXME : reçus depuis le back
-var secteursActivites = Object.freeze({
-    'A': ['A1401'],
-    'G': ['G1603', 'G1803'],
-    'F': ['F1602', 'F1703', 'F1301'],
-    'D': ['D1507', 'D1505', 'D1106'],
-    'K': ['K1302', 'K1304', 'K2204'],
-    'B': ['B1802'],
-    'H': ['H2202', 'H2913', 'H3203', 'H3302', 'H2402'],
-    'N': ['N1103', 'N1105', 'N4101']
-});
-var secteursActivitesLabels = Object.freeze({
-    'A': 'Agriculture',
-    'G': 'Hôtellerie restauration',
-    'F': 'Bâtiment',
-    'D': 'Commerce',
-    'K': 'Services à la personne',
-    'B': 'Textile',
-    'H': 'Industrie',
-    'N': 'Transport et logistique'
-});
-var metiers = Object.freeze({
-    'A1401': 'Aide agricole',
-    'B1802': 'Réalisation d\'articles',
-    'D1106': 'Vente',
-    'D1505': 'Caisse',
-    'D1507': 'Mise en rayon',
-    'F1301': 'Conduite d’engins',
-    'F1602': 'Électricité',
-    'F1703': 'Maçonnerie',
-    'G1603': 'Personnel polyvalent',
-    'G1803': 'Service',
-    'H2101': 'Découpe de viande',
-    'H2102': 'Conduite de machines',
-    'H2202': 'Conduite de machines',
-    'H2402': 'Mécanicien en confection',
-    'H2913': 'Soudage',
-    'H3203': 'Fabrication de pièces',
-    'H3302': 'Tri et emballage',
-    'K1302': 'Aide aux personnes âgées',
-    'K1304': 'Aide à domicile',
-    'K2204': 'Nettoyage de locaux',
-    'N1103': 'Préparation de commandes',
-    'N1105': 'Manutention',
-    'N4101': 'Conduite de poids lourds'
-});
-var departements = Object.freeze({
-    '85': 'Vendée'
-});
-var frequences = [
-    {value: 'Quotidienne', label: 'Chaque jour'},
-    {value: 'Hebdomadaire', label: 'Chaque semaine'}
-];
-
 $(document).ready(function () {
 
     var body = $("body");
-    var criteresRechercheForm = $("#criteresRechercheForm");
     var selecteurSecteursActivites = $("#js-secteursActivites-selecteur");
     var selecteurMetiers = $("#js-metiers-selecteur");
     var selecteurDepartements = $("#js-departements-selecteur");
-    var htmlTousLesMetiers = selecteurMetiers.html();
-    var resultatsRecherche = $("#js-resultatsRecherche");
-    var titreCompteurResultats = $(".compteurResultats-titre");
 
-    initialiserTableau();
-    modifierPagination();
-    modifierTitreCompteurResultats(selecteurSecteursActivites.val(), selecteurMetiers.val(), selecteurDepartements.val());
-
-    selecteurSecteursActivites.change(function () {
-        var secteurActivite = $(this).val();
-        selecteurMetiers.empty();
-        if (secteurActivite !== '') {
-            var codesMetiers = secteursActivites[secteurActivite];
-            selecteurMetiers.append(
-                $('<option>')
-                    .val("")
-                    .text("Tous les métiers du secteur"));
-            for (var i = 0; i < codesMetiers.length; i++) {
-                selecteurMetiers.append(
-                    $('<option>')
-                        .val(codesMetiers[i])
-                        .text(metiers[codesMetiers[i]])
-                )
-            }
-        } else {
-            selecteurMetiers.html(htmlTousLesMetiers);
-        }
-        rechercherCandidats().done(function () {
-            modifierTitreCompteurResultats(secteurActivite, '', selecteurDepartements.val());
-        });
-    });
-
-    selecteurDepartements.change(function() {
-        var codeDepartement = $(this).val();
-        rechercherCandidats().done(function () {
-            modifierTitreCompteurResultats(selecteurSecteursActivites.val(), selecteurMetiers.val(), codeDepartement);
-        });
-    });
-
-    selecteurMetiers.change(function () {
-        var metier = $(this).val();
-        rechercherCandidats().done(function () {
-            modifierTitreCompteurResultats(selecteurSecteursActivites.val(), metier, selecteurDepartements.val());
-        });
-    });
-
-    function rechercherCandidats() {
-        return $.ajax({
-            type: "POST",
-            url: "/recruteur/recherche",
-            data: criteresRechercheForm.serializeArray(),
-            dataType: 'text'
-        }).done(function (data) {
-            resultatsRecherche.html(data);
-            initialiserTableau();
-            modifierPagination();
-        });
-    }
-
-    function modifierTitreCompteurResultats(secteurActivite, metier, codeDepartement) {
-        var nbResultats = $(".listeResultatsRecherche-ligne").length;
-        if (nbResultats === 0) {
-            titreCompteurResultats.html("Nous n'avons pas de candidats à vous proposer avec ces critères");
-        } else {
-            if (metier !== undefined && metier !== '') {
-                titreCompteurResultats.html("<b>" + getIntituleCandidats(nbResultats) + " pour ce métier</b><br/>" + getSuffixeCandidats(nbResultats));
-            } else if (secteurActivite !== undefined && secteurActivite !== '') {
-                titreCompteurResultats.html("<b>" + getIntituleCandidats(nbResultats) + " pour ce secteur d'activité</b><br/>" + getSuffixeCandidats(nbResultats));
-            } else if (codeDepartement !== undefined && codeDepartement !== '') {
-                titreCompteurResultats.html("<b>" + getIntituleCandidats(nbResultats) + " pour ce département</b><br/>" + getSuffixeCandidats(nbResultats));
-            } else {
-                titreCompteurResultats.html("<b>" + getIntituleCandidats(nbResultats) + " perspectives</b><br/>" + getSuffixeCandidats(nbResultats));
-            }
-        }
-    }
-
-    function getIntituleCandidats(nbCandidats) {
-        return nbCandidats === 1 ? "1 candidat" : nbCandidats + " candidats";
-    }
-    function getSuffixeCandidats(nbCandidats) {
-        return nbCandidats === 1 ? "est validé par la Méthode de Recrutement par Simulation" : "sont validés par la Méthode de Recrutement par Simulation";
-    }
-
-    function modifierPagination() {
-        app.$refs.pagination.modifierPagination(app.calculerPages());
-        app.chargerPage(0); // premiere page
-    }
-
-    function initialiserTableau() {
-        $(".js-infoCandidat").hide();
-        $(".js-profilCandidat").hide();
-    }
+    app.chargerPage(0); // premiere page
 
     body.on("click", ".js-boutonCandidat", function () {
         var bouton = $(this);
@@ -255,16 +110,99 @@ var app = new Vue({
     el: '#rechercheCandidat',
     data: function() {
         return {
+            csrfToken: jsData.csrfToken,
+            nbCandidats: jsData.nbCandidats,
             nbCandidatsParPage: 25,
-            frequences: frequences
+            frequences: [ // FIXME: reçues du back
+                {value: 'Quotidienne', label: 'Chaque jour'},
+                {value: 'Hebdomadaire', label: 'Chaque semaine'}
+            ],
+            alertes: jsData.alertes,
+            secteurActivite: jsData.secteurActivite,
+            secteursActivites: jsData.secteursActivites,
+            departement: jsData.departement,
+            departements: jsData.departements,
+            metier: jsData.metier,
+            labelTousLesMetiers: 'Tous les métiers'
         }
     },
     computed: {
         pagesInitiales: function() {
             return this.calculerPages();
+        },
+        metiers: function() {
+            var secteurActivite = this.secteurActivite;
+            if (secteurActivite !== undefined && secteurActivite !== '') {
+                this.labelTousLesMetiers = 'Tous les métiers du secteur';
+                return this.secteursActivites.find(function(s) {
+                    return s.code === secteurActivite;
+                }).metiers;
+            } else {
+                this.labelTousLesMetiers = 'Tous les métiers';
+                return jsData.metiers;
+            }
         }
     },
     methods: {
+        titreCompteurResultats: function() {
+            if (this.nbCandidats === 0) {
+                return "Nous n'avons pas de candidats à vous proposer avec ces critères";
+            } else {
+                if (this.metier !== undefined && this.metier !== '') {
+                    return "<b>" + this.getIntituleCandidats(this.nbCandidats) + " pour ce métier</b><br/>" + this.getSuffixeCandidats(this.nbCandidats);
+                } else if (this.secteurActivite !== undefined && this.secteurActivite !== '') {
+                    return "<b>" + this.getIntituleCandidats(this.nbCandidats) + " pour ce secteur d'activité</b><br/>" + this.getSuffixeCandidats(this.nbCandidats);
+                } else if (this.departement !== undefined && this.departement !== '') {
+                    return "<b>" + this.getIntituleCandidats(this.nbCandidats) + " pour ce département</b><br/>" + this.getSuffixeCandidats(this.nbCandidats);
+                } else {
+                    return "<b>" + this.getIntituleCandidats(this.nbCandidats) + " perspectives</b><br/>" + this.getSuffixeCandidats(this.nbCandidats);
+                }
+            }
+        },
+        getIntituleCandidats: function(nbCandidats) {
+            return nbCandidats === 1 ? "1 candidat" : nbCandidats + " candidats";
+        },
+        getSuffixeCandidats: function(nbCandidats) {
+            return nbCandidats === 1 ? "est validé par la Méthode de Recrutement par Simulation" : "sont validés par la Méthode de Recrutement par Simulation";
+        },
+        initialiserTableau: function() {
+            app.$refs.pagination.modifierPagination(this.pagesInitiales);
+            app.chargerPage(0); // premiere page
+        },
+        rechercherCandidats: function() {
+            var formData = [
+                {name: 'csrfToken', value: this.csrfToken},
+                {name: "secteurActivite", value: this.secteurActivite},
+                {name: "metier", value: this.metier},
+                {name: "codeDepartement", value: this.departement}
+            ];
+            return $.ajax({
+                type: "POST",
+                url: "/recruteur/recherche",
+                data: formData,
+                dataType: 'json'
+            }).done(function (response) {
+                app.nbCandidats = response.nbCandidats;
+                $("#js-resultatsRecherche").html(response.html);
+                app.initialiserTableau();
+                app.titreCompteurResultats();
+            });
+        },
+        onSecteurActiviteModifie: function() {
+            this.metier = '';
+            this.rechercherCandidats();
+        },
+        modifierMetiersPourSecteur: function() {
+            if (this.secteurActivite !== '') {
+                this.labelTousLesMetiers = 'Tous les métiers du secteur';
+                this.metiers = this.secteursActivites.find(function(s) {
+                    return s.code === app.secteurActivite;
+                }).metiers;
+            } else {
+                this.labelTousLesMetiers = 'Tous les métiers';
+                this.metiers = jsData.metiers;
+            }
+        },
         chargerPageSuivante: function(critere) {
             this.chargerPage(critere);
             app.$refs.pagination.pageSuivanteChargee(0, '');
@@ -274,8 +212,7 @@ var app = new Vue({
             app.$refs.pagination.pagePrecedenteChargee(index);
         },
         calculerPages: function() {
-            var nbCandidats = $(".listeResultatsRecherche-ligne").length;
-            var nbPages = Math.ceil(nbCandidats / this.nbCandidatsParPage);
+            var nbPages = Math.ceil(this.nbCandidats / this.nbCandidatsParPage);
             var result = [];
             for (var i = 0; i < nbPages; i++) {
                 result.push(i * this.nbCandidatsParPage);
@@ -298,21 +235,32 @@ var app = new Vue({
         },
         intituleAlerte: function() {
             var intitule = "";
-            if (app.$refs.metier.value !== "") {
-                intitule += metiers[app.$refs.metier.value];
-            } else if (app.$refs.secteurActivite.value !== "") {
-                intitule += secteursActivitesLabels[app.$refs.secteurActivite.value];
+            if (this.metier !== "") {
+                intitule += this.metiers.find(function(m) {
+                    return m.codeROME === app.metier;
+                }).label;
+            } else if (this.secteurActivite !== "") {
+                intitule += this.secteursActivites.find(function(s) {
+                    return s.code === app.secteurActivite;
+                }).label;
             } else {
                 intitule += "Candidats";
             }
-            if (app.$refs.departement.value !== "") {
-                intitule += " en " + departements[app.$refs.departement.value];
+            if (this.departement !== "") {
+                intitule += " en " + this.departements.find(function(f) {
+                    return f.code === app.departement;
+                }).label;
             }
             return intitule;
         },
         creerAlerte: function(frequence) {
-            var formData = $("#criteresRechercheForm").serializeArray();
-            formData.push({name: "frequence", value: frequence});
+            var formData = [
+                {name: "csrfToken", value: this.csrfToken},
+                {name: "secteurActivite", value: this.secteurActivite},
+                {name: "metier", value: this.metier},
+                {name: "codeDepartement", value: this.departement},
+                {name: "frequence", value: frequence}
+            ];
             var intituleAlerte = this.intituleAlerte();
             var labelFrequence = app.$refs.alertesRecruteur.frequences.find(function(f) {
                 return f.value === frequence;
@@ -333,9 +281,9 @@ var app = new Vue({
                         intitule: intituleAlerte,
                         frequence: labelFrequence,
                         criteres: {
-                            codeSecteurActivite: app.$refs.secteurActivite.value,
-                            codeROME: app.$refs.metier.value,
-                            codeDepartement: app.$refs.departement.value
+                            codeSecteurActivite: app.secteurActivite,
+                            codeROME: app.metier,
+                            codeDepartement: app.departement
                         }
                     });
                 }).fail(function () {
@@ -346,7 +294,7 @@ var app = new Vue({
         supprimerAlerte: function(alerteId) {
             $.ajax({
                 type: "DELETE",
-                url: "/recruteur/alerte/" + encodeURIComponent(alerteId) + "?csrfToken=" + $('input[name="csrfToken"]').val(),
+                url: "/recruteur/alerte/" + encodeURIComponent(alerteId) + "?csrfToken=" + this.csrfToken,
                 data: '',
                 dataType: 'text'
             }).done(function () {
@@ -356,32 +304,11 @@ var app = new Vue({
             });
         },
         selectionnerAlerte: function(criteres) {
-            app.$refs.secteurActivite.value = criteres.codeSecteurActivite;
-            app.$refs.departement.value = criteres.codeDepartement;
+            this.secteurActivite = criteres.codeSecteurActivite;
+            this.metier = criteres.codeROME;
+            this.departement = criteres.codeDepartement;
 
-            if (criteres.codeROME !== '') {
-                // FIXME : dupliqué
-                var codesMetiers = secteursActivites[criteres.codeSecteurActivite];
-                $("#js-metiers-selecteur").empty().append(
-                    $('<option>')
-                        .val("")
-                        .text("Tous les métiers du secteur"));
-                for (var i = 0; i < codesMetiers.length; i++) {
-                    $("#js-metiers-selecteur").append(
-                        $('<option>')
-                            .val(codesMetiers[i])
-                            .text(metiers[codesMetiers[i]])
-                    )
-                }
-                app.$refs.metier.value = criteres.codeROME;
-                $("#js-metiers-selecteur").change();
-            } else if (criteres.codeSecteurActivite !== '') {
-                app.$refs.metier.value = '';
-                $("#js-secteursActivites-selecteur").change();
-            } else {
-                app.$refs.metier.value = '';
-                $("#js-departements-selecteur").change();
-            }
+            this.rechercherCandidats();
         }
     }
 });

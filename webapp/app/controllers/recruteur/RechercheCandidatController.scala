@@ -9,6 +9,7 @@ import controllers.FlashMessages._
 import fr.poleemploi.cqrs.projection.UnauthorizedQueryException
 import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.commun.domain.{CodeDepartement, CodeROME, CodeSecteurActivite}
+import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
 import fr.poleemploi.perspectives.projections.candidat._
 import fr.poleemploi.perspectives.projections.candidat.cv.CVCandidatPourRecruteurQuery
 import fr.poleemploi.perspectives.projections.rechercheCandidat.RechercheCandidatQueryHandler
@@ -19,7 +20,9 @@ import fr.poleemploi.perspectives.recruteur.alerte.domain.{AlerteId, FrequenceAl
 import fr.poleemploi.perspectives.recruteur.commentaire.domain.ContexteRecherche
 import javax.inject.{Inject, Singleton}
 import play.api.http.HttpEntity
+import play.api.libs.json.{JsString, Json}
 import play.api.mvc.{Action, _}
+import play.filters.csrf.CSRF
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -52,11 +55,19 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
             rechercheCandidatForm = RechercheCandidatForm.form.fill(rechercheCandidatForm),
             recruteurAuthentifie = recruteurAuthentifieRequest.recruteurAuthentifie,
             rechercheCandidatQueryResult = rechercheCandidatQueryResult,
-            secteursActivites = rechercheCandidatQueryHandler.secteursProposes,
-            departements = departementsProposes,
-            alertes = alertesRecruteurQueryResult.alertes,
             metierChoisi = rechercheCandidatForm.metier.flatMap(c => rechercheCandidatQueryHandler.metierProposeParCode(CodeROME(c)).map(_.label)),
-            secteurActiviteChoisi = rechercheCandidatForm.secteurActivite.map(s => rechercheCandidatQueryHandler.secteurProposeParCode(CodeSecteurActivite(s)).label)
+            secteurActiviteChoisi = rechercheCandidatForm.secteurActivite.map(s => rechercheCandidatQueryHandler.secteurProposeParCode(CodeSecteurActivite(s)).label),
+            jsData = Json.obj(
+              "secteurActivite" -> Json.toJson(rechercheCandidatForm.secteurActivite.map(CodeSecteurActivite(_).value).getOrElse("")),
+              "secteursActivites" -> Json.toJson(rechercheCandidatQueryHandler.secteursProposes),
+              "metier" -> Json.toJson(rechercheCandidatForm.metier.map(CodeROME(_).value).getOrElse("")),
+              "metiers" -> Json.toJson(rechercheCandidatQueryHandler.secteursProposes.flatMap(_.metiers)),
+              "departement" -> Json.toJson(rechercheCandidatForm.codeDepartement.map(CodeDepartement(_).value).getOrElse("")),
+              "departements" -> Json.toJson(departementsProposes),
+              "alertes" -> Json.toJson(alertesRecruteurQueryResult.alertes),
+              "nbCandidats" -> rechercheCandidatQueryResult.nbCandidats,
+              "csrfToken" -> JsString(CSRF.getToken.map(_.value).getOrElse(""))
+            )
           ))
         }).recover {
           case _: ProfilRecruteurIncompletException =>
@@ -72,12 +83,16 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
         formWithErrors => Future.successful(BadRequest(formWithErrors.errorsAsJson)),
         rechercheCandidatForm => {
           rechercher(request = recruteurAuthentifieRequest, rechercheCandidatForm = rechercheCandidatForm).map(rechercheCandidatQueryResult =>
-            Ok(views.html.recruteur.partials.resultatsRecherche(
-              rechercheCandidatQueryResult = rechercheCandidatQueryResult,
-              metierChoisi = rechercheCandidatForm.metier.flatMap(c => rechercheCandidatQueryHandler.metierProposeParCode(CodeROME(c)).map(_.label)),
-              secteurActiviteChoisi = rechercheCandidatForm.secteurActivite.map(s => rechercheCandidatQueryHandler.secteurProposeParCode(CodeSecteurActivite(s)).label)
-            ))
-          ).recover {
+            Ok(
+              Json.obj(
+                "html" -> views.html.recruteur.partials.resultatsRecherche(
+                  rechercheCandidatQueryResult = rechercheCandidatQueryResult,
+                  metierChoisi = rechercheCandidatForm.metier.flatMap(c => rechercheCandidatQueryHandler.metierProposeParCode(CodeROME(c)).map(_.label)),
+                  secteurActiviteChoisi = rechercheCandidatForm.secteurActivite.map(s => rechercheCandidatQueryHandler.secteurProposeParCode(CodeSecteurActivite(s)).label)
+                ).body.replaceAll("\n", ""),
+                "nbCandidats" -> rechercheCandidatQueryResult.nbCandidats
+              ))
+            ).recover {
             case _: ProfilRecruteurIncompletException => BadRequest("Vous devez renseigner votre profil avant de pouvoir effectuer une recherche")
           }
         }

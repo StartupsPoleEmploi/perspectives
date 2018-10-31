@@ -8,5 +8,5 @@ import fr.poleemploi.eventsourcing.StringValueObject
   */
 case class CodeROME(value: String) extends StringValueObject
 
-class Metier(val codeROME: CodeROME,
-             val label: String)
+case class Metier(codeROME: CodeROME,
+                  label: String)

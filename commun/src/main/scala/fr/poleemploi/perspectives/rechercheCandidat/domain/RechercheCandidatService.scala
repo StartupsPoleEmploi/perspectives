@@ -31,103 +31,103 @@ class RechercheCandidatService {
 
 object RechercheCandidatService {
 
-  val AIDE_AGRICOLE = new Metier(
+  val AIDE_AGRICOLE = Metier(
     codeROME = CodeROME("A1401"),
     label = "Aide agricole"
   )
-  val REALISATION_ARTICLES = new Metier(
+  val REALISATION_ARTICLES = Metier(
     codeROME = CodeROME("B1802"),
     label = "Réalisation d'articles"
   )
-  val VENTE = new Metier(
+  val VENTE = Metier(
     codeROME = CodeROME("D1106"),
     label = "Vente"
   )
-  val CAISSE = new Metier(
+  val CAISSE = Metier(
     codeROME = CodeROME("D1505"),
     label = "Caisse"
   )
-  val MISE_EN_RAYON = new Metier(
+  val MISE_EN_RAYON = Metier(
     codeROME = CodeROME("D1507"),
     label = "Mise en rayon"
   )
-  val CONDUITE_ENGINS = new Metier(
+  val CONDUITE_ENGINS = Metier(
     codeROME = CodeROME("F1301"),
     label = "Conduite d’engins"
   )
-  val ELECTRICITE = new Metier(
+  val ELECTRICITE = Metier(
     codeROME = CodeROME("F1602"),
     label = "Électricité"
   )
-  val MACONNERIE = new Metier(
+  val MACONNERIE = Metier(
     codeROME = CodeROME("F1703"),
     label = "Maçonnerie"
   )
-  val PERSONNEL_POLYVALENT = new Metier(
+  val PERSONNEL_POLYVALENT = Metier(
     codeROME = CodeROME("G1603"),
     label = "Personnel polyvalent"
   )
-  val SERVICE = new Metier(
+  val SERVICE = Metier(
     codeROME = CodeROME("G1803"),
     label = "Service"
   )
-  val CONDUITE_MACHINE_AGRO = new Metier(
+  val CONDUITE_MACHINE_AGRO = Metier(
     codeROME = CodeROME("H2102"),
     label = "Conduite de machines"
   )
-  val CONDUITE_MACHINE = new Metier(
+  val CONDUITE_MACHINE = Metier(
     codeROME = CodeROME("H2202"),
     label = "Conduite de machines"
   )
-  val MECANICIEN_CONFECTION = new Metier(
+  val MECANICIEN_CONFECTION = Metier(
     codeROME = CodeROME("H2402"),
     label = "Mécanicien en confection"
   )
-  val SOUDAGE = new Metier(
+  val SOUDAGE = Metier(
     codeROME = CodeROME("H2913"),
     label = "Soudage"
   )
-  val FABRICATION_PIECES = new Metier(
+  val FABRICATION_PIECES = Metier(
     codeROME = CodeROME("H3203"),
     label = "Fabrication de pièces"
   )
-  val TRI_EMBALLAGE = new Metier(
+  val TRI_EMBALLAGE = Metier(
     codeROME = CodeROME("H3302"),
     label = "Tri et emballage"
   )
-  val AIDE_PERSONNES_AGEES = new Metier(
+  val AIDE_PERSONNES_AGEES = Metier(
     codeROME = CodeROME("K1302"),
     label = "Aide aux personnes âgées"
   )
-  val AIDE_DOMICILE = new Metier(
+  val AIDE_DOMICILE = Metier(
     codeROME = CodeROME("K1304"),
     label = "Aide à domicile"
   )
-  val NETTOYAGE_LOCAUX = new Metier(
+  val NETTOYAGE_LOCAUX = Metier(
     codeROME = CodeROME("K2204"),
     label = "Nettoyage de locaux",
   )
-  val PREPARATION_COMMANDE = new Metier(
+  val PREPARATION_COMMANDE = Metier(
     codeROME = CodeROME("N1103"),
     label = "Préparation de commandes"
   )
-  val MANUTENTION = new Metier(
+  val MANUTENTION = Metier(
     codeROME = CodeROME("N1105"),
     label = "Manutention"
   )
-  val CONDUITE_POIDS_LOURDS = new Metier(
+  val CONDUITE_POIDS_LOURDS = Metier(
     codeROME = CodeROME("N4101"),
     label = "Conduite de poids lourds"
   )
 
-  val AGRICULTURE: SecteurActivite = new SecteurActivite(
+  val AGRICULTURE: SecteurActivite = SecteurActivite(
     code = CodeSecteurActivite("A"),
     label = "Agriculture",
     metiers = List(
       AIDE_AGRICOLE
     ))
 
-  val HOTELLERIE_RESTAURATION: SecteurActivite = new SecteurActivite(
+  val HOTELLERIE_RESTAURATION: SecteurActivite = SecteurActivite(
     code = CodeSecteurActivite("G"),
     label = "Hôtellerie restauration",
     metiers = List(
@@ -135,7 +135,7 @@ object RechercheCandidatService {
       SERVICE
     ))
 
-  val BATIMENT: SecteurActivite = new SecteurActivite(
+  val BATIMENT: SecteurActivite = SecteurActivite(
     code = CodeSecteurActivite("F"),
     label = "Bâtiment",
     metiers = List(
@@ -144,7 +144,7 @@ object RechercheCandidatService {
       CONDUITE_ENGINS
     ))
 
-  val COMMERCE: SecteurActivite = new SecteurActivite(
+  val COMMERCE: SecteurActivite = SecteurActivite(
     code = CodeSecteurActivite("D"),
     label = "Commerce",
     metiers = List(
@@ -153,7 +153,7 @@ object RechercheCandidatService {
       VENTE
     ))
 
-  val SERVICES_A_LA_PERSONNE: SecteurActivite = new SecteurActivite(
+  val SERVICES_A_LA_PERSONNE: SecteurActivite = SecteurActivite(
     code = CodeSecteurActivite("K"),
     label = "Services à la personne",
     metiers = List(
@@ -162,14 +162,14 @@ object RechercheCandidatService {
       NETTOYAGE_LOCAUX
     ))
 
-  val TEXTILE: SecteurActivite = new SecteurActivite(
+  val TEXTILE: SecteurActivite = SecteurActivite(
     code = CodeSecteurActivite("B"),
     label = "Textile",
     metiers = List(
       REALISATION_ARTICLES
     ))
 
-  val INDUSTRIE: SecteurActivite = new SecteurActivite(
+  val INDUSTRIE: SecteurActivite = SecteurActivite(
     code = CodeSecteurActivite("H"),
     label = "Industrie",
     metiers = List(
@@ -180,7 +180,7 @@ object RechercheCandidatService {
       MECANICIEN_CONFECTION
     ))
 
-  val TRANSPORT_LOGISTIQUE: SecteurActivite = new SecteurActivite(
+  val TRANSPORT_LOGISTIQUE: SecteurActivite = SecteurActivite(
     code = CodeSecteurActivite("N"),
     label = "Transport et logistique",
     metiers = List(
@@ -210,7 +210,7 @@ object RechercheCandidatService {
 
   private val departements: List[Departement] =
     List(
-      new Departement(
+      Departement(
         code = CodeDepartement("85"),
         label = "Vendée"
       )
