@@ -13,6 +13,11 @@ private[ws] object PEConnectWSMapping {
     case "female" => Genre.FEMME
     case g@_ => throw new IllegalArgumentException(s"Gender non géré : $g")
   }
+
+  def extractCertifie(habilitation: String): Boolean = habilitation match {
+    case "recruteurcertifie" => true
+    case _ => false
+  }
 }
 
 case class AccessTokenResponse(accessToken: String,
@@ -38,7 +43,8 @@ case class PEConnectRecruteurInfos(peConnectId: PEConnectId,
                                    nom: String,
                                    prenom: String,
                                    email: Email,
-                                   genre: Genre)
+                                   genre: Genre,
+                                   certifie: Boolean)
 
 private[ws] case class UserInfosResponse(sub: String,
                                          familyName: String,
@@ -48,15 +54,6 @@ private[ws] case class UserInfosResponse(sub: String,
 
   def toPEConnectCandidatInfos: PEConnectCandidatInfos =
     PEConnectCandidatInfos(
-      peConnectId = PEConnectId(sub),
-      nom = familyName.toLowerCase,
-      prenom = givenName.toLowerCase,
-      email = Email(email.toLowerCase), // on fait confiance à PEConnect pour avoir un email valide
-      genre = PEConnectWSMapping.extractGender(gender)
-    )
-
-  def toPEConnectRecruteurInfos: PEConnectRecruteurInfos =
-    PEConnectRecruteurInfos(
       peConnectId = PEConnectId(sub),
       nom = familyName.toLowerCase,
       prenom = givenName.toLowerCase,
@@ -74,6 +71,36 @@ object UserInfosResponse {
       (JsPath \ "email").read[String] and
       (JsPath \ "gender").read[String]
     ) (UserInfosResponse.apply _)
+}
+
+private[ws] case class UserInfosEntrepriseResponse(sub: String,
+                                                   familyName: String,
+                                                   givenName: String,
+                                                   email: String,
+                                                   gender: String,
+                                                   habilitation: String) {
+
+  def toPEConnectRecruteurInfos: PEConnectRecruteurInfos =
+    PEConnectRecruteurInfos(
+      peConnectId = PEConnectId(sub),
+      nom = familyName.toLowerCase,
+      prenom = givenName.toLowerCase,
+      email = Email(email.toLowerCase), // on fait confiance à PEConnect pour avoir un email valide
+      genre = PEConnectWSMapping.extractGender(gender),
+      certifie = PEConnectWSMapping.extractCertifie(habilitation)
+    )
+}
+
+object UserInfosEntrepriseResponse {
+
+  implicit val jsonReads: Reads[UserInfosEntrepriseResponse] = (
+    (JsPath \ "sub").read[String] and
+      (JsPath \ "family_name").read[String] and
+      (JsPath \ "given_name").read[String] and
+      (JsPath \ "email").read[String] and
+      (JsPath \ "gender").read[String] and
+      (JsPath \ "habilitation").read[String]
+    ) (UserInfosEntrepriseResponse.apply _)
 }
 
 private[ws] case class CoordonneesCandidatReponse(adresse1: Option[String],

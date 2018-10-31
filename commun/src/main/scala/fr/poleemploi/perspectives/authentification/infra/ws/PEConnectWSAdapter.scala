@@ -19,7 +19,7 @@ class PEConnectWSAdapter(wsClient: WSClient,
       .get()
       .map(filtreStatutReponse(_))
       .map(response =>
-        response.json.as[UserInfosResponse].toPEConnectRecruteurInfos
+        response.json.as[UserInfosEntrepriseResponse].toPEConnectRecruteurInfos
       )
 
   def getInfosCandidat(accessToken: String): Future[PEConnectCandidatInfos] =

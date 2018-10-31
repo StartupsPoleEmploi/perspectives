@@ -44,7 +44,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
           "realm" -> Seq("/employeur"),
           "response_type" -> Seq("code"),
           "client_id" -> Seq(peConnectConfig.clientId),
-          "scope" -> Seq(s"application_${peConnectConfig.clientId} api_peconnect-entreprisev1 openid profile email"),
+          "scope" -> Seq(s"application_${peConnectConfig.clientId} api_peconnect-entreprisev1 habilitation openid profile email"),
           "redirect_uri" -> Seq(redirectUri.absoluteURL()),
           "state" -> Seq(oauthTokens.state),
           "nonce" -> Seq(oauthTokens.nonce)
