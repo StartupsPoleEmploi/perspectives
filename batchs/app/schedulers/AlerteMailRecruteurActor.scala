@@ -48,12 +48,12 @@ class AlerteMailRecruteurActor(emailingService: EmailingService,
     case EnvoyerAlertesQuotidiennes =>
       envoyerAlertes(
         alertes = alerteRecruteurProjection.alertesQuotidiennes,
-        apresDateInscription = ZonedDateTime.now().minusDays(1L)
+        apresDateInscription = ZonedDateTime.now().minusDays(1L).withHour(0).withMinute(0).withSecond(0)
       )
     case EnvoyerAlertesHebdomadaires =>
       envoyerAlertes(
         alertes = alerteRecruteurProjection.alertesHebdomaraires,
-        apresDateInscription = ZonedDateTime.now().minusDays(7L)
+        apresDateInscription = ZonedDateTime.now().minusDays(7L).withHour(0).withMinute(0).withSecond(0)
       )
     case Failure(t) =>
       log.error(t, "Erreur lors de l'envoi des alertes mails aux recruteurs")
