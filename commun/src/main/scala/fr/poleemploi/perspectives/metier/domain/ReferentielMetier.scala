@@ -53,6 +53,14 @@ object ReferentielMetier {
         Habilete.DEXTERITE,
         Habilete.MAINTIENT_ATTENTION
       ),
+      CodeROME("H2701") -> List(
+        Habilete.RESPECT_NORMES_ET_CONSIGNES,
+        Habilete.REPRESENTATION_ESPACE,
+        Habilete.RECEUIL_ANALYSE_DONNEES,
+        Habilete.COMMUNIQUER,
+        Habilete.MAINTIENT_ATTENTION,
+        Habilete.TRAVAIL_SOUS_TENSION
+      ),
       CodeROME("H2903") -> List(
         Habilete.RESPECT_NORMES_ET_CONSIGNES,
         Habilete.DEXTERITE,
