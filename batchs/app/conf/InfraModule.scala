@@ -8,7 +8,7 @@ import fr.poleemploi.eventsourcing.eventstore.{AppendOnlyStore, EventStore}
 import fr.poleemploi.eventsourcing.infra.jackson.EventStoreObjectMapperBuilder
 import fr.poleemploi.eventsourcing.infra.postgresql.{PostgreSQLAppendOnlyStore, PostgresDriver => EventSourcingPostgresDriver}
 import fr.poleemploi.eventsourcing.{EventHandler, EventPublisher, LocalEventHandler, LocalEventPublisher}
-import fr.poleemploi.perspectives.authentification.infra.sql.PEConnectSqlAdapter
+import fr.poleemploi.perspectives.authentification.infra.peconnect.sql.PEConnectSqlAdapter
 import fr.poleemploi.perspectives.candidat.mrs.infra.local.ImportMRSCandidatLocal
 import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.{ImportMRSCandidatPEConnect, MRSValideesCSVAdapter}
 import fr.poleemploi.perspectives.candidat.mrs.infra.sql.MRSValideesSqlAdapter

@@ -1,5 +1,6 @@
 package authentification.infra.play
 
+import controllers.FlashMessages._
 import controllers.candidat.routes
 import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
 import fr.poleemploi.perspectives.candidat.CandidatId
@@ -24,9 +25,12 @@ class CandidatAuthentifieAction @Inject()(override val parser: BodyParsers.Defau
       .get(request.session)
       .map(candidat => block(CandidatAuthentifieRequest(candidat, request)))
       .getOrElse(
-        Future.successful(Redirect(routes.InscriptionController.inscription())
-          .withSession(SessionUtilisateurNonAuthentifie.setUriConnexion(request.uri, request.session))
-        )
+        if (request.flash.candidatConnecte) // Un candidat n'est pas authentifié alors qu'il vient de se connecter : erreur de session
+          Future.successful(Unauthorized)
+        else
+          Future.successful(Redirect(routes.InscriptionController.inscription())
+            .withSession(SessionUtilisateurNonAuthentifie.setUriConnexion(request.uri, request.session))
+          )
       )
 }
 

@@ -1,6 +1,6 @@
 package conf
 
-import fr.poleemploi.perspectives.authentification.infra.ws.PEConnectWSAdapterConfig
+import fr.poleemploi.perspectives.authentification.infra.peconnect.ws.PEConnectWSAdapterConfig
 import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.commun.infra.Environnement
 import fr.poleemploi.perspectives.commun.infra.oauth.OauthConfig
@@ -23,21 +23,29 @@ class WebAppConfig(configuration: Configuration) {
   val environnement: Environnement = Environnement.from(configuration.get[String]("environnement"))
   val version: String = BuildInfo.version
 
-  val emploiStoreOauthConfig: OauthConfig = OauthConfig(
+  val candidatOauthConfig: OauthConfig = OauthConfig(
     clientId = configuration.get[String]("emploiStore.oauth2.clientId"),
-    clientSecret = configuration.get[String]("emploiStore.oauth2.clientSecret")
-  )
-
-  val peConnectRecruteurConfig: PEConnectWSAdapterConfig = PEConnectWSAdapterConfig(
-    urlAuthentification = configuration.get[String]("emploiStore.entreprise.urlAuthentification"),
-    urlApi = configuration.get[String]("emploiStore.urlApi"),
-    oauthConfig = emploiStoreOauthConfig,
-  )
-
-  val peConnectCandidatConfig: PEConnectWSAdapterConfig = PEConnectWSAdapterConfig(
+    clientSecret = configuration.get[String]("emploiStore.oauth2.clientSecret"),
     urlAuthentification = configuration.get[String]("emploiStore.candidat.urlAuthentification"),
-    urlApi = configuration.get[String]("emploiStore.urlApi"),
-    oauthConfig = emploiStoreOauthConfig
+    realm = "individu"
+  )
+
+  val recruteurOauthConfig: OauthConfig = OauthConfig(
+    clientId = configuration.get[String]("emploiStore.oauth2.clientId"),
+    clientSecret = configuration.get[String]("emploiStore.oauth2.clientSecret"),
+    urlAuthentification = configuration.get[String]("emploiStore.entreprise.urlAuthentification"),
+    realm = "employeur"
+  )
+
+  val partenaireOauthConfig: OauthConfig = OauthConfig(
+    clientId = configuration.get[String]("emploiStore.oauth2.clientId"),
+    clientSecret = configuration.get[String]("emploiStore.oauth2.clientSecret"),
+    urlAuthentification = configuration.get[String]("emploiStore.entreprise.urlAuthentification"),
+    realm = "partenaire"
+  )
+
+  val peConnectWSAdapterConfig: PEConnectWSAdapterConfig = PEConnectWSAdapterConfig(
+    urlApi = configuration.get[String]("emploiStore.urlApi")
   )
 
   val googleTagManagerContainerId: String = configuration.get[String]("googleTagManager.containerId")
@@ -60,9 +68,8 @@ class WebAppConfig(configuration: Configuration) {
   )
 
   val referentielMetierWSAdapterConfig: ReferentielMetierWSAdapterConfig = ReferentielMetierWSAdapterConfig(
-    urlAuthentification = configuration.get[String]("emploiStore.entreprise.urlAuthentification"),
     urlApi = configuration.get[String]("emploiStore.urlApi"),
-    oauthConfig = emploiStoreOauthConfig
+    oauthConfig = partenaireOauthConfig
   )
 
   val admins: List[String] = configuration.getOptional[Seq[String]]("admins").map(_.toList).getOrElse(Nil)

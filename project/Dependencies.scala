@@ -2,20 +2,16 @@ import sbt._
 
 object Dependencies {
 
-  // Doit correspondre à la version de Jackson utilisée par Play
+  // Doivent correspondre aux versions utilisées par Play
   val jacksonVersion = "2.8.11"
   val jacksonDatabindVersion = "2.8.11.1"
-
-  // Doit correspondre à la version de Guice utilisée par Play
   val guiceVersion = "4.1.0"
+  val akkaVersion = "2.5.17"
 
-  // La version de slickPg doit suivre la verson de slick
+  // La version de slickPg doit suivre la version de slick
   val slickVersion = "3.2.3"
 
   val slickPgVersion = "0.16.1"
-
-  // Doit correspondre à la version d'Akka utilisée par Play
-  val akkaVersion = "2.5.17"
 
   val akkaActor = "com.typesafe.akka" %% "akka-actor" % akkaVersion
 
@@ -31,7 +27,7 @@ object Dependencies {
 
   val jacksonDatabind = "com.fasterxml.jackson.core" % "jackson-databind" % jacksonDatabindVersion
 
-  /** For DateTimeModule */
+  /** Pour le DateTimeModule */
   val jacksonDatatypeJSR310 = "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310" % jacksonVersion
 
   val jacksonModuleScala = "com.fasterxml.jackson.module" % "jackson-module-scala_2.12" % jacksonVersion

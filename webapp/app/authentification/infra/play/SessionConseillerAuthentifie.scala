@@ -14,11 +14,7 @@ object SessionConseillerAuthentifie {
   )
 
   def get(session: Session): Option[ConseillerAuthentifie] =
-    for {
-      conseillerId <- session.get("candidat.candidatId").flatMap(mapCandidatsConseillers.get)
-    } yield ConseillerAuthentifie(
-      conseillerId = conseillerId
-    )
+    session.get("candidat.candidatId").flatMap(mapCandidatsConseillers.get).map(ConseillerAuthentifie)
 
   def set(conseillerAuthentifie: ConseillerAuthentifie,
           session: Session): Session =

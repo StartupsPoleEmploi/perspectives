@@ -29,7 +29,7 @@ class ReferentielMetierWSAdapter(config: ReferentielMetierWSAdapterConfig,
 
   private def genererAccessToken: Future[AccessTokenResponse] =
     wsClient
-      .url(s"${config.urlAuthentification}/connexion/oauth2/access_token?realm=%2Fpartenaire")
+      .url(s"${config.urlAuthentification}/connexion/oauth2/access_token?realm=%2F${config.realm}")
       .post(Map(
         "grant_type" -> "client_credentials",
         "client_id" -> config.clientId,

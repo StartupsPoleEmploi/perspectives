@@ -3,7 +3,8 @@ GET         /candidat/inscription                                    controllers
 GET         /candidat/confirmation-inscription                       controllers.candidat.InscriptionController.confirmationInscription
 GET         /candidat/cv/telecharger/:nomFichier                     controllers.candidat.CVController.telecharger(nomFichier)
 GET         /candidat/peconnect/connexion                            controllers.candidat.PEConnectController.connexion
-GET         /candidat/peconnect/callback                             controllers.candidat.PEConnectController.connexionCallback
+GET         /candidat/peconnect/connexion/callback                   controllers.candidat.PEConnectController.connexionCallback
+GET         /candidat/peconnect/deconnexion/callback                 controllers.candidat.PEConnectController.deconnexionCallback
 GET         /candidat/deconnexion                                    controllers.candidat.AuthentificationController.deconnexion
 GET         /candidat/criteres-recherche                             controllers.candidat.SaisieCriteresRechercheController.saisieCriteresRecherche
 POST        /candidat/criteres-recherche                             controllers.candidat.SaisieCriteresRechercheController.modifierCriteresRecherche
@@ -12,7 +13,8 @@ POST        /candidat/modifierCV                                     controllers
 GET         /recruteur                                               controllers.recruteur.LandingController.landing
 GET         /recruteur/inscription                                   controllers.recruteur.InscriptionController.inscription
 GET         /recruteur/peconnect/connexion                           controllers.recruteur.PEConnectController.connexion
-GET         /recruteur/peconnect/callback                            controllers.recruteur.PEConnectController.connexionCallback
+GET         /recruteur/peconnect/connexion/callback                  controllers.recruteur.PEConnectController.connexionCallback
+GET         /recruteur/peconnect/deconnexion/callback                controllers.recruteur.PEConnectController.deconnexionCallback
 GET         /recruteur/deconnexion                                   controllers.recruteur.AuthentificationController.deconnexion
 GET         /recruteur/profil                                        controllers.recruteur.ProfilController.modificationProfil
 POST        /recruteur/profil                                        controllers.recruteur.ProfilController.modifierProfil

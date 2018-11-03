@@ -1,4 +1,4 @@
-package fr.poleemploi.perspectives.authentification.infra.sql
+package fr.poleemploi.perspectives.authentification.infra.peconnect.sql
 
 import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId

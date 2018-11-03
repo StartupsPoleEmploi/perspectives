@@ -5,7 +5,7 @@ import play.filters.csrf.CSRF.TokenProvider
 
 class PlayOauthService(tokenProvider: TokenProvider) extends OauthService {
 
-  def generateTokens(): OauthTokens =
+  def generateTokens: OauthTokens =
     OauthTokens(
       state = tokenProvider.generateToken,
       nonce = tokenProvider.generateToken

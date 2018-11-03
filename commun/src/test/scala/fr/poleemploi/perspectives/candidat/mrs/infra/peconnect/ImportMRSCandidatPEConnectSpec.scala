@@ -2,7 +2,7 @@ package fr.poleemploi.perspectives.candidat.mrs.infra.peconnect
 
 import java.nio.file.Paths
 
-import fr.poleemploi.perspectives.authentification.infra.sql.PEConnectSqlAdapter
+import fr.poleemploi.perspectives.authentification.infra.peconnect.sql.PEConnectSqlAdapter
 import fr.poleemploi.perspectives.candidat.mrs.infra.sql.MRSValideesSqlAdapter
 import org.mockito.Mockito._
 import org.scalatest.concurrent.ScalaFutures

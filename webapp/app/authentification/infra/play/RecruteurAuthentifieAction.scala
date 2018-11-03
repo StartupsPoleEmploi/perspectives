@@ -1,5 +1,6 @@
 package authentification.infra.play
 
+import controllers.FlashMessages._
 import controllers.recruteur.routes
 import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
 import fr.poleemploi.perspectives.recruteur.RecruteurId
@@ -23,9 +24,12 @@ class RecruteurAuthentifieAction @Inject()(override val parser: BodyParsers.Defa
       .get(request.session)
       .map(recruteur => block(RecruteurAuthentifieRequest(recruteur, request)))
       .getOrElse(
-        Future.successful(Redirect(routes.InscriptionController.inscription())
-          .withSession(SessionUtilisateurNonAuthentifie.setUriConnexion(request.uri, request.session))
-        )
+        if (request.flash.recruteurConnecte) // Un recruteur n'est pas authentifié alors qu'il vient de se connecter : erreur de session
+          Future.successful(Unauthorized)
+        else
+          Future.successful(Redirect(routes.InscriptionController.inscription())
+            .withSession(SessionUtilisateurNonAuthentifie.setUriConnexion(request.uri, request.session))
+          )
       )
 }
 

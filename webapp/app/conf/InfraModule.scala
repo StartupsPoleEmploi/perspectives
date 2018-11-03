@@ -8,9 +8,10 @@ import fr.poleemploi.eventsourcing.eventstore.{AppendOnlyStore, EventStore}
 import fr.poleemploi.eventsourcing.infra.jackson.EventStoreObjectMapperBuilder
 import fr.poleemploi.eventsourcing.infra.postgresql.{PostgreSQLAppendOnlyStore, PostgresDriver => EventSourcingPostgresDriver}
 import fr.poleemploi.eventsourcing.{EventHandler, EventPublisher, LocalEventHandler, LocalEventPublisher}
-import fr.poleemploi.perspectives.authentification.infra.PEConnectService
-import fr.poleemploi.perspectives.authentification.infra.sql.PEConnectSqlAdapter
-import fr.poleemploi.perspectives.authentification.infra.ws.PEConnectWSAdapter
+import fr.poleemploi.perspectives.authentification.infra.peconnect.PEConnectAdapter
+import fr.poleemploi.perspectives.authentification.infra.peconnect.jwt.PEConnectJWTAdapter
+import fr.poleemploi.perspectives.authentification.infra.peconnect.sql.PEConnectSqlAdapter
+import fr.poleemploi.perspectives.authentification.infra.peconnect.ws.PEConnectWSAdapter
 import fr.poleemploi.perspectives.candidat.cv.infra.sql.CVSqlAdapter
 import fr.poleemploi.perspectives.candidat.mrs.infra.local.ReferentielMRSCandidatLocal
 import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.ReferentielMRSCandidatPEConnect
@@ -109,23 +110,33 @@ class InfraModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
+  def peConnectJWTAdapter(webAppConfig: WebAppConfig): PEConnectJWTAdapter =
+    new PEConnectJWTAdapter(
+      recruteurOauthConfig = webAppConfig.recruteurOauthConfig,
+      candidatOauthConfig = webAppConfig.candidatOauthConfig
+    )
+
+  @Provides
   def peConnectWSAdapter(webAppConfig: WebAppConfig,
                          wsClient: WSClient): PEConnectWSAdapter =
     new PEConnectWSAdapter(
       wsClient = wsClient,
-      recruteurConfig = webAppConfig.peConnectRecruteurConfig,
-      candidatConfig = webAppConfig.peConnectCandidatConfig
+      config = webAppConfig.peConnectWSAdapterConfig,
+      recruteurOauthConfig = webAppConfig.recruteurOauthConfig,
+      candidatOauthConfig = webAppConfig.candidatOauthConfig
     )
 
   @Provides
   @Singleton
   def peConnectService(oauthService: OauthService,
                        peConnectWSAdapter: PEConnectWSAdapter,
-                       peConnectSqlAdapter: PEConnectSqlAdapter): PEConnectService =
-    new PEConnectService(
+                       peConnectSqlAdapter: PEConnectSqlAdapter,
+                       peConnectJWTAdapter: PEConnectJWTAdapter): PEConnectAdapter =
+    new PEConnectAdapter(
       oauthService = oauthService,
       peConnectWSAdapter = peConnectWSAdapter,
-      peConnectSqlAdapter = peConnectSqlAdapter
+      peConnectSqlAdapter = peConnectSqlAdapter,
+      peConnectJWTAdapter = peConnectJWTAdapter
     )
 
   @Provides

@@ -3,7 +3,7 @@ package fr.poleemploi.perspectives.candidat.mrs.infra.peconnect
 import java.nio.file.{DirectoryStream, Files, Path, StandardCopyOption}
 
 import akka.stream.scaladsl.FileIO
-import fr.poleemploi.perspectives.authentification.infra.sql.PEConnectSqlAdapter
+import fr.poleemploi.perspectives.authentification.infra.peconnect.sql.PEConnectSqlAdapter
 import fr.poleemploi.perspectives.candidat.mrs.domain.{ImportMRSCandidat, MRSValideeCandidat}
 import fr.poleemploi.perspectives.candidat.mrs.infra.importMrsCandidatLogger
 import fr.poleemploi.perspectives.candidat.mrs.infra.sql.MRSValideesSqlAdapter

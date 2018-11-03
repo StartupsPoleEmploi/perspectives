@@ -1,4 +1,4 @@
-package fr.poleemploi.perspectives.authentification.infra.ws
+package fr.poleemploi.perspectives.authentification.infra.peconnect.ws
 
 import fr.poleemploi.perspectives.candidat.{Adresse, StatutDemandeurEmploi}
 import fr.poleemploi.perspectives.commun.domain.{Email, Genre}
@@ -20,15 +20,19 @@ private[ws] object PEConnectWSMapping {
   }
 }
 
-case class AccessTokenResponse(accessToken: String,
-                               idToken: String,
+case class AccessToken(value: String)
+
+case class JWTToken(value: String)
+
+case class AccessTokenResponse(accessToken: AccessToken,
+                               idToken: JWTToken,
                                nonce: String)
 
 object AccessTokenResponse {
 
   implicit val accessTokenResponseReads: Reads[AccessTokenResponse] = (
-    (JsPath \ "access_token").read[String] and
-      (JsPath \ "id_token").read[String] and
+    (JsPath \ "access_token").read[String].map(AccessToken) and
+      (JsPath \ "id_token").read[String].map(JWTToken) and
       (JsPath \ "nonce").read[String]
     ) (AccessTokenResponse.apply _)
 }

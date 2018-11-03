@@ -4,14 +4,15 @@ import authentification.infra.play._
 import conf.WebAppConfig
 import controllers.FlashMessages._
 import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
-import fr.poleemploi.perspectives.authentification.infra.PEConnectService
-import fr.poleemploi.perspectives.authentification.infra.sql.CandidatPEConnect
-import fr.poleemploi.perspectives.authentification.infra.ws.{AccessTokenResponse, PEConnectCandidatInfos, PEConnectException, PEConnectWSAdapterConfig}
+import fr.poleemploi.perspectives.authentification.infra.peconnect.PEConnectAdapter
+import fr.poleemploi.perspectives.authentification.infra.peconnect.sql.CandidatPEConnect
+import fr.poleemploi.perspectives.authentification.infra.peconnect.ws._
 import fr.poleemploi.perspectives.candidat._
+import fr.poleemploi.perspectives.commun.EitherUtils._
+import fr.poleemploi.perspectives.commun.infra.oauth.OauthConfig
 import javax.inject.{Inject, Singleton}
 import play.api.Logger
 import play.api.mvc._
-import utils.EitherUtils._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -21,29 +22,28 @@ class PEConnectController @Inject()(cc: ControllerComponents,
                                     webAppConfig: WebAppConfig,
                                     candidatCommandHandler: CandidatCommandHandler,
                                     candidatPEConnectAction: CandidatPEConnectAction,
-                                    peConnectService: PEConnectService) extends AbstractController(cc) {
+                                    peConnectAdapter: PEConnectAdapter) extends AbstractController(cc) {
 
-  val oauthTokenSessionStorage = new OauthTokenSessionStorage("candidat")
   val redirectUri: Call = routes.PEConnectController.connexionCallback()
-  val peConnectConfig: PEConnectWSAdapterConfig = webAppConfig.peConnectCandidatConfig
+  val oauthConfig: OauthConfig = webAppConfig.candidatOauthConfig
 
   def inscription: Action[AnyContent] = Action { request =>
     Redirect(routes.PEConnectController.connexion()).withSession(
-      oauthTokenSessionStorage.set(peConnectService.generateTokens(), request.session)
+      SessionOauthTokens.setOauthTokensCandidat(peConnectAdapter.generateTokens, request.session)
     )
   }
 
   def connexion: Action[AnyContent] = Action.async { implicit request =>
-    oauthTokenSessionStorage.get(request.session).toRight("Aucun token n'a été stocké en session").toFuture
+    SessionOauthTokens.getOauthTokensCandidat(request.session).toRight("Aucun token n'a été stocké en session").toFuture
       .map(oauthTokens =>
         Redirect(
-          url = s"${peConnectConfig.urlAuthentification}/connexion/oauth2/authorize",
+          url = s"${oauthConfig.urlAuthentification}/connexion/oauth2/authorize",
           status = SEE_OTHER,
           queryString = Map(
-            "realm" -> Seq("/individu"),
+            "realm" -> Seq(s"/${oauthConfig.realm}"),
             "response_type" -> Seq("code"),
-            "client_id" -> Seq(peConnectConfig.clientId),
-            "scope" -> Seq(s"application_${peConnectConfig.clientId} api_peconnect-individuv1 api_peconnect-coordonneesv1 api_peconnect-statutv1 openid profile email coordonnees statut"),
+            "client_id" -> Seq(oauthConfig.clientId),
+            "scope" -> Seq(s"application_${oauthConfig.clientId} api_peconnect-individuv1 api_peconnect-coordonneesv1 api_peconnect-statutv1 openid profile email coordonnees statut"),
             "redirect_uri" -> Seq(redirectUri.absoluteURL()),
             "state" -> Seq(oauthTokens.state),
             "nonce" -> Seq(oauthTokens.nonce)
@@ -53,7 +53,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
         Logger.error("Erreur lors de l'authentification PEConnect", t)
         // Nettoyage de session et redirect
         Redirect(routes.LandingController.landing())
-          .withSession(oauthTokenSessionStorage.remove(request.session))
+          .withSession(SessionOauthTokens.removeOauthTokensCandidat(request.session))
           .flashing(request.flash.withMessageErreur("Une erreur est survenue lors de l'accès au service de Pôle Emploi, veuillez réessayer ultérieurement"))
     }
   }
@@ -62,18 +62,17 @@ class PEConnectController @Inject()(cc: ControllerComponents,
     (for {
       authorizationCode <- request.getQueryString("code").toRight("Aucun code d'autorisation n'a été retourné").toFuture
       stateCallback <- request.getQueryString("state").toRight("Aucun state n'a été retourné").toFuture
-      oauthTokens <- oauthTokenSessionStorage.get(request.session).toRight("Aucun token n'a été stocké en session").toFuture
-      accessTokenResponse <- peConnectService.getAccessTokenCandidat(
+      oauthTokens <- SessionOauthTokens.getOauthTokensCandidat(request.session).toRight("Aucun token n'a été stocké en session").toFuture
+      _ <- Either.cond(peConnectAdapter.verifyState(oauthTokens, stateCallback), (), "La comparaison du state a échoué").toFuture
+      accessTokenResponse <- peConnectAdapter.getAccessTokenCandidat(
         authorizationCode = authorizationCode,
-        redirectUri = redirectUri.absoluteURL()
+        redirectUri = redirectUri.absoluteURL(),
+        oauthTokens = oauthTokens
       )
-      _ <- Either.cond(peConnectService.verifyState(oauthTokens, stateCallback), (), "La comparaison du state a échoué").toFuture
-      _ <- Either.cond(peConnectService.verifyNonce(oauthTokens, accessTokenResponse.nonce), (), "La comparaison du nonce a échoué").toFuture
-      _ <- peConnectService.validateAccessToken(accessTokenResponse)
-      infosCandidat <- peConnectService.getInfosCandidat(accessTokenResponse.accessToken)
-      adresse <- getAdresseCandidat(accessTokenResponse)
-      statutDemandeurEmploi <- getStatutDemandeurEmploi(accessTokenResponse)
-      optCandidat <- peConnectService.findCandidat(infosCandidat.peConnectId)
+      infosCandidat <- peConnectAdapter.getInfosCandidat(accessTokenResponse.accessToken)
+      adresse <- getAdresseCandidat(accessTokenResponse.accessToken)
+      statutDemandeurEmploi <- getStatutDemandeurEmploi(accessTokenResponse.accessToken)
+      optCandidat <- peConnectAdapter.findCandidat(infosCandidat.peConnectId)
       candidatId <- optCandidat.map(c => connecter(c, infosCandidat, adresse, statutDemandeurEmploi))
         .getOrElse(inscrire(
           peConnectCandidatInfos = infosCandidat,
@@ -86,41 +85,41 @@ class PEConnectController @Inject()(cc: ControllerComponents,
         nom = infosCandidat.nom,
         prenom = infosCandidat.prenom
       )
-      val session = SessionCandidatPEConnect.set(accessTokenResponse.idToken, SessionCandidatAuthentifie.set(candidatAuthentifie, oauthTokenSessionStorage.remove(request.session)))
+      val session = SessionCandidatPEConnect.setJWTToken(accessTokenResponse.idToken, SessionCandidatAuthentifie.set(candidatAuthentifie, SessionOauthTokens.removeOauthTokensCandidat(request.session)))
+      val flash = request.flash.withCandidatConnecte
 
       if (optCandidat.isDefined)
         SessionUtilisateurNonAuthentifie.getUriConnexion(request.session)
-          .map(uri => Redirect(uri).withSession(SessionUtilisateurNonAuthentifie.remove(session)))
-          .getOrElse(Redirect(routes.SaisieCriteresRechercheController.saisieCriteresRecherche()).withSession(session))
+          .map(uri => Redirect(uri).withSession(SessionUtilisateurNonAuthentifie.remove(session)).flashing(flash))
+          .getOrElse(Redirect(routes.SaisieCriteresRechercheController.saisieCriteresRecherche()).withSession(session).flashing(flash))
       else
         Redirect(routes.SaisieCriteresRechercheController.saisieCriteresRecherche()).withSession(session)
-          .flashing(request.flash.withCandidatInscrit)
+          .flashing(flash.withCandidatInscrit)
     }).recover {
       case t: PEConnectException =>
         Logger.error("Erreur lors du callback PEConnect", t)
         // Nettoyage de session et redirect
         Redirect(routes.LandingController.landing())
-          .withSession(oauthTokenSessionStorage.remove(request.session))
+          .withSession(SessionOauthTokens.removeOauthTokensCandidat(request.session))
           .flashing(request.flash.withMessageErreur("Une erreur est survenue lors de l'accès au service de Pôle Emploi, veuillez réessayer ultérieurement"))
       case t: Throwable =>
         Logger.error("Erreur lors du callback PEConnect", t)
         // Nettoyage de session et redirect
         Redirect(routes.LandingController.landing()).withSession(
-          oauthTokenSessionStorage.remove(request.session)
+          SessionOauthTokens.removeOauthTokensCandidat(request.session)
         )
     }
   }
 
   def deconnexion: Action[AnyContent] = candidatPEConnectAction.async { implicit request: CandidatPEConnectRequest[AnyContent] =>
-    peConnectService.deconnexionCandidat(
-      idToken = request.idTokenPEConnect,
-      redirectUri = routes.LandingController.landing().absoluteURL()
-    ).map { _ =>
-      // Nettoyage de session et redirect
-      Redirect(routes.LandingController.landing()).withSession(
-        SessionCandidatAuthentifie.remove(SessionCandidatPEConnect.remove(request.session))
+    Future(Redirect(
+      url = s"${oauthConfig.urlAuthentification}/compte/deconnexion",
+      status = SEE_OTHER,
+      queryString = Map(
+        "id_token_hint" -> Seq(request.idTokenPEConnect.value),
+        "redirect_uri" -> Seq(routes.PEConnectController.deconnexionCallback().absoluteURL())
       )
-    }.recover {
+    )).recover {
       case t: Throwable =>
         Logger.error("Erreur lors de la déconnexion PEConnect", t)
         // Nettoyage de session et redirect
@@ -128,6 +127,13 @@ class PEConnectController @Inject()(cc: ControllerComponents,
           SessionCandidatAuthentifie.remove(SessionCandidatPEConnect.remove(request.session))
         )
     }
+  }
+
+  def deconnexionCallback: Action[AnyContent] = candidatPEConnectAction.async { implicit request: CandidatPEConnectRequest[AnyContent] =>
+    // Nettoyage de session et redirect
+    Future(Redirect(routes.LandingController.landing()).withSession(
+      SessionCandidatAuthentifie.remove(SessionCandidatPEConnect.remove(request.session))
+    ))
   }
 
   private def inscrire(peConnectCandidatInfos: PEConnectCandidatInfos,
@@ -144,7 +150,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       statutDemandeurEmploi = statutDemandeurEmploi
     )
     for {
-      _ <- peConnectService.saveCandidat(CandidatPEConnect(
+      _ <- peConnectAdapter.saveCandidat(CandidatPEConnect(
         candidatId = candidatId,
         peConnectId = peConnectCandidatInfos.peConnectId
       ))
@@ -169,16 +175,16 @@ class PEConnectController @Inject()(cc: ControllerComponents,
     candidatCommandHandler.handle(command).map(_ => candidatId)
   }
 
-  private def getAdresseCandidat(accessTokenResponse: AccessTokenResponse): Future[Option[Adresse]] =
-    peConnectService.getAdresseCandidat(accessTokenResponse.accessToken).map(Some(_))
+  private def getAdresseCandidat(accessToken: AccessToken): Future[Option[Adresse]] =
+    peConnectAdapter.getAdresseCandidat(accessToken).map(Some(_))
       .recoverWith {
         case t: Throwable =>
           Logger.error("Erreur lors de la récupération de l'adresse", t)
           Future.successful(None)
       }
 
-  private def getStatutDemandeurEmploi(accessTokenResponse: AccessTokenResponse): Future[Option[StatutDemandeurEmploi]] =
-    peConnectService.getStatutDemandeurEmploiCandidat(accessTokenResponse.accessToken).map(Some(_))
+  private def getStatutDemandeurEmploi(accessToken: AccessToken): Future[Option[StatutDemandeurEmploi]] =
+    peConnectAdapter.getStatutDemandeurEmploiCandidat(accessToken).map(Some(_))
       .recoverWith {
         case t: Throwable =>
           Logger.error("Erreur lors de la récupération du statut demandeur d'emploi", t)
