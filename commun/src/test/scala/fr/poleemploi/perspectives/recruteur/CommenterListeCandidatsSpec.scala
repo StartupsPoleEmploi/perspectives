@@ -37,7 +37,7 @@ class CommenterListeCandidatsSpec extends AsyncWordSpec
       recoverToExceptionIf[IllegalArgumentException] {
         recruteur.commenterListeCandidats(commande, commentaireService)
       }.map(ex =>
-        ex.getMessage mustBe s"Le recruteur ${recruteur.id.value} n'est pas encore inscrit"
+        ex.getMessage mustBe s"Le recruteur ${commande.id.value} dans l'état Nouveau ne peut pas gérer la commande ${commande.getClass.getSimpleName}"
       )
     }
     "renvoyer une erreur lorsque le recruteur n'a pas le profil complet" in {
@@ -48,7 +48,7 @@ class CommenterListeCandidatsSpec extends AsyncWordSpec
       recoverToExceptionIf[IllegalArgumentException] {
         recruteur.commenterListeCandidats(commande, commentaireService)
       }.map(ex =>
-        ex.getMessage mustBe s"Le recruteur ${recruteur.id.value} n'a pas encore complété son profil"
+        ex.getMessage mustBe s"Le recruteur ${commande.id.value} dans l'état Inscrit ne peut pas gérer la commande ${commande.getClass.getSimpleName}"
       )
     }
     "renvoyer une erreur lorsque le service échoue" in {

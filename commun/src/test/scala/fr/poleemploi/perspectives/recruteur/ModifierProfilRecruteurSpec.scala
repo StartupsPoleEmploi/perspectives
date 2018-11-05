@@ -8,7 +8,7 @@ class ModifierProfilRecruteurSpec extends WordSpec with MustMatchers with Mockit
 
   val recruteurBuilder = new RecruteurBuilder
 
-  val modifierProfilCommande: ModifierProfilCommand =
+  val commande: ModifierProfilCommand =
     ModifierProfilCommand(
       id = recruteurBuilder.recruteurId,
       raisonSociale = "raison sociale",
@@ -25,27 +25,27 @@ class ModifierProfilRecruteurSpec extends WordSpec with MustMatchers with Mockit
 
       // When
       val ex = intercept[IllegalArgumentException] {
-        recruteur.modifierProfil(modifierProfilCommande)
+        recruteur.modifierProfil(commande)
       }
 
       // Then
-      ex.getMessage mustBe s"Le recruteur ${recruteur.id.value} n'est pas encore inscrit"
+      ex.getMessage mustBe s"Le recruteur ${commande.id.value} dans l'état Nouveau ne peut pas gérer la commande ${commande.getClass.getSimpleName}"
     }
     "ne pas générer d'événement si aucune information de profil n'a été modifiée" in {
       // Given
       val recruteur = recruteurBuilder
         .avecInscription()
         .avecProfil(
-          typeRecruteur = Some(modifierProfilCommande.typeRecruteur),
-          raisonSociale = Some(modifierProfilCommande.raisonSociale),
-          numeroSiret = Some(modifierProfilCommande.numeroSiret),
-          numeroTelephone = Some(modifierProfilCommande.numeroTelephone),
-          contactParCandidats = Some(modifierProfilCommande.contactParCandidats)
+          typeRecruteur = Some(commande.typeRecruteur),
+          raisonSociale = Some(commande.raisonSociale),
+          numeroSiret = Some(commande.numeroSiret),
+          numeroTelephone = Some(commande.numeroTelephone),
+          contactParCandidats = Some(commande.contactParCandidats)
         )
         .build
 
       // When
-      val results = recruteur.modifierProfil(modifierProfilCommande)
+      val results = recruteur.modifierProfil(commande)
 
       // Then
       results.isEmpty mustBe true
@@ -58,7 +58,7 @@ class ModifierProfilRecruteurSpec extends WordSpec with MustMatchers with Mockit
         .build
 
       // When
-      val results = recruteur.modifierProfil(modifierProfilCommande)
+      val results = recruteur.modifierProfil(commande)
 
       // Then
       results.size mustBe 1
@@ -71,7 +71,7 @@ class ModifierProfilRecruteurSpec extends WordSpec with MustMatchers with Mockit
         .build
 
       // When
-      val results = recruteur.modifierProfil(modifierProfilCommande.copy(
+      val results = recruteur.modifierProfil(commande.copy(
         raisonSociale = "nouvelle raison sociale"
       ))
 
@@ -86,7 +86,7 @@ class ModifierProfilRecruteurSpec extends WordSpec with MustMatchers with Mockit
         .build
 
       // When
-      val results = recruteur.modifierProfil(modifierProfilCommande.copy(
+      val results = recruteur.modifierProfil(commande.copy(
         numeroSiret = NumeroSiret("00000000000018")
       ))
 
@@ -101,7 +101,7 @@ class ModifierProfilRecruteurSpec extends WordSpec with MustMatchers with Mockit
         .build
 
       // When
-      val results = recruteur.modifierProfil(modifierProfilCommande.copy(
+      val results = recruteur.modifierProfil(commande.copy(
         typeRecruteur = TypeRecruteur.AGENCE_INTERIM
       ))
 
@@ -116,7 +116,7 @@ class ModifierProfilRecruteurSpec extends WordSpec with MustMatchers with Mockit
         .build
 
       // When
-      val results = recruteur.modifierProfil(modifierProfilCommande.copy(
+      val results = recruteur.modifierProfil(commande.copy(
         numeroTelephone = NumeroTelephone("0197564567")
       ))
 
@@ -131,7 +131,7 @@ class ModifierProfilRecruteurSpec extends WordSpec with MustMatchers with Mockit
         .build
 
       // When
-      val results = recruteur.modifierProfil(modifierProfilCommande.copy(
+      val results = recruteur.modifierProfil(commande.copy(
         contactParCandidats = true
       ))
 
@@ -146,16 +146,16 @@ class ModifierProfilRecruteurSpec extends WordSpec with MustMatchers with Mockit
         .build
 
       // When
-      val results = recruteur.modifierProfil(modifierProfilCommande)
+      val results = recruteur.modifierProfil(commande)
 
       // Then
       val event = results.head.asInstanceOf[ProfilModifieEvent]
-      event.recruteurId mustBe modifierProfilCommande.id
-      event.raisonSociale mustBe modifierProfilCommande.raisonSociale
-      event.numeroSiret mustBe modifierProfilCommande.numeroSiret
-      event.numeroTelephone mustBe modifierProfilCommande.numeroTelephone
-      event.typeRecruteur mustBe modifierProfilCommande.typeRecruteur
-      event.contactParCandidats mustBe modifierProfilCommande.contactParCandidats
+      event.recruteurId mustBe commande.id
+      event.raisonSociale mustBe commande.raisonSociale
+      event.numeroSiret mustBe commande.numeroSiret
+      event.numeroTelephone mustBe commande.numeroTelephone
+      event.typeRecruteur mustBe commande.typeRecruteur
+      event.contactParCandidats mustBe commande.contactParCandidats
     }
   }
 

@@ -9,7 +9,7 @@ class InscrireRecruteurSpec extends WordSpec with MustMatchers with MockitoSugar
 
   val recruteurBuilder = new RecruteurBuilder
 
-  val inscrireCommande: InscrireRecruteurCommand =
+  val commande: InscrireRecruteurCommand =
     InscrireRecruteurCommand(
       id = recruteurBuilder.recruteurId,
       nom = "nom",
@@ -25,18 +25,18 @@ class InscrireRecruteurSpec extends WordSpec with MustMatchers with MockitoSugar
 
       // When
       val ex = intercept[IllegalArgumentException] {
-        recruteur.inscrire(inscrireCommande)
+        recruteur.inscrire(commande)
       }
 
       // Then
-      ex.getMessage mustBe s"Le recruteur ${recruteur.id.value} est déjà inscrit"
+      ex.getMessage mustBe s"Le recruteur ${commande.id.value} dans l'état Inscrit ne peut pas gérer la commande ${commande.getClass.getSimpleName}"
     }
     "générer un événement lorsque le recruteur n'est pas encore inscrit" in {
       // Given
       val recruteur = recruteurBuilder.build
 
       // When
-      val events: List[Event] = recruteur.inscrire(inscrireCommande)
+      val events: List[Event] = recruteur.inscrire(commande)
 
       // Then
       events.size mustBe 1
@@ -46,15 +46,15 @@ class InscrireRecruteurSpec extends WordSpec with MustMatchers with MockitoSugar
       val recruteur = recruteurBuilder.build
 
       // When
-      val results = recruteur.inscrire(inscrireCommande)
+      val results = recruteur.inscrire(commande)
 
       // Then
       val recruteurInscritEvent = results.head.asInstanceOf[RecruteurInscritEvent]
-      recruteurInscritEvent.recruteurId mustBe inscrireCommande.id
-      recruteurInscritEvent.nom mustBe inscrireCommande.nom
-      recruteurInscritEvent.prenom mustBe inscrireCommande.prenom
-      recruteurInscritEvent.email mustBe inscrireCommande.email
-      recruteurInscritEvent.genre mustBe inscrireCommande.genre
+      recruteurInscritEvent.recruteurId mustBe commande.id
+      recruteurInscritEvent.nom mustBe commande.nom
+      recruteurInscritEvent.prenom mustBe commande.prenom
+      recruteurInscritEvent.email mustBe commande.email
+      recruteurInscritEvent.genre mustBe commande.genre
     }
   }
 

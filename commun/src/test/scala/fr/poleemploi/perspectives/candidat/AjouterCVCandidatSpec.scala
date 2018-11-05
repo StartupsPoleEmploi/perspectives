@@ -41,7 +41,7 @@ class AjouterCVCandidatSpec extends AsyncWordSpec
       recoverToExceptionIf[IllegalArgumentException] {
         candidat.ajouterCV(commande, cvService)
       }.map(ex =>
-        ex.getMessage mustBe s"Le candidat ${candidat.id.value} n'est pas encore inscrit"
+        ex.getMessage mustBe s"Le candidat ${candidat.id.value} dans l'état Nouveau ne peut pas gérer la commande ${commande.getClass.getSimpleName}"
       )
     }
     "renvoyer une erreur lorsque le CV existe déjà" in {

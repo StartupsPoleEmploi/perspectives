@@ -28,7 +28,7 @@ class DeclarerRepriseEmploiSpec extends WordSpec with MustMatchers with MockitoS
       }
 
       // Then
-      ex.getMessage mustBe s"Le candidat ${candidat.id.value} n'est pas encore inscrit"
+      ex.getMessage mustBe s"Le candidat ${candidat.id.value} dans l'état Nouveau ne peut pas gérer la commande ${commande.getClass.getSimpleName}"
     }
     "renvoyer une erreur lorsque le candidat n'est pas en recherche d'emploi (reprise déjà déclarée)" in {
       // Given

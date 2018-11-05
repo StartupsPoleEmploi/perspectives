@@ -32,7 +32,7 @@ class ModifierCriteresCandidatSpec extends WordSpec
       }
 
       // Then
-      ex.getMessage mustBe s"Le candidat ${candidat.id.value} n'est pas encore inscrit"
+      ex.getMessage mustBe s"Le candidat ${candidat.id.value} dans l'état Nouveau ne peut pas gérer la commande ${commande.getClass.getSimpleName}"
     }
     "ne pas générer d'événement si aucun critère n'a été modifié" in {
       // Given

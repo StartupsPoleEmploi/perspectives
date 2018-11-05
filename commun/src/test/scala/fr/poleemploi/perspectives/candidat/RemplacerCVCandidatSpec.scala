@@ -41,7 +41,7 @@ class RemplacerCVCandidatSpec extends AsyncWordSpec
       recoverToExceptionIf[IllegalArgumentException] {
         candidat.remplacerCV(commande, cvService)
       }.map(ex =>
-        ex.getMessage mustBe s"Le candidat ${candidat.id.value} n'est pas encore inscrit"
+        ex.getMessage mustBe s"Le candidat ${candidat.id.value} dans l'état Nouveau ne peut pas gérer la commande ${commande.getClass.getSimpleName}"
       )
     }
     "renvoyer une erreur lorsqu'aucun CV n'existe" in {

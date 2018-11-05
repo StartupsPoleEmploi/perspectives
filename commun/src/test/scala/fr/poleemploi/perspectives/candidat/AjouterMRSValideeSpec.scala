@@ -33,7 +33,7 @@ class AjouterMRSValideeSpec extends WordSpec with MustMatchers with MockitoSugar
       }
 
       // Then
-      ex.getMessage mustBe s"Le candidat ${candidat.id.value} n'est pas encore inscrit"
+      ex.getMessage mustBe s"Le candidat ${candidat.id.value} dans l'état Nouveau ne peut pas gérer la commande ${commande.getClass.getSimpleName}"
     }
     "renvoyer une erreur lorsque le candidat a déjà passé la MRS" in {
       // Given

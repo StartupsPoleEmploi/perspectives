@@ -9,7 +9,7 @@ class CreerAlerteSpec extends WordSpec with MustMatchers with MockitoSugar {
 
   val recruteurBuilder = new RecruteurBuilder
 
-  val creerAlerteCommand: CreerAlerteCommand =
+  val commande: CreerAlerteCommand =
     CreerAlerteCommand(
       id = recruteurBuilder.recruteurId,
       alerteId = recruteurBuilder.genererAlerteId,
@@ -26,11 +26,11 @@ class CreerAlerteSpec extends WordSpec with MustMatchers with MockitoSugar {
 
       // When
       val ex = intercept[IllegalArgumentException] {
-        recruteur.creerAlerte(creerAlerteCommand)
+        recruteur.creerAlerte(commande)
       }
 
       // Then
-      ex.getMessage mustBe s"Le recruteur ${recruteur.id.value} n'est pas encore inscrit"
+      ex.getMessage mustBe s"Le recruteur ${commande.id.value} dans l'état Nouveau ne peut pas gérer la commande ${commande.getClass.getSimpleName}"
     }
     "renvoyer une erreur lorsque le recruteur n'a pas complété son profil" in {
       // Given
@@ -38,11 +38,11 @@ class CreerAlerteSpec extends WordSpec with MustMatchers with MockitoSugar {
 
       // When
       val ex = intercept[IllegalArgumentException] {
-        recruteur.creerAlerte(creerAlerteCommand)
+        recruteur.creerAlerte(commande)
       }
 
       // Then
-      ex.getMessage mustBe s"Le recruteur ${recruteur.id.value} n'a pas encore complété son profil"
+      ex.getMessage mustBe s"Le recruteur ${commande.id.value} dans l'état Inscrit ne peut pas gérer la commande ${commande.getClass.getSimpleName}"
     }
     "renvoyer une erreur lorsque l'alerte ne comporte aucun critère" in {
       // Given
@@ -53,7 +53,7 @@ class CreerAlerteSpec extends WordSpec with MustMatchers with MockitoSugar {
 
       // When
       val ex = intercept[IllegalArgumentException] {
-        recruteur.creerAlerte(creerAlerteCommand.copy(
+        recruteur.creerAlerte(commande.copy(
           codeSecteurActivite = None,
           codeROME = None,
           codeDepartement = None
@@ -75,7 +75,7 @@ class CreerAlerteSpec extends WordSpec with MustMatchers with MockitoSugar {
 
       // When
       val ex = intercept[IllegalArgumentException] {
-        recruteur.creerAlerte(creerAlerteCommand)
+        recruteur.creerAlerte(commande)
       }
 
       // Then
@@ -95,7 +95,7 @@ class CreerAlerteSpec extends WordSpec with MustMatchers with MockitoSugar {
 
       // When
       val ex = intercept[IllegalArgumentException] {
-        recruteur.creerAlerte(creerAlerteCommand.copy(
+        recruteur.creerAlerte(commande.copy(
           codeSecteurActivite = Some(CodeSecteurActivite("H")),
           codeROME = Some(CodeROME("H2909")),
           codeDepartement = Some(CodeDepartement("85"))
@@ -113,7 +113,7 @@ class CreerAlerteSpec extends WordSpec with MustMatchers with MockitoSugar {
         .build
 
       // When
-      val result = recruteur.creerAlerte(creerAlerteCommand)
+      val result = recruteur.creerAlerte(commande)
 
       // Then
       result.count(_.isInstanceOf[AlerteRecruteurCreeEvent]) mustBe 1
@@ -126,18 +126,18 @@ class CreerAlerteSpec extends WordSpec with MustMatchers with MockitoSugar {
         .build
 
       // When
-      val result = recruteur.creerAlerte(creerAlerteCommand)
+      val result = recruteur.creerAlerte(commande)
 
       // Then
       val alerteRecruteurCreeEvent = result
         .filter(_.getClass == classOf[AlerteRecruteurCreeEvent])
         .head.asInstanceOf[AlerteRecruteurCreeEvent]
-      alerteRecruteurCreeEvent.recruteurId mustBe creerAlerteCommand.id
-      alerteRecruteurCreeEvent.alerteId mustBe creerAlerteCommand.alerteId
-      alerteRecruteurCreeEvent.frequence mustBe creerAlerteCommand.frequenceAlerte
-      alerteRecruteurCreeEvent.codeSecteurActivite mustBe creerAlerteCommand.codeSecteurActivite
-      alerteRecruteurCreeEvent.codeROME mustBe creerAlerteCommand.codeROME
-      alerteRecruteurCreeEvent.codeDepartement mustBe creerAlerteCommand.codeDepartement
+      alerteRecruteurCreeEvent.recruteurId mustBe commande.id
+      alerteRecruteurCreeEvent.alerteId mustBe commande.alerteId
+      alerteRecruteurCreeEvent.frequence mustBe commande.frequenceAlerte
+      alerteRecruteurCreeEvent.codeSecteurActivite mustBe commande.codeSecteurActivite
+      alerteRecruteurCreeEvent.codeROME mustBe commande.codeROME
+      alerteRecruteurCreeEvent.codeDepartement mustBe commande.codeDepartement
     }
   }
 
