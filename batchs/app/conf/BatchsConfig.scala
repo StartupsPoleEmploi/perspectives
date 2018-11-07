@@ -17,9 +17,11 @@ class BatchsConfig(configuration: Configuration) {
   val version: String = BuildInfo.version
   val webappURL: String = configuration.get[String]("webappURL")
 
-  val emploiStoreOauthConfig: OauthConfig = OauthConfig(
+  val partenaireOauthConfig: OauthConfig = OauthConfig(
     clientId = configuration.get[String]("emploiStore.oauth2.clientId"),
-    clientSecret = configuration.get[String]("emploiStore.oauth2.clientSecret")
+    clientSecret = configuration.get[String]("emploiStore.oauth2.clientSecret"),
+    urlAuthentification = configuration.get[String]("emploiStore.entreprise.urlAuthentification"),
+    realm = "partenaire"
   )
 
   val mailjetWSAdapterConfig: MailjetWSAdapterConfig = MailjetWSAdapterConfig(
@@ -36,8 +38,7 @@ class BatchsConfig(configuration: Configuration) {
   )
 
   val referentielMetierWSAdapterConfig: ReferentielMetierWSAdapterConfig = ReferentielMetierWSAdapterConfig(
-    urlAuthentification = configuration.get[String]("emploiStore.entreprise.urlAuthentification"),
     urlApi = configuration.get[String]("emploiStore.urlApi"),
-    oauthConfig = emploiStoreOauthConfig
+    oauthConfig = partenaireOauthConfig
   )
 }
