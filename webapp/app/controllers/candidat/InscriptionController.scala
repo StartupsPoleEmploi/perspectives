@@ -36,8 +36,8 @@ class InscriptionController @Inject()(cc: ControllerComponents,
       genre = Genre.HOMME,
       adresse = Some(Adresse(
         voie = "3 rue des oursons",
-        codePostal = "75020",
-        libelleCommune = "Paris",
+        codePostal = "85000",
+        libelleCommune = "La Roche sur Yon",
         libellePays = "France"
       )),
       statutDemandeurEmploi = Some(StatutDemandeurEmploi.DEMANDEUR_EMPLOI)
