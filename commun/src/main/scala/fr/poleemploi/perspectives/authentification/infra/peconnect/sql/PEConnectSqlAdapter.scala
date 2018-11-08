@@ -1,10 +1,13 @@
 package fr.poleemploi.perspectives.authentification.infra.peconnect.sql
 
+import akka.NotUsed
+import akka.stream.scaladsl.Source
 import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
 import fr.poleemploi.perspectives.recruteur.RecruteurId
 import slick.jdbc.JdbcBackend.Database
+import slick.jdbc.{ResultSetConcurrency, ResultSetType}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -63,6 +66,20 @@ class PEConnectSqlAdapter(val driver: PostgresDriver,
 
   def getCandidat(candidatId: CandidatId): Future[CandidatPEConnect] =
     database.run(getCandidatQuery(candidatId).result.head)
+
+  def getAllCandidats: Source[CandidatPEConnect, NotUsed] =
+    Source.fromPublisher {
+      database.stream(
+        candidatsPEConnectTable
+          .result
+          .transactionally
+          .withStatementParameters(
+            rsType = ResultSetType.ForwardOnly,
+            rsConcurrency = ResultSetConcurrency.ReadOnly,
+            fetchSize = 1000
+          )
+      )
+    }
 
   def findCandidatId(peConnectId: PEConnectId): Future[Option[CandidatId]] =
     database.run(findCandidatIdQuery(peConnectId).result.headOption)

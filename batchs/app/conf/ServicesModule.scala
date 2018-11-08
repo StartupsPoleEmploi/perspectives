@@ -1,9 +1,11 @@
 package conf
 
 import com.google.inject.{AbstractModule, Provider, Provides, Singleton}
-import fr.poleemploi.perspectives.candidat.mrs.domain.ImportMRSCandidat
+import fr.poleemploi.perspectives.candidat.mrs.domain.{ImportHabiletesMRS, ImportMRSCandidat, ReferentielHabiletesMRS}
+import fr.poleemploi.perspectives.candidat.mrs.infra.csv.ImportHabiletesMRSCsvAdapter
 import fr.poleemploi.perspectives.candidat.mrs.infra.local.ImportMRSCandidatLocal
 import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.ImportMRSCandidatPEConnect
+import fr.poleemploi.perspectives.candidat.mrs.infra.sql.ReferentielHabiletesMRSSqlAdapter
 import fr.poleemploi.perspectives.emailing.domain.EmailingService
 import fr.poleemploi.perspectives.emailing.infra.local.LocalEmailingService
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetEmailingService
@@ -44,4 +46,14 @@ class ServicesModule extends AbstractModule {
   @Singleton
   def rechercheCandidatService: RechercheCandidatService =
     new RechercheCandidatService
+
+  @Provides
+  @Singleton
+  def referentielHabiletesMRS(referentielHabiletesMRSSqlAdapter: Provider[ReferentielHabiletesMRSSqlAdapter]): ReferentielHabiletesMRS =
+    referentielHabiletesMRSSqlAdapter.get()
+
+  @Provides
+  @Singleton
+  def importHabiletesMRS(importHabiletesMRSCsvAdapter: Provider[ImportHabiletesMRSCsvAdapter]): ImportHabiletesMRS =
+    importHabiletesMRSCsvAdapter.get()
 }

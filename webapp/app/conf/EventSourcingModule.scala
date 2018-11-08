@@ -6,6 +6,7 @@ import fr.poleemploi.eventsourcing.eventstore.EventStore
 import fr.poleemploi.eventsourcing.{AggregateRepository, Event}
 import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.candidat.cv.domain.CVService
+import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielHabiletesMRS
 import fr.poleemploi.perspectives.recruteur._
 import fr.poleemploi.perspectives.recruteur.alerte.domain.AlerteId
 import fr.poleemploi.perspectives.recruteur.commentaire.domain.CommentaireService
@@ -28,7 +29,8 @@ class EventSourcingModule extends AbstractModule {
   @Provides
   @Singleton
   def candidatCommandHandler(candidatRepository: CandidatRepository,
-                             cvService: CVService): CandidatCommandHandler =
+                             cvService: CVService,
+                             referentielHabiletesMRS: ReferentielHabiletesMRS): CandidatCommandHandler =
     new CandidatCommandHandler {
       override def repository: AggregateRepository[Candidat] = candidatRepository
 
@@ -40,7 +42,7 @@ class EventSourcingModule extends AbstractModule {
         case command: ConnecterCandidatCommand => c => Future(c.connecter(command))
         case command: AjouterCVCommand => c => c.ajouterCV(command, cvService)
         case command: RemplacerCVCommand => c => c.remplacerCV(command, cvService)
-        case command: AjouterMRSValideesCommand => c => Future(c.ajouterMRSValidee(command))
+        case command: AjouterMRSValideesCommand => c => c.ajouterMRSValidee(command, referentielHabiletesMRS)
         case command: DeclarerRepriseEmploiParConseillerCommand => c => Future(c.declarerRepriseEmploiParConseiller(command))
       }
     }

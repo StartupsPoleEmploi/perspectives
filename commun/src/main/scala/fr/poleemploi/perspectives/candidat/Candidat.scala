@@ -2,7 +2,7 @@ package fr.poleemploi.perspectives.candidat
 
 import fr.poleemploi.eventsourcing.{Aggregate, Event}
 import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, CVService}
-import fr.poleemploi.perspectives.candidat.mrs.domain.MRSValidee
+import fr.poleemploi.perspectives.candidat.mrs.domain.{MRSValidee, ReferentielHabiletesMRS}
 import fr.poleemploi.perspectives.candidat.state.{CandidatInscritState, CandidatState, NouveauCandidatState}
 import fr.poleemploi.perspectives.commun.domain._
 
@@ -62,6 +62,7 @@ class Candidat(override val id: CandidatId,
         context.copy(
           mrsValidees = MRSValidee(
             codeROME = e.metier,
+            codeDepartement = e.departement,
             dateEvaluation = e.dateEvaluation) :: context.mrsValidees
         )
       case _: RepriseEmploiDeclareeParConseillerEvent =>
@@ -84,8 +85,8 @@ class Candidat(override val id: CandidatId,
   def remplacerCV(command: RemplacerCVCommand, cvService: CVService): Future[List[Event]] =
     state.remplacerCV(context = context, command = command, cvService = cvService)
 
-  def ajouterMRSValidee(command: AjouterMRSValideesCommand): List[Event] =
-    state.ajouterMRSValidee(context = context, command = command)
+  def ajouterMRSValidee(command: AjouterMRSValideesCommand, referentielHabiletesMRS: ReferentielHabiletesMRS): Future[List[Event]] =
+    state.ajouterMRSValidee(context = context, command = command, referentielHabiletesMRS = referentielHabiletesMRS)
 
   def declarerRepriseEmploiParConseiller(command: DeclarerRepriseEmploiParConseillerCommand): List[Event] =
     state.declarerRepriseEmploiParConseiller(context = context, command = command)

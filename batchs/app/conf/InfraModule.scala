@@ -9,9 +9,10 @@ import fr.poleemploi.eventsourcing.infra.jackson.EventStoreObjectMapperBuilder
 import fr.poleemploi.eventsourcing.infra.postgresql.{PostgreSQLAppendOnlyStore, PostgresDriver => EventSourcingPostgresDriver}
 import fr.poleemploi.eventsourcing.{EventHandler, EventPublisher, LocalEventHandler, LocalEventPublisher}
 import fr.poleemploi.perspectives.authentification.infra.peconnect.sql.PEConnectSqlAdapter
+import fr.poleemploi.perspectives.candidat.mrs.infra.csv.{HabiletesMRSCsvAdapter, ImportHabiletesMRSCsvAdapter}
 import fr.poleemploi.perspectives.candidat.mrs.infra.local.ImportMRSCandidatLocal
-import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.{ImportMRSCandidatPEConnect, MRSValideesCSVAdapter}
-import fr.poleemploi.perspectives.candidat.mrs.infra.sql.MRSValideesSqlAdapter
+import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.{ImportMRSCandidatPEConnect, MRSValideesCandidatsCSVAdapter, MRSValideesCandidatsSqlAdapter}
+import fr.poleemploi.perspectives.candidat.mrs.infra.sql.ReferentielHabiletesMRSSqlAdapter
 import fr.poleemploi.perspectives.commun.infra.jackson.PerspectivesEventSourcingModule
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
 import fr.poleemploi.perspectives.emailing.infra.local.LocalEmailingService
@@ -97,12 +98,12 @@ class InfraModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
-  def mrsValideesCSVAdapter(actorSystem: ActorSystem): MRSValideesCSVAdapter =
-    new MRSValideesCSVAdapter(actorSystem = actorSystem)
+  def mrsValideesCandidatsCSVAdapter(actorSystem: ActorSystem): MRSValideesCandidatsCSVAdapter =
+    new MRSValideesCandidatsCSVAdapter(actorSystem = actorSystem)
 
   @Provides
-  def mrsValideesSqlAdapter(database: Database): MRSValideesSqlAdapter =
-    new MRSValideesSqlAdapter(
+  def mrsValideesCandidatsSqlAdapter(database: Database): MRSValideesCandidatsSqlAdapter =
+    new MRSValideesCandidatsSqlAdapter(
       driver = PostgresDriver,
       database = database
     )
@@ -146,13 +147,15 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   def importMRSCandidatPEConnectAdapter(batchsConfig: BatchsConfig,
-                                        mrsValideesCSVAdapter: MRSValideesCSVAdapter,
-                                        mrsValideesSqlAdapter: MRSValideesSqlAdapter,
+                                        actorSystem: ActorSystem,
+                                        mrsValideesCandidatsCSVAdapter: MRSValideesCandidatsCSVAdapter,
+                                        mrsValideesCandidatsSqlAdapter: MRSValideesCandidatsSqlAdapter,
                                         peConnectSqlAdapter: PEConnectSqlAdapter): ImportMRSCandidatPEConnect =
     new ImportMRSCandidatPEConnect(
       config = batchsConfig.importMRSCandidatPEConnectConfig,
-      mrsValideesCSVAdapter = mrsValideesCSVAdapter,
-      mrsValideesSqlAdapter = mrsValideesSqlAdapter,
+      actorSystem = actorSystem,
+      mrsValideesCandidatsCSVAdapter = mrsValideesCandidatsCSVAdapter,
+      mrsValideesCandidatsSqlAdapter = mrsValideesCandidatsSqlAdapter,
       peConnectSqlAdapter = peConnectSqlAdapter
     )
 
@@ -162,5 +165,26 @@ class InfraModule extends AbstractModule with ScalaModule {
     new ReferentielMetierWSAdapter(
       config = batchsConfig.referentielMetierWSAdapterConfig,
       wsClient = wsClient
+    )
+
+  @Provides
+  def referentielHabiletesMRSSqlAdapter(database: Database): ReferentielHabiletesMRSSqlAdapter =
+    new ReferentielHabiletesMRSSqlAdapter(
+      driver = PostgresDriver,
+      database = database
+    )
+
+  @Provides
+  def habiletesMRSCsvAdapter(actorSystem: ActorSystem): HabiletesMRSCsvAdapter =
+    new HabiletesMRSCsvAdapter(actorSystem = actorSystem)
+
+  @Provides
+  def importHabiletesMRSCsvAdapter(batchsConfig: BatchsConfig,
+                                   referentielHabiletesMRSSqlAdapter: ReferentielHabiletesMRSSqlAdapter,
+                                   habiletesMRSCsvAdapter: HabiletesMRSCsvAdapter): ImportHabiletesMRSCsvAdapter =
+    new ImportHabiletesMRSCsvAdapter(
+      config = batchsConfig.importHabiletesMRSCsvAdapterConfig,
+      habiletesMRSCsvAdapter = habiletesMRSCsvAdapter,
+      referentielHabiletesMRSSqlAdapter = referentielHabiletesMRSSqlAdapter
     )
 }

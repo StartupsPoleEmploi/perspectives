@@ -27,6 +27,7 @@ object PerspectivesEventSourcingModule extends EventSourcingModule {
   addStringValueObject(classOf[TypeMedia], TypeMedia(_))
   addStringValueObject(classOf[AlerteId], AlerteId)
   addStringValueObject(classOf[FrequenceAlerte], FrequenceAlerte(_))
+  addStringValueObject(classOf[Habilete], Habilete(_))
 
   addIntValueObject(classOf[RayonRecherche], RayonRecherche(_))
 }

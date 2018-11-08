@@ -53,6 +53,8 @@ case class CVRemplaceEvent(candidatId: CandidatId,
 
 case class MRSAjouteeEvent(candidatId: CandidatId,
                            metier: CodeROME,
+                           departement: CodeDepartement,
+                           habiletes: List[Habilete],
                            dateEvaluation: LocalDate) extends CandidatEvent
 
 case class RepriseEmploiDeclareeParConseillerEvent(candidatId: CandidatId,

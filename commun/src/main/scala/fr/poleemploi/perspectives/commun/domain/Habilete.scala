@@ -1,6 +1,8 @@
 package fr.poleemploi.perspectives.commun.domain
 
-case class Habilete(label: String)
+import fr.poleemploi.eventsourcing.StringValueObject
+
+case class Habilete(value: String) extends StringValueObject
 
 object Habilete {
 

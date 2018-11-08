@@ -2,6 +2,7 @@ package conf
 
 import java.nio.file.Paths
 
+import fr.poleemploi.perspectives.candidat.mrs.infra.csv.ImportHabiletesMRSCsvAdapterConfig
 import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.ImportMRSCandidatPEConnectConfig
 import fr.poleemploi.perspectives.commun.infra.oauth.OauthConfig
 import fr.poleemploi.perspectives.emailing.infra.ws.MailjetWSAdapterConfig
@@ -33,8 +34,13 @@ class BatchsConfig(configuration: Configuration) {
   )
 
   val importMRSCandidatPEConnectConfig: ImportMRSCandidatPEConnectConfig = ImportMRSCandidatPEConnectConfig(
-    importDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.mrsValidees.importDirectory")),
-    archiveDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.mrsValidees.archiveDirectory"))
+    importDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.candidatsMrsValidees.importDirectory")),
+    archiveDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.candidatsMrsValidees.archiveDirectory"))
+  )
+
+  val importHabiletesMRSCsvAdapterConfig: ImportHabiletesMRSCsvAdapterConfig = ImportHabiletesMRSCsvAdapterConfig(
+    importDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.habiletesMRS.importDirectory")),
+    archiveDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.habiletesMRS.archiveDirectory"))
   )
 
   val referentielMetierWSAdapterConfig: ReferentielMetierWSAdapterConfig = ReferentielMetierWSAdapterConfig(

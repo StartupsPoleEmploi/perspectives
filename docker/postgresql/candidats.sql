@@ -13,6 +13,7 @@ CREATE TABLE candidats
   commune   CHARACTER VARYING(255),
   recherche_metier_evalue BOOL,
   metiers_evalues   TEXT[] DEFAULT '{}',
+  habiletes   TEXT[] DEFAULT '{}',
   recherche_autre_metier BOOL,
   metiers_recherches TEXT[] DEFAULT '{}',
   contacte_par_agence_interim BOOL,

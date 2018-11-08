@@ -2,8 +2,8 @@ package fr.poleemploi.perspectives.candidat.mrs.infra.peconnect
 
 import java.nio.file.Paths
 
+import akka.actor.ActorSystem
 import fr.poleemploi.perspectives.authentification.infra.peconnect.sql.PEConnectSqlAdapter
-import fr.poleemploi.perspectives.candidat.mrs.infra.sql.MRSValideesSqlAdapter
 import org.mockito.Mockito._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
@@ -12,25 +12,27 @@ import org.scalatest.{AsyncWordSpec, BeforeAndAfter, MustMatchers, Succeeded}
 class ImportMRSCandidatPEConnectSpec extends AsyncWordSpec
   with MustMatchers with MockitoSugar with BeforeAndAfter with ScalaFutures {
 
+  val actorSystem: ActorSystem = ActorSystem(this.getClass.getSimpleName)
   var referentielMRSCandidatPEConnect: ImportMRSCandidatPEConnect = _
   var config: ImportMRSCandidatPEConnectConfig = _
-  var mrsValideesCSVAdapter: MRSValideesCSVAdapter = _
-  var mrsValideesSqlAdapter: MRSValideesSqlAdapter = _
+  var mrsValideesCandidatsCSVAdapter: MRSValideesCandidatsCSVAdapter = _
+  var mrsValideesCandidatsSqlAdapter: MRSValideesCandidatsSqlAdapter = _
   var peConnectSqlAdapter: PEConnectSqlAdapter = _
 
   before {
     config = mock[ImportMRSCandidatPEConnectConfig]
-    mrsValideesCSVAdapter = mock[MRSValideesCSVAdapter]
-    mrsValideesSqlAdapter = mock[MRSValideesSqlAdapter]
+    mrsValideesCandidatsCSVAdapter = mock[MRSValideesCandidatsCSVAdapter]
+    mrsValideesCandidatsSqlAdapter = mock[MRSValideesCandidatsSqlAdapter]
     peConnectSqlAdapter = mock[PEConnectSqlAdapter]
 
-    when(config.importDirectory) thenReturn Paths.get(getClass.getClassLoader.getResource("./mrs_validees").toURI)
-    when(config.archiveDirectory) thenReturn Paths.get(getClass.getClassLoader.getResource("./mrs_validees/archives").toURI)
+    when(config.importDirectory) thenReturn Paths.get(getClass.getClassLoader.getResource("./candidats_mrs_validees").toURI)
+    when(config.archiveDirectory) thenReturn Paths.get(getClass.getClassLoader.getResource("./candidats_mrs_validees/archives").toURI)
 
     referentielMRSCandidatPEConnect = new ImportMRSCandidatPEConnect(
       config = config,
-      mrsValideesCSVAdapter = mrsValideesCSVAdapter,
-      mrsValideesSqlAdapter = mrsValideesSqlAdapter,
+      actorSystem = actorSystem,
+      mrsValideesCandidatsCSVAdapter = mrsValideesCandidatsCSVAdapter,
+      mrsValideesCandidatsSqlAdapter = mrsValideesCandidatsSqlAdapter,
       peConnectSqlAdapter = peConnectSqlAdapter
     )
   }
@@ -41,8 +43,9 @@ class ImportMRSCandidatPEConnectSpec extends AsyncWordSpec
       when(config.importDirectory) thenReturn Paths.get("/home/unknown")
       referentielMRSCandidatPEConnect = new ImportMRSCandidatPEConnect(
         config = config,
-        mrsValideesCSVAdapter = mrsValideesCSVAdapter,
-        mrsValideesSqlAdapter = mrsValideesSqlAdapter,
+        actorSystem = actorSystem,
+        mrsValideesCandidatsCSVAdapter = mrsValideesCandidatsCSVAdapter,
+        mrsValideesCandidatsSqlAdapter = mrsValideesCandidatsSqlAdapter,
         peConnectSqlAdapter = peConnectSqlAdapter
       )
 
@@ -58,8 +61,9 @@ class ImportMRSCandidatPEConnectSpec extends AsyncWordSpec
       when(config.archiveDirectory) thenReturn Paths.get("/home/unknown")
       referentielMRSCandidatPEConnect = new ImportMRSCandidatPEConnect(
         config = config,
-        mrsValideesCSVAdapter = mrsValideesCSVAdapter,
-        mrsValideesSqlAdapter = mrsValideesSqlAdapter,
+        actorSystem = actorSystem,
+        mrsValideesCandidatsCSVAdapter = mrsValideesCandidatsCSVAdapter,
+        mrsValideesCandidatsSqlAdapter = mrsValideesCandidatsSqlAdapter,
         peConnectSqlAdapter = peConnectSqlAdapter
       )
 

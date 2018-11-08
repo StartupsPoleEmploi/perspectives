@@ -1,0 +1,2 @@
+dc_individu_local;dn_individu_national;dc_siteprescripteur;dc_nom;dc_prenom;dc_telephone;dd_daterealisation;kc_resultatsbeneficiaire_id;dc_codepostallocalite;dc_codealeinscription;dc_adresseemail;dc_rome_id;dc_ididentiteexterne;dc_romev3_1_id;dc_dureeexperience_1;dc_romev3_2_id;dc_dureeexperience_2
+"12345678910";8031234567;"44212";"NOM";"PRENOM";"0701020304";2018-01-09 00:00:00.0;"VEM";"44200 NANTES";"44155";"PRENOM.NOM@gmail.com";"H2909";"28d0b75a-b694-4de3-8849-18bfbfebd729";"G1502";;;

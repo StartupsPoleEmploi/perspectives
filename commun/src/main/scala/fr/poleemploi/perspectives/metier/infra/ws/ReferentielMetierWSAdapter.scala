@@ -42,9 +42,9 @@ class ReferentielMetierWSAdapter(config: ReferentielMetierWSAdapterConfig,
   private def listerMetiers(accessTokenResponse: AccessTokenResponse): Future[Map[CodeROME, Metier]] = {
     def callWS(offset: Option[Int] = None): Future[ListeMetiersResponse] =
       wsClient
-        .url(s"${config.urlApi}/infotravail/v1/datastore_search" + offset
-          .map(o => s"?offset=$o&resource_id=$metiersResourceId")
-          .getOrElse(s"?resource_id=$metiersResourceId"))
+        .url(s"${config.urlApi}/infotravail/v1/datastore_search" +
+          offset.map(o => s"?offset=$o&resource_id=$metiersResourceId")
+            .getOrElse(s"?resource_id=$metiersResourceId"))
         .addHttpHeaders(("Authorization", s"Bearer ${accessTokenResponse.accessToken}"))
         .get()
         .map(filtreStatutReponse(_))
@@ -61,9 +61,9 @@ class ReferentielMetierWSAdapter(config: ReferentielMetierWSAdapterConfig,
 
     futures.map { l =>
       l.flatMap(_.records)
-      .foldLeft(Map[CodeROME, Metier]())(
-        (map, romeCardResponse) => map + (CodeROME(romeCardResponse.romeProfessionCardCode) -> romeCardResponse.toMetier)
-      )
+        .foldLeft(Map[CodeROME, Metier]())(
+          (map, romeCardResponse) => map + (CodeROME(romeCardResponse.romeProfessionCardCode) -> romeCardResponse.toMetier)
+        )
     }
   }
 

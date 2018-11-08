@@ -3,9 +3,10 @@ package conf
 import com.google.inject.{AbstractModule, Provider, Provides, Singleton}
 import fr.poleemploi.perspectives.candidat.cv.domain.CVService
 import fr.poleemploi.perspectives.candidat.cv.infra.sql.CVSqlAdapter
-import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielMRSCandidat
-import fr.poleemploi.perspectives.candidat.mrs.infra.local.ReferentielMRSCandidatLocal
+import fr.poleemploi.perspectives.candidat.mrs.domain.{ReferentielHabiletesMRS, ReferentielMRSCandidat}
+import fr.poleemploi.perspectives.candidat.mrs.infra.local.{ReferentielHabiletesMRSLocal, ReferentielMRSCandidatLocal}
 import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.ReferentielMRSCandidatPEConnect
+import fr.poleemploi.perspectives.candidat.mrs.infra.sql.ReferentielHabiletesMRSSqlAdapter
 import fr.poleemploi.perspectives.conseiller.{AutorisationService, ConseillerId}
 import fr.poleemploi.perspectives.emailing.domain.EmailingService
 import fr.poleemploi.perspectives.emailing.infra.local.LocalEmailingService
@@ -46,6 +47,16 @@ class ServicesModule extends AbstractModule {
 
   @Provides
   @Singleton
+  def referentielHabiletesMRS(referentielHabiletesMRSSqlAdapter: Provider[ReferentielHabiletesMRSSqlAdapter],
+                              referentielHabiletesMRSLocal: Provider[ReferentielHabiletesMRSLocal],
+                              webAppConfig: WebAppConfig): ReferentielHabiletesMRS =
+    if (webAppConfig.useReferentielHabiletesMRS)
+      referentielHabiletesMRSSqlAdapter.get()
+    else
+      referentielHabiletesMRSLocal.get()
+
+  @Provides
+  @Singleton
   def emailingService(mailjetEmailingService: Provider[MailjetEmailingService],
                       localEmailingService: Provider[LocalEmailingService],
                       webAppConfig: WebAppConfig): EmailingService =
@@ -59,7 +70,7 @@ class ServicesModule extends AbstractModule {
   def referentielMetier(referentielMetierWSAdapter: Provider[ReferentielMetierWSAdapter],
                         referentielMetierFileAdapter: Provider[ReferentielMetierFileAdapter],
                         webAppConfig: WebAppConfig): ReferentielMetier =
-    if (webAppConfig.useReferentielMetierWS)
+    if (webAppConfig.useReferentielMetier)
       referentielMetierWSAdapter.get()
     else
       referentielMetierFileAdapter.get()

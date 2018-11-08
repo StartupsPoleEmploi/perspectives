@@ -39,11 +39,20 @@ class CandidatBuilder {
     this
   }
 
-  def avecMRSValidee(mrsValidee: MRSValidee): CandidatBuilder = {
+  def avecMRSValidee(mrsValidee: MRSValidee,
+                     habiletes: List[Habilete] = Nil): CandidatBuilder = {
     events += MRSAjouteeEvent(
       candidatId = candidatId,
       metier = mrsValidee.codeROME,
-      dateEvaluation = mrsValidee.dateEvaluation
+      departement = mrsValidee.codeDepartement,
+      dateEvaluation = mrsValidee.dateEvaluation,
+      habiletes =
+        if (habiletes.isEmpty)
+          List(
+            Habilete("S'adapter au changement"),
+            Habilete("Maintenir son attention dans la durée")
+          ) else
+          habiletes
     )
     this
   }
@@ -93,7 +102,7 @@ class CandidatBuilder {
   def avecRepriseEmploiDeclaree(conseillerId: ConseillerId): CandidatBuilder = {
     events += RepriseEmploiDeclareeParConseillerEvent(
       candidatId = candidatId,
-      conseillerId =conseillerId
+      conseillerId = conseillerId
     )
     this
   }

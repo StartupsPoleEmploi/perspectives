@@ -13,9 +13,9 @@ import fr.poleemploi.perspectives.authentification.infra.peconnect.jwt.PEConnect
 import fr.poleemploi.perspectives.authentification.infra.peconnect.sql.PEConnectSqlAdapter
 import fr.poleemploi.perspectives.authentification.infra.peconnect.ws.PEConnectWSAdapter
 import fr.poleemploi.perspectives.candidat.cv.infra.sql.CVSqlAdapter
-import fr.poleemploi.perspectives.candidat.mrs.infra.local.ReferentielMRSCandidatLocal
-import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.ReferentielMRSCandidatPEConnect
-import fr.poleemploi.perspectives.candidat.mrs.infra.sql.MRSValideesSqlAdapter
+import fr.poleemploi.perspectives.candidat.mrs.infra.local.{ReferentielHabiletesMRSLocal, ReferentielMRSCandidatLocal}
+import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.{MRSValideesCandidatsSqlAdapter, ReferentielMRSCandidatPEConnect}
+import fr.poleemploi.perspectives.candidat.mrs.infra.sql.ReferentielHabiletesMRSSqlAdapter
 import fr.poleemploi.perspectives.commun.infra.jackson.PerspectivesEventSourcingModule
 import fr.poleemploi.perspectives.commun.infra.oauth.OauthService
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
@@ -147,8 +147,8 @@ class InfraModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
-  def mrsValideesSqlAdapter(database: Database): MRSValideesSqlAdapter =
-    new MRSValideesSqlAdapter(
+  def mrsValideesCandidatsSqlAdapter(database: Database): MRSValideesCandidatsSqlAdapter =
+    new MRSValideesCandidatsSqlAdapter(
       driver = PostgresDriver,
       database = database
     )
@@ -199,16 +199,27 @@ class InfraModule extends AbstractModule with ScalaModule {
     new ReferentielMetierFileAdapter()
 
   @Provides
-  def referentielMRSCandidatPEConnect(mrsValideesSqlAdapter: MRSValideesSqlAdapter,
+  def referentielMRSCandidatPEConnect(mrsValideesCandidatsSqlAdapter: MRSValideesCandidatsSqlAdapter,
                                       peConnectSqlAdapter: PEConnectSqlAdapter): ReferentielMRSCandidatPEConnect =
     new ReferentielMRSCandidatPEConnect(
-      mrsValideesSqlAdapter = mrsValideesSqlAdapter,
+      mrsValideesCandidatsSqlAdapter = mrsValideesCandidatsSqlAdapter,
       peConnectSqlAdapter = peConnectSqlAdapter
     )
 
   @Provides
   def referentielMRSCandidatLocal: ReferentielMRSCandidatLocal =
     new ReferentielMRSCandidatLocal
+
+  @Provides
+  def referentielHabiletesMRSSqlAdapter(database: Database): ReferentielHabiletesMRSSqlAdapter =
+    new ReferentielHabiletesMRSSqlAdapter(
+      driver = PostgresDriver,
+      database = database
+    )
+
+  @Provides
+  def referentielHabiletesMRSLocal: ReferentielHabiletesMRSLocal =
+    new ReferentielHabiletesMRSLocal()
 
   @Provides
   def commentaireServiceLocal: CommentaireServiceLocal =

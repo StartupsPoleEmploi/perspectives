@@ -8,31 +8,31 @@ import fr.poleemploi.perspectives.candidat.{AjouterMRSValideesCommand, CandidatC
 
 import scala.concurrent.{ExecutionContextExecutor, Future}
 
-object MRSValideesActor {
+object CandidatsMRSValideesActor {
 
-  final val name = "MRSValideesActor"
+  final val name = "CandidatsMRSValideesActor"
 
-  case object StartImportMRSValidees
+  case object StartImportCandidatsMRSValidees
 
-  case object ImportMRSValideesDone
+  case object ImportCandidatsMRSValideesDone
 
   def props(importMRSCandidat: ImportMRSCandidat,
             candidatCommandHandler: CandidatCommandHandler): Props =
-    Props(new MRSValideesActor(
+    Props(new CandidatsMRSValideesActor(
       importMRSCandidat = importMRSCandidat,
       candidatCommandHandler = candidatCommandHandler
     ))
 }
 
-class MRSValideesActor(importMRSCandidat: ImportMRSCandidat,
-                       candidatCommandHandler: CandidatCommandHandler) extends Actor with ActorLogging {
+class CandidatsMRSValideesActor(importMRSCandidat: ImportMRSCandidat,
+                                candidatCommandHandler: CandidatCommandHandler) extends Actor with ActorLogging {
 
-  import MRSValideesActor._
+  import CandidatsMRSValideesActor._
 
   implicit val executionContext: ExecutionContextExecutor = context.dispatcher
 
   override def receive: Receive = {
-    case StartImportMRSValidees =>
+    case StartImportCandidatsMRSValidees =>
       log.info("Intégration des MRS validées pour les candidats")
       (for {
         mrsValidees <- importMRSCandidat.integrerMRSValidees
@@ -43,6 +43,7 @@ class MRSValideesActor(importMRSCandidat: ImportMRSCandidat,
               mrsValidees = v._2.map(m =>
                 MRSValidee(
                   codeROME = m.codeROME,
+                  codeDepartement = m.codeDepartement,
                   dateEvaluation = m.dateEvaluation
                 )).toList
             )
@@ -51,14 +52,14 @@ class MRSValideesActor(importMRSCandidat: ImportMRSCandidat,
               log.error(t, s"Erreur lors de l'import des MRS validées")
           }
         ))
-      } yield ImportMRSValideesDone) pipeTo self
+      } yield ImportCandidatsMRSValideesDone) pipeTo self
       context.become(importEnCours)
   }
 
   def importEnCours: Receive = {
-    case StartImportMRSValidees =>
+    case StartImportCandidatsMRSValidees =>
       log.warning("Import des MRS validées déjà en cours")
-    case ImportMRSValideesDone =>
+    case ImportCandidatsMRSValideesDone =>
       context.unbecome()
     case Failure(t) =>
       log.error(t, "Erreur lors de l'import des MRS validées")

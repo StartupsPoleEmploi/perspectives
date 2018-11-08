@@ -3,6 +3,7 @@ package fr.poleemploi.perspectives.candidat.state
 import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.candidat.cv.domain.CVService
+import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielHabiletesMRS
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -121,19 +122,30 @@ object CandidatInscritState extends CandidatState {
     ))
   }
 
-  override def ajouterMRSValidee(context: CandidatContext, command: AjouterMRSValideesCommand): List[Event] = {
+  override def ajouterMRSValidee(context: CandidatContext, command: AjouterMRSValideesCommand,
+                                 referentielHabiletesMRS: ReferentielHabiletesMRS): Future[List[Event]] = {
     val mrsDejaValidees = context.mrsValidees.intersect(command.mrsValidees)
     if (mrsDejaValidees.nonEmpty) {
-      throw new IllegalArgumentException(
+      return Future.failed(new IllegalArgumentException(
         s"Le candidat ${command.id.value} a déjà validé les MRS suivantes : ${mrsDejaValidees.foldLeft("")((s, mrs) => s + '\n' + s"${mrs.codeROME} le ${mrs.dateEvaluation}")}"
-      )
+      ))
     }
 
-    command.mrsValidees.map(m => MRSAjouteeEvent(
-      candidatId = command.id,
-      metier = m.codeROME,
-      dateEvaluation = m.dateEvaluation
-    ))
+    Future.sequence(
+    command.mrsValidees.map(m =>
+      referentielHabiletesMRS.habiletes(
+        codeROME = m.codeROME,
+        codeDepartement = m.codeDepartement
+      ).map(h =>
+        MRSAjouteeEvent(
+          candidatId = command.id,
+          metier = m.codeROME,
+          departement = m.codeDepartement,
+          habiletes = h,
+          dateEvaluation = m.dateEvaluation
+        ))
+      )
+    )
   }
 
   override def declarerRepriseEmploiParConseiller(context: CandidatContext, command: DeclarerRepriseEmploiParConseillerCommand): List[Event] = {

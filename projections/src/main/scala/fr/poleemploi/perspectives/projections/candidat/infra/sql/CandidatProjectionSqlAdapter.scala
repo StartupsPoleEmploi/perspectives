@@ -46,6 +46,8 @@ class CandidatProjectionSqlAdapter(database: Database,
 
     def metiersEvalues = column[List[CodeROME]]("metiers_evalues")
 
+    def habiletes = column[List[Habilete]]("habiletes")
+
     def rechercheAutreMetier = column[Option[Boolean]]("recherche_autre_metier")
 
     def metiersRecherches = column[List[CodeROME]]("metiers_recherches")
@@ -234,7 +236,7 @@ class CandidatProjectionSqlAdapter(database: Database,
   }
 
   private def candidatRechercheDtoShape(c: CandidatTable) =
-    CandidatRechercheLifted(c.candidatId, c.nom, c.prenom, c.email, c.commune, c.metiersEvalues, c.metiersRecherches, c.rayonRecherche, c.numeroTelephone, c.cvId, c.cvTypeMedia)
+    CandidatRechercheLifted(c.candidatId, c.nom, c.prenom, c.email, c.commune, c.metiersEvalues, c.habiletes, c.metiersRecherches, c.rayonRecherche, c.numeroTelephone, c.cvId, c.cvTypeMedia)
 
   private def toCandidatRechercheDto(record: CandidatRechercheRecord): CandidatRechercheDto = {
     val metiersEvalues = record.metiersEvalues.map(referentielMetier.metierParCode)
@@ -246,7 +248,7 @@ class CandidatProjectionSqlAdapter(database: Database,
       email = record.email,
       commune = record.commune,
       metiersEvalues = metiersEvalues,
-      habiletes = metiersEvalues.flatMap(m => referentielMetier.habiletesParMetier(m.codeROME)).distinct,
+      habiletes = record.habiletes,
       metiersRecherchesParSecteur =
         record.metiersRecherches.flatMap(rechercheCandidatService.metierProposeParCode)
           .groupBy(m => rechercheCandidatService.secteurActivitePourCodeROME(m.codeROME)),
@@ -390,14 +392,17 @@ class CandidatProjectionSqlAdapter(database: Database,
       Some(event.adresse.libelleCommune)
     ))).map(_ => ())
 
-  def onMRSAjouteeEvent(event: MRSAjouteeEvent): Future[Unit] =
-  //FIXME : est faite en une seule requete car la base va gérer le fait que deux evenements peuvent arriver très proches et que la projection n'attend pas la fin du traitement d'un event avant de passer à l'autre
+  def onMRSAjouteeEvent(event: MRSAjouteeEvent): Future[Unit] = {
+    val seq: Seq[String] = event.habiletes.map(_.value)
+    //FIXME : est faite en une seule requete car la base va gérer le fait que deux evenements peuvent arriver très proches et que la projection n'attend pas la fin du traitement d'un event avant de passer à l'autre
     database.run(
       sqlu"""
             UPDATE candidats
-            SET metiers_evalues = ${event.metier.value}::text || metiers_evalues
+            SET metiers_evalues = ${event.metier.value}::text || metiers_evalues,
+            habiletes = array(SELECT DISTINCT UNNEST(habiletes || $seq))
             WHERE candidat_id = ${event.candidatId.value}
           """).map(_ => ())
+  }
 
   def onRepriseEmploiDeclareeParConseillerEvent(event: RepriseEmploiDeclareeParConseillerEvent): Future[Unit] =
     database.run(repriseEmploiQuery(event.candidatId).update((

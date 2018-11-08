@@ -3,14 +3,14 @@ package conf
 import akka.actor.{ActorRef, ActorSystem}
 import com.google.inject.{AbstractModule, Inject, Provides, Singleton}
 import fr.poleemploi.perspectives.candidat.CandidatCommandHandler
-import fr.poleemploi.perspectives.candidat.mrs.domain.ImportMRSCandidat
+import fr.poleemploi.perspectives.candidat.mrs.domain.{ImportHabiletesMRS, ImportMRSCandidat}
 import fr.poleemploi.perspectives.emailing.domain.EmailingService
 import fr.poleemploi.perspectives.projections.candidat.CandidatProjection
 import fr.poleemploi.perspectives.projections.recruteur.alerte.AlerteRecruteurProjection
 import javax.inject.Named
 import net.codingwell.scalaguice.ScalaModule
 import play.api.libs.concurrent.AkkaGuiceSupport
-import schedulers.{AlerteMailRecruteurActor, BatchsScheduler, MRSValideesActor}
+import schedulers.{AlerteMailRecruteurActor, BatchsScheduler, CandidatsMRSValideesActor, HabiletesMRSActor}
 
 class Scheduled @Inject()(perspectivesScheduler: BatchsScheduler) {
 
@@ -20,7 +20,8 @@ class Scheduled @Inject()(perspectivesScheduler: BatchsScheduler) {
 class SchedulersModule extends AbstractModule with ScalaModule with AkkaGuiceSupport {
 
   override def configure(): Unit = {
-    bindActor[MRSValideesActor](MRSValideesActor.name)
+    bindActor[CandidatsMRSValideesActor](CandidatsMRSValideesActor.name)
+    bindActor[HabiletesMRSActor](HabiletesMRSActor.name)
     bindActor[AlerteMailRecruteurActor](AlerteMailRecruteurActor.name)
 
     bind[Scheduled].asEagerSingleton()
@@ -28,8 +29,8 @@ class SchedulersModule extends AbstractModule with ScalaModule with AkkaGuiceSup
 
   @Provides
   def mrsValideesActor(importMRSCandidat: ImportMRSCandidat,
-                       candidatCommandHandler: CandidatCommandHandler): MRSValideesActor =
-    new MRSValideesActor(
+                       candidatCommandHandler: CandidatCommandHandler): CandidatsMRSValideesActor =
+    new CandidatsMRSValideesActor(
       importMRSCandidat = importMRSCandidat,
       candidatCommandHandler = candidatCommandHandler
     )
@@ -47,15 +48,24 @@ class SchedulersModule extends AbstractModule with ScalaModule with AkkaGuiceSup
     )
 
   @Provides
+  def habiletesMRSActor(importHabiletesMRS: ImportHabiletesMRS): HabiletesMRSActor =
+    new HabiletesMRSActor(
+      importHabiletesMRS = importHabiletesMRS
+    )
+
+  @Provides
   @Singleton
   def perspectivesScheduler(actorSystem: ActorSystem,
-                            @Named(MRSValideesActor.name)
-                            mrsValideesActor: ActorRef,
+                            @Named(CandidatsMRSValideesActor.name)
+                            candidatsMrsValideesActor: ActorRef,
                             @Named(AlerteMailRecruteurActor.name)
-                            alerteMailRecruteurActor: ActorRef): BatchsScheduler =
+                            alerteMailRecruteurActor: ActorRef,
+                            @Named(HabiletesMRSActor.name)
+                            habiletesMRSActor: ActorRef): BatchsScheduler =
     new BatchsScheduler(
       actorSystem = actorSystem,
-      mrsValideesActor = mrsValideesActor,
-      alerteMailRecruteurActor = alerteMailRecruteurActor
+      candidatsMrsValideesActor = candidatsMrsValideesActor,
+      alerteMailRecruteurActor = alerteMailRecruteurActor,
+      habiletesMRSActor = habiletesMRSActor
     )
 }

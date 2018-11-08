@@ -2,20 +2,24 @@ package fr.poleemploi.perspectives.candidat.mrs.infra.peconnect
 
 import java.nio.file.{DirectoryStream, Files, Path, StandardCopyOption}
 
-import akka.stream.scaladsl.FileIO
+import akka.actor.ActorSystem
+import akka.stream.ActorMaterializer
+import akka.stream.scaladsl.{FileIO, Sink}
 import fr.poleemploi.perspectives.authentification.infra.peconnect.sql.PEConnectSqlAdapter
 import fr.poleemploi.perspectives.candidat.mrs.domain.{ImportMRSCandidat, MRSValideeCandidat}
 import fr.poleemploi.perspectives.candidat.mrs.infra.importMrsCandidatLogger
-import fr.poleemploi.perspectives.candidat.mrs.infra.sql.MRSValideesSqlAdapter
 
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class ImportMRSCandidatPEConnect(config: ImportMRSCandidatPEConnectConfig,
-                                 mrsValideesCSVAdapter: MRSValideesCSVAdapter,
-                                 mrsValideesSqlAdapter: MRSValideesSqlAdapter,
+                                 actorSystem: ActorSystem,
+                                 mrsValideesCandidatsCSVAdapter: MRSValideesCandidatsCSVAdapter,
+                                 mrsValideesCandidatsSqlAdapter: MRSValideesCandidatsSqlAdapter,
                                  peConnectSqlAdapter: PEConnectSqlAdapter) extends ImportMRSCandidat {
+
+  implicit val materializer: ActorMaterializer = ActorMaterializer()(actorSystem)
 
   /** Intègre les full et les delta */
   val pattern: String = "DE_MRS_VALIDES_*.csv"
@@ -33,26 +37,34 @@ class ImportMRSCandidatPEConnect(config: ImportMRSCandidatPEConnectConfig,
     val fichiers = stream.asScala.toList
     stream.close()
     for {
-      streamCandidatPEConnect <- Future.sequence(fichiers.map(f =>
+      streamMRSValideesCandidatsPEConnect <- Future.sequence(fichiers.map(f =>
         integrerFichier(f).recover {
           case t: Throwable =>
             importMrsCandidatLogger.error(s"Erreur lors de l'intégration du fichier $f", t)
             Stream.empty
         })).map(_.foldLeft(Stream.empty[MRSValideeCandidatPEConnect])((acc, s) => acc ++ s))
-      streamCandidat <- Future.sequence(streamCandidatPEConnect.map(mrsValideeCandidatPEConnect =>
-        peConnectSqlAdapter.findCandidatId(mrsValideeCandidatPEConnect.peConnectId).map(_.map(candidatId => MRSValideeCandidat(
-          candidatId = candidatId,
-          codeROME = mrsValideeCandidatPEConnect.codeROME,
-          dateEvaluation = mrsValideeCandidatPEConnect.dateEvaluation
-        ))
-        )))
-    } yield streamCandidat.flatten
+      streamCandidatsPEConnect <-
+        if (streamMRSValideesCandidatsPEConnect.isEmpty)
+          Future.successful(Stream.empty)
+        else
+          peConnectSqlAdapter.getAllCandidats.runWith(Sink.collection)
+    } yield
+      streamMRSValideesCandidatsPEConnect
+        .flatMap(mrsValideeCandidatPEConnect =>
+          streamCandidatsPEConnect.find(c => c.peConnectId == mrsValideeCandidatPEConnect.peConnectId).map(c =>
+            MRSValideeCandidat(
+              candidatId = c.candidatId,
+              codeROME = mrsValideeCandidatPEConnect.codeROME,
+              codeDepartement = mrsValideeCandidatPEConnect.codeDepartement,
+              dateEvaluation = mrsValideeCandidatPEConnect.dateEvaluation
+            )
+          ))
   }
 
   private def integrerFichier(fichier: Path): Future[Stream[MRSValideeCandidatPEConnect]] = {
     for {
-      mrsValideesCandidatPEConnect <- mrsValideesCSVAdapter.load(FileIO.fromPath(fichier))
-      nbMrsValideesIntegrees <- mrsValideesSqlAdapter.ajouter(mrsValideesCandidatPEConnect)
+      mrsValideesCandidatPEConnect <- mrsValideesCandidatsCSVAdapter.load(FileIO.fromPath(fichier))
+      nbMrsValideesIntegrees <- mrsValideesCandidatsSqlAdapter.ajouter(mrsValideesCandidatPEConnect)
     } yield {
       Files.move(fichier, archiveDirectory.resolve(fichier.getFileName), StandardCopyOption.REPLACE_EXISTING)
       if (importMrsCandidatLogger.isInfoEnabled()) {

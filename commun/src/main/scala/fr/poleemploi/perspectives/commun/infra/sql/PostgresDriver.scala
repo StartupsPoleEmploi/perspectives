@@ -20,9 +20,8 @@ trait PostgresDriver extends ExPostgresProfile
 
   object PostgresAPI extends API
     with ArrayImplicits
+    with SimpleArrayPlainImplicits
     with DateTimeImplicits {
-
-    implicit val strListTypeMapper: DriverJdbcType[List[String]] = new SimpleArrayJdbcType[String]("text").to(_.toList)
 
     implicit val recruteurIdColumnType: BaseColumnType[RecruteurId] = mapAggregateId(RecruteurId)
 
@@ -48,10 +47,8 @@ trait PostgresDriver extends ExPostgresProfile
 
     implicit val codeROMEColumnType: BaseColumnType[CodeROME] = mapStringValueObject(CodeROME)
 
-    implicit val listCodeROMEColumnType: BaseColumnType[List[CodeROME]] = MappedColumnType.base[List[CodeROME], List[String]](
-      { c => c.map(_.value) },
-      { s => s.map(CodeROME) }
-    )
+    implicit val codeROMETypeMapper: DriverJdbcType[List[CodeROME]] = new SimpleArrayJdbcType[String]("text")
+      .mapTo[CodeROME](CodeROME, _.value).to(_.toList)
 
     implicit val statutDemandeurEmploiColumnType: BaseColumnType[StatutDemandeurEmploi] = mapStringValueObject(StatutDemandeurEmploi(_))
 
@@ -64,6 +61,9 @@ trait PostgresDriver extends ExPostgresProfile
     implicit val codeSecteurActiviteColumnType: BaseColumnType[CodeSecteurActivite] = mapStringValueObject(CodeSecteurActivite(_))
 
     implicit val codeDepartementColumnType: BaseColumnType[CodeDepartement] = mapStringValueObject(CodeDepartement)
+
+    implicit val habileteTypeMapper: DriverJdbcType[List[Habilete]] = new SimpleArrayJdbcType[String]("text")
+      .mapTo[Habilete](Habilete(_), _.value).to(_.toList)
 
     def mapAggregateId[T <: AggregateId](deserialize: String => T)(implicit tag: ClassTag[T]): BaseColumnType[T] =
       MappedColumnType.base[T, String](

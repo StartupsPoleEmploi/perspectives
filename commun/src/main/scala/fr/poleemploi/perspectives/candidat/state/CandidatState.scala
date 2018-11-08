@@ -4,6 +4,7 @@ import fr.poleemploi.cqrs.command.Command
 import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.candidat.cv.domain.CVService
+import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielHabiletesMRS
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -27,8 +28,9 @@ trait CandidatState {
   def remplacerCV(context: CandidatContext, command: RemplacerCVCommand, cvService: CVService): Future[List[Event]] =
     Future(default(context, command))
 
-  def ajouterMRSValidee(context: CandidatContext, command: AjouterMRSValideesCommand): List[Event] =
-    default(context, command)
+  def ajouterMRSValidee(context: CandidatContext, command: AjouterMRSValideesCommand,
+                        referentielHabiletesMRS: ReferentielHabiletesMRS): Future[List[Event]] =
+    Future(default(context, command))
 
   def declarerRepriseEmploiParConseiller(context: CandidatContext, command: DeclarerRepriseEmploiParConseillerCommand): List[Event] =
     default(context, command)
