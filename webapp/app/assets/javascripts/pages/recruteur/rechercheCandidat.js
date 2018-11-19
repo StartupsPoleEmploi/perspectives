@@ -39,7 +39,6 @@ $(document).ready(function () {
                 ligneOuverte.hide();
                 ligneOuverte.removeClass("profilCandidat--courant");
             });
-            window.location.hash = ligne.attr("id");
             ligneProfil.slideDown(400, function() {
                 ligneProfil.addClass("profilCandidat--courant");
             });
