@@ -2,30 +2,51 @@ version: "3.5"
 services:
   nginx:
     image: perspectives-nginx
+    depends_on:
+      - fluentbit
     ports:
       - "8080:80"
     deploy:
       replicas: 1
+    logging:
+      driver: fluentd
+      options:
+        tag: "perspectives_nginx.{{.ID}}"
+        fluentd-async-connect: "true"
     networks:
       - net
 
   database:
     image: perspectives-postgresql
+    depends_on:
+      - fluentbit
     volumes:
       - postgresql:/var/lib/postgresql/data
     env_file:
       - dev.env
     deploy:
       replicas: 1
+    logging:
+      driver: fluentd
+      options:
+        tag: "perspectives_database.{{.ID}}"
+        fluentd-async-connect: "true"
     networks:
       - net
 
   database_cron_backup:
     image: perspectives-postgresql-cron-backup
+    depends_on:
+      - database
     volumes:
       - postgresql_backups:/var/opt/postgresql-cron-backup
     deploy:
       replicas: 1
+    logging:
+      driver: fluentd
+      options:
+        tag: "perspectives_database.{{.ID}}"
+        fluentd-async-connect: "true"
     networks:
       - net
 
@@ -38,6 +59,11 @@ services:
       - dev.env
     deploy:
       replicas: 2
+    logging:
+      driver: fluentd
+      options:
+        tag: "perspectives_webapp.{{.ID}}"
+        fluentd-async-connect: "true"
     ports:
       - "9000:9000"
     networks:
@@ -53,6 +79,22 @@ services:
       - export_poleemploi:/var/perspectives/export_poleemploi
     deploy:
       replicas: 1
+    logging:
+      driver: fluentd
+      options:
+        tag: "perspectives_batchs.{{.ID}}"
+        fluentd-async-connect: "true"
+    networks:
+      - net
+
+  fluentbit:
+    image: perspectives-fluentbit
+    env_file:
+      - dev.env
+    deploy:
+      replicas: 1
+    ports:
+      - "24224:24224"
     networks:
       - net
 
