@@ -4,8 +4,8 @@ import java.sql.SQLException
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.tminglei.slickpg.JsonString
-import fr.poleemploi.eventsourcing.eventstore.{AppendOnlyData, AppendOnlyStore, AppendOnlyStoreConcurrencyException}
-import fr.poleemploi.eventsourcing.{AppendedEvent, Event}
+import fr.poleemploi.eventsourcing.Event
+import fr.poleemploi.eventsourcing.eventstore.{AppendOnlyData, AppendOnlyStore, AppendOnlyStoreConcurrencyException, AppendedEvent}
 import slick.jdbc.JdbcBackend.Database
 
 import scala.concurrent.ExecutionContext.Implicits.global

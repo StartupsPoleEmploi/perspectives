@@ -2,7 +2,7 @@ package conf
 
 import com.google.inject.{AbstractModule, Inject, Provides, Singleton}
 import fr.poleemploi.cqrs.projection.{Query, QueryResult}
-import fr.poleemploi.eventsourcing.{EventHandler, EventPublisher}
+import fr.poleemploi.eventsourcing.eventstore.EventStoreListener
 import fr.poleemploi.perspectives.candidat.cv.domain.CVService
 import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielMRSCandidat
 import fr.poleemploi.perspectives.emailing.domain.EmailingService
@@ -22,8 +22,7 @@ import slick.jdbc.JdbcBackend.Database
 
 import scala.concurrent.Future
 
-class RegisterProjections @Inject()(eventPublisher: EventPublisher,
-                                    eventHandler: EventHandler,
+class RegisterProjections @Inject()(eventStoreListener: EventStoreListener,
                                     candidatProjection: CandidatProjection,
                                     candidatNotificationSlackProjection: CandidatNotificationSlackProjection,
                                     candidatMailProjection: CandidatEmailProjection,
@@ -31,16 +30,14 @@ class RegisterProjections @Inject()(eventPublisher: EventPublisher,
                                     recruteurEmailProjection: RecruteurEmailProjection,
                                     alerteRecruteurProjection: AlerteRecruteurProjection,
                                     webAppConfig: WebAppConfig) {
-  eventPublisher.subscribe(eventHandler)
-
-  eventHandler.subscribe(candidatProjection)
-  eventHandler.subscribe(candidatMailProjection)
-  eventHandler.subscribe(recruteurProjection)
-  eventHandler.subscribe(recruteurEmailProjection)
-  eventHandler.subscribe(alerteRecruteurProjection)
+  eventStoreListener.subscribe(candidatProjection)
+  eventStoreListener.subscribe(candidatMailProjection)
+  eventStoreListener.subscribe(recruteurProjection)
+  eventStoreListener.subscribe(recruteurEmailProjection)
+  eventStoreListener.subscribe(alerteRecruteurProjection)
 
   if (webAppConfig.useSlackNotification) {
-    eventHandler.subscribe(candidatNotificationSlackProjection)
+    eventStoreListener.subscribe(candidatNotificationSlackProjection)
   }
 }
 

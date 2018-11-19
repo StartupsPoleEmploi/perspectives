@@ -9,7 +9,7 @@ import scala.concurrent.Future
   * Class for high-level data access to the store. <br />
   * Handle concurrency exception and publish events.
   */
-class EventStore(eventPublisher: EventPublisher,
+class EventStore(eventStoreListener: EventStoreListener,
                  appendOnlyStore: AppendOnlyStore) {
 
   /**
@@ -26,7 +26,7 @@ class EventStore(eventPublisher: EventPublisher,
     }
 
   /**
-    * Appends events for the provided aggregate.
+    * Append events for the provided aggregate.
     *
     * @param aggregateId     aggregate id to append to.
     * @param expectedVersion The expected version that will be checked for concurrency.
@@ -52,7 +52,7 @@ class EventStore(eventPublisher: EventPublisher,
     ).map { _ =>
       datas.foreach(a => {
         // On attend pas le retour de la publication
-        eventPublisher.publish(
+        eventStoreListener.publish(
           AppendedEvent(
             streamName = aggregateId.value,
             streamVersion = a.streamVersion,

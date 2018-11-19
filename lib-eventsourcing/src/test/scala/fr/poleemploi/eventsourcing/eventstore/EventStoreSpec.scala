@@ -1,6 +1,6 @@
 package fr.poleemploi.eventsourcing.eventstore
 
-import fr.poleemploi.eventsourcing.{AggregateId, AppendedEvent, Event, EventPublisher}
+import fr.poleemploi.eventsourcing.{AggregateId, Event}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
@@ -13,19 +13,19 @@ import scala.concurrent.Future
 class EventStoreSpec extends AsyncWordSpec with MustMatchers
   with MockitoSugar with BeforeAndAfter with ScalaFutures {
 
-  var eventPublisher: EventPublisher = _
+  var eventStoreListener: EventStoreListener = _
   var appendOnlyStore: AppendOnlyStore = _
   var eventStore: EventStore = _
   var aggregateId: AggregateId = _
 
   before {
-    eventPublisher = mock[EventPublisher]
+    eventStoreListener = mock[EventStoreListener]
     appendOnlyStore = mock[AppendOnlyStore]
     aggregateId = mock[AggregateId]
     when(aggregateId.value) thenReturn "4"
 
     eventStore = new EventStore(
-      eventPublisher = eventPublisher,
+      eventStoreListener = eventStoreListener,
       appendOnlyStore = appendOnlyStore
     )
   }
@@ -100,14 +100,14 @@ class EventStoreSpec extends AsyncWordSpec with MustMatchers
           events = List(mock[Event])
         )
       } map { _ =>
-        verify(eventPublisher, never()).publish(any[AppendedEvent])
+        verify(eventStoreListener, never()).publish(any[AppendedEvent])
         Succeeded
       }
     }
-    "sauvegarder un evenement dans le store meme si la publication echoue" in {
+    "sauvegarder un evenement dans le store meme si la publication au listener echoue" in {
       // Given
       when(appendOnlyStore.append(ArgumentMatchers.eq(aggregateId.value), ArgumentMatchers.eq(0), ArgumentMatchers.any[List[AppendOnlyData]])) thenReturn Future.successful()
-      when(eventPublisher.publish(ArgumentMatchers.any[AppendedEvent]())) thenReturn Future.failed(new RuntimeException("Erreur de publication"))
+      when(eventStoreListener.publish(ArgumentMatchers.any[AppendedEvent]())) thenReturn Future.failed(new RuntimeException("Erreur de publication"))
 
       // When
       val future = eventStore.append(

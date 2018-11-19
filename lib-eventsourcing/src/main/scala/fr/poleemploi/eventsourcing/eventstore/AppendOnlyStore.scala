@@ -1,6 +1,6 @@
 package fr.poleemploi.eventsourcing.eventstore
 
-import fr.poleemploi.eventsourcing.{AppendedEvent, Event}
+import fr.poleemploi.eventsourcing.Event
 
 import scala.concurrent.Future
 

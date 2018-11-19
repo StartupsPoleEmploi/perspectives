@@ -1,7 +1,7 @@
 package conf
 
 import com.google.inject.{AbstractModule, Inject, Provides, Singleton}
-import fr.poleemploi.eventsourcing.{EventHandler, EventPublisher}
+import fr.poleemploi.eventsourcing.eventstore.EventStoreListener
 import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
 import fr.poleemploi.perspectives.projections.candidat.CandidatProjection
 import fr.poleemploi.perspectives.projections.candidat.infra.sql.CandidatProjectionSqlAdapter
@@ -11,14 +11,11 @@ import fr.poleemploi.perspectives.rechercheCandidat.domain.RechercheCandidatServ
 import net.codingwell.scalaguice.ScalaModule
 import slick.jdbc.JdbcBackend.Database
 
-class RegisterProjections @Inject()(eventPublisher: EventPublisher,
-                                    eventHandler: EventHandler,
+class RegisterProjections @Inject()(eventStoreListener: EventStoreListener,
                                     candidatProjection: CandidatProjection,
                                     alerteRecruteurProjection: AlerteRecruteurProjection) {
-  eventPublisher.subscribe(eventHandler)
-
-  eventHandler.subscribe(candidatProjection)
-  eventHandler.subscribe(alerteRecruteurProjection)
+  eventStoreListener.subscribe(candidatProjection)
+  eventStoreListener.subscribe(alerteRecruteurProjection)
 }
 
 class ProjectionsModule extends AbstractModule with ScalaModule {

@@ -4,10 +4,9 @@ import akka.actor.ActorSystem
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.inject.name.Named
 import com.google.inject.{AbstractModule, Provider, Provides, Singleton}
-import fr.poleemploi.eventsourcing.eventstore.{AppendOnlyStore, EventStore}
+import fr.poleemploi.eventsourcing.eventstore.{AppendOnlyStore, EventStore, EventStoreListener, LocalEventStoreListener}
 import fr.poleemploi.eventsourcing.infra.jackson.EventStoreObjectMapperBuilder
 import fr.poleemploi.eventsourcing.infra.postgresql.{PostgreSQLAppendOnlyStore, PostgresDriver => EventSourcingPostgresDriver}
-import fr.poleemploi.eventsourcing.{EventHandler, EventPublisher, LocalEventHandler, LocalEventPublisher}
 import fr.poleemploi.perspectives.authentification.infra.peconnect.sql.PEConnectSqlAdapter
 import fr.poleemploi.perspectives.candidat.mrs.infra.csv.{HabiletesMRSCsvAdapter, ImportHabiletesMRSCsvAdapter}
 import fr.poleemploi.perspectives.candidat.mrs.infra.local.ImportMRSCandidatLocal
@@ -47,11 +46,7 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
-  def eventPublisher: EventPublisher = new LocalEventPublisher
-
-  @Provides
-  @Singleton
-  def eventHandler: EventHandler = new LocalEventHandler
+  def eventStoreListener: EventStoreListener = new LocalEventStoreListener
 
   @Provides
   def postgreSqlAppendOnlyStore(database: Database,
@@ -69,10 +64,10 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
-  def eventStore(eventPublisher: EventPublisher,
+  def eventStore(eventStoreListener: EventStoreListener,
                  appendOnlyStore: AppendOnlyStore): EventStore =
     new EventStore(
-      eventPublisher = eventPublisher,
+      eventStoreListener = eventStoreListener,
       appendOnlyStore = appendOnlyStore
     )
 

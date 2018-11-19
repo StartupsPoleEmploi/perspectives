@@ -1,15 +1,14 @@
 package conf
 
 import com.google.inject.{AbstractModule, Inject, Provides, Singleton}
-import fr.poleemploi.eventsourcing.{EventHandler, EventPublisher}
+import fr.poleemploi.eventsourcing.eventstore.EventStoreListener
 import fr.poleemploi.perspectives.candidat.CandidatCommandHandler
 import fr.poleemploi.perspectives.candidat.mrs.domain.{MRSValideeProcessManager, ReferentielMRSCandidat}
 import net.codingwell.scalaguice.ScalaModule
 
-class RegisterProcessManagers @Inject()(eventPublisher: EventPublisher,
-                                        eventHandler: EventHandler,
+class RegisterProcessManagers @Inject()(eventStoreListener: EventStoreListener,
                                         mrsValideeProcessPEConnectManager: MRSValideeProcessManager) {
-  eventHandler.subscribe(mrsValideeProcessPEConnectManager)
+  eventStoreListener.subscribe(mrsValideeProcessPEConnectManager)
 }
 
 class ProcessManagersModule extends AbstractModule with ScalaModule {
