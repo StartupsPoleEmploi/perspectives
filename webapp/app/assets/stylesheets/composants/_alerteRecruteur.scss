@@ -13,11 +13,11 @@
   }
 
   .boutonFrequence {
-    background-color: $perspectives-noir;
-    border: 1px solid $perspectives-noir;
+    background-color: $perspectives-bleu-nuit;
+    border: 1px solid $perspectives-bleu-nuit;
     color: white;
     border-bottom-left-radius: 4px;
-    width: 200px;
+    width: 360px;
     padding: 0 1rem;
   }
 
@@ -27,9 +27,9 @@
 
   .boutonAlerte {
     background-color: white;
-    border: 1px solid $perspectives-noir;
+    border: 1px solid $perspectives-bleu-nuit;
     border-top: none;
-    color: $perspectives-noir;
+    color: $perspectives-bleu-nuit;
     border-bottom-right-radius: 4px;
     width: 130px;
   }
@@ -42,8 +42,8 @@
 
   .listeFrequences {
     @extend %liste;
-    width: 200px;
-    background-color: $perspectives-noir;
+    width: 360px;
+    background-color: $perspectives-bleu-nuit;
     color: white;
 
     &-item {
@@ -54,7 +54,7 @@
 
   .sansAlertes {
     max-width: 55%;
-    margin-left: 200px;
+    margin-left: 360px;
     padding: 10px;
     background-color: white;
   }
@@ -62,7 +62,7 @@
   .listeAlertes {
     @extend %liste;
     max-width: 55%;
-    margin-left: 200px;
+    margin-left: 360px;
 
     &-item {
       cursor: pointer;

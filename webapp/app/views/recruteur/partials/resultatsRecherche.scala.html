@@ -3,7 +3,7 @@
 
 @(rechercheCandidatQueryResult: RechercheCandidatQueryResult,
         secteurActiviteChoisi: Option[String] = None,
-        metierChoisi: Option[String] = None)
+        metierChoisi: Option[String] = None)(implicit assetsFinder: AssetsFinder)
 
 @getTitreForCandidats(rechercheCandidatDtos: List[CandidatRechercheDto], titreSingulier: String) = @{
     rechercheCandidatDtos match {
@@ -15,12 +15,10 @@
 
 @rechercheCandidatQueryResult match {
     case RechercheCandidatParDepartementQueryResult(candidats) => {
-        @affichageResultats(cssClasse = "avecLignesBleues", candidatRechercheDtos = candidats)
+        @affichageResultats(candidatRechercheDtos = candidats)
     }
     case RechercheCandidatParSecteurQueryResult(candidatsEvaluesSurSecteur, candidatsInteressesParAutreSecteur) => {
         @affichageResultats(
-             cssClasse = "avecLignesBleues",
-             styleTitre = Some("resultatsRecherche-titre--bleu"),
              titre = getTitreForCandidats(
                  rechercheCandidatDtos = candidatsEvaluesSurSecteur,
                  titreSingulier = s"""Candidat validé dans le secteur "${secteurActiviteChoisi.getOrElse("")}""""
@@ -28,8 +26,6 @@
             candidatRechercheDtos = candidatsEvaluesSurSecteur
         )
         @affichageResultats(
-            cssClasse = "avecLignesNoires",
-            styleTitre = Some("resultatsRecherche-titre--noir"),
             titre = getTitreForCandidats(
                 rechercheCandidatDtos = candidatsInteressesParAutreSecteur,
                 titreSingulier = s"""Candidat intéréssé par le secteur "${secteurActiviteChoisi.getOrElse("")}" et validé dans un autre secteur"""
@@ -39,8 +35,6 @@
     }
     case RechercheCandidatParMetierQueryResult(candidatsEvaluesSurMetier, candidatsInteressesParMetierMemeSecteur, candidatsInteressesParMetierAutreSecteur) => {
         @affichageResultats(
-            cssClasse = "avecLignesBleues",
-            styleTitre = Some("resultatsRecherche-titre--bleu"),
             titre = getTitreForCandidats(
                 rechercheCandidatDtos = candidatsEvaluesSurMetier,
                 titreSingulier = s"""Candidat validé sur le métier "${metierChoisi.getOrElse("")}""""
@@ -48,8 +42,6 @@
             candidatRechercheDtos = candidatsEvaluesSurMetier
         )
         @affichageResultats(
-            cssClasse = "avecLignesNoires",
-            styleTitre = Some("resultatsRecherche-titre--noir"),
             titre = getTitreForCandidats(
                 rechercheCandidatDtos = candidatsInteressesParMetierMemeSecteur,
                 titreSingulier = s"""Candidat intéréssé par le métier "${metierChoisi.getOrElse("")}" et validé sur un métier du même secteur"""
@@ -57,8 +49,6 @@
             candidatRechercheDtos = candidatsInteressesParMetierMemeSecteur
         )
         @affichageResultats(
-            cssClasse = "avecLignesNoires",
-            styleTitre = Some("resultatsRecherche-titre--noir"),
             titre = getTitreForCandidats(
                 rechercheCandidatDtos = candidatsInteressesParMetierAutreSecteur,
                 titreSingulier = s"""Candidat intéréssé par le métier "${metierChoisi.getOrElse("")}" et validé dans un autre secteur"""
@@ -68,88 +58,93 @@
     }
 }
 
-@affichageResultats(cssClasse: String, styleTitre: Option[String] = None, titre: Option[String] = None, candidatRechercheDtos: List[CandidatRechercheDto]) = {
+@affichageResultats(titre: Option[String] = None, candidatRechercheDtos: List[CandidatRechercheDto]) = {
     @if(candidatRechercheDtos.nonEmpty) {
-    <div class="resultatsRecherche-titreConteneur">
-        <div class="resultatsRecherche-titre @styleTitre">@titre</div>
-    </div>
+        @if(titre.isDefined) {
+            <div class="resultatsRecherche-titreConteneur">
+                <div class="resultatsRecherche-titre">@titre</div>
+            </div>
+        }
     <div class="listeResultatsRecherche">
-        @for(candidatWithIndex <- candidatRechercheDtos.zipWithIndex) {
-            @defining(candidatWithIndex._1) { rechercheCandidatDto =>
-            <div class="listeResultatsRecherche-arrierePlan @if(candidatWithIndex._2 % 2 == 0){@cssClasse--lignePaire}">
-                <div class="listeResultatsRecherche-conteneur">
-                    <div id="js-ligne-@rechercheCandidatDto.candidatId.value" class="listeResultatsRecherche-ligne">
-                        <div class="listeResultatsRecherche-candidat">
-                            <div class="info--majuscule info--principale">@rechercheCandidatDto.nom</div>
-                            <div class="info--minuscule info--principale">@rechercheCandidatDto.prenom.capitalize</div>
-                        </div>
-                        <div class="listeResultatsRecherche-mrs">
-                            <div class="info--majuscule info--principale">Potentiel validé</div>
-                            <div class="info--minuscule info--principale">@rechercheCandidatDto.metiersEvalues.map(_.label).mkString(", ")</div>
-                        </div>
-                        <div class="listeResultatsRecherche-localisation">
-                        @if(rechercheCandidatDto.commune.isDefined) {
-                            <div class="info--majuscule info--principale">Mobilité</div>
-                            <div class="info--minuscule info--principale">
-                            @(rechercheCandidatDto.rayonRecherche.map {
-                                case RayonRecherche.MAX_100 => s"+50km autour de ${rechercheCandidatDto.commune.map(_.capitalize).getOrElse("")}"
-                                case r@_ => s"${r.value}km autour de ${rechercheCandidatDto.commune.map(_.capitalize).getOrElse("")}"
-                            })
-                            </div>
+        <div class="listeResultatsRecherche-conteneur">
+            <div class="listeResultatsRecherche-ligneTitre">
+                <div class="listeResultatsRecherche-candidat">Nom du candidat</div>
+                <div class="listeResultatsRecherche-mrs">Métier validé</div>
+                <div class="listeResultatsRecherche-localisation">Localité</div>
+            </div>
+        </div>
+        @for(rechercheCandidatDto <- candidatRechercheDtos) {
+            <div class="listeResultatsRecherche-conteneur">
+                <div id="js-ligne-@rechercheCandidatDto.candidatId.value" class="listeResultatsRecherche-ligne">
+                    <div class="listeResultatsRecherche-candidat info--gras">
+                        @rechercheCandidatDto.prenom.capitalize @rechercheCandidatDto.nom.capitalize
+                    </div>
+                    <div class="listeResultatsRecherche-mrs">
+                        @rechercheCandidatDto.metiersEvalues.map(_.label).mkString(", ")
+                    </div>
+                    <div class="listeResultatsRecherche-localisation">
+                    @if(rechercheCandidatDto.commune.isDefined) {
+                        @(rechercheCandidatDto.rayonRecherche.map {
+                            case RayonRecherche.MAX_100 => s"+50km autour de ${rechercheCandidatDto.commune.map(_.capitalize).getOrElse("")}"
+                            case r@_ => s"${r.value}km autour de ${rechercheCandidatDto.commune.map(_.capitalize).getOrElse("")}"
+                        })
+                    }
+                    </div>
+                    <div class="listeResultatsRecherche-voirProfil">
+                        <img src="@assetsFinder.path("images/pages/recruteur/rechercheCandidat/ouvrir-profil-candidat.svg")"
+                             alt="Détails du profil candidat" height="16" width="16"
+                             class="voirProfil--ferme"/>
+                         <img src="@assetsFinder.path("images/pages/recruteur/rechercheCandidat/fermer-profil-candidat.svg")"
+                             alt="Détails du profil candidat" height="16" width="16"
+                             class="voirProfil--ouvert"/>
+                             Détail
+                    </div>
+                </div>
+            </div>
+            <div class="listeResultatsRecherche-conteneur">
+                <div id="js-profilCandidat-@rechercheCandidatDto.candidatId.value" class="profilCandidat js-profilCandidat">
+                    <div class="profilCandidat-habiletes">
+                        <div>Habiletés validées</div>
+                        <ul class="detailsProfils">
+                        @for(habilete <- rechercheCandidatDto.habiletes) {
+                            <li class="detailsProfils-item">@habilete.value</li>
                         }
-                        </div>
-                        <div class="listeResultatsRecherche-voirProfil">
-                            <div class="bouton bouton-actionCandidat bouton--blancSurNoir">Voir le profil</div>
-                        </div>
+                        </ul>
                     </div>
-                </div>
-            </div>
-            <div class="listeResultatsRecherche-arrierePlanProfil">
-                <div class="listeResultatsRecherche-conteneur">
-                    <div id="js-profilCandidat-@rechercheCandidatDto.candidatId.value" class="profilCandidat js-profilCandidat">
-                        <div class="profilCandidat-habiletes">
-                            <div class="info--majuscule info--detaillee">Habiletés validées</div>
+                    <div class="profilCandidat-interessePar">
+                        @if(rechercheCandidatDto.metiersRecherchesParSecteur.nonEmpty) {
+                            <div>Intéréssé par</div>
                             <ul class="detailsProfils">
-                            @for(habilete <- rechercheCandidatDto.habiletes) {
-                                <li class="detailsProfils-item">@habilete.value</li>
+                            @for(metiersParSecteur <- rechercheCandidatDto.metiersRecherchesParSecteur) {
+                                <li class="detailsProfils-item">@metiersParSecteur._1.label
+                                    : @metiersParSecteur._2.map(_.label).mkString(", ")</li>
                             }
                             </ul>
-                        </div>
-                        <div class="profilCandidat-interessePar">
-                            @if(rechercheCandidatDto.metiersRecherchesParSecteur.nonEmpty) {
-                                <div class="info--majuscule info--detaillee">Intéréssé par</div>
-                                <ul class="detailsProfils">
-                                @for(metiersParSecteur <- rechercheCandidatDto.metiersRecherchesParSecteur) {
-                                    <li class="detailsProfils-item">@metiersParSecteur._1.label
-                                        : @metiersParSecteur._2.map(_.label).mkString(", ")</li>
-                                }
-                                </ul>
+                        }
+                    </div>
+                    <div class="profilCandidat-actions">
+                        <ul class="listeActions">
+                            @if(rechercheCandidatDto.possedeCV) {
+                                <li class="listeActions-item">
+                                    <a class="bouton bouton-actionCandidat bouton-actionCandidat--large bouton--noirSurBlanc" target="_blank" href="/recruteur/cv/telecharger/@rechercheCandidatDto.candidatId.value/@rechercheCandidatDto.nomCV">
+                                        CV
+                                    </a>
+                                </li>
                             }
-                        </div>
-                        <div class="profilCandidat-actions">
-                            <ul class="listeActions">
-                                @if(rechercheCandidatDto.possedeCV) {
-                                    <li class="listeActions-item">
-                                        <a class="bouton bouton-actionCandidat bouton-actionCandidat--large bouton--noirSurBlanc" target="_blank" href="/recruteur/cv/telecharger/@rechercheCandidatDto.candidatId.value/@rechercheCandidatDto.nomCV">
-                                            CV
-                                        </a>
-                                    </li>
-                                }
-                                @if(rechercheCandidatDto.numeroTelephone.isDefined) {
-                                    <li class="listeActions-item">
-                                        <span class="bouton bouton-actionCandidat bouton--bleu bouton-actionCandidat--large js-boutonCandidat">
-                                            Téléphone</span>
-                                        <span class="bouton bouton-infoCandidat bouton--noirSurBlanc js-infoCandidat">@rechercheCandidatDto.numeroTelephone.map(_.value)</span>
-                                        <input class="copiePressePapier js-copiePressePapier" type="text" value="@rechercheCandidatDto.numeroTelephone.map(_.value)" />
-                                        <div class="infoBulle js-infoBulle">Copié !</div>
-                                    </li>
-                                }
-                            </ul>
-                        </div>
+                            @if(rechercheCandidatDto.numeroTelephone.isDefined) {
+                                <li class="listeActions-item">
+                                    <span class="bouton bouton-actionCandidat bouton--bleu bouton-actionCandidat--large js-boutonCandidat">
+                                        Téléphone</span>
+                                    <span class="bouton bouton-infoCandidat bouton--noirSurBlanc js-infoCandidat">@rechercheCandidatDto.numeroTelephone.map(_.value)</span>
+                                    <input class="copiePressePapier js-copiePressePapier" type="text" value="@rechercheCandidatDto.numeroTelephone.map(_.value)" />
+                                    <div class="infoBulle js-infoBulle">Copié !</div>
+                                </li>
+                            }
+                        </ul>
                     </div>
                 </div>
             </div>
-            }
+            <div class="listeResultatsRecherche-separation"></div>
         }
     </div>
     }

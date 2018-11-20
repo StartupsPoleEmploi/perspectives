@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <!-- Generator: Sketch 51.3 (57544) - http://www.bohemiancoding.com/sketch -->
+    <title>Combined Shape</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="LAST-UI-Carole" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Perspective_MatchingPage-Copy" transform="translate(-1305.000000, -944.000000)" fill="#334051" fill-rule="nonzero">
+            <path d="M1314,951 L1320,951 C1320.55228,951 1321,951.447715 1321,952 C1321,952.552285 1320.55228,953 1320,953 L1314,953 L1314,959 C1314,959.552285 1313.55228,960 1313,960 C1312.44772,960 1312,959.552285 1312,959 L1312,953 L1306,953 C1305.44772,953 1305,952.552285 1305,952 C1305,951.447715 1305.44772,951 1306,951 L1312,951 L1312,945 C1312,944.447715 1312.44772,944 1313,944 C1313.55228,944 1314,944.447715 1314,945 L1314,951 Z" id="Combined-Shape"></path>
+        </g>
+    </g>
+</svg>

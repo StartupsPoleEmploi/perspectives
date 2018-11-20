@@ -1,12 +1,10 @@
 #rechercheCandidat {
 
-  margin-top: 3em;
+  margin-top: 4em;
 
   .compteurResultats {
     @include make-container();
     @include make-container-max-widths();
-    text-align: center;
-    margin-bottom: 2em;
 
     &-titre {
       color: #0F415A;
@@ -38,7 +36,8 @@
   }
 
   .resultatsRecherche {
-    margin-top: 4em;
+    margin-top: 1em;
+    background-color: rgba(234, 235, 237, 0.5);
 
     &-titreConteneur {
       @include make-container();
@@ -48,35 +47,36 @@
     &-titre {
       position: relative;
       text-transform: uppercase;
-      margin: 1em;
+      padding-top: 2.5em;
       font-size: 1em;
       font-weight: 700;
-
-      &--bleu {
-        color: #82CCDD;
-      }
-
-      &--noir {
-        color: $perspectives-noir;
-      }
+      color: $perspectives-bleu-nuit;
     }
   }
 
   .listeResultatsRecherche {
-    &-arrierePlanProfil {
-      background-color: $perspectives-noir;
+    &-separation {
+      height: 5px;
     }
 
     &-conteneur {
       @include make-container();
       @include make-container-max-widths();
       text-align: left;
+      font-size: 0.9em;
+    }
+
+    &-ligneTitre {
+      @include make-row();
+      color: rgba(51, 64, 81, 0.5);
     }
 
     &-ligne {
       @include make-row();
       align-items: center;
       cursor: pointer;
+      background-color: white;
+      color: $perspectives-bleu-nuit;
     }
 
     &-candidat {
@@ -105,9 +105,16 @@
     }
   }
 
+  .voirProfil {
+    &--ouvert {
+      display: none;
+    }
+  }
+
   .profilCandidat {
     @include make-row();
     color: white;
+    background-color: $perspectives-bleu-nuit;
 
     &-habiletes {
       @include make-col-ready();
@@ -128,19 +135,8 @@
   }
 
   .info {
-    &--majuscule {
-      font-size: 0.8em;
+    &--gras {
       font-weight: 700;
-      text-transform: uppercase;
-    }
-    &--minuscule {
-      font-size: 0.9em;
-    }
-    &--principale {
-      color: $perspectives-noir;
-    }
-    &--detaillee {
-      color: white;
     }
   }
 
@@ -150,19 +146,6 @@
 
     &-item {
       padding-left: 10px;
-      font-size: 0.9em;
-    }
-  }
-
-  .avecLignesBleues {
-    &--lignePaire {
-      background-color: rgba(130, 204, 221, 0.1);
-    }
-  }
-
-  .avecLignesNoires {
-    &--lignePaire {
-      background-color: rgba(234, 235, 237, 0.3);
     }
   }
 
@@ -233,57 +216,11 @@
     left: -9999px;
   }
 
-  .videoMRS {
-    @include make-col(2);
-    position: relative;
-  }
-
-  .infoBulleMRS {
-    position: absolute;
-    top: -65px;
-    width: 200px;
-    display: inline-flex;
-    align-items: center;
-    border-radius: 4px;
-    background-color: $perspectives-noir;
-
-    &:before {
-      content: "";
-      position: absolute;
-      top: 100%;
-      left: 4em;
-      height: 10px;
-      width: 10px;
-      background: $perspectives-noir;
-      box-sizing: border-box;
-      transform: rotate(45deg) translate(-7px);
-      border-bottom: inherit;
-      border-right: inherit;
-      box-shadow: inherit;
-    }
-
-    &-iconeLecture {
-      margin: 1em;
-    }
-  }
-
-  .questionMRS {
-    margin-right: 1em;
-    text-decoration: underline;
-    color: white;
-  }
-
-  .definitionMRS {
-    display: block;
-    margin-left: 2.2em;
-    margin-top: 1em;
-  }
-
   .modaleVideo {
     &-header {
       display: flex;
       justify-content: space-between;
-      background-color: $perspectives-noir;
+      background-color: $perspectives-bleu-nuit;
       color: white;
     }
 
@@ -317,7 +254,7 @@
     padding: 2em;
 
     &-titre {
-      color: $perspectives-noir;
+      color: $perspectives-bleu-nuit;
       font-size: 1.2em;
       padding-bottom: 1em;
       margin: 0;
@@ -328,7 +265,7 @@
     }
 
     &-action {
-      border: 1px solid $perspectives-noir;
+      border: 1px solid $perspectives-bleu-nuit;
       padding: 0.5em 2.4em;
       margin: 0.5em;
       border-radius: 4px;

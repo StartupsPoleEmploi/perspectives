@@ -14,9 +14,6 @@
 
 @layout(recruteurAuthentifie = Some(recruteurAuthentifie)) {
     <div id="rechercheCandidat" v-cloak>
-        <section class="compteurResultats">
-            <h2 class="compteurResultats-titre" v-html="titreCompteurResultats()"></h2>
-        </section>
         <div id="js-modaleVideo" class="modal" tabindex="-1" role="dialog" aria-labelledby="titreModaleVideo">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -57,15 +54,6 @@
                             <option v-for="departement in departements" v-bind:value="departement.code">{{departement.label}}</option>
                         </select>
                     </div>
-                    <div class="videoMRS">
-                        <a id="js-infoBulleMRS" class="infoBulleMRS" href="#" data-toggle="modal" data-target="#js-modaleVideo">
-                            <img class="infoBulleMRS-iconeLecture" alt="Lecture vidéo MRS" width="36" height="36"
-                                 src="@assetsFinder.path("images/pages/recruteur/rechercheCandidat/lecture-video.svg")" />
-                            <div class="questionMRS">Qu'est ce qu'une MRS?</div>
-                        </a>
-                        <img class="definitionMRS" alt="Definition MRS" width="56" height="56"
-                             src="@assetsFinder.path("images/pages/recruteur/rechercheCandidat/mrs.svg")" />
-                    </div>
                 </div>
             }
             <alerte-recruteur ref="alertesRecruteur"
@@ -76,6 +64,9 @@
                               v-on:supprimer-alerte="supprimerAlerte"
                               v-on:selectionner-alerte="selectionnerAlerte">
             </alerte-recruteur>
+        </section>
+        <section class="compteurResultats">
+            <h2 class="compteurResultats-titre" v-html="titreCompteurResultats()"></h2>
         </section>
         <section id="js-resultatsRecherche" class="resultatsRecherche">
             @partials.resultatsRecherche(

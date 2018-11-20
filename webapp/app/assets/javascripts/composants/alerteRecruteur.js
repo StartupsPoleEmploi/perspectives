@@ -70,7 +70,7 @@ Vue.component('alerte-recruteur', {
                 'v-on:click="ouvrirFrequences" v-on:blur="fermerFrequences">' +
             '<img alt="Creer alerte" height="18" width="18" class="creerAlerte" ' +
                   'src="/assets/images/composants/alerteRecruteur/creer-alerte.png" />' +
-            'Créer une alerte' +
+            'Créer une alerte pour cette recherche' +
         '</button>' +
         '<ul v-show="choisirFrequenceAlerte" class="listeChoix listeFrequences" v-on:mouseleave="fermerFrequences">' +
             '<li v-for="frequence in frequences" class="listeFrequences-item" v-on:mousedown="creerAlerte(frequence.value)">' +

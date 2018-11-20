@@ -3,7 +3,7 @@ $font-family: "Open Sans", sans-serif;
 $gradient-gris-blanc: linear-gradient(339deg, rgba(255, 255, 255, 0.15) 0%, rgba(234, 239, 248, 0.15) 85%, rgba(234, 239, 248, 1) 100%);
 
 $perspectives-text-required: #FB6B6B;
-$perspectives-noir: #334051;
+$perspectives-bleu-nuit: #334051;
 
 body {
   font-family: $font-family;
@@ -21,7 +21,7 @@ body {
 }
 
 %descriptionTitrePrincipal {
-  color: #334051;
+  color: $perspectives-bleu-nuit;
   font-size: 1.2em;
   letter-spacing: 1.12px;
   font-weight: lighter;

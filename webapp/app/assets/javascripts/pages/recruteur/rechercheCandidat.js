@@ -28,19 +28,32 @@ $(document).ready(function () {
     body.on("click", "div[id^='js-ligne-']", function () {
         var ligne = $(this);
         var index = ligne.prop("id").substring("js-ligne-".length);
-        var ligneProfil = $("#js-profilCandidat-" + index);
+        var profilCandidat = $("#js-profilCandidat-" + index);
+        var profilFerme = ligne.find("img.voirProfil--ferme");
+        var profilOuvert = ligne.find("img.voirProfil--ouvert");
 
-        if (ligneProfil.hasClass("profilCandidat--courant")) {
-            ligneProfil.hide();
-            ligneProfil.removeClass("profilCandidat--courant");
+        if (profilCandidat.hasClass("profilCandidat--courant")) {
+            profilCandidat.hide();
+            profilCandidat.removeClass("profilCandidat--courant");
+            profilFerme.show();
+            profilOuvert.hide();
         } else {
             $(".profilCandidat--courant").each(function () {
-                var ligneOuverte = $(this);
-                ligneOuverte.hide();
-                ligneOuverte.removeClass("profilCandidat--courant");
+                var profilCandidatCourant = $(this);
+                var indexProfilCourant = profilCandidatCourant.prop("id").substring("js-profilCandidat-".length);
+                var ligneCandidatCourant = $("#js-ligne-" + indexProfilCourant);
+                var profilFermeCandidatCourant = ligneCandidatCourant.find("img.voirProfil--ferme");
+                var profilOuvertCandidatCourant = ligneCandidatCourant.find("img.voirProfil--ouvert");
+
+                profilCandidatCourant.hide();
+                profilCandidatCourant.removeClass("profilCandidat--courant");
+                profilFermeCandidatCourant.show();
+                profilOuvertCandidatCourant.hide();
             });
-            ligneProfil.slideDown(400, function() {
-                ligneProfil.addClass("profilCandidat--courant");
+            profilFerme.hide();
+            profilOuvert.show();
+            profilCandidat.slideDown(400, function() {
+                profilCandidat.addClass("profilCandidat--courant");
             });
         }
     });
@@ -148,13 +161,13 @@ var app = new Vue({
                 return "Nous n'avons pas de candidats à vous proposer avec ces critères";
             } else {
                 if (this.metier !== undefined && this.metier !== '') {
-                    return "<b>" + this.getIntituleCandidats(this.nbCandidats) + " pour ce métier</b><br/>" + this.getSuffixeCandidats(this.nbCandidats);
+                    return "<b>" + this.getIntituleCandidats(this.nbCandidats) + " pour ce métier</b> " + this.getSuffixeCandidats(this.nbCandidats);
                 } else if (this.secteurActivite !== undefined && this.secteurActivite !== '') {
-                    return "<b>" + this.getIntituleCandidats(this.nbCandidats) + " pour ce secteur d'activité</b><br/>" + this.getSuffixeCandidats(this.nbCandidats);
+                    return "<b>" + this.getIntituleCandidats(this.nbCandidats) + " pour ce secteur d'activité</b> " + this.getSuffixeCandidats(this.nbCandidats);
                 } else if (this.departement !== undefined && this.departement !== '') {
-                    return "<b>" + this.getIntituleCandidats(this.nbCandidats) + " pour ce département</b><br/>" + this.getSuffixeCandidats(this.nbCandidats);
+                    return "<b>" + this.getIntituleCandidats(this.nbCandidats) + " pour ce département</b> " + this.getSuffixeCandidats(this.nbCandidats);
                 } else {
-                    return "<b>" + this.getIntituleCandidats(this.nbCandidats) + " perspectives</b><br/>" + this.getSuffixeCandidats(this.nbCandidats);
+                    return "<b>" + this.getIntituleCandidats(this.nbCandidats) + " perspectives</b> " + this.getSuffixeCandidats(this.nbCandidats);
                 }
             }
         },
@@ -162,7 +175,7 @@ var app = new Vue({
             return nbCandidats === 1 ? "1 candidat" : nbCandidats + " candidats";
         },
         getSuffixeCandidats: function(nbCandidats) {
-            return nbCandidats === 1 ? "est validé par la Méthode de Recrutement par Simulation" : "sont validés par la Méthode de Recrutement par Simulation";
+            return (nbCandidats === 1 ? "est validé" : "sont validés") + " par la <abbr title='Méthode de Recrutement par Simulation' data-toggle='modal' data-target='#js-modaleVideo'>MRS</abbr>";
         },
         initialiserTableau: function() {
             app.$refs.pagination.modifierPagination(this.pagesInitiales);
@@ -225,9 +238,13 @@ var app = new Vue({
             $(".listeResultatsRecherche-ligne").each(function(e) {
                 $(this).toggle(e >= min && e < max);
             });
+            $(".listeResultatsRecherche-separation").each(function(e) {
+                $(this).toggle(e >= min && e < max);
+            });
             $(".resultatsRecherche-titreConteneur").next(".listeResultatsRecherche").each(function() {
                 var nbLignes = $(this).find(".listeResultatsRecherche-ligne:visible").length;
                 $(this).prev(".resultatsRecherche-titreConteneur").toggle(nbLignes > 0);
+                $(this).find(".listeResultatsRecherche-ligneTitre").toggle(nbLignes > 0);
             });
             $(".js-infoCandidat").hide();
             $(".js-profilCandidat").hide();
