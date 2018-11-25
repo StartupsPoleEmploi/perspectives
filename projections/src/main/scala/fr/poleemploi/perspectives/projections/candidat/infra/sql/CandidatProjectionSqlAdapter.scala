@@ -398,7 +398,7 @@ class CandidatProjectionSqlAdapter(database: Database,
     database.run(
       sqlu"""
             UPDATE candidats
-            SET metiers_evalues = ${event.metier.value}::text || metiers_evalues,
+            SET metiers_evalues = array(SELECT DISTINCT UNNEST(metiers_evalues || ${event.metier.value}::text)),
             habiletes = array(SELECT DISTINCT UNNEST(habiletes || $seq))
             WHERE candidat_id = ${event.candidatId.value}
           """).map(_ => ())
