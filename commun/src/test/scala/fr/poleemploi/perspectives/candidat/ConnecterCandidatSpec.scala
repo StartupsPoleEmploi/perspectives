@@ -2,10 +2,9 @@ package fr.poleemploi.perspectives.candidat
 
 import fr.poleemploi.perspectives.commun.domain.{Email, Genre}
 import org.scalatest.mockito.MockitoSugar
-import org.scalatest.{BeforeAndAfter, MustMatchers, WordSpec}
+import org.scalatest.{MustMatchers, WordSpec}
 
-class ConnecterCandidatSpec extends WordSpec
-  with MustMatchers with MockitoSugar with BeforeAndAfter {
+class ConnecterCandidatSpec extends WordSpec with MustMatchers with MockitoSugar {
 
   val candidatBuilder = new CandidatBuilder
 

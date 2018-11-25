@@ -62,7 +62,7 @@ object CandidatInscritState extends CandidatState {
       } else None
 
     val adresseModifieeEvent = command.adresse.flatMap(adresse =>
-      if (command.adresse.isDefined && !context.adresse.contains(command.adresse.get)) {
+      if (!context.adresse.contains(adresse)) {
         Some(AdresseModifieeEvent(
           candidatId = command.id,
           adresse = command.adresse.get
