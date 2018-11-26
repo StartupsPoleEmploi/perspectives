@@ -2,11 +2,14 @@ package fr.poleemploi.eventsourcing.infra.postgresql
 
 import java.sql.SQLException
 
+import akka.NotUsed
+import akka.stream.scaladsl.Source
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.tminglei.slickpg.JsonString
 import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.eventsourcing.eventstore.{AppendOnlyData, AppendOnlyStore, AppendOnlyStoreConcurrencyException, AppendedEvent}
 import slick.jdbc.JdbcBackend.Database
+import slick.jdbc.{ResultSetConcurrency, ResultSetType}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -77,6 +80,27 @@ class PostgreSQLAppendOnlyStore(val driver: PostgresDriver,
           event = unserializeData(eventRecord.data.value)
         )
       ))
+
+  def streamRecords: Source[AppendedEvent, NotUsed] =
+    Source.fromPublisher {
+      database.stream(
+        eventsTable
+          .sortBy(e => (e.streamName, e.streamVersion))
+          .result
+          .transactionally
+          .withStatementParameters(
+            rsType = ResultSetType.ForwardOnly,
+            rsConcurrency = ResultSetConcurrency.ReadOnly,
+            fetchSize = 1000
+          )
+      ).mapResult(eventRecord =>
+        AppendedEvent(
+          streamName = eventRecord.streamName,
+          streamVersion = eventRecord.streamVersion,
+          event = unserializeData(eventRecord.data.value)
+        )
+      )
+    }
 
   private def getLastStreamVersion(streamName: String): Int = 0
 

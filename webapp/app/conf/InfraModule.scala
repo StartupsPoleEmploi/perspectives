@@ -1,10 +1,12 @@
 package conf
 
+import akka.actor.ActorSystem
 import authentification.infra.play.PlayOauthService
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.inject.name.Named
 import com.google.inject.{AbstractModule, Provider, Provides, Singleton}
-import fr.poleemploi.eventsourcing.eventstore.{AppendOnlyStore, EventStore, EventStoreListener, LocalEventStoreListener}
+import fr.poleemploi.eventsourcing.eventstore.{AppendOnlyStore, EventStore, EventStoreListener}
+import fr.poleemploi.eventsourcing.infra.akka.AkkaEventStoreListener
 import fr.poleemploi.eventsourcing.infra.jackson.EventStoreObjectMapperBuilder
 import fr.poleemploi.eventsourcing.infra.postgresql.{PostgreSQLAppendOnlyStore, PostgresDriver => EventSourcingPostgresDriver}
 import fr.poleemploi.perspectives.authentification.infra.peconnect.PEConnectAdapter
@@ -54,7 +56,8 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
-  def eventStoreListener: EventStoreListener = new LocalEventStoreListener
+  def eventStoreListener(actorSystem: ActorSystem): EventStoreListener =
+    new AkkaEventStoreListener(actorSystem = actorSystem)
 
   @Provides
   def postgreSqlAppendOnlyStore(database: Database,

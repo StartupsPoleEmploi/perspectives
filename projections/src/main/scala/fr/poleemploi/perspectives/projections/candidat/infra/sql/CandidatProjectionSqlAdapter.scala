@@ -130,6 +130,11 @@ class CandidatProjectionSqlAdapter(database: Database,
       c <- candidatTable if c.candidatId === candidatId
     } yield (c.codePostal, c.commune)
   }
+  val mrsAjouteeQuery = Compiled { candidatId: Rep[CandidatId] =>
+    for {
+      c <- candidatTable if c.candidatId === candidatId
+    } yield (c.metiersEvalues, c.habiletes)
+  }
   val repriseEmploiQuery = Compiled { candidatId: Rep[CandidatId] =>
     for {
       c <- candidatTable if c.candidatId === candidatId
@@ -392,17 +397,14 @@ class CandidatProjectionSqlAdapter(database: Database,
       Some(event.adresse.libelleCommune)
     ))).map(_ => ())
 
-  def onMRSAjouteeEvent(event: MRSAjouteeEvent): Future[Unit] = {
-    val seq: Seq[String] = event.habiletes.map(_.value)
-    //FIXME : est faite en une seule requete car la base va gérer le fait que deux evenements peuvent arriver très proches et que la projection n'attend pas la fin du traitement d'un event avant de passer à l'autre
-    database.run(
-      sqlu"""
-            UPDATE candidats
-            SET metiers_evalues = array(SELECT DISTINCT UNNEST(metiers_evalues || ${event.metier.value}::text)),
-            habiletes = array(SELECT DISTINCT UNNEST(habiletes || $seq))
-            WHERE candidat_id = ${event.candidatId.value}
-          """).map(_ => ())
-  }
+  def onMRSAjouteeEvent(event: MRSAjouteeEvent): Future[Unit] =
+    for {
+      res <- database.run(mrsAjouteeQuery(event.candidatId).result).map(_.toList)
+      _ <- database.run(mrsAjouteeQuery(event.candidatId).update((
+        (event.metier :: res.flatMap(v => v._1)).distinct,
+        (event.habiletes ++ res.flatMap(v => v._2)).distinct
+      )))
+    } yield ()
 
   def onRepriseEmploiDeclareeParConseillerEvent(event: RepriseEmploiDeclareeParConseillerEvent): Future[Unit] =
     database.run(repriseEmploiQuery(event.candidatId).update((

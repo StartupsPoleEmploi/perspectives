@@ -9,26 +9,26 @@ import fr.poleemploi.perspectives.recruteur._
 
 import scala.concurrent.Future
 
-class AlerteRecruteurProjection(alerteRecruteurSqlAdapter: AlerteRecruteurSqlAdapter) extends Projection {
+class AlerteRecruteurProjection(adapter: AlerteRecruteurSqlAdapter) extends Projection {
 
   override def listenTo: List[Class[_ <: Event]] = List(classOf[RecruteurEvent])
 
   override def isReplayable: Boolean = true
 
   override def onEvent: ReceiveEvent = {
-    case e: AlerteRecruteurCreeEvent => alerteRecruteurSqlAdapter.onAlerteRecruteurCreeEvent(e)
-    case e: AlerteRecruteurSupprimeeEvent => alerteRecruteurSqlAdapter.onAlerteRecruteurSupprimeeEvent(e)
-    case e: ProfilGerantModifieEvent => alerteRecruteurSqlAdapter.onProfilGerantModifieEvent(e)
-    case e: ProfilModifieEvent => alerteRecruteurSqlAdapter.onProfilModifieEvent(e)
+    case e: AlerteRecruteurCreeEvent => adapter.onAlerteRecruteurCreeEvent(e)
+    case e: AlerteRecruteurSupprimeeEvent => adapter.onAlerteRecruteurSupprimeeEvent(e)
+    case e: ProfilGerantModifieEvent => adapter.onProfilGerantModifieEvent(e)
+    case e: ProfilModifieEvent => adapter.onProfilModifieEvent(e)
     case _ => Future.successful(())
   }
 
   def alertesQuotidiennes: Source[AlerteRecruteurDto, NotUsed] =
-    alerteRecruteurSqlAdapter.alertesQuotidiennes
+    adapter.alertesQuotidiennes
 
   def alertesHebdomaraires: Source[AlerteRecruteurDto, NotUsed] =
-    alerteRecruteurSqlAdapter.alertesHebdomaraires
+    adapter.alertesHebdomaraires
 
   def alertesParRecruteur(query: AlertesRecruteurQuery): Future[AlertesRecruteurQueryResult] =
-    alerteRecruteurSqlAdapter.alertesParRecruteur(query)
+    adapter.alertesParRecruteur(query)
 }

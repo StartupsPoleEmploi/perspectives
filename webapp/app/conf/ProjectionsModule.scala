@@ -151,7 +151,7 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
   @Singleton
   def alerteRecruteurProjection(alerteRecruteurSqlAdapter: AlerteRecruteurSqlAdapter): AlerteRecruteurProjection =
     new AlerteRecruteurProjection(
-      alerteRecruteurSqlAdapter = alerteRecruteurSqlAdapter
+      adapter = alerteRecruteurSqlAdapter
     )
 
 }

@@ -14,8 +14,7 @@ import slick.jdbc.JdbcBackend.Database
 class RegisterProjections @Inject()(eventStoreListener: EventStoreListener,
                                     candidatProjection: CandidatProjection,
                                     alerteRecruteurProjection: AlerteRecruteurProjection) {
-  eventStoreListener.subscribe(candidatProjection)
-  eventStoreListener.subscribe(alerteRecruteurProjection)
+  eventStoreListener.subscribe(candidatProjection, alerteRecruteurProjection)
 }
 
 class ProjectionsModule extends AbstractModule with ScalaModule {
@@ -56,7 +55,7 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
   @Singleton
   def alerteRecruteurProjection(alerteRecruteurSqlAdapter: AlerteRecruteurSqlAdapter): AlerteRecruteurProjection =
     new AlerteRecruteurProjection(
-      alerteRecruteurSqlAdapter = alerteRecruteurSqlAdapter
+      adapter = alerteRecruteurSqlAdapter
     )
 
 }
