@@ -7,6 +7,7 @@ import fr.poleemploi.perspectives.commun.domain.{CodeDepartement, CodeROME}
 import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
 import slick.jdbc.JdbcBackend.Database
+import slick.lifted.{Constraint, PrimaryKey}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -31,6 +32,12 @@ class MRSValideesCandidatsSqlAdapter(val driver: PostgresDriver,
 
     def dateEvaluation = column[LocalDate]("date_evaluation")
 
+    def pk: PrimaryKey = primaryKey("candidats_mrs_validees_pk", id)
+
+    def idx = index("candidats_mrs_validees_peconnect_id_idx", peConnectId)
+
+    override def tableConstraints: Iterator[Constraint] = List(primaryKey("candidats_mrs_validees_unicite_mrs", (peConnectId, codeROME, codeDepartement))).toIterator
+
     def * = (peConnectId, codeROME, codeDepartement, dateEvaluation) <> (MRSValideeCandidatPEConnect.tupled, MRSValideeCandidatPEConnect.unapply)
   }
 
@@ -48,14 +55,25 @@ class MRSValideesCandidatsSqlAdapter(val driver: PostgresDriver,
       ))
   }
 
-  def ajouter(mrsValidees: Stream[MRSValideeCandidatPEConnect]): Future[Int] = {
+  /**
+    * Intègre les MRS provenant de l'extract du SI Pôle Emploi
+    * Mets à jour les infos de MRS qu'un candidat a déjà validé (contrainte peconnect_id, code_rome, code_departement) car on ne sait pas ce qui a changé dans l'extract ni pour quelle raison, et cela évite d'intégrer des règles issues du SI de Pôle Emploi ici. <br />
+    * Par exemple on peut recevoir un enregistrement en VSL puis un autre en VEM, et on ne sait pas dire si c'est une nouvelle MRS ou une mise à jour du statut.
+    *
+    * @return Le stream des MRS effectivement intégrées
+    */
+  def ajouter(mrsValidees: Stream[MRSValideeCandidatPEConnect]): Future[Stream[MRSValideeCandidatPEConnect]] = {
     val bulkInsert: DBIO[Option[Int]] = mrsValideesCandidatsTable.map(
       m => (m.peConnectId, m.codeROME, m.codeDepartement, m.dateEvaluation)
-    ) ++= mrsValidees.map(
+    ) insertOrUpdateAll mrsValidees.map(
       m => (m.peConnectId, m.codeROME, m.codeDepartement, m.dateEvaluation)
     )
 
-    database.run(bulkInsert).map(_.getOrElse(0))
+    /**
+      * On met à jour si un conflit existe : on retourne donc les mêmes mrs qu'en entrée.
+      * Il peut y avoir des doublons de MRS contenant la même date d'évaluation mais l'aggrégat Candidat fait les vérifications
+      */
+    database.run(bulkInsert).map(_ => mrsValidees)
   }
 
   def mrsValideesParCandidat(peConnectId: PEConnectId): Future[List[MRSValidee]] =

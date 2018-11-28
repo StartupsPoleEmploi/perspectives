@@ -6,8 +6,7 @@ CREATE TABLE candidats_mrs_validees
   code_rome CHARACTER VARYING(255) NOT NULL,
   code_departement CHARACTER VARYING(255) NOT NULL,
   date_evaluation DATE NOT NULL,
-  CONSTRAINT candidats_mrs_validees_pk PRIMARY KEY (id),
-  UNIQUE (peconnect_id, code_rome)
+  CONSTRAINT candidats_mrs_validees_pk PRIMARY KEY (id)
 )
 WITH (
 OIDS =FALSE
@@ -19,3 +18,4 @@ COMMENT ON COLUMN candidats_mrs_validees.code_rome IS 'Code ROME du metier valid
 COMMENT ON COLUMN candidats_mrs_validees.date_evaluation IS 'Date de l evaluation';
 
 CREATE INDEX candidats_mrs_validees_peconnect_id_idx ON candidats_mrs_validees (peconnect_id);
+ALTER TABLE candidats_mrs_validees ADD CONSTRAINT candidats_mrs_validees_unicite_mrs UNIQUE (peconnect_id, code_rome, code_departement);

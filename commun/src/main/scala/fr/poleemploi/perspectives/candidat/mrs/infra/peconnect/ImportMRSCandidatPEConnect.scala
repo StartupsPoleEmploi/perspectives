@@ -64,13 +64,13 @@ class ImportMRSCandidatPEConnect(config: ImportMRSCandidatPEConnectConfig,
   private def integrerFichier(fichier: Path): Future[Stream[MRSValideeCandidatPEConnect]] = {
     for {
       mrsValideesCandidatPEConnect <- mrsValideesCandidatsCSVAdapter.load(FileIO.fromPath(fichier))
-      nbMrsValideesIntegrees <- mrsValideesCandidatsSqlAdapter.ajouter(mrsValideesCandidatPEConnect)
+      mrsValideesIntegrees <- mrsValideesCandidatsSqlAdapter.ajouter(mrsValideesCandidatPEConnect)
     } yield {
       Files.move(fichier, archiveDirectory.resolve(fichier.getFileName), StandardCopyOption.REPLACE_EXISTING)
       if (importMrsCandidatLogger.isInfoEnabled()) {
-        importMrsCandidatLogger.info(s"Nombres de MRS validées intégrées : $nbMrsValideesIntegrees dans le fichier $fichier")
+        importMrsCandidatLogger.info(s"Nombres de MRS validées intégrées dans le référentiel : ${mrsValideesIntegrees.size}/${mrsValideesCandidatPEConnect.size} reçues dans le fichier $fichier")
       }
-      mrsValideesCandidatPEConnect
+      mrsValideesIntegrees
     }
   }
 }

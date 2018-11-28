@@ -124,6 +124,7 @@ object CandidatInscritState extends CandidatState {
 
   override def ajouterMRSValidee(context: CandidatContext, command: AjouterMRSValideesCommand,
                                  referentielHabiletesMRS: ReferentielHabiletesMRS): Future[List[Event]] = {
+    // Un candidat peut potentiellement passer la même MRS à une date différente (la repasser) : aux projections de gérer si elles veulent afficher un historique ou simplement savoir les métiers validés
     val mrsDejaValidees = context.mrsValidees.intersect(command.mrsValidees)
     if (mrsDejaValidees.nonEmpty) {
       return Future.failed(new IllegalArgumentException(

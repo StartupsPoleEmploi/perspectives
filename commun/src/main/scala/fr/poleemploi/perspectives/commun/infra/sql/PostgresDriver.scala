@@ -10,6 +10,8 @@ import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetContactId
 import fr.poleemploi.perspectives.recruteur.alerte.domain.{AlerteId, FrequenceAlerte}
 import fr.poleemploi.perspectives.recruteur.{NumeroSiret, RecruteurId, TypeRecruteur}
+import slick.basic.Capability
+import slick.jdbc.JdbcCapabilities
 
 import scala.reflect.ClassTag
 
@@ -17,6 +19,9 @@ trait PostgresDriver extends ExPostgresProfile
   with PgArraySupport
   with PgArrayExtensions
   with PgDate2Support {
+
+  protected override def computeCapabilities: Set[Capability] =
+    super.computeCapabilities + JdbcCapabilities.insertOrUpdate
 
   object PostgresAPI extends API
     with ArrayImplicits
