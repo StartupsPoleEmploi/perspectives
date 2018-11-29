@@ -7,35 +7,63 @@ import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.recruteur.RecruteurId
 import play.api.libs.json._
 
+/**
+  * Contient des macros Json.format : l'ordre de déclaration est important
+  */
 object JsonFormats {
 
-  implicit val writesCandidatId: Writes[CandidatId] = writesAggregateId[CandidatId]
-  implicit val writesRecruteurId: Writes[RecruteurId] = writesAggregateId[RecruteurId]
-  implicit val writesCvId: Writes[CVId] = writesStringValueObject[CVId]
+  implicit val formatCandidatId: Format[CandidatId] = formatAggregateId(CandidatId)
+  implicit val formatRecruteurId: Format[RecruteurId] = formatAggregateId(RecruteurId)
+  implicit val formatCvId: Format[CVId] = formatStringValueObject(CVId)
 
-  implicit val writesGenre: Writes[Genre] = writesStringValueObject[Genre]
-  implicit val writesCodeDepartement: Writes[CodeDepartement] = writesStringValueObject[CodeDepartement]
-  implicit val writesCodeROME: Writes[CodeROME] = writesStringValueObject[CodeROME]
-  implicit val writesCodeSecteurActivite: Writes[CodeSecteurActivite] = writesStringValueObject[CodeSecteurActivite]
-  implicit val writesEmail: Writes[Email] = writesStringValueObject[Email]
-  implicit val writesRayonRecherche: Writes[RayonRecherche] = writesIntValueObject[RayonRecherche]
-  implicit val writesNumeroTelephone: Writes[NumeroTelephone] = writesStringValueObject[NumeroTelephone]
-  implicit val writesStatutDemandeurEmploi: Writes[StatutDemandeurEmploi] = writesStringValueObject[StatutDemandeurEmploi]
-  implicit val writesTypeMedia: Writes[TypeMedia] = writesStringValueObject[TypeMedia]
+  implicit val formatGenre: Format[Genre] = formatStringValueObject(Genre(_))
+  implicit val formatCodeDepartement: Format[CodeDepartement] = formatStringValueObject(CodeDepartement)
+  implicit val formatCodeROME: Format[CodeROME] = formatStringValueObject(CodeROME)
+  implicit val formatCodeSecteurActivite: Format[CodeSecteurActivite] = formatStringValueObject(CodeSecteurActivite(_))
+  implicit val formatEmail: Format[Email] = formatStringValueObject(Email)
+  implicit val formatRayonRecherche: Format[RayonRecherche] = formatIntValueObject(RayonRecherche(_))
+  implicit val formatNumeroTelephone: Format[NumeroTelephone] = formatStringValueObject(NumeroTelephone(_))
+  implicit val formatStatutDemandeurEmploi: Format[StatutDemandeurEmploi] = formatStringValueObject(StatutDemandeurEmploi(_))
+  implicit val formatTypeMedia: Format[TypeMedia] = formatStringValueObject(TypeMedia(_))
+  implicit val formatHabilete: Format[Habilete] = formatStringValueObject(Habilete(_))
 
-  implicit val jsonWritesDepartement: Writes[Departement] = Json.writes[Departement]
-  implicit val jsonWritesMetier: Writes[Metier] = Json.writes[Metier]
-  implicit val jsonWritesSecteurActivite: Writes[SecteurActivite] = Json.writes[SecteurActivite]
+  implicit val formatDepartement: Format[Departement] = Json.format[Departement]
+  implicit val formatMetier: Format[Metier] = Json.format[Metier]
+  implicit val formatSecteurActivite: Format[SecteurActivite] = Json.format[SecteurActivite]
 
-  private def writesAggregateId[T <: AggregateId]: Writes[T] = Writes { id =>
+  def readsAggregateId[T <: AggregateId](deserialize: String => T): Reads[T] = Reads {
+    case JsString(s) => JsSuccess(deserialize(s))
+    case _ => JsError("Not a string")
+  }
+
+  def writesAggregateId[T <: AggregateId]: Writes[T] = Writes { id =>
     JsString(id.value)
   }
 
-  private def writesStringValueObject[T <: StringValueObject]: Writes[T] = Writes { s =>
+  def formatAggregateId[T <: AggregateId](deserialize: String => T): Format[T] =
+    Format(readsAggregateId[T](deserialize), writesAggregateId[T])
+
+  def readsStringValueObject[T <: StringValueObject](deserialize: String => T): Reads[T] = Reads {
+    case JsString(s) => JsSuccess(deserialize(s))
+    case _ => JsError("Not a string")
+  }
+
+  def writesStringValueObject[T <: StringValueObject]: Writes[T] = Writes { s =>
     JsString(s.value)
   }
 
-  private def writesIntValueObject[T <: IntValueObject]: Writes[T] = Writes { i =>
+  def formatStringValueObject[T <: StringValueObject](deserialize: String => T): Format[T] =
+    Format(readsStringValueObject[T](deserialize), writesStringValueObject[T])
+
+  def readsIntValueObject[T <: IntValueObject](deserialize: Int => T): Reads[T] = Reads {
+    case JsNumber(n) => JsSuccess(deserialize(n.intValue()))
+    case _ => JsError("Not a number")
+  }
+
+  def writesIntValueObject[T <: IntValueObject]: Writes[T] = Writes { i =>
     JsNumber(i.value)
   }
+
+  def formatIntValueObject[T <: IntValueObject](deserialize: Int => T): Format[T] =
+    Format(readsIntValueObject[T](deserialize), writesIntValueObject[T])
 }
