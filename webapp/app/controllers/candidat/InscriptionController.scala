@@ -35,7 +35,7 @@ class InscriptionController @Inject()(cc: ControllerComponents,
       email = Email("mickael.perspectives@mail.com"),
       genre = Genre.HOMME,
       adresse = Some(Adresse(
-        voie = "3 rue des oursons",
+        voie = "54 rue René Goscinny",
         codePostal = "85000",
         libelleCommune = "La Roche sur Yon",
         libellePays = "France"
