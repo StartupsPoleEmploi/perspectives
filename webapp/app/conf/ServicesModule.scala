@@ -85,11 +85,11 @@ class ServicesModule extends AbstractModule {
 
   @Provides
   @Singleton
-  def commentaireService(slackCommentaireAdapter: Provider[SlackCommentaireAdapter],
-                         commentaireServiceLocal: Provider[CommentaireServiceLocal],
+  def commentaireService(commentaireSlackAdapter: Provider[CommentaireSlackAdapter],
+                         commentaireServiceLocal: Provider[CommentaireLocalAdapter],
                          webAppConfig: WebAppConfig): CommentaireService =
     if (webAppConfig.useSlackNotification)
-      slackCommentaireAdapter.get()
+      commentaireSlackAdapter.get()
     else
       commentaireServiceLocal.get()
 

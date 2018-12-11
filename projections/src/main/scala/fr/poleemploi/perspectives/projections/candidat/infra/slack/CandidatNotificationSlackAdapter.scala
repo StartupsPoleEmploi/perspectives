@@ -1,9 +1,8 @@
-package fr.poleemploi.perspectives.projections.candidat
+package fr.poleemploi.perspectives.projections.candidat.infra.slack
 
-import fr.poleemploi.cqrs.projection.Projection
-import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.perspectives.candidat.CandidatInscritEvent
 import fr.poleemploi.perspectives.commun.infra.Environnement
+import fr.poleemploi.perspectives.projections.candidat.CandidatNotificationProjection
 import play.api.libs.json.Json
 import play.api.libs.ws.WSClient
 
@@ -13,18 +12,10 @@ import scala.concurrent.Future
 case class SlackCandidatConfig(webhookURL: String,
                                environnement: Environnement)
 
-class CandidatNotificationSlackProjection(config: SlackCandidatConfig,
-                                          wsClient: WSClient) extends Projection {
+class CandidatNotificationSlackAdapter(config: SlackCandidatConfig,
+                                       wsClient: WSClient) extends CandidatNotificationProjection {
 
-  override def listenTo: List[Class[_ <: Event]] = List(classOf[CandidatInscritEvent])
-
-  override def isReplayable: Boolean = false
-
-  override def onEvent: ReceiveEvent = {
-    case e: CandidatInscritEvent => onCandidatInscritEvent
-  }
-
-  private def onCandidatInscritEvent: Future[Unit] =
+  override def onCandidatInscritEvent(event: CandidatInscritEvent): Future[Unit] =
     wsClient
       .url(s"${config.webhookURL}")
       .addHttpHeaders("Content-Type" -> "application/json")

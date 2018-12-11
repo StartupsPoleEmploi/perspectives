@@ -7,7 +7,7 @@ import play.api.libs.ws.WSClient
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class SlackCommentaireAdapter(config: SlackRecruteurConfig,
+class CommentaireSlackAdapter(config: SlackRecruteurConfig,
                               wsClient: WSClient) extends CommentaireService {
 
   override def commenterListeCandidats(commentaire: CommentaireListeCandidats): Future[Unit] =
@@ -20,7 +20,7 @@ class SlackCommentaireAdapter(config: SlackRecruteurConfig,
              |Commentaire sur la recherche candidats de ${commentaire.nomRecruteur.capitalize} ${commentaire.prenomRecruteur.capitalize}, société ${commentaire.raisonSociale} :
              |Secteur : ${commentaire.labelSecteurActiviteRecherche.getOrElse("")}
              |Métier : ${commentaire.labelMetierRecherche.getOrElse("")}
-             |Département : ${commentaire.labelDepartementRecherche.getOrElse("")}
+             |Département : ${commentaire.labelLocalisationRecherche.getOrElse("")}
              |Commentaire : ${commentaire.commentaire}""".stripMargin
       )))
       .map(response => {

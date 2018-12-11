@@ -7,6 +7,9 @@ import fr.poleemploi.perspectives.emailing.domain.{CandidatInscrit, EmailingServ
 
 import scala.concurrent.Future
 
+/**
+  * Projection qui traite les envois de mails aux candidats
+  */
 class CandidatEmailProjection(emailingService: EmailingService) extends Projection {
 
   override def listenTo: List[Class[_ <: Event]] = List(classOf[CandidatInscritEvent], classOf[CVAjouteEvent], classOf[CVRemplaceEvent])

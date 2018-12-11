@@ -4,7 +4,7 @@ import fr.poleemploi.perspectives.recruteur.commentaire.domain.{CommentaireListe
 
 import scala.concurrent.Future
 
-class CommentaireServiceLocal extends CommentaireService {
+class CommentaireLocalAdapter extends CommentaireService {
 
   override def commenterListeCandidats(commentaire: CommentaireListeCandidats): Future[Unit] = {
     Future.successful(())

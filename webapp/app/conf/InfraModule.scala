@@ -222,13 +222,13 @@ class InfraModule extends AbstractModule with ScalaModule {
     new ReferentielHabiletesMRSLocal()
 
   @Provides
-  def commentaireServiceLocal: CommentaireServiceLocal =
-    new CommentaireServiceLocal
+  def commentaireLocalAdapter: CommentaireLocalAdapter =
+    new CommentaireLocalAdapter
 
   @Provides
-  def slackCommentaireAdapter(wsClient: WSClient,
-                              webAppConfig: WebAppConfig): SlackCommentaireAdapter =
-    new SlackCommentaireAdapter(
+  def commentaireSlackAdapter(wsClient: WSClient,
+                              webAppConfig: WebAppConfig): CommentaireSlackAdapter =
+    new CommentaireSlackAdapter(
       wsClient = wsClient,
       config = webAppConfig.slackRecruteurConfig
     )
@@ -250,4 +250,17 @@ class InfraModule extends AbstractModule with ScalaModule {
       config = webAppConfig.localisationWSAdapterConfig,
       mapping = mapping
     )
+
+  @Provides
+  def candidatNotificationSlackAdapter(webAppConfig: WebAppConfig,
+                                       wsClient: WSClient): CandidatNotificationSlackAdapter =
+    new CandidatNotificationSlackAdapter(
+      config = webAppConfig.slackCandidatConfig,
+      wsClient = wsClient
+    )
+
+  @Provides
+  def candidatNotificationLocalAdapter(webAppConfig: WebAppConfig,
+                                       wsClient: WSClient): CandidatNotificationLocalAdapter =
+    new CandidatNotificationLocalAdapter()
 }
