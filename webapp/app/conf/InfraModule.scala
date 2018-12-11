@@ -3,8 +3,8 @@ package conf
 import akka.actor.ActorSystem
 import authentification.infra.play.PlayOauthService
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.google.inject._
 import com.google.inject.name.Named
-import com.google.inject.{AbstractModule, Provider, Provides, Singleton}
 import fr.poleemploi.eventsourcing.eventstore.{AppendOnlyStore, EventStore, EventStoreListener}
 import fr.poleemploi.eventsourcing.infra.akka.AkkaEventStoreListener
 import fr.poleemploi.eventsourcing.infra.jackson.EventStoreObjectMapperBuilder
@@ -14,6 +14,8 @@ import fr.poleemploi.perspectives.authentification.infra.peconnect.jwt.PEConnect
 import fr.poleemploi.perspectives.authentification.infra.peconnect.sql.PEConnectSqlAdapter
 import fr.poleemploi.perspectives.authentification.infra.peconnect.ws.PEConnectWSAdapter
 import fr.poleemploi.perspectives.candidat.cv.infra.sql.CVSqlAdapter
+import fr.poleemploi.perspectives.candidat.localisation.infra.local.LocalisationLocalAdapter
+import fr.poleemploi.perspectives.candidat.localisation.infra.ws.{LocalisationWSAdapter, LocalisationWSMapping}
 import fr.poleemploi.perspectives.candidat.mrs.infra.local.{ReferentielHabiletesMRSLocal, ReferentielMRSCandidatLocal}
 import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.{MRSValideesCandidatsSqlAdapter, ReferentielMRSCandidatPEConnect}
 import fr.poleemploi.perspectives.candidat.mrs.infra.sql.ReferentielHabiletesMRSSqlAdapter
@@ -26,8 +28,8 @@ import fr.poleemploi.perspectives.emailing.infra.sql.MailjetSqlAdapter
 import fr.poleemploi.perspectives.emailing.infra.ws.{MailjetWSAdapter, MailjetWSMapping}
 import fr.poleemploi.perspectives.metier.infra.file.ReferentielMetierFileAdapter
 import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapter
-import fr.poleemploi.perspectives.recruteur.commentaire.infra.local.CommentaireServiceLocal
-import fr.poleemploi.perspectives.recruteur.commentaire.infra.slack.SlackCommentaireAdapter
+import fr.poleemploi.perspectives.recruteur.commentaire.infra.local.CommentaireLocalAdapter
+import fr.poleemploi.perspectives.recruteur.commentaire.infra.slack.CommentaireSlackAdapter
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
 import play.api.inject.ApplicationLifecycle
@@ -229,5 +231,23 @@ class InfraModule extends AbstractModule with ScalaModule {
     new SlackCommentaireAdapter(
       wsClient = wsClient,
       config = webAppConfig.slackRecruteurConfig
+    )
+
+  @Provides
+  def localisationLocalAdapter: LocalisationLocalAdapter =
+    new LocalisationLocalAdapter
+
+  @Provides
+  def localisationWSMapping: LocalisationWSMapping =
+    new LocalisationWSMapping()
+
+  @Provides
+  def localisationWSAdapter(wsClient: WSClient,
+                            mapping: LocalisationWSMapping,
+                            webAppConfig: WebAppConfig): LocalisationWSAdapter =
+    new LocalisationWSAdapter(
+      wsClient = wsClient,
+      config = webAppConfig.localisationWSAdapterConfig,
+      mapping = mapping
     )
 }

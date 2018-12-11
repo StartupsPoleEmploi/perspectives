@@ -4,7 +4,7 @@ import java.time.LocalDate
 
 import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
-import fr.poleemploi.perspectives.commun.domain._
+import fr.poleemploi.perspectives.commun.domain.{Coordonnees, _}
 import fr.poleemploi.perspectives.conseiller.ConseillerId
 
 sealed trait CandidatEvent extends Event {
@@ -38,7 +38,8 @@ case class NumeroTelephoneModifieEvent(candidatId: CandidatId,
                                        numeroTelephone: NumeroTelephone) extends CandidatEvent
 
 case class AdresseModifieeEvent(candidatId: CandidatId,
-                                adresse: Adresse) extends CandidatEvent
+                                adresse: Adresse,
+                                coordonnees: Option[Coordonnees]) extends CandidatEvent
 
 case class StatutDemandeurEmploiModifieEvent(candidatId: CandidatId,
                                              statutDemandeurEmploi: StatutDemandeurEmploi) extends CandidatEvent

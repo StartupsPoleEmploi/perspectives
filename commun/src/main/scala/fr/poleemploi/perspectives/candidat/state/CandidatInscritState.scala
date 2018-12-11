@@ -3,6 +3,7 @@ package fr.poleemploi.perspectives.candidat.state
 import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.candidat.cv.domain.CVService
+import fr.poleemploi.perspectives.candidat.localisation.domain.LocalisationService
 import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielHabiletesMRS
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -44,10 +45,12 @@ object CandidatInscritState extends CandidatState {
     List(criteresRechercheModifiesEvent, numeroTelephoneModifieEvent).flatten
   }
 
-  override def connecter(context: CandidatContext, command: ConnecterCandidatCommand): List[Event] = {
-    val candidatConnecteEvent = Some(CandidatConnecteEvent(command.id))
+  override def connecter(context: CandidatContext,
+                         command: ConnecterCandidatCommand,
+                         localisationService: LocalisationService): Future[List[Event]] = {
+    val candidatConnecteEvent = Future.successful(Some(CandidatConnecteEvent(command.id)))
 
-    val profilCandidatModifieEvent =
+    val profilCandidatModifieEvent = Future.successful(
       if (!context.nom.contains(command.nom) ||
         !context.prenom.contains(command.prenom) ||
         !context.email.contains(command.email) ||
@@ -59,27 +62,39 @@ object CandidatInscritState extends CandidatState {
           email = command.email,
           genre = command.genre
         ))
-      } else None
+      } else None)
 
-    val adresseModifieeEvent = command.adresse.flatMap(adresse =>
+    val adresseModifieeEvent = command.adresse.map(adresse =>
       if (!context.adresse.contains(adresse)) {
-        Some(AdresseModifieeEvent(
-          candidatId = command.id,
-          adresse = command.adresse.get
-        ))
-      } else None
-    )
+        localisationService.localiser(adresse).map(optCoordonnees => Some(
+          AdresseModifieeEvent(
+            candidatId = command.id,
+            adresse = adresse,
+            coordonnees = optCoordonnees
+          )
+        )).recover {
+          case _: Throwable => Some(
+            AdresseModifieeEvent(
+              candidatId = command.id,
+              adresse = adresse,
+              coordonnees = None
+            )
+          )
+        }
+      } else Future.successful(None)
+    ).getOrElse(Future.successful(None))
 
-    val statutDemandeurEmploiModifieEvent = command.statutDemandeurEmploi.flatMap(statutDemandeurEmploi =>
+    val statutDemandeurEmploiModifieEvent = Future.successful(command.statutDemandeurEmploi.flatMap(statutDemandeurEmploi =>
       if (!context.statutDemandeurEmploi.contains(statutDemandeurEmploi)) {
         Some(StatutDemandeurEmploiModifieEvent(
           candidatId = command.id,
           statutDemandeurEmploi = statutDemandeurEmploi
         ))
       } else None
-    )
+    ))
 
-    List(candidatConnecteEvent, profilCandidatModifieEvent, adresseModifieeEvent, statutDemandeurEmploiModifieEvent).flatten
+    Future.sequence(List(candidatConnecteEvent, profilCandidatModifieEvent, adresseModifieeEvent, statutDemandeurEmploiModifieEvent))
+      .map(_.flatten)
   }
 
   override def ajouterCV(context: CandidatContext, command: AjouterCVCommand, cvService: CVService): Future[List[Event]] = {

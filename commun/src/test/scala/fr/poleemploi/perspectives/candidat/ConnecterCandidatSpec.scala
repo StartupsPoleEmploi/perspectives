@@ -1,10 +1,15 @@
 package fr.poleemploi.perspectives.candidat
 
-import fr.poleemploi.perspectives.commun.domain.{Email, Genre}
+import fr.poleemploi.perspectives.candidat.localisation.domain.LocalisationService
+import fr.poleemploi.perspectives.commun.domain.{Coordonnees, Email, Genre}
+import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
-import org.scalatest.{MustMatchers, WordSpec}
+import org.scalatest.{AsyncWordSpec, BeforeAndAfter, MustMatchers}
 
-class ConnecterCandidatSpec extends WordSpec with MustMatchers with MockitoSugar {
+import scala.concurrent.Future
+
+class ConnecterCandidatSpec extends AsyncWordSpec
+  with MustMatchers with MockitoSugar with BeforeAndAfter {
 
   val candidatBuilder = new CandidatBuilder
 
@@ -28,18 +33,24 @@ class ConnecterCandidatSpec extends WordSpec with MustMatchers with MockitoSugar
       statutDemandeurEmploi = None
     )
 
+  var localisationService: LocalisationService = _
+
+  before {
+    localisationService = mock[LocalisationService]
+    when(localisationService.localiser(adresse)) thenReturn Future.successful(None)
+  }
+
   "modifierProfil" should {
     "renvoyer une erreur lorsque le candidat n'est pas inscrit" in {
       // Given
       val candidat = candidatBuilder.build
 
-      // When
-      val ex = intercept[IllegalArgumentException] {
-        candidat.connecter(commande)
-      }
-
-      // Then
-      ex.getMessage mustBe s"Le candidat ${candidat.id.value} dans l'état Nouveau ne peut pas gérer la commande ${commande.getClass.getSimpleName}"
+      // When & Then
+      recoverToExceptionIf[IllegalArgumentException] {
+        candidat.connecter(commande, localisationService)
+      }.map(ex =>
+        ex.getMessage mustBe s"Le candidat ${candidat.id.value} dans l'état Nouveau ne peut pas gérer la commande ${commande.getClass.getSimpleName}"
+      )
     }
     "générer un événement de connexion lorsqu'aucune information de profil n'est modifiée" in {
       // Given
@@ -53,10 +64,10 @@ class ConnecterCandidatSpec extends WordSpec with MustMatchers with MockitoSugar
         .build
 
       // When
-      val result = candidat.connecter(commande)
+      val future = candidat.connecter(commande, localisationService)
 
       // Then
-      result.count(_.isInstanceOf[CandidatConnecteEvent]) mustBe 1
+      future map (events => events.count(_.isInstanceOf[CandidatConnecteEvent]) mustBe 1)
     }
     "générer un événement si une information de profil a été saisie pour la premiere fois" in {
       // Given
@@ -64,10 +75,10 @@ class ConnecterCandidatSpec extends WordSpec with MustMatchers with MockitoSugar
         .build
 
       // When
-      val result = candidat.connecter(commande)
+      val future = candidat.connecter(commande, localisationService)
 
       // Then
-      result.count(_.isInstanceOf[ProfilCandidatModifieEvent]) mustBe 1
+      future map (events => events.count(_.isInstanceOf[ProfilCandidatModifieEvent]) mustBe 1)
     }
     "générer un événement si le nom a été modifié" in {
       // Given
@@ -76,12 +87,12 @@ class ConnecterCandidatSpec extends WordSpec with MustMatchers with MockitoSugar
         .build
 
       // When
-      val result = candidat.connecter(commande.copy(
+      val future = candidat.connecter(commande.copy(
         nom = "nouveau nom"
-      ))
+      ), localisationService)
 
       // Then
-      result.count(_.isInstanceOf[ProfilCandidatModifieEvent]) mustBe 1
+      future map (events => events.count(_.isInstanceOf[ProfilCandidatModifieEvent]) mustBe 1)
     }
     "générer un événement si le prénom a été modifié" in {
       // Given
@@ -90,12 +101,12 @@ class ConnecterCandidatSpec extends WordSpec with MustMatchers with MockitoSugar
         .build
 
       // When
-      val result = candidat.connecter(commande.copy(
+      val future = candidat.connecter(commande.copy(
         prenom = "nouveau prénom"
-      ))
+      ), localisationService)
 
       // Then
-      result.count(_.isInstanceOf[ProfilCandidatModifieEvent]) mustBe 1
+      future map (events => events.count(_.isInstanceOf[ProfilCandidatModifieEvent]) mustBe 1)
     }
     "générer un événement si l'email a été modifié" in {
       // Given
@@ -104,12 +115,12 @@ class ConnecterCandidatSpec extends WordSpec with MustMatchers with MockitoSugar
         .build
 
       // When
-      val result = candidat.connecter(commande.copy(
+      val future = candidat.connecter(commande.copy(
         email = Email("nouvel-email@domain.fr")
-      ))
+      ), localisationService)
 
       // Then
-      result.count(_.isInstanceOf[ProfilCandidatModifieEvent]) mustBe 1
+      future map (events => events.count(_.isInstanceOf[ProfilCandidatModifieEvent]) mustBe 1)
     }
     "générer un événement si le genre a été modifié" in {
       // Given
@@ -118,12 +129,12 @@ class ConnecterCandidatSpec extends WordSpec with MustMatchers with MockitoSugar
         .build
 
       // When
-      val result = candidat.connecter(commande.copy(
+      val future = candidat.connecter(commande.copy(
         genre = Genre.FEMME
-      ))
+      ), localisationService)
 
       // Then
-      result.count(_.isInstanceOf[ProfilCandidatModifieEvent]) mustBe 1
+      future map (events => events.count(_.isInstanceOf[ProfilCandidatModifieEvent]) mustBe 1)
     }
     "générer un événement contenant les informations de profil modifiées" in {
       // Given
@@ -132,47 +143,79 @@ class ConnecterCandidatSpec extends WordSpec with MustMatchers with MockitoSugar
         .build
 
       // When
-      val result = candidat.connecter(commande)
+      val future = candidat.connecter(commande, localisationService)
 
       // Then
-      val event = result.filter(_.isInstanceOf[ProfilCandidatModifieEvent]).head.asInstanceOf[ProfilCandidatModifieEvent]
-      event.candidatId mustBe commande.id
-      event.nom mustBe commande.nom
-      event.prenom mustBe commande.prenom
-      event.email mustBe commande.email
-      event.genre mustBe commande.genre
+      future map (events => {
+        val event = events.filter(_.isInstanceOf[ProfilCandidatModifieEvent]).head.asInstanceOf[ProfilCandidatModifieEvent]
+        event.candidatId mustBe commande.id
+        event.nom mustBe commande.nom
+        event.prenom mustBe commande.prenom
+        event.email mustBe commande.email
+        event.genre mustBe commande.genre
+      })
     }
     "générer un événement si l'adresse a été modifiée" in {
       // Given
+      val nouvelleAdresse = adresse.copy(voie = "nouvelle voie")
+      when(localisationService.localiser(nouvelleAdresse)) thenReturn Future.successful(None)
       val candidat = candidatBuilder
         .avecInscription()
         .avecAdresse(adresse.copy(voie = "ancienne voie"))
         .build
 
       // When
-      val result = candidat.connecter(commande.copy(
-        adresse = Some(adresse.copy(voie = "nouvelle voie"))
-      ))
+      val future = candidat.connecter(commande.copy(
+        adresse = Some(nouvelleAdresse)
+      ), localisationService)
 
       // Then
-      result.count(_.isInstanceOf[AdresseModifieeEvent]) mustBe 1
+      future map (events => events.count(_.isInstanceOf[AdresseModifieeEvent]) mustBe 1)
     }
     "générer un événement contenant l'adresse modifiée" in {
       // Given
+      val nouvelleAdresse = adresse.copy(voie = "nouvelle voie")
+      val coordonnees = mock[Coordonnees]
+      when(localisationService.localiser(nouvelleAdresse)) thenReturn Future.successful(Some(coordonnees))
       val candidat = candidatBuilder
         .avecInscription()
         .avecAdresse(adresse.copy(voie = "ancienne voie"))
         .build
 
       // When
-      val result = candidat.connecter(commande.copy(
-        adresse = Some(adresse.copy(voie = "nouvelle voie"))
-      ))
+      val future = candidat.connecter(commande.copy(
+        adresse = Some(nouvelleAdresse)
+      ), localisationService)
 
       // Then
-      val event = result.filter(_.isInstanceOf[AdresseModifieeEvent]).head.asInstanceOf[AdresseModifieeEvent]
-      event.candidatId mustBe commande.id
-      event.adresse.voie mustBe "nouvelle voie"
+      future map (events => {
+        val event = events.filter(_.isInstanceOf[AdresseModifieeEvent]).head.asInstanceOf[AdresseModifieeEvent]
+        event.candidatId mustBe commande.id
+        event.adresse.voie mustBe "nouvelle voie"
+        event.coordonnees mustBe Some(coordonnees)
+      })
+    }
+    "générer un événement contenant l'adresse modifiée même lorsque le service de localisation échoue" in {
+      // Given
+      val nouvelleAdresse = adresse.copy(voie = "nouvelle voie")
+      when(localisationService.localiser(nouvelleAdresse)) thenReturn Future.failed(new RuntimeException("erreur de service"))
+      val candidat = candidatBuilder
+        .avecInscription()
+        .avecAdresse(adresse.copy(voie = "ancienne voie"))
+        .build
+
+      // When
+      val future = candidat.connecter(commande.copy(
+        adresse = Some(nouvelleAdresse)
+      ), localisationService)
+
+      // Then
+      future map (events => {
+        val event = events.filter(_.isInstanceOf[AdresseModifieeEvent]).head.asInstanceOf[AdresseModifieeEvent]
+        event.candidatId mustBe commande.id
+        event.adresse.voie mustBe "nouvelle voie"
+        event.coordonnees mustBe None
+      })
     }
     "générer un événement contenant le statut de demandeur d'emploi modifié" in {
       // Given
@@ -182,14 +225,16 @@ class ConnecterCandidatSpec extends WordSpec with MustMatchers with MockitoSugar
         .build
 
       // When
-      val result = candidat.connecter(commande.copy(
+      val future = candidat.connecter(commande.copy(
         statutDemandeurEmploi = Some(StatutDemandeurEmploi.NON_DEMANDEUR_EMPLOI)
-      ))
+      ), localisationService)
 
       // Then
-      val event = result.filter(_.isInstanceOf[StatutDemandeurEmploiModifieEvent]).head.asInstanceOf[StatutDemandeurEmploiModifieEvent]
-      event.candidatId mustBe commande.id
-      event.statutDemandeurEmploi mustBe StatutDemandeurEmploi.NON_DEMANDEUR_EMPLOI
+      future map (events => {
+        val event = events.filter(_.isInstanceOf[StatutDemandeurEmploiModifieEvent]).head.asInstanceOf[StatutDemandeurEmploiModifieEvent]
+        event.candidatId mustBe commande.id
+        event.statutDemandeurEmploi mustBe StatutDemandeurEmploi.NON_DEMANDEUR_EMPLOI
+      })
     }
   }
 }

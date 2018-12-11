@@ -18,9 +18,9 @@ class WebAppConfig(configuration: Configuration) {
   val useSlackNotification: Boolean = configuration.getOptional[Boolean]("useSlackNotification").getOrElse(true)
   val useMailjet: Boolean = configuration.getOptional[Boolean]("useMailjet").getOrElse(true)
   val useGoogleTagManager: Boolean = configuration.getOptional[Boolean]("useGoogleTagManager").getOrElse(true)
-
   val useReferentielMetier: Boolean = configuration.getOptional[Boolean]("useReferentielMetier").getOrElse(true)
   val useReferentielHabiletesMRS: Boolean = configuration.getOptional[Boolean]("useReferentielHabiletesMRS").getOrElse(true)
+  val useLocalisationWS: Boolean = configuration.getOptional[Boolean]("useLocalisationWS").getOrElse(true)
 
   val environnement: Environnement = Environnement.from(configuration.get[String]("environnement"))
   val version: String = BuildInfo.version
@@ -67,6 +67,10 @@ class WebAppConfig(configuration: Configuration) {
     apiKeyPublic = configuration.get[String]("mailjet.apiKey.public"),
     apiKeyPrivate = configuration.get[String]("mailjet.apiKey.private"),
     testeurs = configuration.getOptional[Seq[String]]("mailjet.testeurs").map(_.toList).getOrElse(Nil)
+  )
+
+  val localisationWSAdapterConfig: LocalisationWSAdapterConfig = LocalisationWSAdapterConfig(
+    urlApi = configuration.get[String]("emploiStore.localisation.urlApi")
   )
 
   val referentielMetierWSAdapterConfig: ReferentielMetierWSAdapterConfig = ReferentielMetierWSAdapterConfig(

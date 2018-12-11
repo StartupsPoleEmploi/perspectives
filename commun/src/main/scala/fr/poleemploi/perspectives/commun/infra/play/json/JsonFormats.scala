@@ -27,9 +27,11 @@ object JsonFormats {
   implicit val formatTypeMedia: Format[TypeMedia] = formatStringValueObject(TypeMedia(_))
   implicit val formatHabilete: Format[Habilete] = formatStringValueObject(Habilete(_))
 
-  implicit val formatDepartement: Format[Departement] = Json.format[Departement]
   implicit val formatMetier: Format[Metier] = Json.format[Metier]
   implicit val formatSecteurActivite: Format[SecteurActivite] = Json.format[SecteurActivite]
+
+  implicit val formatCoordonnees: Format[Coordonnees] = Json.format[Coordonnees]
+  implicit val formatLocalisation: Format[Localisation] = Json.format[Localisation]
 
   def readsAggregateId[T <: AggregateId](deserialize: String => T): Reads[T] = Reads {
     case JsString(s) => JsSuccess(deserialize(s))

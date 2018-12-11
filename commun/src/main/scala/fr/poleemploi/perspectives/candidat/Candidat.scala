@@ -2,6 +2,7 @@ package fr.poleemploi.perspectives.candidat
 
 import fr.poleemploi.eventsourcing.{Aggregate, Event}
 import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, CVService}
+import fr.poleemploi.perspectives.candidat.localisation.domain.LocalisationService
 import fr.poleemploi.perspectives.candidat.mrs.domain.{MRSValidee, ReferentielHabiletesMRS}
 import fr.poleemploi.perspectives.candidat.state.{CandidatInscritState, CandidatState, NouveauCandidatState}
 import fr.poleemploi.perspectives.commun.domain._
@@ -70,14 +71,14 @@ class Candidat(override val id: CandidatId,
       case _ => context
     })
 
-  def inscrire(command: InscrireCandidatCommand): List[Event] =
-    state.inscrire(context = context, command = command)
+  def inscrire(command: InscrireCandidatCommand, localisationService: LocalisationService): Future[List[Event]] =
+    state.inscrire(context = context, command = command, localisationService = localisationService)
 
   def modifierCriteres(command: ModifierCriteresRechercheCommand): List[Event] =
     state.modifierCriteres(context = context, command = command)
 
-  def connecter(command: ConnecterCandidatCommand): List[Event] =
-    state.connecter(context = context, command = command)
+  def connecter(command: ConnecterCandidatCommand, localisationService: LocalisationService): Future[List[Event]] =
+    state.connecter(context = context, command = command, localisationService = localisationService)
 
   def ajouterCV(command: AjouterCVCommand, cvService: CVService): Future[List[Event]] =
     state.ajouterCV(context = context, command = command, cvService = cvService)

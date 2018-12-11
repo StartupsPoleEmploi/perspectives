@@ -4,6 +4,7 @@ import fr.poleemploi.cqrs.command.Command
 import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.candidat.cv.domain.CVService
+import fr.poleemploi.perspectives.candidat.localisation.domain.LocalisationService
 import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielHabiletesMRS
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -13,14 +14,14 @@ trait CandidatState {
 
   def name: String
 
-  def inscrire(context: CandidatContext, command: InscrireCandidatCommand): List[Event] =
-    default(context, command)
+  def inscrire(context: CandidatContext, command: InscrireCandidatCommand, localisationService: LocalisationService): Future[List[Event]] =
+    Future(default(context, command))
 
   def modifierCriteres(context: CandidatContext, command: ModifierCriteresRechercheCommand): List[Event] =
     default(context, command)
 
-  def connecter(context: CandidatContext, command: ConnecterCandidatCommand): List[Event] =
-    default(context, command)
+  def connecter(context: CandidatContext, command: ConnecterCandidatCommand, localisationService: LocalisationService): Future[List[Event]] =
+    Future(default(context, command))
 
   def ajouterCV(context: CandidatContext, command: AjouterCVCommand, cvService: CVService): Future[List[Event]] =
     Future(default(context, command))

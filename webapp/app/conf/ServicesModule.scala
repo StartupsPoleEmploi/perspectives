@@ -3,6 +3,9 @@ package conf
 import com.google.inject.{AbstractModule, Provider, Provides, Singleton}
 import fr.poleemploi.perspectives.candidat.cv.domain.CVService
 import fr.poleemploi.perspectives.candidat.cv.infra.sql.CVSqlAdapter
+import fr.poleemploi.perspectives.candidat.localisation.domain.LocalisationService
+import fr.poleemploi.perspectives.candidat.localisation.infra.local.LocalisationLocalAdapter
+import fr.poleemploi.perspectives.candidat.localisation.infra.ws.LocalisationWSAdapter
 import fr.poleemploi.perspectives.candidat.mrs.domain.{ReferentielHabiletesMRS, ReferentielMRSCandidat}
 import fr.poleemploi.perspectives.candidat.mrs.infra.local.{ReferentielHabiletesMRSLocal, ReferentielMRSCandidatLocal}
 import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.ReferentielMRSCandidatPEConnect
@@ -16,8 +19,8 @@ import fr.poleemploi.perspectives.metier.infra.file.ReferentielMetierFileAdapter
 import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapter
 import fr.poleemploi.perspectives.rechercheCandidat.domain.RechercheCandidatService
 import fr.poleemploi.perspectives.recruteur.commentaire.domain.CommentaireService
-import fr.poleemploi.perspectives.recruteur.commentaire.infra.local.CommentaireServiceLocal
-import fr.poleemploi.perspectives.recruteur.commentaire.infra.slack.SlackCommentaireAdapter
+import fr.poleemploi.perspectives.recruteur.commentaire.infra.local.CommentaireLocalAdapter
+import fr.poleemploi.perspectives.recruteur.commentaire.infra.slack.CommentaireSlackAdapter
 
 class ServicesModule extends AbstractModule {
 
@@ -89,4 +92,14 @@ class ServicesModule extends AbstractModule {
       slackCommentaireAdapter.get()
     else
       commentaireServiceLocal.get()
+
+  @Provides
+  @Singleton
+  def localisationService(localisationWSAdapter: Provider[LocalisationWSAdapter],
+                         localisationLocalAdapter: Provider[LocalisationLocalAdapter],
+                         webAppConfig: WebAppConfig): LocalisationService =
+    if (webAppConfig.useLocalisationWS)
+      localisationWSAdapter.get()
+    else
+      localisationLocalAdapter.get()
 }

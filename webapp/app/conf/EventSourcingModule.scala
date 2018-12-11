@@ -6,6 +6,7 @@ import fr.poleemploi.eventsourcing.eventstore.EventStore
 import fr.poleemploi.eventsourcing.{AggregateRepository, Event}
 import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.candidat.cv.domain.CVService
+import fr.poleemploi.perspectives.candidat.localisation.domain.LocalisationService
 import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielHabiletesMRS
 import fr.poleemploi.perspectives.recruteur._
 import fr.poleemploi.perspectives.recruteur.alerte.domain.AlerteId
@@ -30,16 +31,17 @@ class EventSourcingModule extends AbstractModule {
   @Singleton
   def candidatCommandHandler(candidatRepository: CandidatRepository,
                              cvService: CVService,
-                             referentielHabiletesMRS: ReferentielHabiletesMRS): CandidatCommandHandler =
+                             referentielHabiletesMRS: ReferentielHabiletesMRS,
+                             localisationService: LocalisationService): CandidatCommandHandler =
     new CandidatCommandHandler {
       override def repository: AggregateRepository[Candidat] = candidatRepository
 
       override def newCandidatId: CandidatId = candidatRepository.newCandidatId
 
       override def configure: PartialFunction[Command[Candidat], Candidat => Future[List[Event]]] = {
-        case command: InscrireCandidatCommand => c => Future(c.inscrire(command))
+        case command: InscrireCandidatCommand => c => c.inscrire(command, localisationService)
         case command: ModifierCriteresRechercheCommand => c => Future(c.modifierCriteres(command))
-        case command: ConnecterCandidatCommand => c => Future(c.connecter(command))
+        case command: ConnecterCandidatCommand => c => c.connecter(command, localisationService)
         case command: AjouterCVCommand => c => c.ajouterCV(command, cvService)
         case command: RemplacerCVCommand => c => c.remplacerCV(command, cvService)
         case command: AjouterMRSValideesCommand => c => c.ajouterMRSValidee(command, referentielHabiletesMRS)

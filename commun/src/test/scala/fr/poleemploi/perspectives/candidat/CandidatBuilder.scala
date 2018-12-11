@@ -5,7 +5,7 @@ import java.util.UUID
 import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
 import fr.poleemploi.perspectives.candidat.mrs.domain.MRSValidee
-import fr.poleemploi.perspectives.commun.domain._
+import fr.poleemploi.perspectives.commun.domain.{Coordonnees, _}
 import fr.poleemploi.perspectives.conseiller.ConseillerId
 
 import scala.collection.mutable.ListBuffer
@@ -57,10 +57,12 @@ class CandidatBuilder {
     this
   }
 
-  def avecAdresse(adresse: Adresse): CandidatBuilder = {
+  def avecAdresse(adresse: Adresse,
+                  coordonnees: Option[Coordonnees] = None): CandidatBuilder = {
     events += AdresseModifieeEvent(
       candidatId = candidatId,
-      adresse = adresse
+      adresse = adresse,
+      coordonnees = coordonnees
     )
     this
   }
