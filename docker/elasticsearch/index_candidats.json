@@ -1,0 +1,79 @@
+{
+  "settings": {
+    "number_of_shards" : 1
+  },
+  "mappings" : {
+    "_doc" : {
+      "properties" : {
+        "candidat_id": {
+          "type": "keyword"
+        },
+        "nom": {
+          "type": "text"
+        },
+        "prenom": {
+          "type": "text"
+        },
+        "genre": {
+          "type": "keyword"
+        },
+        "email": {
+          "type": "text"
+        },
+        "numero_telephone": {
+          "type": "keyword"
+        },
+        "statut_demandeur_emploi": {
+          "type": "keyword"
+        },
+        "code_postal": {
+          "type": "keyword"
+        },
+        "commune": {
+          "type": "text"
+        },
+        "rayon_recherche": {
+          "type": "integer"
+        },
+        "mobilite": {
+          "type": "geo_shape",
+          "tree": "quadtree",
+          "precision": "100m"
+        },
+        "recherche_metiers_evalues": {
+          "type": "boolean"
+        },
+        "metiers_evalues": {
+          "type": "keyword"
+        },
+        "recherche_autres_metiers" : {
+          "type": "boolean"
+        },
+        "metiers_recherches": {
+          "type": "keyword"
+        },
+        "habiletes": {
+          "type": "text"
+        },
+        "contacte_par_agence_interim": {
+          "type": "boolean"
+        },
+        "contacte_par_organisme_formation": {
+          "type": "boolean"
+        },
+        "cv_id": {
+          "type": "keyword"
+        },
+        "cv_type_media": {
+          "enabled": false
+        },
+        "date_inscription": {
+          "type": "date"
+        },
+        "date_derniere_connexion": {
+          "type": "date"
+        }
+      }
+    }
+  }
+}

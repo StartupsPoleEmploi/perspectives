@@ -1,0 +1,3 @@
+FROM docker.elastic.co/elasticsearch/elasticsearch:6.5.0
+
+COPY elasticsearch/elasticsearch.yml /usr/share/elasticsearch/config/
