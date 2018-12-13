@@ -9,16 +9,16 @@
     <div id="landingCandidat">
         <section class="intro">
             <header class="introTitres">
-                <h2 class="intro-titre"><span class="intro-titre--gras">Retrouvez un emploi</span>
-                    avec votre simulation Pôle emploi validée !</h2>
+                <h2 class="intro-titre intro-titre--gras">Notre mission, faciliter la rencontre
+                    entre une entreprise et un candidat</h2>
             </header>
             <div class="presentation">
                 <aside class="avantages">
                     <ul class="listeAvantages">
-                        <li class="listeAvantages-item"><b>Vos aptitudes validées</b> vous permettent
-                            de choisir de nombreux métiers</li>
-                        <li class="listeAvantages-item"><b>Pas d'expérience ?</b>
-                            Votre futur employeur vous formera</li>
+                        <li class="listeAvantages-item">Vous avez validé des habiletés par la
+                            MRS Pôle Emploi</li>
+                        <li class="listeAvantages-item">Inscrivez-vous dès maintenant
+                            pour être visible par les recruteurs</li>
                     </ul>
                     <div class="introActions">
                         @if(candidatAuthentifie.isDefined) {
@@ -27,8 +27,8 @@
                         </a>
                         } else {
                         <a class="bouton bouton-actionPrincipale bouton--fondBleu" href="@controllers.candidat.routes.InscriptionController.inscription().url">
-                            Je m'inscris !
-                            <small class="bouton-small bouton-small--opaque">en moins de 30 secondes</small>
+                            Je m'inscris
+                            <small class="bouton-small bouton-small--opaque">avec mes identifiants Pôle Emploi</small>
                         </a>
                         <p class="introActions-sponsor">Service exclusif pour les candidats validés
                             par la Méthode de Recrutement par Simulation Pôle emploi<p>
@@ -48,11 +48,10 @@
                     <div class="etapeInscription">
                         <img alt="Etape inscription" src="@assetsFinder.path("images/pages/candidat/landing/etape-inscription.svg")" />
                         <p class="etapeInscription-texte etape-texte">
-                            @if(candidatAuthentifie.isDefined) {
-                                <a class="etapeInscription-lien" href="@controllers.candidat.routes.SaisieCriteresRechercheController.saisieCriteresRecherche().url">Je m’inscris</a><br />en moins de 30 secondes
-                            } else {
-                                <a class="etapeInscription-lien" href="@controllers.candidat.routes.InscriptionController.inscription().url">Je m’inscris</a><br />en moins de 30 secondes
-                            }
+                            <a class="etapeInscription-lien"
+                               href="@candidatAuthentifie.map(_ => controllers.candidat.routes.SaisieCriteresRechercheController.saisieCriteresRecherche().url).getOrElse(controllers.candidat.routes.InscriptionController.inscription().url)">
+                                J'ai validé une MRS
+                            </a><br />Je me connecte avec mes identifiants Pôle Emploi
                         </p>
                     </div>
                     <div class="transitionMetiers transition">
@@ -60,29 +59,28 @@
                     </div>
                     <div class="etapeSelectionMetiers">
                         <img alt="Etape selection metiers" src="@assetsFinder.path("images/pages/candidat/landing/etape-selection-metiers.svg")" />
-                        <p class="etapeSelectionMetiers-texte etape-texte">Je sélectionne les métiers qui m’intéressent</p>
+                        <p class="etapeSelectionMetiers-texte etape-texte">Je m'inscris et je crée mon profil en remplissant le formulaire de Perspectives</p>
                     </div>
                     <div class="transitionContact transition">
                         <img alt="Transition etape contact" src="@assetsFinder.path("images/pages/candidat/landing/transition-contact.svg")" />
                     </div>
                     <div class="etapeContact">
                         <img alt="Etape contact" src="@assetsFinder.path("images/pages/candidat/landing/etape-contact.svg")" />
-                        <p class="etapeContact-texte etape-texte">Je suis contacté par des employeurs
-                            ou des organismes de formation</p>
+                        <p class="etapeContact-texte etape-texte">Mon profil et ma MRS sont visibles par les recruteurs qui peuvent me contacter</p>
                     </div>
                 </div>
             </div>
             <div class="commentCaMarcheActions">
                 @if(candidatAuthentifie.isEmpty) {
                 <a class="bouton bouton-actionPrincipale bouton--fondBlanc" href="@controllers.candidat.routes.InscriptionController.inscription().url">
-                    Je m'inscris !
-                    <small class="bouton-small bouton-small--opaque">en moins de 30 secondes</small>
+                    Je m'inscris
+                    <small class="bouton-small bouton-small--opaque">avec mes identifiants Pôle Emploi</small>
                 </a>
                 }
             </div>
         </section>
         <section class="metiers">
-            <h2 class="metiers-titre">Accédez à de nouveaux emplois !</h2>
+            <h2 class="metiers-titre">Les métiers présents sur Perspectives</h2>
             <ul class="secteursActivites">
                 @for(secteurActivite <- secteursActivites) {
                     <li class="secteursActivites-item">
@@ -96,14 +94,14 @@
             <div class="metiersAction">
             @if(candidatAuthentifie.isEmpty) {
                 <a class="bouton bouton-actionPrincipale bouton--fondBleu" href="@controllers.candidat.routes.InscriptionController.inscription().url">
-                    Je m'inscris !
-                    <small class="bouton-small bouton-small--opaque">en moins de 30 secondes</small>
+                    Je m'inscris
+                    <small class="bouton-small bouton-small--opaque">avec mes identifiants Pôle Emploi</small>
                 </a>
             }
             </div>
         </section>
         <section class="temoignages">
-            <h2 class="temoignages-titre">Témoignages</h2>
+            <h2 class="temoignages-titre">Ils se sont inscrits sur Perspectives</h2>
             <div class="temoignage">
                 <div class="temoignage-texte">
                     <img alt="Citation" class="temoignage-image" width="115" height="82" src="@assetsFinder.path("images/modules/temoignage/quote.svg")" />
@@ -128,8 +126,8 @@
             <div class="temoignagesAction">
             @if(candidatAuthentifie.isEmpty) {
                 <a class="bouton bouton-actionPrincipale bouton--fondBleu" href="@controllers.candidat.routes.InscriptionController.inscription().url">
-                    Je m'inscris !
-                    <small class="bouton-small bouton-small--opaque">en moins de 30 secondes</small>
+                    Je m'inscris
+                    <small class="bouton-small bouton-small--opaque">avec mes identifiants Pôle Emploi</small>
                 </a>
             }
             </div>

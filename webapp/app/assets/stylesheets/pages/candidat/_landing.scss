@@ -7,7 +7,6 @@
     &-titre {
       @extend %titrePrincipal;
       color: #334051;
-      text-align: center;
       white-space: pre-line;
 
       &--gras {
@@ -18,8 +17,10 @@
 
   .introTitres {
     padding: 3em 0;
+    text-align: left;
 
     @include media-breakpoint-down(md) {
+      text-align: center;
       padding: 2em 0;
     }
   }
