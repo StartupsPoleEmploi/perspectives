@@ -4,6 +4,7 @@ import java.nio.file.Paths
 
 import fr.poleemploi.perspectives.candidat.mrs.infra.csv.ImportHabiletesMRSCsvAdapterConfig
 import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.ImportMRSCandidatPEConnectConfig
+import fr.poleemploi.perspectives.commun.infra.elasticsearch.EsConfig
 import fr.poleemploi.perspectives.commun.infra.oauth.OauthConfig
 import fr.poleemploi.perspectives.emailing.infra.ws.MailjetWSAdapterConfig
 import fr.poleemploi.perspectives.infra.BuildInfo
@@ -46,5 +47,10 @@ class BatchsConfig(configuration: Configuration) {
   val referentielMetierWSAdapterConfig: ReferentielMetierWSAdapterConfig = ReferentielMetierWSAdapterConfig(
     urlApi = configuration.get[String]("emploiStore.urlApi"),
     oauthConfig = partenaireOauthConfig
+  )
+
+  val esConfig: EsConfig = EsConfig(
+    host = configuration.get[String]("elasticsearch.host"),
+    port = configuration.get[Int]("elasticsearch.port")
   )
 }

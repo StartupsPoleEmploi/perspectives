@@ -21,8 +21,7 @@ case class ProfilModifieEvent(recruteurId: RecruteurId,
                               typeRecruteur: TypeRecruteur,
                               raisonSociale: String,
                               numeroSiret: NumeroSiret,
-                              numeroTelephone: NumeroTelephone,
-                              contactParCandidats: Boolean) extends RecruteurEvent
+                              numeroTelephone: NumeroTelephone) extends RecruteurEvent
 
 case class ProfilGerantModifieEvent(recruteurId: RecruteurId,
                                     nom: String,
@@ -31,14 +30,13 @@ case class ProfilGerantModifieEvent(recruteurId: RecruteurId,
                                     genre: Genre) extends RecruteurEvent
 
 case class AlerteRecruteurCreeEvent(recruteurId: RecruteurId,
-                                    prenom: String,
                                     typeRecruteur: TypeRecruteur,
                                     email: Email,
                                     alerteId: AlerteId,
                                     frequence: FrequenceAlerte,
                                     codeROME: Option[CodeROME],
                                     codeSecteurActivite: Option[CodeSecteurActivite],
-                                    codeDepartement: Option[CodeDepartement]) extends RecruteurEvent
+                                    localisation: Option[Localisation]) extends RecruteurEvent
 
 case class AlerteRecruteurSupprimeeEvent(recruteurId: RecruteurId,
                                          alerteId: AlerteId) extends RecruteurEvent

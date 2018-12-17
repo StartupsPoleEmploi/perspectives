@@ -2,8 +2,8 @@ package controllers.recruteur
 
 import authentification.infra.play.{RecruteurAuthentifieAction, RecruteurAuthentifieRequest}
 import conf.WebAppConfig
+import controllers.AssetsFinder
 import controllers.FlashMessages._
-import controllers.{AssetsFinder, FormHelpers}
 import fr.poleemploi.perspectives.commun.domain.NumeroTelephone
 import fr.poleemploi.perspectives.projections.recruteur.{ProfilRecruteurQuery, RecruteurQueryHandler}
 import fr.poleemploi.perspectives.recruteur._
@@ -50,8 +50,7 @@ class ProfilController @Inject()(components: ControllerComponents,
             raisonSociale = inscriptionForm.raisonSociale,
             typeRecruteur = TypeRecruteur(inscriptionForm.typeRecruteur),
             numeroSiret = NumeroSiret(inscriptionForm.numeroSiret),
-            numeroTelephone = NumeroTelephone(inscriptionForm.numeroTelephone),
-            contactParCandidats = FormHelpers.stringToBoolean(inscriptionForm.contactParCandidats)
+            numeroTelephone = NumeroTelephone(inscriptionForm.numeroTelephone)
           )
           recruteurCommandHandler.handle(command)
             .map(_ =>

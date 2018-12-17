@@ -3,16 +3,14 @@
 
 @import fr.poleemploi.perspectives.candidat.StatutDemandeurEmploi
 @import fr.poleemploi.perspectives.commun.domain.Genre
-@import fr.poleemploi.perspectives.projections.candidat.CandidatsPourConseillerQueryResult
+@import fr.poleemploi.perspectives.projections.candidat.CandidatPourConseillerDto
 
-@(resultat: CandidatsPourConseillerQueryResult)
+@(candidats: List[CandidatPourConseillerDto])
 
 @getBoolean(boolean: Option[Boolean]) = @{
     if (boolean.getOrElse(false)) "Oui" else "Non"
 }
 
-<input type="hidden" id="js-dernierResultat" value="@resultat.derniereDateInscription.map(DateTimeFormatter.ISO_OFFSET_DATE_TIME.format)"/>
-<input type="hidden" id="js-nbResultats" value="@resultat.candidats.size"/>
 <table class="table table-responsive">
     <thead class="thead-light">
         <tr>
@@ -35,7 +33,7 @@
         </tr>
     </thead>
     <tbody>
-    @for(candidat <- resultat.candidats) {
+    @for(candidat <- candidats) {
         <tr>
             <td>@candidat.dateInscription.format(DateTimeFormatter.ofPattern("d MMM yyyy HH:mm", Locale.FRANCE))</td>
             <td>@candidat.dateDerniereConnexion.format(DateTimeFormatter.ofPattern("d MMM yyyy HH:mm", Locale.FRANCE))</td>

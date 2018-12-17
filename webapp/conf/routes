@@ -18,7 +18,7 @@ GET         /recruteur/peconnect/deconnexion/callback                controllers
 GET         /recruteur/deconnexion                                   controllers.recruteur.AuthentificationController.deconnexion
 GET         /recruteur/profil                                        controllers.recruteur.ProfilController.modificationProfil
 POST        /recruteur/profil                                        controllers.recruteur.ProfilController.modifierProfil
-GET         /recruteur/recherche                                     controllers.recruteur.RechercheCandidatController.index(secteurActivite: Option[String] ?= None, metier: Option[String] ?= None, departement: Option[String] ?= None)
+GET         /recruteur/recherche                                     controllers.recruteur.RechercheCandidatController.index(secteurActivite: Option[String] ?= None, metier: Option[String] ?= None, localisation: Option[String] ?= None, latitude: Option[String] ?= None, longitude: Option[String] ?= None)
 POST        /recruteur/recherche                                     controllers.recruteur.RechercheCandidatController.rechercherCandidats
 POST        /recruteur/recherche/commenterListeCandidats             controllers.recruteur.RechercheCandidatController.commenterListeCandidats
 GET         /recruteur/cv/telecharger/:candidatId/:nomFichier        controllers.recruteur.RechercheCandidatController.telechargerCV(candidatId, nomFichier)
@@ -26,9 +26,9 @@ POST        /recruteur/alerte                                        controllers
 DELETE      /recruteur/alerte/:alerteId                              controllers.recruteur.RechercheCandidatController.supprimerAlerte(alerteId: String)
 
 GET         /conseiller/candidats                                    controllers.conseiller.ConseillerController.listeCandidats
-GET         /conseiller/candidats/:avantDateInscription              controllers.conseiller.ConseillerController.paginationCandidats(avantDateInscription: String)
+GET         /conseiller/paginationCandidats                          controllers.conseiller.ConseillerController.paginationCandidats(dateInscription: Long, candidatId: String)
 GET         /conseiller/recruteurs                                   controllers.conseiller.ConseillerController.listeRecruteurs
-GET         /conseiller/recruteurs/:avantDateInscription             controllers.conseiller.ConseillerController.paginationRecruteurs(avantDateInscription: String)
+GET         /conseiller/paginationRecruteurs                         controllers.conseiller.ConseillerController.paginationRecruteurs(dateInscription: String, recruteurId: String)
 GET         /conseiller/declarerRepriseEmploi/:candidatId            controllers.conseiller.ConseillerController.declarerRepriseEmploi(candidatId)
 
 GET         /assets/*file                                            controllers.Assets.versioned(file: String)

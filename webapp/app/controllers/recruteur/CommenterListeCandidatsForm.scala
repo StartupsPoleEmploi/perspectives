@@ -5,7 +5,7 @@ import play.api.data.Forms._
 
 case class CommenterListeCandidatsForm(secteurActiviteRecherche: Option[String],
                                        metierRecherche: Option[String],
-                                       departementRecherche: Option[String],
+                                       localisationRecherche: Option[String],
                                        commentaire: String)
 
 object CommenterListeCandidatsForm {
@@ -14,7 +14,7 @@ object CommenterListeCandidatsForm {
     mapping(
       "secteurActiviteRecherche" -> optional(text),
       "metierRecherche" -> optional(text),
-      "departementRecherche" -> optional(text),
+      "localisationRecherche" -> optional(text),
       "commentaire" -> nonEmptyText,
     )(CommenterListeCandidatsForm.apply)(CommenterListeCandidatsForm.unapply)
   )

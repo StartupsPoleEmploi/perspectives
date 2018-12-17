@@ -37,13 +37,11 @@ class RecruteurProjectionSqlAdapter(database: Database) {
 
     def numeroTelephone = column[Option[NumeroTelephone]]("numero_telephone")
 
-    def contactParCandidats = column[Option[Boolean]]("contact_par_candidats")
-
     def dateInscription = column[ZonedDateTime]("date_inscription")
 
     def dateDerniereConnexion = column[ZonedDateTime]("date_derniere_connexion")
 
-    def * = (recruteurId, nom, prenom, email, genre, typeRecruteur, raisonSociale, numeroSiret, numeroTelephone, contactParCandidats, dateInscription, dateDerniereConnexion) <> (RecruteurRecord.tupled, RecruteurRecord.unapply)
+    def * = (recruteurId, nom, prenom, email, genre, typeRecruteur, raisonSociale, numeroSiret, numeroTelephone, dateInscription, dateDerniereConnexion) <> (RecruteurRecord.tupled, RecruteurRecord.unapply)
   }
 
   implicit object ProfilRecruteurShape extends CaseClassShape(ProfilRecruteurLifted.tupled, ProfilRecruteurQueryResult.tupled)
@@ -59,19 +57,19 @@ class RecruteurProjectionSqlAdapter(database: Database) {
   val profilRecruteurQuery = Compiled { recruteurId: Rep[RecruteurId] =>
     recruteurTable
       .filter(r => r.recruteurId === recruteurId)
-      .map(r => ProfilRecruteurLifted(r.recruteurId, r.typeRecruteur, r.raisonSociale, r.numeroSiret, r.numeroTelephone, r.contactParCandidats))
+      .map(r => ProfilRecruteurLifted(r.recruteurId, r.typeRecruteur, r.raisonSociale, r.numeroSiret, r.numeroTelephone))
   }
   val listerParDateInscriptionQuery = Compiled { (nbRecruteursParPage: ConstColumn[Long], avantDateInscription: Rep[ZonedDateTime]) =>
     recruteurTable
       .filter(_.dateInscription < avantDateInscription)
       .sortBy(_.dateInscription.desc)
       .take(nbRecruteursParPage)
-      .map(r => RecruteurPourConseillerLifted(r.recruteurId, r.nom, r.prenom, r.email, r.genre, r.typeRecruteur, r.raisonSociale, r.numeroSiret, r.numeroTelephone, r.contactParCandidats, r.dateInscription, r.dateDerniereConnexion))
+      .map(r => RecruteurPourConseillerLifted(r.recruteurId, r.nom, r.prenom, r.email, r.genre, r.typeRecruteur, r.raisonSociale, r.numeroSiret, r.numeroTelephone, r.dateInscription, r.dateDerniereConnexion))
   }
   val modifierProfilQuery = Compiled { recruteurId: Rep[RecruteurId] =>
     for {
       r <- recruteurTable if r.recruteurId === recruteurId
-    } yield (r.typeRecruteur, r.raisonSociale, r.numeroSiret, r.numeroTelephone, r.contactParCandidats)
+    } yield (r.typeRecruteur, r.raisonSociale, r.numeroSiret, r.numeroTelephone)
   }
   val modifierProfilGerantQuery = Compiled { recruteurId: Rep[RecruteurId] =>
     for {
@@ -91,15 +89,20 @@ class RecruteurProjectionSqlAdapter(database: Database) {
     database.run(profilRecruteurQuery(query.recruteurId).result.head)
 
   def listerPourConseiller(query: RecruteursPourConseillerQuery): Future[RecruteursPourConseillerQueryResult] =
-    database.run(listerParDateInscriptionQuery(query.nbRecruteursParPage * query.nbPagesACharger, query.avantDateInscription).result)
+    database.run(listerParDateInscriptionQuery(query.nbRecruteursParPage * query.nbPagesACharger, query.page.map(_.dateInscription).getOrElse(ZonedDateTime.now())).result)
       .map(r => {
         val recruteurs = r.toList
+        val pages = recruteurs.zipWithIndex
+          .filter(v => v._2 == 0 || (v._2 + 1) % query.nbRecruteursParPage == 0)
+          .map(v => KeysetRecruteursPourConseiller(
+            dateInscription = if (v._2 == 0) v._1.dateInscription.plusSeconds(1) else v._1.dateInscription,
+            recruteurId = v._1.recruteurId
+          ))
+
         RecruteursPourConseillerQueryResult(
           recruteurs = recruteurs.take(query.nbRecruteursParPage),
-          pages = query.avantDateInscription :: recruteurs.zipWithIndex
-            .filter(v => v._2 != 0 && (v._2 + 1) % query.nbRecruteursParPage == 0)
-            .map(_._1.dateInscription),
-          derniereDateInscription = recruteurs.reverse.headOption.map(_.dateInscription)
+          pages = query.page.map(k => k :: pages.tail).getOrElse(pages),
+          pageSuivante = pages.reverse.headOption
         )
       })
 
@@ -119,8 +122,7 @@ class RecruteurProjectionSqlAdapter(database: Database) {
       Some(event.typeRecruteur),
       Some(event.raisonSociale),
       Some(event.numeroSiret),
-      Some(event.numeroTelephone),
-      Some(event.contactParCandidats)
+      Some(event.numeroTelephone)
     ))).map(_ => ())
 
   def onProfilGerantModifieEvent(event: ProfilGerantModifieEvent): Future[Unit] =

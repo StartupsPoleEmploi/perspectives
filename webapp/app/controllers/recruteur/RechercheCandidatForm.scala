@@ -1,19 +1,34 @@
 package controllers.recruteur
 
+import fr.poleemploi.perspectives.commun.domain.Coordonnees
 import play.api.data.Form
 import play.api.data.Forms._
+import play.api.data.format.Formats._
+
+case class PaginationCandidat(score: Option[Int],
+                              dateInscription: Long,
+                              candidatId: String)
 
 case class RechercheCandidatForm(secteurActivite: Option[String],
-                                 codeDepartement: Option[String],
-                                 metier: Option[String])
+                                 metier: Option[String],
+                                 coordonnees: Option[Coordonnees],
+                                 pagination: Option[PaginationCandidat])
 
 object RechercheCandidatForm {
 
   val form = Form(
     mapping(
       "secteurActivite" -> optional(text),
-      "codeDepartement" -> optional(text),
-      "metier" -> optional(text)
+      "metier" -> optional(text),
+      "coordonnees" -> optional(mapping(
+        "latitude" -> of[Double],
+        "longitude" -> of[Double]
+      )(Coordonnees.apply)(Coordonnees.unapply)),
+      "pagination" -> optional(mapping(
+        "score" -> optional(number),
+        "dateInscription" -> of[Long],
+        "candidatId" -> text
+      )(PaginationCandidat.apply)(PaginationCandidat.unapply))
     )(RechercheCandidatForm.apply)(RechercheCandidatForm.unapply)
   )
 }

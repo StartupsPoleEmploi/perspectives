@@ -10,8 +10,7 @@ case class ProfilRecruteurQueryResult(recruteurId: RecruteurId,
                                       typeRecruteur: Option[TypeRecruteur],
                                       raisonSociale: Option[String],
                                       numeroSiret: Option[NumeroSiret],
-                                      numeroTelephone: Option[NumeroTelephone],
-                                      contactParCandidats: Option[Boolean]) extends QueryResult {
+                                      numeroTelephone: Option[NumeroTelephone]) extends QueryResult {
   val profilComplet: Boolean =
-    List(typeRecruteur, raisonSociale, numeroSiret, numeroTelephone, contactParCandidats).forall(_.isDefined)
+    List(typeRecruteur, raisonSociale, numeroSiret, numeroTelephone).forall(_.isDefined)
 }

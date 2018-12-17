@@ -19,13 +19,11 @@ class AlerteRecruteurSqlAdapter(database: Database,
 
   import PostgresDriver.api._
 
-  class AlerteRecruteurTable(tag: Tag) extends Table[AlerteRecruteurRecord](tag, "alertes_recruteurs") {
+  class AlerteRecruteurTable(tag: Tag) extends Table[AlerteRecruteurRecord](tag, "recruteurs_alertes") {
 
     def id = column[Long]("id", O.PrimaryKey)
 
     def recruteurId = column[RecruteurId]("recruteur_id")
-
-    def prenomRecruteur = column[String]("prenom_recruteur")
 
     def typeRecruteur = column[TypeRecruteur]("type_recruteur")
 
@@ -39,9 +37,13 @@ class AlerteRecruteurSqlAdapter(database: Database,
 
     def codeSecteurActivite = column[Option[CodeSecteurActivite]]("secteur_activite")
 
-    def codeDepartement = column[Option[CodeDepartement]]("departement")
+    def labelLocalisation = column[Option[String]]("label_localisation")
 
-    def * = (recruteurId, prenomRecruteur, typeRecruteur, emailRecruteur, alerteId, frequence, codeROME, codeSecteurActivite, codeDepartement) <> (AlerteRecruteurRecord.tupled, AlerteRecruteurRecord.unapply)
+    def latitude = column[Option[Double]]("latitude")
+
+    def longitude = column[Option[Double]]("longitude")
+
+    def * = (recruteurId, typeRecruteur, emailRecruteur, alerteId, frequence, codeROME, codeSecteurActivite, labelLocalisation, latitude, longitude) <> (AlerteRecruteurRecord.tupled, AlerteRecruteurRecord.unapply)
   }
 
   val alertesRecruteursTable = TableQuery[AlerteRecruteurTable]
@@ -63,37 +65,19 @@ class AlerteRecruteurSqlAdapter(database: Database,
   val modifierProfilGerantQuery = Compiled { recruteurId: Rep[RecruteurId] =>
     for {
       a <- alertesRecruteursTable if a.recruteurId === recruteurId
-    } yield (a.prenomRecruteur, a.emailRecruteur)
+    } yield a.emailRecruteur
   }
   val alertesParRecruteurQuery = Compiled { recruteurId: Rep[RecruteurId] =>
     for {
       a <- alertesRecruteursTable if a.recruteurId === recruteurId
-    } yield (a.codeROME, a.codeSecteurActivite, a.codeDepartement, a.frequence, a.alerteId)
+    } yield a
   }
 
-  // FIXME : logique dupliquée en front
   def alertesParRecruteur(query: AlertesRecruteurQuery): Future[AlertesRecruteurQueryResult] =
     database.run(alertesParRecruteurQuery(query.recruteurId).result).map(r =>
-      AlertesRecruteurQueryResult(alertes = r.toList.map { a =>
-        AlerteDto(
-          alerteId = a._5.value,
-          intitule =
-            s"${
-              if (a._1.isDefined) {
-                a._1.flatMap(c => rechercheCandidatService.metierProposeParCode(c)).map(_.label).getOrElse("")
-              } else if (a._2.isDefined) {
-                a._2.map(c => rechercheCandidatService.secteurActiviteParCode(c).label).getOrElse("")
-              } else
-                "Candidats"
-            }${a._3.map(c => s" en ${rechercheCandidatService.departementParCode(c).label}").getOrElse("")}",
-          criteres = Criteres(
-            codeSecteurActivite = a._2.map(_.value).getOrElse(""),
-            codeROME = a._1.map(_.value).getOrElse(""),
-            codeDepartement = a._3.map(_.value).getOrElse("")
-          ),
-          frequence = FrequenceAlerte.label(a._4)
-        )
-      })
+      AlertesRecruteurQueryResult(
+        alertes = r.toList.map(toAlerteRecruteurDto)
+      )
     )
 
   def alertesQuotidiennes: Source[AlerteRecruteurDto, NotUsed] =
@@ -104,8 +88,8 @@ class AlerteRecruteurSqlAdapter(database: Database,
 
   def onAlerteRecruteurCreeEvent(event: AlerteRecruteurCreeEvent): Future[Unit] =
     database
-      .run(alertesRecruteursTable.map(a => (a.recruteurId, a.prenomRecruteur, a.typeRecruteur, a.emailRecruteur, a.alerteId, a.frequence, a.codeROME, a.codeSecteurActivite, a.codeDepartement))
-        += (event.recruteurId, event.prenom, event.typeRecruteur, event.email, event.alerteId, event.frequence, event.codeROME, event.codeSecteurActivite, event.codeDepartement))
+      .run(alertesRecruteursTable.map(a => (a.recruteurId, a.typeRecruteur, a.emailRecruteur, a.alerteId, a.frequence, a.codeROME, a.codeSecteurActivite, a.labelLocalisation, a.latitude, a.longitude))
+        += (event.recruteurId, event.typeRecruteur, event.email, event.alerteId, event.frequence, event.codeROME, event.codeSecteurActivite, event.localisation.map(_.label), event.localisation.map(_.coordonnees.latitude), event.localisation.map(_.coordonnees.longitude)))
       .map(_ => ())
 
   def onAlerteRecruteurSupprimeeEvent(event: AlerteRecruteurSupprimeeEvent): Future[Unit] =
@@ -117,10 +101,9 @@ class AlerteRecruteurSqlAdapter(database: Database,
     )).map(_ => ())
 
   def onProfilGerantModifieEvent(event: ProfilGerantModifieEvent): Future[Unit] =
-    database.run(modifierProfilGerantQuery(event.recruteurId).update((
-      event.prenom,
+    database.run(modifierProfilGerantQuery(event.recruteurId).update(
       event.email
-    ))).map(_ => ())
+    )).map(_ => ())
 
   private def streamAlertes(frequenceAlerte: FrequenceAlerte): Source[AlerteRecruteurDto, NotUsed] =
     Source.fromPublisher {
@@ -136,39 +119,29 @@ class AlerteRecruteurSqlAdapter(database: Database,
       ).mapResult(toAlerteRecruteurDto)
     }
 
-  private def toAlerteRecruteurDto(alerteRecruteurRecord: AlerteRecruteurRecord): AlerteRecruteurDto = {
-    alerteRecruteurRecord.codeROME.map(codeROME =>
-      AlerteRecruteurMetierDto(
-        recruteurId = alerteRecruteurRecord.recruteurId,
-        typeRecruteur = alerteRecruteurRecord.typeRecruteur,
-        prenom = alerteRecruteurRecord.prenomRecruteur,
-        email = alerteRecruteurRecord.emailRecruteur,
-        alerteId = alerteRecruteurRecord.alerteId,
-        frequence = alerteRecruteurRecord.frequence,
-        metier = rechercheCandidatService.metierProposeParCode(codeROME).get,
-        departement = alerteRecruteurRecord.codeDepartement.map(rechercheCandidatService.departementParCode)
+  private def toAlerteRecruteurDto(alerteRecruteurRecord: AlerteRecruteurRecord): AlerteRecruteurDto =
+    AlerteRecruteurDto(
+      recruteurId = alerteRecruteurRecord.recruteurId,
+      typeRecruteur = alerteRecruteurRecord.typeRecruteur,
+      email = alerteRecruteurRecord.emailRecruteur,
+      alerteId = alerteRecruteurRecord.alerteId,
+      frequence = alerteRecruteurRecord.frequence,
+      secteurActivite = alerteRecruteurRecord.codeSecteurActivite.map(rechercheCandidatService.secteurActiviteParCode),
+      metier = alerteRecruteurRecord.codeROME.flatMap(rechercheCandidatService.metierProposeParCode),
+      localisation = buildLocalisation(alerteRecruteurRecord)
+    )
+
+  private def buildLocalisation(alerteRecruteurRecord: AlerteRecruteurRecord): Option[Localisation] =
+    for {
+      label <- alerteRecruteurRecord.labelLocalisation
+      latitude <- alerteRecruteurRecord.latitude
+      longitude <- alerteRecruteurRecord.longitude
+    } yield
+      Localisation(
+        label = label,
+        coordonnees = Coordonnees(
+          latitude = latitude,
+          longitude = longitude
+        )
       )
-    ).orElse(alerteRecruteurRecord.codeSecteurActivite.map(codeSecteurActivite =>
-      AlerteRecruteurSecteurDto(
-        recruteurId = alerteRecruteurRecord.recruteurId,
-        typeRecruteur = alerteRecruteurRecord.typeRecruteur,
-        prenom = alerteRecruteurRecord.prenomRecruteur,
-        email = alerteRecruteurRecord.emailRecruteur,
-        alerteId = alerteRecruteurRecord.alerteId,
-        frequence = alerteRecruteurRecord.frequence,
-        secteurActivite = rechercheCandidatService.secteurActiviteParCode(codeSecteurActivite),
-        departement = alerteRecruteurRecord.codeDepartement.map(rechercheCandidatService.departementParCode)
-      )
-    )).orElse(alerteRecruteurRecord.codeDepartement.map(codeDepartement =>
-      AlerteRecruteurDepartementDto(
-        recruteurId = alerteRecruteurRecord.recruteurId,
-        typeRecruteur = alerteRecruteurRecord.typeRecruteur,
-        prenom = alerteRecruteurRecord.prenomRecruteur,
-        email = alerteRecruteurRecord.emailRecruteur,
-        alerteId = alerteRecruteurRecord.alerteId,
-        frequence = alerteRecruteurRecord.frequence,
-        departement = rechercheCandidatService.departementParCode(codeDepartement)
-      )
-    )).getOrElse(throw new IllegalArgumentException("Type d'alerte non géré"))
-  }
 }

@@ -47,10 +47,18 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
     ).map(_.contactId)
 
   def envoyerAlerteMailRecruteur(alerteMailRecruteur: AlerteMailRecruteur): Future[Unit] =
-    sendTemplate(mailjetWSMapping.buildAlerteMailTemplateRecruteur(
-      alerteMailRecruteur = alerteMailRecruteur,
-      templateId = alerteMailRecruteurTemplateId,
-      sender = config.senderAdress
+    sendTemplate(MailjetTemplateEmail(
+      messages = List(MailjetTemplateMessage(
+        from = MailjetSender(email = sender, name = ""),
+        to = List(MailjetRecipient(email = alerteMailRecruteur.email.value, name = "")),
+        subject = alerteMailRecruteur.sujet,
+        templateID = alerteMailRecruteurTemplateId,
+        templateLanguage = true,
+        variables = Map(
+          "texteInscription" -> alerteMailRecruteur.recapitulatifInscriptions,
+          "lienConnexion" -> alerteMailRecruteur.lienConnexion
+        )
+      ))
     ))
 
   private def sendTemplate(mailjetTemplateEmail: MailjetTemplateEmail): Future[Unit] =

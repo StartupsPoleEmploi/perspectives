@@ -1,18 +1,22 @@
 package fr.poleemploi.perspectives.projections.candidat
 
-import java.time.ZonedDateTime
+import java.time.LocalDateTime
 
 import fr.poleemploi.cqrs.projection.{Query, QueryResult}
 import fr.poleemploi.perspectives.candidat.{CandidatId, StatutDemandeurEmploi}
 import fr.poleemploi.perspectives.commun.domain._
+import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
+import play.api.libs.functional.syntax.{unlift, _}
+import play.api.libs.json.{JsPath, Writes}
 
-case class CandidatsPourConseillerQuery(nbCandidatsParPage: Int,
-                                        nbPagesACharger: Int,
-                                        avantDateInscription: ZonedDateTime) extends Query[CandidatsPourConseillerQueryResult]
+case class CandidatsPourConseillerQuery(nbPagesACharger: Int,
+                                        page: Option[KeysetCandidatsPourConseiller]) extends Query[CandidatsPourConseillerQueryResult] {
+  val nbCandidatsParPage = 20
+}
 
 case class CandidatsPourConseillerQueryResult(candidats: List[CandidatPourConseillerDto],
-                                              pages: List[ZonedDateTime],
-                                              derniereDateInscription: Option[ZonedDateTime]) extends QueryResult
+                                              pages: List[KeysetCandidatsPourConseiller],
+                                              pageSuivante: Option[KeysetCandidatsPourConseiller]) extends QueryResult
 
 case class CandidatPourConseillerDto(candidatId: CandidatId,
                                      nom: String,
@@ -28,8 +32,8 @@ case class CandidatPourConseillerDto(candidatId: CandidatId,
                                      contacteParOrganismeFormation: Option[Boolean],
                                      rayonRecherche: Option[RayonRecherche],
                                      numeroTelephone: Option[NumeroTelephone],
-                                     dateInscription: ZonedDateTime,
-                                     dateDerniereConnexion: ZonedDateTime) {
+                                     dateInscription: LocalDateTime,
+                                     dateDerniereConnexion: LocalDateTime) {
 
   /**
     * Ne se base pas sur statutDemandeurEmploi car il n'est pas forcément actualisé tout de suite
@@ -38,4 +42,15 @@ case class CandidatPourConseillerDto(candidatId: CandidatId,
   def rechercheEmploi: Boolean =
     (rechercheMetierEvalue.isEmpty && rechercheAutreMetier.isEmpty) ||
       rechercheMetierEvalue.getOrElse(false) || rechercheAutreMetier.getOrElse(false)
+}
+
+case class KeysetCandidatsPourConseiller(dateInscription: Long,
+                                         candidatId: CandidatId)
+
+object KeysetCandidatsPourConseiller {
+
+  implicit val writes: Writes[KeysetCandidatsPourConseiller] = (
+    (JsPath \ "dateInscription").write[Long] and
+      (JsPath \ "candidatId").write[CandidatId]
+    ) (unlift(KeysetCandidatsPourConseiller.unapply))
 }

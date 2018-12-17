@@ -30,19 +30,17 @@ object RecruteurProfilCompletState extends RecruteurState {
     ).map(_ => Nil)
 
   override def creerAlerte(context: RecruteurContext, command: CreerAlerteCommand): List[Event] = {
-    if (command.codeDepartement
-      .orElse(command.codeSecteurActivite)
-      .orElse(command.codeROME).isEmpty) {
+    if (command.localisation.orElse(command.codeSecteurActivite).orElse(command.codeROME).isEmpty) {
       throw new IllegalArgumentException("Au moins un critère doit être renseigné pour une alerte")
     }
     if (context.alertes.size == 10) {
       throw new IllegalArgumentException(s"Le recruteur ${command.id.value} a atteint le nombre maximum d'alertes")
     }
     val criteresAlerte = CriteresAlerte(
-      command.frequenceAlerte,
-      command.codeROME,
-      command.codeSecteurActivite,
-      command.codeDepartement
+      frequence = command.frequenceAlerte,
+      codeROME = command.codeROME,
+      codeSecteurActivite = command.codeSecteurActivite,
+      localisation = command.localisation
     )
     if (context.alertes.values.toList.contains(criteresAlerte)) {
       throw new IllegalArgumentException(s"Une alerte existe déjà pour le recruteur ${command.id.value} avec les critères suivants : $criteresAlerte")
@@ -50,14 +48,13 @@ object RecruteurProfilCompletState extends RecruteurState {
 
     List(AlerteRecruteurCreeEvent(
       recruteurId = command.id,
-      prenom = context.prenom.get,
       email = context.email.get,
       typeRecruteur = context.typeRecruteur.get,
       alerteId = command.alerteId,
       frequence = command.frequenceAlerte,
       codeROME = command.codeROME,
       codeSecteurActivite = command.codeSecteurActivite,
-      codeDepartement = command.codeDepartement
+      localisation = command.localisation
     ))
   }
 

@@ -19,14 +19,14 @@ Vue.component('pagination', {
         chargerPagePrecedente: function(index) {
             this.$emit("charger-page-precedente", this.pagesPrecedentes[index], index);
         },
-        pageSuivanteChargee: function(nbResultat, dernierResultat) {
+        pageSuivanteChargee: function(nbResultat, pageSuivante) {
             this.pagesPrecedentes.push(this.criterePageSuivante);
             this.pageCourante = this.pagesPrecedentes.length - 1;
 
             if (nbResultat === this.nbParPage) {
-                this.criterePageSuivante = dernierResultat;
+                this.criterePageSuivante = pageSuivante;
             } else {
-                this.criterePageSuivante = '';
+                this.criterePageSuivante = undefined; // dernière page atteinte
             }
         },
         pagePrecedenteChargee: function(index) {
@@ -37,7 +37,7 @@ Vue.component('pagination', {
         },
         modifierPagination: function(pages) {
             this.pagesPrecedentes = (pages !== undefined && pages.length > 0) ? pages.slice(0, pages.length - 1) : [];
-            this.criterePageSuivante= (pages !== undefined && pages.length > 1) ? pages[pages.length - 1] : undefined;
+            this.criterePageSuivante = (pages !== undefined && pages.length > 1) ? pages[pages.length - 1] : undefined;
             this.pageCourante = 0;
         }
     },
@@ -49,7 +49,7 @@ Vue.component('pagination', {
             'v-bind:class="[isPageCourante(index) ? \'pagination-pageCourante\' : \'pagination-page\']">' +
             '{{index + 1}}' +
         '</a>' +
-        '<a href="#" v-if="criterePageSuivante !== undefined && criterePageSuivante !== \'\'" ' +
+        '<a href="#" v-if="criterePageSuivante !== undefined" ' +
             'v-on:click="chargerPageSuivante" class="bouton pagination-item pagination-page">></a>' +
     '</div>'
 });

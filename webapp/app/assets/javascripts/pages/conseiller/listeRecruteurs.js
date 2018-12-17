@@ -1,23 +1,36 @@
 "use strict";
 
-// FIXME : pas de jquery pour accéder à des éléments externes au composant
 var app = new Vue({
     el: '#listeRecruteurs',
+    data: function() {
+        return {
+            pagesInitiales: jsData.pagesInitiales,
+            nbRecruteursParPage: jsData.nbRecruteursParPage
+        }
+    },
     methods: {
         chargerPageSuivante: function(critere) {
-             this.$http.get('/conseiller/recruteurs/' + encodeURIComponent(critere)).then(function(response) {
-                app.$refs.recruteurs.innerHTML = response.body;
-                app.$refs.pagination.pageSuivanteChargee(Number($("#js-nbResultats").val()), $("#js-dernierResultat").val());
-            }, function(response) {
-                // erreur
+            $.ajax({
+                type: 'GET',
+                url: '/conseiller/paginationRecruteurs' +
+                '?dateInscription=' + encodeURIComponent(critere.dateInscription) +
+                '&recruteurId=' + encodeURIComponent(critere.recruteurId),
+                dataType: 'json'
+            }).done(function (response) {
+                app.$refs.recruteurs.innerHTML = response.html;
+                app.$refs.pagination.pageSuivanteChargee(response.nbRecruteurs, response.pageSuivante);
             });
         },
         chargerPagePrecedente: function(critere, index) {
-            this.$http.get('/conseiller/recruteurs/' + encodeURIComponent(critere)).then(function(response) {
-                app.$refs.recruteurs.innerHTML = response.body;
+            $.ajax({
+                type: 'GET',
+                url: '/conseiller/paginationRecruteurs' +
+                '?dateInscription=' + encodeURIComponent(critere.dateInscription) +
+                '&recruteurId=' + encodeURIComponent(critere.recruteurId),
+                dataType: 'json'
+            }).done(function (response) {
+                app.$refs.recruteurs.innerHTML = response.html;
                 app.$refs.pagination.pagePrecedenteChargee(index);
-            }, function(response) {
-                // erreur
             });
         }
     }

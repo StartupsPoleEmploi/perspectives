@@ -40,8 +40,5 @@ class MailjetEmailingService(mailjetSqlAdapter: MailjetSqlAdapter,
   }
 
   override def envoyerAlerteMailRecruteur(alerteMailRecruteur: AlerteMailRecruteur): Future[Unit] =
-    if (alerteMailRecruteur.nbCandidats > 0)
-      mailjetWSAdapter.envoyerAlerteMailRecruteur(alerteMailRecruteur)
-    else
-      Future.successful(())
+    mailjetWSAdapter.envoyerAlerteMailRecruteur(alerteMailRecruteur)
 }

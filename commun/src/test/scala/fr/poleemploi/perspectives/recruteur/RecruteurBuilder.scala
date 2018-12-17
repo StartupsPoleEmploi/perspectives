@@ -40,30 +40,33 @@ class RecruteurBuilder {
       typeRecruteur = typeRecruteur.getOrElse(TypeRecruteur.ENTREPRISE),
       raisonSociale = raisonSociale.getOrElse("raison sociale"),
       numeroSiret = numeroSiret.getOrElse(NumeroSiret("00000000000018")),
-      numeroTelephone = numeroTelephone.getOrElse(NumeroTelephone("0987654356")),
-      contactParCandidats = contactParCandidats.getOrElse(true)
+      numeroTelephone = numeroTelephone.getOrElse(NumeroTelephone("0987654356"))
     )
     this
   }
 
   def avecAlerte(alerteId: Option[AlerteId] = None,
-                 prenom: Option[String] = None,
                  typeRecruteur: Option[TypeRecruteur] = None,
                  email: Option[Email] = None,
                  frequenceAlerte: Option[FrequenceAlerte] = None,
                  codeSecteurActivite: Option[CodeSecteurActivite] = None,
                  codeROME: Option[CodeROME] = None,
-                 codeDepartement: Option[CodeDepartement] = None): RecruteurBuilder = {
+                 localisation: Option[Localisation] = None): RecruteurBuilder = {
     events += AlerteRecruteurCreeEvent(
       recruteurId = recruteurId,
-      prenom = prenom.getOrElse("bob"),
       typeRecruteur = typeRecruteur.getOrElse(TypeRecruteur.ENTREPRISE),
       email = email.getOrElse(Email("bob.recruteur@mail.com")),
       alerteId = alerteId.getOrElse(genererAlerteId),
       frequence = frequenceAlerte.getOrElse(FrequenceAlerte.HEBDOMADAIRE),
       codeSecteurActivite = codeSecteurActivite.orElse(Some(CodeSecteurActivite("H"))),
       codeROME = codeROME.orElse(Some(CodeROME("H2909"))),
-      codeDepartement = codeDepartement.orElse(Some(CodeDepartement("85")))
+      localisation = localisation.orElse(Some(Localisation(
+        label = "85",
+        coordonnees = Coordonnees(
+          latitude = 46.8329,
+          longitude = -1.8421
+        )
+      )))
     )
     this
   }

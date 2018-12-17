@@ -1,6 +1,9 @@
 package schedulers
 
+import java.net.URLEncoder
 import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 import akka.NotUsed
 import akka.actor.Status.Failure
@@ -11,6 +14,7 @@ import akka.stream.scaladsl.Source
 import fr.poleemploi.perspectives.emailing.domain._
 import fr.poleemploi.perspectives.projections.candidat._
 import fr.poleemploi.perspectives.projections.recruteur.alerte._
+import fr.poleemploi.perspectives.recruteur.alerte.domain.FrequenceAlerte
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -44,6 +48,8 @@ class AlerteMailRecruteurActor(emailingService: EmailingService,
 
   implicit val materializer: ActorMaterializer = ActorMaterializer()
 
+  val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("eeee d MMMM yyyy", Locale.FRANCE)
+
   override def receive: Receive = {
     case EnvoyerAlertesQuotidiennes =>
       envoyerAlertes(
@@ -62,77 +68,86 @@ class AlerteMailRecruteurActor(emailingService: EmailingService,
   private def envoyerAlertes(alertes: Source[AlerteRecruteurDto, NotUsed],
                              apresDateInscription: ZonedDateTime): Future[Unit] =
     alertes.runForeach(alerteRecruteurDto => {
-      val rechercherCandidatsQuery = buildRechercherCandidatsQuery(alerteRecruteurDto, apresDateInscription)
       for {
-        resultatRechercheCandidat <- candidatProjection.rechercherCandidats(rechercherCandidatsQuery)
-        _ <- emailingService.envoyerAlerteMailRecruteur(buildAlerteMailRecruteur(
-          alerteRecruteurDto = alerteRecruteurDto,
-          rechercheCandidatQueryResult = resultatRechercheCandidat,
-          apresDateInscription = apresDateInscription
+        rechercheCandidatQueryResult <- candidatProjection.rechercherCandidats(RechercherCandidatsQuery(
+          typeRecruteur = alerteRecruteurDto.typeRecruteur,
+          codeROME = alerteRecruteurDto.metier.map(_.codeROME),
+          codeSecteurActivite = alerteRecruteurDto.secteurActivite.map(_.code),
+          coordonnees = alerteRecruteurDto.localisation.map(l => l.coordonnees),
+          nbPagesACharger = 1,
+          page = Some(KeysetRechercherCandidats(
+            dateInscription = apresDateInscription.toEpochSecond,
+            score = None,
+            candidatId = None
+          ))
         ))
+        _ <-
+          if (rechercheCandidatQueryResult.nbCandidatsTotal > 0)
+            emailingService.envoyerAlerteMailRecruteur(buildAlerteMailRecruteur(
+              alerteRecruteurDto = alerteRecruteurDto,
+              rechercheCandidatQueryResult = rechercheCandidatQueryResult,
+              apresDateInscription = apresDateInscription
+            ))
+          else
+            Future.successful(())
       } yield ()
     }).map(_ => ()) pipeTo self
 
-  private def buildRechercherCandidatsQuery(alerteRecruteurDto: AlerteRecruteurDto,
-                                            apresDateInscription: ZonedDateTime): RechercherCandidatsQuery =
-    alerteRecruteurDto match {
-      case a: AlerteRecruteurMetierDto =>
-        RechercherCandidatsParMetierQuery(
-          typeRecruteur = a.typeRecruteur,
-          codeROME = a.metier.codeROME,
-          codeDepartement = a.departement.map(_.code),
-          apresDateInscription = Some(apresDateInscription)
-        )
-      case a: AlerteRecruteurSecteurDto =>
-        RechercherCandidatsParSecteurQuery(
-          typeRecruteur = a.typeRecruteur,
-          codeSecteurActivite = a.secteurActivite.code,
-          codeDepartement = a.departement.map(_.code),
-          apresDateInscription = Some(apresDateInscription)
-        )
-      case a: AlerteRecruteurDepartementDto =>
-        RechercherCandidatsParDepartementQuery(
-          typeRecruteur = a.typeRecruteur,
-          codeDepartement = a.departement.code,
-          apresDateInscription = Some(apresDateInscription)
-        )
-    }
-
   private def buildAlerteMailRecruteur(alerteRecruteurDto: AlerteRecruteurDto,
                                        rechercheCandidatQueryResult: RechercheCandidatQueryResult,
-                                       apresDateInscription: ZonedDateTime): AlerteMailRecruteur =
-    alerteRecruteurDto match {
-      case a: AlerteRecruteurSecteurDto =>
-        AlerteMailRecruteurSecteur(
-          prenom = a.prenom,
-          email = a.email,
-          frequence = a.frequence,
-          nbCandidats = rechercheCandidatQueryResult.nbCandidats,
-          apresDateInscription = apresDateInscription,
-          departement = a.departement,
-          secteurActivite = a.secteurActivite,
-          lienConnexion = s"$webappURL/recruteur/recherche?secteurActivite=${a.secteurActivite.code.value}${a.departement.map(c => s"&departement=${c.code.value}").getOrElse("")}"
-        )
-      case a: AlerteRecruteurMetierDto =>
-        AlerteMailRecruteurMetier(
-          prenom = a.prenom,
-          email = a.email,
-          frequence = a.frequence,
-          nbCandidats = rechercheCandidatQueryResult.nbCandidats,
-          apresDateInscription = apresDateInscription,
-          departement = a.departement,
-          metier = a.metier,
-          lienConnexion = s"$webappURL/recruteur/recherche?metier=${a.metier.codeROME.value}${a.departement.map(c => s"&departement=${c.code.value}").getOrElse("")}"
-        )
-      case a: AlerteRecruteurDepartementDto =>
-        AlerteMailRecruteurDepartement(
-          prenom = a.prenom,
-          email = a.email,
-          frequence = a.frequence,
-          nbCandidats = rechercheCandidatQueryResult.nbCandidats,
-          apresDateInscription = apresDateInscription,
-          departement = a.departement,
-          lienConnexion = s"$webappURL/recruteur/recherche?departement=${a.departement.code.value}"
-        )
+                                       apresDateInscription: ZonedDateTime): AlerteMailRecruteur = {
+    def nbCandidats: String = rechercheCandidatQueryResult.nbCandidatsTotal match {
+      case x if x == 1 => s"1 nouveau candidat"
+      case x if x > 1 => s"$x nouveaux candidats"
+      case _ => ""
     }
+
+    def nbCandidatsInscrits: String = rechercheCandidatQueryResult.nbCandidatsTotal match {
+      case x if x == 1 => s"1 nouveau candidat s'est inscrit"
+      case x if x > 1 => s"$x nouveaux candidats se sont inscrits"
+      case _ => ""
+    }
+
+    def dateRechercheCandidat: String = alerteRecruteurDto.frequence match {
+      case FrequenceAlerte.HEBDOMADAIRE => s"depuis le ${dateTimeFormatter.format(apresDateInscription)}"
+      case _ => ""
+    }
+
+    def localisation: String = alerteRecruteurDto.localisation.map(l => s"à ${l.label}").getOrElse("")
+
+    def metier: String = alerteRecruteurDto.metier.map(m => s"sur le métier ${m.label}").getOrElse("")
+
+    def secteur: String = alerteRecruteurDto.secteurActivite.map(s => s"dans le secteur ${s.label}").getOrElse("")
+
+    val textes = alerteRecruteurDto.metier.map(_ =>
+      (
+        s"$nbCandidats $metier $localisation",
+        s"$nbCandidatsInscrits $metier $localisation $dateRechercheCandidat"
+      )
+    ).orElse(alerteRecruteurDto.secteurActivite.map(_ =>
+      (
+        s"$nbCandidats $secteur $localisation",
+        s"$nbCandidatsInscrits $secteur $localisation $dateRechercheCandidat"
+      )
+    )).orElse(alerteRecruteurDto.localisation.map(_ =>
+      (
+        s"$nbCandidats $localisation",
+        s"$nbCandidatsInscrits $localisation $dateRechercheCandidat"
+      )
+    )).getOrElse(throw new IllegalArgumentException("Type d'alerte non géré"))
+
+    val lienConnexion = List(
+      alerteRecruteurDto.metier.map(m => s"metier=${m.codeROME.value}"),
+      alerteRecruteurDto.secteurActivite.map(s => s"secteurActivite=${s.code.value}"),
+      alerteRecruteurDto.localisation.map(l => s"localisation=${URLEncoder.encode(l.label, "UTF-8")}&latitude=${l.coordonnees.latitude}&longitude=${l.coordonnees.longitude}")
+    ).flatten.foldLeft(s"$webappURL/recruteur/recherche")((url, param) => s"$url&$param")
+        .replaceFirst("&", "?")
+
+    AlerteMailRecruteur(
+      email = alerteRecruteurDto.email,
+      sujet = textes._1,
+      recapitulatifInscriptions = textes._2,
+      lienConnexion = lienConnexion
+    )
+  }
 }

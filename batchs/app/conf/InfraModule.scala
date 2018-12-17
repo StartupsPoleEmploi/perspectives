@@ -19,7 +19,11 @@ import fr.poleemploi.perspectives.emailing.infra.local.LocalEmailingService
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetEmailingService
 import fr.poleemploi.perspectives.emailing.infra.sql.MailjetSqlAdapter
 import fr.poleemploi.perspectives.emailing.infra.ws.{MailjetWSAdapter, MailjetWSMapping}
+import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
 import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapter
+import fr.poleemploi.perspectives.projections.candidat.infra.elasticsearch.CandidatProjectionElasticsearchAdapter
+import fr.poleemploi.perspectives.projections.recruteur.alerte.infra.sql.AlerteRecruteurSqlAdapter
+import fr.poleemploi.perspectives.rechercheCandidat.domain.RechercheCandidatService
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
 import play.api.inject.ApplicationLifecycle
@@ -183,5 +187,25 @@ class InfraModule extends AbstractModule with ScalaModule {
       config = batchsConfig.importHabiletesMRSCsvAdapterConfig,
       habiletesMRSCsvAdapter = habiletesMRSCsvAdapter,
       referentielHabiletesMRSSqlAdapter = referentielHabiletesMRSSqlAdapter
+    )
+
+  @Provides
+  def candidatProjectionElasticsearchAdapter(batchsConfig: BatchsConfig,
+                                             wsClient: WSClient,
+                                             referentielMetier: ReferentielMetier,
+                                             rechercheCandidatService: RechercheCandidatService): CandidatProjectionElasticsearchAdapter =
+    new CandidatProjectionElasticsearchAdapter(
+      wsClient = wsClient,
+      esConfig = batchsConfig.esConfig,
+      referentielMetier = referentielMetier,
+      rechercheCandidatService = rechercheCandidatService
+    )
+
+  @Provides
+  def alerteRecruteurSqlAdapter(database: Database,
+                                rechercheCandidatService: RechercheCandidatService): AlerteRecruteurSqlAdapter =
+    new AlerteRecruteurSqlAdapter(
+      database = database,
+      rechercheCandidatService = rechercheCandidatService
     )
 }

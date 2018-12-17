@@ -35,7 +35,6 @@ class Recruteur(override val id: RecruteurId,
           raisonSociale = Some(e.raisonSociale),
           numeroSiret = Some(e.numeroSiret),
           typeRecruteur = Some(e.typeRecruteur),
-          contactParCandidats = Some(e.contactParCandidats),
           numeroTelephone = Some(e.numeroTelephone)
         )
       case e: ProfilGerantModifieEvent =>
@@ -51,7 +50,7 @@ class Recruteur(override val id: RecruteurId,
             frequence = e.frequence,
             codeROME = e.codeROME,
             codeSecteurActivite = e.codeSecteurActivite,
-            codeDepartement = e.codeDepartement
+            localisation = e.localisation
           ))
         )
       case e: AlerteRecruteurSupprimeeEvent =>
@@ -88,6 +87,5 @@ private[recruteur] case class RecruteurContext(nom: Option[String] = None,
                                                raisonSociale: Option[String] = None,
                                                numeroSiret: Option[NumeroSiret] = None,
                                                typeRecruteur: Option[TypeRecruteur] = None,
-                                               contactParCandidats: Option[Boolean] = None,
                                                numeroTelephone: Option[NumeroTelephone] = None,
                                                alertes: Map[AlerteId, CriteresAlerte] = Map())

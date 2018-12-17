@@ -15,8 +15,7 @@ case class ModifierProfilCommand(id: RecruteurId,
                                  raisonSociale: String,
                                  numeroSiret: NumeroSiret,
                                  typeRecruteur: TypeRecruteur,
-                                 numeroTelephone: NumeroTelephone,
-                                 contactParCandidats: Boolean) extends Command[Recruteur]
+                                 numeroTelephone: NumeroTelephone) extends Command[Recruteur]
 
 case class ConnecterRecruteurCommand(id: RecruteurId,
                                      nom: String,
@@ -32,7 +31,7 @@ case class CreerAlerteCommand(id: RecruteurId,
                               alerteId: AlerteId,
                               codeSecteurActivite: Option[CodeSecteurActivite],
                               codeROME: Option[CodeROME],
-                              codeDepartement: Option[CodeDepartement],
+                              localisation: Option[Localisation],
                               frequenceAlerte: FrequenceAlerte) extends Command[Recruteur]
 
 case class SupprimerAlerteCommand(id: RecruteurId,

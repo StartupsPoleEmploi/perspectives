@@ -2,12 +2,38 @@
 
 $(document).ready(function () {
 
+    var placesAutocomplete = places({
+        appId: jsData.algoliaPlaces.appId,
+        apiKey: jsData.algoliaPlaces.apiKey,
+        container: document.querySelector('#js-localisation'),
+        type: 'city',
+        aroundLatLngViaIP: false,
+        style: true,
+        useDeviceLocation: false,
+        language: 'fr',
+        countries: ['fr']
+    });
+    placesAutocomplete.on('change', function(e) {
+        app.localiser({
+            label: e.suggestion.name,
+            latitude: e.suggestion.latlng.lat,
+            longitude: e.suggestion.latlng.lng
+        });
+    });
+    placesAutocomplete.on('clear', function(e) {
+        app.localiser({
+            label: '',
+            latitude: null,
+            longitude: null
+        });
+    });
+
     var body = $("body");
     var selecteurSecteursActivites = $("#js-secteursActivites-selecteur");
     var selecteurMetiers = $("#js-metiers-selecteur");
-    var selecteurDepartements = $("#js-departements-selecteur");
+    var inputLocalisation = $("#js-localisation");
 
-    app.chargerPage(0); // premiere page
+    app.initialiserTableau();
 
     body.on("click", ".js-boutonCandidat", function () {
         var bouton = $(this);
@@ -94,7 +120,7 @@ $(document).ready(function () {
             e.preventDefault();
             $("#js-commentaireSecteurActivite").val(selecteurSecteursActivites.val());
             $("#js-commentaireMetier").val(selecteurMetiers.val());
-            $("#js-commentaireDepartement").val(selecteurDepartements.val());
+            $("#js-commentaireLocalisation").val(inputLocalisation.val());
             if (commentaireRecruteur.val() !== '') {
                 $.ajax({
                     type: "POST",
@@ -123,28 +149,45 @@ var app = new Vue({
     data: function() {
         return {
             csrfToken: jsData.csrfToken,
-            nbCandidats: jsData.nbCandidats,
-            nbCandidatsParPage: 25,
+            nbCandidatsParPage: jsData.nbCandidatsParPage,
+            pagesInitiales: jsData.pagesInitiales,
             frequences: [ // FIXME: reçues du back
                 {value: 'Quotidienne', label: 'Chaque jour'},
                 {value: 'Hebdomadaire', label: 'Chaque semaine'}
             ],
-            alertes: jsData.alertes,
-            secteurActivite: jsData.secteurActivite,
+            alertes: [],
+            secteurActivite: jsData.secteurActivite !== undefined && jsData.secteurActivite !== null ? jsData.secteurActivite : '',
             secteursActivites: jsData.secteursActivites,
-            departement: jsData.departement,
-            departements: jsData.departements,
-            metier: jsData.metier,
-            labelTousLesMetiers: 'Tous les métiers'
+            metier: jsData.metier !== undefined && jsData.metier !== null ? jsData.metier : '',
+            localisation: jsData.localisation !== undefined && jsData.localisation !== null ? jsData.localisation : {
+                label: '',
+                latitude: null,
+                longitude: null
+            },
+            labelTousLesMetiers: 'Tous les métiers',
+            titreCompteurResultats: null
         }
     },
+    beforeMount: function() {
+       var self = this;
+       this.alertes = jsData.alertes.map(function(alerte) {
+            return {
+                id: alerte.id,
+                intitule: self.intituleAlerte(alerte.metier, alerte.secteurActivite, alerte.localisation),
+                frequence: alerte.frequence,
+                criteres : {
+                    codeSecteurActivite: alerte.secteurActivite !== null ? alerte.secteurActivite : '',
+                    codeROME: alerte.metier !== null ? alerte.metier : '',
+                    localisation: alerte.localisation
+                }
+            };
+        });
+        this.titreCompteurResultats = this.getTitreCompteurResultats(jsData.nbCandidatsTotal);
+    },
     computed: {
-        pagesInitiales: function() {
-            return this.calculerPages();
-        },
         metiers: function() {
             var secteurActivite = this.secteurActivite;
-            if (secteurActivite !== undefined && secteurActivite !== '') {
+            if (secteurActivite !== null && secteurActivite !== '') {
                 this.labelTousLesMetiers = 'Tous les métiers du secteur';
                 return this.secteursActivites.find(function(s) {
                     return s.code === secteurActivite;
@@ -156,18 +199,20 @@ var app = new Vue({
         }
     },
     methods: {
-        titreCompteurResultats: function() {
-            if (this.nbCandidats === 0) {
+        getTitreCompteurResultats: function(nbCandidats) {
+            if (nbCandidats === 0) {
                 return "Nous n'avons pas de candidats à vous proposer avec ces critères";
             } else {
                 if (this.metier !== undefined && this.metier !== '') {
-                    return "<b>" + this.getIntituleCandidats(this.nbCandidats) + " pour ce métier</b> " + this.getSuffixeCandidats(this.nbCandidats);
+                    return "<b>" + this.getIntituleCandidats(nbCandidats) + " pour ce métier</b> " + this.getSuffixeCandidats(nbCandidats);
                 } else if (this.secteurActivite !== undefined && this.secteurActivite !== '') {
-                    return "<b>" + this.getIntituleCandidats(this.nbCandidats) + " pour ce secteur d'activité</b> " + this.getSuffixeCandidats(this.nbCandidats);
-                } else if (this.departement !== undefined && this.departement !== '') {
-                    return "<b>" + this.getIntituleCandidats(this.nbCandidats) + " pour ce département</b> " + this.getSuffixeCandidats(this.nbCandidats);
-                } else {
-                    return "<b>" + this.getIntituleCandidats(this.nbCandidats) + " perspectives</b> " + this.getSuffixeCandidats(this.nbCandidats);
+                    return "<b>" + this.getIntituleCandidats(nbCandidats) + " pour ce secteur d'activité</b> " + this.getSuffixeCandidats(nbCandidats);
+                }
+                else if (this.localisation !== null && this.localisation.label !== '') {
+                    return "<b>" + this.getIntituleCandidats(nbCandidats) + " à " + this.localisation.label + "</b> " + this.getSuffixeCandidats(nbCandidats);
+                }
+                 else {
+                    return "<b>" + this.getIntituleCandidats(nbCandidats) + " perspectives</b> " + this.getSuffixeCandidats(nbCandidats);
                 }
             }
         },
@@ -177,16 +222,16 @@ var app = new Vue({
         getSuffixeCandidats: function(nbCandidats) {
             return (nbCandidats === 1 ? "est validé" : "sont validés") + " par la <abbr title='Méthode de Recrutement par Simulation' data-toggle='modal' data-target='#js-modaleVideo'>MRS</abbr>";
         },
-        initialiserTableau: function() {
-            app.$refs.pagination.modifierPagination(this.pagesInitiales);
-            app.chargerPage(0); // premiere page
+        localiser: function(localisation) {
+            this.localisation = localisation;
         },
         rechercherCandidats: function() {
             var formData = [
-                {name: 'csrfToken', value: this.csrfToken},
+                {name: "csrfToken", value: this.csrfToken},
                 {name: "secteurActivite", value: this.secteurActivite},
                 {name: "metier", value: this.metier},
-                {name: "codeDepartement", value: this.departement}
+                {name: "coordonnees.latitude", value: this.localisation !== null ? this.localisation.latitude: null},
+                {name: "coordonnees.longitude", value: this.localisation !== null ? this.localisation.longitude: null}
             ];
             return $.ajax({
                 type: "POST",
@@ -194,15 +239,14 @@ var app = new Vue({
                 data: formData,
                 dataType: 'json'
             }).done(function (response) {
-                app.nbCandidats = response.nbCandidats;
-                $("#js-resultatsRecherche").html(response.html);
+                app.$refs.resultatsRecherche.innerHTML = response.html;
                 app.initialiserTableau();
-                app.titreCompteurResultats();
+                app.$refs.pagination.modifierPagination(response.pages);
+                app.titreCompteurResultats = app.getTitreCompteurResultats(response.nbCandidatsTotal);
             });
         },
         onSecteurActiviteModifie: function() {
             this.metier = '';
-            this.rechercherCandidats();
         },
         modifierMetiersPourSecteur: function() {
             if (this.secteurActivite !== '') {
@@ -216,56 +260,68 @@ var app = new Vue({
             }
         },
         chargerPageSuivante: function(critere) {
-            this.chargerPage(critere);
-            app.$refs.pagination.pageSuivanteChargee(0, '');
+            var formData = [
+                {name: "csrfToken", value: this.csrfToken},
+                {name: "secteurActivite", value: this.secteurActivite},
+                {name: "metier", value: this.metier},
+                {name: "coordonnees.latitude", value: this.localisation !== null ? this.localisation.latitude: null},
+                {name: "coordonnees.longitude", value: this.localisation !== null ? this.localisation.longitude: null},
+                {name: "pagination.score", value: critere.score},
+                {name: "pagination.dateInscription", value: critere.dateInscription},
+                {name: "pagination.candidatId", value: critere.candidatId}
+            ];
+            return $.ajax({
+                type: "POST",
+                url: "/recruteur/recherche",
+                data: formData,
+                dataType: 'json'
+            }).done(function (response) {
+                app.$refs.resultatsRecherche.innerHTML = response.html;
+                app.initialiserTableau();
+                app.$refs.pagination.pageSuivanteChargee(response.nbCandidats, response.pageSuivante);
+            });
         },
         chargerPagePrecedente: function(critere, index) {
-            this.chargerPage(critere);
-            app.$refs.pagination.pagePrecedenteChargee(index);
+            var formData = [
+                {name: "csrfToken", value: this.csrfToken},
+                {name: "secteurActivite", value: this.secteurActivite},
+                {name: "metier", value: this.metier},
+                {name: "coordonnees.latitude", value: this.localisation !== null ? this.localisation.latitude: null},
+                {name: "coordonnees.longitude", value: this.localisation !== null ? this.localisation.longitude: null},
+                {name: "pagination.score", value: critere.score},
+                {name: "pagination.dateInscription", value: critere.dateInscription},
+                {name: "pagination.candidatId", value: critere.candidatId}
+            ];
+            return $.ajax({
+                type: "POST",
+                url: "/recruteur/recherche",
+                data: formData,
+                dataType: 'json'
+            }).done(function (response) {
+                app.$refs.resultatsRecherche.innerHTML = response.html;
+                app.initialiserTableau();
+                app.$refs.pagination.pagePrecedenteChargee(index);
+            });
         },
-        calculerPages: function() {
-            var nbPages = Math.ceil(this.nbCandidats / this.nbCandidatsParPage);
-            var result = [];
-            for (var i = 0; i < nbPages; i++) {
-                result.push(i * this.nbCandidatsParPage);
-            }
-            return result;
-        },
-        chargerPage: function(critere) {
-            var min = critere;
-            var max = critere + this.nbCandidatsParPage;
-
-            $(".listeResultatsRecherche-ligne").each(function(e) {
-                $(this).toggle(e >= min && e < max);
-            });
-            $(".listeResultatsRecherche-separation").each(function(e) {
-                $(this).toggle(e >= min && e < max);
-            });
-            $(".resultatsRecherche-titreConteneur").next(".listeResultatsRecherche").each(function() {
-                var nbLignes = $(this).find(".listeResultatsRecherche-ligne:visible").length;
-                $(this).prev(".resultatsRecherche-titreConteneur").toggle(nbLignes > 0);
-                $(this).find(".listeResultatsRecherche-ligneTitre").toggle(nbLignes > 0);
-            });
+        initialiserTableau: function() {
             $(".js-infoCandidat").hide();
             $(".js-profilCandidat").hide();
         },
-        intituleAlerte: function() {
-            var intitule = "";
-            if (this.metier !== "") {
+        intituleAlerte: function(metier, secteurActivite, localisation) {
+            var intitule = '';
+            if (metier !== null && metier !== '') {
                 intitule += this.metiers.find(function(m) {
-                    return m.codeROME === app.metier;
+                    return m.codeROME === metier;
                 }).label;
-            } else if (this.secteurActivite !== "") {
+            } else if (secteurActivite !== null && secteurActivite !== '') {
                 intitule += this.secteursActivites.find(function(s) {
-                    return s.code === app.secteurActivite;
+                    return s.code === secteurActivite;
                 }).label;
             } else {
                 intitule += "Candidats";
             }
-            if (this.departement !== "") {
-                intitule += " en " + this.departements.find(function(f) {
-                    return f.code === app.departement;
-                }).label;
+            if (localisation.label !== null && localisation.label !== '') {
+                intitule += " à " + localisation.label;
             }
             return intitule;
         },
@@ -274,16 +330,21 @@ var app = new Vue({
                 {name: "csrfToken", value: this.csrfToken},
                 {name: "secteurActivite", value: this.secteurActivite},
                 {name: "metier", value: this.metier},
-                {name: "codeDepartement", value: this.departement},
+                {name: "localisation.label", value: this.localisation !== null ? this.localisation.label: null},
+                {name: "localisation.latitude", value: this.localisation !== null ? this.localisation.latitude: null},
+                {name: "localisation.longitude", value: this.localisation !== null ? this.localisation.longitude: null},
                 {name: "frequence", value: frequence}
             ];
-            var intituleAlerte = this.intituleAlerte();
+            var intituleAlerte = this.intituleAlerte(this.metier, this.secteurActivite, this.localisation);
             var labelFrequence = app.$refs.alertesRecruteur.frequences.find(function(f) {
                 return f.value === frequence;
             }).label;
-            if (app.$refs.alertesRecruteur.alertes.findIndex(function(el) {
+
+            if (this.secteurActivite === '' && this.metier === '' && (this.localisation === null || this.localisation.latitude === null || this.localisation.longitude === null)) {
+                app.$refs.alertesRecruteur.onErreur('Choisissez au moins un critère pour créer une alerte');
+            } else if (app.$refs.alertesRecruteur.alertes.findIndex(function(el) {
                 return el.intitule === intituleAlerte && el.frequence === labelFrequence;
-            }) !== -1) {
+            }) !== -1) { // FIXME : ne pas chercher sur l'intitulé : pas solide
                 app.$refs.alertesRecruteur.onErreur('Une alerte existe déjà avec ces critères');
             } else {
                 $.ajax({
@@ -299,7 +360,7 @@ var app = new Vue({
                         criteres: {
                             codeSecteurActivite: app.secteurActivite,
                             codeROME: app.metier,
-                            codeDepartement: app.departement
+                            localisation: app.localisation
                         }
                     });
                 }).fail(function () {
@@ -322,7 +383,7 @@ var app = new Vue({
         selectionnerAlerte: function(criteres) {
             this.secteurActivite = criteres.codeSecteurActivite;
             this.metier = criteres.codeROME;
-            this.departement = criteres.codeDepartement;
+            this.localisation = criteres.localisation;
 
             this.rechercherCandidats();
         }

@@ -1,51 +1,37 @@
 package fr.poleemploi.perspectives.projections.recruteur.alerte
 
 import fr.poleemploi.cqrs.projection.{Query, QueryResult}
-import fr.poleemploi.perspectives.commun.domain.{Departement, Email, Metier, SecteurActivite}
+import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.recruteur.alerte.domain.{AlerteId, FrequenceAlerte}
 import fr.poleemploi.perspectives.recruteur.{RecruteurId, TypeRecruteur}
+import play.api.libs.json.{Json, Writes}
 
 case class AlertesRecruteurQuery(recruteurId: RecruteurId) extends Query[AlertesRecruteurQueryResult]
 
-case class AlertesRecruteurQueryResult(alertes: List[AlerteDto]) extends QueryResult
+case class AlertesRecruteurQueryResult(alertes: List[AlerteRecruteurDto]) extends QueryResult
 
-sealed trait AlerteRecruteurDto {
+case class AlerteRecruteurDto(recruteurId: RecruteurId,
+                              typeRecruteur: TypeRecruteur,
+                              email: Email,
+                              alerteId: AlerteId,
+                              frequence: FrequenceAlerte,
+                              secteurActivite: Option[SecteurActivite],
+                              metier: Option[Metier],
+                              localisation: Option[Localisation])
 
-  def recruteurId: RecruteurId
+object AlerteRecruteurDto {
 
-  def typeRecruteur: TypeRecruteur
-
-  def prenom: String
-
-  def email: Email
-
-  def alerteId: AlerteId
-
-  def frequence: FrequenceAlerte
+  implicit val writes: Writes[AlerteRecruteurDto] = Writes { a =>
+    Json.obj(
+      "id" -> a.alerteId.value,
+      "frequence" -> a.frequence.value,
+      "secteurActivite" -> a.secteurActivite.map(_.code.value),
+      "metier" -> a.metier.map(_.codeROME.value),
+      "localisation" -> Json.obj(
+        "label" -> a.localisation.map(_.label),
+        "latitude" -> a.localisation.map(_.coordonnees.latitude),
+        "longitude" -> a.localisation.map(_.coordonnees.longitude)
+      )
+    )
+  }
 }
-
-case class AlerteRecruteurSecteurDto(recruteurId: RecruteurId,
-                                     typeRecruteur: TypeRecruteur,
-                                     prenom: String,
-                                     email: Email,
-                                     alerteId: AlerteId,
-                                     frequence: FrequenceAlerte,
-                                     secteurActivite: SecteurActivite,
-                                     departement: Option[Departement]) extends AlerteRecruteurDto
-
-case class AlerteRecruteurMetierDto(recruteurId: RecruteurId,
-                                    typeRecruteur: TypeRecruteur,
-                                    prenom: String,
-                                    email: Email,
-                                    alerteId: AlerteId,
-                                    frequence: FrequenceAlerte,
-                                    metier: Metier,
-                                    departement: Option[Departement]) extends AlerteRecruteurDto
-
-case class AlerteRecruteurDepartementDto(recruteurId: RecruteurId,
-                                         typeRecruteur: TypeRecruteur,
-                                         prenom: String,
-                                         email: Email,
-                                         alerteId: AlerteId,
-                                         frequence: FrequenceAlerte,
-                                         departement: Departement) extends AlerteRecruteurDto

@@ -10,8 +10,7 @@ case class ProfilRecruteurLifted(recruteurId: Rep[RecruteurId],
                                  typeRecruteur: Rep[Option[TypeRecruteur]],
                                  raisonSociale: Rep[Option[String]],
                                  numeroSiret: Rep[Option[NumeroSiret]],
-                                 numeroTelephone: Rep[Option[NumeroTelephone]],
-                                 contactParCandidats: Rep[Option[Boolean]])
+                                 numeroTelephone: Rep[Option[NumeroTelephone]])
 
 case class RecruteurPourConseillerLifted(recruteurId: Rep[RecruteurId],
                                          nom: Rep[String],
@@ -22,6 +21,5 @@ case class RecruteurPourConseillerLifted(recruteurId: Rep[RecruteurId],
                                          raisonSociale: Rep[Option[String]],
                                          numeroSiret: Rep[Option[NumeroSiret]],
                                          numeroTelephone: Rep[Option[NumeroTelephone]],
-                                         contactParCandidats: Rep[Option[Boolean]],
                                          dateInscription: Rep[ZonedDateTime],
                                          dateDerniereConnexion: Rep[ZonedDateTime])

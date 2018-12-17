@@ -6,9 +6,11 @@ import authentification.infra.play.{ConseillerAdminAuthentifieAction, Conseiller
 import conf.WebAppConfig
 import controllers.AssetsFinder
 import fr.poleemploi.perspectives.candidat.{CandidatCommandHandler, CandidatId, DeclarerRepriseEmploiParConseillerCommand}
-import fr.poleemploi.perspectives.projections.candidat.{CandidatQueryHandler, CandidatsPourConseillerQuery}
-import fr.poleemploi.perspectives.projections.recruteur.{RecruteurQueryHandler, RecruteursPourConseillerQuery}
+import fr.poleemploi.perspectives.projections.candidat.{CandidatQueryHandler, CandidatsPourConseillerQuery, KeysetCandidatsPourConseiller}
+import fr.poleemploi.perspectives.projections.recruteur.{KeysetRecruteursPourConseiller, RecruteurQueryHandler, RecruteursPourConseillerQuery}
+import fr.poleemploi.perspectives.recruteur.RecruteurId
 import javax.inject.Inject
+import play.api.libs.json.Json
 import play.api.mvc._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -22,32 +24,36 @@ class ConseillerController @Inject()(cc: ControllerComponents,
                                      candidatCommandHandler: CandidatCommandHandler,
                                      recruteurQueryHandler: RecruteurQueryHandler) extends AbstractController(cc) {
 
-  val nbCandidatsParPage = 20
-  val nbRecruteursParPage = 20
-
   def listeCandidats: Action[AnyContent] = conseillerAdminAuthentifieAction.async { implicit conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
-    val avantDateInscription = ZonedDateTime.now()
-    candidatQueryHandler.handle(
-      CandidatsPourConseillerQuery(
-        nbCandidatsParPage = nbCandidatsParPage,
-        nbPagesACharger = 4,
-        avantDateInscription = avantDateInscription
-      )
-    ).map(result =>
+    val query = CandidatsPourConseillerQuery(
+      nbPagesACharger = 4,
+      page = None
+    )
+    candidatQueryHandler.handle(query).map(result =>
       Ok(views.html.conseiller.listeCandidats(
-        resultat = result,
-        nbCandidatsParPage = nbCandidatsParPage))
+        candidats = result.candidats,
+        jsData = Json.obj(
+          "nbCandidatsParPage" -> query.nbCandidatsParPage,
+          "pagesInitiales" -> result.pages
+        )
+      ))
     )
   }
 
-  def paginationCandidats(avantDateInscription: String): Action[AnyContent] = conseillerAdminAuthentifieAction.async { implicit conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
+  def paginationCandidats(dateInscription: Long, candidatId: String): Action[AnyContent] = conseillerAdminAuthentifieAction.async { implicit conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
     candidatQueryHandler.handle(
       CandidatsPourConseillerQuery(
-        nbCandidatsParPage = nbCandidatsParPage,
         nbPagesACharger = 1,
-        avantDateInscription = ZonedDateTime.parse(avantDateInscription)
+        page =  Some(KeysetCandidatsPourConseiller(
+          dateInscription = dateInscription,
+          candidatId = CandidatId(candidatId)
+        ))
       )
-    ).map(result => Ok(views.html.conseiller.partials.candidats(result)))
+    ).map(result => Ok(Json.obj(
+      "html" -> views.html.conseiller.partials.candidats(result.candidats).body.replaceAll("\n", ""),
+      "nbCandidats" -> result.candidats.size,
+      "pageSuivante" -> result.pageSuivante
+    )))
   }
 
   def declarerRepriseEmploi(candidatId: String): Action[AnyContent] = conseillerAdminAuthentifieAction.async { implicit conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
@@ -60,29 +66,35 @@ class ConseillerController @Inject()(cc: ControllerComponents,
   }
 
   def listeRecruteurs: Action[AnyContent] = conseillerAdminAuthentifieAction.async { implicit conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
-    val avantDateInscription = ZonedDateTime.now()
-    recruteurQueryHandler.handle(
-      RecruteursPourConseillerQuery(
-        nbRecruteursParPage = nbRecruteursParPage,
-        nbPagesACharger = 4,
-        avantDateInscription = avantDateInscription
-      )
-    ).map(result =>
+    val query = RecruteursPourConseillerQuery(
+      nbPagesACharger = 4,
+      page = None
+    )
+    recruteurQueryHandler.handle(query).map(result =>
       Ok(views.html.conseiller.listeRecruteurs(
         recruteurs = result.recruteurs,
-        pagesInitiales = result.pages,
-        nbRecruteursParPage = nbRecruteursParPage))
+        jsData = Json.obj(
+          "nbRecruteursParPage" -> query.nbRecruteursParPage,
+          "pagesInitiales" -> result.pages
+        )
+      ))
     )
   }
 
-  def paginationRecruteurs(avantDateInscription: String): Action[AnyContent] = conseillerAdminAuthentifieAction.async { implicit conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
+  def paginationRecruteurs(dateInscription: String, recruteurId: String): Action[AnyContent] = conseillerAdminAuthentifieAction.async { implicit conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
     recruteurQueryHandler.handle(
       RecruteursPourConseillerQuery(
-        nbRecruteursParPage = nbRecruteursParPage,
         nbPagesACharger = 1,
-        avantDateInscription = ZonedDateTime.parse(avantDateInscription)
+        page =  Some(KeysetRecruteursPourConseiller(
+          dateInscription = ZonedDateTime.parse(dateInscription),
+          recruteurId = RecruteurId(recruteurId)
+        ))
       )
-    ).map(result => Ok(views.html.conseiller.partials.recruteurs(result.recruteurs)))
+    ).map(result => Ok(Json.obj(
+      "html" -> views.html.conseiller.partials.recruteurs(result.recruteurs).body.replaceAll("\n", ""),
+      "nbRecruteurs" -> result.recruteurs.size,
+      "pageSuivante" -> result.pageSuivante
+    )))
   }
 
 }

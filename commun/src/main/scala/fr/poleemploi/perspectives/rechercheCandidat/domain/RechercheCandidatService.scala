@@ -10,14 +10,6 @@ class RechercheCandidatService {
   def metierProposeParCode(codeROME: CodeROME): Option[Metier] =
     RechercheCandidatService.metiers.get(codeROME)
 
-  def departementsProposes: List[Departement] =
-    RechercheCandidatService.departements
-
-  def departementParCode(code: CodeDepartement): Departement =
-    departementsProposes
-      .find(_.code == code)
-      .getOrElse(throw new IllegalArgumentException(s"Aucun département avec le code $code"))
-
   def secteurActiviteParCode(codeSecteurActivite: CodeSecteurActivite): SecteurActivite =
     secteursProposes
       .find(_.code == codeSecteurActivite)
@@ -212,12 +204,4 @@ object RechercheCandidatService {
       .foldLeft(Map[CodeROME, Metier]())(
         (map, metier) => map + (metier.codeROME -> metier)
       )
-
-  private val departements: List[Departement] =
-    List(
-      Departement(
-        code = CodeDepartement("85"),
-        label = "Vendée"
-      )
-    )
 }

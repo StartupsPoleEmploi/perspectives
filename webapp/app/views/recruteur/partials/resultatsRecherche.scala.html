@@ -1,59 +1,90 @@
-@import fr.poleemploi.perspectives.commun.domain.RayonRecherche
-@import fr.poleemploi.perspectives.projections.candidat.{CandidatRechercheDto, RechercheCandidatParDepartementQueryResult, RechercheCandidatParMetierQueryResult, RechercheCandidatParSecteurQueryResult, RechercheCandidatQueryResult}
+@import fr.poleemploi.perspectives.commun.domain.{CodeSecteurActivite, Metier, RayonRecherche, SecteurActivite}
+@import fr.poleemploi.perspectives.projections.candidat.{CandidatRechercheDto, RechercheCandidatParLocalisationQueryResult, RechercheCandidatParMetierQueryResult, RechercheCandidatParSecteurQueryResult, RechercheCandidatQueryResult}
 
 @(rechercheCandidatQueryResult: RechercheCandidatQueryResult,
-        secteurActiviteChoisi: Option[String] = None,
-        metierChoisi: Option[String] = None)(implicit assetsFinder: AssetsFinder)
+        metierChoisi: Option[Metier] = None,
+        secteurActiviteChoisi: Option[SecteurActivite] = None,
+        secteursActivites: List[SecteurActivite])(implicit assetsFinder: AssetsFinder)
 
-@getTitreForCandidats(rechercheCandidatDtos: List[CandidatRechercheDto], titreSingulier: String) = @{
-    rechercheCandidatDtos match {
+@getTitreForCandidats(candidatRechercheDtos: List[CandidatRechercheDto], titreSingulier: String) = @{
+    candidatRechercheDtos match {
         case Nil => None
         case x::Nil => Some(titreSingulier)
         case x::xs => Some(s"${titreSingulier.replaceAll("Candidat", "Candidats").replaceAll("validé", "validés").replaceAll("intéréssé", "intéréssés")}")
     }
 }
 
+@interessePar(candidatRechercheDto: CandidatRechercheDto) = @{
+    metierChoisi.map(metier =>
+        if (!candidatRechercheDto.metiersEvalues.contains(metier) && candidatRechercheDto.metiersRecherches.contains(metier))
+            metier.label
+        else ""
+    ).orElse(secteurActiviteChoisi.map(secteurActivite =>
+        if (candidatRechercheDto.metiersRecherches.intersect(secteurActivite.metiers).nonEmpty)
+            secteurActivite.label
+        else ""
+    )).getOrElse(candidatRechercheDto.metiersRecherches
+            .map(m => CodeSecteurActivite.fromCodeROME(m.codeROME))
+            .distinct
+            .flatMap(c => secteursActivites.find(_.code == c).map(_.label))
+            .mkString(", ")
+    )
+}
+
+@interesseParDetail(candidatRechercheDto: CandidatRechercheDto) = @{
+    metierChoisi.map(metier =>
+        secteursActivites.find(_.code == CodeSecteurActivite.fromCodeROME(metier.codeROME))
+                  .map(s =>
+                        if (candidatRechercheDto.metiersRecherches.intersect(s.metiers).nonEmpty)
+                            Map(s -> candidatRechercheDto.metiersRecherches.intersect(s.metiers))
+                        else
+                            Map()
+                    )
+                  .getOrElse(Map())
+    ).orElse(secteurActiviteChoisi.map(secteurActivite =>
+            if (candidatRechercheDto.metiersRecherches.intersect(secteurActivite.metiers).nonEmpty)
+                Map(secteurActivite -> candidatRechercheDto.metiersRecherches.intersect(secteurActivite.metiers))
+            else
+                Map()
+    )).getOrElse(candidatRechercheDto.metiersRecherches
+            .groupBy(m => CodeSecteurActivite.fromCodeROME(m.codeROME))
+            .map(v => (secteursActivites.find(_.code == v._1).get, v._2)))
+}
+
 @rechercheCandidatQueryResult match {
-    case RechercheCandidatParDepartementQueryResult(candidats) => {
+    case r@RechercheCandidatParLocalisationQueryResult(candidats, _, _, _, _) => {
         @affichageResultats(candidatRechercheDtos = candidats)
     }
-    case RechercheCandidatParSecteurQueryResult(candidatsEvaluesSurSecteur, candidatsInteressesParAutreSecteur) => {
+    case RechercheCandidatParSecteurQueryResult(candidatsEvaluesSurSecteur, candidatsInteressesParAutreSecteur, _, _, _, _) => {
         @affichageResultats(
              titre = getTitreForCandidats(
-                 rechercheCandidatDtos = candidatsEvaluesSurSecteur,
-                 titreSingulier = s"""Candidat validé dans le secteur "${secteurActiviteChoisi.getOrElse("")}""""
+                 candidatRechercheDtos = candidatsEvaluesSurSecteur,
+                 titreSingulier = s"""<b>Candidat validé</b> dans le secteur "${secteurActiviteChoisi.map(_.label).getOrElse("")}""""
              ),
             candidatRechercheDtos = candidatsEvaluesSurSecteur
         )
         @affichageResultats(
             titre = getTitreForCandidats(
-                rechercheCandidatDtos = candidatsInteressesParAutreSecteur,
-                titreSingulier = s"""Candidat intéréssé par le secteur "${secteurActiviteChoisi.getOrElse("")}" et validé dans un autre secteur"""
+                candidatRechercheDtos = candidatsInteressesParAutreSecteur,
+                titreSingulier = s"""<b>Candidat intéréssé</b> par le secteur "${secteurActiviteChoisi.map(_.label).getOrElse("")}""""
             ),
             candidatRechercheDtos = candidatsInteressesParAutreSecteur
         )
     }
-    case RechercheCandidatParMetierQueryResult(candidatsEvaluesSurMetier, candidatsInteressesParMetierMemeSecteur, candidatsInteressesParMetierAutreSecteur) => {
+    case RechercheCandidatParMetierQueryResult(candidatsEvaluesSurMetier, candidatsInteressesParMetier, _, _, _, _) => {
         @affichageResultats(
             titre = getTitreForCandidats(
-                rechercheCandidatDtos = candidatsEvaluesSurMetier,
-                titreSingulier = s"""Candidat validé sur le métier "${metierChoisi.getOrElse("")}""""
+                candidatRechercheDtos = candidatsEvaluesSurMetier,
+                titreSingulier = s"""<b>Candidat validé</b> sur le métier "${metierChoisi.map(_.label).getOrElse("")}""""
             ),
             candidatRechercheDtos = candidatsEvaluesSurMetier
         )
         @affichageResultats(
             titre = getTitreForCandidats(
-                rechercheCandidatDtos = candidatsInteressesParMetierMemeSecteur,
-                titreSingulier = s"""Candidat intéréssé par le métier "${metierChoisi.getOrElse("")}" et validé sur un métier du même secteur"""
+                candidatRechercheDtos = candidatsInteressesParMetier,
+                titreSingulier = s"""<b>Candidat intéréssé</b> par le métier "${metierChoisi.map(_.label).getOrElse("")}""""
             ),
-            candidatRechercheDtos = candidatsInteressesParMetierMemeSecteur
-        )
-        @affichageResultats(
-            titre = getTitreForCandidats(
-                rechercheCandidatDtos = candidatsInteressesParMetierAutreSecteur,
-                titreSingulier = s"""Candidat intéréssé par le métier "${metierChoisi.getOrElse("")}" et validé dans un autre secteur"""
-            ),
-            candidatRechercheDtos = candidatsInteressesParMetierAutreSecteur
+            candidatRechercheDtos = candidatsInteressesParMetier
         )
     }
 }
@@ -62,35 +93,30 @@
     @if(candidatRechercheDtos.nonEmpty) {
         @if(titre.isDefined) {
             <div class="resultatsRecherche-titreConteneur">
-                <div class="resultatsRecherche-titre">@titre</div>
+                <div class="resultatsRecherche-titre">@Html(titre.getOrElse(""))</div>
             </div>
         }
     <div class="listeResultatsRecherche">
         <div class="listeResultatsRecherche-conteneur">
             <div class="listeResultatsRecherche-ligneTitre">
-                <div class="listeResultatsRecherche-candidat">Nom du candidat</div>
-                <div class="listeResultatsRecherche-mrs">Métier validé</div>
-                <div class="listeResultatsRecherche-localisation">Localité</div>
+                <div class="listeResultatsRecherche-colonne listeResultatsRecherche-candidat">Nom du candidat</div>
+                <div class="listeResultatsRecherche-colonne listeResultatsRecherche-mrs">Métier validé</div>
+                <div class="listeResultatsRecherche-colonne listeResultatsRecherche-interessePar">Intéressé par</div>
             </div>
         </div>
-        @for(rechercheCandidatDto <- candidatRechercheDtos) {
+        @for(candidatRechercheDto <- candidatRechercheDtos) {
             <div class="listeResultatsRecherche-conteneur">
-                <div id="js-ligne-@rechercheCandidatDto.candidatId.value" class="listeResultatsRecherche-ligne">
-                    <div class="listeResultatsRecherche-candidat info--gras">
-                        @rechercheCandidatDto.prenom.capitalize @rechercheCandidatDto.nom.capitalize
+                <div id="js-ligne-@candidatRechercheDto.candidatId.value" class="listeResultatsRecherche-ligne">
+                    <div class="listeResultatsRecherche-colonne listeResultatsRecherche-candidat info--gras">
+                        @candidatRechercheDto.prenom.capitalize @candidatRechercheDto.nom.capitalize
                     </div>
-                    <div class="listeResultatsRecherche-mrs">
-                        @rechercheCandidatDto.metiersEvalues.map(_.label).mkString(", ")
+                    <div class="listeResultatsRecherche-colonne listeResultatsRecherche-mrs">
+                        @candidatRechercheDto.metiersEvalues.map(_.label).mkString(", ")
                     </div>
-                    <div class="listeResultatsRecherche-localisation">
-                    @if(rechercheCandidatDto.commune.isDefined) {
-                        @(rechercheCandidatDto.rayonRecherche.map {
-                            case RayonRecherche.MAX_100 => s"+50km autour de ${rechercheCandidatDto.commune.map(_.capitalize).getOrElse("")}"
-                            case r@_ => s"${r.value}km autour de ${rechercheCandidatDto.commune.map(_.capitalize).getOrElse("")}"
-                        })
-                    }
+                    <div class="listeResultatsRecherche-colonne listeResultatsRecherche-interessePar">
+                        @interessePar(candidatRechercheDto)
                     </div>
-                    <div class="listeResultatsRecherche-voirProfil">
+                    <div class="listeResultatsRecherche-colonne listeResultatsRecherche-voirProfil">
                         <img src="@assetsFinder.path("images/pages/recruteur/rechercheCandidat/ouvrir-profil-candidat.svg")"
                              alt="Détails du profil candidat" height="16" width="16"
                              class="voirProfil--ferme"/>
@@ -102,44 +128,51 @@
                 </div>
             </div>
             <div class="listeResultatsRecherche-conteneur">
-                <div id="js-profilCandidat-@rechercheCandidatDto.candidatId.value" class="profilCandidat js-profilCandidat">
-                    <div class="profilCandidat-habiletes">
+                <div id="js-profilCandidat-@candidatRechercheDto.candidatId.value" class="profilCandidat js-profilCandidat">
+                    <div class="profilCandidat-colonne profilCandidat-habiletes">
                         <div>Habiletés validées</div>
                         <ul class="detailsProfils">
-                        @for(habilete <- rechercheCandidatDto.habiletes) {
+                        @for(habilete <- candidatRechercheDto.habiletes) {
                             <li class="detailsProfils-item">@habilete.value</li>
                         }
                         </ul>
                     </div>
-                    <div class="profilCandidat-interessePar">
-                        @if(rechercheCandidatDto.metiersRecherchesParSecteur.nonEmpty) {
-                            <div>Intéréssé par</div>
-                            <ul class="detailsProfils">
-                            @for(metiersParSecteur <- rechercheCandidatDto.metiersRecherchesParSecteur) {
-                                <li class="detailsProfils-item">@metiersParSecteur._1.label
-                                    : @metiersParSecteur._2.map(_.label).mkString(", ")</li>
+                    <div class="profilCandidat-colonne profilCandidat-interessePar">
+                        @defining(interesseParDetail(candidatRechercheDto)) { detail =>
+                            @if(detail.nonEmpty) {
+                                <div>Intéréssé par</div>
+                                <ul class="detailsProfils">
+                                @for(metiersParSecteur <- detail) {
+                                    <li class="detailsProfils-item">@metiersParSecteur._1.label
+                                        : @metiersParSecteur._2.map(_.label).mkString(", ")</li>
+                                }
+                                </ul>
                             }
-                            </ul>
                         }
                     </div>
-                    <div class="profilCandidat-actions">
+                    <div class="profilCandidat-colonne profilCandidat-mobilite">
+                        <div>Mobilité</div>
+                        @(candidatRechercheDto.rayonRecherche match {
+                            case RayonRecherche.MAX_100 => "+50km"
+                            case r@_ => s"${r.value}km"
+                        }) autour de @candidatRechercheDto.commune.capitalize
+                    </div>
+                    <div class="profilCandidat-colonne profilCandidat-actions">
                         <ul class="listeActions">
-                            @if(rechercheCandidatDto.possedeCV) {
+                            @if(candidatRechercheDto.possedeCV) {
                                 <li class="listeActions-item">
-                                    <a class="bouton bouton-actionCandidat bouton-actionCandidat--large bouton--noirSurBlanc" target="_blank" href="/recruteur/cv/telecharger/@rechercheCandidatDto.candidatId.value/@rechercheCandidatDto.nomCV">
+                                    <a class="bouton bouton-actionCandidat bouton-actionCandidat--large bouton--noirSurBlanc" target="_blank" href="/recruteur/cv/telecharger/@candidatRechercheDto.candidatId.value/@candidatRechercheDto.nomCV">
                                         CV
                                     </a>
                                 </li>
                             }
-                            @if(rechercheCandidatDto.numeroTelephone.isDefined) {
-                                <li class="listeActions-item">
-                                    <span class="bouton bouton-actionCandidat bouton--bleu bouton-actionCandidat--large js-boutonCandidat">
-                                        Téléphone</span>
-                                    <span class="bouton bouton-infoCandidat bouton--noirSurBlanc js-infoCandidat">@rechercheCandidatDto.numeroTelephone.map(_.value)</span>
-                                    <input class="copiePressePapier js-copiePressePapier" type="text" value="@rechercheCandidatDto.numeroTelephone.map(_.value)" />
-                                    <div class="infoBulle js-infoBulle">Copié !</div>
-                                </li>
-                            }
+                            <li class="listeActions-item">
+                                <span class="bouton bouton-actionCandidat bouton--bleu bouton-actionCandidat--large js-boutonCandidat">
+                                    Téléphone</span>
+                                <span class="bouton bouton-infoCandidat bouton--noirSurBlanc js-infoCandidat">@candidatRechercheDto.numeroTelephone.value</span>
+                                <input class="copiePressePapier js-copiePressePapier" type="text" value="@candidatRechercheDto.numeroTelephone.value" />
+                                <div class="infoBulle js-infoBulle">Copié !</div>
+                            </li>
                         </ul>
                     </div>
                 </div>

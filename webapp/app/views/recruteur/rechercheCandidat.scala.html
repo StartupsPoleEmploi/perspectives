@@ -1,6 +1,7 @@
 @import conf.WebAppConfig
 @import controllers.recruteur.RechercheCandidatForm
 @import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
+@import fr.poleemploi.perspectives.commun.domain.{Metier, SecteurActivite}
 @import fr.poleemploi.perspectives.projections.candidat.RechercheCandidatQueryResult
 @import helper._
 @import play.api.libs.json.JsObject
@@ -8,8 +9,9 @@
 @(rechercheCandidatForm: Form[RechercheCandidatForm],
         recruteurAuthentifie: RecruteurAuthentifie,
         rechercheCandidatQueryResult: RechercheCandidatQueryResult,
-        metierChoisi: Option[String] = None,
-        secteurActiviteChoisi: Option[String] = None,
+        metierChoisi: Option[Metier] = None,
+        secteurActiviteChoisi: Option[SecteurActivite] = None,
+        secteursActivites: List[SecteurActivite],
         jsData: JsObject)(implicit request: MessagesRequestHeader, flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
 @layout(recruteurAuthentifie = Some(recruteurAuthentifie)) {
@@ -42,17 +44,18 @@
                     <div class="criteres-item conteneurSelecteur">
                         <label for="js-metiers-selecteur" class="conteneurSelecteur-label">Chosissez un métier</label>
                         <select id="js-metiers-selecteur" name="metier" class="conteneurSelecteur-selecteur"
-                                v-model="metier" v-on:change="rechercherCandidats()">
+                                v-model="metier">
                             <option value="">{{labelTousLesMetiers}}</option>
                             <option v-for="metier in metiers" v-bind:value="metier.codeROME">{{metier.label}}</option>
                         </select>
                     </div>
-                    <div class="criteres-item conteneurSelecteur">
-                        <label for="js-departements-selecteur" class="conteneurSelecteur-label">Choisissez un département</label>
-                        <select id="js-departements-selecteur" class="conteneurSelecteur-selecteur" name="codeDepartement"
-                                v-model="departement" v-on:change="rechercherCandidats()">
-                            <option v-for="departement in departements" v-bind:value="departement.code">{{departement.label}}</option>
-                        </select>
+                    <div class="criteres-item">
+                        <label for="js-localisation" class="localisationLabel">Choisissez un lieu de travail</label>
+                        <input id="js-localisation" type="search" v-model="localisation.label" placeholder="Lieu de travail"
+                               class="critereLocalisation"/>
+                    </div>
+                    <div class="rechercherCandidats">
+                        <button type="button" class="rechercherCandidats-bouton" v-on:click="rechercherCandidats"></button>
                     </div>
                 </div>
             }
@@ -66,13 +69,14 @@
             </alerte-recruteur>
         </section>
         <section class="compteurResultats">
-            <h2 class="compteurResultats-titre" v-html="titreCompteurResultats()"></h2>
+            <h2 class="compteurResultats-titre" v-html="titreCompteurResultats"></h2>
         </section>
-        <section id="js-resultatsRecherche" class="resultatsRecherche">
+        <section ref="resultatsRecherche" class="resultatsRecherche">
             @partials.resultatsRecherche(
                 rechercheCandidatQueryResult = rechercheCandidatQueryResult,
                 secteurActiviteChoisi = secteurActiviteChoisi,
-                metierChoisi = metierChoisi
+                metierChoisi = metierChoisi,
+                secteursActivites = secteursActivites
             )
         </section>
         <pagination ref="pagination"
@@ -99,7 +103,7 @@
                     @CSRF.formField
                     <input type="hidden" name="secteurActiviteRecherche" id="js-commentaireSecteurActivite" value=""/>
                     <input type="hidden" name="metierRecherche" id="js-commentaireMetier" value=""/>
-                    <input type="hidden" name="departementRecherche" id="js-commentaireDepartement" value=""/>
+                    <input type="hidden" name="localisationRecherche" id="js-commentaireLocalisation" value=""/>
                     <label id="js-labelCommentaireRecruteur" for="commentaireRecruteur" class="commentaireRecruteur-label"></label>
                     <textarea id="commentaireRecruteur" name="commentaire" class="zoneTexte" rows="6" cols="50" required maxlength="300"></textarea>
                     <div class="envoyerCommentaire">
@@ -111,6 +115,7 @@
     </div>
 
     @components.jsData(jsData)
+    <script src="@assetsFinder.path("javascripts/vendor/algolia/places.js")" type="text/javascript"></script>
     <script src="@assetsFinder.path("javascripts/modules/pagination.js")" type="text/javascript"></script>
     <script src="@assetsFinder.path("javascripts/composants/alerteRecruteur.js")" type="text/javascript"></script>
     <script src="@assetsFinder.path("javascripts/pages/recruteur/rechercheCandidat.js")" type="text/javascript"></script>

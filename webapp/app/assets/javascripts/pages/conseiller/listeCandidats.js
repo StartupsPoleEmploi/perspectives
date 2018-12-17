@@ -15,24 +15,37 @@ $(document).ready(function () {
     });
 });
 
-// FIXME : pas de jquery pour accéder à des éléments externes au composant
 var app = new Vue({
     el: '#listeCandidats',
+    data: function() {
+      return {
+          pagesInitiales: jsData.pagesInitiales,
+          nbCandidatsParPage: jsData.nbCandidatsParPage
+      }
+    },
     methods: {
         chargerPageSuivante: function(critere) {
-            this.$http.get('/conseiller/candidats/' + encodeURIComponent(critere)).then(function(response) {
-                app.$refs.candidats.innerHTML = response.body;
-                app.$refs.pagination.pageSuivanteChargee(Number($("#js-nbResultats").val()), $("#js-dernierResultat").val());
-            }, function(response) {
-                // erreur
+            $.ajax({
+                type: 'GET',
+                url: '/conseiller/paginationCandidats' +
+                '?dateInscription=' + encodeURIComponent(critere.dateInscription) +
+                '&candidatId=' + encodeURIComponent(critere.candidatId),
+                dataType: 'json'
+            }).done(function (response) {
+                app.$refs.candidats.innerHTML = response.html;
+                app.$refs.pagination.pageSuivanteChargee(response.nbCandidats, response.pageSuivante);
             });
         },
         chargerPagePrecedente: function(critere, index) {
-            this.$http.get('/conseiller/candidats/' + encodeURIComponent(critere)).then(function(response) {
-                app.$refs.candidats.innerHTML = response.body;
+            $.ajax({
+                type: 'GET',
+                url: '/conseiller/paginationCandidats' +
+                '?dateInscription=' + encodeURIComponent(critere.dateInscription) +
+                '&candidatId=' + encodeURIComponent(critere.candidatId),
+                dataType: 'json'
+            }).done(function (response) {
+                app.$refs.candidats.innerHTML = response.html;
                 app.$refs.pagination.pagePrecedenteChargee(index);
-            }, function(response) {
-                // erreur
             });
         }
     }

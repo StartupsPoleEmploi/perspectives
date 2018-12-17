@@ -35,6 +35,29 @@
     }
   }
 
+  .localisationLabel {
+    @include sr-only();
+  }
+
+  .critereLocalisation {
+    height: 47px;
+  }
+
+  .rechercherCandidats {
+    background-color: $perspectives-bleu-nuit;
+    border-radius: 4px;
+    height: 45px;
+    width: 90px;
+
+    &-bouton {
+      height: 45px;
+      width: 100%;
+      cursor: pointer;
+      border: none;
+      background: url('/assets/images/pages/recruteur/rechercheCandidat/rechercher.svg') no-repeat center;
+    }
+  }
+
   .resultatsRecherche {
     margin-top: 1em;
     background-color: rgba(234, 235, 237, 0.5);
@@ -46,10 +69,8 @@
 
     &-titre {
       position: relative;
-      text-transform: uppercase;
       padding-top: 2.5em;
-      font-size: 1em;
-      font-weight: 700;
+      font-size: 1.375em;
       color: $perspectives-bleu-nuit;
     }
   }
@@ -79,28 +100,27 @@
       color: $perspectives-bleu-nuit;
     }
 
-    &-candidat {
+    &-colonne {
       @include make-col-ready();
+      padding-top: 27px;
+      padding-bottom: 27px;
+    }
+
+    &-candidat {
       @include make-col(2);
-      padding: 15px;
+      font-weight: 700;
     }
 
     &-mrs {
-      @include make-col-ready();
       @include make-col(4);
-      padding: 15px;
     }
 
-    &-localisation {
-      @include make-col-ready();
-      @include make-col(3);
-      padding: 15px;
+    &-interessePar {
+      @include make-col(4);
     }
 
     &-voirProfil {
-      @include make-col-ready();
-      @include make-col(3);
-      padding: 15px;
+      @include make-col(2);
       text-align: center;
     }
   }
@@ -116,27 +136,24 @@
     color: white;
     background-color: $perspectives-bleu-nuit;
 
-    &-habiletes {
+    &-colonne {
       @include make-col-ready();
-      @include make-col(5);
-      padding: 15px;
+      padding-top: 15px;
+      padding-bottom: 15px;
+    }
+
+    &-habiletes {
+      @include make-col(4);
     }
     &-interessePar {
-      @include make-col-ready();
       @include make-col(4);
-      padding: 15px;
+    }
+    &-mobilite {
+      @include make-col(2);
     }
     &-actions {
-      @include make-col-ready();
-      @include make-col(3);
+      @include make-col(2);
       text-align: center;
-      padding: 15px;
-    }
-  }
-
-  .info {
-    &--gras {
-      font-weight: 700;
     }
   }
 

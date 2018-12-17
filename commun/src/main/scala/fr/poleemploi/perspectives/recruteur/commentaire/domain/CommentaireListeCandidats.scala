@@ -10,5 +10,5 @@ case class CommentaireListeCandidats(nomRecruteur: String,
 
   def labelMetierRecherche: Option[String] = contexteRecherche.metier.map(_.label)
 
-  def labelDepartementRecherche: Option[String] = contexteRecherche.departement.map(_.label)
+  def labelLocalisationRecherche: Option[String] = contexteRecherche.localisation
 }

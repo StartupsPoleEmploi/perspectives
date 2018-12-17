@@ -1,15 +1,12 @@
 package conf
 
-import com.google.inject.{AbstractModule, Inject, Provides, Singleton}
+import com.google.inject._
 import fr.poleemploi.eventsourcing.eventstore.EventStoreListener
-import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
 import fr.poleemploi.perspectives.projections.candidat.CandidatProjection
-import fr.poleemploi.perspectives.projections.candidat.infra.sql.CandidatProjectionSqlAdapter
+import fr.poleemploi.perspectives.projections.candidat.infra.elasticsearch.CandidatProjectionElasticsearchAdapter
 import fr.poleemploi.perspectives.projections.recruteur.alerte.AlerteRecruteurProjection
 import fr.poleemploi.perspectives.projections.recruteur.alerte.infra.sql.AlerteRecruteurSqlAdapter
-import fr.poleemploi.perspectives.rechercheCandidat.domain.RechercheCandidatService
 import net.codingwell.scalaguice.ScalaModule
-import slick.jdbc.JdbcBackend.Database
 
 class RegisterProjections @Inject()(eventStoreListener: EventStoreListener,
                                     candidatProjection: CandidatProjection,
@@ -25,31 +22,8 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
-  def candidatProjectionSqlAdapter(database: Database,
-                                   referentielMetier: ReferentielMetier,
-                                   rechercheCandidatService: RechercheCandidatService,
-                                   batchsConfig: BatchsConfig): CandidatProjectionSqlAdapter =
-    new CandidatProjectionSqlAdapter(
-      database = database,
-      referentielMetier = referentielMetier,
-      rechercheCandidatService = rechercheCandidatService,
-      candidatsTesteurs = Nil
-    )
-
-  @Provides
-  @Singleton
-  def candidatProjection(candidatProjectionSqlAdapter: CandidatProjectionSqlAdapter): CandidatProjection =
-    new CandidatProjection(
-      adapter = candidatProjectionSqlAdapter
-    )
-
-  @Provides
-  def alerteRecruteurSqlAdapter(database: Database,
-                                rechercheCandidatService: RechercheCandidatService): AlerteRecruteurSqlAdapter =
-    new AlerteRecruteurSqlAdapter(
-      database = database,
-      rechercheCandidatService = rechercheCandidatService
-    )
+  def candidatProjection(candidatProjectionElasticsearchAdapter: CandidatProjectionElasticsearchAdapter): CandidatProjection =
+    candidatProjectionElasticsearchAdapter
 
   @Provides
   @Singleton

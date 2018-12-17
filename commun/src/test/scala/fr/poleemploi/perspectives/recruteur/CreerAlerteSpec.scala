@@ -1,6 +1,6 @@
 package fr.poleemploi.perspectives.recruteur
 
-import fr.poleemploi.perspectives.commun.domain.{CodeDepartement, CodeROME, CodeSecteurActivite}
+import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite, Localisation}
 import fr.poleemploi.perspectives.recruteur.alerte.domain.FrequenceAlerte
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{MustMatchers, WordSpec}
@@ -13,9 +13,9 @@ class CreerAlerteSpec extends WordSpec with MustMatchers with MockitoSugar {
     CreerAlerteCommand(
       id = recruteurBuilder.recruteurId,
       alerteId = recruteurBuilder.genererAlerteId,
-      codeSecteurActivite = None,
+      codeSecteurActivite = Some(CodeSecteurActivite("H")),
       codeROME = None,
-      codeDepartement = Some(CodeDepartement("85")),
+      localisation = None,
       frequenceAlerte = FrequenceAlerte.QUOTIDIENNE
     )
 
@@ -56,7 +56,7 @@ class CreerAlerteSpec extends WordSpec with MustMatchers with MockitoSugar {
         recruteur.creerAlerte(commande.copy(
           codeSecteurActivite = None,
           codeROME = None,
-          codeDepartement = None
+          localisation = None
         ))
       }
 
@@ -68,10 +68,9 @@ class CreerAlerteSpec extends WordSpec with MustMatchers with MockitoSugar {
       val builder = recruteurBuilder
         .avecInscription()
         .avecProfil()
-      (1 to 10).toList.foldLeft(builder)((b, acc) => b.avecAlerte(
-        codeDepartement = Some(CodeDepartement(acc.toString))
-      ))
-      val recruteur = builder.build
+      val recruteur = (1 to 10).toList.foldLeft(builder)((b, acc) => b.avecAlerte(
+        localisation = Some(mock[Localisation])
+      )).build
 
       // When
       val ex = intercept[IllegalArgumentException] {
@@ -83,14 +82,14 @@ class CreerAlerteSpec extends WordSpec with MustMatchers with MockitoSugar {
     }
     "renvoyer une erreur lorsqu'une alerte existe déjà avec les mêmes critères" in {
       // Given
+      val localisation = mock[Localisation]
       val recruteur = recruteurBuilder
         .avecInscription()
         .avecProfil()
         .avecAlerte(
           frequenceAlerte = Some(FrequenceAlerte.QUOTIDIENNE),
           codeSecteurActivite = Some(CodeSecteurActivite("H")),
-          codeROME = Some(CodeROME("H2909")),
-          codeDepartement = Some(CodeDepartement("85"))
+          localisation = Some(localisation)
         ).build
 
       // When
@@ -98,7 +97,7 @@ class CreerAlerteSpec extends WordSpec with MustMatchers with MockitoSugar {
         recruteur.creerAlerte(commande.copy(
           codeSecteurActivite = Some(CodeSecteurActivite("H")),
           codeROME = Some(CodeROME("H2909")),
-          codeDepartement = Some(CodeDepartement("85"))
+          localisation = Some(localisation)
         ))
       }
 
@@ -137,7 +136,7 @@ class CreerAlerteSpec extends WordSpec with MustMatchers with MockitoSugar {
       alerteRecruteurCreeEvent.frequence mustBe commande.frequenceAlerte
       alerteRecruteurCreeEvent.codeSecteurActivite mustBe commande.codeSecteurActivite
       alerteRecruteurCreeEvent.codeROME mustBe commande.codeROME
-      alerteRecruteurCreeEvent.codeDepartement mustBe commande.codeDepartement
+      alerteRecruteurCreeEvent.localisation mustBe commande.localisation
     }
   }
 

@@ -3,43 +3,56 @@ package fr.poleemploi.perspectives.projections.candidat
 import fr.poleemploi.cqrs.projection.Projection
 import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.perspectives.candidat.{CandidatId, _}
-import fr.poleemploi.perspectives.projections.candidat.infra.sql._
 
 import scala.concurrent.Future
 
-class CandidatProjection(adapter: CandidatProjectionSqlAdapter) extends Projection {
+trait CandidatProjection extends Projection {
 
   override def listenTo: List[Class[_ <: Event]] = List(classOf[CandidatEvent])
 
   override def isReplayable: Boolean = true
 
   override def onEvent: ReceiveEvent = {
-    case e: CandidatInscritEvent => adapter.onCandidatInscritEvent(e)
-    case e: CandidatConnecteEvent => adapter.onCandidatConnecteEvent(e)
-    case e: ProfilCandidatModifieEvent => adapter.onProfilModifieEvent(e)
-    case e: CriteresRechercheModifiesEvent => adapter.onCriteresRechercheModifiesEvent(e)
-    case e: NumeroTelephoneModifieEvent => adapter.onNumeroTelephoneModifieEvent(e)
-    case e: AdresseModifieeEvent => adapter.onAdresseModifieeEvent(e)
-    case e: StatutDemandeurEmploiModifieEvent => adapter.onStatutDemandeurEmploiModifieEvent(e)
-    case e: CVAjouteEvent => adapter.onCVAjouteEvent(e)
-    case e: CVRemplaceEvent => adapter.onCVRemplaceEvent(e)
-    case e: MRSAjouteeEvent => adapter.onMRSAjouteeEvent(e)
-    case e: RepriseEmploiDeclareeParConseillerEvent => adapter.onRepriseEmploiDeclareeParConseillerEvent(e)
+    case e: CandidatInscritEvent => onCandidatInscritEvent(e)
+    case e: CandidatConnecteEvent => onCandidatConnecteEvent(e)
+    case e: ProfilCandidatModifieEvent => onProfilModifieEvent(e)
+    case e: CriteresRechercheModifiesEvent => onCriteresRechercheModifiesEvent(e)
+    case e: NumeroTelephoneModifieEvent => onNumeroTelephoneModifieEvent(e)
+    case e: AdresseModifieeEvent => onAdresseModifieeEvent(e)
+    case e: StatutDemandeurEmploiModifieEvent => onStatutDemandeurEmploiModifieEvent(e)
+    case e: CVAjouteEvent => onCVAjouteEvent(e)
+    case e: CVRemplaceEvent => onCVRemplaceEvent(e)
+    case e: MRSAjouteeEvent => onMRSAjouteeEvent(e)
+    case e: RepriseEmploiDeclareeParConseillerEvent => onRepriseEmploiDeclareeParConseillerEvent(e)
   }
 
-  def candidatSaisieCriteresRecherche(query: CandidatSaisieCriteresRechercheQuery): Future[CandidatSaisieCriteresRechercheQueryResult] =
-    adapter.candidatSaisieCriteresRecherche(query)
+  def candidatSaisieCriteresRecherche(query: CandidatSaisieCriteresRechercheQuery): Future[CandidatSaisieCriteresRechercheQueryResult]
 
-  def candidatContactRecruteur(candidatId: CandidatId): Future[CandidatContactRecruteurDto] =
-    adapter.candidatContactRecruteur(candidatId)
+  def candidatContactRecruteur(candidatId: CandidatId): Future[CandidatContactRecruteurDto]
 
-  def listerPourConseiller(query: CandidatsPourConseillerQuery): Future[CandidatsPourConseillerQueryResult] =
-    adapter.listerPourConseiller(query)
+  def rechercherCandidats(query: RechercherCandidatsQuery): Future[RechercheCandidatQueryResult]
 
-  def rechercherCandidats(query: RechercherCandidatsQuery): Future[RechercheCandidatQueryResult] =
-    query match {
-      case q: RechercherCandidatsParDepartementQuery => adapter.rechercherCandidatParDepartement(q)
-      case q: RechercherCandidatsParSecteurQuery => adapter.rechercherCandidatParSecteur(q)
-      case q: RechercherCandidatsParMetierQuery => adapter.rechercherCandidatParMetier(q)
-    }
+  def listerPourConseiller(query: CandidatsPourConseillerQuery): Future[CandidatsPourConseillerQueryResult]
+
+  def onCandidatInscritEvent(event: CandidatInscritEvent): Future[Unit]
+
+  def onCandidatConnecteEvent(event: CandidatConnecteEvent): Future[Unit]
+
+  def onProfilModifieEvent(event: ProfilCandidatModifieEvent): Future[Unit]
+
+  def onCriteresRechercheModifiesEvent(event: CriteresRechercheModifiesEvent): Future[Unit]
+
+  def onNumeroTelephoneModifieEvent(event: NumeroTelephoneModifieEvent): Future[Unit]
+
+  def onStatutDemandeurEmploiModifieEvent(event: StatutDemandeurEmploiModifieEvent): Future[Unit]
+
+  def onCVAjouteEvent(event: CVAjouteEvent): Future[Unit]
+
+  def onCVRemplaceEvent(event: CVRemplaceEvent): Future[Unit]
+
+  def onAdresseModifieeEvent(event: AdresseModifieeEvent): Future[Unit]
+
+  def onMRSAjouteeEvent(event: MRSAjouteeEvent): Future[Unit]
+
+  def onRepriseEmploiDeclareeParConseillerEvent(event: RepriseEmploiDeclareeParConseillerEvent): Future[Unit]
 }

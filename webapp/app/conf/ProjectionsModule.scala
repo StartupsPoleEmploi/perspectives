@@ -1,14 +1,16 @@
 package conf
 
-import com.google.inject.{AbstractModule, Inject, Provides, Singleton}
+import com.google.inject._
 import fr.poleemploi.cqrs.projection.{Query, QueryResult}
 import fr.poleemploi.eventsourcing.eventstore.EventStoreListener
 import fr.poleemploi.perspectives.candidat.cv.domain.CVService
 import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielMRSCandidat
 import fr.poleemploi.perspectives.emailing.domain.EmailingService
 import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
-import fr.poleemploi.perspectives.projections.candidat.infra.sql.CandidatProjectionSqlAdapter
-import fr.poleemploi.perspectives.projections.candidat.{CandidatNotificationSlackProjection, CandidatProjection, CandidatQueryHandler}
+import fr.poleemploi.perspectives.projections.candidat._
+import fr.poleemploi.perspectives.projections.candidat.infra.elasticsearch.CandidatProjectionElasticsearchAdapter
+import fr.poleemploi.perspectives.projections.candidat.infra.local.CandidatNotificationLocalAdapter
+import fr.poleemploi.perspectives.projections.candidat.infra.slack.CandidatNotificationSlackAdapter
 import fr.poleemploi.perspectives.projections.emailing.{CandidatEmailProjection, RecruteurEmailProjection}
 import fr.poleemploi.perspectives.projections.rechercheCandidat.RechercheCandidatQueryHandler
 import fr.poleemploi.perspectives.projections.recruteur._
@@ -17,28 +19,18 @@ import fr.poleemploi.perspectives.projections.recruteur.alerte.{AlerteRecruteurP
 import fr.poleemploi.perspectives.projections.recruteur.infra.sql.RecruteurProjectionSqlAdapter
 import fr.poleemploi.perspectives.rechercheCandidat.domain.RechercheCandidatService
 import net.codingwell.scalaguice.ScalaModule
-import play.api.libs.ws.WSClient
-import slick.jdbc.JdbcBackend.Database
 
 import scala.concurrent.Future
 
 class RegisterProjections @Inject()(eventStoreListener: EventStoreListener,
                                     candidatProjection: CandidatProjection,
-                                    candidatNotificationSlackProjection: CandidatNotificationSlackProjection,
+                                    candidatNotificationProjection: CandidatNotificationProjection,
                                     candidatMailProjection: CandidatEmailProjection,
                                     recruteurProjection: RecruteurProjection,
                                     recruteurEmailProjection: RecruteurEmailProjection,
-                                    alerteRecruteurProjection: AlerteRecruteurProjection,
-                                    webAppConfig: WebAppConfig) {
-  eventStoreListener.subscribe(candidatProjection)
-  eventStoreListener.subscribe(candidatMailProjection)
-  eventStoreListener.subscribe(recruteurProjection)
-  eventStoreListener.subscribe(recruteurEmailProjection)
-  eventStoreListener.subscribe(alerteRecruteurProjection)
-
-  if (webAppConfig.useSlackNotification) {
-    eventStoreListener.subscribe(candidatNotificationSlackProjection)
-  }
+                                    alerteRecruteurProjection: AlerteRecruteurProjection) {
+  eventStoreListener.subscribe(candidatProjection, candidatMailProjection, candidatNotificationProjection)
+  eventStoreListener.subscribe(recruteurProjection, recruteurEmailProjection, alerteRecruteurProjection)
 }
 
 class ProjectionsModule extends AbstractModule with ScalaModule {
@@ -49,23 +41,18 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
-  def candidatProjectionSqlAdapter(database: Database,
-                                   referentielMetier: ReferentielMetier,
-                                   rechercheCandidatService: RechercheCandidatService,
-                                   webAppConfig: WebAppConfig): CandidatProjectionSqlAdapter =
-    new CandidatProjectionSqlAdapter(
-      database = database,
-      referentielMetier = referentielMetier,
-      rechercheCandidatService = rechercheCandidatService,
-      candidatsTesteurs = webAppConfig.candidatsTesteurs
-    )
+  def candidatProjection(candidatProjectionElasticsearchAdapter: CandidatProjectionElasticsearchAdapter): CandidatProjection =
+    candidatProjectionElasticsearchAdapter
 
   @Provides
   @Singleton
-  def candidatProjection(candidatProjectionSqlAdapter: CandidatProjectionSqlAdapter): CandidatProjection =
-    new CandidatProjection(
-      adapter = candidatProjectionSqlAdapter
-    )
+  def candidatNotificationProjection(candidatNotificationSlackAdapter: Provider[CandidatNotificationSlackAdapter],
+                                     candidatNotificationLocalAdapter: Provider[CandidatNotificationLocalAdapter],
+                                     webAppConfig: WebAppConfig): CandidatNotificationProjection =
+    if (webAppConfig.useSlackNotification)
+      candidatNotificationSlackAdapter.get()
+    else
+      candidatNotificationLocalAdapter.get()
 
   @Provides
   @Singleton
@@ -84,25 +71,9 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
-  def candidatNotificationSlackProjection(webAppConfig: WebAppConfig,
-                                          wsClient: WSClient): CandidatNotificationSlackProjection =
-    new CandidatNotificationSlackProjection(
-      config = webAppConfig.slackCandidatConfig,
-      wsClient = wsClient
-    )
-
-  @Provides
-  @Singleton
   def candidatEmailProjection(emailingService: EmailingService): CandidatEmailProjection =
     new CandidatEmailProjection(
       emailingService = emailingService
-    )
-
-  @Provides
-  @Singleton
-  def recruteurProjectionSqlAdapter(database: Database): RecruteurProjectionSqlAdapter =
-    new RecruteurProjectionSqlAdapter(
-      database = database
     )
 
   @Provides
@@ -136,14 +107,6 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
   @Singleton
   def rechercheCandidatQueryHandler(rechercheCandidatService: RechercheCandidatService): RechercheCandidatQueryHandler =
     new RechercheCandidatQueryHandler(
-      rechercheCandidatService = rechercheCandidatService
-    )
-
-  @Provides
-  def alerteRecruteurSqlAdapter(database: Database,
-                                rechercheCandidatService: RechercheCandidatService): AlerteRecruteurSqlAdapter =
-    new AlerteRecruteurSqlAdapter(
-      database = database,
       rechercheCandidatService = rechercheCandidatService
     )
 

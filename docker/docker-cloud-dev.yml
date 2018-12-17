@@ -50,6 +50,19 @@ services:
     networks:
       - net
 
+  elasticsearch:
+    image: perspectives-elasticsearch
+    depends_on:
+      - database
+    env_file:
+      - dev.env
+    ports:
+      - "9200:9200"
+    deploy:
+      replicas: 1
+    networks:
+      - net
+
   webapp:
     image: perspectives-webapp
     depends_on:

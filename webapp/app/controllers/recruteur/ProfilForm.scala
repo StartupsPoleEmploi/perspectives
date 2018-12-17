@@ -11,8 +11,7 @@ case class ProfilForm(nouveauRecruteur: Boolean,
                       typeRecruteur: String,
                       raisonSociale: String,
                       numeroSiret: String,
-                      numeroTelephone: String,
-                      contactParCandidats: String)
+                      numeroTelephone: String)
 
 object ProfilForm {
 
@@ -35,7 +34,6 @@ object ProfilForm {
       "raisonSociale" -> nonEmptyText,
       "numeroSiret" -> nonEmptyText.verifying(numeroSiretConstraint),
       "numeroTelephone" -> nonEmptyText.verifying(FormHelpers.numeroTelephoneConstraint),
-      "contactParCandidats" -> nonEmptyText
     )(ProfilForm.apply)(ProfilForm.unapply)
   )
 
@@ -46,7 +44,6 @@ object ProfilForm {
       raisonSociale = "",
       numeroSiret = "",
       numeroTelephone = "",
-      contactParCandidats = ""
     )
   )
 
@@ -56,8 +53,7 @@ object ProfilForm {
       typeRecruteur = profilRecruteur.typeRecruteur.map(_.value).getOrElse(""),
       raisonSociale = profilRecruteur.raisonSociale.getOrElse(""),
       numeroSiret = profilRecruteur.numeroSiret.map(_.value).getOrElse(""),
-      numeroTelephone = profilRecruteur.numeroTelephone.map(_.value).getOrElse(""),
-      contactParCandidats = FormHelpers.optBooleanToString(profilRecruteur.contactParCandidats)
+      numeroTelephone = profilRecruteur.numeroTelephone.map(_.value).getOrElse("")
     )
   )
 }

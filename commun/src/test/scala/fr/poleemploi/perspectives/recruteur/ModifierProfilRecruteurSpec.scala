@@ -14,8 +14,7 @@ class ModifierProfilRecruteurSpec extends WordSpec with MustMatchers with Mockit
       raisonSociale = "raison sociale",
       numeroSiret = NumeroSiret("13000548100010"),
       typeRecruteur = TypeRecruteur.AGENCE_INTERIM,
-      numeroTelephone = NumeroTelephone("0123678943"),
-      contactParCandidats = true
+      numeroTelephone = NumeroTelephone("0123678943")
     )
 
   "modifierProfil" should {
@@ -39,8 +38,7 @@ class ModifierProfilRecruteurSpec extends WordSpec with MustMatchers with Mockit
           typeRecruteur = Some(commande.typeRecruteur),
           raisonSociale = Some(commande.raisonSociale),
           numeroSiret = Some(commande.numeroSiret),
-          numeroTelephone = Some(commande.numeroTelephone),
-          contactParCandidats = Some(commande.contactParCandidats)
+          numeroTelephone = Some(commande.numeroTelephone)
         )
         .build
 
@@ -123,21 +121,6 @@ class ModifierProfilRecruteurSpec extends WordSpec with MustMatchers with Mockit
       // Then
       results.size mustBe 1
     }
-    "générer un événement si contactParCandidats a été modifié" in {
-      // Given
-      val recruteur = recruteurBuilder
-        .avecInscription()
-        .avecProfil(contactParCandidats = Some(false))
-        .build
-
-      // When
-      val results = recruteur.modifierProfil(commande.copy(
-        contactParCandidats = true
-      ))
-
-      // Then
-      results.size mustBe 1
-    }
     "générer un événement contenant les informations modifiées" in {
       // Given
       val recruteur = recruteurBuilder
@@ -155,7 +138,6 @@ class ModifierProfilRecruteurSpec extends WordSpec with MustMatchers with Mockit
       event.numeroSiret mustBe commande.numeroSiret
       event.numeroTelephone mustBe commande.numeroTelephone
       event.typeRecruteur mustBe commande.typeRecruteur
-      event.contactParCandidats mustBe commande.contactParCandidats
     }
   }
 

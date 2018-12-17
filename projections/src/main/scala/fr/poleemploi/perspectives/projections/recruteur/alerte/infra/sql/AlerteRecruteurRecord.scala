@@ -5,11 +5,12 @@ import fr.poleemploi.perspectives.recruteur.alerte.domain.{AlerteId, FrequenceAl
 import fr.poleemploi.perspectives.recruteur.{RecruteurId, TypeRecruteur}
 
 case class AlerteRecruteurRecord(recruteurId: RecruteurId,
-                                 prenomRecruteur: String,
                                  typeRecruteur: TypeRecruteur,
                                  emailRecruteur: Email,
                                  alerteId: AlerteId,
                                  frequence: FrequenceAlerte,
                                  codeROME: Option[CodeROME],
                                  codeSecteurActivite: Option[CodeSecteurActivite],
-                                 codeDepartement: Option[CodeDepartement])
+                                 labelLocalisation: Option[String],
+                                 latitude: Option[Double],
+                                 longitude: Option[Double])

@@ -14,6 +14,5 @@ case class RecruteurRecord(recruteurId: RecruteurId,
                            raisonSociale: Option[String],
                            numeroSiret: Option[NumeroSiret],
                            numeroTelephone: Option[NumeroTelephone],
-                           contactParCandidats: Option[Boolean],
                            dateInscription: ZonedDateTime,
                            dateDerniereConnexion: ZonedDateTime)

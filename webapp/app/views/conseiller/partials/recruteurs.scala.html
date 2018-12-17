@@ -7,12 +7,6 @@
 
 @(recruteurs: List[RecruteurPourConseillerDto])
 
-@getBoolean(boolean: Option[Boolean]) = @{
-    if (boolean.getOrElse(false)) "Oui" else "Non"
-}
-
-<input type="hidden" id="js-dernierResultat" value="@recruteurs.reverse.headOption.map(_.dateInscription).map(DateTimeFormatter.ISO_OFFSET_DATE_TIME.format)"/>
-<input type="hidden" id="js-nbResultats" value="@recruteurs.size"/>
 <table class="table table-responsive">
     <thead class="thead-light">
         <tr>
@@ -26,7 +20,6 @@
             <th>Email</th>
             <th>Téléphone</th>
             <th>SIRET</th>
-            <th>Etre contacté par les candidats</th>
         </tr>
     </thead>
     <tbody>
@@ -42,7 +35,6 @@
             <td>@recruteur.email.value</td>
             <td>@recruteur.numeroTelephone.map(_.value)</td>
             <td>@recruteur.numeroSiret.map(_.value)</td>
-            <td>@getBoolean(recruteur.contactParCandidats)</td>
         </tr>
     }
     </tbody>

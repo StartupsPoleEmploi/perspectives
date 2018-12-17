@@ -22,8 +22,23 @@ services:
 
   database_cron_backup:
     image: perspectives-postgresql-cron-backup
+    depends_on:
+      - database
     volumes:
       - postgresql_backups:/var/opt/postgresql-cron-backup
+    deploy:
+      replicas: 1
+    networks:
+      - net
+
+  elasticsearch:
+    image: perspectives-elasticsearch
+    depends_on:
+      - database
+    env_file:
+      - recette.env
+    ports:
+      - "9200:9200"
     deploy:
       replicas: 1
     networks:
