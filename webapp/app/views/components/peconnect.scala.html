@@ -1,8 +1,8 @@
-@(href: String)(implicit assetsFinder: AssetsFinder)
+@(href: String, texte: String)(implicit assetsFinder: AssetsFinder)
 
 <div class="pe-connect">
     <a href="@href" class="button-pe-connect is-blue" data-toggle="tooltip" data-placement="bottom" title="Connectez-vous à Perspectives en utilisant des identifiants pôle emploi et bénéficiez d'un accès gratuit à ce service.">
         <img class="icon-pe-connect" src="@assetsFinder.path("images/vendor/pe-connect/icon-pe-connect-is-white.svg")" alt="Icône Pôle emploi" width="34" height="31" />
-        <span class="text">Se connecter avec pôle emploi</span>
+        <span class="text">@texte</span>
     </a>
 </div>

@@ -14,8 +14,14 @@
 <div id="inscriptionRecruteur">
     <section class="introductionFormulaire">
         <header class="introductionFormulaireTitres">
-            <h2 class="introductionFormulaireTitres-titre">Faisons connaissance...</h2>
-            <p class="introductionFormulaireTitres-description">Bénéficiez rapidement de mises en relation avec des candidats !</p>
+            <h2 class="introductionFormulaireTitres-titre">Bonjour @recruteurAuthentifie.prenom.capitalize</h2>
+            @if(profilForm("nouveauRecruteur").value.exists(_.toBoolean)) {
+                <p class="introductionFormulaireTitres-description">Bienvenue sur Perspectives.
+                    Finalisez votre inscription en renseignant votre profil
+                    puis accédez à la liste des candidats disponible</p>
+            } else {
+                <p class="introductionFormulaireTitres-description">Vous êtes déjà inscrit, vous pouvez, si vous le souhaitez, modifier votre profil.</p>
+            }
         </header>
         <div class="separation">
             <span class="separation-ligne"></span>
@@ -117,41 +123,12 @@
                 </dd>
                 }
             </dl>
-            <dl class="informationProfil">
-                <dt class="question">
-                    <span class="question-puce @if(hasErrors("contactParCandidats")){question-puce--erreur}">5</span>
-                    <div class="question-texte">
-                        Acceptez-vous d'être contacté directement par les candidats ?
-                        <span class="question-requise">*</span>
-                    </div>
-                </dt>
-                <dd class="choix">
-                    @components.boutonRadio(form = profilForm, name = "contactParCandidats", values = List("true" -> "Oui", "false" -> "Non"))
-                </dd>
-                @if(hasErrors("contactParCandidats")) {
-                <dd class="erreurs">
-                    <span class="erreurs-item">@profilForm("contactParCandidats").errors.map(_.format).mkString(", ")</span>
-                </dd>
-                }
-            </dl>
             <div class="validerInscription">
-                <div class="conditions">
-                    @components.checkbox(
-                        form = profilForm,
-                        name = "formerCandidats",
-                        value = "true",
-                        label = "Nous sommes prêts à former le(s) candidat(s) recherché(s)",
-                        slotLabel = Some(Html("<span class=\"question-requise\">*</span>")),
-                        checkboxClasses = List("checkbox-checkmark--grande"),
-                        labelClasses = List("formerCandidats")
-                    )
-                </div>
                 <button id="js-boutonInscription" class="bouton bouton-actionPrincipale bouton--fondBleu" type="submit">
-                    J'inscris mon entreprise
+                    Valider mes informations
                 </button>
             </div>
         }
     </section>
 </div>
-<script src="@assetsFinder.path("javascripts/pages/recruteur/profil.js")" type="text/javascript"></script>
 }

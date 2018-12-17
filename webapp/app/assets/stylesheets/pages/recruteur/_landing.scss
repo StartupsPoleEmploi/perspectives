@@ -106,7 +106,14 @@
 
   .sponsors {
     text-align: center;
-    margin: 2em 0;
+    margin-bottom: 2em;
+
+    &-titre {
+      @extend %titrePrincipal;
+      color: $perspectives-bleu-nuit;
+      padding: 3rem 0;
+      margin: 0;
+    }
 
     @include media-breakpoint-down(md) {
       display: none;
@@ -167,66 +174,6 @@
     height: 0;
     padding-bottom: 56.25%;
     margin-bottom: 3rem;
-  }
-
-  .commentCaMarche {
-    @include make-container();
-    @include make-container-max-widths();
-    padding-bottom: 3rem;
-    padding-top: 3rem;
-
-    &-titre {
-      @extend %titrePrincipal;
-      color: #2C4054;
-      text-align: center;
-      margin-bottom: 3rem;
-    }
-  }
-
-  .etapes {
-    @include make-row();
-    counter-reset: etape;
-    list-style-type: none;
-    padding: 0;
-    margin-top: 7em;
-    margin-bottom: 3rem;
-    text-align: center;
-
-    @include media-breakpoint-down(md) {
-      margin-top: 2em;
-      margin-bottom: 0;
-    }
-
-    &-item {
-      @include make-col-ready();
-      @include make-col(4);
-
-      counter-increment: etape;
-      color: #334051;
-      font-size: 20px;
-      letter-spacing: 1px;
-      line-height: 32px;
-
-      @include media-breakpoint-down(md) {
-        @include make-col(12);
-
-        padding: 2em 0;
-      }
-
-      &:before {
-        content: counter(etape)".";
-        color: #82CCDD;
-        font-size: 4em;
-        display: block;
-        position: relative;
-        top: -0.5em;
-
-        @include media-breakpoint-down(md) {
-          top: 0;
-          margin-bottom: 0.5em;
-        }
-      }
-    }
   }
 
   .inscription {

@@ -65,6 +65,16 @@
     font-weight: 700;
   }
 
+  &-info {
+    @include make-col-ready();
+    @include make-col(11);
+    padding-left: 38px;
+
+    color: #334051;
+    font-size: 1em;
+    font-style: italic;
+  }
+
   &-requise {
     color: $perspectives-text-required;
   }

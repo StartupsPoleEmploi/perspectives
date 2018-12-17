@@ -11,7 +11,10 @@
             <a class="accesLanding-lien" href="@controllers.candidat.routes.LandingController.landing().url">Accès candidat</a>
         </nav>
         <div class="conteneurPEConnect">
-        @components.peconnect(controllers.recruteur.routes.InscriptionController.inscription().url)
+        @components.peconnect(
+            href = controllers.recruteur.routes.InscriptionController.inscription().url,
+            texte = "Connexion recruteur avec pôle emploi"
+        )
         </div>
     }
 </div>

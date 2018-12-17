@@ -29,13 +29,13 @@
                         <span class="introVersion-deco"></span>
                     </div>
                     <header class="introTitres">
-                        <h2 class="intro-titre">Vous recherchez des candidats à former aux besoins de votre entreprise ?</h2>
+                        <h2 class="intro-titre">Notre mission, faciliter la rencontre entre une entreprise et un candidat.</h2>
                     </header>
                     <div class="presentation">
                         <aside class="avantages">
                             <ul class="listeAvantages">
                                 <li class="listeAvantages-item">
-                                    Découvrez des candidats dont <b><a href="#definitionMRS" class="definition-lien" title="Comment les candidats sont-ils validés ?">les aptitudes ont été validées par Pôle emploi</a></b>
+                                    En vous proposant des profils validés par la <a href="#definitionMRS" class="definition-lien" title="Comment les candidats sont-ils validés ?">Méthode de recrutement par simulation (MRS Pôle Emploi)</a>
                                 </li>
                                 <li class="listeAvantages-item">Contactez des <b>candidats disponibles</b></li>
                                 <li class="listeAvantages-item">Vous n'avez <b>pas d'offre à déposer</b></li>
@@ -60,6 +60,7 @@
                 </div>
             </section>
             <section class="sponsors">
+                <h2 class="sponsors-titre">Ils recrutent avec Perspectives</h2>
                 <ul class="listeSponsors">
                     <li class="listeSponsors-item"><img alt="Franaud" src="@assetsFinder.path("images/pages/recruteur/landing/sponsor-franaud.png")" width="155" height="60"/></li>
                     <li class="listeSponsors-item"><img alt="Afpa" src="@assetsFinder.path("images/pages/recruteur/landing/sponsor-afpa.png")" width="145" height="75"/></li>
@@ -71,7 +72,7 @@
             <section id="definitionMRS" class="definitionArrierePlan">
                 <div class="definition">
                     <header class="definitionTitres">
-                        <h2 class="definition-titre">Comment les candidats sont-ils validés ?</h2>
+                        <h2 class="definition-titre">La Méthode de Recrutement par Simulation : Comment les candidats sont-ils validés ?</h2>
                         <p class="definition-texte">La Méthode de Recrutement par Simulation reproduit les conditions de travail et permet de tester les aptitudes des candidats à exercer un nouveau métier</p>
                     </header>
                     <div class="videoPresentation">
@@ -86,22 +87,6 @@
                         </a>
                     }
                     </div>
-                </div>
-            </section>
-            <section class="commentCaMarche">
-                <h2 class="commentCaMarche-titre">En seulement trois étapes, trouvez le bon candidat !</h2>
-                <ol class="etapes">
-                    <li class="etapes-item">Je me crée un compte et me connecte</li>
-                    <li class="etapes-item">Je saisis mes critères de recherche</li>
-                    <li class="etapes-item">Je contacte les candidats</li>
-                </ol>
-                <div class="inscription">
-                @if(recruteurAuthentifie.isEmpty) {
-                    <a class="bouton bouton-actionPrincipale bouton--degradeBleu" href="@controllers.recruteur.routes.InscriptionController.inscription().url">
-                        Je m'inscris
-                        <small class="bouton-small">en moins de 30 secondes</small>
-                    </a>
-                }
                 </div>
             </section>
             <section class="temoignages">

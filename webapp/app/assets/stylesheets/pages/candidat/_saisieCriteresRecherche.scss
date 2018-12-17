@@ -1,16 +1,9 @@
 #saisieCriteresRechercheCandidat {
 
   .mrsValidees {
-    @include make-container();
-    @include make-container-max-widths();
     text-align: center;
-    margin-bottom: 3rem;
     color: $perspectives-bleu-nuit;
-
-    &-intitule {
-      font-size: 1em;
-      font-weight: 700;
-    }
+    margin-bottom: 1em;
   }
 
   .listeMrsValidees {

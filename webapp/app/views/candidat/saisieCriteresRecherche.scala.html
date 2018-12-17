@@ -24,30 +24,32 @@
 <div id="saisieCriteresRechercheCandidat">
     <section class="introductionFormulaire">
         <header class="introductionFormulaireTitres">
-            <h2 class="introductionFormulaireTitres-titre">Sélectionnez vos critères</h2>
-            <p class="introductionFormulaireTitres-description">Choisissez les métiers qui vous intéressent et sur lesquels vous
-                souhaiteriez être formé par votre futur employeur.</p>
+            <h2 class="introductionFormulaireTitres-titre">Bonjour @candidatAuthentifie.prenom.capitalize</h2>
+            @if(metiersEvaluesCandidat.nonEmpty) {
+                <div class="mrsValidees">
+                    @if(metiersEvaluesCandidat.size == 1) {
+                        Vous avez été évalué sur le métier suivant :
+                    } else {
+                        Vous avez été évalué sur les métiers suivants :
+                    }
+                    <ul class="listeMrsValidees">
+                    @for(metierEvalue <- metiersEvaluesCandidat) {
+                        <li class="listeMrsValidees-item">@metierEvalue.label</li>
+                    }
+                    </ul>
+                </div>
+            }
+            @if(saisieCriteresRechercheForm("nouveauCandidat").value.exists(_.toBoolean)) {
+                <p class="introductionFormulaireTitres-description">Finalisez votre inscription en répondant aux questions ci-dessous.</p>
+            } else {
+                <p class="introductionFormulaireTitres-description">Vous êtes déjà inscrit, vous pouvez, si vous le souhaitez, modifier votre profil.</p>
+            }
         </header>
         <div class="separation">
             <span class="separation-ligne"></span>
         </div>
     </section>
-    @if(metiersEvaluesCandidat.nonEmpty) {
-    <section class="mrsValidees">
-        <span class="mrsValidees-intitule">
-            @if(metiersEvaluesCandidat.size == 1) {
-                Vous avez été évalué sur le métier suivant :
-            } else {
-                Vous avez été évalué sur les métiers suivants :
-            }
-        </span>
-        @for(metierEvalue <- metiersEvaluesCandidat) {
-            <ul class="listeMrsValidees">
-                <li class="listeMrsValidees-item">@metierEvalue.label</li>
-            </ul>
-        }
-    </section>
-    }
+
     <section class="criteres">
         @form(action = controllers.candidat.routes.SaisieCriteresRechercheController.modifierCriteresRecherche(), 'id -> "criteresRechercheForm") {
         @CSRF.formField
@@ -57,12 +59,13 @@
                 <span class="question-puce @if(hasErrors("rechercheMetierEvalue")){question-puce--erreur}">1</span>
                 <div class="question-texte">
                     @if(metiersEvaluesCandidat.size <= 1) { @** Il est possible qu'on ne récupère pas tout de suite son métier, mais on affiche quand meme la question *@
-                        Cherchez-vous toujours sur le métier pour lequel vous avez été évalué ?
+                        Cherchez vous sur le métier pour lequel vous avez été évalué ?
                     } else {
-                        Cherchez-vous toujours sur les métiers pour lesquels vous avez été évalué ?
+                        Cherchez-vous sur les métiers pour lesquels vous avez été évalué ?
                     }
                     <span class="question-requise">*</span>
                 </div>
+                <small class="question-info">Le métier et vos habilités MRS seront visibles par les recruteurs</small>
             </dt>
             <dd class="choix">
                 @components.boutonRadio(form = saisieCriteresRechercheForm, name = "rechercheMetierEvalue", values = List("true" -> "Oui", "false" -> "Non"))
@@ -77,9 +80,10 @@
             <dt class="question">
                 <span class="question-puce @if(hasErrors("rechercheAutreMetier")){question-puce--erreur}">2</span>
                 <div class="question-texte">
-                    Recherchez-vous un autre métier ?
+                    Êtes-vous également intéressé par un autre métier ?
                     <span class="question-requise">*</span>
                 </div>
+                <small class="question-info">Vos habilités MRS validées peuvent concerner d’autres métiers</small>
             </dt>
             <dd class="choix">
                 @components.boutonRadio(form = saisieCriteresRechercheForm, name = "rechercheAutreMetier", values = List("true" -> "Oui", "false" -> "Non"))
@@ -98,7 +102,7 @@
         <dl id="js-critere-metiers" class="critere">
             <dt class="sousQuestion">
                 <div class="sousQuestion-texte">
-                    Si oui, lesquels ?
+                    Dans cette liste quels métiers vous intéresse ?
                     <span class="sousQuestion-requise">*</span>
                 </div>
                 <p class="sousQuestion-aide">Choisissez-en autant que vous le souhaitez</p>
@@ -142,7 +146,7 @@
             <dt class="question">
                 <span class="question-puce @if(hasErrors("contactInterim")){question-puce--erreur}">3</span>
                 <div class="question-texte">
-                    Acceptez-vous d'être contacté pour des missions d'interim ?
+                    Acceptez-vous les missions d'interim ?
                     <span class="question-requise">*</span>
                 </div>
             </dt>
@@ -159,7 +163,7 @@
             <dt class="question">
                 <span class="question-puce @if(hasErrors("contactFormation")){question-puce--erreur}">4</span>
                 <div class="question-texte">
-                    Acceptez-vous d'être contacté pour une formation sur ces métiers ?
+                    Souhaitez-vous être contacté par des organismes de formation ?
                     <span class="question-requise">*</span>
                 </div>
             </dt>
@@ -258,7 +262,7 @@
         </dl>
         <div class="validerCriteres">
             <button id="js-validerCriteres" class="bouton bouton-actionPrincipale bouton--fondBleu" type="submit">
-                Valider mes critères
+                Valider mes informations
             </button>
         </div>
         }
