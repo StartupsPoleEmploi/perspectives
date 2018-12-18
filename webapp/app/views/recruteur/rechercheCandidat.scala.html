@@ -59,14 +59,6 @@
                     </div>
                 </div>
             }
-            <alerte-recruteur ref="alertesRecruteur"
-                              v-bind:nb-max-alertes="10"
-                              v-bind:alertes-initiales="alertes"
-                              v-bind:frequences="frequences"
-                              v-on:creer-alerte="creerAlerte"
-                              v-on:supprimer-alerte="supprimerAlerte"
-                              v-on:selectionner-alerte="selectionnerAlerte">
-            </alerte-recruteur>
         </section>
         <section class="compteurResultats">
             <h2 class="compteurResultats-titre" v-html="titreCompteurResultats"></h2>
