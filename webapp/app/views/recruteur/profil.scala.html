@@ -123,6 +123,23 @@
                 </dd>
                 }
             </dl>
+            <dl class="informationProfil">
+                <dt class="question">
+                    <span class="question-puce @if(hasErrors("contactParCandidats")){question-puce--erreur}">5</span>
+                    <div class="question-texte">
+                        Acceptez-vous d'être contacté directement par les candidats ?
+                        <span class="question-requise">*</span>
+                    </div>
+                </dt>
+                <dd class="choix">
+                @components.boutonRadio(form = profilForm, name = "contactParCandidats", values = List("true" -> "Oui", "false" -> "Non"))
+                </dd>
+                @if(hasErrors("contactParCandidats")) {
+                    <dd class="erreurs">
+                        <span class="erreurs-item">@profilForm("contactParCandidats").errors.map(_.format).mkString(", ")</span>
+                    </dd>
+                }
+            </dl>
             <div class="validerInscription">
                 <button id="js-boutonInscription" class="bouton bouton-actionPrincipale bouton--fondBleu" type="submit">
                     Valider mes informations

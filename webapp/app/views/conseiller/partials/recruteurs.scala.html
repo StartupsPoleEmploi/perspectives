@@ -7,6 +7,10 @@
 
 @(recruteurs: List[RecruteurPourConseillerDto])
 
+@getBoolean(boolean: Option[Boolean]) = @{
+    if (boolean.getOrElse(false)) "Oui" else "Non"
+}
+
 <table class="table table-responsive">
     <thead class="thead-light">
         <tr>
@@ -20,6 +24,7 @@
             <th>Email</th>
             <th>Téléphone</th>
             <th>SIRET</th>
+            <th>Etre contacté par les candidats</th>
         </tr>
     </thead>
     <tbody>
@@ -35,6 +40,7 @@
             <td>@recruteur.email.value</td>
             <td>@recruteur.numeroTelephone.map(_.value)</td>
             <td>@recruteur.numeroSiret.map(_.value)</td>
+            <td>@getBoolean(recruteur.contactParCandidats)</td>
         </tr>
     }
     </tbody>

@@ -21,7 +21,8 @@ case class ProfilModifieEvent(recruteurId: RecruteurId,
                               typeRecruteur: TypeRecruteur,
                               raisonSociale: String,
                               numeroSiret: NumeroSiret,
-                              numeroTelephone: NumeroTelephone) extends RecruteurEvent
+                              numeroTelephone: NumeroTelephone,
+                              contactParCandidats: Boolean) extends RecruteurEvent
 
 case class ProfilGerantModifieEvent(recruteurId: RecruteurId,
                                     nom: String,

@@ -37,11 +37,13 @@ class RecruteurProjectionSqlAdapter(database: Database) {
 
     def numeroTelephone = column[Option[NumeroTelephone]]("numero_telephone")
 
+    def contactParCandidats = column[Option[Boolean]]("contact_par_candidats")
+
     def dateInscription = column[ZonedDateTime]("date_inscription")
 
     def dateDerniereConnexion = column[ZonedDateTime]("date_derniere_connexion")
 
-    def * = (recruteurId, nom, prenom, email, genre, typeRecruteur, raisonSociale, numeroSiret, numeroTelephone, dateInscription, dateDerniereConnexion) <> (RecruteurRecord.tupled, RecruteurRecord.unapply)
+    def * = (recruteurId, nom, prenom, email, genre, typeRecruteur, raisonSociale, numeroSiret, numeroTelephone, contactParCandidats, dateInscription, dateDerniereConnexion) <> (RecruteurRecord.tupled, RecruteurRecord.unapply)
   }
 
   implicit object ProfilRecruteurShape extends CaseClassShape(ProfilRecruteurLifted.tupled, ProfilRecruteurQueryResult.tupled)
@@ -57,19 +59,19 @@ class RecruteurProjectionSqlAdapter(database: Database) {
   val profilRecruteurQuery = Compiled { recruteurId: Rep[RecruteurId] =>
     recruteurTable
       .filter(r => r.recruteurId === recruteurId)
-      .map(r => ProfilRecruteurLifted(r.recruteurId, r.typeRecruteur, r.raisonSociale, r.numeroSiret, r.numeroTelephone))
+      .map(r => ProfilRecruteurLifted(r.recruteurId, r.typeRecruteur, r.raisonSociale, r.numeroSiret, r.numeroTelephone, r.contactParCandidats))
   }
   val listerParDateInscriptionQuery = Compiled { (nbRecruteursParPage: ConstColumn[Long], avantDateInscription: Rep[ZonedDateTime]) =>
     recruteurTable
       .filter(_.dateInscription < avantDateInscription)
       .sortBy(_.dateInscription.desc)
       .take(nbRecruteursParPage)
-      .map(r => RecruteurPourConseillerLifted(r.recruteurId, r.nom, r.prenom, r.email, r.genre, r.typeRecruteur, r.raisonSociale, r.numeroSiret, r.numeroTelephone, r.dateInscription, r.dateDerniereConnexion))
+      .map(r => RecruteurPourConseillerLifted(r.recruteurId, r.nom, r.prenom, r.email, r.genre, r.typeRecruteur, r.raisonSociale, r.numeroSiret, r.numeroTelephone, r.contactParCandidats, r.dateInscription, r.dateDerniereConnexion))
   }
   val modifierProfilQuery = Compiled { recruteurId: Rep[RecruteurId] =>
     for {
       r <- recruteurTable if r.recruteurId === recruteurId
-    } yield (r.typeRecruteur, r.raisonSociale, r.numeroSiret, r.numeroTelephone)
+    } yield (r.typeRecruteur, r.raisonSociale, r.numeroSiret, r.numeroTelephone, r.contactParCandidats)
   }
   val modifierProfilGerantQuery = Compiled { recruteurId: Rep[RecruteurId] =>
     for {
@@ -122,7 +124,8 @@ class RecruteurProjectionSqlAdapter(database: Database) {
       Some(event.typeRecruteur),
       Some(event.raisonSociale),
       Some(event.numeroSiret),
-      Some(event.numeroTelephone)
+      Some(event.numeroTelephone),
+      Some(event.contactParCandidats)
     ))).map(_ => ())
 
   def onProfilGerantModifieEvent(event: ProfilGerantModifieEvent): Future[Unit] =

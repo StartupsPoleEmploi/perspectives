@@ -40,7 +40,8 @@ class RecruteurBuilder {
       typeRecruteur = typeRecruteur.getOrElse(TypeRecruteur.ENTREPRISE),
       raisonSociale = raisonSociale.getOrElse("raison sociale"),
       numeroSiret = numeroSiret.getOrElse(NumeroSiret("00000000000018")),
-      numeroTelephone = numeroTelephone.getOrElse(NumeroTelephone("0987654356"))
+      numeroTelephone = numeroTelephone.getOrElse(NumeroTelephone("0987654356")),
+      contactParCandidats = contactParCandidats.getOrElse(true)
     )
     this
   }

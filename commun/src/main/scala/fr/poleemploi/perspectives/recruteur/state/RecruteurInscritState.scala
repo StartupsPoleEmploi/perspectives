@@ -10,12 +10,14 @@ object RecruteurInscritState extends RecruteurState {
     if (!context.raisonSociale.contains(command.raisonSociale) ||
       !context.numeroSiret.contains(command.numeroSiret) ||
       !context.typeRecruteur.contains(command.typeRecruteur) ||
+      !context.contactParCandidats.contains(command.contactParCandidats) ||
       !context.numeroTelephone.contains(command.numeroTelephone)) {
       List(ProfilModifieEvent(
         recruteurId = command.id,
         raisonSociale = command.raisonSociale,
         numeroSiret = command.numeroSiret,
         typeRecruteur = command.typeRecruteur,
+        contactParCandidats = command.contactParCandidats,
         numeroTelephone = command.numeroTelephone
       ))
     } else Nil
