@@ -51,7 +51,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
         )
       )).recover {
       case t: Throwable =>
-        Logger.error("Erreur lors de la connexion PEConnect", t)
+        Logger.error("Erreur lors de la connexion recruteur via PEConnect", t)
         // Nettoyage de session et redirect
         Redirect(routes.LandingController.landing()).withSession(
           SessionOauthTokens.removeOauthTokensRecruteur(request.session)
@@ -94,7 +94,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
         Redirect(routes.ProfilController.modificationProfil()).withSession(session).flashing(flash.withRecruteurInscrit)
     }).recover {
       case t: Throwable =>
-        Logger.error("Erreur lors de l'authentification PEConnect", t)
+        Logger.error("Erreur lors de l'authentification recruteur via PEConnect", t)
         // Nettoyage de session et redirect
         Redirect(routes.LandingController.landing()).withSession(
           SessionOauthTokens.removeOauthTokensRecruteur(request.session)
@@ -112,7 +112,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       )
     )).recover {
       case t: Throwable =>
-        Logger.error("Erreur lors de la déconnexion PEConnect", t)
+        Logger.error("Erreur lors de la déconnexion recruteur via PEConnect", t)
         // Nettoyage de session et redirect
         Redirect(routes.LandingController.landing()).withSession(
           SessionRecruteurAuthentifie.remove(SessionRecruteurPEConnect.remove(request.session))

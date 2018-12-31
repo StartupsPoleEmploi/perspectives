@@ -50,7 +50,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
           )
         )).recover {
       case t: Throwable =>
-        Logger.error("Erreur lors de l'authentification PEConnect", t)
+        Logger.error("Erreur lors de la connexion candidat via PEConnect", t)
         // Nettoyage de session et redirect
         Redirect(routes.LandingController.landing())
           .withSession(SessionOauthTokens.removeOauthTokensCandidat(request.session))
@@ -97,13 +97,13 @@ class PEConnectController @Inject()(cc: ControllerComponents,
           .flashing(flash.withCandidatInscrit)
     }).recover {
       case t: PEConnectException =>
-        Logger.error("Erreur lors du callback PEConnect", t)
+        Logger.error("Erreur lors du callback candidat PEConnect", t)
         // Nettoyage de session et redirect
         Redirect(routes.LandingController.landing())
           .withSession(SessionOauthTokens.removeOauthTokensCandidat(request.session))
           .flashing(request.flash.withMessageErreur("Une erreur est survenue lors de l'accès au service de Pôle Emploi, veuillez réessayer ultérieurement"))
       case t: Throwable =>
-        Logger.error("Erreur lors du callback PEConnect", t)
+        Logger.error("Erreur lors du callback candidat PEConnect", t)
         // Nettoyage de session et redirect
         Redirect(routes.LandingController.landing()).withSession(
           SessionOauthTokens.removeOauthTokensCandidat(request.session)
@@ -121,7 +121,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       )
     )).recover {
       case t: Throwable =>
-        Logger.error("Erreur lors de la déconnexion PEConnect", t)
+        Logger.error("Erreur lors de la déconnexion candidat via PEConnect", t)
         // Nettoyage de session et redirect
         Redirect(routes.LandingController.landing()).withSession(
           SessionCandidatAuthentifie.remove(SessionCandidatPEConnect.remove(request.session))
