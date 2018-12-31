@@ -16,9 +16,9 @@ Vue.filter('date', function (value) {
 });
 
 Vue.filter('statutDemandeurEmploi', function (value) {
-    if (value === "0") {
+    if (value === statutDemandeurEmploi.NON_DEMANDEUR_EMPLOI) {
         return "Non";
-    } else if (value === "1") {
+    } else if (value === statutDemandeurEmploi.DEMANDEUR_EMPLOI) {
         return "Oui";
     } else {
         return "";

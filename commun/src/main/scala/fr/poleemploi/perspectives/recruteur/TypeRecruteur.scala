@@ -26,12 +26,4 @@ object TypeRecruteur {
   )
 
   def from(value: String): Option[TypeRecruteur] = typeRecruteurParValue.get(value)
-
-  def getLabel(typeRecruteur: TypeRecruteur): String =
-    typeRecruteur match {
-      case ENTREPRISE => "Entreprise"
-      case AGENCE_INTERIM => "Agence d'interim"
-      case ORGANISME_FORMATION => "Organisme de formation"
-      case _ => ""
-    }
 }

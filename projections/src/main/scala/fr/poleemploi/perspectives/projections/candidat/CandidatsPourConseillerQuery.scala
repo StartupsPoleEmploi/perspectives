@@ -6,7 +6,6 @@ import fr.poleemploi.cqrs.projection.{Query, QueryResult}
 import fr.poleemploi.perspectives.candidat.{CandidatId, StatutDemandeurEmploi}
 import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
-import play.api.libs.functional.syntax.{unlift, _}
 import play.api.libs.json._
 
 case class CandidatsPourConseillerQuery(nbPagesACharger: Int,
@@ -55,8 +54,5 @@ case class KeysetCandidatsPourConseiller(dateInscription: Long,
 
 object KeysetCandidatsPourConseiller {
 
-  implicit val writes: Writes[KeysetCandidatsPourConseiller] = (
-    (JsPath \ "dateInscription").write[Long] and
-      (JsPath \ "candidatId").write[CandidatId]
-    ) (unlift(KeysetCandidatsPourConseiller.unapply))
+  implicit val writes: Writes[KeysetCandidatsPourConseiller] = Json.writes[KeysetCandidatsPourConseiller]
 }

@@ -102,8 +102,8 @@
                     <div>Email : {{candidat.email}}</div>
                     <div>Telephone : {{candidat.numeroTelephone}}</div>
                     <div>Demandeur d'emploi : {{candidat.statutDemandeurEmploi | statutDemandeurEmploi}}</div>
-                    <div>Inscription : {{candidat.dateInscription || date}}</div>
-                    <div>Derniere connexion : {{candidat.dateDerniereConnexion || date}}</div>
+                    <div>Inscription : {{candidat.dateInscription | date}}</div>
+                    <div>Derniere connexion : {{candidat.dateDerniereConnexion | date}}</div>
                 </div>
                 <div class="profilCandidat-colonne profilCandidat-contact">
                     <div v-if="candidat.rayonRecherche">Rayon de recherche : {{candidat.rayonRecherche}}km</div>

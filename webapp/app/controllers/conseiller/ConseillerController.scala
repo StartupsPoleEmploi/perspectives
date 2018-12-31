@@ -110,8 +110,8 @@ class ConseillerController @Inject()(cc: ControllerComponents,
     )
     recruteurQueryHandler.handle(query).map(result =>
       Ok(views.html.conseiller.listeRecruteurs(
-        recruteurs = result.recruteurs,
         jsData = Json.obj(
+          "recruteurs" -> result.recruteurs,
           "nbRecruteursParPage" -> query.nbRecruteursParPage,
           "pagesInitiales" -> result.pages,
           "csrfToken" -> CSRF.getToken.map(_.value)
@@ -136,8 +136,7 @@ class ConseillerController @Inject()(cc: ControllerComponents,
               ))
             )
           ).map(result => Ok(Json.obj(
-            "html" -> views.html.conseiller.partials.recruteurs(result.recruteurs).body.replaceAll("\n", ""),
-            "nbRecruteurs" -> result.recruteurs.size,
+            "recruteurs" -> result.recruteurs,
             "pageSuivante" -> result.pageSuivante
           )))
         }

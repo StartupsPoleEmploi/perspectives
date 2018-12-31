@@ -4,7 +4,7 @@ import fr.poleemploi.eventsourcing.{AggregateId, IntValueObject, StringValueObje
 import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
 import fr.poleemploi.perspectives.candidat.{CandidatId, StatutDemandeurEmploi}
 import fr.poleemploi.perspectives.commun.domain._
-import fr.poleemploi.perspectives.recruteur.RecruteurId
+import fr.poleemploi.perspectives.recruteur.{NumeroSiret, RecruteurId, TypeRecruteur}
 import play.api.libs.json._
 
 /**
@@ -18,20 +18,23 @@ object JsonFormats {
 
   implicit val formatGenre: Format[Genre] = formatStringValueObject(Genre(_))
   implicit val formatCodeDepartement: Format[CodeDepartement] = formatStringValueObject(CodeDepartement)
-  implicit val formatCodeROME: Format[CodeROME] = formatStringValueObject(CodeROME)
-  implicit val formatCodeSecteurActivite: Format[CodeSecteurActivite] = formatStringValueObject(CodeSecteurActivite(_))
   implicit val formatEmail: Format[Email] = formatStringValueObject(Email)
   implicit val formatRayonRecherche: Format[RayonRecherche] = formatIntValueObject(RayonRecherche(_))
   implicit val formatNumeroTelephone: Format[NumeroTelephone] = formatStringValueObject(NumeroTelephone(_))
   implicit val formatStatutDemandeurEmploi: Format[StatutDemandeurEmploi] = formatStringValueObject(StatutDemandeurEmploi(_))
   implicit val formatTypeMedia: Format[TypeMedia] = formatStringValueObject(TypeMedia(_))
-  implicit val formatHabilete: Format[Habilete] = formatStringValueObject(Habilete(_))
 
+  implicit val formatCodeROME: Format[CodeROME] = formatStringValueObject(CodeROME)
   implicit val formatMetier: Format[Metier] = Json.format[Metier]
+  implicit val formatCodeSecteurActivite: Format[CodeSecteurActivite] = formatStringValueObject(CodeSecteurActivite(_))
   implicit val formatSecteurActivite: Format[SecteurActivite] = Json.format[SecteurActivite]
+  implicit val formatHabilete: Format[Habilete] = formatStringValueObject(Habilete(_))
 
   implicit val formatCoordonnees: Format[Coordonnees] = Json.format[Coordonnees]
   implicit val formatLocalisation: Format[Localisation] = Json.format[Localisation]
+
+  implicit val formatTypeRecruteur: Format[TypeRecruteur] = formatStringValueObject(TypeRecruteur(_))
+  implicit val formatNumeroSiret: Format[NumeroSiret] = formatStringValueObject(NumeroSiret(_))
 
   def readsAggregateId[T <: AggregateId](deserialize: String => T): Reads[T] = Reads {
     case JsString(s) => JsSuccess(deserialize(s))
