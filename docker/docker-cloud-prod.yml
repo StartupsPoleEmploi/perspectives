@@ -36,6 +36,8 @@ services:
     image: perspectives-elasticsearch
     depends_on:
       - database
+    volumes:
+      - projections_elasticsearch:/usr/share/elasticsearch/data
     env_file:
       - prod.env
     ports:
@@ -77,3 +79,4 @@ volumes:
   postgresql:
   postgresql_backups:
   export_poleemploi:
+  projections_elasticsearch:
