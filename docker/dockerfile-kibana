@@ -1,0 +1,3 @@
+FROM docker.elastic.co/kibana/kibana:6.5.0
+
+COPY kibana/kibana.yml /usr/share/kibana/config/kibana.yml
