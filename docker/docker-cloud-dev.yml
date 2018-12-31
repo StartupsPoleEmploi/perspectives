@@ -101,7 +101,7 @@ services:
       - net
 
   fluentbit:
-    image: perspectives-fluentbit
+    image: perspectives-fluent-bit
     env_file:
       - dev.env
     deploy:
