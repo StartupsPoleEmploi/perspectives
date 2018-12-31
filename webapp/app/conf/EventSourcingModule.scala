@@ -8,6 +8,7 @@ import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.candidat.cv.domain.CVService
 import fr.poleemploi.perspectives.candidat.localisation.domain.LocalisationService
 import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielHabiletesMRS
+import fr.poleemploi.perspectives.commun.infra.play.http.HttpCommandHandler
 import fr.poleemploi.perspectives.recruteur._
 import fr.poleemploi.perspectives.recruteur.alerte.domain.AlerteId
 import fr.poleemploi.perspectives.recruteur.commentaire.domain.CommentaireService
@@ -48,6 +49,11 @@ class EventSourcingModule extends AbstractModule {
         case command: DeclarerRepriseEmploiParConseillerCommand => c => Future(c.declarerRepriseEmploiParConseiller(command))
       }
     }
+
+  @Provides
+  @Singleton
+  def httpCandidatCommandHandler(commandHandler: CandidatCommandHandler): HttpCommandHandler[Candidat] =
+    new HttpCommandHandler[Candidat](commandHandler)
 
   @Provides
   @Singleton

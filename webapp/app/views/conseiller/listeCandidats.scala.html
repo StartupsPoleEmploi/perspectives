@@ -1,23 +1,146 @@
 @import conf.WebAppConfig
-@import fr.poleemploi.perspectives.projections.candidat.CandidatPourConseillerDto
 @import play.api.libs.json.JsObject
 
-@(candidats: List[CandidatPourConseillerDto],
-        jsData: JsObject)(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
+@(jsData: JsObject)(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
 @layout() {
-<div id="listeCandidats">
-    <div ref="candidats">
-        @partials.candidats(candidats)
-    </div>
+<div id="listeCandidats" v-cloak>
+    <form id="ajouterMRSCandidatForm" class="ajouterMRSCandidatForm" v-on:submit="ajouterMRSCandidat" v-show="afficherMRSCandidatForm"
+          action="@controllers.conseiller.routes.ConseillerController.ajouterMRSCandidat()" method="post">
+        <header class="ajouterMRSCandidatForm-titre">Ajouter une MRS pour {{mrsCandidatFormData.prenomCandidat | capitalize}} {{mrsCandidatFormData.nomCandidat | capitalize}}</header>
+        <input type="hidden" name="candidatId" v-model="mrsCandidatFormData.candidatId" />
+        <dl class="champFormulaire">
+            <dt>
+                <label for="codeDepartement">Département (unité MRS)</label>
+            </dt>
+            <dd class="choix">
+                <select id="codeDepartement" name="codeDepartement"
+                        v-model="mrsCandidatFormData.codeDepartement" v-on:change="onCodeDepartementModifie">
+                    <option value="">Choisissez un département</option>
+                    <option v-for="departement in codeROMEsParDepartement" v-bind:value="departement[0]">{{departement[0]}}</option>
+                </select>
+            </dd>
+            <dd class="erreurs"
+                v-show="mrsCandidatFormErrors.codeDepartement" v-for="error in mrsCandidatFormErrors.codeDepartement">
+                <span class="erreurs-item">{{error}}</span>
+            </dd>
+        </dl>
+        <dl class="champFormulaire">
+            <dt>
+                <label for="codeROME">Code ROME</label>
+            </dt>
+            <dd class="choix">
+                <select id="codeROME" name="codeROME"
+                        v-model="mrsCandidatFormData.codeROME">
+                    <option value="">Choisissez un code ROME</option>
+                    <option v-for="codeROME in codeROMEs" v-bind:value="codeROME">{{codeROME}}</option>
+                </select>
+            </dd>
+            <dd class="erreurs"
+                v-show="mrsCandidatFormErrors.codeROME" v-for="error in mrsCandidatFormErrors.codeROME">
+                <span class="erreurs-item">{{error}}</span>
+            </dd>
+        </dl>
+        <dl class="champFormulaire">
+            <dt>
+                <label for="dateEvaluation">Date d'évaluation</label>
+            </dt>
+            <dd class="choix">
+                <input type="date" name="dateEvaluation" id="dateEvaluation" v-model="mrsCandidatFormData.dateEvaluation" />
+            </dd>
+            <dd class="erreurs"
+                v-show="mrsCandidatFormErrors.dateEvaluation" v-for="error in mrsCandidatFormErrors.dateEvaluation">
+                <span class="erreurs-item">{{error}}</span>
+            </dd>
+        </dl>
+        <p>
+            <input type="submit" value="Ajouter">
+            <input type="button" value="Annuler" v-on:click="annulerMRSCandidat">
+            <span class="erreur" v-show="mrsCandidatFormErrors.globalError">{{mrsCandidatFormErrors.globalError}}</span>
+        </p>
+    </form>
+
+    <section class="resultatsRecherche" v-show="afficherCandidats">
+        <div class="listeResultatsRecherche">
+            <div class="listeResultatsRecherche-ligneTitre">
+                <div class="listeResultatsRecherche-colonne listeResultatsRecherche-candidat">Nom du candidat</div>
+                <div class="listeResultatsRecherche-colonne listeResultatsRecherche-metiersEvalues">Métiers évalués</div>
+                <div class="listeResultatsRecherche-colonne listeResultatsRecherche-metiersRecherches">Métiers recherchés</div>
+            </div>
+            <template v-for="candidat in candidats">
+            <div class="listeResultatsRecherche-ligne"
+                 v-on:click="toggleProfilCandidatCourant(candidat)">
+                <div class="listeResultatsRecherche-colonne listeResultatsRecherche-candidat">
+                    {{candidat.prenom | capitalize }} {{candidat.nom | capitalize }}
+                </div>
+                <div class="listeResultatsRecherche-colonne listeResultatsRecherche-metiersEvalues">
+                    <div v-if="candidat.rechercheMetierEvalue">Recherche métiers évalués : {{candidat.rechercheMetierEvalue | boolean}}</div>
+                    <ul class="detailsProfils">
+                        <li class="detailsProfils-item" v-for="metier in candidat.metiersEvalues">{{metier.codeROME}} : {{metier.label}}</li>
+                    </ul>
+                </div>
+                <div class="listeResultatsRecherche-colonne listeResultatsRecherche-metiersRecherches">
+                    <div v-if="candidat.rechercheAutreMetier">Recherche autres métiers : {{candidat.rechercheAutreMetier | boolean}}</div>
+                    <ul class="detailsProfils">
+                        <li class="detailsProfils-item" v-for="metier in candidat.metiersRecherches">{{metier.codeROME}} : {{metier.label}}</li>
+                    </ul>
+                </div>
+                <div class="listeResultatsRecherche-colonne listeResultatsRecherche-actions">
+                    <img src="@assetsFinder.path("images/pages/recruteur/rechercheCandidat/ouvrir-profil-candidat.svg")"
+                         alt="Plus de détails" height="16" width="16" class="voirProfil--ferme"
+                         v-show="!estProfilCandidatCourant(candidat)" />
+                    <img src="@assetsFinder.path("images/pages/recruteur/rechercheCandidat/fermer-profil-candidat.svg")"
+                         alt="Moins de détails" height="16" width="16" class="voirProfil--ouvert"
+                         v-show="estProfilCandidatCourant(candidat)" />
+                    Détail
+                </div>
+            </div>
+            <div class="profilCandidat"
+                 v-show="estProfilCandidatCourant(candidat)"
+                 v-bind:class="[estProfilCandidatCourant(candidat) ? 'profilCandidat--courant' : '']">
+                <div class="profilCandidat-colonne profilCandidat-date">
+                    <div>Email : {{candidat.email}}</div>
+                    <div>Telephone : {{candidat.numeroTelephone}}</div>
+                    <div>Demandeur d'emploi : {{candidat.statutDemandeurEmploi | statutDemandeurEmploi}}</div>
+                    <div>Inscription : {{candidat.dateInscription || date}}</div>
+                    <div>Derniere connexion : {{candidat.dateDerniereConnexion || date}}</div>
+                </div>
+                <div class="profilCandidat-colonne profilCandidat-contact">
+                    <div v-if="candidat.rayonRecherche">Rayon de recherche : {{candidat.rayonRecherche}}km</div>
+                    <div v-if="candidat.contacteParAgenceInterim">Contact interim : {{candidat.contacteParAgenceInterim | boolean}}</div>
+                    <div v-if="candidat.contacteParOrganismeFormation">Contact formation : {{candidat.contacteParOrganismeFormation | boolean}}</div>
+                </div>
+                <div class="profilCandidat-colonne profilCandidat-actions">
+                    <ul class="listeActions">
+                        <li class="listeActions-item">
+                            <span class="bouton bouton--bleu bouton-actionCandidat"
+                                  v-on:click="initialiserMRSCandidatFormAvecCandidat(candidat)">
+                                Ajouter une MRS
+                            </span>
+                        </li>
+                        <li class="listeActions-item" v-if="candidat.rechercheEmploi">
+                            <span class="bouton bouton--bleu bouton-actionCandidat"
+                                  v-on:click="declarerRepriseEmploi(candidat)">
+                                Déclarer reprise d'emploi
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="listeResultatsRecherche-separation"></div>
+            </template>
+        </div>
+    </section>
     <pagination ref="pagination"
                 v-bind:nb-par-page="nbCandidatsParPage"
                 v-on:charger-page-suivante="chargerPageSuivante"
                 v-on:charger-page-precedente="chargerPagePrecedente"
-                v-bind:pages-initiales="pagesInitiales"></pagination>
+                v-bind:pages-initiales="pagesInitiales"
+                v-show="afficherCandidats"></pagination>
 </div>
 
 @components.jsData(jsData)
-<script src="@assetsFinder.path("javascripts/modules/pagination.js")" type="text/javascript"></script>
+<script src="@assetsFinder.path("javascripts/composants/pagination.js")" type="text/javascript"></script>
+<script src="@assetsFinder.path("javascripts/domain/candidat/statutDemandeurEmploi.js")" type="text/javascript"></script>
 <script src="@assetsFinder.path("javascripts/pages/conseiller/listeCandidats.js")" type="text/javascript"></script>
 }

@@ -1,34 +1,35 @@
-GET         /                                                        controllers.candidat.LandingController.landing
-GET         /candidat/inscription                                    controllers.candidat.InscriptionController.inscription
-GET         /candidat/confirmation-inscription                       controllers.candidat.InscriptionController.confirmationInscription
-GET         /candidat/cv/telecharger/:nomFichier                     controllers.candidat.CVController.telecharger(nomFichier)
-GET         /candidat/peconnect/connexion                            controllers.candidat.PEConnectController.connexion
-GET         /candidat/peconnect/connexion/callback                   controllers.candidat.PEConnectController.connexionCallback
-GET         /candidat/peconnect/deconnexion/callback                 controllers.candidat.PEConnectController.deconnexionCallback
-GET         /candidat/deconnexion                                    controllers.candidat.AuthentificationController.deconnexion
-GET         /candidat/criteres-recherche                             controllers.candidat.SaisieCriteresRechercheController.saisieCriteresRecherche
-POST        /candidat/criteres-recherche                             controllers.candidat.SaisieCriteresRechercheController.modifierCriteresRecherche
-POST        /candidat/modifierCV                                     controllers.candidat.SaisieCriteresRechercheController.modifierCV
+GET           /                                                        controllers.candidat.LandingController.landing
+GET           /candidat/inscription                                    controllers.candidat.InscriptionController.inscription
+GET           /candidat/confirmation-inscription                       controllers.candidat.InscriptionController.confirmationInscription
+GET           /candidat/cv/telecharger/:nomFichier                     controllers.candidat.CVController.telecharger(nomFichier)
+GET           /candidat/peconnect/connexion                            controllers.candidat.PEConnectController.connexion
+GET           /candidat/peconnect/connexion/callback                   controllers.candidat.PEConnectController.connexionCallback
+GET           /candidat/peconnect/deconnexion/callback                 controllers.candidat.PEConnectController.deconnexionCallback
+GET           /candidat/deconnexion                                    controllers.candidat.AuthentificationController.deconnexion
+GET           /candidat/criteres-recherche                             controllers.candidat.SaisieCriteresRechercheController.saisieCriteresRecherche
+POST          /candidat/criteres-recherche                             controllers.candidat.SaisieCriteresRechercheController.modifierCriteresRecherche
+POST          /candidat/modifierCV                                     controllers.candidat.SaisieCriteresRechercheController.modifierCV
 
-GET         /recruteur                                               controllers.recruteur.LandingController.landing
-GET         /recruteur/inscription                                   controllers.recruteur.InscriptionController.inscription
-GET         /recruteur/peconnect/connexion                           controllers.recruteur.PEConnectController.connexion
-GET         /recruteur/peconnect/connexion/callback                  controllers.recruteur.PEConnectController.connexionCallback
-GET         /recruteur/peconnect/deconnexion/callback                controllers.recruteur.PEConnectController.deconnexionCallback
-GET         /recruteur/deconnexion                                   controllers.recruteur.AuthentificationController.deconnexion
-GET         /recruteur/profil                                        controllers.recruteur.ProfilController.modificationProfil
-POST        /recruteur/profil                                        controllers.recruteur.ProfilController.modifierProfil
-GET         /recruteur/recherche                                     controllers.recruteur.RechercheCandidatController.index(secteurActivite: Option[String] ?= None, metier: Option[String] ?= None, localisation: Option[String] ?= None, latitude: Option[String] ?= None, longitude: Option[String] ?= None)
-POST        /recruteur/recherche                                     controllers.recruteur.RechercheCandidatController.rechercherCandidats
-POST        /recruteur/recherche/commenterListeCandidats             controllers.recruteur.RechercheCandidatController.commenterListeCandidats
-GET         /recruteur/cv/telecharger/:candidatId/:nomFichier        controllers.recruteur.RechercheCandidatController.telechargerCV(candidatId, nomFichier)
-POST        /recruteur/alerte                                        controllers.recruteur.RechercheCandidatController.creerAlerte
-DELETE      /recruteur/alerte/:alerteId                              controllers.recruteur.RechercheCandidatController.supprimerAlerte(alerteId: String)
+GET           /recruteur                                               controllers.recruteur.LandingController.landing
+GET           /recruteur/inscription                                   controllers.recruteur.InscriptionController.inscription
+GET           /recruteur/peconnect/connexion                           controllers.recruteur.PEConnectController.connexion
+GET           /recruteur/peconnect/connexion/callback                  controllers.recruteur.PEConnectController.connexionCallback
+GET           /recruteur/peconnect/deconnexion/callback                controllers.recruteur.PEConnectController.deconnexionCallback
+GET           /recruteur/deconnexion                                   controllers.recruteur.AuthentificationController.deconnexion
+GET           /recruteur/profil                                        controllers.recruteur.ProfilController.modificationProfil
+POST          /recruteur/profil                                        controllers.recruteur.ProfilController.modifierProfil
+GET           /recruteur/recherche                                     controllers.recruteur.RechercheCandidatController.index(secteurActivite: Option[String] ?= None, metier: Option[String] ?= None, localisation: Option[String] ?= None, latitude: Option[String] ?= None, longitude: Option[String] ?= None)
+POST          /recruteur/recherche                                     controllers.recruteur.RechercheCandidatController.rechercherCandidats
+POST          /recruteur/recherche/commenterListeCandidats             controllers.recruteur.RechercheCandidatController.commenterListeCandidats
+GET           /recruteur/cv/telecharger/:candidatId/:nomFichier        controllers.recruteur.RechercheCandidatController.telechargerCV(candidatId, nomFichier)
+POST          /recruteur/alerte                                        controllers.recruteur.RechercheCandidatController.creerAlerte
+DELETE        /recruteur/alerte/:alerteId                              controllers.recruteur.RechercheCandidatController.supprimerAlerte(alerteId: String)
 
-GET         /conseiller/candidats                                    controllers.conseiller.ConseillerController.listeCandidats
-GET         /conseiller/paginationCandidats                          controllers.conseiller.ConseillerController.paginationCandidats(dateInscription: Long, candidatId: String)
-GET         /conseiller/recruteurs                                   controllers.conseiller.ConseillerController.listeRecruteurs
-GET         /conseiller/paginationRecruteurs                         controllers.conseiller.ConseillerController.paginationRecruteurs(dateInscription: String, recruteurId: String)
-GET         /conseiller/declarerRepriseEmploi/:candidatId            controllers.conseiller.ConseillerController.declarerRepriseEmploi(candidatId)
+GET           /conseiller/candidats                                    controllers.conseiller.ConseillerController.listeCandidats
+POST          /conseiller/paginerCandidats                             controllers.conseiller.ConseillerController.paginerCandidats
+POST          /conseiller/ajouterMRSCandidat                           controllers.conseiller.ConseillerController.ajouterMRSCandidat
+GET           /conseiller/recruteurs                                   controllers.conseiller.ConseillerController.listeRecruteurs
+POST          /conseiller/paginerRecruteurs                            controllers.conseiller.ConseillerController.paginerRecruteurs
+GET           /conseiller/declarerRepriseEmploi/:candidatId            controllers.conseiller.ConseillerController.declarerRepriseEmploi(candidatId)
 
-GET         /assets/*file                                            controllers.Assets.versioned(file: String)
+GET           /assets/*file                                            controllers.Assets.versioned(file: String)

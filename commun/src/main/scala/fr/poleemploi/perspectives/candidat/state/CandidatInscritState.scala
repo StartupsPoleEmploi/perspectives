@@ -13,7 +13,6 @@ object CandidatInscritState extends CandidatState {
 
   override def name: String = "Inscrit"
 
-  // FIXME : vérification de l'existence des codes ROME dans le référentiel
   override def modifierCriteres(context: CandidatContext, command: ModifierCriteresRechercheCommand): List[Event] = {
     val criteresRechercheModifiesEvent =
       if (!context.rechercheMetierEvalue.contains(command.rechercheMetierEvalue) ||
@@ -143,23 +142,23 @@ object CandidatInscritState extends CandidatState {
     val mrsDejaValidees = context.mrsValidees.intersect(command.mrsValidees)
     if (mrsDejaValidees.nonEmpty) {
       return Future.failed(new IllegalArgumentException(
-        s"Le candidat ${command.id.value} a déjà validé les MRS suivantes : ${mrsDejaValidees.foldLeft("")((s, mrs) => s + '\n' + s"${mrs.codeROME} le ${mrs.dateEvaluation}")}"
+        s"Le candidat ${command.id.value} a déjà validé les MRS suivantes : ${mrsDejaValidees.foldLeft("")((s, mrs) => s + '\n' + s"${mrs.codeROME.value} le ${mrs.dateEvaluation}")}"
       ))
     }
 
     Future.sequence(
-    command.mrsValidees.map(m =>
-      referentielHabiletesMRS.habiletes(
-        codeROME = m.codeROME,
-        codeDepartement = m.codeDepartement
-      ).map(h =>
-        MRSAjouteeEvent(
-          candidatId = command.id,
-          metier = m.codeROME,
-          departement = m.codeDepartement,
-          habiletes = h,
-          dateEvaluation = m.dateEvaluation
-        ))
+      command.mrsValidees.map(m =>
+        referentielHabiletesMRS.habiletes(
+          codeROME = m.codeROME,
+          codeDepartement = m.codeDepartement
+        ).map(habiletes =>
+          MRSAjouteeEvent(
+            candidatId = command.id,
+            metier = m.codeROME,
+            departement = m.codeDepartement,
+            habiletes = habiletes,
+            dateEvaluation = m.dateEvaluation
+          ))
       )
     )
   }

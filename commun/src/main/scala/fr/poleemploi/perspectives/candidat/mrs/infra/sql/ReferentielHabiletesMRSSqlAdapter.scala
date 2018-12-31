@@ -47,4 +47,8 @@ class ReferentielHabiletesMRSSqlAdapter(val driver: PostgresDriver,
     database.run(habiletesParMRSQuery(codeROME, codeDepartement).result.headOption).map(_.map(
       h => h.habiletes
     ).getOrElse(Nil))
+
+  override def codeROMEsParDepartement: Future[Map[CodeDepartement, List[CodeROME]]] =
+    database.run(habiletesMRSTable.map(h => (h.codeDepartement, h.codeROME)).result)
+      .map(_.toList.groupBy(_._1).map(v => (v._1, v._2.map(l => l._2))))
 }

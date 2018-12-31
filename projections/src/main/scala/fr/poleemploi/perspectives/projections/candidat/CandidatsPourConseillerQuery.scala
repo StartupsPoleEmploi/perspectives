@@ -7,7 +7,7 @@ import fr.poleemploi.perspectives.candidat.{CandidatId, StatutDemandeurEmploi}
 import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
 import play.api.libs.functional.syntax.{unlift, _}
-import play.api.libs.json.{JsPath, Writes}
+import play.api.libs.json._
 
 case class CandidatsPourConseillerQuery(nbPagesACharger: Int,
                                         page: Option[KeysetCandidatsPourConseiller]) extends Query[CandidatsPourConseillerQueryResult] {
@@ -39,9 +39,15 @@ case class CandidatPourConseillerDto(candidatId: CandidatId,
     * Ne se base pas sur statutDemandeurEmploi car il n'est pas forcément actualisé tout de suite
     * par le candidat et cela implique une reconnexion du candidat via un service externe.
     */
-  def rechercheEmploi: Boolean =
+  val rechercheEmploi: Boolean =
     (rechercheMetierEvalue.isEmpty && rechercheAutreMetier.isEmpty) ||
       rechercheMetierEvalue.getOrElse(false) || rechercheAutreMetier.getOrElse(false)
+}
+
+object CandidatPourConseillerDto {
+
+  implicit val writes: Writes[CandidatPourConseillerDto] = (a: CandidatPourConseillerDto) =>
+    Json.writes[CandidatPourConseillerDto].writes(a) ++ Json.obj("rechercheEmploi" -> JsBoolean(a.rechercheEmploi))
 }
 
 case class KeysetCandidatsPourConseiller(dateInscription: Long,

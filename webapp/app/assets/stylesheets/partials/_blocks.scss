@@ -121,6 +121,12 @@
   }
 }
 
+.erreur {
+  display: block;
+  color: $perspectives-text-required;
+  font-weight: bold;
+}
+
 .erreurs {
   margin-left: 2.5rem;
 

@@ -40,7 +40,7 @@ object FormHelpers {
         errArgs = Nil
       )(key, data)
 
-    override def unbind(key: String, value: ZonedDateTime) =
+    override def unbind(key: String, value: ZonedDateTime): Map[String, String] =
       Map(key -> DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(value))
   }
 }

@@ -4,7 +4,7 @@ import com.google.inject._
 import fr.poleemploi.cqrs.projection.{Query, QueryResult}
 import fr.poleemploi.eventsourcing.eventstore.EventStoreListener
 import fr.poleemploi.perspectives.candidat.cv.domain.CVService
-import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielMRSCandidat
+import fr.poleemploi.perspectives.candidat.mrs.domain.{ReferentielHabiletesMRS, ReferentielMRSCandidat}
 import fr.poleemploi.perspectives.emailing.domain.EmailingService
 import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
 import fr.poleemploi.perspectives.projections.candidat._
@@ -60,13 +60,15 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
                            recruteurProjection: RecruteurProjection,
                            cvService: CVService,
                            referentielMRSCandidat: ReferentielMRSCandidat,
-                           referentielMetier: ReferentielMetier): CandidatQueryHandler =
+                           referentielMetier: ReferentielMetier,
+                           referentielHabiletesMRS: ReferentielHabiletesMRS): CandidatQueryHandler =
     new CandidatQueryHandler(
       candidatProjection = candidatProjection,
       recruteurProjection = recruteurProjection,
       cvService = cvService,
       referentielMRSCandidat = referentielMRSCandidat,
-      referentielMetier = referentielMetier
+      referentielMetier = referentielMetier,
+      referentielHabiletesMRS = referentielHabiletesMRS
     )
 
   @Provides

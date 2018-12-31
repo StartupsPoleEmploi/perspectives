@@ -1,3 +1,107 @@
 #listeCandidats {
-  @include make-container();
+
+  .ajouterMRSCandidatForm {
+    margin-top: 2em;
+    @include make-container();
+    @include make-container-max-widths();
+
+    &-titre {
+      text-align: center;
+      font-size: 1.4em;
+    }
+  }
+
+  .champFormulaire {
+    @include make-col-ready();
+  }
+
+  .resultatsRecherche {
+    margin-top: 1em;
+    background-color: rgba(234, 235, 237, 0.5);
+  }
+
+  .listeResultatsRecherche {
+    @include make-container();
+    @include make-container-max-widths();
+
+    &-separation {
+      height: 5px;
+    }
+
+    &-ligneTitre {
+      @include make-row();
+      color: rgba(51, 64, 81, 0.5);
+    }
+
+    &-ligne {
+      @include make-row();
+      align-items: center;
+      cursor: pointer;
+      background-color: white;
+      color: $perspectives-bleu-nuit;
+    }
+
+    &-colonne {
+      @include make-col-ready();
+      padding-top: 15px;
+      padding-bottom: 15px;
+    }
+
+    &-candidat {
+      @include make-col(2);
+    }
+    &-metiersEvalues {
+      @include make-col(4);
+    }
+    &-metiersRecherches {
+      @include make-col(4);
+    }
+    &-actions {
+      @include make-col(2);
+    }
+  }
+
+  .profilCandidat {
+    @include make-row();
+    color: white;
+    background-color: $perspectives-bleu-nuit;
+
+    &-colonne {
+      @include make-col-ready();
+      padding-top: 15px;
+      padding-bottom: 15px;
+    }
+
+    &-date {
+      @include make-col(5);
+    }
+    &-contact {
+      @include make-col(4);
+    }
+    &-actions {
+      @include make-col(3);
+      text-align: center;
+    }
+  }
+
+  .listeActions {
+    @extend %liste;
+    display: inline-block;
+
+    &-item {
+      display: block;
+      position: relative;
+      padding: 10px;
+    }
+  }
+
+  .bouton-actionCandidat {
+    display: inline-block;
+    border-radius: 4px;
+    padding: 1em 1em;
+    font-size: 0.7em;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
 }
+
