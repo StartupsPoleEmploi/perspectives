@@ -94,7 +94,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
         Redirect(routes.ProfilController.modificationProfil()).withSession(session).flashing(flash.withRecruteurInscrit)
     }).recover {
       case t: Throwable =>
-        Logger.error("Erreur lors de l'authentification recruteur via PEConnect", t)
+        Logger.error("Erreur lors du callback recruteur via PEConnect", t)
         // Nettoyage de session et redirect
         Redirect(routes.LandingController.landing()).withSession(
           SessionOauthTokens.removeOauthTokensRecruteur(request.session)
