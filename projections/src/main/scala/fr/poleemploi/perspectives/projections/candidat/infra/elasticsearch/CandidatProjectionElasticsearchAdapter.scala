@@ -69,7 +69,7 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
         .url(s"$baseUrl/$indexName/$docType/${event.candidatId.value}")
         .withQueryStringParameters(refreshParam, ("_source", s"$rayon_recherche"))
         .get()
-        .map(filtreStatutReponse(_))
+        .flatMap(filtreStatutReponse(_))
         .map(r => (Json.parse(r.body) \ "_source" \ s"$rayon_recherche").asOpt[Int])
       _ <- update(event.candidatId, Json.obj(
         code_postal -> event.adresse.codePostal,
@@ -100,7 +100,7 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
         .url(s"$baseUrl/$indexName/$docType/${event.candidatId.value}")
         .withQueryStringParameters(refreshParam, ("_source", s"$mobilite"))
         .get()
-        .map(filtreStatutReponse(_))
+        .flatMap(filtreStatutReponse(_))
         .map(r => (Json.parse(r.body) \ "_source" \ s"$mobilite").asOpt[MobiliteDocument])
       _ <- update(event.candidatId, Json.obj(
         recherche_metiers_evalues -> event.rechercheMetierEvalue,
@@ -145,7 +145,7 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
         .url(s"$baseUrl/$indexName/$docType/${event.candidatId.value}")
         .withQueryStringParameters(refreshParam, ("_source", s"$metiers_evalues,$habiletes"))
         .get()
-        .map(filtreStatutReponse(_))
+        .flatMap(filtreStatutReponse(_))
         .map(r => (Json.parse(r.body) \ "_source").as[CandidatMetiersEvaluesDocument])
       _ <- update(event.candidatId, Json.obj(
         metiers_evalues -> (event.metier :: candidat.metiersEvalues).distinct,
@@ -164,7 +164,7 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
     wsClient
       .url(s"$baseUrl/$indexName/$docType/${query.candidatId.value}")
       .get()
-      .map(filtreStatutReponse(_))
+      .flatMap(filtreStatutReponse(_))
       .map { response =>
         val document = (Json.parse(response.body) \ "_source").as[CandidatSaisieCriteresRechercheDocument]
         toCandidatSaisieCriteresRechercheQueryResult(document)
@@ -177,7 +177,7 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
         ("_source", s"$contacte_par_organisme_formation,$contacte_par_agence_interim")
       )
       .get()
-      .map(filtreStatutReponse(_))
+      .flatMap(filtreStatutReponse(_))
       .map(response =>
         (Json.parse(response.body) \ "_source").as[CandidatContactRecruteurDocument].toContactRecruteurDto
       )

@@ -96,18 +96,12 @@ class PEConnectController @Inject()(cc: ControllerComponents,
         Redirect(routes.SaisieCriteresRechercheController.saisieCriteresRecherche()).withSession(session)
           .flashing(flash.withCandidatInscrit)
     }).recover {
-      case t: PEConnectException =>
+      case t: Throwable =>
         Logger.error("Erreur lors du callback candidat PEConnect", t)
         // Nettoyage de session et redirect
         Redirect(routes.LandingController.landing())
           .withSession(SessionOauthTokens.removeOauthTokensCandidat(request.session))
           .flashing(request.flash.withMessageErreur("Une erreur est survenue lors de l'accès au service de Pôle Emploi, veuillez réessayer ultérieurement"))
-      case t: Throwable =>
-        Logger.error("Erreur lors du callback candidat PEConnect", t)
-        // Nettoyage de session et redirect
-        Redirect(routes.LandingController.landing()).withSession(
-          SessionOauthTokens.removeOauthTokensCandidat(request.session)
-        )
     }
   }
 

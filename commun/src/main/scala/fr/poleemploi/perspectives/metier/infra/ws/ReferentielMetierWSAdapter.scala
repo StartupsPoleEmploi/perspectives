@@ -1,8 +1,9 @@
 package fr.poleemploi.perspectives.metier.infra.ws
 
 import fr.poleemploi.perspectives.commun.domain.{CodeROME, Metier}
+import fr.poleemploi.perspectives.commun.infra.ws.WSAdapter
 import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
-import play.api.libs.ws.{WSClient, WSResponse}
+import play.api.libs.ws.WSClient
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
@@ -14,7 +15,7 @@ case class ReferentielMetierWSException(message: String) extends Exception(messa
   * Se base sur l'API infotravail de l'emploi store
   */
 class ReferentielMetierWSAdapter(config: ReferentielMetierWSAdapterConfig,
-                                 wsClient: WSClient) extends ReferentielMetier {
+                                 wsClient: WSClient) extends ReferentielMetier with WSAdapter {
 
   val metiersResourceId = "767d0c4a-277b-493c-84b7-00143933efce"
 
@@ -36,7 +37,7 @@ class ReferentielMetierWSAdapter(config: ReferentielMetierWSAdapterConfig,
         "client_secret" -> config.clientSecret,
         "scope" -> s"application_${config.clientId} api_infotravailv1",
       ))
-      .map(filtreStatutReponse(_))
+      .flatMap(filtreStatutReponse(_))
       .map(_.json.as[AccessTokenResponse])
 
   private def listerMetiers(accessTokenResponse: AccessTokenResponse): Future[Map[CodeROME, Metier]] = {
@@ -47,7 +48,7 @@ class ReferentielMetierWSAdapter(config: ReferentielMetierWSAdapterConfig,
             .getOrElse(s"?resource_id=$metiersResourceId"))
         .addHttpHeaders(("Authorization", s"Bearer ${accessTokenResponse.accessToken}"))
         .get()
-        .map(filtreStatutReponse(_))
+        .flatMap(filtreStatutReponse(_))
         .map(_.json.as[ListeMetiersResponse])
 
     val futures = callWS().flatMap { listeMetiers =>
@@ -65,13 +66,5 @@ class ReferentielMetierWSAdapter(config: ReferentielMetierWSAdapterConfig,
           (map, romeCardResponse) => map + (CodeROME(romeCardResponse.romeProfessionCardCode) -> romeCardResponse.toMetier)
         )
     }
-  }
-
-  private def filtreStatutReponse(response: WSResponse,
-                                  statutErreur: Int => Boolean = s => s >= 400,
-                                  statutNonGere: Int => Boolean = s => s != 200): WSResponse = response.status match {
-    case s if statutErreur(s) => throw ReferentielMetierWSException(s"Erreur lors de l'appel au référentiel métier. Code: ${response.status}. Reponse : ${response.body}")
-    case s if statutNonGere(s) => throw ReferentielMetierWSException(s"Statut non géré lors de l'appel au référentiel métier. Code: ${response.status}. Reponse : ${response.body}")
-    case _ => response
   }
 }

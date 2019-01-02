@@ -4,19 +4,18 @@ import java.nio.charset.StandardCharsets
 import java.util.Base64
 
 import fr.poleemploi.perspectives.commun.domain.Email
+import fr.poleemploi.perspectives.commun.infra.ws.WSAdapter
 import fr.poleemploi.perspectives.emailing.domain._
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetContactId
 import play.api.libs.json._
-import play.api.libs.ws.{WSClient, WSResponse}
+import play.api.libs.ws.WSClient
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-case class MailjetWSAdapterException(message: String) extends Exception(message)
-
 class MailjetWSAdapter(config: MailjetWSAdapterConfig,
                        mailjetWSMapping: MailjetWSMapping,
-                       wsClient: WSClient) {
+                       wsClient: WSClient) extends WSAdapter {
 
   val authorization: String = Base64.getEncoder
     .encodeToString(s"${config.apiKeyPublic}:${config.apiKeyPrivate}".getBytes(StandardCharsets.UTF_8))
@@ -68,23 +67,16 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
       .post(Json.obj(
         "Messages" -> Json.toJson(mailjetTemplateEmail.messages)
       ))
-      .map(filtreStatutReponse(_))
+      .flatMap(filtreStatutReponse(_))
+      .map(_ => ())
 
   private def manageContact(idListeContact: Int, request: ManageContactRequest): Future[ManageContactResponse] =
     wsClient
       .url(s"${config.urlApi}/v3/REST/contactslist/${filtrerListeTesteurs(idListeContact, request.email)}/managecontact")
       .addHttpHeaders(jsonHttpHeader, authorizationHeader)
       .post(Json.toJson(request))
-      .map(filtreStatutReponse(_))
+      .flatMap(filtreStatutReponse(_))
       .map(_.json.as[ManageContactResponse])
-
-  private def filtreStatutReponse(response: WSResponse,
-                                  statutErreur: Int => Boolean = s => s >= 400,
-                                  statutNonGere: Int => Boolean = s => s != 200 && s != 201): WSResponse = response.status match {
-    case s if statutErreur(s) => throw MailjetWSAdapterException(s"Erreur lors de l'envoi d'un email. Code: ${response.status}. Reponse : ${response.body}")
-    case s if statutNonGere(s) => throw MailjetWSAdapterException(s"Statut non géré lors de l'envoi d'un email. Code: ${response.status}. Reponse : ${response.body}")
-    case _ => response
-  }
 
   private def jsonHttpHeader: (String, String) = ("Content-Type", "application/json")
 

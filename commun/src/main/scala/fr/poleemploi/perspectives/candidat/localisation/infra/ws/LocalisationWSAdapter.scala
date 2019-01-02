@@ -23,7 +23,7 @@ class LocalisationWSAdapter(wsClient: WSClient,
         ("limit", "1") // Une seul résultat suffit : celui avec le score le plus élevé sera retourné
       )
       .get()
-      .map(filtreStatutReponse(_))
+      .flatMap(filtreStatutReponse(_))
       .map(response => {
         val coordonnees = (Json.parse(response.body) \\ "coordinates").headOption.map(json => json.as[GeometryCoordinates])
         coordonnees.map(mapping.buildCoordonnees)
