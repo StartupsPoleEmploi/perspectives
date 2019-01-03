@@ -119,12 +119,17 @@ class ProjectionActor(projection: Projection) extends Actor with Stash with Time
         }
       ) ! Apply(e.appendedEvent.event)
     case Clean =>
-      aggregatActors.foreach(e => e._2 ! PoisonPill)
-      context.become(cleaning)
+      if (aggregatActors.nonEmpty) {
+        aggregatActors.foreach(e => e._2 ! PoisonPill)
+        context.become(cleaning)
+      }
     case Stop =>
       timers.cancel(CleaningKey)
-      aggregatActors.foreach(e => e._2 ! PoisonPill)
-      context.become(stopping)
+      if (aggregatActors.nonEmpty) {
+        aggregatActors.foreach(e => e._2 ! PoisonPill)
+        context.become(stopping)
+      } else
+        context.stop(self)
   }
 
   def cleaning: Receive = {
