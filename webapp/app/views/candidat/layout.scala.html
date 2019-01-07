@@ -1,8 +1,10 @@
 @import conf.WebAppConfig
 @import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
+@import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
 
 @(title: String = "Perspectives : boostez vos opportunités !",
         candidatAuthentifie: Option[CandidatAuthentifie],
+        recruteurAuthentifie: Option[RecruteurAuthentifie] = None,
         cssClassesBody: List[String] = Nil)(content: Html)(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
 <!DOCTYPE html>
@@ -21,20 +23,7 @@
     </head>
     <body @if(cssClassesBody.nonEmpty){class="@cssClassesBody.mkString(" ")"}>
         @if(webAppConfig.useGoogleTagManager) {@components.googleTagManagerNoScript()}
-        <div class="navigation">
-            @components.headerPrincipal()
-            @candidatAuthentifie.map(c => partials.menuCandidat(c)).getOrElse {
-                <nav class="accesLanding">
-                    <a class="accesLanding-lien" href="@controllers.recruteur.routes.LandingController.landing()">Accès recruteur</a>
-                </nav>
-                <div class="conteneurPEConnect">
-                @components.peconnect(
-                    href = controllers.candidat.routes.InscriptionController.inscription().url,
-                    texte = "Connexion candidat avec pôle emploi"
-                )
-                </div>
-            }
-        </div>
+        @navigation(candidatAuthentifie, recruteurAuthentifie)
         @components.flashMessages()
 
         @content

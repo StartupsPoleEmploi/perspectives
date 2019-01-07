@@ -1,0 +1,20 @@
+@import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
+@import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
+
+@(candidatAuthentifie: Option[CandidatAuthentifie],
+        recruteurAuthentifie: Option[RecruteurAuthentifie])(implicit assetsFinder: AssetsFinder)
+
+<div class="navigation">
+    @components.headerPrincipal()
+    @candidatAuthentifie.map(c => partials.menuCandidat(c)).getOrElse {
+        <nav class="accesLanding">
+            <a class="accesLanding-lien" href="@recruteurAuthentifie.map(_ => controllers.recruteur.routes.RechercheCandidatController.index()).getOrElse(controllers.recruteur.routes.LandingController.landing())">Accès recruteur</a>
+        </nav>
+        <div class="conteneurPEConnect">
+        @components.peconnect(
+            href = controllers.candidat.routes.InscriptionController.inscription().url,
+            texte = "Connexion candidat avec pôle emploi"
+        )
+        </div>
+    }
+</div>

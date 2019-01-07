@@ -1,6 +1,6 @@
 package controllers.candidat
 
-import authentification.infra.play.{OptionalCandidatAuthentifieAction, OptionalCandidatAuthentifieRequest}
+import authentification.infra.play.{OptionalCandidatAuthentifieAction, OptionalCandidatAuthentifieRequest, OptionalRecruteurAuthentifieAction, OptionalRecruteurAuthentifieRequest}
 import conf.WebAppConfig
 import controllers.AssetsFinder
 import fr.poleemploi.perspectives.projections.rechercheCandidat.RechercheCandidatQueryHandler
@@ -12,12 +12,16 @@ class LandingController @Inject()(cc: ControllerComponents,
                                   implicit val assets: AssetsFinder,
                                   implicit val webAppConfig: WebAppConfig,
                                   optionalCandidatAuthentifieAction: OptionalCandidatAuthentifieAction,
+                                  optionalRecruteurAuthentifieAction: OptionalRecruteurAuthentifieAction,
                                   rechercheCandidatQueryHandler: RechercheCandidatQueryHandler) extends AbstractController(cc) {
 
-  def landing() = optionalCandidatAuthentifieAction { implicit request: OptionalCandidatAuthentifieRequest[AnyContent] =>
-    Ok(views.html.candidat.landing(
-      candidatAuthentifie = request.candidatAuthentifie,
-      secteursActivites = rechercheCandidatQueryHandler.secteursProposes
-    ))
+  def landing(): Action[AnyContent] = optionalRecruteurAuthentifieAction.async { optionalRecruteurAuthentifieRequest: OptionalRecruteurAuthentifieRequest[AnyContent] =>
+    optionalCandidatAuthentifieAction { implicit request: OptionalCandidatAuthentifieRequest[AnyContent] =>
+      Ok(views.html.candidat.landing(
+        candidatAuthentifie = request.candidatAuthentifie,
+        recruteurAuthentifie = optionalRecruteurAuthentifieRequest.recruteurAuthentifie,
+        secteursActivites = rechercheCandidatQueryHandler.secteursProposes
+      ))
+    }(optionalRecruteurAuthentifieRequest)
   }
 }

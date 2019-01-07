@@ -1,11 +1,15 @@
 @import conf.WebAppConfig
 @import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
+@import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
 @import fr.poleemploi.perspectives.commun.domain.SecteurActivite
 
 @(candidatAuthentifie: Option[CandidatAuthentifie],
+        recruteurAuthentifie: Option[RecruteurAuthentifie],
         secteursActivites: List[SecteurActivite])(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
-@layout(candidatAuthentifie = candidatAuthentifie, cssClassesBody = List("degradeGrisBlanc")) {
+@layout(candidatAuthentifie = candidatAuthentifie,
+        recruteurAuthentifie = recruteurAuthentifie,
+        cssClassesBody = List("degradeGrisBlanc")) {
     <div id="landingCandidat">
         <section class="intro">
             <header class="introTitres">
