@@ -6,7 +6,8 @@ object Settings {
 
   val commonSettings: Seq[Setting[_]] = Seq(
     organization := "fr.poleemploi.perspectives",
-    scalaVersion := "2.12.4"
+    scalaVersion := "2.12.4",
+    Keys.scalacOptions ++= Seq("-deprecation")
   )
 
   val buildInfoSettings: Seq[Setting[_]] = Seq(
