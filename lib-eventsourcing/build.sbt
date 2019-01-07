@@ -10,5 +10,6 @@ libraryDependencies ++= Seq(
   Dependencies.slickPg,
   Dependencies.slickHikariCp,
   Dependencies.scalatestplus,
-  Dependencies.mockito
+  Dependencies.mockito,
+  Dependencies.akkaTestkit
 )

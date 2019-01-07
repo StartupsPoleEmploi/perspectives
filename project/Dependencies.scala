@@ -19,6 +19,8 @@ object Dependencies {
 
   val akkaStream = "com.typesafe.akka" %% "akka-stream" % akkaVersion
 
+  val akkaTestkit = "com.typesafe.akka" %% "akka-testkit" % akkaVersion % Test
+
   val akkaQuartzScheduler = "com.enragedginger" %% "akka-quartz-scheduler" % "1.6.1-akka-2.5.x"
 
   val jacksonCore = "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion

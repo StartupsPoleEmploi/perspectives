@@ -64,7 +64,7 @@ class ProjectionManagerActor extends Actor {
         }
       ) ! ProjectionActor.Publish(e.appendedEvent)
     case Stop =>
-      projectionActors.foreach(e => e._2 ! Stop)
+      projectionActors.foreach(e => e._2 ! ProjectionActor.Stop)
     case Terminated(actorRef) =>
       projectionActors.find(a => a._2 == actorRef).foreach(a =>
         projectionActors.remove(a._1)
@@ -82,9 +82,13 @@ object ProjectionActor {
 
   case object Clean
 
-  def props(projection: Projection): Props =
+  case object Stop
+
+  def props(projection: Projection,
+            cleanInterval: FiniteDuration = 1.minute): Props =
     Props(new ProjectionActor(
-      projection = projection
+      projection = projection,
+      cleanInterval = cleanInterval
     ))
 
   private case object CleaningKey
@@ -93,19 +97,19 @@ object ProjectionActor {
 /**
   * Crée un acteur par aggrégat
   */
-class ProjectionActor(projection: Projection) extends Actor with Stash with Timers with ActorLogging {
+class ProjectionActor(projection: Projection,
+                      cleanInterval: FiniteDuration) extends Actor with Stash with Timers with ActorLogging {
 
   import AggregatActor._
   import ProjectionActor._
-  import ProjectionManagerActor._
 
   // Recrée régulièrement les acteurs par aggrégat pour éviter d'en avoir trop en mémoire
-  timers.startPeriodicTimer(CleaningKey, Clean, 1.minute)
+  timers.startPeriodicTimer(CleaningKey, Clean, cleanInterval)
 
   val aggregatActors: mutable.Map[String, ActorRef] = mutable.HashMap.empty
 
   override def receive: Receive = {
-    case e: ProjectionActor.Publish =>
+    case e: Publish =>
       aggregatActors.getOrElse(
         key = e.appendedEvent.streamName,
         default = {
