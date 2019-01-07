@@ -260,28 +260,20 @@ var app = new Vue({
             }
         },
         chargerPageSuivante: function(critere) {
-            var formData = [
-                {name: "csrfToken", value: this.csrfToken},
-                {name: "secteurActivite", value: this.secteurActivite},
-                {name: "metier", value: this.metier},
-                {name: "coordonnees.latitude", value: this.localisation !== null ? this.localisation.latitude: null},
-                {name: "coordonnees.longitude", value: this.localisation !== null ? this.localisation.longitude: null},
-                {name: "pagination.score", value: critere.score},
-                {name: "pagination.dateInscription", value: critere.dateInscription},
-                {name: "pagination.candidatId", value: critere.candidatId}
-            ];
-            return $.ajax({
-                type: "POST",
-                url: "/recruteur/recherche",
-                data: formData,
-                dataType: 'json'
-            }).done(function (response) {
+            this.paginerCandidats(critere).done(function (response) {
                 app.$refs.resultatsRecherche.innerHTML = response.html;
                 app.initialiserTableau();
                 app.$refs.pagination.pageSuivanteChargee(response.nbCandidats, response.pageSuivante);
             });
         },
         chargerPagePrecedente: function(critere, index) {
+            this.paginerCandidats(critere).done(function (response) {
+                app.$refs.resultatsRecherche.innerHTML = response.html;
+                app.initialiserTableau();
+                app.$refs.pagination.pagePrecedenteChargee(index);
+            });
+        },
+        paginerCandidats: function(critere) {
             var formData = [
                 {name: "csrfToken", value: this.csrfToken},
                 {name: "secteurActivite", value: this.secteurActivite},
@@ -293,15 +285,11 @@ var app = new Vue({
                 {name: "pagination.candidatId", value: critere.candidatId}
             ];
             return $.ajax({
-                type: "POST",
-                url: "/recruteur/recherche",
+                type: 'POST',
+                url: '/recruteur/recherche',
                 data: formData,
                 dataType: 'json'
-            }).done(function (response) {
-                app.$refs.resultatsRecherche.innerHTML = response.html;
-                app.initialiserTableau();
-                app.$refs.pagination.pagePrecedenteChargee(index);
-            });
+            })
         },
         initialiserTableau: function() {
             $(".js-infoCandidat").hide();
