@@ -9,8 +9,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-case class ReferentielMetierWSException(message: String) extends Exception(message)
-
 /**
   * Se base sur l'API infotravail de l'emploi store
   */
