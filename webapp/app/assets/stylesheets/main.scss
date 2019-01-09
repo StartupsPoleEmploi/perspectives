@@ -14,8 +14,9 @@
 @import "modules/navigation";
 @import "modules/flashMessages";
 @import "modules/temoignages";
-@import "modules/pagination";
 @import "modules/vuejs";
+
+@import "composants/pagination";
 @import "composants/alerteRecruteur";
 
 @import "pages/candidat/landing";
