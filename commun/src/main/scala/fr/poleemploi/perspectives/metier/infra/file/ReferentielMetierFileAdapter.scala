@@ -17,7 +17,7 @@ class ReferentielMetierFileAdapter extends ReferentielMetier {
     Json.fromJson[List[MetierFileDto]](Json.parse(source.mkString)) match {
       case s: JsSuccess[List[MetierFileDto]] =>
         s.value.foldLeft(Map[CodeROME, Metier]())(
-          (map, json) => map + (json.codeROME -> new Metier(codeROME = json.codeROME, label = json.label))
+          (map, json) => map + (json.codeROME -> Metier(codeROME = json.codeROME, label = json.label))
         )
       case e: JsError => throw new RuntimeException(s"Impossible de charger le referentiel metier : $e")
     }
