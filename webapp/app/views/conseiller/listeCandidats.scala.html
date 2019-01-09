@@ -74,13 +74,13 @@
                     {{candidat.prenom | capitalize }} {{candidat.nom | capitalize }}
                 </div>
                 <div class="listeResultatsRecherche-colonne listeResultatsRecherche-metiersEvalues">
-                    <div v-if="candidat.rechercheMetierEvalue">Recherche métiers évalués : {{candidat.rechercheMetierEvalue | boolean}}</div>
+                    <div v-if="candidat.rechercheMetiersEvalues !== undefined">Recherche métiers évalués : {{candidat.rechercheMetiersEvalues | boolean}}</div>
                     <ul class="detailsProfils">
                         <li class="detailsProfils-item" v-for="metier in candidat.metiersEvalues">{{metier.codeROME}} : {{metier.label}}</li>
                     </ul>
                 </div>
                 <div class="listeResultatsRecherche-colonne listeResultatsRecherche-metiersRecherches">
-                    <div v-if="candidat.rechercheAutreMetier">Recherche autres métiers : {{candidat.rechercheAutreMetier | boolean}}</div>
+                    <div v-if="candidat.rechercheAutresMetiers !== undefined">Recherche autres métiers : {{candidat.rechercheAutresMetiers | boolean}}</div>
                     <ul class="detailsProfils">
                         <li class="detailsProfils-item" v-for="metier in candidat.metiersRecherches">{{metier.codeROME}} : {{metier.label}}</li>
                     </ul>
@@ -106,6 +106,8 @@
                     <div>Derniere connexion : {{candidat.dateDerniereConnexion | date}}</div>
                 </div>
                 <div class="profilCandidat-colonne profilCandidat-contact">
+                    <div v-if="candidat.commune">Commune : {{candidat.commune}}</div>
+                    <div v-if="candidat.codePostal">Code postal : {{candidat.codePostal}}</div>
                     <div v-if="candidat.rayonRecherche">Rayon de recherche : {{candidat.rayonRecherche}}km</div>
                     <div v-if="candidat.contacteParAgenceInterim">Contact interim : {{candidat.contacteParAgenceInterim | boolean}}</div>
                     <div v-if="candidat.contacteParOrganismeFormation">Contact formation : {{candidat.contacteParOrganismeFormation | boolean}}</div>

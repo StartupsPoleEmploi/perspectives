@@ -23,12 +23,14 @@ case class CandidatPourConseillerDto(candidatId: CandidatId,
                                      genre: Genre,
                                      email: Email,
                                      statutDemandeurEmploi: Option[StatutDemandeurEmploi],
-                                     rechercheMetierEvalue: Option[Boolean],
+                                     rechercheMetiersEvalues: Option[Boolean],
                                      metiersEvalues: List[Metier],
-                                     rechercheAutreMetier: Option[Boolean],
+                                     rechercheAutresMetiers: Option[Boolean],
                                      metiersRecherches: List[Metier],
                                      contacteParAgenceInterim: Option[Boolean],
                                      contacteParOrganismeFormation: Option[Boolean],
+                                     commune: Option[String],
+                                     codePostal: Option[String],
                                      rayonRecherche: Option[RayonRecherche],
                                      numeroTelephone: Option[NumeroTelephone],
                                      dateInscription: LocalDateTime,
@@ -39,8 +41,8 @@ case class CandidatPourConseillerDto(candidatId: CandidatId,
     * par le candidat et cela implique une reconnexion du candidat via un service externe.
     */
   val rechercheEmploi: Boolean =
-    (rechercheMetierEvalue.isEmpty && rechercheAutreMetier.isEmpty) ||
-      rechercheMetierEvalue.getOrElse(false) || rechercheAutreMetier.getOrElse(false)
+    (rechercheMetiersEvalues.isEmpty && rechercheAutresMetiers.isEmpty) ||
+      rechercheMetiersEvalues.getOrElse(false) || rechercheAutresMetiers.getOrElse(false)
 }
 
 object CandidatPourConseillerDto {

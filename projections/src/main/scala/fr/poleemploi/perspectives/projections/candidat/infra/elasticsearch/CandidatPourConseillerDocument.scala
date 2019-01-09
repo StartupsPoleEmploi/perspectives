@@ -14,12 +14,14 @@ case class CandidatPourConseillerDocument(candidatId: CandidatId,
                                           genre: Genre,
                                           email: Email,
                                           statutDemandeurEmploi: Option[StatutDemandeurEmploi],
-                                          rechercheMetierEvalue: Option[Boolean],
+                                          rechercheMetiersEvalues: Option[Boolean],
                                           metiersEvalues: List[CodeROME],
-                                          rechercheAutreMetier: Option[Boolean],
+                                          rechercheAutresMetiers: Option[Boolean],
                                           metiersRecherches: List[CodeROME],
                                           contacteParAgenceInterim: Option[Boolean],
                                           contacteParOrganismeFormation: Option[Boolean],
+                                          commune: Option[String],
+                                          codePostal: Option[String],
                                           rayonRecherche: Option[RayonRecherche],
                                           numeroTelephone: Option[NumeroTelephone],
                                           dateInscription: LocalDateTime,
@@ -42,6 +44,8 @@ object CandidatPourConseillerDocument {
       (JsPath \ metiers_recherches).read[List[CodeROME]] and
       (JsPath \ contacte_par_agence_interim).readNullable[Boolean] and
       (JsPath \ contacte_par_organisme_formation).readNullable[Boolean] and
+      (JsPath \ commune).readNullable[String] and
+      (JsPath \ code_postal).readNullable[String] and
       (JsPath \ rayon_recherche).readNullable[RayonRecherche] and
       (JsPath \ numero_telephone).readNullable[NumeroTelephone] and
       (JsPath \ date_inscription).read[LocalDateTime] and
