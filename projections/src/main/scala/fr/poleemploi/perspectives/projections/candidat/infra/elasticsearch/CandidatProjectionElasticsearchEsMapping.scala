@@ -139,7 +139,6 @@ object CandidatProjectionElasticsearchEsMapping {
     ).getOrElse(queryJson)
   }
 
-
   def buildQueryRechercherCandidatsParMetier(query: RechercherCandidatsQuery,
                                              codeROME: CodeROME,
                                              metiersSecteurSansMetierChoisi: List[CodeROME]): JsObject = {
@@ -254,7 +253,6 @@ object CandidatProjectionElasticsearchEsMapping {
       )
     ).getOrElse(queryJson)
   }
-
 
   private def filtreTypeRecruteur(typeRecruteur: TypeRecruteur): Option[JsObject] = typeRecruteur match {
     case TypeRecruteur.AGENCE_INTERIM =>
