@@ -11,11 +11,4 @@ object Genre {
 
   val HOMME = Genre(value = "H")
   val FEMME = Genre(value = "F")
-
-  def label(genre: Genre): String =
-    genre match {
-      case HOMME => "Homme"
-      case FEMME => "Femme"
-      case _ => ""
-    }
 }
