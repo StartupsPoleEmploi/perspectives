@@ -18,7 +18,7 @@ class ReferentielMRSCandidatLocal extends ReferentielMRSCandidat {
         dateEvaluation = LocalDate.now()
       ),
       MRSValidee(
-        codeROME = CodeROME("I1307"),
+        codeROME = CodeROME("D1106"),
         codeDepartement = CodeDepartement("85"),
         dateEvaluation = LocalDate.now()
       )
