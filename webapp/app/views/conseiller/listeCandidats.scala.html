@@ -96,8 +96,7 @@
                 </div>
             </div>
             <div class="profilCandidat"
-                 v-show="estProfilCandidatCourant(candidat)"
-                 v-bind:class="[estProfilCandidatCourant(candidat) ? 'profilCandidat--courant' : '']">
+                 v-show="estProfilCandidatCourant(candidat)">
                 <div class="profilCandidat-colonne profilCandidat-date">
                     <div>Email : {{candidat.email}}</div>
                     <div>Telephone : {{candidat.numeroTelephone}}</div>
