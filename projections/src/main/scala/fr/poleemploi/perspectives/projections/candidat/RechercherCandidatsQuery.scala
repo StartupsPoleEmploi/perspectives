@@ -6,8 +6,7 @@ import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
 import fr.poleemploi.perspectives.commun.domain.{Coordonnees, _}
 import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
 import fr.poleemploi.perspectives.recruteur.TypeRecruteur
-import play.api.libs.functional.syntax.{unlift, _}
-import play.api.libs.json.{JsPath, Writes}
+import play.api.libs.json.{Json, Writes}
 
 case class RechercherCandidatsQuery(typeRecruteur: TypeRecruteur,
                                     codeSecteurActivite: Option[CodeSecteurActivite],
@@ -73,9 +72,5 @@ case class KeysetRechercherCandidats(score: Option[Int],
 
 object KeysetRechercherCandidats {
 
-  implicit val writes: Writes[KeysetRechercherCandidats] = (
-    (JsPath \ "score").writeNullable[Int] and
-      (JsPath \ "dateInscription").write[Long] and
-      (JsPath \ "candidatId").writeNullable[CandidatId]
-    ) (unlift(KeysetRechercherCandidats.unapply))
+  implicit val writes: Writes[KeysetRechercherCandidats] = Json.writes[KeysetRechercherCandidats]
 }
