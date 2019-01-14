@@ -1,6 +1,6 @@
 "use strict";
 
-Vue.component('pagination', {
+var pagination = Vue.component('pagination', {
     props: {
         pagesInitiales: Array,
         nbParPage: Number
@@ -53,3 +53,5 @@ Vue.component('pagination', {
             'v-on:click="chargerPageSuivante" class="bouton pagination-item pagination-page">></a>' +
     '</div>'
 });
+
+export default pagination;

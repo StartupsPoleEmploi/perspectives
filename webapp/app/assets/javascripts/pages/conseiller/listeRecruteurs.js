@@ -1,5 +1,8 @@
 "use strict";
 
+import pagination from '../../composants/pagination.js';
+import filters from '../../commun/filters.js';
+
 var app = new Vue({
     el: '#listeRecruteurs',
     data: function() {

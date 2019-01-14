@@ -1,3 +1,9 @@
+"use strict";
+
+import statutDemandeurEmploi from '../domain/candidat/statutDemandeurEmploi.js';
+import typeRecruteur from '../domain/recruteur/typeRecruteur.js';
+import frequenceAlerte from '../domain/recruteur/alerte/frequenceAlerte.js';
+
 Vue.filter('capitalize', function (value) {
     if (!value) return '';
     value = value.toString();
@@ -30,6 +36,16 @@ Vue.filter('typeRecruteur', function (value) {
         return "Agence d'interim";
     } else if (value === typeRecruteur.ORGANISME_FORMATION) {
         return "Organisme de formation";
+    } else {
+        return "";
+    }
+});
+
+Vue.filter('frequenceAlerte', function (value) {
+    if (value === frequenceAlerte.QUOTIDIENNE) {
+        return "Chaque jour";
+    } else if (value === frequenceAlerte.HEBDOMADAIRE) {
+        return "Chaque semaine";
     } else {
         return "";
     }

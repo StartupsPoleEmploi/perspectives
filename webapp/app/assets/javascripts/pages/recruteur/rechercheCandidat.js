@@ -1,5 +1,10 @@
 "use strict";
 
+import pagination from '../../composants/pagination.js';
+import alerteRecruteur from '../../composants/alerteRecruteur.js';
+import places from 'places.js';
+import { intituleAlerte, buildAlerte } from '../../domain/recruteur/alerte/alerteService.js';
+
 $(document).ready(function () {
 
     var placesAutocomplete = places({
@@ -151,11 +156,9 @@ var app = new Vue({
             csrfToken: jsData.csrfToken,
             nbCandidatsParPage: jsData.nbCandidatsParPage,
             pagesInitiales: jsData.pagesInitiales,
-            frequences: [ // FIXME: reçues du back
-                {value: 'Quotidienne', label: 'Chaque jour'},
-                {value: 'Hebdomadaire', label: 'Chaque semaine'}
-            ],
-            alertes: [],
+            alertes: jsData.alertes.map(function(alerte) {
+                return buildAlerte(alerte, jsData.metiers, jsData.secteursActivites);
+            }),
             secteurActivite: jsData.secteurActivite !== undefined && jsData.secteurActivite !== null ? jsData.secteurActivite : '',
             secteursActivites: jsData.secteursActivites,
             metier: jsData.metier !== undefined && jsData.metier !== null ? jsData.metier : '',
@@ -169,19 +172,6 @@ var app = new Vue({
         }
     },
     beforeMount: function() {
-       var self = this;
-       this.alertes = jsData.alertes.map(function(alerte) {
-            return {
-                id: alerte.id,
-                intitule: self.intituleAlerte(alerte.metier, alerte.secteurActivite, alerte.localisation),
-                frequence: alerte.frequence,
-                criteres : {
-                    codeSecteurActivite: alerte.secteurActivite !== null ? alerte.secteurActivite : '',
-                    codeROME: alerte.metier !== null ? alerte.metier : '',
-                    localisation: alerte.localisation
-                }
-            };
-        });
         this.titreCompteurResultats = this.getTitreCompteurResultats(jsData.nbCandidatsTotal);
     },
     computed: {
@@ -207,11 +197,9 @@ var app = new Vue({
                     return "<b>" + this.getIntituleCandidats(nbCandidats) + " pour ce métier</b> " + this.getSuffixeCandidats(nbCandidats);
                 } else if (this.secteurActivite !== undefined && this.secteurActivite !== '') {
                     return "<b>" + this.getIntituleCandidats(nbCandidats) + " pour ce secteur d'activité</b> " + this.getSuffixeCandidats(nbCandidats);
-                }
-                else if (this.localisation !== null && this.localisation.label !== '') {
+                } else if (this.localisation !== null && this.localisation.label !== '') {
                     return "<b>" + this.getIntituleCandidats(nbCandidats) + " à " + this.localisation.label + "</b> " + this.getSuffixeCandidats(nbCandidats);
-                }
-                 else {
+                } else {
                     return "<b>" + this.getIntituleCandidats(nbCandidats) + " perspectives</b> " + this.getSuffixeCandidats(nbCandidats);
                 }
             }
@@ -295,24 +283,6 @@ var app = new Vue({
             $(".js-infoCandidat").hide();
             $(".js-profilCandidat").hide();
         },
-        intituleAlerte: function(metier, secteurActivite, localisation) {
-            var intitule = '';
-            if (metier !== null && metier !== '') {
-                intitule += this.metiers.find(function(m) {
-                    return m.codeROME === metier;
-                }).label;
-            } else if (secteurActivite !== null && secteurActivite !== '') {
-                intitule += this.secteursActivites.find(function(s) {
-                    return s.code === secteurActivite;
-                }).label;
-            } else {
-                intitule += "Candidats";
-            }
-            if (localisation.label !== null && localisation.label !== '') {
-                intitule += " à " + localisation.label;
-            }
-            return intitule;
-        },
         creerAlerte: function(frequence) {
             var formData = [
                 {name: "csrfToken", value: this.csrfToken},
@@ -323,7 +293,11 @@ var app = new Vue({
                 {name: "localisation.longitude", value: this.localisation !== null ? this.localisation.longitude: null},
                 {name: "frequence", value: frequence}
             ];
-            var intituleAlerte = this.intituleAlerte(this.metier, this.secteurActivite, this.localisation);
+            var intituleAlerte = intituleAlerte({
+                metier: this.metier,
+                secteurActivite: this.secteurActivite,
+                localisation: this.localisation
+            }, this.metiers, this.secteursActivites);
             var labelFrequence = app.$refs.alertesRecruteur.frequences.find(function(f) {
                 return f.value === frequence;
             }).label;
