@@ -67,7 +67,7 @@
 
   &--degradeBleu {
     color: white;
-    background: linear-gradient(0deg, #82CCDD 0%, #6A89CC 100%);
+    background: linear-gradient(0deg, $perspectives-bleu-ciel 0%, #6A89CC 100%);
     box-shadow: 0 0 30px 0 rgba(57, 92, 99, 0.15);
 
     &:hover {
@@ -110,7 +110,8 @@
 
   &--bleu {
     color: white;
-    background-color: #82CCDD;
+    background-color: $perspectives-bleu-ciel;
+    border: 1px solid transparent;
 
     &:hover {
       background-color: #AEDEE9;
@@ -156,7 +157,7 @@
       background-color: #364252;
 
       .boutonRadio-cercle {
-        background-color: #82CCDD;
+        background-color: $perspectives-bleu-ciel;
       }
     }
 
@@ -221,7 +222,7 @@
 
       width: 10px;
       height: 15px;
-      border: solid #82CCDD;
+      border: solid $perspectives-bleu-ciel;
       border-width: 0 3px 3px 0;
       -webkit-transform: rotate(40deg);
       -ms-transform: rotate(40deg);
