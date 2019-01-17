@@ -5,14 +5,16 @@ import play.api.mvc.Flash
 
 object FlashMessages {
 
-  val keyMessageSucces = "message_succes"
-  val keyMessageErreur = "message_erreur"
+  private val keyMessageSucces = "message_succes"
+  private val keyMessageErreur = "message_erreur"
 
-  val keyInscriptionRecruteur = "recruteur_inscrit"
-  val keyConnexionRecruteur = "recruteur_connecte"
-  val keyTypeRecruteur = "type_recruteur"
-  val keyInscriptionCandidat = "candidat_inscrit"
-  val keyConnexionCandidat = "candidat_connecte"
+  private val keyInscriptionRecruteur = "recruteur_inscrit"
+  private val keyConnexionRecruteur = "recruteur_connecte"
+  private val keyTypeRecruteur = "type_recruteur"
+
+  private val keyInscriptionCandidat = "candidat_inscrit"
+  private val keyConnexionCandidat = "candidat_connecte"
+  private val keyCriteresRechercheCandidat = "candidat_criteres_recherche"
 
   implicit class FlashMessage[T](f: Flash) {
 
