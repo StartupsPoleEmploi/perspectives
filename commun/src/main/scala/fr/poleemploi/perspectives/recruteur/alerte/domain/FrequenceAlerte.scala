@@ -20,11 +20,4 @@ object FrequenceAlerte {
   )
 
   def frequenceAlerte(value: String): Option[FrequenceAlerte] = frequenceAlertesParValeur.get(value)
-
-  def label(frequenceAlerte: FrequenceAlerte): String = frequenceAlerte match {
-    case QUOTIDIENNE => "Chaque jour"
-    case HEBDOMADAIRE => "Chaque semaine"
-    case _ => ""
-  }
-
 }
