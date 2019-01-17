@@ -4,7 +4,7 @@ import authentification.infra.play.{OptionalRecruteurAuthentifieAction, Optional
 import conf.WebAppConfig
 import controllers.AssetsFinder
 import javax.inject.{Inject, Singleton}
-import play.api.mvc.{AbstractController, AnyContent, ControllerComponents}
+import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
 
 @Singleton
 class LandingController @Inject()(cc: ControllerComponents,
@@ -12,7 +12,10 @@ class LandingController @Inject()(cc: ControllerComponents,
                                   implicit val webAppConfig: WebAppConfig,
                                   optionalRecruteurAuthentifieAction: OptionalRecruteurAuthentifieAction) extends AbstractController(cc) {
 
-  def landing() = optionalRecruteurAuthentifieAction { implicit request: OptionalRecruteurAuthentifieRequest[AnyContent] =>
-    Ok(views.html.recruteur.landing(request.recruteurAuthentifie))
+  def landing(): Action[AnyContent] = optionalRecruteurAuthentifieAction { implicit request: OptionalRecruteurAuthentifieRequest[AnyContent] =>
+    if (request.isRecruteurAuthentifie)
+      Redirect(routes.RechercheCandidatController.index())
+    else
+      Ok(views.html.recruteur.landing())
   }
 }

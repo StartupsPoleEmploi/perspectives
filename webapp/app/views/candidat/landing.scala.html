@@ -3,11 +3,10 @@
 @import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
 @import fr.poleemploi.perspectives.commun.domain.SecteurActivite
 
-@(candidatAuthentifie: Option[CandidatAuthentifie],
-        recruteurAuthentifie: Option[RecruteurAuthentifie],
+@(recruteurAuthentifie: Option[RecruteurAuthentifie],
         secteursActivites: List[SecteurActivite])(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
-@layout(candidatAuthentifie = candidatAuthentifie,
+@layout(candidatAuthentifie = None,
         recruteurAuthentifie = recruteurAuthentifie,
         cssClassesBody = List("degradeGrisBlanc")) {
     <div id="landingCandidat">
@@ -25,18 +24,12 @@
                             pour être visible par les recruteurs</li>
                     </ul>
                     <div class="introActions">
-                        @if(candidatAuthentifie.isDefined) {
-                        <a class="bouton bouton-actionSecondaire bouton--fondBlanc" href="@controllers.candidat.routes.SaisieCriteresRechercheController.saisieCriteresRecherche().url">
-                            Modifier mes critères
-                        </a>
-                        } else {
                         <a class="bouton bouton-actionPrincipale bouton--fondBleu" href="@controllers.candidat.routes.InscriptionController.inscription().url">
                             Je m'inscris
                             <small class="bouton-small bouton-small--opaque">avec mes identifiants Pôle Emploi</small>
                         </a>
                         <p class="introActions-sponsor">Service exclusif pour les candidats validés
                             par la Méthode de Recrutement par Simulation Pôle emploi<p>
-                        }
                     </div>
                 </aside>
                 <aside class="introIllustration">
@@ -53,7 +46,7 @@
                         <img alt="Etape inscription" src="@assetsFinder.path("images/pages/candidat/landing/etape-inscription.svg")" />
                         <p class="etapeInscription-texte etape-texte">
                             <a class="etapeInscription-lien"
-                               href="@candidatAuthentifie.map(_ => controllers.candidat.routes.SaisieCriteresRechercheController.saisieCriteresRecherche().url).getOrElse(controllers.candidat.routes.InscriptionController.inscription().url)">
+                               href="@controllers.candidat.routes.InscriptionController.inscription()">
                                 J'ai validé une MRS
                             </a><br />Je me connecte avec mes identifiants Pôle Emploi
                         </p>
@@ -75,12 +68,10 @@
                 </div>
             </div>
             <div class="commentCaMarcheActions">
-                @if(candidatAuthentifie.isEmpty) {
                 <a class="bouton bouton-actionPrincipale bouton--fondBlanc" href="@controllers.candidat.routes.InscriptionController.inscription().url">
                     Je m'inscris
                     <small class="bouton-small bouton-small--opaque">avec mes identifiants Pôle Emploi</small>
                 </a>
-                }
             </div>
         </section>
         <section class="metiers">
@@ -96,12 +87,10 @@
                 }
             </ul>
             <div class="metiersAction">
-            @if(candidatAuthentifie.isEmpty) {
                 <a class="bouton bouton-actionPrincipale bouton--fondBleu" href="@controllers.candidat.routes.InscriptionController.inscription().url">
                     Je m'inscris
                     <small class="bouton-small bouton-small--opaque">avec mes identifiants Pôle Emploi</small>
                 </a>
-            }
             </div>
         </section>
         <section class="temoignages temoignagesCandidat">
@@ -128,12 +117,10 @@
                 <span class="temoignage-source">Jessica H.</span>
             </div>
             <div class="temoignagesAction">
-            @if(candidatAuthentifie.isEmpty) {
                 <a class="bouton bouton-actionPrincipale bouton--fondBleu" href="@controllers.candidat.routes.InscriptionController.inscription().url">
                     Je m'inscris
                     <small class="bouton-small bouton-small--opaque">avec mes identifiants Pôle Emploi</small>
                 </a>
-            }
             </div>
         </section>
     </div>

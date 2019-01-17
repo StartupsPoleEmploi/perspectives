@@ -1,7 +1,7 @@
 @import conf.WebAppConfig
 @import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
 
-@(recruteurAuthentifie: Option[RecruteurAuthentifie])(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
+@()(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -20,7 +20,7 @@
         <div id="landingRecruteur">
             <section class="introArrierePlan">
                 @if(webAppConfig.useGoogleTagManager) {@components.googleTagManagerNoScript()}
-                @navigation(recruteurAuthentifie)
+                @navigation(recruteurAuthentifie = None)
                 @components.flashMessages()
                 <div class="intro">
                     <div class="introVersion">
@@ -40,14 +40,10 @@
                                 <li class="listeAvantages-item">Vous n'avez <b>pas d'offre à déposer</b></li>
                             </ul>
                             <div class="introActions">
-                                @if(recruteurAuthentifie.isDefined) {
-                                    <a class="bouton bouton-actionSecondaire bouton--degradeBleu" href="@controllers.recruteur.routes.ProfilController.modificationProfil().url">Modifier mon profil</a>
-                                } else {
-                                    <a class="bouton bouton-actionPrincipale bouton--degradeBleu" href="@controllers.recruteur.routes.InscriptionController.inscription().url">
-                                        Je m'inscris
-                                        <small class="bouton-small">en moins de 30 secondes</small>
-                                    </a>
-                                }
+                                <a class="bouton bouton-actionPrincipale bouton--degradeBleu" href="@controllers.recruteur.routes.InscriptionController.inscription().url">
+                                    Je m'inscris
+                                    <small class="bouton-small">en moins de 30 secondes</small>
+                                </a>
                                 <p class="introActions-sponsor">Crée par Pôle Emploi<p>
                             </div>
                         </aside>
@@ -79,12 +75,10 @@
                         </iframe>
                     </div>
                     <div class="inscription">
-                    @if(recruteurAuthentifie.isEmpty) {
                         <a class="bouton bouton-actionPrincipale bouton--degradeBleu" href="@controllers.recruteur.routes.InscriptionController.inscription().url">
                             Je m'inscris
                             <small class="bouton-small">en moins de 30 secondes</small>
                         </a>
-                    }
                     </div>
                 </div>
             </section>
@@ -105,12 +99,10 @@
                     <span class="temoignage-source">Matthieu V. - Manufacture Baizet</span>
                 </div>
                 <div class="inscription">
-                @if(recruteurAuthentifie.isEmpty) {
                     <a class="bouton bouton-actionPrincipale bouton--degradeBleu" href="@controllers.recruteur.routes.InscriptionController.inscription().url">
                         Je m'inscris
                         <small class="bouton-small">en moins de 30 secondes</small>
                     </a>
-                }
                 </div>
             </section>
         </div>
