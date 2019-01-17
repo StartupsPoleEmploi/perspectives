@@ -1,6 +1,6 @@
 "use strict";
 
-var alerteRecruteur = Vue.component('alerte-recruteur', {
+var component = Vue.component('alerte-recruteur', {
     props:  {
         nbMaxAlertes: Number,
         alertesInitiales: Array,
@@ -106,4 +106,4 @@ var alerteRecruteur = Vue.component('alerte-recruteur', {
     '</div>'
 });
 
-export default alerteRecruteur;
+export default component;
