@@ -19,14 +19,14 @@ trait Projection {
   def listenTo: List[Class[_ <: Event]]
 
   /**
+    * Indique si la projection peut être rejouée
+    */
+  def isReplayable: Boolean
+
+  /**
     * Appelée lors de la réception d'un événement écouté par la projection.
     *
     * @return ReceiveEvent: le Future[Unit] indiquant un side effect sur la projection
     */
   def onEvent: ReceiveEvent
-
-  /**
-    * Indique si la projection peut être rejouée
-    */
-  def isReplayable: Boolean
 }
