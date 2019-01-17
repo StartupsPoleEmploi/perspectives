@@ -10,6 +10,12 @@ Vue.filter('capitalize', function (value) {
     return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
 });
 
+Vue.filter('take', function (value, n) {
+    if (!value) return '';
+    if (value.length > n) return value.substring(0, n) + '...';
+    return value;
+});
+
 Vue.filter('boolean', function (value) {
     if (value) return 'Oui';
     return 'Non';
