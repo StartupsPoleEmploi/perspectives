@@ -412,4 +412,14 @@
   .contactRecruteur {
     color: $perspectives-bleu-ciel;
   }
+
+  .lienOrigineOffre {
+    color: $perspectives-bleu-ciel;
+
+    &-hover {
+      color: $perspectives-bleu-ciel;
+      text-decoration: none;
+      cursor: pointer;
+    }
+  }
 }

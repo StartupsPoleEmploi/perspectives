@@ -8,6 +8,7 @@ import fr.poleemploi.perspectives.commun.domain.{Email, Metier, NumeroTelephone}
 case class OffreId(value: String) extends StringValueObject
 
 case class Offre(id: OffreId,
+                 urlOrigine: String,
                  intitule: String,
                  description: Option[String],
                  libelleLieuTravail: String,

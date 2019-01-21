@@ -51,6 +51,14 @@ object EntrepriseResponse {
   implicit val reads: Reads[EntrepriseResponse] = Json.reads[EntrepriseResponse]
 }
 
+case class OrigineOffreResponse(origine: Option[String],
+                                urlOrigine: String)
+
+object OrigineOffreResponse {
+
+  implicit val reads: Reads[OrigineOffreResponse] = Json.reads[OrigineOffreResponse]
+}
+
 case class OffreResponse(id: String,
                          intitule: String,
                          romeCode: String,
@@ -66,6 +74,7 @@ case class OffreResponse(id: String,
                          lieuTravail: LieuTravailResponse,
                          contact: Option[ContactResponse],
                          competences: List[CompetenceResponse],
+                         origineOffre: OrigineOffreResponse,
                          dateActualisation: ZonedDateTime)
 
 object OffreResponse {
@@ -82,6 +91,7 @@ class ReferentielOffreWSMapping {
   def buildOffre(offreResponse: OffreResponse): Offre =
     Offre(
       id = OffreId(offreResponse.id),
+      urlOrigine = offreResponse.origineOffre.urlOrigine,
       intitule = offreResponse.intitule,
       metier = Metier(codeROME = CodeROME(offreResponse.romeCode), offreResponse.romeLibelle),
       libelleLieuTravail = offreResponse.lieuTravail.libelle,

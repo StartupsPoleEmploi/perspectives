@@ -14,6 +14,7 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
     if (n % 3 == 0)
       Offre(
         id = OffreId(UUID.randomUUID().toString),
+        urlOrigine = "https://candidat.pole-emploi.fr/offres/recherche/detail/4038653",
         intitule = "Manoeuvre bâtiment",
         description = Some("L'agence Osmose emploi recherche pour l'un de ses clients un MANŒUVRE (H/F) sur le secteur de Pau (64)\n\nVotre mission consiste a préparer le terrain, les outils et les matériaux nécessaires à l'exécution de travaux de construction, de réparation ou d'entretien dans le bâtiment, sur les routes ou voiries,selon les règles de sécurité.\n\nVous pouvez être amené a assister le maçon et développer vos compétences en maçonnerie.\n\nCe poste est ouvert a toutes les personnes qui souhaitent s'investir pleinement et devenir autonome et polyvalent sur différentes tâches."),
         libelleLieuTravail = "64 - PAU",
@@ -27,9 +28,9 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
         nomEntreprise = Some("OSMOSE EMPLOI"),
         descriptionEntreprise = Some("Agence d'emplois, travail temporaire, Placements CDD, CDI"),
         effectifEntreprise = None,
-        nomContact = Some("Mme Aurelie TOULET"),
+        nomContact = None,
         telephoneContact = None,
-        emailContact = Some(Email("offre29086632.8@osmose-emploi.contactrh.com")),
+        emailContact = None,
         urlPostuler = None,
         coordonneesContact = None,
         dateActualisation = LocalDateTime.now()
@@ -37,6 +38,7 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
     else if (n % 2 == 0)
       Offre(
         id = OffreId(UUID.randomUUID().toString),
+        urlOrigine = "https://candidat.pole-emploi.fr/offres/recherche/detail/456",
         intitule = "Responsable contrôle métrologie en industrie",
         description = Some("Rattaché à notre Business Line Chemicals & Pharma, le Responsable Métrologie H/F a pour principales missions : \n\n- Planifier et assurer la gestion métrologique des équipements ainsi que le suivi des maintenances (mise à jour, réparation)\n- Gérer et optimiser les consommables (envoi/réception et gestion des stocks)\n- Prendre en charge la gestion documentaire associée (gestion, archivage, mise en ligne des certificats)\n- Participer à la sélection et assurer le suivi des fournisseurs\n- Piloter la qualification des équipements selon les procédures en place\n- Participer à la rédaction des documents en rapport avec les équipements\n- Réaliser une veille sur les équipements et les nouvelles technologies\n\nBAC+2 Maintenance des Systèmes, maintenance industrielle/métrologie.\nVous avez une connaissance des équipements de laboratoire d'analyses et/ou formation en métrologie.\nVous maîtrisez Word et Excel. \nDes déplacements ponctuels sont à prévoir./F) sur le secteur de Pau (64)\n\nVotre mission consiste a préparer le terrain, les outils et les matériaux nécessaires à l'exécution de travaux de construction, de réparation ou d'entretien dans le bâtiment, sur les routes ou voiries,selon les règles de sécurité.\n\nVous pouvez être amené a assister le maçon et développer vos compétences en maçonnerie.\n\nCe poste est ouvert a toutes les personnes qui souhaitent s'investir pleinement et devenir autonome et polyvalent sur différentes tâches."),
         libelleLieuTravail = "27 - HEUDEBOUVILLE",
@@ -60,6 +62,7 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
     else
       Offre(
         id = OffreId(UUID.randomUUID().toString),
+        urlOrigine = "https://candidat.pole-emploi.fr/offres/recherche/detail/123",
         intitule = "Agent de fabrication polyvalent / Agente de fabrication pol (H/F)",
         description = None,
         libelleLieuTravail = "57 - STE MARIE AUX CHENES",

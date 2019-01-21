@@ -61,6 +61,9 @@
                                         <p class="postuler-info" v-show="offreCourante.nomContact"><b>{{offreCourante.nomContact}}</b></p>
                                         <p class="postuler-info" v-show="offreCourante.telephoneContact">{{offreCourante.telephoneContact}}</p>
                                         <p class="postuler-info" v-show="offreCourante.emailContact">{{offreCourante.emailContact}}</p>
+                                        <p class="postuler-info" v-show="!offreCourante.nomContact && !offreCourante.telephoneContact && !offreCourante.emailContact">
+                                            <a class="lienOrigineOffre" target="_blank" v-bind:href="offreCourante.urlOrigine">{{offreCourante.urlOrigine}}</a>
+                                        </p>
                                     </div>
                                 </div>
                             </div>
