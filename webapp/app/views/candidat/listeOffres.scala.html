@@ -71,8 +71,8 @@
         </div>
         <div class="row">
             <section class="profil">
-                <div class="mrsValidees" v-if="metiersEvaluesParSecteur.length > 0">
-                    <h2 class="mrsValidees-titre">Vos MRS validées :</h2>
+                <div class="metiersEvalues" v-if="metiersEvaluesParSecteur.length > 0">
+                    <h2 class="metiersEvalues-titre">Vos métiers évalués :</h2>
                     <template v-for="secteur in metiersEvaluesParSecteur">
                         <img v-bind:src="'/assets/images/pages/candidat/landing/secteurs/' + secteur.code + '.svg'"
                              v-bind:alt="secteur.label" width="50" height="50"
@@ -86,9 +86,6 @@
                             </ul>
                         </div>
                     </template>
-                </div>
-                <div class="mrsValidees" v-else>
-                    <p>Vous n'avez pas passé de MRS</p>
                 </div>
                 <div class="criteresRecherche">
                     <h2 class="criteresRecherche-titre" v-on:click="display.criteres = !display.criteres">

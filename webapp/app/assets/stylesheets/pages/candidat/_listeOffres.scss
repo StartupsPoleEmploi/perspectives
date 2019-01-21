@@ -37,7 +37,7 @@
     margin-left: 1rem;
   }
 
-  .mrsValidees {
+  .metiersEvalues {
     margin: 0;
     color: white;
     background-color: $perspectives-bleu-ciel;
@@ -403,6 +403,10 @@
 
   .boutonPostuler {
     margin: 0.5rem 0 0.5rem 0;
+    font-size: 1em;
+    font-weight: 700;
+    border-radius: 8px;
+    padding: .5em 4em;
   }
 
   .contactRecruteur {

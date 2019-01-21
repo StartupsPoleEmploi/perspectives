@@ -9,7 +9,7 @@ var app = new Vue({
         return {
             candidat: jsData.candidat,
             secteursActivites: jsData.secteursActivites,
-            nbOffresParPage: 20,
+            nbOffresParPage: 10,
             offres: jsData.offres,
             indexCourant: 0,
             offreCourante: {},
