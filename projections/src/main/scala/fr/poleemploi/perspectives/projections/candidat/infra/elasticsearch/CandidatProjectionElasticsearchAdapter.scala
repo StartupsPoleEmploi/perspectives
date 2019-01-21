@@ -170,6 +170,16 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
         toCandidatSaisieCriteresRechercheQueryResult(document)
       }
 
+  override def candidatCriteresRecherche(query: CandidatCriteresRechercheQuery): Future[CandidatCriteresRechercheQueryResult] =
+    wsClient
+      .url(s"$baseUrl/$indexName/$docType/${query.candidatId.value}")
+      .get()
+      .flatMap(filtreStatutReponse(_))
+      .map { response =>
+        val document = (Json.parse(response.body) \ "_source").as[CandidatCriteresRechercheDocument]
+        toCandidatCriteresRechercheQueryResult(document)
+      }
+
   override def candidatContactRecruteur(candidatId: CandidatId): Future[CandidatContactRecruteurDto] =
     wsClient
       .url(s"$baseUrl/$indexName/$docType/${candidatId.value}")
@@ -346,6 +356,18 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
       numeroTelephone = document.numeroTelephone,
       cvId = document.cvId,
       cvTypeMedia = document.cvTypeMedia
+    )
+
+  private def toCandidatCriteresRechercheQueryResult(document: CandidatCriteresRechercheDocument): CandidatCriteresRechercheQueryResult =
+    CandidatCriteresRechercheQueryResult(
+      candidatId = document.candidatId,
+      rechercheMetiersEvalues = document.rechercheMetiersEvalues,
+      metiersEvalues = document.metiersEvalues.map(referentielMetier.metierParCode),
+      rechercheAutresMetiers = document.rechercheAutresMetiers,
+      metiersRecherches = document.metiersRecherches.map(referentielMetier.metierParCode),
+      codePostal = document.codePostal,
+      commune = document.commune,
+      rayonRecherche = document.rayonRecherche
     )
 
   private def toCandidatRechercheDto(document: CandidatRechercheDocument): CandidatRechercheDto =

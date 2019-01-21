@@ -7,6 +7,12 @@ class RechercheCandidatQueryHandler(rechercheCandidatService: RechercheCandidatS
 
   def secteursProposes: List[SecteurActivite] = rechercheCandidatService.secteursProposes
 
+  def secteursProposesDtos: List[SecteurActiviteDto] = rechercheCandidatService.secteursProposes.map(s =>
+  SecteurActiviteDto(
+    code = s.code,
+    label = s.label
+  ))
+
   def secteurProposeParCode(code: CodeSecteurActivite): SecteurActivite = rechercheCandidatService.secteurActiviteParCode(code)
 
   def metierProposeParCode(codeROME: CodeROME): Option[Metier] = rechercheCandidatService.metierProposeParCode(codeROME)

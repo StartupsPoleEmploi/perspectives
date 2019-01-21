@@ -29,6 +29,8 @@ import fr.poleemploi.perspectives.emailing.infra.ws.{MailjetWSAdapter, MailjetWS
 import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
 import fr.poleemploi.perspectives.metier.infra.file.ReferentielMetierFileAdapter
 import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapter
+import fr.poleemploi.perspectives.offre.infra.local.ReferentielOffreLocalAdapter
+import fr.poleemploi.perspectives.offre.infra.ws.{ReferentielOffreWSAdapter, ReferentielOffreWSMapping}
 import fr.poleemploi.perspectives.projections.candidat.infra.elasticsearch.CandidatProjectionElasticsearchAdapter
 import fr.poleemploi.perspectives.projections.candidat.infra.local.CandidatNotificationLocalAdapter
 import fr.poleemploi.perspectives.projections.candidat.infra.slack.CandidatNotificationSlackAdapter
@@ -270,6 +272,25 @@ class InfraModule extends AbstractModule with ScalaModule {
   def candidatNotificationLocalAdapter(webAppConfig: WebAppConfig,
                                        wsClient: WSClient): CandidatNotificationLocalAdapter =
     new CandidatNotificationLocalAdapter()
+
+  @Provides
+  def referentielOffreWSMapping(wsClient: WSClient,
+                                webAppConfig: WebAppConfig): ReferentielOffreWSMapping =
+    new ReferentielOffreWSMapping()
+
+  @Provides
+  def referentielOffreWSAdapter(wsClient: WSClient,
+                                webAppConfig: WebAppConfig,
+                                referentielOffreWSMapping: ReferentielOffreWSMapping): ReferentielOffreWSAdapter =
+    new ReferentielOffreWSAdapter(
+      config = webAppConfig.referentielOffreWSAdapterConfig,
+      wsClient = wsClient,
+      mapping = referentielOffreWSMapping
+    )
+
+  @Provides
+  def referentielOffreLocalAdapter: ReferentielOffreLocalAdapter =
+    new ReferentielOffreLocalAdapter()
 
   @Provides
   def candidatProjectionElasticsearchAdapter(webAppConfig: WebAppConfig,

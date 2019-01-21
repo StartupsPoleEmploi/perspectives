@@ -7,6 +7,7 @@ import fr.poleemploi.perspectives.candidat.cv.domain.CVService
 import fr.poleemploi.perspectives.candidat.mrs.domain.{ReferentielHabiletesMRS, ReferentielMRSCandidat}
 import fr.poleemploi.perspectives.emailing.domain.EmailingService
 import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
+import fr.poleemploi.perspectives.offre.domain.ReferentielOffre
 import fr.poleemploi.perspectives.projections.candidat._
 import fr.poleemploi.perspectives.projections.candidat.infra.elasticsearch.CandidatProjectionElasticsearchAdapter
 import fr.poleemploi.perspectives.projections.candidat.infra.local.CandidatNotificationLocalAdapter
@@ -61,14 +62,16 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
                            cvService: CVService,
                            referentielMRSCandidat: ReferentielMRSCandidat,
                            referentielMetier: ReferentielMetier,
-                           referentielHabiletesMRS: ReferentielHabiletesMRS): CandidatQueryHandler =
+                           referentielHabiletesMRS: ReferentielHabiletesMRS,
+                           referentielOffre: ReferentielOffre): CandidatQueryHandler =
     new CandidatQueryHandler(
       candidatProjection = candidatProjection,
       recruteurProjection = recruteurProjection,
       cvService = cvService,
       referentielMRSCandidat = referentielMRSCandidat,
       referentielMetier = referentielMetier,
-      referentielHabiletesMRS = referentielHabiletesMRS
+      referentielHabiletesMRS = referentielHabiletesMRS,
+      referentielOffre = referentielOffre
     )
 
   @Provides

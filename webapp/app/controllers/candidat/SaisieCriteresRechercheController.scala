@@ -73,9 +73,15 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
                 if (saisieCriteresRechercheForm.nouveauCandidat) {
                   Redirect(routes.InscriptionController.confirmationInscription())
                 } else {
-                  Redirect(routes.LandingController.landing()).flashing(
-                    messagesRequest.flash.withMessageSucces("Merci, vos criteres ont bien été pris en compte")
-                  )
+                  Redirect(routes.OffreController.listeOffres())
+                    .flashing(messagesRequest.flash.withCandidatCriteresRechercheModifies(
+                      CriteresRechercheModifies(
+                        rechercheMetiersEvalues = modifierCriteresCommand.rechercheMetierEvalue,
+                        rechercheAutresMetiers = modifierCriteresCommand.rechercheAutreMetier,
+                        metiersRecherches = modifierCriteresCommand.metiersRecherches,
+                        rayonRecherche = modifierCriteresCommand.rayonRecherche
+                      ))
+                    )
                 }
               )
             }

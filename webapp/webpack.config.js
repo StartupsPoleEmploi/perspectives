@@ -4,7 +4,8 @@ module.exports = {
     entry: {
         recruteurRechercheCandidat: './app/assets/javascripts/pages/recruteur/rechercheCandidat.js',
         conseillerListeCandidats: './app/assets/javascripts/pages/conseiller/listeCandidats.js',
-        conseillerListeRecruteurs: './app/assets/javascripts/pages/conseiller/listeRecruteurs.js'
+        conseillerListeRecruteurs: './app/assets/javascripts/pages/conseiller/listeRecruteurs.js',
+        candidatListeOffres: './app/assets/javascripts/pages/candidat/listeOffres.js'
     },
     output: {
         filename: '[name].js',

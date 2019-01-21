@@ -10,6 +10,7 @@ import fr.poleemploi.perspectives.authentification.infra.peconnect.ws._
 import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.commun.EitherUtils._
 import fr.poleemploi.perspectives.commun.infra.oauth.OauthConfig
+import fr.poleemploi.perspectives.projections.candidat.{CandidatCriteresRechercheQuery, CandidatQueryHandler}
 import javax.inject.{Inject, Singleton}
 import play.api.Logger
 import play.api.mvc._
@@ -21,6 +22,7 @@ import scala.concurrent.Future
 class PEConnectController @Inject()(cc: ControllerComponents,
                                     webAppConfig: WebAppConfig,
                                     candidatCommandHandler: CandidatCommandHandler,
+                                    candidatQueryHandler: CandidatQueryHandler,
                                     candidatPEConnectAction: CandidatPEConnectAction,
                                     peConnectAdapter: PEConnectAdapter) extends AbstractController(cc) {
 
@@ -70,14 +72,15 @@ class PEConnectController @Inject()(cc: ControllerComponents,
         oauthTokens = oauthTokens
       )
       infosCandidat <- peConnectAdapter.getInfosCandidat(accessTokenResponse.accessToken)
-      adresse <- getAdresseCandidat(accessTokenResponse.accessToken)
-      statutDemandeurEmploi <- getStatutDemandeurEmploi(accessTokenResponse.accessToken)
+      optAdresse <- findAdresseCandidat(accessTokenResponse.accessToken)
+      optStatutDemandeurEmploi <- findStatutDemandeurEmploi(accessTokenResponse.accessToken)
       optCandidat <- peConnectAdapter.findCandidat(infosCandidat.peConnectId)
-      candidatId <- optCandidat.map(c => connecter(c, infosCandidat, adresse, statutDemandeurEmploi))
+      optCriteresRecherche <- optCandidat.map(c => candidatQueryHandler.handle(CandidatCriteresRechercheQuery(c.candidatId)).map(Some(_))).getOrElse(Future.successful(None))
+      candidatId <- optCandidat.map(c => connecter(c, infosCandidat, optAdresse, optStatutDemandeurEmploi))
         .getOrElse(inscrire(
           peConnectCandidatInfos = infosCandidat,
-          adresse = adresse,
-          statutDemandeurEmploi = statutDemandeurEmploi
+          adresse = optAdresse,
+          statutDemandeurEmploi = optStatutDemandeurEmploi
         ))
     } yield {
       val candidatAuthentifie = CandidatAuthentifie(
@@ -88,10 +91,12 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       val session = SessionCandidatPEConnect.setJWTToken(accessTokenResponse.idToken, SessionCandidatAuthentifie.set(candidatAuthentifie, SessionOauthTokens.removeOauthTokensCandidat(request.session)))
       val flash = request.flash.withCandidatConnecte
 
-      if (optCandidat.isDefined)
+      if (optCriteresRecherche.exists(_.criteresComplet))
         SessionUtilisateurNonAuthentifie.getUriConnexion(request.session)
           .map(uri => Redirect(uri).withSession(SessionUtilisateurNonAuthentifie.remove(session)).flashing(flash))
-          .getOrElse(Redirect(routes.LandingController.landing()).withSession(session).flashing(flash))
+          .getOrElse(Redirect(routes.OffreController.listeOffres()).withSession(session).flashing(flash))
+      else if (optCriteresRecherche.isDefined)
+        Redirect(routes.SaisieCriteresRechercheController.saisieCriteresRecherche()).withSession(session).flashing(flash)
       else
         Redirect(routes.SaisieCriteresRechercheController.saisieCriteresRecherche()).withSession(session)
           .flashing(flash.withCandidatInscrit)
@@ -169,7 +174,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
     candidatCommandHandler.handle(command).map(_ => candidatId)
   }
 
-  private def getAdresseCandidat(accessToken: AccessToken): Future[Option[Adresse]] =
+  private def findAdresseCandidat(accessToken: AccessToken): Future[Option[Adresse]] =
     peConnectAdapter.getAdresseCandidat(accessToken).map(Some(_))
       .recoverWith {
         case t: Throwable =>
@@ -177,7 +182,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
           Future.successful(None)
       }
 
-  private def getStatutDemandeurEmploi(accessToken: AccessToken): Future[Option[StatutDemandeurEmploi]] =
+  private def findStatutDemandeurEmploi(accessToken: AccessToken): Future[Option[StatutDemandeurEmploi]] =
     peConnectAdapter.getStatutDemandeurEmploiCandidat(accessToken).map(Some(_))
       .recoverWith {
         case t: Throwable =>

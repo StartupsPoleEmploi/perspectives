@@ -4,6 +4,7 @@ import fr.poleemploi.cqrs.projection.{Query, QueryHandler, QueryResult, Unauthor
 import fr.poleemploi.perspectives.candidat.cv.domain.{CV, CVService}
 import fr.poleemploi.perspectives.candidat.mrs.domain.{ReferentielHabiletesMRS, ReferentielMRSCandidat}
 import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
+import fr.poleemploi.perspectives.offre.domain.ReferentielOffre
 import fr.poleemploi.perspectives.projections.candidat.cv.{CVCandidatPourRecruteurQuery, CVCandidatPourRecruteurQueryResult, CVCandidatQuery, CVCandidatQueryResult}
 import fr.poleemploi.perspectives.projections.candidat.mrs.{CodeROMEParDepartementQuery, CodeROMEParDepartementQueryResult, MetiersEvaluesNouvelInscritQuery, MetiersEvaluesNouvelInscritQueryResult}
 import fr.poleemploi.perspectives.projections.recruteur.{RecruteurProjection, TypeRecruteurQuery}
@@ -17,16 +18,19 @@ class CandidatQueryHandler(candidatProjection: CandidatProjection,
                            cvService: CVService,
                            referentielMRSCandidat: ReferentielMRSCandidat,
                            referentielMetier: ReferentielMetier,
-                           referentielHabiletesMRS: ReferentielHabiletesMRS) extends QueryHandler {
+                           referentielHabiletesMRS: ReferentielHabiletesMRS,
+                           referentielOffre: ReferentielOffre) extends QueryHandler {
 
   override def configure: PartialFunction[Query[_ <: QueryResult], Future[QueryResult]] = {
     case q: CVCandidatQuery => cvService.getCVByCandidat(q.candidatId).map(CVCandidatQueryResult)
     case q: CVCandidatPourRecruteurQuery => cvCandidatPourRecruteur(q).map(CVCandidatPourRecruteurQueryResult)
     case q: CandidatSaisieCriteresRechercheQuery => candidatProjection.candidatSaisieCriteresRecherche(q)
+    case q: CandidatCriteresRechercheQuery => candidatProjection.candidatCriteresRecherche(q)
     case q: CandidatsPourConseillerQuery => candidatProjection.listerPourConseiller(q)
     case q: RechercherCandidatsQuery => candidatProjection.rechercherCandidats(q)
     case q: MetiersEvaluesNouvelInscritQuery => metiersEvaluesNouvelInscrit(q)
     case _: CodeROMEParDepartementQuery => referentielHabiletesMRS.codeROMEsParDepartement.map(CodeROMEParDepartementQueryResult(_))
+    case q: OffresCandidatQuery => referentielOffre.rechercherOffres(q.criteresRechercheOffre).map(OffresCandidatQueryResult(_))
   }
 
   private def cvCandidatPourRecruteur(query: CVCandidatPourRecruteurQuery): Future[CV] = {

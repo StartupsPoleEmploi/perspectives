@@ -8,9 +8,11 @@
         <h2 class="confirmationTitre titrePrincipal">Votre inscription a bien été enregistrée</h2>
         <p class="confirmationTexte descriptionTitrePrincipal">Votre profil est maintenant visible par les recruteurs qui pourront vous
             téléphoner directement.
-            Perspectives vous adressera des mails pour vous tenir informé des évolutions de son service.</p>
-        <a class="bouton bouton-actionPrincipale bouton--fondBleu" href="@controllers.candidat.routes.LandingController.landing().url">
-            Retour à la page d'accueil
+            Perspectives vous adressera des mails pour vous tenir informé des évolutions de son service.
+
+            Vous pouvez dés à présent consulter des offres d'emploi qui correspondent à vos critères.</p>
+        <a class="bouton bouton-actionPrincipale bouton--fondBleu" href="@controllers.candidat.routes.OffreController.listeOffres().url">
+            Voir les offres
         </a>
     </div>
 }

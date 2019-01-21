@@ -9,6 +9,7 @@ import fr.poleemploi.perspectives.commun.infra.oauth.OauthConfig
 import fr.poleemploi.perspectives.emailing.infra.ws.MailjetWSAdapterConfig
 import fr.poleemploi.perspectives.infra.BuildInfo
 import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapterConfig
+import fr.poleemploi.perspectives.offre.infra.ws.ReferentielOffreWSAdapterConfig
 import fr.poleemploi.perspectives.projections.candidat.infra.slack.SlackCandidatConfig
 import fr.poleemploi.perspectives.recruteur.commentaire.infra.slack.SlackRecruteurConfig
 import play.api.Configuration
@@ -20,6 +21,7 @@ class WebAppConfig(configuration: Configuration) {
   val useMailjet: Boolean = configuration.getOptional[Boolean]("useMailjet").getOrElse(true)
   val useGoogleTagManager: Boolean = configuration.getOptional[Boolean]("useGoogleTagManager").getOrElse(true)
   val useReferentielMetier: Boolean = configuration.getOptional[Boolean]("useReferentielMetier").getOrElse(true)
+  val useReferentielOffre: Boolean = configuration.getOptional[Boolean]("useReferentielOffre").getOrElse(true)
   val useReferentielHabiletesMRS: Boolean = configuration.getOptional[Boolean]("useReferentielHabiletesMRS").getOrElse(true)
   val useLocalisationWS: Boolean = configuration.getOptional[Boolean]("useLocalisationWS").getOrElse(true)
 
@@ -75,6 +77,11 @@ class WebAppConfig(configuration: Configuration) {
   )
 
   val referentielMetierWSAdapterConfig: ReferentielMetierWSAdapterConfig = ReferentielMetierWSAdapterConfig(
+    urlApi = configuration.get[String]("emploiStore.urlApi"),
+    oauthConfig = partenaireOauthConfig
+  )
+
+  val referentielOffreWSAdapterConfig: ReferentielOffreWSAdapterConfig = ReferentielOffreWSAdapterConfig(
     urlApi = configuration.get[String]("emploiStore.urlApi"),
     oauthConfig = partenaireOauthConfig
   )
