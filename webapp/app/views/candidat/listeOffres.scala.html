@@ -144,10 +144,10 @@
                     <template v-for="(offre, index) in offres">
                         <div class="listeOffres-ligne" v-on:click="toggleOffreCourante(offre)" v-show="afficherOffre(index)">
                             <div class="listeOffres-colonne offre">
-                                <p class="offre--info offre--intitule">{{offre.intitule}}</p>
-                                <p class="offre--info offre--nomEntreprise">{{offre.nomEntreprise | capitalize}}</p>
-                                <p class="offre--info">{{offre.libelleLieuTravail}}</p>
-                                <p v-show="offre.description" class="offre--info">{{offre.description | take(100)}}</p>
+                                <p class="offre-info offre-intitule">{{offre.intitule}}</p>
+                                <p class="offre-info offre-nomEntreprise">{{offre.nomEntreprise | capitalize}}</p>
+                                <p class="offre-info offre-lieuTravail">{{offre.libelleLieuTravail}}</p>
+                                <p v-show="offre.description" class="offre-info offre-description">{{offre.description | take(100)}}</p>
                             </div>
                             <div class="listeOffres-colonne typeContrat">
                                 <b>{{offre.typeContrat}}</b>

@@ -60,7 +60,11 @@
   }
 
   .secteurEvalue, .secteurRecherche {
-    padding-left: 3.5rem;
+    padding-left: 4.5rem;
+  }
+
+  .secteurRecherche {
+    font-size: 0.875em;
   }
 
   .criteresRecherche {
@@ -76,14 +80,14 @@
       width: 100%;
       padding: 1rem;
       margin: 0;
-      font-size: 1.2em;
+      font-size: 1.125em;
       font-weight: 700;
       cursor: pointer;
       background-color: #EAEBED;
     }
 
     &-sousTitre {
-      font-size: 1em;
+      font-size: 0.875em;
       font-weight: 300;
     }
   }
@@ -102,6 +106,7 @@
 
   .localisation {
     padding-left: 1.5rem;
+    font-size: 0.875em;
   }
 
   .secteurActivite-icone {
@@ -179,16 +184,24 @@
       @include make-col(10);
     }
 
-    &--intitule {
+    &-intitule {
       font-weight: 600;
-      font-size: 1.2em;
+      font-size: 1em;
     }
 
-    &--nomEntreprise {
-      font-size: 1.2em;
+    &-nomEntreprise {
+      font-size: 1em;
     }
 
-    &--info {
+    &-lieuTravail {
+      font-size: 0.875em;
+    }
+
+    &-description {
+      font-size: 0.875em;
+    }
+
+    &-info {
       margin-bottom: 0.5rem;
     }
   }
