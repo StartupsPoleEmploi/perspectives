@@ -6,6 +6,14 @@ import fr.poleemploi.perspectives.commun.domain.{CodeROME, Email, Metier, Numero
 import fr.poleemploi.perspectives.offre.domain.{Experience, Offre, OffreId}
 import play.api.libs.json.{Json, Reads}
 
+case class CommuneResponse(code: String,
+                           codePostal: String)
+
+object CommuneResponse {
+
+  implicit val reads: Reads[CommuneResponse] = Json.reads[CommuneResponse]
+}
+
 case class ContactResponse(nom: Option[String],
                            courriel: Option[String],
                            telephone: Option[String],

@@ -3,7 +3,7 @@ package fr.poleemploi.perspectives.offre.infra.local
 import java.time.LocalDateTime
 import java.util.UUID
 
-import fr.poleemploi.perspectives.commun.domain.{CodeROME, Email, Metier, NumeroTelephone}
+import fr.poleemploi.perspectives.commun.domain.{CodeROME, Metier, NumeroTelephone}
 import fr.poleemploi.perspectives.offre.domain.{CriteresRechercheOffre, Offre, OffreId, ReferentielOffre}
 
 import scala.concurrent.Future

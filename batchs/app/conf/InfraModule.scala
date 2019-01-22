@@ -26,6 +26,7 @@ import fr.poleemploi.perspectives.projections.recruteur.alerte.infra.sql.AlerteR
 import fr.poleemploi.perspectives.rechercheCandidat.domain.RechercheCandidatService
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
+import play.api.cache.AsyncCacheApi
 import play.api.inject.ApplicationLifecycle
 import play.api.libs.ws.WSClient
 import slick.jdbc.JdbcBackend.Database
@@ -162,10 +163,12 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   def referentielMetierWSAdapter(wsClient: WSClient,
-                                 batchsConfig: BatchsConfig): ReferentielMetierWSAdapter =
+                                 batchsConfig: BatchsConfig,
+                                 cacheApi: AsyncCacheApi): ReferentielMetierWSAdapter =
     new ReferentielMetierWSAdapter(
       config = batchsConfig.referentielMetierWSAdapterConfig,
-      wsClient = wsClient
+      wsClient = wsClient,
+      cacheApi = cacheApi
     )
 
   @Provides

@@ -4,54 +4,36 @@ import fr.poleemploi.perspectives.commun.domain.CodeROME
 import fr.poleemploi.perspectives.commun.infra.ws.{WSAdapter, WebServiceException}
 import fr.poleemploi.perspectives.metier.infra.ws.AccessTokenResponse
 import fr.poleemploi.perspectives.offre.domain.{CriteresRechercheOffre, Offre, ReferentielOffre}
-import play.api.libs.json.{JsArray, Json, Reads}
+import play.api.cache.AsyncCacheApi
+import play.api.libs.json.JsArray
 import play.api.libs.ws.WSClient
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
-
-case class Commune(code: String,
-                   codePostal: String)
-
-object Commune {
-  implicit val reads: Reads[Commune] = Json.reads[Commune]
-}
+import scala.concurrent.Future
 
 class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
                                 wsClient: WSClient,
+                                cacheApi: AsyncCacheApi,
                                 mapping: ReferentielOffreWSMapping) extends ReferentielOffre with WSAdapter {
 
-  val communes: Map[String, String] = Await.result(for {
-    accessTokenResponse <- genererAccessToken
-    communes <- wsClient
-      .url(s"${config.urlApi}/offresdemploi/v2/referentiel/communes")
-      .addHttpHeaders(
-        ("Authorization", s"Bearer ${accessTokenResponse.accessToken}"),
-        ("Content-Type", "application/json")
-      )
-      .get()
-      .map(r => {
-        r.json.as[List[Commune]].map(c => c.codePostal -> c.code).toMap
-      })
-  } yield communes, Duration.Inf)
+  private val cacheKeyCommunes = "referentielOffre.communes"
 
   /**
     * L'API ne gère que 3 codesROME par appel, on découpe donc en plusieurs appels. <br />
     * Elle est également limitée en nombre d'appels par seconde, il faut donc gérer le statut 429
     */
   def rechercherOffres(criteres: CriteresRechercheOffre): Future[List[Offre]] = {
-    def callWS(accessTokenResponse: AccessTokenResponse, codesROME: List[CodeROME] = Nil): Future[List[Offre]] =
+    def callWS(accessTokenResponse: AccessTokenResponse, codesROME: List[CodeROME] = Nil, codeInsee: String): Future[List[Offre]] =
       wsClient.url(s"${config.urlApi}/offresdemploi/v2/offres/search")
         .addQueryStringParameters(
           "codeROME" -> criteres.codesROME.take(3).map(_.value).mkString(","),
           "experience" -> mapping.buildExperience(criteres.experience),
-          "commune" -> communes(criteres.codePostal),
+          "commune" -> codeInsee,
           "distance" -> s"${criteres.rayonRecherche.value}",
         )
         .addHttpHeaders(
           ("Authorization", s"Bearer ${accessTokenResponse.accessToken}"),
-          ("Content-Type", "application/json"),
+          jsonContentType,
           ("Accept", "application/json")
         )
         .get()
@@ -60,16 +42,17 @@ class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
           (r.json \ "resultats").as[JsArray].value.map(_.as[OffreResponse])
             .map(mapping.buildOffre).toList
         })
-      .recoverWith {
-        case e: WebServiceException if e.statut == 429 =>
-          referentielOffreWSLogger.error(e.getMessage)
-          Future.successful(Nil)
-      }
+        .recoverWith {
+          case e: WebServiceException if e.statut == 429 =>
+            referentielOffreWSLogger.error(e.getMessage)
+            Future.successful(Nil)
+        }
 
     for {
       accessTokenResponse <- genererAccessToken
+      codeInsee <- codeInsee(criteres.codePostal, accessTokenResponse)
       offres <- Future.sequence(criteres.codesROME.sliding(3, 3).toList.map(codesROME =>
-        callWS(accessTokenResponse, codesROME)
+        callWS(accessTokenResponse, codesROME, codeInsee)
       ))
     } yield {
       offres
@@ -90,5 +73,22 @@ class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
       ))
       .flatMap(filtreStatutReponse(_))
       .map(_.json.as[AccessTokenResponse])
+
+  private def codeInsee(codePostal: String, accessTokenResponse: AccessTokenResponse): Future[String] =
+    cacheApi
+      .getOrElseUpdate(cacheKeyCommunes)(listerCommunes(accessTokenResponse))
+      .map(_.getOrElse(codePostal, throw new IllegalArgumentException(s"Aucun codeInsee associé au codePostal : $codePostal")))
+
+  private def listerCommunes(accessTokenResponse: AccessTokenResponse): Future[Map[String, String]] =
+    for {
+      communes <- wsClient
+        .url(s"${config.urlApi}/offresdemploi/v2/referentiel/communes")
+        .addHttpHeaders(
+          ("Authorization", s"Bearer ${accessTokenResponse.accessToken}"),
+          jsonContentType
+        )
+        .get()
+        .map(r => r.json.as[List[CommuneResponse]].map(c => c.codePostal -> c.code).toMap)
+    } yield communes
 
 }

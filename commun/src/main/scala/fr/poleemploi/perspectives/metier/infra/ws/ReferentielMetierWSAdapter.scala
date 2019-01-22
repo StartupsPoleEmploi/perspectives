@@ -3,28 +3,34 @@ package fr.poleemploi.perspectives.metier.infra.ws
 import fr.poleemploi.perspectives.commun.domain.{CodeROME, Metier}
 import fr.poleemploi.perspectives.commun.infra.ws.WSAdapter
 import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
+import play.api.cache.AsyncCacheApi
 import play.api.libs.ws.WSClient
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 
 /**
   * Se base sur l'API infotravail de l'emploi store
   */
 class ReferentielMetierWSAdapter(config: ReferentielMetierWSAdapterConfig,
+                                 cacheApi: AsyncCacheApi,
                                  wsClient: WSClient) extends ReferentielMetier with WSAdapter {
 
-  val metiersResourceId = "767d0c4a-277b-493c-84b7-00143933efce"
-
-  // FIXME : charger en non bloquant
-  val metiers: Map[CodeROME, Metier] = Await.result(genererAccessToken.flatMap(listerMetiers), 10.seconds)
+  private val metiersResourceId = "767d0c4a-277b-493c-84b7-00143933efce"
+  private val cacheKeyMetiers = "referentiel.metiers"
 
   /**
     * Renvoie une exception si le Métier n'est associé à aucun code.
     */
-  override def metierParCode(code: CodeROME): Metier =
-    metiers.getOrElse(code, throw new IllegalArgumentException(s"Aucun label associé au code : $code"))
+  override def metiersParCode(codesROME: List[CodeROME]): Future[List[Metier]] =
+    cacheApi.getOrElseUpdate(cacheKeyMetiers)(
+      for {
+        accessToken <- genererAccessToken
+        metiers <- listerMetiers(accessToken)
+      } yield metiers
+    ).map(metiers =>
+      codesROME.map(c => metiers.getOrElse(c, throw new IllegalArgumentException(s"Aucun métier associé au code : $c")))
+    )
 
   private def genererAccessToken: Future[AccessTokenResponse] =
     wsClient

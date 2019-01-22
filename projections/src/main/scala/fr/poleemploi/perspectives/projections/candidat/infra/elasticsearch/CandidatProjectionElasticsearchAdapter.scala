@@ -29,14 +29,13 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
 
   val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
 
-  private val jsonHttpHeader: (String, String) = ("Content-Type", "application/json")
   private val refreshParam: (String, String) = ("refresh", "true")
 
   def onCandidatInscritEvent(event: CandidatInscritEvent): Future[Unit] =
     wsClient
       .url(s"$baseUrl/$indexName/$docType/${event.candidatId.value}")
       .withQueryStringParameters(refreshParam)
-      .withHttpHeaders(jsonHttpHeader)
+      .withHttpHeaders(jsonContentType)
       .post(Json.obj(
         candidat_id -> event.candidatId,
         nom -> event.nom,
@@ -165,20 +164,14 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
       .url(s"$baseUrl/$indexName/$docType/${query.candidatId.value}")
       .get()
       .flatMap(filtreStatutReponse(_))
-      .map { response =>
-        val document = (Json.parse(response.body) \ "_source").as[CandidatSaisieCriteresRechercheDocument]
-        toCandidatSaisieCriteresRechercheQueryResult(document)
-      }
+      .flatMap(r => toCandidatSaisieCriteresRechercheQueryResult((Json.parse(r.body) \ "_source").as[CandidatSaisieCriteresRechercheDocument]))
 
   override def candidatCriteresRecherche(query: CandidatCriteresRechercheQuery): Future[CandidatCriteresRechercheQueryResult] =
     wsClient
       .url(s"$baseUrl/$indexName/$docType/${query.candidatId.value}")
       .get()
       .flatMap(filtreStatutReponse(_))
-      .map { response =>
-        val document = (Json.parse(response.body) \ "_source").as[CandidatCriteresRechercheDocument]
-        toCandidatCriteresRechercheQueryResult(document)
-      }
+      .flatMap(r => toCandidatCriteresRechercheQueryResult((Json.parse(r.body) \ "_source").as[CandidatCriteresRechercheDocument]))
 
   override def candidatContactRecruteur(candidatId: CandidatId): Future[CandidatContactRecruteurDto] =
     wsClient
@@ -188,31 +181,33 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
       )
       .get()
       .flatMap(filtreStatutReponse(_))
-      .map(response =>
-        (Json.parse(response.body) \ "_source").as[CandidatContactRecruteurDocument].toContactRecruteurDto
-      )
+      .map(r => (Json.parse(r.body) \ "_source").as[CandidatContactRecruteurDocument].toContactRecruteurDto)
 
   override def listerPourConseiller(query: CandidatsPourConseillerQuery): Future[CandidatsPourConseillerQueryResult] = {
     val queryJson = buildQueryCandidatPourConseiller(query)
     wsClient
       .url(s"$baseUrl/$indexName/_search")
-      .withHttpHeaders(jsonHttpHeader)
+      .withHttpHeaders(jsonContentType)
       .post(queryJson)
-      .map { response =>
+      .flatMap { response =>
         val hits = (Json.parse(response.body) \ "hits" \ "hits").as[JsArray]
-        val candidats = (hits \\ "_source").map(_.as[CandidatPourConseillerDocument]).map(toCandidatPourConseillerDto).toList
+        val candidats = (hits \\ "_source").take(query.nbCandidatsParPage).map(_.as[CandidatPourConseillerDocument])
         val pages = (hits \\ "sort").zipWithIndex
-        .filter(v => v._2 == 0 || (v._2 + 1) % query.nbCandidatsParPage == 0)
-        .map(v => KeysetCandidatsPourConseiller(
-          dateInscription = if (v._2 == 0) (v._1 \ 0).as[Long] + 1L else (v._1 \ 0).as[Long],
-          candidatId = (v._1 \ 1).as[CandidatId]
-        )).toList
+          .filter(v => v._2 == 0 || (v._2 + 1) % query.nbCandidatsParPage == 0)
+          .map(v => KeysetCandidatsPourConseiller(
+            dateInscription = if (v._2 == 0) (v._1 \ 0).as[Long] + 1L else (v._1 \ 0).as[Long],
+            candidatId = (v._1 \ 1).as[CandidatId]
+          )).toList
 
-        CandidatsPourConseillerQueryResult(
-          candidats = candidats.take(query.nbCandidatsParPage),
-          pages = query.page.map(k => k :: pages.tail).getOrElse(pages),
-          pageSuivante = pages.reverse.headOption
-        )
+        referentielMetier.metiersParCode(candidats.flatMap(_.metiersEvalues).distinct.toList)
+          .map(metiers => metiers.foldLeft(Map.empty[CodeROME, Metier])((map, metier) => map + (metier.codeROME -> metier)))
+          .map(metiers =>
+            CandidatsPourConseillerQueryResult(
+              candidats = candidats.map(c => toCandidatPourConseillerDto(c, metiers)).toList,
+              pages = query.page.map(k => k :: pages.tail).getOrElse(pages),
+              pageSuivante = pages.reverse.headOption
+            )
+          )
       }
   }
 
@@ -222,12 +217,12 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
       .getOrElse {
         wsClient
           .url(s"$baseUrl/$indexName/_search")
-          .withHttpHeaders(jsonHttpHeader)
+          .withHttpHeaders(jsonContentType)
           .post(buildQueryRechercherCandidatsParLocalisation(query))
-          .map { response =>
+          .flatMap { response =>
             val json = Json.parse(response.body)
             val hits = (json \ "hits" \ "hits").as[JsArray]
-            val candidats = (hits \\ "_source").map(_.as[CandidatRechercheDocument]).map(toCandidatRechercheDto).toList
+            val candidats = (hits \\ "_source").take(query.nbCandidatsParPage).map(_.as[CandidatRechercheDocument])
             val pages = (hits \\ "sort").zipWithIndex
               .filter(v => v._2 == 0 || (v._2 + 1) % query.nbCandidatsParPage == 0)
               .map(v => KeysetRechercherCandidats(
@@ -237,13 +232,17 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
               )).toList
             val nbCandidatsTotal = (json \ "hits" \ "total").as[Int]
 
-            RechercheCandidatParLocalisationQueryResult(
-              candidats = candidats.take(query.nbCandidatsParPage),
-              nbCandidats = candidats.size,
-              nbCandidatsTotal = nbCandidatsTotal,
-              pages = query.page.map(k => k :: pages.tail).getOrElse(pages),
-              pageSuivante = pages.reverse.headOption
-            )
+            referentielMetier.metiersParCode(candidats.flatMap(_.metiersEvalues).distinct.toList)
+              .map(metiers => metiers.foldLeft(Map.empty[CodeROME, Metier])((map, metier) => map + (metier.codeROME -> metier)))
+              .map(metiers =>
+                RechercheCandidatParLocalisationQueryResult(
+                  candidats = candidats.map(c => toCandidatRechercheDto(c, metiers)).toList,
+                  nbCandidats = candidats.size,
+                  nbCandidatsTotal = nbCandidatsTotal,
+                  pages = query.page.map(k => k :: pages.tail).getOrElse(pages),
+                  pageSuivante = pages.reverse.headOption
+                )
+              )
           }
       }
 
@@ -254,9 +253,9 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
     val queryjson = buildQueryRechercherCandidatsParSecteur(query, metiersSecteur)
     wsClient
       .url(s"$baseUrl/$indexName/_search")
-      .withHttpHeaders(jsonHttpHeader)
+      .withHttpHeaders(jsonContentType)
       .post(queryjson)
-      .map { response =>
+      .flatMap { response =>
         val json = Json.parse(response.body)
         val hits = (json \ "hits" \ "hits").as[JsArray]
         val pages = (hits \\ "sort").zipWithIndex
@@ -272,20 +271,24 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
         val candidatsEvaluesSurSecteur =
           candidats
             .filter(jsValue => (jsValue \ "_score").as[Int] > 2)
-            .map(js => toCandidatRechercheDto((js \ "_source").as[CandidatRechercheDocument]))
+            .map(js => (js \ "_source").as[CandidatRechercheDocument])
         val candidatsInteressesParAutreSecteur =
           candidats
             .filter(jsValue => (jsValue \ "_score").as[Int] == 2)
-            .map(js => toCandidatRechercheDto((js \ "_source").as[CandidatRechercheDocument]))
+            .map(js => (js \ "_source").as[CandidatRechercheDocument])
 
-        RechercheCandidatParSecteurQueryResult(
-          candidatsEvaluesSurSecteur = candidatsEvaluesSurSecteur,
-          candidatsInteressesParAutreSecteur = candidatsInteressesParAutreSecteur,
-          nbCandidats = candidats.size,
-          nbCandidatsTotal = nbCandidatsTotal,
-          pages = query.page.map(k => k :: pages.tail).getOrElse(pages),
-          pageSuivante = pages.reverse.headOption
-        )
+        referentielMetier.metiersParCode((candidatsEvaluesSurSecteur ++ candidatsInteressesParAutreSecteur).flatMap(_.metiersEvalues).distinct)
+          .map(metiers => metiers.foldLeft(Map.empty[CodeROME, Metier])((map, metier) => map + (metier.codeROME -> metier)))
+          .map(metiers =>
+            RechercheCandidatParSecteurQueryResult(
+              candidatsEvaluesSurSecteur = candidatsEvaluesSurSecteur.map(c => toCandidatRechercheDto(c, metiers)),
+              candidatsInteressesParAutreSecteur = candidatsInteressesParAutreSecteur.map(c => toCandidatRechercheDto(c, metiers)),
+              nbCandidats = candidats.size,
+              nbCandidatsTotal = nbCandidatsTotal,
+              pages = query.page.map(k => k :: pages.tail).getOrElse(pages),
+              pageSuivante = pages.reverse.headOption
+            )
+          )
       }
   }
 
@@ -297,9 +300,9 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
     val queryJson = buildQueryRechercherCandidatsParMetier(query, codeROME, metiersSecteurSansMetierChoisi)
     wsClient
       .url(s"$baseUrl/$indexName/_search")
-      .withHttpHeaders(jsonHttpHeader)
+      .withHttpHeaders(jsonContentType)
       .post(queryJson)
-      .map { response =>
+      .flatMap { response =>
         val json = Json.parse(response.body)
         val hits = (json \ "hits" \ "hits").as[JsArray]
         val pages = (hits \\ "sort").zipWithIndex
@@ -315,20 +318,24 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
         val candidatsEvaluesSurMetier =
           candidats
             .filter(jsValue => (jsValue \ "_score").as[Int] >= 6)
-            .map(js => toCandidatRechercheDto((js \ "_source").as[CandidatRechercheDocument]))
+            .map(js => (js \ "_source").as[CandidatRechercheDocument])
         val candidatsInteressesParMetier =
           candidats
             .filter(jsValue => (jsValue \ "_score").as[Int] >= 2 && (jsValue \ "_score").as[Int] < 6)
-            .map(js => toCandidatRechercheDto((js \ "_source").as[CandidatRechercheDocument]))
+            .map(js => (js \ "_source").as[CandidatRechercheDocument])
 
-        RechercheCandidatParMetierQueryResult(
-          candidatsEvaluesSurMetier = candidatsEvaluesSurMetier,
-          candidatsInteressesParMetier = candidatsInteressesParMetier,
-          nbCandidats = candidats.size,
-          nbCandidatsTotal = nbCandidatsTotal,
-          pages = query.page.map(k => k :: pages.tail).getOrElse(pages),
-          pageSuivante = pages.reverse.headOption
-        )
+        referentielMetier.metiersParCode((candidatsEvaluesSurMetier ++ candidatsInteressesParMetier).flatMap(_.metiersEvalues).distinct)
+          .map(metiers => metiers.foldLeft(Map.empty[CodeROME, Metier])((map, metier) => map + (metier.codeROME -> metier)))
+          .map(metiers =>
+            RechercheCandidatParMetierQueryResult(
+              candidatsEvaluesSurMetier = candidatsEvaluesSurMetier.map(c => toCandidatRechercheDto(c, metiers)),
+              candidatsInteressesParMetier = candidatsInteressesParMetier.map(c => toCandidatRechercheDto(c, metiers)),
+              nbCandidats = candidats.size,
+              nbCandidatsTotal = nbCandidatsTotal,
+              pages = query.page.map(k => k :: pages.tail).getOrElse(pages),
+              pageSuivante = pages.reverse.headOption
+            )
+          )
       }
   }
 
@@ -336,47 +343,54 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
     wsClient
       .url(s"$baseUrl/$indexName/$docType/${candidatId.value}/_update")
       .withQueryStringParameters(refreshParam)
-      .withHttpHeaders(jsonHttpHeader)
+      .withHttpHeaders(jsonContentType)
       .post(
         Json.obj("doc" -> json)
       ).map(_ => ())
 
-  private def toCandidatSaisieCriteresRechercheQueryResult(document: CandidatSaisieCriteresRechercheDocument): CandidatSaisieCriteresRechercheQueryResult =
-    CandidatSaisieCriteresRechercheQueryResult(
-      candidatId = document.candidatId,
-      nom = document.nom,
-      prenom = document.prenom,
-      rechercheMetierEvalue = document.rechercheMetierEvalue,
-      metiersEvalues = document.metiersEvalues.map(referentielMetier.metierParCode),
-      rechercheAutreMetier = document.rechercheAutreMetier,
-      metiersRecherches = document.metiersRecherches,
-      contacteParAgenceInterim = document.contacteParAgenceInterim,
-      contacteParOrganismeFormation = document.contacteParOrganismeFormation,
-      rayonRecherche = document.rayonRecherche,
-      numeroTelephone = document.numeroTelephone,
-      cvId = document.cvId,
-      cvTypeMedia = document.cvTypeMedia
+  private def toCandidatSaisieCriteresRechercheQueryResult(document: CandidatSaisieCriteresRechercheDocument): Future[CandidatSaisieCriteresRechercheQueryResult] =
+    referentielMetier.metiersParCode(document.metiersEvalues).map(metiersEvalues =>
+      CandidatSaisieCriteresRechercheQueryResult(
+        candidatId = document.candidatId,
+        nom = document.nom,
+        prenom = document.prenom,
+        rechercheMetierEvalue = document.rechercheMetierEvalue,
+        metiersEvalues = metiersEvalues,
+        rechercheAutreMetier = document.rechercheAutreMetier,
+        metiersRecherches = document.metiersRecherches,
+        contacteParAgenceInterim = document.contacteParAgenceInterim,
+        contacteParOrganismeFormation = document.contacteParOrganismeFormation,
+        rayonRecherche = document.rayonRecherche,
+        numeroTelephone = document.numeroTelephone,
+        cvId = document.cvId,
+        cvTypeMedia = document.cvTypeMedia
+      )
     )
 
-  private def toCandidatCriteresRechercheQueryResult(document: CandidatCriteresRechercheDocument): CandidatCriteresRechercheQueryResult =
-    CandidatCriteresRechercheQueryResult(
-      candidatId = document.candidatId,
-      rechercheMetiersEvalues = document.rechercheMetiersEvalues,
-      metiersEvalues = document.metiersEvalues.map(referentielMetier.metierParCode),
-      rechercheAutresMetiers = document.rechercheAutresMetiers,
-      metiersRecherches = document.metiersRecherches.map(referentielMetier.metierParCode),
-      codePostal = document.codePostal,
-      commune = document.commune,
-      rayonRecherche = document.rayonRecherche
-    )
+  private def toCandidatCriteresRechercheQueryResult(document: CandidatCriteresRechercheDocument): Future[CandidatCriteresRechercheQueryResult] =
+    for {
+      metiersEvalues <- referentielMetier.metiersParCode(document.metiersEvalues)
+      metiersRecherches <- referentielMetier.metiersParCode(document.metiersRecherches)
+    } yield
+      CandidatCriteresRechercheQueryResult(
+        candidatId = document.candidatId,
+        rechercheMetiersEvalues = document.rechercheMetiersEvalues,
+        metiersEvalues = metiersEvalues,
+        rechercheAutresMetiers = document.rechercheAutresMetiers,
+        metiersRecherches = metiersRecherches,
+        codePostal = document.codePostal,
+        commune = document.commune,
+        rayonRecherche = document.rayonRecherche
+      )
 
-  private def toCandidatRechercheDto(document: CandidatRechercheDocument): CandidatRechercheDto =
+  private def toCandidatRechercheDto(document: CandidatRechercheDocument,
+                                     metiers: Map[CodeROME, Metier]): CandidatRechercheDto =
     CandidatRechercheDto(
       candidatId = document.candidatId,
       nom = document.nom,
       prenom = document.prenom,
       email = document.email,
-      metiersEvalues = document.metiersEvalues.map(referentielMetier.metierParCode),
+      metiersEvalues = document.metiersEvalues.flatMap(metiers.get),
       habiletes = document.habiletes,
       metiersRecherches = document.metiersRecherches.flatMap(rechercheCandidatService.metierProposeParCode),
       numeroTelephone = document.numeroTelephone,
@@ -386,7 +400,8 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
       cvTypeMedia = document.cvTypeMedia
     )
 
-  private def toCandidatPourConseillerDto(document: CandidatPourConseillerDocument): CandidatPourConseillerDto =
+  private def toCandidatPourConseillerDto(document: CandidatPourConseillerDocument,
+                                          metiers: Map[CodeROME, Metier]): CandidatPourConseillerDto =
     CandidatPourConseillerDto(
       candidatId = document.candidatId,
       nom = document.nom,
@@ -395,7 +410,7 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
       email = document.email,
       statutDemandeurEmploi = document.statutDemandeurEmploi,
       rechercheMetiersEvalues = document.rechercheMetiersEvalues,
-      metiersEvalues = document.metiersEvalues.map(referentielMetier.metierParCode),
+      metiersEvalues = document.metiersEvalues.flatMap(metiers.get),
       rechercheAutresMetiers = document.rechercheAutresMetiers,
       metiersRecherches = document.metiersRecherches.flatMap(rechercheCandidatService.metierProposeParCode),
       contacteParAgenceInterim = document.contacteParAgenceInterim,

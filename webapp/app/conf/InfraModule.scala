@@ -21,6 +21,7 @@ import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.{MRSValideesCandi
 import fr.poleemploi.perspectives.candidat.mrs.infra.sql.ReferentielHabiletesMRSSqlAdapter
 import fr.poleemploi.perspectives.commun.infra.jackson.PerspectivesEventSourcingModule
 import fr.poleemploi.perspectives.commun.infra.oauth.OauthService
+import fr.poleemploi.perspectives.commun.infra.play.cache.InMemoryCacheApi
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
 import fr.poleemploi.perspectives.emailing.infra.local.LocalEmailingService
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetEmailingService
@@ -41,6 +42,7 @@ import fr.poleemploi.perspectives.recruteur.commentaire.infra.local.CommentaireL
 import fr.poleemploi.perspectives.recruteur.commentaire.infra.slack.CommentaireSlackAdapter
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
+import play.api.cache.AsyncCacheApi
 import play.api.inject.ApplicationLifecycle
 import play.api.libs.ws.WSClient
 import play.filters.csrf.CSRF.TokenProvider
@@ -106,6 +108,9 @@ class InfraModule extends AbstractModule with ScalaModule {
 
     database
   }
+
+  @Provides
+  def asyncCacheApi: AsyncCacheApi = new InMemoryCacheApi
 
   @Provides
   def oauthService(tokenProvider: TokenProvider): OauthService =
@@ -197,10 +202,12 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   def referentielMetierWSAdapter(wsClient: WSClient,
-                                 webAppConfig: WebAppConfig): ReferentielMetierWSAdapter =
+                                 webAppConfig: WebAppConfig,
+                                 cacheApi: AsyncCacheApi): ReferentielMetierWSAdapter =
     new ReferentielMetierWSAdapter(
       config = webAppConfig.referentielMetierWSAdapterConfig,
-      wsClient = wsClient
+      wsClient = wsClient,
+      cacheApi = cacheApi
     )
 
   @Provides
@@ -281,11 +288,13 @@ class InfraModule extends AbstractModule with ScalaModule {
   @Provides
   def referentielOffreWSAdapter(wsClient: WSClient,
                                 webAppConfig: WebAppConfig,
-                                referentielOffreWSMapping: ReferentielOffreWSMapping): ReferentielOffreWSAdapter =
+                                referentielOffreWSMapping: ReferentielOffreWSMapping,
+                                cacheApi: AsyncCacheApi): ReferentielOffreWSAdapter =
     new ReferentielOffreWSAdapter(
       config = webAppConfig.referentielOffreWSAdapterConfig,
       wsClient = wsClient,
-      mapping = referentielOffreWSMapping
+      mapping = referentielOffreWSMapping,
+      cacheApi = cacheApi
     )
 
   @Provides

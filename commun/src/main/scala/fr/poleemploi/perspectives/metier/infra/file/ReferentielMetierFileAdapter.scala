@@ -4,6 +4,8 @@ import fr.poleemploi.perspectives.commun.domain.{CodeROME, Metier}
 import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
 import play.api.libs.json.{JsError, JsSuccess, Json}
 
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.io.{BufferedSource, Source}
 
 /**
@@ -25,7 +27,6 @@ class ReferentielMetierFileAdapter extends ReferentielMetier {
   /**
     * Renvoie une exception si le Métier n'est associé à aucun code.
     */
-  override def metierParCode(code: CodeROME): Metier =
-    metiers.getOrElse(code, throw new IllegalArgumentException(s"Aucun label associé au code : $code"))
-
+  override def metiersParCode(codesROME: List[CodeROME]): Future[List[Metier]] =
+    Future(codesROME.map(c => metiers.getOrElse(c, throw new IllegalArgumentException(s"Aucun métier associé au code : $c"))))
 }

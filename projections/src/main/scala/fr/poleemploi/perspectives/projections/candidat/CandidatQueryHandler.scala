@@ -51,9 +51,8 @@ class CandidatQueryHandler(candidatProjection: CandidatProjection,
   }
 
   private def metiersEvaluesNouvelInscrit(query: MetiersEvaluesNouvelInscritQuery): Future[MetiersEvaluesNouvelInscritQueryResult] =
-    referentielMRSCandidat
-      .mrsValideesParCandidat(query.candidatId)
-      .map(mrsValidees =>
-        MetiersEvaluesNouvelInscritQueryResult(mrsValidees.map(m => referentielMetier.metierParCode(m.codeROME)))
-      )
+    for {
+      mrsValidees <- referentielMRSCandidat.mrsValideesParCandidat(query.candidatId)
+      metiersEvalues <- referentielMetier.metiersParCode(mrsValidees.map(m => m.codeROME))
+    } yield MetiersEvaluesNouvelInscritQueryResult(metiersEvalues)
 }
