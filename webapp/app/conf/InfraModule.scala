@@ -97,7 +97,7 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
-  def provideDatabase(lifecycle: ApplicationLifecycle,
+  def database(lifecycle: ApplicationLifecycle,
                       configuration: Configuration): Database = {
     val database = Database.forConfig(
       path = "db.postgresql",

@@ -14,6 +14,7 @@ import fr.poleemploi.perspectives.candidat.mrs.infra.local.ImportMRSCandidatLoca
 import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.{ImportMRSCandidatPEConnect, MRSValideesCandidatsCSVAdapter, MRSValideesCandidatsSqlAdapter}
 import fr.poleemploi.perspectives.candidat.mrs.infra.sql.ReferentielHabiletesMRSSqlAdapter
 import fr.poleemploi.perspectives.commun.infra.jackson.PerspectivesEventSourcingModule
+import fr.poleemploi.perspectives.commun.infra.play.cache.InMemoryCacheApi
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
 import fr.poleemploi.perspectives.emailing.infra.local.LocalEmailingService
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetEmailingService
@@ -80,7 +81,7 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
-  def provideDatabase(lifecycle: ApplicationLifecycle,
+  def database(lifecycle: ApplicationLifecycle,
                       configuration: Configuration): Database = {
     val database = Database.forConfig(
       path = "db.postgresql",
@@ -91,6 +92,9 @@ class InfraModule extends AbstractModule with ScalaModule {
 
     database
   }
+
+  @Provides
+  def asyncCacheApi: AsyncCacheApi = new InMemoryCacheApi
 
   @Provides
   def peConnectSqlAdapter(database: Database): PEConnectSqlAdapter =
