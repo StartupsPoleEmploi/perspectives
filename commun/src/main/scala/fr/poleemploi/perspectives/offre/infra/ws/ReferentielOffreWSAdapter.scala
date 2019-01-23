@@ -26,7 +26,7 @@ class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
     def callWS(accessTokenResponse: AccessTokenResponse, codesROME: List[CodeROME] = Nil, codeInsee: String): Future[List[Offre]] =
       wsClient.url(s"${config.urlApi}/offresdemploi/v2/offres/search")
         .addQueryStringParameters(
-          "codeROME" -> criteres.codesROME.take(3).map(_.value).mkString(","),
+          "codeROME" -> codesROME.map(_.value).mkString(","),
           "experience" -> mapping.buildExperience(criteres.experience),
           "commune" -> codeInsee,
           "distance" -> s"${criteres.rayonRecherche.value}",
@@ -38,10 +38,10 @@ class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
         )
         .get()
         .flatMap(r => filtreStatutReponse(response = r, statutNonGere = s => s != 200 && s != 206))
-        .map(r => {
+        .map(r =>
           (r.json \ "resultats").as[JsArray].value.map(_.as[OffreResponse])
             .map(mapping.buildOffre).toList
-        })
+        )
         .recoverWith {
           case e: WebServiceException if e.statut == 429 =>
             referentielOffreWSLogger.error(e.getMessage)
