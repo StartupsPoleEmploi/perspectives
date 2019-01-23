@@ -10,16 +10,16 @@ import play.api.libs.ws.WSClient
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-case class SlackCandidatConfig(webhookURL: String,
-                               environnement: Environnement)
+case class CandidatNotificationSlackConfig(webhookURL: String,
+                                           environnement: Environnement)
 
-class CandidatNotificationSlackAdapter(config: SlackCandidatConfig,
+class CandidatNotificationSlackAdapter(config: CandidatNotificationSlackConfig,
                                        wsClient: WSClient) extends CandidatNotificationProjection with WSAdapter {
 
   override def onCandidatInscritEvent(event: CandidatInscritEvent): Future[Unit] =
     wsClient
       .url(s"${config.webhookURL}")
-      .addHttpHeaders("Content-Type" -> "application/json")
+      .addHttpHeaders(jsonContentType)
       .post(Json.obj("text" -> s"Nouveau candidat inscrit en ${config.environnement.value}"))
       .flatMap(filtreStatutReponse(_))
       .map(_ => ())

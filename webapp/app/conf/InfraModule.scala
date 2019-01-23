@@ -246,7 +246,7 @@ class InfraModule extends AbstractModule with ScalaModule {
                               webAppConfig: WebAppConfig): CommentaireSlackAdapter =
     new CommentaireSlackAdapter(
       wsClient = wsClient,
-      config = webAppConfig.slackRecruteurConfig
+      config = webAppConfig.commentaireSlackConfig
     )
 
   @Provides
@@ -271,7 +271,7 @@ class InfraModule extends AbstractModule with ScalaModule {
   def candidatNotificationSlackAdapter(webAppConfig: WebAppConfig,
                                        wsClient: WSClient): CandidatNotificationSlackAdapter =
     new CandidatNotificationSlackAdapter(
-      config = webAppConfig.slackCandidatConfig,
+      config = webAppConfig.candidatNotificationSlackConfig,
       wsClient = wsClient
     )
 

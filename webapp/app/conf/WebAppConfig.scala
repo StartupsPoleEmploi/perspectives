@@ -10,8 +10,8 @@ import fr.poleemploi.perspectives.emailing.infra.ws.MailjetWSAdapterConfig
 import fr.poleemploi.perspectives.infra.BuildInfo
 import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapterConfig
 import fr.poleemploi.perspectives.offre.infra.ws.ReferentielOffreWSAdapterConfig
-import fr.poleemploi.perspectives.projections.candidat.infra.slack.SlackCandidatConfig
-import fr.poleemploi.perspectives.recruteur.commentaire.infra.slack.SlackRecruteurConfig
+import fr.poleemploi.perspectives.projections.candidat.infra.slack.CandidatNotificationSlackConfig
+import fr.poleemploi.perspectives.recruteur.commentaire.infra.slack.CommentaireSlackConfig
 import play.api.Configuration
 
 class WebAppConfig(configuration: Configuration) {
@@ -55,12 +55,12 @@ class WebAppConfig(configuration: Configuration) {
 
   val googleTagManagerContainerId: String = configuration.get[String]("googleTagManager.containerId")
 
-  val slackCandidatConfig: SlackCandidatConfig = SlackCandidatConfig(
+  val candidatNotificationSlackConfig: CandidatNotificationSlackConfig = CandidatNotificationSlackConfig(
     webhookURL = configuration.get[String]("slack.webhook.url"),
     environnement = environnement
   )
 
-  val slackRecruteurConfig: SlackRecruteurConfig = SlackRecruteurConfig(
+  val commentaireSlackConfig: CommentaireSlackConfig = CommentaireSlackConfig(
     webhookURL = configuration.get[String]("slack.webhook.url")
   )
 
