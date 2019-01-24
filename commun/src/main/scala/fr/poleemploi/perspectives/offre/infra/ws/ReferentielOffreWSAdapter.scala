@@ -1,6 +1,5 @@
 package fr.poleemploi.perspectives.offre.infra.ws
 
-import fr.poleemploi.perspectives.commun.domain.CodeROME
 import fr.poleemploi.perspectives.commun.infra.ws.{WSAdapter, WebServiceException}
 import fr.poleemploi.perspectives.metier.infra.ws.AccessTokenResponse
 import fr.poleemploi.perspectives.offre.domain.{CriteresRechercheOffre, Offre, ReferentielOffre}
@@ -23,14 +22,9 @@ class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
     * Elle est également limitée en nombre d'appels par seconde, il faut donc gérer le statut 429
     */
   def rechercherOffres(criteres: CriteresRechercheOffre): Future[List[Offre]] = {
-    def callWS(accessTokenResponse: AccessTokenResponse, codesROME: List[CodeROME] = Nil, codeInsee: String): Future[List[Offre]] =
+    def callWS(accessTokenResponse: AccessTokenResponse, request: RechercheOffreRequest): Future[List[Offre]] =
       wsClient.url(s"${config.urlApi}/offresdemploi/v2/offres/search")
-        .addQueryStringParameters(
-          "codeROME" -> codesROME.map(_.value).mkString(","),
-          "experience" -> mapping.buildExperience(criteres.experience),
-          "commune" -> codeInsee,
-          "distance" -> s"${criteres.rayonRecherche.value}",
-        )
+        .addQueryStringParameters(request.params:_ *)
         .addHttpHeaders(
           ("Authorization", s"Bearer ${accessTokenResponse.accessToken}"),
           jsonContentType,
@@ -50,10 +44,8 @@ class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
 
     for {
       accessTokenResponse <- genererAccessToken
-      codeInsee <- codeInsee(criteres.codePostal, accessTokenResponse)
-      offres <- Future.sequence(criteres.codesROME.sliding(3, 3).toList.map(codesROME =>
-        callWS(accessTokenResponse, codesROME, codeInsee)
-      ))
+      codeInsee <- codeInsee(accessTokenResponse, criteres.codePostal)
+      offres <- Future.sequence(mapping.buildRechercherOffresRequest(criteres, codeInsee).map(request => callWS(accessTokenResponse, request)))
     } yield {
       offres
         .flatten
@@ -74,10 +66,10 @@ class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
       .flatMap(filtreStatutReponse(_))
       .map(_.json.as[AccessTokenResponse])
 
-  private def codeInsee(codePostal: String, accessTokenResponse: AccessTokenResponse): Future[String] =
+  private def codeInsee(accessTokenResponse: AccessTokenResponse, codePostal: String): Future[String] =
     cacheApi
       .getOrElseUpdate(cacheKeyCommunes)(listerCommunes(accessTokenResponse))
-      .map(_.getOrElse(codePostal, throw new IllegalArgumentException(s"Aucun codeInsee associé au codePostal : $codePostal")))
+      .map(_.getOrElse(codePostal, throw new IllegalArgumentException(s"Aucun codeINSEE associé au codePostal : $codePostal")))
 
   private def listerCommunes(accessTokenResponse: AccessTokenResponse): Future[Map[String, String]] =
     for {

@@ -3,7 +3,7 @@ package fr.poleemploi.perspectives.offre.infra.ws
 import java.time.ZonedDateTime
 
 import fr.poleemploi.perspectives.commun.domain.{CodeROME, Email, Metier, NumeroTelephone}
-import fr.poleemploi.perspectives.offre.domain.{Experience, Offre, OffreId}
+import fr.poleemploi.perspectives.offre.domain.{CriteresRechercheOffre, Experience, Offre, OffreId}
 import play.api.libs.json.{Json, Reads}
 
 case class CommuneResponse(code: String,
@@ -90,11 +90,22 @@ object OffreResponse {
   implicit val reads: Reads[OffreResponse] = Json.reads[OffreResponse]
 }
 
-case class RerchercheOffreRequest()
+case class RechercheOffreRequest(params: List[(String, String)])
 
 case class RechercheOffreResponse(resultats: List[OffreResponse])
 
 class ReferentielOffreWSMapping {
+
+  def buildRechercherOffresRequest(criteresRechercheOffre: CriteresRechercheOffre,
+                                   codeINSEE: String): List[RechercheOffreRequest] =
+    criteresRechercheOffre.codesROME.sliding(3, 3).toList.map(codesROME =>
+      RechercheOffreRequest(List(
+        "codeROME" -> codesROME.map(_.value).mkString(","),
+        "commune" -> codeINSEE,
+        "distance" -> s"${criteresRechercheOffre.rayonRecherche.value}",
+        "experience" -> buildExperience(criteresRechercheOffre.experience)
+      ))
+    )
 
   def buildOffre(offreResponse: OffreResponse): Offre =
     Offre(
