@@ -14,6 +14,7 @@
         @components.metaGoogleSearchConsole()
         <link rel="stylesheet" media="screen" href="@assetsFinder.path("stylesheets/main.css")">
         <script src="@assetsFinder.path("javascripts/vendor/jquery.js")" type="text/javascript"></script>
+        @components.polyfill()
         @if(webAppConfig.useGoogleTagManager) {<script src="@assetsFinder.path("javascripts/vendor/googleTagManager.js")" type="text/javascript"></script>}
     </head>
     <body>
