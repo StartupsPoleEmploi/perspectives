@@ -1,5 +1,3 @@
--- DROP TABLE IF EXISTS events;
-
 CREATE TABLE events
 (
   id bigserial NOT NULL,
