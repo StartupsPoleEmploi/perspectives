@@ -1,20 +1,20 @@
-package fr.poleemploi.perspectives.candidat.mrs.infra.csv
+package fr.poleemploi.perspectives.candidat.dhae.infra.csv
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import akka.stream.alpakka.csv.scaladsl.{CsvParsing, CsvToMap}
 import akka.stream.scaladsl.{Sink, Source}
 import akka.util.ByteString
-import fr.poleemploi.perspectives.candidat.mrs.domain.HabiletesMRS
+import fr.poleemploi.perspectives.candidat.dhae.domain.HabiletesDHAE
 import fr.poleemploi.perspectives.commun.domain.{CodeDepartement, CodeROME, Habilete}
 
 import scala.concurrent.Future
 
-class HabiletesMRSCsvAdapter(val actorSystem: ActorSystem) {
+class HabiletesDHAECsvAdapter(val actorSystem: ActorSystem) {
 
   implicit val materializer: ActorMaterializer = ActorMaterializer()(actorSystem)
 
-  def load(source: Source[ByteString, _]): Future[Stream[HabiletesMRS]] = {
+  def load(source: Source[ByteString, _]): Future[Stream[HabiletesDHAE]] = {
     source
       .via(CsvParsing.lineScanner(delimiter = ','))
       .via(CsvToMap.toMapAsStrings())
@@ -30,7 +30,7 @@ class HabiletesMRSCsvAdapter(val actorSystem: ActorSystem) {
           .map(v => Habilete(v.trim.replaceAll("\\n", "")))
           .toList
 
-      HabiletesMRS(
+      HabiletesDHAE(
         codeROME = CodeROME(data("ROME commande")),
         codeDepartement = CodeDepartement(data("Département")),
         habiletes = habiletes

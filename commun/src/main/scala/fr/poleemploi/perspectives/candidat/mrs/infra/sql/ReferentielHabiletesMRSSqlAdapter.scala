@@ -4,6 +4,7 @@ import fr.poleemploi.perspectives.candidat.mrs.domain.{HabiletesMRS, Referentiel
 import fr.poleemploi.perspectives.commun.domain.{CodeDepartement, CodeROME, Habilete}
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
 import slick.jdbc.JdbcBackend.Database
+import slick.lifted.{Constraint, PrimaryKey}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -23,6 +24,10 @@ class ReferentielHabiletesMRSSqlAdapter(val driver: PostgresDriver,
 
     def habiletes = column[List[Habilete]]("habiletes")
 
+    def pk: PrimaryKey = primaryKey("mrs_habiletes_pk", id)
+
+    override def tableConstraints: Iterator[Constraint] = List(primaryKey("mrs_habiletes_unicite_mrs", (codeROME, codeDepartement))).toIterator
+
     def * = (codeROME, codeDepartement, habiletes) <> (HabiletesMRS.tupled, HabiletesMRS.unapply)
   }
 
@@ -36,7 +41,7 @@ class ReferentielHabiletesMRSSqlAdapter(val driver: PostgresDriver,
   def ajouter(habiletesMRS: Stream[HabiletesMRS]): Future[Int] = {
     val bulkInsert: DBIO[Option[Int]] = habiletesMRSTable.map(
       h => (h.codeROME, h.codeDepartement, h.habiletes)
-    ) ++= habiletesMRS.map(
+    ) insertOrUpdateAll habiletesMRS.map(
       h => (h.codeROME, h.codeDepartement, h.habiletes)
     )
 

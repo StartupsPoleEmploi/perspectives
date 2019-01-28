@@ -9,8 +9,11 @@ import fr.poleemploi.eventsourcing.infra.akka.AkkaEventStoreListener
 import fr.poleemploi.eventsourcing.infra.jackson.EventStoreObjectMapperBuilder
 import fr.poleemploi.eventsourcing.infra.postgresql.{PostgreSQLAppendOnlyStore, PostgresDriver => EventSourcingPostgresDriver}
 import fr.poleemploi.perspectives.authentification.infra.peconnect.sql.PEConnectSqlAdapter
+import fr.poleemploi.perspectives.candidat.dhae.infra.csv.{HabiletesDHAECsvAdapter, ImportHabiletesDHAECsvAdapter}
+import fr.poleemploi.perspectives.candidat.dhae.infra.local.ImportHabiletesDHAELocal
+import fr.poleemploi.perspectives.candidat.dhae.infra.sql.ReferentielHabiletesDHAESqlAdapter
 import fr.poleemploi.perspectives.candidat.mrs.infra.csv.{HabiletesMRSCsvAdapter, ImportHabiletesMRSCsvAdapter}
-import fr.poleemploi.perspectives.candidat.mrs.infra.local.ImportMRSCandidatLocal
+import fr.poleemploi.perspectives.candidat.mrs.infra.local.{ImportHabiletesMRSLocal, ImportMRSCandidatLocal}
 import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.{ImportMRSCandidatPEConnect, MRSValideesCandidatsCSVAdapter, MRSValideesCandidatsSqlAdapter}
 import fr.poleemploi.perspectives.candidat.mrs.infra.sql.ReferentielHabiletesMRSSqlAdapter
 import fr.poleemploi.perspectives.commun.infra.jackson.PerspectivesEventSourcingModule
@@ -82,7 +85,7 @@ class InfraModule extends AbstractModule with ScalaModule {
   @Provides
   @Singleton
   def database(lifecycle: ApplicationLifecycle,
-                      configuration: Configuration): Database = {
+               configuration: Configuration): Database = {
     val database = Database.forConfig(
       path = "db.postgresql",
       config = configuration.underlying
@@ -183,6 +186,10 @@ class InfraModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
+  def importHabiletesMRSLocal: ImportHabiletesMRSLocal =
+    new ImportHabiletesMRSLocal
+
+  @Provides
   def habiletesMRSCsvAdapter(actorSystem: ActorSystem): HabiletesMRSCsvAdapter =
     new HabiletesMRSCsvAdapter(actorSystem = actorSystem)
 
@@ -194,6 +201,31 @@ class InfraModule extends AbstractModule with ScalaModule {
       config = batchsConfig.importHabiletesMRSCsvAdapterConfig,
       habiletesMRSCsvAdapter = habiletesMRSCsvAdapter,
       referentielHabiletesMRSSqlAdapter = referentielHabiletesMRSSqlAdapter
+    )
+
+  @Provides
+  def importHabiletesDHAELocal: ImportHabiletesDHAELocal =
+    new ImportHabiletesDHAELocal
+
+  @Provides
+  def habiletesDHAECsvAdapter(actorSystem: ActorSystem): HabiletesDHAECsvAdapter =
+    new HabiletesDHAECsvAdapter(actorSystem = actorSystem)
+
+  @Provides
+  def referentielHabiletesDHAESqlAdapter(database: Database): ReferentielHabiletesDHAESqlAdapter =
+    new ReferentielHabiletesDHAESqlAdapter(
+      driver = PostgresDriver,
+      database = database
+    )
+
+  @Provides
+  def importHabiletesDHAELocal(batchsConfig: BatchsConfig,
+                               habiletesDHAECsvAdapter: HabiletesDHAECsvAdapter,
+                               referentielHabiletesDHAESqlAdapter: ReferentielHabiletesDHAESqlAdapter): ImportHabiletesDHAECsvAdapter =
+    new ImportHabiletesDHAECsvAdapter(
+      habiletesDHAECsvAdapter = habiletesDHAECsvAdapter,
+      referentielHabiletesDHAESqlAdapter = referentielHabiletesDHAESqlAdapter,
+      config = batchsConfig.importHabiletesDHAECsvAdapterConfig
     )
 
   @Provides

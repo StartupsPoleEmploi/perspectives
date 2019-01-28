@@ -1,4 +1,4 @@
-package fr.poleemploi.perspectives.candidat.mrs.infra.csv
+package fr.poleemploi.perspectives.candidat.dhae.infra.csv
 
 import akka.actor.ActorSystem
 import akka.stream.scaladsl.Source
@@ -8,12 +8,11 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{AsyncWordSpec, BeforeAndAfter, MustMatchers}
 
-class HabiletesMRSCsvAdapterSpec extends AsyncWordSpec
+class HabiletesDHAECsvAdapterSpec extends AsyncWordSpec
   with MustMatchers with MockitoSugar with BeforeAndAfter with ScalaFutures {
 
   val actorSystem: ActorSystem = ActorSystem(this.getClass.getSimpleName)
-  val habiletesMRSCsvAdapter = new HabiletesMRSCsvAdapter(actorSystem)
-  val codeDepartement = CodeDepartement("85")
+  val habiletesDHAECsvAdapter = new HabiletesDHAECsvAdapter(actorSystem)
 
   "import" should {
     "ne rien faire si aucune ligne n'est présente dans la source" in {
@@ -24,7 +23,7 @@ class HabiletesMRSCsvAdapterSpec extends AsyncWordSpec
       )
 
       // When
-      val future = habiletesMRSCsvAdapter.load(source)
+      val future = habiletesDHAECsvAdapter.load(source)
 
       // Then
       future map (s => s.isEmpty mustBe true)
@@ -38,7 +37,7 @@ class HabiletesMRSCsvAdapterSpec extends AsyncWordSpec
       )
 
       // When
-      val future = habiletesMRSCsvAdapter.load(source)
+      val future = habiletesDHAECsvAdapter.load(source)
 
       // Then
       future.map(s => s.isEmpty mustBe true)
@@ -52,7 +51,7 @@ class HabiletesMRSCsvAdapterSpec extends AsyncWordSpec
       )
 
       // When
-      val future = habiletesMRSCsvAdapter.load(source)
+      val future = habiletesDHAECsvAdapter.load(source)
 
       // Then
       future.map(s => s.isEmpty mustBe true)
@@ -66,7 +65,7 @@ class HabiletesMRSCsvAdapterSpec extends AsyncWordSpec
       )
 
       // When
-      val future = habiletesMRSCsvAdapter.load(source)
+      val future = habiletesDHAECsvAdapter.load(source)
 
       // Then
       future.map(s => s.isEmpty mustBe true)
@@ -80,7 +79,7 @@ class HabiletesMRSCsvAdapterSpec extends AsyncWordSpec
       )
 
       // When
-      val future = habiletesMRSCsvAdapter.load(source)
+      val future = habiletesDHAECsvAdapter.load(source)
 
       // Then
       future.map(s => {
@@ -96,7 +95,7 @@ class HabiletesMRSCsvAdapterSpec extends AsyncWordSpec
       )
 
       // When
-      val future = habiletesMRSCsvAdapter.load(source)
+      val future = habiletesDHAECsvAdapter.load(source)
 
       // Then
       future.map(s => {
@@ -115,7 +114,7 @@ class HabiletesMRSCsvAdapterSpec extends AsyncWordSpec
       )
 
       // When
-      val future = habiletesMRSCsvAdapter.load(source)
+      val future = habiletesDHAECsvAdapter.load(source)
 
       // Then
       future.map(s => {
@@ -134,7 +133,7 @@ class HabiletesMRSCsvAdapterSpec extends AsyncWordSpec
       )
 
       // When
-      val future = habiletesMRSCsvAdapter.load(source)
+      val future = habiletesDHAECsvAdapter.load(source)
 
       // Then
       future.map(s => {

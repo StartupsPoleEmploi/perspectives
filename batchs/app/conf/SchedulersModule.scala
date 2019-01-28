@@ -3,6 +3,7 @@ package conf
 import akka.actor.{ActorRef, ActorSystem}
 import com.google.inject.{AbstractModule, Inject, Provides, Singleton}
 import fr.poleemploi.perspectives.candidat.CandidatCommandHandler
+import fr.poleemploi.perspectives.candidat.dhae.domain.ImportHabiletesDHAE
 import fr.poleemploi.perspectives.candidat.mrs.domain.{ImportHabiletesMRS, ImportMRSCandidat}
 import fr.poleemploi.perspectives.emailing.domain.EmailingService
 import fr.poleemploi.perspectives.projections.candidat.CandidatProjection
@@ -10,7 +11,7 @@ import fr.poleemploi.perspectives.projections.recruteur.alerte.AlerteRecruteurPr
 import javax.inject.Named
 import net.codingwell.scalaguice.ScalaModule
 import play.api.libs.concurrent.AkkaGuiceSupport
-import schedulers.{AlerteMailRecruteurActor, BatchsScheduler, CandidatsMRSValideesActor, HabiletesMRSActor}
+import schedulers._
 
 class Scheduled @Inject()(perspectivesScheduler: BatchsScheduler) {
 
@@ -22,6 +23,7 @@ class SchedulersModule extends AbstractModule with ScalaModule with AkkaGuiceSup
   override def configure(): Unit = {
     bindActor[CandidatsMRSValideesActor](CandidatsMRSValideesActor.name)
     bindActor[HabiletesMRSActor](HabiletesMRSActor.name)
+    bindActor[HabiletesDHAEActor](HabiletesDHAEActor.name)
     bindActor[AlerteMailRecruteurActor](AlerteMailRecruteurActor.name)
 
     bind[Scheduled].asEagerSingleton()
@@ -54,6 +56,12 @@ class SchedulersModule extends AbstractModule with ScalaModule with AkkaGuiceSup
     )
 
   @Provides
+  def habiletesDHAEActor(importHabiletesDHAE: ImportHabiletesDHAE): HabiletesDHAEActor =
+    new HabiletesDHAEActor(
+      importHabiletesDHAE = importHabiletesDHAE
+    )
+
+  @Provides
   @Singleton
   def perspectivesScheduler(actorSystem: ActorSystem,
                             @Named(CandidatsMRSValideesActor.name)
@@ -61,11 +69,14 @@ class SchedulersModule extends AbstractModule with ScalaModule with AkkaGuiceSup
                             @Named(AlerteMailRecruteurActor.name)
                             alerteMailRecruteurActor: ActorRef,
                             @Named(HabiletesMRSActor.name)
-                            habiletesMRSActor: ActorRef): BatchsScheduler =
+                            habiletesMRSActor: ActorRef,
+                            @Named(HabiletesDHAEActor.name)
+                            habiletesDHAEActor: ActorRef): BatchsScheduler =
     new BatchsScheduler(
       actorSystem = actorSystem,
       candidatsMrsValideesActor = candidatsMrsValideesActor,
       alerteMailRecruteurActor = alerteMailRecruteurActor,
-      habiletesMRSActor = habiletesMRSActor
+      habiletesMRSActor = habiletesMRSActor,
+      habiletesDHAEActor = habiletesDHAEActor
     )
 }

@@ -1,9 +1,12 @@
 package conf
 
 import com.google.inject.{AbstractModule, Provider, Provides, Singleton}
+import fr.poleemploi.perspectives.candidat.dhae.domain.ImportHabiletesDHAE
+import fr.poleemploi.perspectives.candidat.dhae.infra.csv.ImportHabiletesDHAECsvAdapter
+import fr.poleemploi.perspectives.candidat.dhae.infra.local.ImportHabiletesDHAELocal
 import fr.poleemploi.perspectives.candidat.mrs.domain.{ImportHabiletesMRS, ImportMRSCandidat, ReferentielHabiletesMRS}
 import fr.poleemploi.perspectives.candidat.mrs.infra.csv.ImportHabiletesMRSCsvAdapter
-import fr.poleemploi.perspectives.candidat.mrs.infra.local.ImportMRSCandidatLocal
+import fr.poleemploi.perspectives.candidat.mrs.infra.local.{ImportHabiletesMRSLocal, ImportMRSCandidatLocal}
 import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.ImportMRSCandidatPEConnect
 import fr.poleemploi.perspectives.candidat.mrs.infra.sql.ReferentielHabiletesMRSSqlAdapter
 import fr.poleemploi.perspectives.emailing.domain.EmailingService
@@ -54,6 +57,21 @@ class ServicesModule extends AbstractModule {
 
   @Provides
   @Singleton
-  def importHabiletesMRS(importHabiletesMRSCsvAdapter: Provider[ImportHabiletesMRSCsvAdapter]): ImportHabiletesMRS =
-    importHabiletesMRSCsvAdapter.get()
+  def importHabiletesMRS(importHabiletesMRSCsvAdapter: Provider[ImportHabiletesMRSCsvAdapter],
+                         importHabiletesMRSLocal: Provider[ImportHabiletesMRSLocal],
+                         batchsConfig: BatchsConfig): ImportHabiletesMRS =
+    if (batchsConfig.useImportHabiletesMRSCsv)
+      importHabiletesMRSCsvAdapter.get()
+    else
+      importHabiletesMRSLocal.get()
+
+  @Provides
+  @Singleton
+  def importHabiletesDHAE(importHabiletesDHAECsvAdapter: Provider[ImportHabiletesDHAECsvAdapter],
+                          importHabiletesDHAELocal: Provider[ImportHabiletesDHAELocal],
+                          batchsConfig: BatchsConfig): ImportHabiletesDHAE =
+    if (batchsConfig.useImportHabiletesDHAECsv)
+      importHabiletesDHAECsvAdapter.get()
+    else
+      importHabiletesDHAELocal.get()
 }
