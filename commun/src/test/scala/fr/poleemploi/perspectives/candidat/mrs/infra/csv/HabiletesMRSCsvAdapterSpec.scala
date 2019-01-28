@@ -73,6 +73,25 @@ class HabiletesMRSCsvAdapterSpec extends AsyncWordSpec
         s.toList.head.codeROME mustBe CodeROME("A1402")
       })
     }
+    "integrer les habiletés de la ligne en supprimant les espaces de début et de fin" in {
+      // Given
+      val source = Source.single(
+        ByteString(
+          """ROME commande,Appellation ROME commande,HABILETE1,HABILETE2,HABILETE3,HABILETE4,HABILETE5,HABILETE6,HABILETE7
+            |A1402,, Respecter des normes et des consignes , Travailler en équipe ,,,,,""".stripMargin)
+      )
+
+      // When
+      val future = habiletesMRSCsvAdapter.load(source = source, codeDepartement = codeDepartement)
+
+      // Then
+      future.map(s => {
+        s.toList.head.habiletes must contain theSameElementsAs List(
+          Habilete("Respecter des normes et des consignes"),
+          Habilete("Travailler en équipe")
+        )
+      })
+    }
     "integrer les habiletés de la ligne" in {
       // Given
       val source = Source.single(
@@ -109,6 +128,4 @@ class HabiletesMRSCsvAdapterSpec extends AsyncWordSpec
       })
     }
   }
-
-
 }
