@@ -64,7 +64,7 @@ class LocalEventStoreListenerSpec extends AsyncWordSpec with MustMatchers
   }
 
   private def onEventSuccess: PartialFunction[Event, Future[Unit]] = {
-    case _: Event => Future.successful()
+    case _: Event => Future.successful(())
   }
 
   private def onEventError: PartialFunction[Event, Future[Unit]] = {

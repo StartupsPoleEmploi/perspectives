@@ -106,7 +106,7 @@ class EventStoreSpec extends AsyncWordSpec with MustMatchers
     }
     "sauvegarder un evenement dans le store meme si la publication au listener echoue" in {
       // Given
-      when(appendOnlyStore.append(ArgumentMatchers.eq(aggregateId.value), ArgumentMatchers.eq(0), ArgumentMatchers.any[List[AppendOnlyData]])) thenReturn Future.successful()
+      when(appendOnlyStore.append(ArgumentMatchers.eq(aggregateId.value), ArgumentMatchers.eq(0), ArgumentMatchers.any[List[AppendOnlyData]])) thenReturn Future.successful(())
       when(eventStoreListener.publish(ArgumentMatchers.any[AppendedEvent]())) thenReturn Future.failed(new RuntimeException("Erreur de publication"))
 
       // When
