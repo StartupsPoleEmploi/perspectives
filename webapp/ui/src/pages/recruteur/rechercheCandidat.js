@@ -6,7 +6,6 @@ import places from 'places.js';
 import { intituleAlerte, buildAlerte } from '../../domain/recruteur/alerte/alerteService.js';
 
 $(document).ready(function () {
-
     var placesAutocomplete = places({
         appId: jsData.algoliaPlaces.appId,
         apiKey: jsData.algoliaPlaces.apiKey,
