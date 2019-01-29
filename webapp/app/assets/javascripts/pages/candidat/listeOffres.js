@@ -15,7 +15,7 @@ var app = new Vue({
             offreCourante: {},
             display: {
                 contact: false,
-                criteres: true
+                criteres: false
             },
             metiersRecherchesParSecteur: [],
             metiersEvaluesParSecteur: []
