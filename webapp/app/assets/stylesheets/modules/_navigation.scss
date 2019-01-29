@@ -70,15 +70,16 @@
 }
 
 .conteneurPEConnect {
-  @include make-col-ready();
   text-align: center;
-  font-size: 0.8rem;
 
   @include media-breakpoint-up(md) {
     @include make-col(4);
+    @include make-col-ready();
+    font-size: 0.7rem;
   }
   @include media-breakpoint-down(md) {
     @include make-col(12);
+    font-size: 0.8rem;
     margin-top: 2em;
   }
 }
