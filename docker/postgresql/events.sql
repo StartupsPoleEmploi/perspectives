@@ -17,4 +17,4 @@ COMMENT ON COLUMN events.stream_version IS 'version du stream (incrémentale)';
 COMMENT ON COLUMN events.stream_name IS 'Identifiant de l''aggregat concerne par l''événement';
 COMMENT ON COLUMN events.event_data IS 'Données de l''événement serialisé en JSONB';
 
-CREATE INDEX stream_name_idx ON events (stream_name);
+CREATE INDEX events_stream_name_idx ON events (stream_name);
