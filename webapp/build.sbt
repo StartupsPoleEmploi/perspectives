@@ -6,3 +6,5 @@ libraryDependencies ++= Seq(
   Dependencies.scalaGuice,
   Dependencies.scalatestplus
 )
+
+PlayKeys.playRunHooks += baseDirectory.map(NpmRunHook.apply).value
