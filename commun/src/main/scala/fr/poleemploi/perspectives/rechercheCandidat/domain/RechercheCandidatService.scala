@@ -45,7 +45,7 @@ object RechercheCandidatService {
   )
   val CONDUITE_ENGINS = Metier(
     codeROME = CodeROME("F1301"),
-    label = "Conduite d’engins"
+    label = "Conduite de grue"
   )
   val ELECTRICITE = Metier(
     codeROME = CodeROME("F1602"),
