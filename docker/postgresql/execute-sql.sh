@@ -8,7 +8,7 @@ CONTAINER_ID=`sudo docker run -d --name postgresql-execute --mount src=perspecti
 
 echo "CONTAINER : $CONTAINER_ID"
 
-cat $SQL_FILE | sudo docker exec -it postgresql-execute psql -U perspectives
+cat $SQL_FILE | sudo docker exec -i postgresql-execute psql -U perspectives
 
 sudo docker container stop postgresql-execute
 
