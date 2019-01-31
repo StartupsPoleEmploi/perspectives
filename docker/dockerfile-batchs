@@ -53,9 +53,13 @@ RUN mkdir -pv ${EXTRACT_CANDIDATS_MRS_VALIDEES_IMPORT_DIRECTORY}
 RUN mkdir -pv ${EXTRACT_CANDIDATS_MRS_VALIDEES_ARCHIVE_DIRECTORY}
 RUN mkdir -pv ${EXTRACT_HABILETES_MRS_IMPORT_DIRECTORY}
 RUN mkdir -pv ${EXTRACT_HABILETES_MRS_ARCHIVE_DIRECTORY}
+RUN mkdir -pv ${EXTRACT_HABILETES_DHAE_ARCHIVE_DIRECTORY}
+RUN mkdir -pv ${EXTRACT_HABILETES_DHAE_ARCHIVE_DIRECTORY}
 
 COPY perspectives-batchs-${BATCHS_VERSION}.zip .
 
 RUN unzip perspectives-batchs-${BATCHS_VERSION}.zip
+
+HEALTHCHECK --interval=15s --timeout=10s CMD curl -f http://localhost:9000 || exit 1
 
 CMD ["sh", "-c", "./perspectives-batchs-${BATCHS_VERSION}/bin/perspectives-batchs -Dlogger.resource=${BATCHS_LOGBACK_RESOURCE} -Dconfig.resource=${BATCHS_CONFIG_RESOURCE}"]
