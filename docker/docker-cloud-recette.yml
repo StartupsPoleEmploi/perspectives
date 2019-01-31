@@ -5,7 +5,10 @@ services:
     depends_on:
       - fluentbit
     ports:
-      - "80:80"
+      - target: 80
+        published: 80
+        protocol: tcp
+        mode: host
     deploy:
       replicas: 1
     logging:
