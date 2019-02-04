@@ -52,10 +52,8 @@ class ConseillerController @Inject()(cc: ControllerComponents,
   def paginerCandidats: Action[AnyContent] = conseillerAdminAuthentifieAction.async { conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
       PaginationCandidatForm.form.bindFromRequest.fold(
-        formWithErrors => {
-          Future.successful(BadRequest(formWithErrors.errorsAsJson))
-        },
-        paginationCandidatForm => {
+        formWithErrors => Future.successful(BadRequest(formWithErrors.errorsAsJson)),
+        paginationCandidatForm =>
           candidatQueryHandler.handle(
             CandidatsPourConseillerQuery(
               nbPagesACharger = 1,
@@ -68,7 +66,6 @@ class ConseillerController @Inject()(cc: ControllerComponents,
             "candidats" -> result.candidats,
             "pageSuivante" -> result.pageSuivante
           )))
-        }
       )
     }(conseillerRequest)
   }
@@ -76,9 +73,7 @@ class ConseillerController @Inject()(cc: ControllerComponents,
   def ajouterMRSCandidat: Action[AnyContent] = conseillerAdminAuthentifieAction.async { conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
       AjouterMRSCandidatForm.form.bindFromRequest.fold(
-        formWithErrors => {
-          Future.successful(BadRequest(formWithErrors.errorsAsJson))
-        },
+        formWithErrors => Future.successful(BadRequest(formWithErrors.errorsAsJson)),
         ajouterMRSCandidatForm => {
           val command = AjouterMRSValideesCommand(
             id = CandidatId(ajouterMRSCandidatForm.candidatId),
@@ -123,9 +118,7 @@ class ConseillerController @Inject()(cc: ControllerComponents,
   def paginerRecruteurs: Action[AnyContent] = conseillerAdminAuthentifieAction.async { conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
       PaginationRecruteurForm.form.bindFromRequest.fold(
-        formWithErrors => {
-          Future.successful(BadRequest(formWithErrors.errorsAsJson))
-        },
+        formWithErrors => Future.successful(BadRequest(formWithErrors.errorsAsJson)),
         paginationRecruteurForm => {
           recruteurQueryHandler.handle(
             RecruteursPourConseillerQuery(

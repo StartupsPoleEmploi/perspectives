@@ -41,9 +41,7 @@ class ProfilController @Inject()(components: ControllerComponents,
   def modifierProfil(): Action[AnyContent] = recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
       ProfilForm.form.bindFromRequest.fold(
-        formWithErrors => {
-          Future.successful(BadRequest(views.html.recruteur.profil(formWithErrors, recruteurAuthentifie = recruteurAuthentifieRequest.recruteurAuthentifie)))
-        },
+        formWithErrors => Future.successful(BadRequest(views.html.recruteur.profil(formWithErrors, recruteurAuthentifie = recruteurAuthentifieRequest.recruteurAuthentifie))),
         inscriptionForm => {
           val command = ModifierProfilCommand(
             id = recruteurAuthentifieRequest.recruteurId,

@@ -57,15 +57,14 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
       candidatQueryHandler.handle(CandidatSaisieCriteresRechercheQuery(candidatAuthentifieRequest.candidatId))
         .flatMap(candidatSaisieCriteresRecherche => {
           SaisieCriteresRechercheForm.form.bindFromRequest.fold(
-            formWithErrors => {
+            formWithErrors =>
               Future.successful(BadRequest(views.html.candidat.saisieCriteresRecherche(
                 saisieCriteresRechercheForm = formWithErrors,
                 candidatSaisieCriteresRecherche = Some(candidatSaisieCriteresRecherche),
                 metiersEvaluesCandidat = candidatSaisieCriteresRecherche.metiersEvalues,
                 candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie,
                 secteursActivites = rechercheCandidatQueryHandler.secteursProposes
-              )))
-            },
+              ))),
             saisieCriteresRechercheForm => {
               val modifierCriteresCommand = buildModifierCriteresRechercheCommand(candidatSaisieCriteresRecherche.candidatId, saisieCriteresRechercheForm)
 
