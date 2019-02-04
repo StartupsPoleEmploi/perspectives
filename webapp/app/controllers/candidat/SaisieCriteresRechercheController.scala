@@ -11,7 +11,6 @@ import fr.poleemploi.perspectives.projections.candidat.mrs.MetiersEvaluesNouvelI
 import fr.poleemploi.perspectives.projections.candidat.{CandidatQueryHandler, CandidatSaisieCriteresRechercheQuery, CandidatSaisieCriteresRechercheQueryResult}
 import fr.poleemploi.perspectives.projections.rechercheCandidat.RechercheCandidatQueryHandler
 import javax.inject.Inject
-import play.api.Logger
 import play.api.libs.Files
 import play.api.mvc._
 
@@ -85,13 +84,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
               )
             }
           )
-        }).recoverWith {
-        case t: Throwable =>
-          Logger.error("Erreur lors de l'enregistrement des critères", t)
-          Future(Redirect(routes.LandingController.landing()).flashing(
-            messagesRequest.flash.withMessageErreur("Une erreur s'est produite lors de l'enregistrement, veuillez réessayer ultérieurement")
-          ))
-      }
+        })
     }(candidatAuthentifieRequest)
   }
 
