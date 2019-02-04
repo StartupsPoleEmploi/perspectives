@@ -5,6 +5,7 @@ import conf.WebAppConfig
 import controllers.AssetsFinder
 import fr.poleemploi.perspectives.projections.rechercheCandidat.RechercheCandidatQueryHandler
 import javax.inject._
+import play.api.libs.json.Json
 import play.api.mvc._
 
 @Singleton
@@ -21,9 +22,11 @@ class LandingController @Inject()(cc: ControllerComponents,
         Redirect(routes.OffreController.listeOffres())
       else
         Ok(views.html.candidat.landing(
-        recruteurAuthentifie = optionalRecruteurAuthentifieRequest.recruteurAuthentifie,
-        secteursActivites = rechercheCandidatQueryHandler.secteursProposes
-      ))
+          recruteurAuthentifie = optionalRecruteurAuthentifieRequest.recruteurAuthentifie,
+          jsData = Json.obj(
+            "secteursActivites" -> rechercheCandidatQueryHandler.secteursProposesDtos
+          )
+        ))
     }(optionalRecruteurAuthentifieRequest)
   }
 }
