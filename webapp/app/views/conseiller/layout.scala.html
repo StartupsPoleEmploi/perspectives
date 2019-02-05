@@ -1,7 +1,6 @@
 @import conf.WebAppConfig
 
-@(title: String = "Perspectives : boostez vos opportunités !",
-        cssClassesBody: List[String] = Nil)(content: Html)(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
+@(title: String = "Perspectives : boostez vos opportunités !")(content: Html)(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -15,7 +14,7 @@
         <script src="@assetsFinder.path("javascripts/vendor/vuejs/vue.js")" type="text/javascript"></script>
         @components.polyfill()
     </head>
-    <body @if(cssClassesBody.nonEmpty){class="@cssClassesBody.mkString(" ")"}>
+    <body>
         @components.headerPrincipal()
 
         @content
