@@ -4,6 +4,7 @@ import fr.poleemploi.cqrs.projection.{Query, QueryResult}
 import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.recruteur.alerte.domain.{AlerteId, FrequenceAlerte}
 import fr.poleemploi.perspectives.recruteur.{RecruteurId, TypeRecruteur}
+import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
 import play.api.libs.json.{Json, Writes}
 
 case class AlertesRecruteurQuery(recruteurId: RecruteurId) extends Query[AlertesRecruteurQueryResult]
@@ -23,8 +24,8 @@ object AlerteRecruteurDto {
 
   implicit val writes: Writes[AlerteRecruteurDto] = Writes { a =>
     Json.obj(
-      "id" -> a.alerteId.value,
-      "frequence" -> a.frequence.value,
+      "id" -> a.alerteId,
+      "frequence" -> a.frequence,
       "secteurActivite" -> a.secteurActivite.map(_.code.value),
       "metier" -> a.metier.map(_.codeROME.value),
       "localisation" -> Json.obj(

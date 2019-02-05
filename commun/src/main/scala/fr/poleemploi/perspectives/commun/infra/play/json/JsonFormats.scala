@@ -5,6 +5,7 @@ import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
 import fr.poleemploi.perspectives.candidat.{CandidatId, StatutDemandeurEmploi}
 import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.offre.domain.OffreId
+import fr.poleemploi.perspectives.recruteur.alerte.domain.{AlerteId, FrequenceAlerte}
 import fr.poleemploi.perspectives.recruteur.{NumeroSiret, RecruteurId, TypeRecruteur}
 import play.api.libs.json._
 
@@ -17,6 +18,7 @@ object JsonFormats {
   implicit val formatRecruteurId: Format[RecruteurId] = formatAggregateId(RecruteurId)
   implicit val formatCvId: Format[CVId] = formatStringValueObject(CVId)
   implicit val formatOffreId: Format[OffreId] = formatStringValueObject(OffreId)
+  implicit val formatAlerteId: Format[AlerteId] = formatStringValueObject(AlerteId)
 
   implicit val formatGenre: Format[Genre] = formatStringValueObject(Genre(_))
   implicit val formatCodeDepartement: Format[CodeDepartement] = formatStringValueObject(CodeDepartement)
@@ -25,6 +27,7 @@ object JsonFormats {
   implicit val formatNumeroTelephone: Format[NumeroTelephone] = formatStringValueObject(NumeroTelephone(_))
   implicit val formatStatutDemandeurEmploi: Format[StatutDemandeurEmploi] = formatStringValueObject(StatutDemandeurEmploi(_))
   implicit val formatTypeMedia: Format[TypeMedia] = formatStringValueObject(TypeMedia(_))
+  implicit val formatFrequenceAlerte: Format[FrequenceAlerte] = formatStringValueObject(FrequenceAlerte(_))
 
   implicit val formatCodeROME: Format[CodeROME] = formatStringValueObject(CodeROME)
   implicit val formatMetier: Format[Metier] = Json.format[Metier]
