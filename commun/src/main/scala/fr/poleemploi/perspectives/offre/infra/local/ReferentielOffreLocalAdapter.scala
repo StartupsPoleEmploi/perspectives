@@ -32,7 +32,9 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
         telephoneContact = None,
         emailContact = None,
         urlPostuler = None,
-        coordonneesContact = None,
+        coordonneesContact1 = Some("93 RUE DE LA MARNE"),
+        coordonneesContact2 = Some("95220 HERBLAY"),
+        coordonneesContact3 = Some("Courriel : ape.95132@pole-emploi.fr"),
         dateActualisation = LocalDateTime.now()
       )
     else if (n % 2 == 0)
@@ -56,7 +58,9 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
         telephoneContact = Some(NumeroTelephone("0169010215")),
         emailContact = None,
         urlPostuler = None,
-        coordonneesContact = None,
+        coordonneesContact1 = None,
+        coordonneesContact2 = None,
+        coordonneesContact3 = None,
         dateActualisation = LocalDateTime.now()
       )
     else
@@ -80,7 +84,9 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
         telephoneContact = None,
         emailContact = None,
         urlPostuler = Some("https://parcasterix-recrute.talent-soft.com/offre-de-emploi/emploi-agent-polyvalent-de-restauration-en-contrat-de-professionnalisation_566.aspx"),
-        coordonneesContact = None,
+        coordonneesContact1 = None,
+        coordonneesContact2 = None,
+        coordonneesContact3 = None,
         dateActualisation = LocalDateTime.now()
       )
   ))

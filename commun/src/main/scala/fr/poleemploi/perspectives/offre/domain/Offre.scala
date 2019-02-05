@@ -27,7 +27,9 @@ case class Offre(id: OffreId,
                  telephoneContact: Option[NumeroTelephone],
                  emailContact: Option[Email],
                  urlPostuler: Option[String],
-                 coordonneesContact: Option[String]) {
+                 coordonneesContact1: Option[String],
+                 coordonneesContact2: Option[String],
+                 coordonneesContact3: Option[String]) {
 
   override def equals(that: Any): Boolean =
     that match {

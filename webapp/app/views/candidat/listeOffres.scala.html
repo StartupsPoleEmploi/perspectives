@@ -61,7 +61,10 @@
                                         <p class="postuler-info" v-show="offreCourante.nomContact"><b>{{offreCourante.nomContact}}</b></p>
                                         <p class="postuler-info" v-show="offreCourante.telephoneContact">{{offreCourante.telephoneContact}}</p>
                                         <p class="postuler-info" v-show="offreCourante.emailContact">{{offreCourante.emailContact}}</p>
-                                        <p class="postuler-info" v-show="!offreCourante.nomContact && !offreCourante.telephoneContact && !offreCourante.emailContact">
+                                        <p class="postuler-info" v-show="offreCourante.coordonneesContact1">{{offreCourante.coordonneesContact1}}</p>
+                                        <p class="postuler-info" v-show="offreCourante.coordonneesContact2">{{offreCourante.coordonneesContact2}}</p>
+                                        <p class="postuler-info" v-show="offreCourante.coordonneesContact3">{{offreCourante.coordonneesContact3}}</p>
+                                        <p class="postuler-info" v-show="!offreCourante.telephoneContact && !offreCourante.emailContact && !offreCourante.coordonneesContact1 && !offreCourante.coordonneesContact2 && !offreCourante.coordonneesContact3">
                                             <a class="lienOrigineOffre" target="_blank" v-bind:href="offreCourante.urlOrigine">{{offreCourante.urlOrigine}}</a>
                                         </p>
                                     </div>

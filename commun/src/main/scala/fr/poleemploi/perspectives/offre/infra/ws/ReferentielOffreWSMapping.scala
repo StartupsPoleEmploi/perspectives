@@ -3,7 +3,7 @@ package fr.poleemploi.perspectives.offre.infra.ws
 import java.time.ZonedDateTime
 
 import fr.poleemploi.perspectives.commun.domain.{CodeROME, Email, Metier, NumeroTelephone}
-import fr.poleemploi.perspectives.offre.domain.{CriteresRechercheOffre, Experience, Offre, OffreId}
+import fr.poleemploi.perspectives.offre.domain._
 import play.api.libs.json.{Json, Reads}
 
 case class CommuneResponse(code: String,
@@ -128,12 +128,9 @@ class ReferentielOffreWSMapping {
       telephoneContact = offreResponse.contact.flatMap(_.telephone).map(NumeroTelephone(_)),
       emailContact = offreResponse.contact.flatMap(_.courriel).map(Email),
       urlPostuler = offreResponse.contact.flatMap(_.urlPostulation),
-      coordonneesContact = for {
-        contact <- offreResponse.contact
-        coordonnees1 <- contact.coordonnees1
-        coordonnees2 <- contact.coordonnees2
-        coordonnees3 <- contact.coordonnees3
-      } yield s"$coordonnees1 $coordonnees2 $coordonnees3",
+      coordonneesContact1 = offreResponse.contact.flatMap(_.coordonnees1),
+      coordonneesContact2 = offreResponse.contact.flatMap(_.coordonnees2),
+      coordonneesContact3 = offreResponse.contact.flatMap(_.coordonnees3),
       dateActualisation = offreResponse.dateActualisation.toLocalDateTime
     )
 

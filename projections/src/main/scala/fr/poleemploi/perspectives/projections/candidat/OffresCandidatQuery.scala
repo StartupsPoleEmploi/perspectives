@@ -11,6 +11,32 @@ case class OffresCandidatQueryResult(offres: List[Offre]) extends QueryResult
 
 object OffresCandidatQueryResult {
 
-  implicit val writesOffre: Writes[Offre] = Json.writes[Offre]
+  implicit val writes: Writes[Offre] = Writes { o =>
+    Json.obj(
+      "id" -> o.id,
+      "urlOrigine" -> o.urlOrigine,
+      "intitule" -> o.intitule,
+      "description" -> o.description,
+      "libelleLieuTravail" -> o.libelleLieuTravail,
+      "typeContrat" -> o.typeContrat,
+      "libelleTypeContrat" -> o.libelleTypeContrat,
+      "libelleSalaire" -> o.libelleSalaire,
+      "libelleDureeTravail" -> o.libelleDureeTravail,
+      "libelleExperience" -> o.libelleExperience,
+      "metier" -> o.metier,
+      "competences" -> o.competences,
+      "nomEntreprise" -> o.nomEntreprise,
+      "descriptionEntreprise" -> o.descriptionEntreprise,
+      "effectifEntreprise" -> o.effectifEntreprise,
+      "dateActualisation" -> o.dateActualisation,
+      "nomContact" -> o.nomContact,
+      "telephoneContact" -> o.telephoneContact,
+      "emailContact" -> o.emailContact,
+      "coordonneesContact1" -> o.coordonneesContact1,
+      "coordonneesContact2" -> o.coordonneesContact2,
+      "coordonneesContact3" -> o.coordonneesContact3,
+      "urlPostuler" -> o.urlPostuler
+    )
+  }
 
 }
