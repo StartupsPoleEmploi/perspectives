@@ -3,7 +3,7 @@
 
 @(candidatAuthentifie: CandidatAuthentifie)(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
-@layout(candidatAuthentifie = Some(candidatAuthentifie), cssClassesBody = List("degradeGrisBlanc")) {
+@layout(candidatAuthentifie = Some(candidatAuthentifie)) {
     <div id="confirmationInscriptionCandidat">
         <h2 class="confirmationTitre titrePrincipal">Votre inscription a bien été enregistrée</h2>
         <p class="confirmationTexte descriptionTitrePrincipal">Votre profil est maintenant visible par les recruteurs qui pourront vous

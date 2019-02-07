@@ -1,15 +1,10 @@
 @import conf.WebAppConfig
 @import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
-@import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
-@import fr.poleemploi.perspectives.commun.domain.SecteurActivite
 @import play.api.libs.json.JsObject
 
-@(recruteurAuthentifie: Option[RecruteurAuthentifie],
-        jsData: JsObject)(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
+@(jsData: JsObject)(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
-@layout(candidatAuthentifie = None,
-        recruteurAuthentifie = recruteurAuthentifie,
-        cssClassesBody = List("degradeGrisBlanc")) {
+@layout(candidatAuthentifie = None) {
     <div id="landingCandidat">
         <section class="intro">
             <header class="introTitres">
