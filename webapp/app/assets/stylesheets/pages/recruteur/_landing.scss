@@ -169,6 +169,18 @@
     padding-bottom: 3rem;
   }
 
+  .temoignagesRecruteur {
+    @include make-container();
+    @include make-container-max-widths();
+
+    &-titre {
+      @extend %titrePrincipal;
+      color: #334051;
+      text-align: center;
+      padding-bottom: 3rem;
+    }
+  }
+
   .videoPresentation {
     position: relative;
     height: 0;

@@ -2,6 +2,7 @@ const path = require('path');
 
 module.exports = {
     entry: {
+        recruteurLanding: './src/pages/recruteur/landing.js',
         recruteurRechercheCandidat: './src/pages/recruteur/rechercheCandidat.js',
         conseillerListeCandidats: './src/pages/conseiller/listeCandidats.js',
         conseillerListeRecruteurs: './src/pages/conseiller/listeRecruteurs.js',

@@ -1,0 +1,46 @@
+.temoignage {
+  position: relative;
+  font-size: 1.5rem;
+  font-style: italic;
+  text-align: left;
+  padding: 0 3rem;
+
+  &-source {
+    font-weight: 600;
+  }
+  &-image {
+    border: 1px solid gray;
+    position: absolute;
+  }
+  &-debutCitation {
+    left: 0;
+    top: 0;
+  }
+  &-finCitation {
+    right: 0;
+    bottom: 0;
+  }
+}
+
+.paginationTemoignages {
+  text-align: center;
+  padding: 2rem;
+
+  &-pageCourante {
+    background-color: $perspectives-vert-emeraude;
+  }
+
+  &-page {
+    background-color: white;
+    border: 1px solid #979797;
+  }
+
+  &-item {
+    border-radius: 50%;
+    display: inline-block;
+    margin: 0.5em;
+    height: 21px;
+    width: 21px;
+    cursor: pointer;
+  }
+}

@@ -101,26 +101,13 @@
                 </div>
                 <span class="temoignage-source">Rebecca S.</span>
             </div>
-            <div class="temoignage">
-                <div class="temoignage-texte">
-                    <img alt="Citation" class="temoignage-image" width="115" height="82" src="@assetsFinder.path("images/modules/temoignage/quote.svg")" />
-                    Je reprends un emploi cet été en espérant plus pour la suite. Je suis très contente. Merci.
-                </div>
-                <span class="temoignage-source">Géraldine R.</span>
-            </div>
-            <div class="temoignage">
-                <div class="temoignage-texte">
-                    <img alt="Citation" class="temoignage-image" width="115" height="82" src="@assetsFinder.path("images/modules/temoignage/quote.svg")" />
-                    Je viens de décrocher un poste aux Sables d'olonne en tant qu'aide à domicile. Je vous remercie pour votre investissement !
-                </div>
-                <span class="temoignage-source">Jessica H.</span>
-            </div>
-            <div class="temoignagesAction">
-                <a class="bouton bouton-actionPrincipale bouton--fondBleu" href="@controllers.candidat.routes.InscriptionController.inscription().url">
-                    Je m'inscris
-                    <small class="bouton-small bouton-small--opaque">avec mes identifiants Pôle Emploi</small>
-                </a>
-            </div>
+        </section>
+        <section class="landingCandidat-temoignages temoignagesCandidat">
+            <h2 class="temoignagesCandidat-titre titreLanding">Ils ont trouvés un job sur Perspectives :</h2>
+            <temoignages v-bind:temoignages="temoignages"></temoignages>
+        </section>
+        <section class="landingCandidat-infoLegales infoLegales">
+            <a class="infoLegales-lien" href="/infos-legales.html">Infos légales</a>
         </section>
     </div>
     @components.jsData(jsData)
