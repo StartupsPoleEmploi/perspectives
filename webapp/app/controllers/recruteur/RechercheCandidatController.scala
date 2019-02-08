@@ -65,6 +65,7 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
           )
           rechercheCandidatQueryResult <- candidatQueryHandler.handle(query)
         } yield {
+          val secteursAvecMetiers = rechercheCandidatQueryHandler.secteursProposes
           Ok(views.html.recruteur.rechercheCandidat(
             rechercheCandidatForm = RechercheCandidatForm.form.fill(rechercheCandidatForm),
             recruteurAuthentifie = recruteurAuthentifieRequest.recruteurAuthentifie,
@@ -74,9 +75,9 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
             secteursActivites = rechercheCandidatQueryHandler.secteursProposes,
             jsData = Json.obj(
               "secteurActivite" -> rechercheCandidatForm.secteurActivite,
-              "secteursActivites" -> rechercheCandidatQueryHandler.secteursProposes,
+              "secteursActivites" -> secteursAvecMetiers,
               "metier" -> rechercheCandidatForm.metier,
-              "metiers" -> rechercheCandidatQueryHandler.secteursProposes.flatMap(_.metiers),
+              "metiers" -> secteursAvecMetiers.flatMap(_.metiers),
               "localisation" -> rechercheCandidatForm.coordonnees.map(c => Json.obj(
                 "label" -> localisation,
                 "latitude" -> c.latitude,
