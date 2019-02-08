@@ -2,8 +2,6 @@ version: "3.5"
 services:
   nginx:
     image: perspectives-nginx
-    depends_on:
-      - fluentbit
     ports:
       - target: 80
         published: 80
@@ -21,8 +19,6 @@ services:
 
   database:
     image: perspectives-postgresql
-    depends_on:
-      - fluentbit
     volumes:
       - postgresql:/var/lib/postgresql/data
     env_file:
@@ -55,8 +51,6 @@ services:
 
   elasticsearch:
     image: perspectives-elasticsearch
-    depends_on:
-      - database
     volumes:
       - projections_elasticsearch:/usr/share/elasticsearch/data
     env_file:
@@ -72,7 +66,6 @@ services:
     image: perspectives-webapp
     depends_on:
       - database
-      - nginx
     env_file:
       - recette.env
     deploy:
@@ -102,6 +95,8 @@ services:
       options:
         tag: "perspectives_batchs.{{.ID}}"
         fluentd-async-connect: "true"
+    ports:
+      - "9001:9000"
     networks:
       - net
 
