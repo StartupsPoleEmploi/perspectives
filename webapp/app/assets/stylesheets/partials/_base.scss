@@ -33,3 +33,10 @@ body {
   padding: 0;
   list-style-type: none;
 }
+
+@mixin make-col-auto() {
+  -ms-flex: 0 0 auto;
+  flex: 0 0 auto;
+  width: auto;
+  max-width: none;
+}
