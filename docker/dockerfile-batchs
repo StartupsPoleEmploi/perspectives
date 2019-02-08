@@ -60,6 +60,6 @@ COPY perspectives-batchs-${BATCHS_VERSION}.zip .
 
 RUN unzip perspectives-batchs-${BATCHS_VERSION}.zip
 
-HEALTHCHECK --interval=15s --timeout=10s CMD curl -f http://localhost:9000 || exit 1
+HEALTHCHECK --interval=15s --timeout=10s --start-period=60s CMD curl -f http://localhost:9000 || exit 1
 
 CMD ["sh", "-c", "./perspectives-batchs-${BATCHS_VERSION}/bin/perspectives-batchs -Dlogger.resource=${BATCHS_LOGBACK_RESOURCE} -Dconfig.resource=${BATCHS_CONFIG_RESOURCE}"]
