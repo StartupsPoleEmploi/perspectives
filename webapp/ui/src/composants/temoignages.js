@@ -9,7 +9,20 @@ var component = Vue.component('temoignages', {
             indexTemoignageCourant: (this.temoignages !== undefined && this.temoignages.length > 0) ? 0 : null
         }
     },
+    mounted: function () {
+        var self = this;
+        setInterval(function () {
+            self.carouselTemoignage();
+        }, 3000);
+    },
     methods: {
+        carouselTemoignage: function() {
+            if (this.indexTemoignageCourant === (this.temoignages.length - 1)) {
+                this.chargerTemoignage(0);
+            } else {
+                this.chargerTemoignage(this.indexTemoignageCourant + 1);
+            }
+        },
         chargerTemoignage: function(index) {
             this.temoignageCourant = this.temoignages[index];
             this.indexTemoignageCourant = index;
