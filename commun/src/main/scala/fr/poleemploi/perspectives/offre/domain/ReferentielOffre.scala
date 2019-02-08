@@ -6,8 +6,10 @@ import scala.concurrent.Future
 
 case class CriteresRechercheOffre(codesROME: List[CodeROME],
                                   codePostal: String,
-                                  rayonRecherche: RayonRecherche,
-                                  experience: Experience)
+                                  rayonRecherche: RayonRecherche) {
+
+  val experience: Experience = Experience.DEBUTANT
+}
 
 trait ReferentielOffre {
 
