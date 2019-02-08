@@ -1,286 +1,219 @@
-.navigation {
+.conteneurNavigation {
   @include make-container();
+  @include make-container-max-widths();
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
 
-  display: -ms-flexbox;
-  display: flex;
-  -ms-flex-wrap: wrap;
-  flex-wrap: wrap;
+.navigation {
+  @include make-row();
   align-items: center;
 
-  @include media-breakpoint-up(md) {
-    @include make-container-max-widths();
-    padding: 2em 0 3em 0;
+  &-conteneurLogo {
+    padding-left: 1rem;
+
+    @include media-breakpoint-up(md) {
+      @include make-col-auto();
+    }
   }
-  @include media-breakpoint-down(md) {
-    max-width: 100%;
-    padding: 0 0 1em 0;
+
+  &-logoPerspectives {
+    @include media-breakpoint-down(md) {
+      @include make-col(5);
+    }
+  }
+
+  &-logoPE {
+    @include media-breakpoint-down(md) {
+      @include make-col(3);
+    }
+  }
+
+  &-logo {
+    width: 100%;
+  }
+
+  &-burgerMenu {
+    padding-right: 1rem;
+  }
+
+  &-conteneurMenu {
+    padding: 0 1rem;
+
+    @include media-breakpoint-up(md) {
+      @include make-col-auto();
+      margin-left: auto;
+    }
+    @include media-breakpoint-down(md) {
+      @include make-col(12);
+      display: none;
+    }
   }
 }
 
-.headerPrincipal {
-  @include make-col-ready();
-
-  @include media-breakpoint-up(md) {
-    @include make-col(5);
-    margin-top: 0;
-    text-align: left;
-  }
-  @include media-breakpoint-down(md) {
-    @include make-col(12);
-    margin-top: 2em;
-    text-align: center;
-  }
-
+.logoPerspectives {
   &-titre {
     display: none;
   }
+
   &-description {
     display: none;
   }
 }
 
-.accesLanding {
-  @include make-col-ready();
-
+.burgerMenu {
   @include media-breakpoint-up(md) {
-    @include make-col(2);
-    @include make-col-offset(1);
-    text-align: right;
-    padding: 0;
+    display: none;
   }
   @include media-breakpoint-down(md) {
-    @include make-col(12);
-    @include make-col-offset(0);
-    margin-top: 1em;
-    text-align: center;
+    @include make-col-auto();
+    margin-left: auto;
   }
 
-  &-lien {
-    color: $perspectives-bleu-nuit;
-    font-size: 0.8em;
-    font-weight: 300;
-    text-transform: uppercase;
-
-    &:hover {
-      color: $perspectives-bleu-nuit;
-      text-decoration: none;
-      cursor: pointer;
+  &-iconeOuverture {
+    @include media-breakpoint-up(md) {
+      display: none;
     }
   }
-}
 
-.conteneurPEConnect {
-  text-align: center;
-
-  @include media-breakpoint-up(md) {
-    @include make-col(4);
-    @include make-col-ready();
-    font-size: 0.7rem;
-  }
-  @include media-breakpoint-down(md) {
-    @include make-col(12);
-    font-size: 0.8rem;
-    margin-top: 2em;
+  &-iconeFermeture {
+    font-size: 2rem;
+    color: $perspectives-vert-emeraude;
+    display: none;
   }
 }
 
 .menuNavigation {
-  font-size: 0.9em;
-  letter-spacing: -0.45px;
+  @include make-row();
+
+  &-item {
+    margin-left: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+
+    @include media-breakpoint-up(md) {
+      @include make-col-auto();
+    }
+    @include media-breakpoint-down(md) {
+      @include make-col(12);
+    }
+  }
+
+  &-lien {
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: none;
+    }
+
+    &--actif {
+      font-weight: 600;
+      color: $perspectives-vert-emeraude;
+      border-bottom: 2px solid $perspectives-vert-emeraude;
+
+      &:hover {
+        color: $perspectives-vert-emeraude;
+      }
+    }
+
+    &--inactif {
+      color: #798182;
+
+      &:hover {
+        color: #798182;
+      }
+    }
+  }
+}
+
+.menuConnexion {
+  position: relative;
 
   @include media-breakpoint-up(md) {
-    @include make-col-ready();
-    @include make-col(3);
-    @include make-col-offset(4);
+    @include make-col-auto();
+    cursor: pointer;
+    padding-right: 1rem;
+
+    &:after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 11px;
+      width: 8px;
+      height: 8px;
+      border: solid $perspectives-bleu-nuit;
+      border-width: 0 2px 2px 0;
+      -webkit-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+      transform: rotate(45deg);
+    }
   }
   @include media-breakpoint-down(md) {
     @include make-col(12);
-    @include make-col-offset(0);
-    padding: 0;
-    order: -1;
-  }
-  &-js-responsive {
-    @include media-breakpoint-up(md) {
-      display: none;
-    }
-    @include media-breakpoint-down(md) {
-      display: inline;
-    }
+    margin-top: 1rem;
   }
 
-  .menuNavigationHeader {
-    @include userSelect(none);
-    cursor: pointer;
-
-    @include media-breakpoint-up(md) {
-      text-align: center;
-      padding-left: 3em;
+  &-titre {
+    &--connecte {
+      color: $perspectives-vert-emeraude;
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+    &--deconnecte {
       color: $perspectives-bleu-nuit;
-    }
-    @include media-breakpoint-down(md) {
-      text-align: center;
-      padding-left: 0;
-      padding-top: 10px;
-      height: 40px;
-      color: white;
-      background-color: $perspectives-bleu-nuit;
-    }
-
-    &-icone {
-      height: 16px;
-      width: 16px;
-      @include media-breakpoint-down(md) {
-        display: none;
-      }
-    }
-
-    &-iconeFermeture, &-iconeOuverture {
-      @include media-breakpoint-up(md) {
-        display: none;
-      }
-      @include media-breakpoint-down(md) {
-        float: left;
-        padding-left: 15px;
-      }
-    }
-    /** Initialise les icones d'ouverture et de fermeture */
-    &-iconeOuverture {
-      @include media-breakpoint-down(md) {
-        display: block;
-      }
-    }
-    &-iconeFermeture {
-      @include media-breakpoint-down(md) {
-        display: none;
-      }
+      font-size: 0.75rem;
     }
   }
 
-  .menuNavigationActions {
+  &-icone {
+    height: 16px;
+    width: 16px;
+    margin-right: 1rem;
+  }
+}
+
+.menuConnexionActions {
+  list-style-type: none;
+  background-color: white;
+  z-index: 1;
+  @include userSelect(none);
+
+  @include media-breakpoint-up(md) {
     display: none;
-    list-style-type: none;
-    padding: 0;
-    z-index: 1;
+    position: absolute;
+    padding: 1rem;
+    margin: 0.5em 0 0 0;
+    width: 250px;
+    border: 1px solid rgba(51, 64, 81, 0.1);
+    border-radius: 3.6px;
+    box-shadow: 0 0 6px 0 rgba(1, 1, 1, 0.1);
+  }
+  @include media-breakpoint-down(md) {
+    padding: 1rem 0;
+    margin: 0;
+  }
 
-    @include media-breakpoint-up(md) {
-      position: absolute;
-      left: 2em;
-      margin: 0.5em 0 0 0;
-      border: 1px solid rgba(51, 64, 81, 0.1);
-      border-radius: 3.6px;
-      box-shadow: 0 0 6px 0 rgba(1, 1, 1, 0.1);
+  &-item {
+    &:not(:last-child) {
+      margin-bottom: 1rem;
     }
-    @include media-breakpoint-down(md) {
-      position: relative;
-      left: 0;
-      margin: 0;
-      background-color: #6A89CC;
-      border: none;
-      border-radius: unset;
-      display: none;
-    }
+  }
 
-    @include userSelect(none);
+  &-lien {
+    display: inline-block;
+    width: 100%;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: $perspectives-bleu-nuit;
+    vertical-align: middle;
 
-    &-item {
-      @include media-breakpoint-up(md) {
-        &:after {
-          content: "";
-          display: block;
-          height: 1px;
-          width: 165px;
-          opacity: 0.22;
-          background: #6A89CC;
-          margin: 15px 15px 15px 33px;
-        }
-      }
-
-      @include media-breakpoint-down(md) {
-        &:after {
-          content: "";
-          display: block;
-          height: 1px;
-          width: auto;
-          opacity: 0.22;
-          background: $perspectives-bleu-nuit;
-          margin: 15px 15px 15px 37px;
-        }
-      }
-
-      &:last-child:after {
-        display: none;
-      }
-
-      &:first-child {
-        padding: 15px 15px 0 15px;
-      }
-
-      &:last-child {
-        padding: 0 15px 15px 15px;
-      }
-    }
-
-    &-lien {
-      display: block;
-      white-space: nowrap;
-      vertical-align: middle;
+    &:hover {
       text-decoration: none;
-
-      &:hover {
-        text-decoration: none;
-        cursor: pointer;
-      }
-
-      @include media-breakpoint-up(md) {
-        color: $perspectives-bleu-nuit;
-        font-size: 1em;
-        letter-spacing: -0.45px;
-
-        &:hover {
-          color: $perspectives-bleu-nuit;
-        }
-      }
-      @include media-breakpoint-down(md) {
-        color: white;
-        font-size: 1.1em;
-        letter-spacing: -0.58px;
-
-        &:hover {
-          color: white;
-        }
-      }
-    }
-
-    &-icone {
-      display: inline-block;
-      margin-right: 15px;
-
-      @include media-breakpoint-up(md) {
-        height: 16px;
-        width: 16px;
-      }
-      @include media-breakpoint-down(md) {
-        height: 19px;
-        width: 19px;
-      }
-
-      &.iconeModifier {
-        @include media-breakpoint-up(md) {
-          background: url('/assets/images/modules/menuNavigation/modifier-noir.svg');
-        }
-        @include media-breakpoint-down(md) {
-          background: url('/assets/images/modules/menuNavigation/modifier-blanc.svg');
-        }
-      }
-
-      &.iconeDeconnexion {
-        @include media-breakpoint-up(md) {
-          background: url('/assets/images/modules/menuNavigation/deconnexion-noir.svg');
-        }
-        @include media-breakpoint-down(md) {
-          background: url('/assets/images/modules/menuNavigation/deconnexion-blanc.svg');
-        }
-      }
+      color: $perspectives-bleu-nuit;
     }
   }
 }

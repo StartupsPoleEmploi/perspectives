@@ -1,28 +1,46 @@
 @import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
 
-@(recruteurAuthentifie: RecruteurAuthentifie)(implicit assetsFinder: AssetsFinder)
+@(recruteurAuthentifie: Option[RecruteurAuthentifie])(implicit assetsFinder: AssetsFinder)
 
 <nav class="menuNavigation">
-    <span class="menuNavigation-js-responsive"></span>
-    <div class="menuNavigationHeader">
-        <img alt="Fermeture menu" class="menuNavigationHeader-iconeFermeture" src="@assetsFinder.path("images/modules/menuNavigation/fermer-menu.png")"/>
-        <img alt="Ouverture menu" class="menuNavigationHeader-iconeOuverture" src="@assetsFinder.path("images/modules/menuNavigation/ouvrir-menu.png")"/>
-        <img alt="Connecte" class="menuNavigationHeader-icone" src="@assetsFinder.path("images/modules/menuNavigation/icone-connecte.svg")" />
-        <span class="menuNavigationHeader-whois">@recruteurAuthentifie.prenom.capitalize @recruteurAuthentifie.nom.capitalize</span>
-        <img alt="Derouler menu" class="menuNavigationHeader-icone" src="@assetsFinder.path("images/modules/menuNavigation/derouler-menu.svg")" />
+    @recruteurAuthentifie.map { recruteurAuthentifie =>
+    <div class="menuNavigation-item menuConnexion">
+        <img alt="Recruteur connecté" class="menuConnexion-icone" src="@assetsFinder.path("images/modules/menuNavigation/icone-connecte.svg")">
+        <span class="menuConnexion-titre--connecte">@recruteurAuthentifie.prenom @recruteurAuthentifie.nom</span>
+        <ul class="menuConnexionActions">
+            <li class="menuConnexionActions-item">
+                <a class="menuConnexionActions-lien" href="@controllers.recruteur.routes.ProfilController.modificationProfil()">
+                    <img alt="Connexion Candidat" class="menuConnexion-icone" src="@assetsFinder.path("images/modules/menuNavigation/modifier.svg")">
+                    Modifier mon profil
+                </a>
+            </li>
+            <li class="menuConnexionActions-item">
+                <a class="menuConnexionActions-lien" href="@controllers.recruteur.routes.AuthentificationController.deconnexion()">
+                    <img alt="Connexion Candidat" class="menuConnexion-icone" src="@assetsFinder.path("images/modules/menuNavigation/deconnexion.svg")">
+                    Me déconnecter
+                </a>
+            </li>
+        </ul>
     </div>
-    <ul class="menuNavigationActions">
-        <li class="menuNavigationActions-item">
-            <a class="menuNavigationActions-lien" href="@controllers.recruteur.routes.ProfilController.modificationProfil().url">
-                <span class="menuNavigationActions-icone iconeModifier"></span>
-                Modifier mon profil
-            </a>
-        </li>
-        <li class="menuNavigationActions-item">
-            <a class="menuNavigationActions-lien" href="@controllers.recruteur.routes.AuthentificationController.deconnexion().url">
-                <span class="menuNavigationActions-icone iconeDeconnexion"></span>
-                Me déconnecter
-            </a>
-        </li>
-    </ul>
+    }.getOrElse {
+        <a class="menuNavigation-item menuNavigation-lien menuNavigation-lien--inactif" href="@controllers.candidat.routes.LandingController.landing()">Trouver un emploi</a>
+        <a class="menuNavigation-item menuNavigation-lien menuNavigation-lien--actif" href="#">Recruter un candidat</a>
+        <div class="menuNavigation-item menuConnexion">
+            <span class="menuConnexion-titre--deconnecte">Se connecter</span>
+            <ul class="menuConnexionActions">
+                <li class="menuConnexionActions-item">
+                    <a class="menuConnexionActions-lien" href="@controllers.candidat.routes.InscriptionController.inscription()">
+                        <img alt="Connexion Candidat" class="menuConnexion-icone" src="@assetsFinder.path("images/modules/menuNavigation/icone-connecte.svg")">
+                        Candidat
+                    </a>
+                </li>
+                <li class="menuConnexionActions-item">
+                    <a class="menuConnexionActions-lien" href="@controllers.recruteur.routes.InscriptionController.inscription()">
+                        <img alt="Connexion Recruteur" class="menuConnexion-icone" src="@assetsFinder.path("images/modules/menuNavigation/icone-connecte.svg")">
+                        Recruteur
+                    </a>
+                </li>
+            </ul>
+        </div>
+    }
 </nav>

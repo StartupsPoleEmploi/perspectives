@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="218px" height="47px" viewBox="0 0 218 47" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 51.3 (57544) - http://www.bohemiancoding.com/sketch -->
+    <title>42180299-FD6E-4E53-ACB1-6B7CE3DB9B1B</title>
+    <desc>Created with sketchtool.</desc>
+    <defs>
+        <linearGradient x1="83.0166903%" y1="-20.9841797%" x2="62.9202178%" y2="37.2610352%" id="linearGradient-1">
+            <stop stop-color="#A3BEE8" offset="0%"></stop>
+            <stop stop-color="#6A89CC" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="New---Carole" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="D_Perspective_Home" transform="translate(-30.000000, -16.000000)">
+            <g id="Header">
+                <g id="LOGO" transform="translate(30.000000, 15.000000)">
+                    <g id="Logo" transform="translate(0.000000, 9.914399)">
+                        <path d="M0,22.3592914 L10.6887085,22.3592914 L10.6887085,33.8255946 L2.12983317,33.8255946 C0.953558791,33.8255946 5.88141275e-16,32.8720358 4.4408921e-16,31.6957615 L0,22.3592914 Z" id="Rectangle-2" fill="#82CCDD"></path>
+                        <path d="M0,0 L19.8101473,0 C20.9864217,-2.16078098e-16 21.9399805,0.953558791 21.9399805,2.12983317 L21.9399805,20.8027734 C21.9399805,21.9790477 20.9864217,22.9326065 19.8101473,22.9326065 L0,22.9326065 L0,0 Z" id="Rectangle-2-Copy" fill="url(#linearGradient-1)"></path>
+                        <polygon id="Rectangle-3" fill="#6A89CC" opacity="0.449999988" points="0 22.9326065 10.6887085 22.9326065 10.6887085 28.092443 0 28.092443"></polygon>
+                    </g>
+                    <text id="PERSPECTIVES" font-family="Montserrat-Bold, Montserrat" font-size="16.5978692" font-weight="bold" letter-spacing="4.14071974" fill="#334051">
+                        <tspan x="42.1087139" y="26.9143986">PERSPECTIVES</tspan>
+                    </text>
+                    <text id="boostez-vos-opportun" font-family="Avenir-Medium, Avenir" font-size="11.0159988" font-weight="400" line-spacing="19.8287972" letter-spacing="1.69127969" fill="#334051">
+                        <tspan x="41.6339919" y="40.8079959">boostez vos opportunités !</tspan>
+                    </text>
+                    <text id="BETA" font-family="Helvetica" font-size="8.39807917" font-weight="normal" letter-spacing="0.469767542" fill="#6A89CC">
+                        <tspan x="194.788773" y="8">BETA</tspan>
+                    </text>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

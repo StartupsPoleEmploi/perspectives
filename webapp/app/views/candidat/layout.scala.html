@@ -23,7 +23,7 @@
     </head>
     <body>
         @if(webAppConfig.useGoogleTagManager) {@components.googleTagManagerNoScript()}
-        @navigation(candidatAuthentifie, recruteurAuthentifie)
+        @components.navigation(partials.menuCandidat(candidatAuthentifie))
         @components.flashMessages()
 
         @content

@@ -38,6 +38,7 @@ class ConseillerController @Inject()(cc: ControllerComponents,
       candidatsPourConseillerQueryResult <- candidatQueryHandler.handle(query)
     } yield {
       Ok(views.html.conseiller.listeCandidats(
+        conseillerAuthentifie = conseillerRequest.conseillerAuthentifie,
         jsData = Json.obj(
           "nbCandidatsParPage" -> query.nbCandidatsParPage,
           "candidats" -> candidatsPourConseillerQueryResult.candidats,
@@ -105,6 +106,7 @@ class ConseillerController @Inject()(cc: ControllerComponents,
     )
     recruteurQueryHandler.handle(query).map(result =>
       Ok(views.html.conseiller.listeRecruteurs(
+        conseillerAuthentifie = conseillerRequest.conseillerAuthentifie,
         jsData = Json.obj(
           "recruteurs" -> result.recruteurs,
           "nbRecruteursParPage" -> query.nbRecruteursParPage,

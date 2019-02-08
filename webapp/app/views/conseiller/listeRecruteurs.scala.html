@@ -1,9 +1,11 @@
 @import conf.WebAppConfig
+@import fr.poleemploi.perspectives.authentification.domain.ConseillerAuthentifie
 @import play.api.libs.json.JsObject
 
-@(jsData: JsObject)(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
+@(conseillerAuthentifie: ConseillerAuthentifie,
+        jsData: JsObject)(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
-@layout() {
+@layout(conseillerAuthentifie = conseillerAuthentifie) {
 <div id="listeRecruteurs">
         <table class="table table-responsive">
             <thead class="thead-light">

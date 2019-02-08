@@ -1,18 +1,31 @@
 "use strict";
 
 $(document).ready(function() {
-    var iconeOuverture = $(".menuNavigationHeader-iconeOuverture");
-    var iconeFermeture = $(".menuNavigationHeader-iconeFermeture");
-    var menuNavigationActions = $(".menuNavigationActions");
-    var menuNavigationResponsive = $(".menuNavigation-js-responsive");
+    var iconeOuverture = $(".burgerMenu-iconeOuverture");
+    var iconeFermeture = $(".burgerMenu-iconeFermeture");
+    var logos = $(".navigation-conteneurLogo");
+    var navigationConteneur = $(".navigation-conteneurMenu");
 
-    $(".menuNavigationHeader").click(function() {
-        menuNavigationActions.toggle();
+    iconeOuverture.click(function() {
+        $(this).hide();
+        logos.hide();
+        iconeFermeture.show();
+        navigationConteneur.show();
+    });
+    iconeFermeture.click(function() {
+        $(this).hide();
+        logos.show();
+        iconeOuverture.show();
+        navigationConteneur.hide();
+    });
 
-        if (menuNavigationResponsive.is(":visible")) {
-            var isIconeOuvertureVisible = iconeOuverture.is(":visible");
-            iconeOuverture.toggle();
-            iconeFermeture.toggle(isIconeOuvertureVisible);
-        }
+    var menuConnexion = $(".menuConnexion");
+    var menuConnexionActions = $(".menuConnexionActions");
+
+    menuConnexion.click(function() {
+        menuConnexionActions.toggle();
+    });
+    menuConnexionActions.mouseleave(function() {
+        $(this).hide();
     });
 });

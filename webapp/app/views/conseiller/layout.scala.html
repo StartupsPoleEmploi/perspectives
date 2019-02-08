@@ -1,6 +1,8 @@
 @import conf.WebAppConfig
+@import fr.poleemploi.perspectives.authentification.domain.ConseillerAuthentifie
 
-@(title: String = "Perspectives : boostez vos opportunités !")(content: Html)(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
+@(title: String = "Perspectives : boostez vos opportunités !",
+        conseillerAuthentifie: ConseillerAuthentifie)(content: Html)(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -15,10 +17,12 @@
         @components.polyfill()
     </head>
     <body>
-        @components.headerPrincipal()
+        @components.navigation(partials.menuConseiller(conseillerAuthentifie))
+        @components.flashMessages()
 
         @content
 
+        <script src="@assetsFinder.path("javascripts/menuNavigation.js")" type="text/javascript"></script>
         @components.infosWebapp()
     </body>
 </html>

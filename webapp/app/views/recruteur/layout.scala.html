@@ -21,7 +21,7 @@
     </head>
     <body>
         @if(webAppConfig.useGoogleTagManager) {@components.googleTagManagerNoScript()}
-        @navigation(recruteurAuthentifie)
+        @components.navigation(partials.menuRecruteur(recruteurAuthentifie))
         @components.flashMessages()
 
         @content

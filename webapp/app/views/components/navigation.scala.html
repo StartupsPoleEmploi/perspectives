@@ -1,0 +1,25 @@
+@import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
+@import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
+
+@(menuNavigation: Html)(implicit assetsFinder: AssetsFinder)
+
+<header class="conteneurNavigation">
+    <div class="navigation">
+        <div class="navigation-conteneurLogo navigation-logoPerspectives logoPerspectives">
+            <h1 class="logoPerspectives-titre">Perspectives</h1>
+            <p class="logoPerspectives-description">Mettre en relation des candidats validés par la méthode de recrutement par simulation, avec des employeurs
+                et des formations à la recherche de leur aptitude</p>
+            <img class="navigation-logo" alt="Logo perspectives" src="@assetsFinder.path("images/commun/logo-perspective.svg")" width="222" height="50" />
+        </div>
+        <div class="navigation-conteneurLogo navigation-logoPE">
+            <img class="navigation-logo" alt="Logo Pôle Emploi" src="@assetsFinder.path("images/commun/logo-pole-emploi.svg")" width="129" height="34" />
+        </div>
+        <div class="navigation-burgerMenu burgerMenu">
+            <img alt="Ouvrir menu navigation" class="burgerMenu-iconeOuverture" src="@assetsFinder.path("images/modules/menuNavigation/ouvrir-menu.svg")"/>
+            <span class="burgerMenu-iconeFermeture">&times;</span>
+        </div>
+        <div class="navigation-conteneurMenu">
+            @menuNavigation
+        </div>
+    </div>
+</header>

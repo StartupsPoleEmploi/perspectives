@@ -1,9 +1,11 @@
 @import conf.WebAppConfig
+@import fr.poleemploi.perspectives.authentification.domain.ConseillerAuthentifie
 @import play.api.libs.json.JsObject
 
-@(jsData: JsObject)(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
+@(conseillerAuthentifie: ConseillerAuthentifie,
+        jsData: JsObject)(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
-@layout() {
+@layout(conseillerAuthentifie = conseillerAuthentifie) {
 <div id="listeCandidats" v-cloak>
     <form id="ajouterMRSCandidatForm" class="ajouterMRSCandidatForm" v-on:submit="ajouterMRSCandidat" v-show="afficherMRSCandidatForm"
           action="@controllers.conseiller.routes.ConseillerController.ajouterMRSCandidat()" method="post">

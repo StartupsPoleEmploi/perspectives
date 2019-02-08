@@ -6,7 +6,7 @@
 .introductionFormulaireTitres {
   @include make-row();
 
-  padding-top: 3rem;
+  padding-top: 2rem;
   justify-content: center;
 
   &-titre {
