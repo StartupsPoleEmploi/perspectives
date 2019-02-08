@@ -71,15 +71,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
                 if (saisieCriteresRechercheForm.nouveauCandidat) {
                   Redirect(routes.InscriptionController.confirmationInscription())
                 } else {
-                  Redirect(routes.OffreController.listeOffres())
-                    .flashing(messagesRequest.flash.withCandidatCriteresRechercheModifies(
-                      CriteresRechercheModifies(
-                        rechercheMetiersEvalues = modifierCriteresCommand.rechercheMetierEvalue,
-                        rechercheAutresMetiers = modifierCriteresCommand.rechercheAutreMetier,
-                        metiersRecherches = modifierCriteresCommand.metiersRecherches,
-                        rayonRecherche = modifierCriteresCommand.rayonRecherche
-                      ))
-                    )
+                  Redirect(routes.OffreController.index())
                 }
               )
             }

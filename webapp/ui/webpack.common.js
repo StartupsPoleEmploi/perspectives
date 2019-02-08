@@ -7,7 +7,7 @@ module.exports = {
         conseillerListeCandidats: './src/pages/conseiller/listeCandidats.js',
         conseillerListeRecruteurs: './src/pages/conseiller/listeRecruteurs.js',
         candidatLanding: './src/pages/candidat/landing.js',
-        candidatListeOffres: './src/pages/candidat/listeOffres.js',
+        candidatRechercheOffres: './src/pages/candidat/rechercheOffres.js',
         candidatSaisieCriteresRecherche: './src/pages/candidat/saisieCriteresRecherche.js',
         menuNavigation: './src/modules/menuNavigation.js'
     },

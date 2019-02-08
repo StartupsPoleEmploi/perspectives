@@ -1,9 +1,6 @@
 package controllers
 
-import controllers.candidat.CriteresRechercheModifies
-import controllers.candidat.CriteresRechercheModifies._
 import fr.poleemploi.perspectives.recruteur.TypeRecruteur
-import play.api.libs.json.Json
 import play.api.mvc.Flash
 
 object FlashMessages {
@@ -43,10 +40,5 @@ object FlashMessages {
 
     def candidatConnecte: Boolean = f.get(keyConnexionCandidat).contains("true")
     def withCandidatConnecte: Flash = f + (keyConnexionCandidat -> "true")
-
-    def criteresRecherchesModifies: Option[CriteresRechercheModifies] =
-      f.get(keyCriteresRechercheModifiesCandidat).flatMap(s => Json.parse(s).asOpt[CriteresRechercheModifies])
-    def withCandidatCriteresRechercheModifies(criteresRechercheModifies: CriteresRechercheModifies): Flash =
-      f + (keyCriteresRechercheModifiesCandidat -> Json.stringify(Json.toJson(criteresRechercheModifies)))
   }
 }

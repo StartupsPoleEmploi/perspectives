@@ -94,7 +94,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       if (optCriteresRecherche.exists(_.criteresComplet))
         SessionUtilisateurNonAuthentifie.getUriConnexion(request.session)
           .map(uri => Redirect(uri).withSession(SessionUtilisateurNonAuthentifie.remove(session)).flashing(flash))
-          .getOrElse(Redirect(routes.OffreController.listeOffres()).withSession(session).flashing(flash))
+          .getOrElse(Redirect(routes.OffreController.index()).withSession(session).flashing(flash))
       else if (optCriteresRecherche.isDefined)
         Redirect(routes.SaisieCriteresRechercheController.saisieCriteresRecherche()).withSession(session).flashing(flash)
       else

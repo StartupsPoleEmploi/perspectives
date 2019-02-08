@@ -1,15 +1,15 @@
 package controllers.candidat
 
-import authentification.infra.play.{CandidatAuthentifieAction, CandidatAuthentifieRequest}
+import authentification.infra.play.{CandidatAuthentifieAction, OptionalCandidatAuthentifieAction, OptionalCandidatAuthentifieRequest}
 import conf.WebAppConfig
 import controllers.AssetsFinder
-import controllers.FlashMessages._
-import fr.poleemploi.perspectives.offre.domain.{CriteresRechercheOffre, Experience}
-import fr.poleemploi.perspectives.projections.candidat.OffresCandidatQueryResult._
+import fr.poleemploi.perspectives.commun.domain.RayonRecherche
+import fr.poleemploi.perspectives.offre.domain.CriteresRechercheOffre
 import fr.poleemploi.perspectives.projections.candidat._
 import fr.poleemploi.perspectives.projections.rechercheCandidat.RechercheCandidatQueryHandler
+import fr.poleemploi.perspectives.projections.candidat.OffresCandidatQueryResult._
 import javax.inject.{Inject, Singleton}
-import play.api.libs.json.Json
+import play.api.libs.json.{JsArray, Json}
 import play.api.mvc._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -19,47 +19,48 @@ import scala.concurrent.Future
 class OffreController @Inject()(cc: ControllerComponents,
                                 implicit val assets: AssetsFinder,
                                 implicit val webAppConfig: WebAppConfig,
+                                messagesAction: MessagesActionBuilder,
+                                optionalCandidatAuthentifieAction: OptionalCandidatAuthentifieAction,
                                 candidatAuthentifieAction: CandidatAuthentifieAction,
                                 candidatQueryHandler: CandidatQueryHandler,
                                 rechercheCandidatQueryHandler: RechercheCandidatQueryHandler) extends AbstractController(cc) {
 
-  def listeOffres: Action[AnyContent] = candidatAuthentifieAction.async { implicit candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
-    for {
-      criteresRechercheQueryResult <- candidatQueryHandler.handle(CandidatCriteresRechercheQuery(candidatAuthentifieRequest.candidatId))
-      criteresRecherches = candidatAuthentifieRequest.request.flash.criteresRecherchesModifies.map(criteresModifies =>
-        criteresRechercheQueryResult.copy(
-          rechercheAutresMetiers = Some(criteresModifies.rechercheAutresMetiers),
-          rechercheMetiersEvalues = Some(criteresModifies.rechercheMetiersEvalues),
-          metiersRecherches = criteresModifies.metiersRecherches.flatMap(rechercheCandidatQueryHandler.metierProposeParCode).toList,
-          rayonRecherche = Some(criteresModifies.rayonRecherche)
-        )
-      ).getOrElse(criteresRechercheQueryResult)
-      offresCandidatQueryResult <-
-        if (criteresRecherches.criteresComplet)
-          candidatQueryHandler.handle(OffresCandidatQuery(buildCriteresRechercheOffre(criteresRecherches)))
-        else
-          Future.successful(OffresCandidatQueryResult(Nil))
-    } yield {
-      Ok(views.html.candidat.listeOffres(
-        candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie,
+  def index: Action[AnyContent] = optionalCandidatAuthentifieAction.async { implicit optCandidatAuthentifieRequest: OptionalCandidatAuthentifieRequest[AnyContent] =>
+    candidatQueryHandler.handle(OffresCandidatQuery(CriteresRechercheOffre(
+      codesROME = Nil,
+      codePostal = "85000",
+      rayonRecherche = RayonRecherche.MAX_10
+    ))).map(offresCandidatQueryResult =>
+      Ok(views.html.candidat.rechercheOffres(
+        candidatAuthentifie = optCandidatAuthentifieRequest.candidatAuthentifie,
         jsData = Json.obj(
-          "candidat" -> criteresRechercheQueryResult,
-          "offres" -> offresCandidatQueryResult.offres,
-          "secteursActivites" -> rechercheCandidatQueryHandler.secteursProposesDtos
+          "offres" -> offresCandidatQueryResult.offres
         )
       ))
-    }
+    )
   }
 
-  private def buildCriteresRechercheOffre(candidatCriteresRechercheResult: CandidatCriteresRechercheQueryResult): CriteresRechercheOffre =
+  def rechercherOffres: Action[AnyContent] = optionalCandidatAuthentifieAction.async { request: OptionalCandidatAuthentifieRequest[AnyContent] =>
+    messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
+      RechercheOffresForm.form.bindFromRequest.fold(
+        formWithErrors => Future.successful(BadRequest(formWithErrors.errorsAsJson)),
+        rechercheOffresForm => {
+          candidatQueryHandler.handle(OffresCandidatQuery(buildCriteresRechercheOffre(rechercheOffresForm)))
+            .map(offresCandidatQueryResult =>
+              Ok(Json.obj(
+                "offres" -> offresCandidatQueryResult.offres
+              ))
+            )
+        }
+      )
+    }(request)
+  }
+
+  private def buildCriteresRechercheOffre(rechercheOffresForm: RechercheOffresForm): CriteresRechercheOffre =
     CriteresRechercheOffre(
-      codesROME = ((if (candidatCriteresRechercheResult.rechercheMetiersEvalues.contains(true))
-        candidatCriteresRechercheResult.metiersEvalues
-      else Nil) ++ (if (candidatCriteresRechercheResult.rechercheAutresMetiers.contains(true))
-        candidatCriteresRechercheResult.metiersRecherches
-      else Nil)).map(_.codeROME),
-      codePostal = candidatCriteresRechercheResult.codePostal.get,
-      rayonRecherche = candidatCriteresRechercheResult.rayonRecherche.get,
-      experience = Experience.DEBUTANT
+      codesROME = Nil,
+      codePostal = "85000",
+      rayonRecherche = RayonRecherche.MAX_10
     )
+
 }

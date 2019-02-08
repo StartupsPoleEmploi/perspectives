@@ -6,95 +6,55 @@
 
 @layout(candidatAuthentifie = None) {
     <div id="landingCandidat">
-        <section class="intro">
-            <header class="introTitres">
-                <h2 class="intro-titre intro-titre--gras">Notre mission, faciliter la rencontre
-                    entre une entreprise et un candidat</h2>
-            </header>
-            <div class="presentation">
-                <aside class="avantages">
-                    <ul class="listeAvantages">
-                        <li class="listeAvantages-item">Vous avez validé des habiletés par la
-                            MRS Pôle Emploi</li>
-                        <li class="listeAvantages-item">Inscrivez-vous dès maintenant
-                            pour être visible par les recruteurs</li>
-                    </ul>
-                    <div class="introActions">
-                        <a class="bouton bouton-actionPrincipale bouton--fondBleu" href="@controllers.candidat.routes.InscriptionController.inscription().url">
-                            Je m'inscris
-                            <small class="bouton-small bouton-small--opaque">avec mes identifiants Pôle Emploi</small>
-                        </a>
-                        <p class="introActions-sponsor">Service exclusif pour les candidats validés
-                            par la Méthode de Recrutement par Simulation Pôle emploi<p>
+        <section class="landingCandidat-presentation presentation">
+            <div class="landingCandidat-rechercheOffres rechercheOffres">
+                <h2 class="rechercheOffres-titre titreLanding">Retrouvez un job,
+                    sans qualifications ou experiences !</h2>
+                <div>
+                    <div>
+                        <label for="js-metiers">Choisissez un ou plusieurs métiers</label>
+                        <input id="js-metiers" type="text" placeholder="Métiers : Electricien(ne), vendeur(se)"
+                               v-model="metier" name="metier"/>
                     </div>
-                </aside>
-                <aside class="introIllustration">
-                    <img alt="Illustration introduction" src="@assetsFinder.path("images/pages/candidat/landing/intro-landing.svg")" />
-                </aside>
-            </div>
-        </section>
-        <section class="commentCaMarcheArrierePlan">
-            <div class="CCMSeparation"></div>
-            <div class="commentCaMarche">
-                <h2 class="commentCaMarche-titre">Comment ça marche ?</h2>
-                <div class="etapes">
-                    <div class="etapeInscription">
-                        <img alt="Etape inscription" src="@assetsFinder.path("images/pages/candidat/landing/etape-inscription.svg")" />
-                        <p class="etapeInscription-texte etape-texte">
-                            <a class="etapeInscription-lien"
-                               href="@controllers.candidat.routes.InscriptionController.inscription()">
-                                J'ai validé une MRS
-                            </a><br />Je me connecte avec mes identifiants Pôle Emploi
-                        </p>
+                    <div>
+                        <label for="js-localisation" class="localisationLabel">Choisissez un lieu de travail</label>
+                        <input id="js-localisation" type="search" v-model="localisation.label" name="localisation" placeholder="Lieu de travail" />
+                        <label for="js-rayonRecherche">Renseignez un rayon de recherche</label>
+                        <select id="js-rayonRecherche" name="rayonRecherche"
+                                v-model="rayonRecherche">
+                            <option v-for="rayonRecherche in rayonsRecherche" v-bind:value="rayonRecherche">{{rayonRecherche}}</option>
+                        </select>
                     </div>
-                    <div class="transitionMetiers transition">
-                        <img alt="Transition etape selection" src="@assetsFinder.path("images/pages/candidat/landing/transition-selection.svg")" />
-                    </div>
-                    <div class="etapeSelectionMetiers">
-                        <img alt="Etape selection metiers" src="@assetsFinder.path("images/pages/candidat/landing/etape-selection-metiers.svg")" />
-                        <p class="etapeSelectionMetiers-texte etape-texte">Je m'inscris et je crée mon profil en remplissant le formulaire de Perspectives</p>
-                    </div>
-                    <div class="transitionContact transition">
-                        <img alt="Transition etape contact" src="@assetsFinder.path("images/pages/candidat/landing/transition-contact.svg")" />
-                    </div>
-                    <div class="etapeContact">
-                        <img alt="Etape contact" src="@assetsFinder.path("images/pages/candidat/landing/etape-contact.svg")" />
-                        <p class="etapeContact-texte etape-texte">Mon profil et ma MRS sont visibles par les recruteurs qui peuvent me contacter</p>
+                    <div>
+                        <a class="bouton boutonAction" v-on:click="rechercherOffres">Je trouve un job</a>
                     </div>
                 </div>
             </div>
-            <div class="commentCaMarcheActions">
-                <a class="bouton bouton-actionPrincipale bouton--fondBlanc" href="@controllers.candidat.routes.InscriptionController.inscription().url">
-                    Je m'inscris
-                    <small class="bouton-small bouton-small--opaque">avec mes identifiants Pôle Emploi</small>
-                </a>
-            </div>
         </section>
-        <section class="metiers">
-            <h2 class="metiers-titre">Les métiers présents sur Perspectives</h2>
-            <ul class="secteursActivites">
-                <li class="secteursActivites-item" v-for="secteurActivite in secteursActivites">
-                    <img class="secteurActivite-icone" width="100" height="100"
-                         v-bind:src="'/assets/images/pages/candidat/landing/secteurs/' + secteurActivite.code + '.svg'"
-                         v-bind:alt="secteurActivite.label" />
-                    <span class="secteurActivite-intitule">{{secteurActivite.label}}</span>
-                </li>
+        <section class="landingCandidat-sponsors sponsors">
+            <ul class="listeSponsors">
+                <li class="listeSponsors-item"><img alt="Franaud" src="@assetsFinder.path("images/commun/sponsors/sponsor-franaud.png")" width="124" height="48"/></li>
+                <li class="listeSponsors-item"><img alt="Afpa" src="@assetsFinder.path("images/commun/sponsors/sponsor-afpa.png")" width="115" height="59"/></li>
+                <li class="listeSponsors-item"><img alt="Manpower" src="@assetsFinder.path("images/commun/sponsors/sponsor-manpower.png")" width="82" height="70"/></li>
+                <li class="listeSponsors-item"><img alt="Shiva" src="@assetsFinder.path("images/commun/sponsors/sponsor-shiva.png")" width="140" height="62"/></li>
+                <li class="listeSponsors-item"><img alt="Supplay" src="@assetsFinder.path("images/commun/sponsors/sponsor-supplay.png")" width="119" height="39"/></li>
+                <li class="listeSponsors-item"><img alt="MrBricolage" src="@assetsFinder.path("images/commun/sponsors/sponsor-mrbricolage.png")" width="166" height="32"/></li>
+                <li class="listeSponsors-item"><img alt="Synergy" src="@assetsFinder.path("images/commun/sponsors/sponsor-synergy.png")" width="59" height="57"/></li>
             </ul>
-            <div class="metiersAction">
-                <a class="bouton bouton-actionPrincipale bouton--fondBleu" href="@controllers.candidat.routes.InscriptionController.inscription().url">
-                    Je m'inscris
-                    <small class="bouton-small bouton-small--opaque">avec mes identifiants Pôle Emploi</small>
-                </a>
-            </div>
         </section>
-        <section class="temoignages temoignagesCandidat">
-            <h2 class="temoignages-titre">Ils se sont inscrits sur Perspectives</h2>
-            <div class="temoignage">
-                <div class="temoignage-texte">
-                    <img alt="Citation" class="temoignage-image" width="115" height="82" src="@assetsFinder.path("images/modules/temoignage/quote.svg")" />
-                    Le lendemain de mon inscription, j'ai été contactée par un employeur ainsi qu'une agence d’intérim. On m'a déjà proposé un essai !
-                </div>
-                <span class="temoignage-source">Rebecca S.</span>
+        <section class="landingCandidat-valorisationMRS">
+            <div class="landingCandidat-illustrationValorisation">
+                <img class="illustrationLanding" alt="Valoriser votre MRS" src="@assetsFinder.path("images/pages/candidat/landing/valorisation-mrs.png")" />
+            </div>
+            <div class="landingCandidat-texteValorisation texteValorisation">
+                <h2 class="titreLanding">Faites-vous contacter par des recruteurs !</h2>
+                <p>Valorisez votre évaluation Pôle Emploi <abbr title="Méthode de Recrutement par Simulation">MRS</abbr> auprès des employeurs.</p>
+                <ol class="etapesInscription">
+                    <li class="etapesInscription-item">Indiquez les métiers qui vous intéressent</li>
+                    <li class="etapesInscription-item">Ajouter votre CV</li>
+                    <li class="etapesInscription-item">Trouvez un emploi !</li>
+                </ol>
+                <a class="bouton boutonAction" href="@controllers.candidat.routes.InscriptionController.inscription()">Je m'inscris avec mon identifiant Pôle Emploi</a>
             </div>
         </section>
         <section class="landingCandidat-temoignages temoignagesCandidat">

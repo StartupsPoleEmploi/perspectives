@@ -8,7 +8,8 @@ GET           /candidat/peconnect/deconnexion/callback                 controlle
 GET           /candidat/deconnexion                                    controllers.candidat.AuthentificationController.deconnexion
 GET           /candidat/criteres-recherche                             controllers.candidat.SaisieCriteresRechercheController.saisieCriteresRecherche
 POST          /candidat/criteres-recherche                             controllers.candidat.SaisieCriteresRechercheController.modifierCriteresRecherche
-GET           /candidat/offres                                         controllers.candidat.OffreController.listeOffres
+GET           /candidat/offres                                         controllers.candidat.OffreController.index
+POST          /candidat/offres                                         controllers.candidat.OffreController.rechercherOffres
 POST          /candidat/modifierCV                                     controllers.candidat.SaisieCriteresRechercheController.modifierCV
 
 GET           /recruteur                                               controllers.recruteur.LandingController.landing
