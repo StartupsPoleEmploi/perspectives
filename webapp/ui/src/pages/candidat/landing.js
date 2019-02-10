@@ -20,7 +20,7 @@ var app = new Vue({
                     texte: "Je viens de décrocher un poste aux Sables d'olonne en tant qu'aide à domicile. Je vous remercie pour votre investissement !"
                 }
             ],
-            localisation: { // FIXME : composant
+            lieuTravail: {
                 label: '',
                 latitude: null,
                 longitude: null
@@ -37,8 +37,8 @@ var app = new Vue({
             if (this.metier !== null && this.metier !== '') {
                 params.push('metier=' + this.metier);
             }
-            if (this.localisation.label !== '') {
-                params.push('localisation=' + this.localisation.label);
+            if (this.lieuTravail.label !== '') {
+                params.push('localisation=' + this.lieuTravail.label);
             }
             if (this.rayonRecherche !== null && this.rayonRecherche !== '') {
                 params.push('rayonRecherche=' + this.rayonRecherche);

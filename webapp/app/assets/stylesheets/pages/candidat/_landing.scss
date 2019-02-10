@@ -9,12 +9,25 @@
     }
 
     &-rechercheOffres {
-      @include make-col(9);
       margin: 0 auto;
+      @include media-breakpoint-up(md) {
+        @include make-col(9);
+        padding: 2rem;
+      }
+
+      @include media-breakpoint-down(md) {
+        @include make-col(11);
+        padding: 1rem;
+      }
     }
 
     &-sponsors {
       @include make-row();
+      padding: 1rem;
+
+      @include media-breakpoint-down(md) {
+        display: none;
+      }
     }
 
     &-valorisationMRS {
@@ -22,16 +35,39 @@
     }
 
     &-illustrationValorisation {
-      @include make-col(6);
+      @include media-breakpoint-up(md) {
+        @include make-col(6);
+      }
+
+      @include media-breakpoint-down(md) {
+        @include make-col(12);
+      }
     }
 
     &-texteValorisation {
-      @include make-col(6);
+      background-color: rgba(121, 129, 130, 0.1);
+
+      @include media-breakpoint-up(md) {
+        @include make-col(6);
+        padding: 3rem;
+      }
+
+      @include media-breakpoint-down(md) {
+        @include make-col(12);
+        padding: 2rem;
+      }
     }
 
     &-temoignages {
       @include make-row();
-      padding: 3rem 6rem;
+
+      @include media-breakpoint-up(md) {
+        padding: 3rem 6rem;
+      }
+
+      @include media-breakpoint-down(md) {
+        padding: 2rem;
+      }
     }
 
     &-infoLegales {
@@ -41,7 +77,12 @@
 
   .titreLanding {
     color: $perspectives-bleu-nuit;
-    font-size: 2rem;
+    @include media-breakpoint-up(md) {
+      font-size: 2rem;
+    }
+    @include media-breakpoint-down(md) {
+      font-size: 1.75rem;
+    }
     font-weight: 800;
     line-height: 2.5rem;
   }
@@ -53,28 +94,120 @@
     border-radius: 8px;
     font-size: 0.875rem;
     font-weight: 700;
-    padding: 1rem 2rem;
+    padding: 1rem;
     border: none;
   }
 
   .presentation {
-    background: url("/assets/images/pages/candidat/landing/presentation.png") no-repeat;
-    height: 620px;
+    background-image: url("/assets/images/pages/candidat/landing/presentation.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 500px;
   }
 
   .rechercheOffres {
     background-color: white;
     border-radius: 8px;
-    padding: 2rem;
 
     &-titre {
       text-align: center;
       white-space: pre-line;
+      margin: 0;
     }
   }
 
-  .sponsors {
-    padding: 1rem;
+  .formulaireRecherche {
+    @include make-row();
+
+    &-conteneur {
+      @include make-col-ready();
+      margin-top: 1rem;
+    }
+
+    &-conteneurMetier {
+      @include media-breakpoint-up(lg) {
+        @include make-col(5);
+      }
+
+      @include media-breakpoint-down(lg) {
+        @include make-col(12);
+      }
+    }
+
+    &-conteneurLocalisation {
+      @include media-breakpoint-up(lg) {
+        @include make-col(4);
+      }
+
+      @include media-breakpoint-down(lg) {
+        @include make-col(12);
+      }
+    }
+
+    &-conteneurRechercher {
+      text-align: center;
+
+      @include media-breakpoint-up(lg) {
+        @include make-col(3);
+      }
+
+      @include media-breakpoint-down(lg) {
+        @include make-col(12);
+      }
+    }
+
+    &-label {
+      @include sr-only();
+    }
+
+    &-metier {
+      width: 100%;
+      border: 1px solid #F2F2F2;
+      border-radius: 2px;
+      padding: 0.75rem 0.5rem;
+    }
+  }
+
+  .localisation {
+    @include make-row();
+    margin: 0;
+    border: 1px solid #F2F2F2;
+    border-radius: 2px;
+    padding: 0.75rem 0 0.75rem 0.5rem;
+
+    &-lieuTravail {
+      @include make-col(8);
+      border: none;
+      border-right: 1px solid $perspectives-vert-emeraude;
+    }
+
+    &-conteneurRayonRecherche {
+      @include make-col(4);
+      position: relative;
+      padding: 0 0.5rem;
+
+      &:after {
+        content: '';
+        position: absolute;
+        right: 0.5rem;
+        top: 3px;
+        width: 10px;
+        height: 10px;
+        border: solid $perspectives-vert-emeraude;
+        border-width: 0 3px 3px 0;
+        -webkit-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+        transform: rotate(45deg);
+      }
+    }
+
+    &-rayonRecherche {
+      width: 100%;
+      border: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-color: white;
+    }
   }
 
   .listeSponsors {
@@ -88,19 +221,17 @@
     }
   }
 
-  .texteValorisation {
-    padding: 3rem;
-    background-color: rgba(121, 129, 130, 0.1);
-  }
-
   .etapesInscription {
+    margin-bottom: 2rem;
+
     &-item {
       margin-bottom: 1rem;
     }
   }
 
   .illustrationLanding {
-    width: 100%;
+    max-width: 100%;
+    height: auto;
   }
 
   .temoignagesCandidat {

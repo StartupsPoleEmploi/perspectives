@@ -1,17 +1,22 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="31px" height="29px" viewBox="0 0 31 29" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: sketchtool 51.3 (57544) - http://www.bohemiancoding.com/sketch -->
-    <title>5BCFFC9B-E733-4308-B8A9-CF8C33CAB336</title>
-    <desc>Created with sketchtool.</desc>
-    <defs></defs>
-    <g id="New---Carole" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" font-family="OpenSans-SemiboldItalic, Open Sans" font-size="64" font-style="italic" font-weight="500" line-spacing="40" opacity="0.3">
-        <g id="D_Perspective_Home" transform="translate(-311.000000, -1453.000000)" fill="#0D7A93">
-            <g id="Témoignages" transform="translate(0.000000, 1320.000000)">
-                <text id="«-copy-2">
-                    <tspan x="309" y="193">« </tspan>
-                    <tspan x="309" y="233"> </tspan>
-                </text>
-            </g>
-        </g>
-    </g>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 23.0.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Calque_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 31 29" style="enable-background:new 0 0 31 29;" xml:space="preserve">
+<style type="text/css">
+	.st0{opacity:0.3;}
+	.st1{enable-background:new    ;}
+	.st2{fill:#0D7A93;}
+</style>
+<title>« copy 1</title>
+<desc>Created with Sketch.</desc>
+<g id="New---Carole" class="st0">
+	<g id="D_Perspective_Home" transform="translate(-311.000000, -1453.000000)">
+		<g id="Témoignages" transform="translate(0.000000, 1320.000000)">
+			<g class="st1">
+				<path class="st2" d="M312.8,146l12.2-11.7l2.4,2.5l-9.3,10.2l5.4,12.1l-3.5,1.5l-7.2-13.8V146z M325.1,147.4l11.5-12.7l2.7,2.2
+					l-8.8,11.4l4.9,10.9l-3.5,1.5l-6.7-12.4V147.4z"/>
+			</g>
+		</g>
+	</g>
+</g>
 </svg>

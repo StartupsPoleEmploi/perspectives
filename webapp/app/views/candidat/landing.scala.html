@@ -10,28 +10,32 @@
             <div class="landingCandidat-rechercheOffres rechercheOffres">
                 <h2 class="rechercheOffres-titre titreLanding">Retrouvez un job,
                     sans qualifications ou experiences !</h2>
-                <div>
-                    <div>
-                        <label for="js-metiers">Choisissez un ou plusieurs métiers</label>
-                        <input id="js-metiers" type="text" placeholder="Métiers : Electricien(ne), vendeur(se)"
-                               v-model="metier" name="metier"/>
+                <div class="formulaireRecherche">
+                    <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurMetier">
+                        <label for="js-metiers" class="formulaireRecherche-label">Choisissez un métier ou un mot-clé</label>
+                        <input id="js-metiers" type="text" placeholder="Métier, mot-clé"
+                               v-model="metier" name="metier" class="formulaireRecherche-metier"/>
                     </div>
-                    <div>
-                        <label for="js-localisation" class="localisationLabel">Choisissez un lieu de travail</label>
-                        <input id="js-localisation" type="search" v-model="localisation.label" name="localisation" placeholder="Lieu de travail" />
-                        <label for="js-rayonRecherche">Renseignez un rayon de recherche</label>
-                        <select id="js-rayonRecherche" name="rayonRecherche"
-                                v-model="rayonRecherche">
-                            <option v-for="rayonRecherche in rayonsRecherche" v-bind:value="rayonRecherche">{{rayonRecherche}}</option>
-                        </select>
+                    <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurLocalisation">
+                        <div class="localisation">
+                            <label for="js-lieuTravail" class="formulaireRecherche-label">Choisissez un lieu de travail</label>
+                            <input id="js-lieuTravail" type="search" v-model="lieuTravail.label" name="lieuTravail" placeholder="Lieu de travail" class="localisation-lieuTravail" />
+                            <label for="js-rayonRecherche"class="formulaireRecherche-label">Renseignez un rayon de recherche</label>
+                            <div class="localisation-conteneurRayonRecherche">
+                                <select id="js-rayonRecherche" name="rayonRecherche"
+                                    v-model="rayonRecherche" class="localisation-rayonRecherche">
+                                    <option v-for="rayonRecherche in rayonsRecherche" v-bind:value="rayonRecherche">{{rayonRecherche}}km</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <div>
+                    <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurRechercher">
                         <a class="bouton boutonAction" v-on:click="rechercherOffres">Je trouve un job</a>
                     </div>
                 </div>
             </div>
         </section>
-        <section class="landingCandidat-sponsors sponsors">
+        <section class="landingCandidat-sponsors">
             <ul class="listeSponsors">
                 <li class="listeSponsors-item"><img alt="Franaud" src="@assetsFinder.path("images/commun/sponsors/sponsor-franaud.png")" width="124" height="48"/></li>
                 <li class="listeSponsors-item"><img alt="Afpa" src="@assetsFinder.path("images/commun/sponsors/sponsor-afpa.png")" width="115" height="59"/></li>
@@ -46,7 +50,7 @@
             <div class="landingCandidat-illustrationValorisation">
                 <img class="illustrationLanding" alt="Valoriser votre MRS" src="@assetsFinder.path("images/pages/candidat/landing/valorisation-mrs.png")" />
             </div>
-            <div class="landingCandidat-texteValorisation texteValorisation">
+            <div class="landingCandidat-texteValorisation">
                 <h2 class="titreLanding">Faites-vous contacter par des recruteurs !</h2>
                 <p>Valorisez votre évaluation Pôle Emploi <abbr title="Méthode de Recrutement par Simulation">MRS</abbr> auprès des employeurs.</p>
                 <ol class="etapesInscription">
