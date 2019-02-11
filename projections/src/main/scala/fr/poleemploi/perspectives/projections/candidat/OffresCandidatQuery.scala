@@ -28,7 +28,7 @@ object OffresCandidatQueryResult {
       "nomEntreprise" -> o.nomEntreprise,
       "descriptionEntreprise" -> o.descriptionEntreprise,
       "effectifEntreprise" -> o.effectifEntreprise,
-      "dateActualisation" -> o.dateActualisation,
+      "dateActualisation" -> o.dateActualisation.toLocalDateTime,
       "nomContact" -> o.nomContact,
       "telephoneContact" -> o.telephoneContact,
       "emailContact" -> o.emailContact,

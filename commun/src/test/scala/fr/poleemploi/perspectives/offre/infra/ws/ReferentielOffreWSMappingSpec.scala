@@ -13,6 +13,7 @@ class ReferentielOffreWSMappingSpec extends WordSpec
   val codeINSEE = "85191"
 
   var criteresRechercheOffre: CriteresRechercheOffre = _
+  var offreResponse: OffreResponse = _
 
   before {
     criteresRechercheOffre = mock[CriteresRechercheOffre]
@@ -20,6 +21,8 @@ class ReferentielOffreWSMappingSpec extends WordSpec
     when(criteresRechercheOffre.codePostal) thenReturn "85000"
     when(criteresRechercheOffre.rayonRecherche) thenReturn RayonRecherche.MAX_10
     when(criteresRechercheOffre.experience) thenReturn Experience.DEBUTANT
+
+    offreResponse = mock[OffreResponse]
   }
 
   "buildRechercherOffresRequest" should {
@@ -85,6 +88,29 @@ class ReferentielOffreWSMappingSpec extends WordSpec
       // Then
       requests.size mustBe 1
       requests.head.params.exists(p => p._1 == "distance" && p._2 == "10") mustBe true
+    }
+  }
+  "buildOffre" should {
+    "ne pas retourner d'offre si l'experience demandée est débutant mais qu'une expérience est exigée (l'API ne prend que le paramètre 'Moins d'un an', il faut filtrer en plus apres)" in {
+      // Given
+      when(criteresRechercheOffre.experience) thenReturn Experience.DEBUTANT
+      when(offreResponse.experienceExige) thenReturn ExperienceExigeResponse.EXIGE
+
+      // When
+      val result = mapping.buildOffre(criteresRechercheOffre, offreResponse)
+
+      // Then
+      result mustBe None
+    }
+    "retourner une offre si l'expérience demandée n'est pas débutant" in {
+      // Given
+      when(criteresRechercheOffre.experience) thenReturn Experience("UN_PRO")
+
+      // When
+      val result = mapping.buildOffre(criteresRechercheOffre, offreResponse)
+
+      // Then
+      result.isDefined mustBe true
     }
   }
 

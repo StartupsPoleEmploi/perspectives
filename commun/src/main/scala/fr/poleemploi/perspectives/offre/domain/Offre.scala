@@ -1,6 +1,6 @@
 package fr.poleemploi.perspectives.offre.domain
 
-import java.time.LocalDateTime
+import java.time.ZonedDateTime
 
 import fr.poleemploi.eventsourcing.StringValueObject
 import fr.poleemploi.perspectives.commun.domain.{Email, Metier, NumeroTelephone}
@@ -22,7 +22,7 @@ case class Offre(id: OffreId,
                  nomEntreprise: Option[String],
                  descriptionEntreprise: Option[String],
                  effectifEntreprise: Option[String],
-                 dateActualisation: LocalDateTime,
+                 dateActualisation: ZonedDateTime,
                  nomContact: Option[String],
                  telephoneContact: Option[NumeroTelephone],
                  emailContact: Option[Email],

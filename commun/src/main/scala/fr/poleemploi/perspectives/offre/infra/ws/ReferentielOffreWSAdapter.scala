@@ -24,7 +24,7 @@ class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
   def rechercherOffres(criteres: CriteresRechercheOffre): Future[List[Offre]] = {
     def callWS(accessTokenResponse: AccessTokenResponse, request: RechercheOffreRequest): Future[List[Offre]] =
       wsClient.url(s"${config.urlApi}/offresdemploi/v2/offres/search")
-        .addQueryStringParameters(request.params:_ *)
+        .addQueryStringParameters(request.params: _ *)
         .addHttpHeaders(
           ("Authorization", s"Bearer ${accessTokenResponse.accessToken}"),
           jsonContentType,
@@ -34,7 +34,7 @@ class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
         .flatMap(r => filtreStatutReponse(response = r, statutNonGere = s => s != 200 && s != 206))
         .map(r =>
           (r.json \ "resultats").as[JsArray].value.map(_.as[OffreResponse])
-            .map(mapping.buildOffre).toList
+            .flatMap(offreResponse => mapping.buildOffre(criteres, offreResponse)).toList
         )
         .recoverWith {
           case e: WebServiceException if e.statut == 429 =>

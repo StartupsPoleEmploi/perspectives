@@ -1,6 +1,6 @@
 package fr.poleemploi.perspectives.offre.infra.local
 
-import java.time.LocalDateTime
+import java.time.ZonedDateTime
 import java.util.UUID
 
 import fr.poleemploi.perspectives.commun.domain.{CodeROME, Metier, NumeroTelephone}
@@ -35,7 +35,7 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
         coordonneesContact1 = Some("93 RUE DE LA MARNE"),
         coordonneesContact2 = Some("95220 HERBLAY"),
         coordonneesContact3 = Some("Courriel : ape.95132@pole-emploi.fr"),
-        dateActualisation = LocalDateTime.now()
+        dateActualisation = ZonedDateTime.now()
       )
     else if (n % 2 == 0)
       Offre(
@@ -61,7 +61,7 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
         coordonneesContact1 = None,
         coordonneesContact2 = None,
         coordonneesContact3 = None,
-        dateActualisation = LocalDateTime.now()
+        dateActualisation = ZonedDateTime.now()
       )
     else
       Offre(
@@ -87,7 +87,7 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
         coordonneesContact1 = None,
         coordonneesContact2 = None,
         coordonneesContact3 = None,
-        dateActualisation = LocalDateTime.now()
+        dateActualisation = ZonedDateTime.now()
       )
   ))
 }

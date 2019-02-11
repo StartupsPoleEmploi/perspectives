@@ -2,9 +2,9 @@ package fr.poleemploi.perspectives.offre.infra.ws
 
 import java.time.ZonedDateTime
 
-import fr.poleemploi.perspectives.commun.domain.{CodeROME, Email, Metier, NumeroTelephone}
+import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.offre.domain._
-import play.api.libs.json.{Json, Reads}
+import play.api.libs.json.{Json, Reads, __}
 
 case class CommuneResponse(code: String,
                            codePostal: String)
@@ -67,6 +67,18 @@ object OrigineOffreResponse {
   implicit val reads: Reads[OrigineOffreResponse] = Json.reads[OrigineOffreResponse]
 }
 
+case class ExperienceExigeResponse(value: String)
+
+object ExperienceExigeResponse {
+
+  val DEBUTANT_ACCEPTE = ExperienceExigeResponse(value = "D")
+  val SOUHAITE = ExperienceExigeResponse(value = "S")
+  val EXIGE = ExperienceExigeResponse(value = "E")
+
+  implicit val reads: Reads[ExperienceExigeResponse] =
+    (__ \ "experienceExige").read[String].map(ExperienceExigeResponse(_))
+}
+
 case class OffreResponse(id: String,
                          intitule: String,
                          romeCode: String,
@@ -75,15 +87,32 @@ case class OffreResponse(id: String,
                          typeContratLibelle: String,
                          description: Option[String],
                          dureeTravailLibelle: String,
+                         alternance: Boolean,
                          experienceLibelle: String,
-                         entreprise: Option[EntrepriseResponse],
+                         experienceExige: ExperienceExigeResponse,
                          trancheEffectifEtab: Option[String],
-                         salaire: Option[SalaireResponse],
-                         lieuTravail: LieuTravailResponse,
-                         contact: Option[ContactResponse],
-                         competences: List[CompetenceResponse],
-                         origineOffre: OrigineOffreResponse,
-                         dateActualisation: ZonedDateTime)
+                         dateActualisation: ZonedDateTime,
+                         private val entreprise: Option[EntrepriseResponse],
+                         private val salaire: Option[SalaireResponse],
+                         private val lieuTravail: LieuTravailResponse,
+                         private val contact: Option[ContactResponse],
+                         private val competences: List[CompetenceResponse],
+                         private val origineOffre: OrigineOffreResponse) {
+
+  val urlOrigine: String = origineOffre.urlOrigine
+  val nomContact: Option[String] = contact.flatMap(_.nom)
+  val telephoneContact: Option[NumeroTelephone] = contact.flatMap(_.telephone).map(NumeroTelephone(_))
+  val emailContact: Option[Email] = contact.flatMap(_.courriel).map(Email)
+  val coordonneesContact1: Option[String] = contact.flatMap(_.coordonnees1)
+  val coordonneesContact2: Option[String] = contact.flatMap(_.coordonnees2)
+  val coordonneesContact3: Option[String] = contact.flatMap(_.coordonnees3)
+  val urlPostuler: Option[String] = contact.flatMap(_.urlPostulation)
+  val libelleLieuTravail: String = lieuTravail.libelle
+  val libelleSalaire: Option[String] = salaire.flatMap(_.libelle)
+  val libellesCompetences: List[String] = competences.flatMap(_.libelle)
+  val nomEntreprise: Option[String] = entreprise.flatMap(_.nom)
+  val descriptionEntreprise: Option[String] = entreprise.flatMap(_.description)
+}
 
 object OffreResponse {
 
@@ -107,35 +136,50 @@ class ReferentielOffreWSMapping {
       ))
     )
 
-  def buildOffre(offreResponse: OffreResponse): Offre =
-    Offre(
-      id = OffreId(offreResponse.id),
-      urlOrigine = offreResponse.origineOffre.urlOrigine,
-      intitule = offreResponse.intitule,
-      metier = Metier(codeROME = CodeROME(offreResponse.romeCode), offreResponse.romeLibelle),
-      libelleLieuTravail = offreResponse.lieuTravail.libelle,
-      typeContrat = offreResponse.typeContrat,
-      libelleTypeContrat = offreResponse.typeContratLibelle,
-      libelleDureeTravail = offreResponse.dureeTravailLibelle,
-      libelleExperience = offreResponse.experienceLibelle,
-      libelleSalaire = offreResponse.salaire.flatMap(_.libelle),
-      description = offreResponse.description,
-      nomEntreprise = offreResponse.entreprise.flatMap(_.nom),
-      descriptionEntreprise = offreResponse.entreprise.flatMap(_.description),
-      effectifEntreprise = offreResponse.trancheEffectifEtab,
-      competences = offreResponse.competences.flatMap(_.libelle),
-      nomContact = offreResponse.contact.flatMap(_.nom),
-      telephoneContact = offreResponse.contact.flatMap(_.telephone).map(NumeroTelephone(_)),
-      emailContact = offreResponse.contact.flatMap(_.courriel).map(Email),
-      urlPostuler = offreResponse.contact.flatMap(_.urlPostulation),
-      coordonneesContact1 = offreResponse.contact.flatMap(_.coordonnees1),
-      coordonneesContact2 = offreResponse.contact.flatMap(_.coordonnees2),
-      coordonneesContact3 = offreResponse.contact.flatMap(_.coordonnees3),
-      dateActualisation = offreResponse.dateActualisation.toLocalDateTime
-    )
+  def buildOffre(criteresRechercheOffre: CriteresRechercheOffre,
+                 offreResponse: OffreResponse): Option[Offre] = {
+    val experienceCorrespondante = criteresRechercheOffre.experience match {
+      case Experience.DEBUTANT => ExperienceExigeResponse.EXIGE != offreResponse.experienceExige
+      case _ => true
+    }
+
+    if (experienceCorrespondante)
+      Some(Offre(
+        id = OffreId(offreResponse.id),
+        urlOrigine = offreResponse.urlOrigine,
+        intitule = offreResponse.intitule,
+        metier = Metier(
+          codeROME = CodeROME(offreResponse.romeCode),
+          label = offreResponse.romeLibelle
+        ),
+        libelleLieuTravail = offreResponse.libelleLieuTravail,
+        typeContrat = offreResponse.typeContrat,
+        libelleTypeContrat = offreResponse.typeContratLibelle,
+        libelleDureeTravail = offreResponse.dureeTravailLibelle,
+        libelleExperience =
+          if (ExperienceExigeResponse.SOUHAITE == offreResponse.experienceExige)
+            s"Expérience souhaitée : ${offreResponse.experienceLibelle}"
+          else
+            offreResponse.experienceLibelle,
+        libelleSalaire = offreResponse.libelleSalaire,
+        description = offreResponse.description,
+        nomEntreprise = offreResponse.nomEntreprise,
+        descriptionEntreprise = offreResponse.descriptionEntreprise,
+        effectifEntreprise = offreResponse.trancheEffectifEtab,
+        competences = offreResponse.libellesCompetences,
+        nomContact = offreResponse.nomContact,
+        telephoneContact = offreResponse.telephoneContact,
+        emailContact = offreResponse.emailContact,
+        urlPostuler = offreResponse.urlPostuler,
+        coordonneesContact1 = offreResponse.coordonneesContact1,
+        coordonneesContact2 = offreResponse.coordonneesContact2,
+        coordonneesContact3 = offreResponse.coordonneesContact3,
+        dateActualisation = offreResponse.dateActualisation
+      )) else None
+  }
 
   def buildExperience(experience: Experience): String = experience match {
-    case Experience.DEBUTANT => "1"
+    case Experience.DEBUTANT => "1" // Moins d'un an d'experience
     case e@_ => throw new IllegalArgumentException(s"Expérience non gérée : $e")
   }
 }
