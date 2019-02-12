@@ -50,7 +50,7 @@
                             <div>
                                 <div>
                                     <div>{{offreCourante.libelleTypeContrat}}</div>
-                                    <div>{{offreCourante.libelleDureeTravail}}</div>
+                                    <div v-show="offreCourante.libelleDureeTravail">{{offreCourante.libelleDureeTravail}}</div>
                                     <div>Salaire : {{offreCourante.libelleSalaire}}</div>
                                 </div>
                                 <div>

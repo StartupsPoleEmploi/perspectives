@@ -76,7 +76,7 @@ object ExperienceExigeResponse {
   val EXIGE = ExperienceExigeResponse(value = "E")
 
   implicit val reads: Reads[ExperienceExigeResponse] =
-    (__ \ "experienceExige").read[String].map(ExperienceExigeResponse(_))
+    __.read[String].map(ExperienceExigeResponse(_))
 }
 
 case class OffreResponse(id: String,
@@ -86,7 +86,7 @@ case class OffreResponse(id: String,
                          typeContrat: String,
                          typeContratLibelle: String,
                          description: Option[String],
-                         dureeTravailLibelle: String,
+                         dureeTravailLibelle: Option[String],
                          alternance: Boolean,
                          experienceLibelle: String,
                          experienceExige: ExperienceExigeResponse,
