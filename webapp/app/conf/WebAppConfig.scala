@@ -83,7 +83,11 @@ class WebAppConfig(configuration: Configuration) {
 
   val referentielOffreWSAdapterConfig: ReferentielOffreWSAdapterConfig = ReferentielOffreWSAdapterConfig(
     urlApi = configuration.get[String]("emploiStore.urlApi"),
-    oauthConfig = partenaireOauthConfig
+    oauthConfig = partenaireOauthConfig,
+    scopes = List("api_offresdemploiv2 o2dsoffre") ++
+      (if (Environnement.PRODUCTION == environnement)
+        List("qos_silver_offresdemploiv2")
+      else Nil)
   )
 
   val esConfig: EsConfig = EsConfig(

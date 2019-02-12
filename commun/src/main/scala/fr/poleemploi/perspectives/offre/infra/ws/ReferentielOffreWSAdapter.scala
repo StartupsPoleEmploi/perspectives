@@ -61,7 +61,7 @@ class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
         "grant_type" -> "client_credentials",
         "client_id" -> config.clientId,
         "client_secret" -> config.clientSecret,
-        "scope" -> s"application_${config.clientId} api_offresdemploiv2 qos_silver_offresdemploiv2 o2dsoffre",
+        "scope" -> s"application_${config.clientId} ${config.scopes.mkString(" ")}",
       ))
       .flatMap(filtreStatutReponse(_))
       .map(_.json.as[AccessTokenResponse])
