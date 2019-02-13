@@ -23,6 +23,12 @@ class ProfilController @Inject()(components: ControllerComponents,
                                  recruteurQueryHandler: RecruteurQueryHandler,
                                  recruteurAuthentifieAction: RecruteurAuthentifieAction) extends AbstractController(components) {
 
+  val typesRecruteur: List[TypeRecruteur] = List(
+    TypeRecruteur.ENTREPRISE,
+    TypeRecruteur.AGENCE_INTERIM,
+    TypeRecruteur.ORGANISME_FORMATION
+  )
+
   def modificationProfil(): Action[AnyContent] = recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
       val form: Future[Form[ProfilForm]] =
@@ -34,14 +40,22 @@ class ProfilController @Inject()(components: ControllerComponents,
             .map(ProfilForm.fromProfilRecruteurQueryResult)
         }
 
-      form.map(f => Ok(views.html.recruteur.profil(f, recruteurAuthentifie = recruteurAuthentifieRequest.recruteurAuthentifie)))
+      form.map(f => Ok(views.html.recruteur.profil(
+        profilForm = f,
+        typesRecruteur = typesRecruteur,
+        recruteurAuthentifie = recruteurAuthentifieRequest.recruteurAuthentifie
+      )))
     }(recruteurAuthentifieRequest)
   }
 
   def modifierProfil(): Action[AnyContent] = recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
       ProfilForm.form.bindFromRequest.fold(
-        formWithErrors => Future.successful(BadRequest(views.html.recruteur.profil(formWithErrors, recruteurAuthentifie = recruteurAuthentifieRequest.recruteurAuthentifie))),
+        formWithErrors => Future.successful(BadRequest(views.html.recruteur.profil(
+          profilForm = formWithErrors,
+          typesRecruteur = typesRecruteur,
+          recruteurAuthentifie = recruteurAuthentifieRequest.recruteurAuthentifie
+        ))),
         inscriptionForm => {
           val command = ModifierProfilCommand(
             id = recruteurAuthentifieRequest.recruteurId,

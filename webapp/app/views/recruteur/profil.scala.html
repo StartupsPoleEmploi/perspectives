@@ -4,7 +4,9 @@
 @import fr.poleemploi.perspectives.recruteur.TypeRecruteur
 @import helper._
 
-@(profilForm: Form[ProfilForm], recruteurAuthentifie: RecruteurAuthentifie)(implicit request: MessagesRequestHeader, flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
+@(profilForm: Form[ProfilForm],
+        typesRecruteur: List[TypeRecruteur],
+        recruteurAuthentifie: RecruteurAuthentifie)(implicit request: MessagesRequestHeader, flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
 @hasErrors(field:String) = @{
     profilForm(field).hasErrors
@@ -44,7 +46,7 @@
                     form = profilForm,
                     name = "typeRecruteur",
                     cssClass = Some("choix-item"),
-                    values = TypeRecruteur.values.map(t => (t.value, t match {
+                    values = typesRecruteur.map(t => (t.value, t match {
                         case TypeRecruteur.ENTREPRISE => "Une entreprise"
                         case TypeRecruteur.AGENCE_INTERIM => "Une agence d'interim"
                         case TypeRecruteur.ORGANISME_FORMATION => "Un organisme de formation"

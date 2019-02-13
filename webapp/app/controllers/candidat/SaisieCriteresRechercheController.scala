@@ -26,6 +26,13 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
                                                   rechercheCandidatQueryHandler: RechercheCandidatQueryHandler,
                                                   candidatAuthentifieAction: CandidatAuthentifieAction) extends AbstractController(components) {
 
+  val rayonsRecherche: List[RayonRecherche] = List(
+    RayonRecherche.MAX_10,
+    RayonRecherche.MAX_30,
+    RayonRecherche.MAX_50,
+    RayonRecherche.MAX_100
+  )
+
   def saisieCriteresRecherche: Action[AnyContent] = candidatAuthentifieAction.async { candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
       for {
@@ -45,7 +52,8 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
           candidatSaisieCriteresRecherche = candidatSaisieCriteresRecherche,
           metiersEvaluesCandidat = metiersEvaluesCandidat,
           candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie,
-          secteursActivites = rechercheCandidatQueryHandler.secteursProposes
+          secteursActivites = rechercheCandidatQueryHandler.secteursProposes,
+          rayonsRecherche = rayonsRecherche
         ))
       }
     }(candidatAuthentifieRequest)
@@ -62,7 +70,8 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
                 candidatSaisieCriteresRecherche = Some(candidatSaisieCriteresRecherche),
                 metiersEvaluesCandidat = candidatSaisieCriteresRecherche.metiersEvalues,
                 candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie,
-                secteursActivites = rechercheCandidatQueryHandler.secteursProposes
+                secteursActivites = rechercheCandidatQueryHandler.secteursProposes,
+                rayonsRecherche = rayonsRecherche
               ))),
             saisieCriteresRechercheForm => {
               val modifierCriteresCommand = buildModifierCriteresRechercheCommand(candidatSaisieCriteresRecherche.candidatId, saisieCriteresRechercheForm)

@@ -10,6 +10,7 @@
         candidatSaisieCriteresRecherche: Option[CandidatSaisieCriteresRechercheQueryResult],
         metiersEvaluesCandidat: List[Metier],
         secteursActivites: List[SecteurActivite],
+        rayonsRecherche: List[RayonRecherche],
         candidatAuthentifie: CandidatAuthentifie)(implicit request: MessagesRequestHeader, flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
 @hasErrors(field:String) = @{
@@ -189,7 +190,7 @@
                 form = saisieCriteresRechercheForm,
                 name = "rayonRecherche",
                 cssClass = Some("choix-item"),
-                values = RayonRecherche.values.toList.map(r => (r._1.toString, r._2 match {
+                values = rayonsRecherche.map(r => (r.value.toString, r match {
                     case RayonRecherche.MAX_100 => "Plus de 50km"
                     case r@_ => s"Moins de ${r.value}km"
                 }))
