@@ -1,5 +1,3 @@
-"use strict";
-
 import pagination from '../../composants/pagination.js';
 import alerteRecruteur from '../../composants/alerteRecruteur.js';
 import places from 'places.js';

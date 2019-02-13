@@ -1,5 +1,3 @@
-"use strict";
-
 var frequenceAlerte = {
     QUOTIDIENNE: "Quotidienne",
     HEBDOMADAIRE: "Hebdomadaire"

@@ -1,8 +1,6 @@
-"use strict";
-
-var statutDemandeurEmploi = {
-    NON_DEMANDEUR_EMPLOI: "0",
-    DEMANDEUR_EMPLOI: "1"
+var statutsDemandeurEmploi = {
+    NON_DEMANDEUR_EMPLOI: {code: "0", label: "Non"},
+    DEMANDEUR_EMPLOI: {code: "1", label: "Oui"}
 };
 
-export default statutDemandeurEmploi;
+export default statutsDemandeurEmploi;

@@ -1,5 +1,3 @@
-"use strict";
-
 var component = Vue.component('pagination', {
     props: {
         pagesInitiales: Array,

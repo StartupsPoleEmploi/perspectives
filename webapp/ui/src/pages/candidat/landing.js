@@ -1,5 +1,3 @@
-"use strict";
-
 import temoignages from '../../composants/temoignages.js';
 
 var app = new Vue({

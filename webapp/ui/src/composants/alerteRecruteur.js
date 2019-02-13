@@ -1,5 +1,3 @@
-"use strict";
-
 var component = Vue.component('alerte-recruteur', {
     props:  {
         nbMaxAlertes: Number,

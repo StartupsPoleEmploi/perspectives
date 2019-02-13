@@ -1,9 +1,7 @@
-"use strict";
-
-var typeRecruteur = {
-    ENTREPRISE: "ENTREPRISE",
-    AGENCE_INTERIM: "AGENCE_INTERIM",
-    ORGANISME_FORMATION: "ORGANISME_FORMATION"
+var typesRecruteur = {
+    ENTREPRISE: "Entreprise",
+    AGENCE_INTERIM: "Agence d'intérim",
+    ORGANISME_FORMATION: "Organisme de formation"
 };
 
-export default typeRecruteur;
+export default typesRecruteur;

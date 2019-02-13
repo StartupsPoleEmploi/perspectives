@@ -1,5 +1,3 @@
-"use strict";
-
 function intitule(alerte, metiers, secteursActivites) {
     var intitule = '';
     if (alerte.metier !== null && alerte.metier !== '') {
