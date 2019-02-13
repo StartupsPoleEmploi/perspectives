@@ -1,7 +1,5 @@
 package fr.poleemploi.perspectives.commun.infra
 
-import scala.collection.immutable.ListMap
-
 case class Environnement(value: String)
 
 object Environnement {
@@ -10,7 +8,7 @@ object Environnement {
   val RECETTE = Environnement(value = "recette")
   val PRODUCTION = Environnement(value = "production")
 
-  private val values = ListMap(
+  private val values: Map[String, Environnement] = Map(
     DEVELOPPEMENT.value -> DEVELOPPEMENT,
     RECETTE.value -> RECETTE,
     PRODUCTION.value -> PRODUCTION

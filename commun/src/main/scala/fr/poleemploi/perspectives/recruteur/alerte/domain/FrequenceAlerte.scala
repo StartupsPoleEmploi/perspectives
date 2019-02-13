@@ -2,8 +2,6 @@ package fr.poleemploi.perspectives.recruteur.alerte.domain
 
 import fr.poleemploi.eventsourcing.StringValueObject
 
-import scala.collection.immutable.ListMap
-
 /**
   * Value Object FrequenceAlerte
   */
@@ -14,10 +12,10 @@ object FrequenceAlerte {
   val QUOTIDIENNE = FrequenceAlerte("Quotidienne")
   val HEBDOMADAIRE = FrequenceAlerte("Hebdomadaire")
 
-  private val frequenceAlertesParValeur = ListMap(
+  private val values: Map[String, FrequenceAlerte] = Map(
     QUOTIDIENNE.value -> QUOTIDIENNE,
     HEBDOMADAIRE.value -> HEBDOMADAIRE
   )
 
-  def frequenceAlerte(value: String): Option[FrequenceAlerte] = frequenceAlertesParValeur.get(value)
+  def frequenceAlerte(value: String): Option[FrequenceAlerte] = values.get(value)
 }
