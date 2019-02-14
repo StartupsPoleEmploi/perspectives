@@ -99,7 +99,7 @@
   }
 
   .presentation {
-    background-image: url("/assets/images/pages/candidat/landing/presentation.png");
+    background-image: url("/assets/images/pages/candidat/landing/presentation.jpg");
     background-repeat: no-repeat;
     background-size: cover;
     height: 500px;
@@ -126,7 +126,7 @@
 
     &-conteneurMetier {
       @include media-breakpoint-up(lg) {
-        @include make-col(5);
+        @include make-col(4);
       }
 
       @include media-breakpoint-down(lg) {
@@ -136,7 +136,7 @@
 
     &-conteneurLocalisation {
       @include media-breakpoint-up(lg) {
-        @include make-col(4);
+        @include make-col(5);
       }
 
       @include media-breakpoint-down(lg) {
