@@ -2,8 +2,6 @@ package fr.poleemploi.perspectives.candidat.cv.domain
 
 import fr.poleemploi.eventsourcing.StringValueObject
 
-import scala.collection.immutable.ListMap
-
 case class TypeMedia(value: String) extends StringValueObject
 
 object TypeMedia {
@@ -14,7 +12,7 @@ object TypeMedia {
   val ODT = TypeMedia("application/vnd.oasis.opendocument.text")
   val JPEG = TypeMedia("image/jpeg")
 
-  private val typesMediasCVParValeur = ListMap(
+  private val typesMediasCVParValeur: Map[String, TypeMedia] = Map(
     PDF.value -> PDF,
     DOC.value -> DOC,
     DOCX.value -> DOCX,
@@ -26,6 +24,8 @@ object TypeMedia {
 
   val extensionsCV: List[String] = typesMediasCVParValeur.values.map(getExtensionFichier).toList
 
+  def typeMediaCV(value: String): Option[TypeMedia] = typesMediasCVParValeur.get(value)
+
   def getExtensionFichier(typeMedia: TypeMedia): String = typeMedia match {
     case PDF => "pdf"
     case DOC => "doc"
@@ -34,6 +34,4 @@ object TypeMedia {
     case JPEG => "jpeg"
     case _ => ""
   }
-
-  def typeMediaCV(value: String): Option[TypeMedia] = typesMediasCVParValeur.get(value)
 }
