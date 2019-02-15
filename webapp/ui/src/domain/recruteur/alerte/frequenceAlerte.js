@@ -1,6 +1,6 @@
-var frequenceAlerte = {
+var frequencesAlertes = {
     QUOTIDIENNE: "Quotidienne",
     HEBDOMADAIRE: "Hebdomadaire"
 };
 
-export default frequenceAlerte;
+export default frequencesAlertes;

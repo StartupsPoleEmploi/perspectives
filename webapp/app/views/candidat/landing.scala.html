@@ -12,19 +12,23 @@
                     sans qualifications ou experiences !</h2>
                 <div class="formulaireRecherche">
                     <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurMetier">
-                        <label for="js-metiers" class="formulaireRecherche-label">Choisissez un métier ou un mot-clé</label>
-                        <input id="js-metiers" type="text" placeholder="Métier, mot-clé"
-                               v-model="metier" name="metier" class="formulaireRecherche-metier"/>
+                        <label for="js-motCle" class="rechercheOffres-label">Choisissez un métier ou un mot-clé</label>
+                        <input id="js-motCle" type="text" placeholder="Métier, mot-clé"
+                               v-model="recherche.motCle" name="motCle" class="rechercheOffres-metier"/>
                     </div>
                     <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurLocalisation">
-                        <div class="localisation">
-                            <label for="js-lieuTravail" class="formulaireRecherche-label">Choisissez un lieu de travail</label>
-                            <input id="js-lieuTravail" type="search" v-model="lieuTravail.label" name="lieuTravail" placeholder="Lieu de travail" class="localisation-lieuTravail" />
-                            <label for="js-rayonRecherche"class="formulaireRecherche-label">Renseignez un rayon de recherche</label>
-                            <div class="localisation-conteneurRayonRecherche">
+                        <div class="rechercheOffres-localisation">
+                            <div class="rechercheOffres-conteneurlieuTravail">
+                                <input type="hidden" name="codePostal" v-model="recherche.codePostal" />
+                                <label for="js-lieuTravail" class="rechercheOffres-label">Choisissez un lieu de travail</label>
+                                <input id="js-lieuTravail" type="search" name="lieuTravail" placeholder="Lieu de travail" class="rechercheOffres-lieuTravail"
+                                       v-model="recherche.lieuTravail"/>
+                            </div>
+                            <div class="rechercheOffres-conteneurRayonRecherche">
+                                <label for="js-rayonRecherche"class="rechercheOffres-label">Renseignez un rayon de recherche</label>
                                 <select id="js-rayonRecherche" name="rayonRecherche"
-                                    v-model="rayonRecherche" class="localisation-rayonRecherche">
-                                    <option v-for="rayonRecherche in rayonsRecherche" v-bind:value="rayonRecherche">{{rayonRecherche}}km</option>
+                                        v-model="recherche.rayonRecherche" class="rechercheOffres-rayonRecherche">
+                                    <option v-for="rayonRecherche in rayonsRecherche" :key="rayonRecherche.value" v-bind:value="rayonRecherche.value">{{rayonRecherche.label}}</option>
                                 </select>
                             </div>
                         </div>

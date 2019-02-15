@@ -19,7 +19,7 @@ class LandingController @Inject()(cc: ControllerComponents,
   def landing(): Action[AnyContent] = optionalRecruteurAuthentifieAction.async { optionalRecruteurAuthentifieRequest: OptionalRecruteurAuthentifieRequest[AnyContent] =>
     optionalCandidatAuthentifieAction.async { implicit optionalCandidatAuthentifieRequest: OptionalCandidatAuthentifieRequest[AnyContent] =>
       if (optionalCandidatAuthentifieRequest.isCandidatAuthentifie)
-        Future.successful(Redirect(controllers.candidat.routes.OffreController.index()))
+        Future.successful(Redirect(controllers.candidat.routes.RechercheOffreController.index()))
       else if (optionalRecruteurAuthentifieRequest.isRecruteurAuthentifie)
         Future.successful(Redirect(controllers.recruteur.routes.RechercheCandidatController.index()))
       else

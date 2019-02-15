@@ -88,14 +88,7 @@
   }
 
   .boutonAction {
-    color: white;
-    background-color: $perspectives-vert-emeraude;
-    text-transform: uppercase;
-    border-radius: 8px;
-    font-size: 0.875rem;
-    font-weight: 700;
-    padding: 1rem;
-    border: none;
+    @include boutonAction();
   }
 
   .presentation {
@@ -154,59 +147,6 @@
       @include media-breakpoint-down(lg) {
         @include make-col(12);
       }
-    }
-
-    &-label {
-      @include sr-only();
-    }
-
-    &-metier {
-      width: 100%;
-      border: 1px solid #F2F2F2;
-      border-radius: 2px;
-      padding: 0.75rem 0.5rem;
-    }
-  }
-
-  .localisation {
-    @include make-row();
-    margin: 0;
-    border: 1px solid #F2F2F2;
-    border-radius: 2px;
-    padding: 0.75rem 0 0.75rem 0.5rem;
-
-    &-lieuTravail {
-      @include make-col(8);
-      border: none;
-      border-right: 1px solid $perspectives-vert-emeraude;
-    }
-
-    &-conteneurRayonRecherche {
-      @include make-col(4);
-      position: relative;
-      padding: 0 0.5rem;
-
-      &:after {
-        content: '';
-        position: absolute;
-        right: 0.5rem;
-        top: 3px;
-        width: 10px;
-        height: 10px;
-        border: solid $perspectives-vert-emeraude;
-        border-width: 0 3px 3px 0;
-        -webkit-transform: rotate(45deg);
-        -ms-transform: rotate(45deg);
-        transform: rotate(45deg);
-      }
-    }
-
-    &-rayonRecherche {
-      width: 100%;
-      border: none;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      background-color: white;
     }
   }
 

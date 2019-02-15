@@ -1,22 +1,23 @@
 package controllers.candidat
 
-import fr.poleemploi.perspectives.commun.domain.Coordonnees
 import play.api.data.Form
 import play.api.data.Forms._
-import play.api.data.format.Formats._
 
-case class RechercheOffresForm(metier: Option[String],
-                               coordonnees: Option[Coordonnees])
+case class RechercheOffresForm(motCle: Option[String],
+                               codePostal: Option[String],
+                               rayonRecherche: Option[Int],
+                               typesContrats: List[String],
+                               secteursActivites: List[String])
 
 object RechercheOffresForm {
 
   val form = Form(
     mapping(
-      "metier" -> optional(text),
-      "coordonnees" -> optional(mapping(
-        "latitude" -> of[Double],
-        "longitude" -> of[Double]
-      )(Coordonnees.apply)(Coordonnees.unapply))
+      "motCle" -> optional(text),
+      "codePostal" -> optional(text),
+      "rayonRecherche" -> optional(number),
+      "typesContrats" -> list(text),
+      "secteursActivites" -> list(text)
     )(RechercheOffresForm.apply)(RechercheOffresForm.unapply)
   )
 }

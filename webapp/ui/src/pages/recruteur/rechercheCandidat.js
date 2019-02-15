@@ -5,8 +5,8 @@ import { intituleAlerte, buildAlerte } from '../../domain/recruteur/alerte/alert
 
 $(document).ready(function () {
     var placesAutocomplete = places({
-        appId: jsData.algoliaPlaces.appId,
-        apiKey: jsData.algoliaPlaces.apiKey,
+        appId: jsData.algoliaPlacesConfig.appId,
+        apiKey: jsData.algoliaPlacesConfig.apiKey,
         container: document.querySelector('#js-localisation'),
         type: 'city',
         aroundLatLngViaIP: false,

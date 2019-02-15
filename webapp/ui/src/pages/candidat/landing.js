@@ -1,4 +1,6 @@
+import rayonsRecherche from "../../domain/commun/rayonRecherche";
 import temoignages from '../../composants/temoignages.js';
+import places from 'places.js';
 
 var app = new Vue({
     el: '#landingCandidat',
@@ -18,28 +20,58 @@ var app = new Vue({
                     texte: "Je viens de décrocher un poste aux Sables d'olonne en tant qu'aide à domicile. Je vous remercie pour votre investissement !"
                 }
             ],
-            lieuTravail: {
-                label: '',
-                latitude: null,
-                longitude: null
+            recherche: {
+                motCle: null,
+                lieuTravail: null,
+                codePostal: null,
+                rayonRecherche: null,
             },
-            rayonRecherche: null,
-            rayonsRecherche: [10, 30, 50, 100],
-            metier: null,
-            metiers: []
+            rayonsRecherche: rayonsRecherche,
+            algoliaPlacesConfig: jsData.algoliaPlacesConfig
         }
     },
+    mounted: function () {
+        var self = this;
+        var placesAutocomplete = places({
+            appId: self.algoliaPlacesConfig.appId,
+            apiKey: self.algoliaPlacesConfig.apiKey,
+            container: document.querySelector('#js-lieuTravail'),
+            type: 'city',
+            aroundLatLngViaIP: false,
+            style: false,
+            useDeviceLocation: false,
+            language: 'fr',
+            countries: ['fr']
+        });
+        placesAutocomplete.on('change', function(e) {
+            self.algoliaPlacesChange(e.suggestion);
+        });
+        placesAutocomplete.on('clear', function() {
+            self.algoliaPlacesClear();
+        });
+    },
     methods: {
+        algoliaPlacesChange: function(suggestion) {
+            this.recherche.codePostal = suggestion.postcode;
+            this.recherche.lieuTravail = suggestion.name;
+        },
+        algoliaPlacesClear: function() {
+            this.recherche.codePostal = null;
+            this.recherche.lieuTravail = null;
+        },
         rechercherOffres: function() {
             var params = [];
-            if (this.metier !== null && this.metier !== '') {
-                params.push('metier=' + this.metier);
+            if (this.recherche.motCle !== null && this.recherche.motCle !== '') {
+                params.push('motCle=' + this.recherche.motCle);
             }
-            if (this.lieuTravail.label !== '') {
-                params.push('localisation=' + this.lieuTravail.label);
+            if (this.recherche.codePostal !== null && this.recherche.codePostal !== '') {
+                params.push('codePostal=' + this.recherche.codePostal);
             }
-            if (this.rayonRecherche !== null && this.rayonRecherche !== '') {
-                params.push('rayonRecherche=' + this.rayonRecherche);
+            if (this.recherche.lieuTravail !== null && this.recherche.lieuTravail !== '') {
+                params.push('lieuTravail=' + this.recherche.lieuTravail);
+            }
+            if (this.recherche.rayonRecherche !== null && this.recherche.rayonRecherche !== '') {
+                params.push('rayonRecherche=' + this.recherche.rayonRecherche);
             }
             if (params.length > 0) {
                 var uri = encodeURI(params.reduce(function(acc, param, index) {

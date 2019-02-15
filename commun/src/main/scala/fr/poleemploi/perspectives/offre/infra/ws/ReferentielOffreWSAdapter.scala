@@ -18,8 +18,7 @@ class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
   private val cacheKeyCommunes = "referentielOffre.communes"
 
   /**
-    * L'API ne gère que 3 codesROME par appel, on découpe donc en plusieurs appels. <br />
-    * Elle est également limitée en nombre d'appels par seconde, il faut donc gérer le statut 429
+    * L'API est limitée en nombre d'appels par seconde, il faut donc gérer le statut 429
     */
   def rechercherOffres(criteres: CriteresRechercheOffre): Future[List[Offre]] = {
     def callWS(accessTokenResponse: AccessTokenResponse, request: RechercheOffreRequest): Future[List[Offre]] =
@@ -44,11 +43,15 @@ class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
 
     for {
       accessTokenResponse <- genererAccessToken
-      codeInsee <- codeInsee(accessTokenResponse, criteres.codePostal)
-      offres <- Future.sequence(mapping.buildRechercherOffresRequest(criteres, codeInsee).map(request => callWS(accessTokenResponse, request)))
+      codeInsee <- criteres.codePostal
+        .map(c => codeInsee(accessTokenResponse, c).map(Some(_)))
+        .getOrElse(Future.successful(None))
+      offres <- callWS(
+        accessTokenResponse = accessTokenResponse,
+        request = mapping.buildRechercherOffresRequest(criteres, codeInsee)
+      )
     } yield {
       offres
-        .flatten
         .distinct
         .sortWith((o1, o2) => o1.dateActualisation.isAfter(o2.dateActualisation))
     }

@@ -4,7 +4,18 @@ import java.time.ZonedDateTime
 
 import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.offre.domain._
-import play.api.libs.json.{Json, Reads, __}
+import play.api.libs.json._
+
+case class ExigenceResponse(value: String)
+
+object ExigenceResponse {
+
+  val SOUHAITE = ExigenceResponse(value = "S")
+  val EXIGE = ExigenceResponse(value = "E")
+
+  implicit val reads: Reads[ExigenceResponse] =
+    __.read[String].map(ExigenceResponse(_))
+}
 
 case class CommuneResponse(code: String,
                            codePostal: String)
@@ -27,16 +38,53 @@ object ContactResponse {
   implicit val reads: Reads[ContactResponse] = Json.reads[ContactResponse]
 }
 
-case class CompetenceResponse(libelle: Option[String],
-                              code: Option[String])
+case class CompetenceResponse(libelle: String,
+                              code: Option[String],
+                              exigence: ExigenceResponse)
 
 object CompetenceResponse {
 
   implicit val reads: Reads[CompetenceResponse] = Json.reads[CompetenceResponse]
 }
 
+case class QualiteProfessionnelleResponse(libelle: String,
+                                          description: String)
+
+object QualiteProfessionnelleResponse {
+
+  implicit val reads: Reads[QualiteProfessionnelleResponse] = Json.reads[QualiteProfessionnelleResponse]
+}
+
+case class PermisResponse(libelle: String,
+                          exigence: ExigenceResponse)
+
+object PermisResponse {
+
+  implicit val reads: Reads[PermisResponse] = Json.reads[PermisResponse]
+}
+
+case class FormationResponse(libelle: Option[String],
+                             domaine: Option[String],
+                             commentaire: Option[String],
+                             exigence: ExigenceResponse)
+
+object FormationResponse {
+
+  implicit val reads: Reads[FormationResponse] = Json.reads[FormationResponse]
+}
+
+case class LangueResponse(libelle: String,
+                             exigence: ExigenceResponse)
+
+object LangueResponse {
+
+  implicit val reads: Reads[LangueResponse] = Json.reads[LangueResponse]
+}
+
 case class SalaireResponse(libelle: Option[String],
-                           commentaire: Option[String])
+                           commentaire: Option[String],
+                           complement1: Option[String],
+                           complement2: Option[String])
 
 object SalaireResponse {
 
@@ -44,7 +92,7 @@ object SalaireResponse {
 }
 
 case class LieuTravailResponse(codePostal: Option[String],
-                               libelle: String)
+                               libelle: Option[String])
 
 object LieuTravailResponse {
 
@@ -52,7 +100,9 @@ object LieuTravailResponse {
 }
 
 case class EntrepriseResponse(nom: Option[String],
-                              description: Option[String])
+                              description: Option[String],
+                              logo: Option[String],
+                              url: Option[String])
 
 object EntrepriseResponse {
 
@@ -81,22 +131,30 @@ object ExperienceExigeResponse {
 
 case class OffreResponse(id: String,
                          intitule: String,
-                         romeCode: String,
-                         romeLibelle: String,
+                         romeCode: Option[String],
+                         romeLibelle: Option[String],
                          typeContrat: String,
                          typeContratLibelle: String,
                          description: Option[String],
                          dureeTravailLibelle: Option[String],
                          alternance: Boolean,
-                         experienceLibelle: String,
-                         experienceExige: ExperienceExigeResponse,
+                         experienceLibelle: Option[String],
+                         experienceCommentaire: Option[String],
+                         experienceExige: Option[ExperienceExigeResponse],
                          trancheEffectifEtab: Option[String],
+                         complementExercice: Option[String],
+                         conditionExercice: Option[String],
+                         deplacementLibelle: Option[String],
+                         competences: List[CompetenceResponse],
+                         qualitesProfessionnelles: List[QualiteProfessionnelleResponse],
+                         permis: List[PermisResponse],
+                         formations: List[FormationResponse],
+                         langues: List[LangueResponse],
                          dateActualisation: ZonedDateTime,
                          private val entreprise: Option[EntrepriseResponse],
                          private val salaire: Option[SalaireResponse],
-                         private val lieuTravail: LieuTravailResponse,
+                         private val lieuTravail: Option[LieuTravailResponse],
                          private val contact: Option[ContactResponse],
-                         private val competences: List[CompetenceResponse],
                          private val origineOffre: OrigineOffreResponse) {
 
   val urlOrigine: String = origineOffre.urlOrigine
@@ -107,16 +165,51 @@ case class OffreResponse(id: String,
   val coordonneesContact2: Option[String] = contact.flatMap(_.coordonnees2)
   val coordonneesContact3: Option[String] = contact.flatMap(_.coordonnees3)
   val urlPostuler: Option[String] = contact.flatMap(_.urlPostulation)
-  val libelleLieuTravail: String = lieuTravail.libelle
+  val libelleLieuTravail: Option[String] = lieuTravail.flatMap(_.libelle)
+  val codePostalLieuTravail: Option[String] = lieuTravail.flatMap(_.codePostal)
   val libelleSalaire: Option[String] = salaire.flatMap(_.libelle)
-  val libellesCompetences: List[String] = competences.flatMap(_.libelle)
+  val commentaireSalaire: Option[String] = salaire.flatMap(_.commentaire)
+  val complement1Salaire: Option[String] = salaire.flatMap(_.complement1)
+  val complement2Salaire: Option[String] = salaire.flatMap(_.complement2)
   val nomEntreprise: Option[String] = entreprise.flatMap(_.nom)
   val descriptionEntreprise: Option[String] = entreprise.flatMap(_.description)
+  val logoEntreprise: Option[String] = entreprise.flatMap(_.logo)
+  val urlEntreprise: Option[String] = entreprise.flatMap(_.url)
 }
 
 object OffreResponse {
 
-  implicit val reads: Reads[OffreResponse] = Json.reads[OffreResponse]
+  implicit val reads: Reads[OffreResponse] = (json: JsValue) => JsSuccess(
+    OffreResponse(
+      id = (json \ "id").as[String],
+      intitule = (json \ "intitule").as[String],
+      romeCode = (json \ "romeCode").asOpt[String],
+      romeLibelle = (json \ "romeLibelle").asOpt[String],
+      typeContrat = (json \ "typeContrat").as[String],
+      typeContratLibelle = (json \ "typeContratLibelle").as[String],
+      description = (json \ "description").asOpt[String],
+      dureeTravailLibelle = (json \ "dureeTravailLibelle").asOpt[String],
+      alternance = (json \ "alternance").as[Boolean],
+      experienceExige = (json \ "experienceExige").asOpt[ExperienceExigeResponse],
+      experienceCommentaire = (json \ "experienceCommentaire").asOpt[String],
+      experienceLibelle = (json \ "experienceLibelle").asOpt[String],
+      complementExercice = (json \ "complementExercice").asOpt[String],
+      conditionExercice = (json \ "conditionExercice").asOpt[String],
+      deplacementLibelle = (json \ "deplacementLibelle").asOpt[String],
+      trancheEffectifEtab = (json \ "trancheEffectifEtab").asOpt[String],
+      competences = (json \ "competences").orElse(JsDefined(JsArray.empty)).as[List[CompetenceResponse]],
+      qualitesProfessionnelles = (json \ "qualitesProfessionnelles").orElse(JsDefined(JsArray.empty)).as[List[QualiteProfessionnelleResponse]],
+      permis = (json \ "permis").orElse(JsDefined(JsArray.empty)).as[List[PermisResponse]],
+      formations = (json \ "formations").orElse(JsDefined(JsArray.empty)).as[List[FormationResponse]],
+      langues = (json \ "langues").orElse(JsDefined(JsArray.empty)).as[List[LangueResponse]],
+      dateActualisation = (json \ "dateActualisation").as[ZonedDateTime],
+      entreprise = (json \ "entreprise").asOpt[EntrepriseResponse],
+      salaire = (json \ "salaire").asOpt[SalaireResponse],
+      lieuTravail = (json \ "lieuTravail").asOpt[LieuTravailResponse],
+      contact = (json \ "contact").asOpt[ContactResponse],
+      origineOffre = (json \ "origineOffre").as[OrigineOffreResponse]
+    )
+  )
 }
 
 case class RechercheOffreRequest(params: List[(String, String)])
@@ -126,54 +219,101 @@ case class RechercheOffreResponse(resultats: List[OffreResponse])
 class ReferentielOffreWSMapping {
 
   def buildRechercherOffresRequest(criteresRechercheOffre: CriteresRechercheOffre,
-                                   codeINSEE: String): List[RechercheOffreRequest] =
-    criteresRechercheOffre.codesROME.sliding(3, 3).toList.map(codesROME =>
-      RechercheOffreRequest(List(
-        "codeROME" -> codesROME.map(_.value).mkString(","),
-        "commune" -> codeINSEE,
-        "distance" -> s"${criteresRechercheOffre.rayonRecherche.value}",
-        "experience" -> buildExperience(criteresRechercheOffre.experience)
-      ))
-    )
+                                   codeINSEE: Option[String]): RechercheOffreRequest =
+    RechercheOffreRequest(List(
+      criteresRechercheOffre.motCle.map(m => "motsCles" -> m),
+      codeINSEE.map(c => "commune" -> c),
+      codeINSEE.flatMap(_ => criteresRechercheOffre.rayonRecherche.map(r => "distance" -> s"${r.value}")),
+      criteresRechercheOffre.typesContrats match {
+        case Nil => None
+        case l@_ => Some("typeContrat" -> l.map(_.value).mkString(","))
+      },
+      Some("experience" -> buildExperience(criteresRechercheOffre.experience))
+    ).flatten)
 
   def buildOffre(criteresRechercheOffre: CriteresRechercheOffre,
                  offreResponse: OffreResponse): Option[Offre] = {
     val experienceCorrespondante = criteresRechercheOffre.experience match {
-      case Experience.DEBUTANT => ExperienceExigeResponse.EXIGE != offreResponse.experienceExige
+      case Experience.DEBUTANT => !offreResponse.experienceExige.contains(ExperienceExigeResponse.EXIGE)
       case _ => true
     }
+    val secteurActiviteCorrespondant = criteresRechercheOffre.secteursActivites match {
+      case Nil => true
+      case xs => xs.exists(s => offreResponse.romeCode.exists(r => r.startsWith(s.value)))
+    }
 
-    if (experienceCorrespondante)
+    if (experienceCorrespondante && secteurActiviteCorrespondant)
       Some(Offre(
         id = OffreId(offreResponse.id),
         urlOrigine = offreResponse.urlOrigine,
         intitule = offreResponse.intitule,
-        metier = Metier(
-          codeROME = CodeROME(offreResponse.romeCode),
-          label = offreResponse.romeLibelle
-        ),
-        libelleLieuTravail = offreResponse.libelleLieuTravail,
-        typeContrat = offreResponse.typeContrat,
-        libelleTypeContrat = offreResponse.typeContratLibelle,
-        libelleDureeTravail = offreResponse.dureeTravailLibelle,
-        libelleExperience =
-          if (ExperienceExigeResponse.SOUHAITE == offreResponse.experienceExige)
-            s"Expérience souhaitée : ${offreResponse.experienceLibelle}"
-          else
-            offreResponse.experienceLibelle,
-        libelleSalaire = offreResponse.libelleSalaire,
+        metier = for {
+          romeCode <- offreResponse.romeCode
+          romeLibelle <- offreResponse.romeLibelle
+        } yield Metier(codeROME = CodeROME(romeCode), label = romeLibelle),
+        contrat = Contrat(code = offreResponse.typeContrat, label = offreResponse.typeContratLibelle),
         description = offreResponse.description,
-        nomEntreprise = offreResponse.nomEntreprise,
-        descriptionEntreprise = offreResponse.descriptionEntreprise,
-        effectifEntreprise = offreResponse.trancheEffectifEtab,
-        competences = offreResponse.libellesCompetences,
-        nomContact = offreResponse.nomContact,
-        telephoneContact = offreResponse.telephoneContact,
-        emailContact = offreResponse.emailContact,
-        urlPostuler = offreResponse.urlPostuler,
-        coordonneesContact1 = offreResponse.coordonneesContact1,
-        coordonneesContact2 = offreResponse.coordonneesContact2,
-        coordonneesContact3 = offreResponse.coordonneesContact3,
+        lieuTravail = LieuTravail(libelle = offreResponse.libelleLieuTravail, codePostal = offreResponse.codePostalLieuTravail),
+        libelleDureeTravail = offreResponse.dureeTravailLibelle,
+        complementExercice = offreResponse.complementExercice,
+        conditionExercice = offreResponse.conditionExercice,
+        libelleDeplacement = offreResponse.deplacementLibelle,
+        experience = ExperienceExige(
+          label =
+            if (offreResponse.experienceExige.contains(ExperienceExigeResponse.SOUHAITE))
+              offreResponse.experienceLibelle.map(l => s"Expérience souhaitée : $l")
+            else
+              offreResponse.experienceLibelle,
+          commentaire = offreResponse.experienceCommentaire,
+          exige =
+            if (offreResponse.experienceExige.contains(ExperienceExigeResponse.EXIGE))
+              Some(true)
+            else
+              Some(false)
+        ),
+        competences = offreResponse.competences.map(c => Competence(
+          label = c.libelle,
+          exige = ExigenceResponse.EXIGE == c.exigence
+        )),
+        qualitesProfessionnelles = offreResponse.qualitesProfessionnelles.map(q => QualiteProfessionnelle(
+          label = q.libelle,
+          description = q.description
+        )),
+        salaire = Salaire(
+          libelle = offreResponse.libelleSalaire,
+          commentaire = offreResponse.commentaireSalaire,
+          complement1 = offreResponse.complement1Salaire,
+          complement2 = offreResponse.complement2Salaire
+        ),
+        permis = offreResponse.permis.map(p => Permis(
+          label = p.libelle,
+          exige = ExigenceResponse.EXIGE == p.exigence
+        )),
+        langues = offreResponse.langues.map(l => Langue(
+          label = l.libelle,
+          exige = ExigenceResponse.EXIGE == l.exigence
+        )),
+        formations = offreResponse.formations.map(f => Formation(
+          domaine = f.domaine,
+          niveau = f.libelle,
+          exige = ExigenceResponse.EXIGE == f.exigence
+        )),
+        entreprise = Entreprise(
+          nom = offreResponse.nomEntreprise,
+          description = offreResponse.descriptionEntreprise,
+          urlLogo = offreResponse.logoEntreprise.map(l => s"https://entreprise.pole-emploi.fr/static/img/logos/$l.png"),
+          urlSite = offreResponse.urlEntreprise,
+          effectif = offreResponse.trancheEffectifEtab
+        ),
+        contact = Contact(
+          nom = offreResponse.nomContact,
+          coordonnees1 = offreResponse.coordonneesContact1,
+          coordonnees2 = offreResponse.coordonneesContact2,
+          coordonnees3 = offreResponse.coordonneesContact3,
+          telephone = offreResponse.telephoneContact,
+          email = offreResponse.emailContact,
+          urlPostuler = offreResponse.urlPostuler
+        ),
         dateActualisation = offreResponse.dateActualisation
       )) else None
   }

@@ -89,10 +89,7 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
               "nbCandidatsParPage" -> query.nbCandidatsParPage,
               "pagesInitiales" -> rechercheCandidatQueryResult.pages,
               "csrfToken" -> CSRF.getToken.map(_.value),
-              "algoliaPlaces" -> Json.obj(
-                "appId" -> webAppConfig.algoliaPlacesConfig.appId,
-                "apiKey" -> webAppConfig.algoliaPlacesConfig.apiKey
-              )
+              "algoliaPlacesConfig" -> webAppConfig.algoliaPlacesConfig
             )
           ))
         }).recover {

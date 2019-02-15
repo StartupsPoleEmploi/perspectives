@@ -80,7 +80,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
                 if (saisieCriteresRechercheForm.nouveauCandidat) {
                   Redirect(routes.InscriptionController.confirmationInscription())
                 } else {
-                  Redirect(routes.OffreController.index())
+                  Redirect(routes.RechercheOffreController.index())
                 }
               )
             }

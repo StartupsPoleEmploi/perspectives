@@ -1,21 +1,168 @@
 #rechercheOffres {
   @include make-container();
   @include make-container-max-widths();
-  margin-top: 2em;
+  padding: 3rem 1rem 0 1rem;
+
+  background-color: #F4F5F6;
+  box-shadow: 0 5px 25px 0 rgba(0, 0, 0, 0.1) inset;
+
+  .boutonRecherche {
+    @include boutonAction();
+    width: 100%;
+  }
 
   .rechercheOffres {
     @include make-row();
 
     &-criteres {
-      @include make-col(3);
+      @include make-col-ready();
+
+      @include media-breakpoint-up(md) {
+        @include make-col(4);
+        margin-top: 2.5rem;
+      }
+
+      @include media-breakpoint-down(md) {
+        @include make-col(12);
+      }
     }
+
     &-offres {
-      @include make-col(9);
+      @include make-col-ready();
+
+      @include media-breakpoint-up(md) {
+        @include make-col(8);
+      }
+
+      @include media-breakpoint-down(md) {
+        @include make-col(12);
+        margin-top: 2rem;
+      }
+    }
+  }
+
+  .formulaireRecherche {
+    @include make-row();
+
+    &-conteneur {
+      @include make-col-ready();
+      @include make-col(12);
+      margin-bottom: 1rem;
+    }
+
+    &-conteneurRechercher {
+      text-align: center;
+    }
+  }
+
+  .formulaireFiltre {
+    &-titre {
+      color: $perspectives-bleu-nuit;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    &-conteneurRechercher {
+      text-align: center;
+    }
+  }
+
+  .filtre {
+    @extend %liste;
+
+    &-item {
+      margin-bottom: 0.5rem;
+      color: $perspectives-bleu-nuit;
+    }
+  }
+
+  .offres {
+    &-item {
+      margin-bottom: 1rem;
+    }
+
+    &-titre {
+      color: $perspectives-bleu-nuit;
+    }
+  }
+
+  .offre {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    border-radius: 2px;
+    background-color: white;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+    padding: 1rem 2rem;
+
+    &-info {
+      color: $perspectives-bleu-nuit;
+    }
+
+    &-resume {
+      @include media-breakpoint-up(md) {
+        @include make-col(9);
+      }
+
+      @include media-breakpoint-down(md) {
+        @include make-col(12);
+      }
+    }
+
+    &-typeContrat {
+      @include media-breakpoint-up(md) {
+        @include make-col(3);
+      }
+
+      @include media-breakpoint-down(md) {
+        @include make-col(12);
+        margin-top: 1rem;
+      }
+    }
+
+    &-intitule {
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: 0;
+    }
+
+    &-nomEntreprise {
+      font-size: 0.875rem;
+      margin-bottom: 1rem;
+    }
+
+    &-localisation {
+      font-size: 0.875rem;
+      margin-bottom: 0;
+    }
+  }
+
+  .typeContrat {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: white;
+    border-radius: 23px;
+    padding: 0.5rem 3rem;
+
+    &--CDI {
+      background-color: #2E8533;
+    }
+
+    &--CDD {
+      background-color: #843D6A;
+    }
+
+    &--MIS {
+      background-color: #CB7F01;
+    }
+
+    &--SAI {
+      background-color: #BA5002;
     }
   }
 
   .modaleDetailOffre {
-    box-shadow: 0 0 10px 0 rgba(0,0,0,0.2);
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
 
     @include media-breakpoint-up(md) {
       max-width: 60%;
@@ -43,6 +190,128 @@
       font-size: 2rem;
       padding: 0;
       margin: 0;
+    }
+  }
+
+  .navigationOffres {
+    @include make-row();
+    align-items: center;
+
+    &-offres {
+      @include media-breakpoint-up(md) {
+        @include make-col-offset(6);
+        @include make-col(3);
+      }
+      @include media-breakpoint-down(md) {
+        @include make-col(9);
+      }
+    }
+    &-fermer {
+      @include make-col(3);
+    }
+
+    &-lien {
+      padding: 1rem;
+    }
+  }
+
+  .detailOffre {
+    @include make-row();
+
+    &-colonne {
+      padding: 1rem;
+
+      @include media-breakpoint-up(md) {
+        @include make-col(6);
+      }
+
+      @include media-breakpoint-down(md) {
+        @include make-col(12);
+      }
+    }
+
+    &-colonneDroite {
+      background-color: #E9F2F5;
+    }
+
+    &-intitule {
+      font-weight: 700;
+      color: $perspectives-bleu-nuit;
+      font-size: 1.5rem;
+    }
+
+    &-info {
+      color: $perspectives-bleu-nuit;
+      font-size: 0.875rem;
+    }
+
+    &-titreSection {
+      font-weight: 700;
+      color: $perspectives-bleu-nuit;
+      margin-bottom: 1rem;
+    }
+  }
+
+  .qualites {
+    @extend %liste;
+
+    &-item {
+      border-radius: 17px;
+      background-color: #EAEBED;
+      padding: 0.5rem;
+      display: inline-block;
+
+      &:not(:last-child) {
+        margin-right: 0.5rem;
+      }
+    }
+  }
+
+  .infosListe {
+    margin-bottom: 2rem;
+
+    &-item {
+      margin-bottom: 0.5rem;
+
+      &:not(:last-child) {
+        border-bottom: 1px solid #A7CED7;
+      }
+    }
+  }
+
+  .boutonPostuler {
+    @include boutonAction();
+    width: 100%;
+  }
+
+  .inscription {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    border-radius: 4px;
+    padding: 1rem;
+    background-color: #A7CED7;
+
+    &-texte {
+      font-size: 1.5rem;
+      color: white;
+      white-space: pre-line;
+    }
+
+    &-bouton {
+      @include boutonAction();
+    }
+  }
+
+  .infosPostuler {
+    border: 1px solid $perspectives-vert-emeraude;
+    color: $perspectives-vert-emeraude;
+    font-size: 0.875rem;
+    padding: 1rem;
+    border-radius: 4px;
+
+    &-item {
+      margin-bottom: 0.5rem;
     }
   }
 }

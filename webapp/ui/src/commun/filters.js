@@ -1,8 +1,8 @@
-"use strict";
-
-import statutDemandeurEmploi from '../domain/candidat/statutDemandeurEmploi.js';
-import typeRecruteur from '../domain/recruteur/typeRecruteur.js';
-import frequenceAlerte from '../domain/recruteur/alerte/frequenceAlerte.js';
+import secteursActivites from '../domain/commun/secteurActivite.js';
+import statutsDemandeurEmploi from '../domain/candidat/statutDemandeurEmploi.js';
+import typesRecruteur from '../domain/recruteur/typeRecruteur.js';
+import frequencesAlertes from '../domain/recruteur/alerte/frequenceAlerte.js';
+import typesContrats from '../domain/offre/typeContrat.js';
 
 Vue.filter('capitalize', function (value) {
     if (!value) return '';
@@ -26,33 +26,21 @@ Vue.filter('date', function (value) {
 });
 
 Vue.filter('statutDemandeurEmploi', function (value) {
-    if (value === statutDemandeurEmploi.NON_DEMANDEUR_EMPLOI) {
-        return "Non";
-    } else if (value === statutDemandeurEmploi.DEMANDEUR_EMPLOI) {
-        return "Oui";
-    } else {
-        return "";
-    }
+    return (value !== undefined && statutsDemandeurEmploi[value] !== undefined) ? statutsDemandeurEmploi[value].label : '';
 });
 
 Vue.filter('typeRecruteur', function (value) {
-    if (value === typeRecruteur.ENTREPRISE) {
-        return "Entreprise";
-    } else if (value === typeRecruteur.AGENCE_INTERIM) {
-        return "Agence d'interim";
-    } else if (value === typeRecruteur.ORGANISME_FORMATION) {
-        return "Organisme de formation";
-    } else {
-        return "";
-    }
+    return (value !== undefined && typesRecruteur[value] !== undefined) ? typesRecruteur[value] : '';
 });
 
 Vue.filter('frequenceAlerte', function (value) {
-    if (value === frequenceAlerte.QUOTIDIENNE) {
-        return "Chaque jour";
-    } else if (value === frequenceAlerte.HEBDOMADAIRE) {
-        return "Chaque semaine";
-    } else {
-        return "";
-    }
+    return (value !== undefined && frequencesAlertes[value] !== undefined) ? frequencesAlertes[value] : '';
+});
+
+Vue.filter('typeContrat', function (value) {
+    return (value !== undefined && typesContrats[value] !== undefined) ? typesContrats[value].label : '';
+});
+
+Vue.filter('secteurActivite', function (value) {
+    return (value !== undefined && secteursActivites[value] !== undefined) ? secteursActivites[value].label : '';
 });
