@@ -1,4 +1,4 @@
-"use strict";
+import $ from 'jquery';
 
 $(document).ready(function() {
     var iconeOuverture = $(".burgerMenu-iconeOuverture");

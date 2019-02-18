@@ -1,3 +1,5 @@
+import Vue from 'vue';
+
 var component = Vue.component('pagination', {
     props: {
         pagesInitiales: Array,

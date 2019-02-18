@@ -1,9 +1,12 @@
+import Vue from "vue";
+import $ from "jquery";
+import places from "places.js";
+import 'bootstrap/js/dist/modal';
+import '../../commun/filters.js';
+import '../../composants/pagination.js';
 import rayonsRecherche from '../../domain/commun/rayonRecherche.js';
 import secteursActivites from '../../domain/commun/secteurActivite.js';
 import typesContrats from '../../domain/offre/typeContrat.js';
-import filters from '../../commun/filters.js';
-import pagination from '../../composants/pagination.js';
-import places from "places.js";
 
 var app = new Vue({
     el: '#rechercheOffres',

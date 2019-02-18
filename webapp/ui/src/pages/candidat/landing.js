@@ -1,6 +1,7 @@
-import rayonsRecherche from "../../domain/commun/rayonRecherche";
-import temoignages from '../../composants/temoignages.js';
+import Vue from 'vue';
 import places from 'places.js';
+import '../../composants/temoignages.js';
+import rayonsRecherche from "../../domain/commun/rayonRecherche";
 
 var app = new Vue({
     el: '#landingCandidat',

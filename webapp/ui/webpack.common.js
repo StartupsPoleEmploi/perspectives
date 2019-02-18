@@ -14,5 +14,23 @@ module.exports = {
     output: {
         filename: '[name].js',
         path: path.resolve(__dirname, '../public/javascripts')
+    },
+    resolve: {
+        alias: {
+            'vue$': 'vue/dist/vue.esm.js'
+        }
+    },
+    optimization: {
+        splitChunks: {
+            chunks: 'initial',
+            cacheGroups: {
+                vendors: {
+                    filename: '[name].bundle.js',
+                    name: 'vendor',
+                    test: /[\\/]node_modules[\\/]/,
+                    chunks: 'initial',
+                }
+            }
+        }
     }
 };

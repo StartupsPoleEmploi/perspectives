@@ -1,6 +1,9 @@
-import pagination from '../../composants/pagination.js';
-import alerteRecruteur from '../../composants/alerteRecruteur.js';
+import Vue from 'vue';
+import $ from 'jquery';
 import places from 'places.js';
+import 'bootstrap/js/dist/modal';
+import pagination from '../../composants/pagination.js';
+import '../../composants/alerteRecruteur.js';
 import { intituleAlerte, buildAlerte } from '../../domain/recruteur/alerte/alerteService.js';
 
 $(document).ready(function () {

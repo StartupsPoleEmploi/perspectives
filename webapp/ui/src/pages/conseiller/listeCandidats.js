@@ -1,5 +1,7 @@
-import pagination from '../../composants/pagination.js';
-import filters from '../../commun/filters.js';
+import Vue from 'vue';
+import $ from 'jquery';
+import '../../composants/pagination.js';
+import '../../commun/filters.js';
 
 var app = new Vue({
     el: '#listeCandidats',

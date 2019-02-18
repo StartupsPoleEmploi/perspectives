@@ -1,5 +1,3 @@
-"use strict";
-
 $(document).ready(function () {
     var secteursActivites = $("input[type='checkbox'][name='secteurActivite[]']");
 

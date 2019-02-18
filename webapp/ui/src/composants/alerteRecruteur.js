@@ -1,3 +1,5 @@
+import Vue from 'vue';
+
 var component = Vue.component('alerte-recruteur', {
     props:  {
         nbMaxAlertes: Number,

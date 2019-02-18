@@ -1,3 +1,4 @@
+import Vue from 'vue';
 import secteursActivites from '../domain/commun/secteurActivite.js';
 import statutsDemandeurEmploi from '../domain/candidat/statutDemandeurEmploi.js';
 import typesRecruteur from '../domain/recruteur/typeRecruteur.js';
