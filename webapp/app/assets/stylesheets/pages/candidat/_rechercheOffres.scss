@@ -4,7 +4,7 @@
   padding: 3rem 1rem 0 1rem;
 
   background-color: #F4F5F6;
-  box-shadow: 0 5px 25px 0 rgba(0, 0, 0, 0.1) inset;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1) inset;
 
   .boutonRecherche {
     @include boutonAction();
@@ -44,6 +44,12 @@
   .formulaireRecherche {
     @include make-row();
 
+    &-titre {
+      color: $perspectives-bleu-nuit;
+      font-weight: 700;
+      margin: 0.5rem 0;
+    }
+
     &-conteneur {
       @include make-col-ready();
       @include make-col(12);
@@ -52,18 +58,8 @@
 
     &-conteneurRechercher {
       text-align: center;
-    }
-  }
-
-  .formulaireFiltre {
-    &-titre {
-      color: $perspectives-bleu-nuit;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-    }
-
-    &-conteneurRechercher {
-      text-align: center;
+      position: sticky;
+      bottom: 1rem;
     }
   }
 
@@ -71,8 +67,11 @@
     @extend %liste;
 
     &-item {
-      margin-bottom: 0.5rem;
       color: $perspectives-bleu-nuit;
+
+      &:not(:last-child) {
+        margin-bottom: 0.5rem;
+      }
     }
   }
 
@@ -94,6 +93,7 @@
     background-color: white;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
     padding: 1rem 2rem;
+    cursor: pointer;
 
     &-info {
       color: $perspectives-bleu-nuit;

@@ -110,61 +110,56 @@
         </div>
         <div class="rechercheOffres">
             <section class="rechercheOffres-criteres">
-                <form id="js-rechercheOffresForm">
-                    <div class="formulaireRecherche">
-                        <div class="formulaireRecherche-conteneur">
-                            <label for="js-motCle" class="rechercheOffres-label">Choisissez un métier ou un mot-clé</label>
-                            <input id="js-motCle" type="text" placeholder="Métier, mot-clé"
-                                   v-model="recherche.motCle" name="motCle" class="rechercheOffres-metier"/>
-                        </div>
-                        <div class="formulaireRecherche-conteneur">
-                            <div class="rechercheOffres-localisation">
-                                <div class="rechercheOffres-conteneurlieuTravail">
-                                    <input type="hidden" name="codePostal" v-model="recherche.codePostal" />
-                                    <label for="js-lieuTravail" class="rechercheOffres-label">Choisissez un lieu de travail</label>
-                                    <input id="js-lieuTravail" type="search" v-model="recherche.lieuTravail" name="lieuTravail" placeholder="Lieu de travail" class="rechercheOffres-lieuTravail"/>
-                                </div>
-                                <div class="rechercheOffres-conteneurRayonRecherche">
-                                    <label for="js-rayonRecherche"class="rechercheOffres-label">Renseignez un rayon de recherche</label>
-                                    <select id="js-rayonRecherche" name="rayonRecherche"
-                                            v-model="recherche.rayonRecherche" class="rechercheOffres-rayonRecherche">
-                                        <option v-for="rayonRecherche in rayonsRecherche" :key="rayonRecherche.value" v-bind:value="rayonRecherche.value">{{rayonRecherche.label}}</option>
-                                    </select>
-                                </div>
+                <form id="js-rechercheOffresForm" class="formulaireRecherche">
+                    <div class="formulaireRecherche-conteneur formulaireRecherche-metier">
+                        <label for="js-motCle" class="rechercheOffres-label">Choisissez un métier ou un mot-clé</label>
+                        <input id="js-motCle" type="text" placeholder="Métier, mot-clé"
+                                v-model="recherche.motCle" name="motCle" class="rechercheOffres-metier" />
+                    </div>
+                    <div class="formulaireRecherche-conteneur">
+                        <div class="rechercheOffres-localisation">
+                            <div class="rechercheOffres-conteneurlieuTravail">
+                                <input type="hidden" name="codePostal" v-model="recherche.codePostal" />
+                                <label for="js-lieuTravail" class="rechercheOffres-label">Choisissez un lieu de travail</label>
+                                <input id="js-lieuTravail" type="search" v-model="recherche.lieuTravail" name="lieuTravail" placeholder="Lieu de travail" class="rechercheOffres-lieuTravail"/>
+                            </div>
+                            <div class="rechercheOffres-conteneurRayonRecherche">
+                                <label for="js-rayonRecherche"class="rechercheOffres-label">Renseignez un rayon de recherche</label>
+                                <select id="js-rayonRecherche" name="rayonRecherche"
+                                        v-model="recherche.rayonRecherche" class="rechercheOffres-rayonRecherche">
+                                    <option v-for="rayonRecherche in rayonsRecherche" :key="rayonRecherche.value" v-bind:value="rayonRecherche.value">{{rayonRecherche.label}}</option>
+                                </select>
                             </div>
                         </div>
-                        <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurRechercher">
-                            <a class="bouton boutonRecherche" v-on:click="rechercherOffres">Rechercher</a>
-                        </div>
                     </div>
-                    <div class="formulaireFiltre">
-                        <p class="formulaireFiltre-titre">Filtrer par contrat :</p>
+                    <div class="formulaireRecherche-conteneur">
+                        <p class="formulaireRecherche-titre">Filtrer par contrat :</p>
                         <ul class="filtre">
                             <li v-for="typeContrat in typesContrats" :key="typeContrat.value" class="filtre-item">
                                 <input v-bind:id="'typeContrat-' + typeContrat.value" type="checkbox"
-                                       name="typesContrats[]" class="checkbox-input"
-                                       v-bind:value="typeContrat.value" v-model="recherche.typesContrats" />
+                                        name="typesContrats[]" class="checkbox-input"
+                                        v-bind:value="typeContrat.value" v-model="recherche.typesContrats" />
                                 <label class="checkbox" v-bind:for="'typeContrat-' + typeContrat.value">
                                     <span class="checkbox-checkmark checkbox-checkmark--blanche"></span>
                                     {{typeContrat.label}}
                                 </label>
                             </li>
                         </ul>
-                        <p class="formulaireFiltre-titre">Filtrer par secteurs d'activité :</p>
+                        <p class="formulaireRecherche-titre">Filtrer par secteurs d'activité :</p>
                         <ul class="filtre">
                             <li v-for="secteurActivite in secteursActivites" :key="secteurActivite.value" class="filtre-item">
                                 <input v-bind:id="'secteurActivite-' + secteurActivite.value" type="checkbox"
-                                       name="secteursActivites[]" class="checkbox-input"
-                                       v-bind:value="secteurActivite.value" v-model="recherche.secteursActivites" />
+                                        name="secteursActivites[]" class="checkbox-input"
+                                        v-bind:value="secteurActivite.value" v-model="recherche.secteursActivites" />
                                 <label class="checkbox" v-bind:for="'secteurActivite-' + secteurActivite.value">
                                     <span class="checkbox-checkmark checkbox-checkmark--blanche"></span>
                                     {{secteurActivite.label}}
                                 </label>
                             </li>
                         </ul>
-                        <div class="formulaireFiltre-conteneurRechercher">
-                            <a class="bouton boutonRecherche" v-on:click="rechercherOffres">Filtrer</a>
-                        </div>
+                    </div>
+                    <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurRechercher">
+                        <a class="bouton boutonRecherche" v-on:click="rechercherOffres">Rechercher</a>
                     </div>
                 </form>
             </section>
