@@ -10,12 +10,7 @@
             <div class="landingCandidat-rechercheOffres rechercheOffres">
                 <h2 class="rechercheOffres-titre titreLanding">Retrouvez un job,
                     sans qualifications ou experiences !</h2>
-                <div class="formulaireRecherche">
-                    <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurMetier">
-                        <label for="js-motCle" class="rechercheOffres-label">Choisissez un métier ou un mot-clé</label>
-                        <input id="js-motCle" type="text" placeholder="Métier, mot-clé"
-                               v-model="recherche.motCle" name="motCle" class="rechercheOffres-metier"/>
-                    </div>
+                <form class="formulaireRecherche">
                     <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurLocalisation">
                         <div class="rechercheOffres-localisation">
                             <div class="rechercheOffres-conteneurlieuTravail">
@@ -36,7 +31,7 @@
                     <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurRechercher">
                         <a class="bouton boutonAction" v-on:click="rechercherOffres">Je trouve un job</a>
                     </div>
-                </div>
+                </form>
             </div>
         </section>
         <section class="landingCandidat-sponsors">

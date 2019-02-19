@@ -22,7 +22,6 @@ var app = new Vue({
                 }
             ],
             recherche: {
-                motCle: null,
                 lieuTravail: null,
                 codePostal: null,
                 rayonRecherche: null,
@@ -62,9 +61,6 @@ var app = new Vue({
         },
         rechercherOffres: function() {
             var params = [];
-            if (this.recherche.motCle !== null && this.recherche.motCle !== '') {
-                params.push('motCle=' + this.recherche.motCle);
-            }
             if (this.recherche.codePostal !== null && this.recherche.codePostal !== '') {
                 params.push('codePostal=' + this.recherche.codePostal);
             }
