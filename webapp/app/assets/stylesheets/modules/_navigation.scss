@@ -132,12 +132,15 @@
 .menuConnexion {
   position: relative;
 
+  &--deconnecte {
+    border-left: 1px solid $perspectives-bleu-nuit;
+  }
+
   @include media-breakpoint-up(md) {
     @include make-col-auto();
     cursor: pointer;
     padding-right: 1rem;
     padding-left: 1rem;
-    border-left: 1px solid $perspectives-bleu-nuit;
 
     &:after {
       content: '';
