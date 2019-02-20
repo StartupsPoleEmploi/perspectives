@@ -6,6 +6,7 @@
   &-pageCourante {
     color: white;
     background-color: #334051;
+
     &:hover {
       color: white;
     }
@@ -14,16 +15,15 @@
   &-page {
     color: #334051;
     background-color: #EAEBED;
+
     &:hover {
       color: #334051;
     }
   }
 
   &-item {
-    border-radius: 50%;
     display: inline-block;
     margin: 0.5em;
-    height: 22px;
-    width: 22px;
+    padding: 0.75rem 1.2rem;
   }
 }
