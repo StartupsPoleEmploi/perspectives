@@ -85,9 +85,11 @@
 
 .menuNavigation {
   @include make-row();
+  font-weight: 600;
 
   &-item {
     margin-left: 1rem;
+    margin-right: 1rem;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
     font-size: 0.75rem;
@@ -109,7 +111,6 @@
     }
 
     &--actif {
-      font-weight: 600;
       color: $perspectives-vert-emeraude;
       border-bottom: 2px solid $perspectives-vert-emeraude;
 
@@ -135,6 +136,8 @@
     @include make-col-auto();
     cursor: pointer;
     padding-right: 1rem;
+    padding-left: 1rem;
+    border-left: 1px solid $perspectives-bleu-nuit;
 
     &:after {
       content: '';

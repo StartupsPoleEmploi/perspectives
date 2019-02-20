@@ -17,32 +17,31 @@
     margin: 0;
     border: 1px solid #F2F2F2;
     border-radius: 2px;
-    padding: 0.75rem 0 0.75rem 0.5rem;
     background-color: white;
   }
 
   &-conteneurlieuTravail {
-    @include make-col(8);
+    @include make-col(9);
     border: none;
-    border-right: 1px solid $perspectives-vert-emeraude;
+    border-right: 1px solid #F2F2F2;
   }
 
   &-lieuTravail {
     width: 100%;
     border: none;
     color: $perspectives-bleu-nuit;
+    font-size: 0.875rem;
   }
 
   &-conteneurRayonRecherche {
-    @include make-col(4);
+    @include make-col(3);
     position: relative;
-    padding: 0 0.5rem;
 
     &:after {
       content: '';
       position: absolute;
       right: 0.5rem;
-      top: 5px;
+      top: 14px;
       width: 10px;
       height: 10px;
       border: solid $perspectives-vert-emeraude;
@@ -55,6 +54,8 @@
 
   &-rayonRecherche {
     width: 100%;
+    font-size: 0.875rem;
+    padding: 0.75rem;
     border: none;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -63,13 +64,17 @@
   }
 
   // Algolia places
+  .algolia-places-nostyle {
+    width: 100%;
+  }
+
   .ap-footer {
     display: none;
   }
   .ap-nostyle {
     &-input {
       color: $perspectives-bleu-nuit;
-      padding-right: 1.2rem;
+      padding: 0.75rem 1rem 0.75rem 1.4rem;
 
       &-icon {
         background-color: transparent;
@@ -79,6 +84,7 @@
     &-icon {
       &-clear {
         position: absolute;
+        top: 9px;
         right: 0;
 
         & path {
@@ -87,7 +93,8 @@
       }
       &-pin {
         position: absolute;
-        right: 0;
+        top: 9px;
+        left: -5px;
 
         & path {
           fill: $perspectives-vert-emeraude;

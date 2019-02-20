@@ -24,7 +24,7 @@ var app = new Vue({
             recherche: {
                 lieuTravail: null,
                 codePostal: null,
-                rayonRecherche: null,
+                rayonRecherche: 10,
             },
             rayonsRecherche: rayonsRecherche,
             algoliaPlacesConfig: jsData.algoliaPlacesConfig

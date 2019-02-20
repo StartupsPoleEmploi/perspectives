@@ -16,7 +16,7 @@
                             <div class="rechercheOffres-conteneurlieuTravail">
                                 <input type="hidden" name="codePostal" v-model="recherche.codePostal" />
                                 <label for="js-lieuTravail" class="rechercheOffres-label">Choisissez un lieu de travail</label>
-                                <input id="js-lieuTravail" type="search" name="lieuTravail" placeholder="Lieu de travail" class="rechercheOffres-lieuTravail"
+                                <input id="js-lieuTravail" type="search" name="lieuTravail" placeholder="Dans quelle ville ?" class="rechercheOffres-lieuTravail"
                                        v-model="recherche.lieuTravail"/>
                             </div>
                             <div class="rechercheOffres-conteneurRayonRecherche">
@@ -51,17 +51,18 @@
             </div>
             <div class="landingCandidat-texteValorisation">
                 <h2 class="titreLanding">Faites-vous contacter par des recruteurs !</h2>
-                <p>Valorisez votre évaluation Pôle Emploi <abbr title="Méthode de Recrutement par Simulation">MRS</abbr> auprès des employeurs.</p>
+                <p class="valorisation">Valorisez votre évaluation Pôle Emploi <abbr title="Méthode de Recrutement par Simulation">MRS*</abbr> auprès des employeurs.</p>
                 <ol class="etapesInscription">
                     <li class="etapesInscription-item">Indiquez les métiers qui vous intéressent</li>
                     <li class="etapesInscription-item">Ajouter votre CV</li>
                     <li class="etapesInscription-item">Trouvez un emploi !</li>
                 </ol>
                 <a class="bouton boutonAction" href="@controllers.candidat.routes.InscriptionController.inscription()">Je m'inscris avec mon identifiant Pôle Emploi</a>
+                <p class="valorisation-abbreviation">* MRS : Méthode de recrutement par simulation</p>
             </div>
         </section>
         <section class="landingCandidat-temoignages temoignagesCandidat">
-            <h2 class="temoignagesCandidat-titre titreLanding">Ils ont trouvés un job sur Perspectives :</h2>
+            <h2 class="temoignagesCandidat-titre titreLanding">Ils ont trouvé un job sur Perspectives :</h2>
             <temoignages v-bind:temoignages="temoignages"></temoignages>
         </section>
         <section class="landingCandidat-infoLegales infoLegales">
