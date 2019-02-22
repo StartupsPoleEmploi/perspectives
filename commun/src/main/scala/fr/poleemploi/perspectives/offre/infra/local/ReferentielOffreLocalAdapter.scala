@@ -13,8 +13,8 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
     Future.successful(List.tabulate(40)(n =>
     if (n % 3 == 0)
       Offre(
-        id = OffreId("083LRLN"),
-        intitule = "Manoeuvre bâtiment",
+        id = OffreId(s"083LRLN$n"),
+        intitule = s"Manoeuvre bâtiment $n",
         urlOrigine = "https://candidat.pole-emploi.fr/offres/recherche/detail/4038653",
         contrat = Contrat(code = "CDD", label = "Contrat à durée déterminée - 1 Mois"),
         metier = Some(Metier(codeROME = CodeROME("H2903"), label = "Conduite d'équipement d'usinage")),
@@ -70,8 +70,8 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
       )
     else if (n % 2 == 0)
       Offre(
-        id = OffreId("083NTLN"),
-        intitule = "Responsable contrôle métrologie en industrie",
+        id = OffreId(s"083NTLN$n"),
+        intitule = s"Responsable contrôle métrologie en industrie $n",
         urlOrigine = "https://candidat.pole-emploi.fr/offres/recherche/detail/456",
         contrat = Contrat(code = "CDI", label = "Contrat à durée indéterminée"),
         metier = Some(Metier(codeROME = CodeROME("H2903"), label = "Conduite d'équipement d'usinage")),
@@ -122,8 +122,8 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
       )
     else
       Offre(
-        id = OffreId("083NHGQ"),
-        intitule = "Agent de fabrication polyvalent / Agente de fabrication pol (H/F)",
+        id = OffreId(s"083NHGQ$n"),
+        intitule = s"Agent de fabrication polyvalent / Agente de fabrication pol (H/F) $n",
         urlOrigine = "https://candidat.pole-emploi.fr/offres/recherche/detail/123",
         contrat = Contrat(code = "MIS", label = "Travail intérimaire - 6 Mois"),
         metier = Some(Metier(codeROME = CodeROME("H2903"), label = "Conduite d'équipement d'usinage")),
