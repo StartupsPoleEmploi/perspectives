@@ -7,7 +7,8 @@ case class RechercheOffresForm(motCle: Option[String],
                                codePostal: Option[String],
                                rayonRecherche: Option[Int],
                                typesContrats: List[String],
-                               secteursActivites: List[String])
+                               secteursActivites: List[String],
+                               metiers: List[String])
 
 object RechercheOffresForm {
 
@@ -17,7 +18,8 @@ object RechercheOffresForm {
       "codePostal" -> optional(text),
       "rayonRecherche" -> optional(number),
       "typesContrats" -> list(text),
-      "secteursActivites" -> list(text)
+      "secteursActivites" -> list(text),
+      "metiers" -> list(text)
     )(RechercheOffresForm.apply)(RechercheOffresForm.unapply)
   )
 }

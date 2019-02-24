@@ -30,6 +30,8 @@ trait CandidatProjection extends Projection {
 
   def candidatCriteresRecherche(query: CandidatCriteresRechercheQuery): Future[CandidatCriteresRechercheQueryResult]
 
+  def candidatPourRechercheOffre(query: CandidatPourRechercheOffreQuery): Future[CandidatPourRechercheOffreQueryResult]
+
   def candidatContactRecruteur(candidatId: CandidatId): Future[CandidatContactRecruteurDto]
 
   def rechercherCandidats(query: RechercherCandidatsQuery): Future[RechercheCandidatQueryResult]

@@ -81,6 +81,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
                   Redirect(routes.InscriptionController.confirmationInscription())
                 } else {
                   Redirect(routes.RechercheOffreController.index())
+                    .flashing(messagesRequest.flash.withRayonRechercheModifie(modifierCriteresCommand.rayonRecherche))
                 }
               )
             }

@@ -26,12 +26,12 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
         libelleDeplacement = None,
         experience = ExperienceExige(label = Some("2 ans"), commentaire = None, exige = Some(true)),
         competences = List(
-          Competence(label = "Appliquer les mesures correctives", exige = false),
+          Competence(label = "Appliquer les mesures correctives", exige = true),
           Competence(label = "Contrôler un produit fini", exige = true),
           Competence(label = "Etudier une demande client", exige = true),
           Competence(label = "Modalités d'accueil", exige = false),
-          Competence(label = "Orienter les personnes selon leur demande", exige = true),
-          Competence(label = "Règles et consignes de sécurité", exige = true)
+          Competence(label = "Orienter les personnes selon leur demande", exige = false),
+          Competence(label = "Règles et consignes de sécurité", exige = false)
         ),
         qualitesProfessionnelles = List(
           QualiteProfessionnelle(label = "Sens de la communication", description = ""),
@@ -99,7 +99,7 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
         ),
         langues = Nil,
         formations = List(
-          Formation(domaine = None, niveau = None, exige = true),
+          Formation(domaine = Some("Commerce international"), niveau = Some("Bac+3 ou équivalent"), exige = true),
           Formation(domaine = Some("Commerce international"), niveau = Some("Bac+5 ou équivalent"), exige = false)
         ),
         entreprise = Entreprise(
@@ -130,13 +130,13 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
         description = None,
         lieuTravail = LieuTravail(libelle = Some("13 - AUBAGNE"), codePostal = Some("13400")),
         libelleDureeTravail = Some("39H Horaires normaux"),
-        complementExercice = Some("Déplacements dans la région à prévoir"),
+        complementExercice = Some("Travail samedi et dimanche"),
         conditionExercice = None,
         libelleDeplacement = Some("Déplacements : Ponctuels International"),
         experience = ExperienceExige(label = Some("Débutant accepté"), commentaire = None, exige = None),
         competences = List(
-          Competence(label = "Détecter un dysfonctionnement", exige = false),
-          Competence(label = "Surveiller le déroulement de l'usinage", exige = true)
+          Competence(label = "Détecter un dysfonctionnement", exige = true),
+          Competence(label = "Surveiller le déroulement de l'usinage", exige = false)
         ),
         qualitesProfessionnelles = List(
           QualiteProfessionnelle(label = "Sens de la communication", description = ""),
@@ -151,8 +151,8 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
         ),
         permis = Nil,
         langues = List(
-          Langue(label = "Anglais courant", exige = false),
-          Langue(label = "Allemand courant", exige = true)
+          Langue(label = "Anglais courant", exige = true),
+          Langue(label = "Allemand courant", exige = false)
         ),
         formations = List(
           Formation(domaine = Some("Commerce international"), niveau = Some("Bac+2 ou équivalent"), exige = false)

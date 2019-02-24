@@ -120,17 +120,34 @@
       background-color: #6DAFBF;
     }
   }
+
+  &--blancSurVert {
+    color: white;
+    background-color: $perspectives-vert-emeraude;
+    border: none;
+
+    &:hover {
+      color: white;
+    }
+  }
+
+  &--vertSurBlanc {
+    color: $perspectives-vert-emeraude;
+    background-color: white;
+    border: 2px solid $perspectives-vert-emeraude;
+
+    &:hover {
+      color: $perspectives-vert-emeraude;
+    }
+  }
 }
 
 @mixin boutonAction() {
-  color: white;
-  background-color: $perspectives-vert-emeraude;
   text-transform: uppercase;
   border-radius: 8px;
   font-size: 0.875rem;
   font-weight: 700;
   padding: 1rem;
-  border: none;
 }
 
 .boutonRadio {

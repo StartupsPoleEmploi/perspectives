@@ -16,20 +16,20 @@
                             <div class="rechercheOffres-conteneurlieuTravail">
                                 <input type="hidden" name="codePostal" v-model="recherche.codePostal" />
                                 <label for="js-lieuTravail" class="rechercheOffres-label">Choisissez un lieu de travail</label>
-                                <input id="js-lieuTravail" type="search" name="lieuTravail" placeholder="Dans quelle ville ?" class="rechercheOffres-lieuTravail"
+                                <input id="js-lieuTravail" type="text" name="lieuTravail" placeholder="Dans quelle ville ?" class="rechercheOffres-lieuTravail"
                                        v-model="recherche.lieuTravail"/>
                             </div>
                             <div class="rechercheOffres-conteneurRayonRecherche">
                                 <label for="js-rayonRecherche"class="rechercheOffres-label">Renseignez un rayon de recherche</label>
                                 <select id="js-rayonRecherche" name="rayonRecherche"
                                         v-model="recherche.rayonRecherche" class="rechercheOffres-rayonRecherche">
-                                    <option v-for="rayonRecherche in rayonsRecherche" :key="rayonRecherche.value" v-bind:value="rayonRecherche.value">{{rayonRecherche.label}}</option>
+                                    <option v-for="rayonRecherche in rayonsRecherche" v-bind:key="rayonRecherche.value" v-bind:value="rayonRecherche.value">{{rayonRecherche.label}}</option>
                                 </select>
                             </div>
                         </div>
                     </div>
                     <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurRechercher">
-                        <a class="bouton boutonAction" v-on:click="rechercherOffres">Je trouve un job</a>
+                        <button class="bouton bouton--blancSurVert boutonAction" v-on:click="rechercherOffres">Je trouve un job</button>
                     </div>
                 </form>
             </div>
@@ -57,7 +57,7 @@
                     <li class="etapesInscription-item">Ajouter votre CV</li>
                     <li class="etapesInscription-item">Trouvez un emploi !</li>
                 </ol>
-                <a class="bouton boutonAction" href="@controllers.candidat.routes.InscriptionController.inscription()">Je m'inscris avec mon identifiant Pôle Emploi</a>
+                <a class="bouton bouton--blancSurVert boutonAction" href="@controllers.candidat.routes.InscriptionController.inscription()">Je m'inscris avec mon identifiant Pôle Emploi</a>
                 <p class="valorisation-abbreviation">* MRS : Méthode de recrutement par simulation</p>
             </div>
         </section>

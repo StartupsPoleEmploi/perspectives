@@ -88,10 +88,8 @@
   font-weight: 600;
 
   &-item {
-    margin-left: 1rem;
-    margin-right: 1rem;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
+    margin: 0 1rem;
+    padding: 0.5rem 0;
     font-size: 0.75rem;
     text-transform: uppercase;
 
@@ -133,7 +131,9 @@
   position: relative;
 
   &--deconnecte {
-    border-left: 1px solid $perspectives-bleu-nuit;
+    @include media-breakpoint-up(md) {
+      border-left: 1px solid $perspectives-bleu-nuit;
+    }
   }
 
   @include media-breakpoint-up(md) {

@@ -63,8 +63,8 @@ object PermisResponse {
   implicit val reads: Reads[PermisResponse] = Json.reads[PermisResponse]
 }
 
-case class FormationResponse(libelle: Option[String],
-                             domaine: Option[String],
+case class FormationResponse(niveauLibelle: Option[String],
+                             domaineLibelle: Option[String],
                              commentaire: Option[String],
                              exigence: ExigenceResponse)
 
@@ -74,7 +74,7 @@ object FormationResponse {
 }
 
 case class LangueResponse(libelle: String,
-                             exigence: ExigenceResponse)
+                          exigence: ExigenceResponse)
 
 object LangueResponse {
 
@@ -228,6 +228,10 @@ class ReferentielOffreWSMapping {
         case Nil => None
         case l@_ => Some("typeContrat" -> l.map(_.value).mkString(","))
       },
+      criteresRechercheOffre.metiers match {
+        case Nil => None
+        case l@_ => Some("codeROME" -> l.map(_.value).mkString(","))
+      },
       Some("experience" -> buildExperience(criteresRechercheOffre.experience))
     ).flatten)
 
@@ -294,8 +298,8 @@ class ReferentielOffreWSMapping {
           exige = ExigenceResponse.EXIGE == l.exigence
         )),
         formations = offreResponse.formations.map(f => Formation(
-          domaine = f.domaine,
-          niveau = f.libelle,
+          domaine = f.domaineLibelle,
+          niveau = f.niveauLibelle,
           exige = ExigenceResponse.EXIGE == f.exigence
         )),
         entreprise = Entreprise(

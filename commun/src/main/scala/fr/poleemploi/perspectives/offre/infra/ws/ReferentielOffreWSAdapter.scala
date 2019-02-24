@@ -18,7 +18,8 @@ class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
   private val cacheKeyCommunes = "referentielOffre.communes"
 
   /**
-    * L'API est limitée en nombre d'appels par seconde, il faut donc gérer le statut 429
+    * L'API est limitée en nombre d'appels par seconde, il faut donc gérer le statut 429. <br />
+    * Ne gère que 3 CodeROME pour l'instant (découpage des requêtes à refaire pour en gérer plus)
     */
   def rechercherOffres(criteres: CriteresRechercheOffre): Future[List[Offre]] = {
     def callWS(accessTokenResponse: AccessTokenResponse, request: RechercheOffreRequest): Future[List[Offre]] =

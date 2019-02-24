@@ -1,5 +1,6 @@
 package controllers
 
+import fr.poleemploi.perspectives.commun.domain.RayonRecherche
 import fr.poleemploi.perspectives.recruteur.TypeRecruteur
 import play.api.mvc.Flash
 
@@ -14,7 +15,7 @@ object FlashMessages {
 
   private val keyInscriptionCandidat = "candidat_inscrit"
   private val keyConnexionCandidat = "candidat_connecte"
-  private val keyCriteresRechercheModifiesCandidat = "candidat_criteres_recherche_modifies"
+  private val keyRayonRechercheModifieCandidat = "candidat_rayon_recherche_modifie"
 
   implicit class FlashMessage[T](f: Flash) {
 
@@ -40,5 +41,8 @@ object FlashMessages {
 
     def candidatConnecte: Boolean = f.get(keyConnexionCandidat).contains("true")
     def withCandidatConnecte: Flash = f + (keyConnexionCandidat -> "true")
+
+    def rayonRechercheModifie: Option[RayonRecherche] = f.get(keyRayonRechercheModifieCandidat).map(s => RayonRecherche(s.toInt))
+    def withRayonRechercheModifie(rayonRecherche: RayonRecherche): Flash = f + (keyRayonRechercheModifieCandidat -> rayonRecherche.value.toString)
   }
 }

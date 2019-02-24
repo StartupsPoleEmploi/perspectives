@@ -4,3 +4,10 @@
   -ms-user-select: $property;
   user-select: $property;
 }
+
+@mixin make-col-auto() {
+  -ms-flex: 0 0 auto;
+  flex: 0 0 auto;
+  width: auto;
+  max-width: none;
+}

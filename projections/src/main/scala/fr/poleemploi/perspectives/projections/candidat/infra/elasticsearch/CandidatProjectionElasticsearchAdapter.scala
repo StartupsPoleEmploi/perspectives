@@ -173,6 +173,16 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
       .flatMap(filtreStatutReponse(_))
       .flatMap(r => toCandidatCriteresRechercheQueryResult((Json.parse(r.body) \ "_source").as[CandidatCriteresRechercheDocument]))
 
+  override def candidatPourRechercheOffre(query: CandidatPourRechercheOffreQuery): Future[CandidatPourRechercheOffreQueryResult] =
+    wsClient
+      .url(s"$baseUrl/$indexName/$docType/${query.candidatId.value}")
+      .withQueryStringParameters(
+        ("_source", s"$candidat_id,$metiers_evalues,$commune,$code_postal,$rayon_recherche,$cv_id")
+      )
+      .get()
+      .flatMap(filtreStatutReponse(_))
+      .flatMap(r => toCandidatPourRechercheOffreQueryResult((Json.parse(r.body) \ "_source").as[CandidatPourRechercheOffreDocument]))
+
   override def candidatContactRecruteur(candidatId: CandidatId): Future[CandidatContactRecruteurDto] =
     wsClient
       .url(s"$baseUrl/$indexName/$docType/${candidatId.value}")
@@ -381,6 +391,19 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
         codePostal = document.codePostal,
         commune = document.commune,
         rayonRecherche = document.rayonRecherche
+      )
+
+  private def toCandidatPourRechercheOffreQueryResult(document: CandidatPourRechercheOffreDocument): Future[CandidatPourRechercheOffreQueryResult] =
+    for {
+      metiersEvalues <- referentielMetier.metiersParCode(document.metiersEvalues)
+    } yield
+      CandidatPourRechercheOffreQueryResult(
+        candidatId = document.candidatId,
+        metiersEvalues = metiersEvalues,
+        codePostal = document.codePostal,
+        commune = document.commune,
+        rayonRecherche = document.rayonRecherche,
+        cv = document.cvId.isDefined
       )
 
   private def toCandidatRechercheDto(document: CandidatRechercheDocument,

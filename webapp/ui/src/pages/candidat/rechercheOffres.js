@@ -13,10 +13,12 @@ var app = new Vue({
     data: function () {
         return {
             isCandidatAuthentifie: jsData.candidatAuthentifie,
+            cv: jsData.cv,
             csrfToken: jsData.csrfToken,
             nbOffresParPage: 10,
             offres: jsData.offres,
-            indexCourant: 0,
+            indexPaginationOffre: 0,
+            indexNavigationOffre: 0,
             offreCourante: {
                 contrat: {},
                 lieuTravail: {},
@@ -33,16 +35,18 @@ var app = new Vue({
                 codePostal: jsData.recherche.codePostal,
                 rayonRecherche: jsData.recherche.rayonRecherche,
                 typesContrats: [],
-                secteursActivites: []
+                secteursActivites: [],
+                metiersEvalues: []
             },
             rayonsRecherche: rayonsRecherche,
             typesContrats: typesContrats,
             secteursActivites: secteursActivites,
+            metiersEvalues: jsData.recherche.metiersEvalues,
             algoliaPlacesConfig: jsData.algoliaPlacesConfig,
             display: {
                 contact: false,
                 offreSuivante: this.offreCourante != null && false,
-                offrePrecedente: this.offreCourante != null &&  false,
+                offrePrecedente: this.offreCourante != null &&  false
             }
         }
     },
@@ -80,41 +84,12 @@ var app = new Vue({
             this.recherche.codePostal = null;
             this.recherche.lieuTravail = null;
         },
-        formations: function(offre) {
-            return offre.formations.reduce(function(acc, f, index) {
-                var label = app.labelFormation(f);
-                if (label !== null) {
-                    return acc + (index === 0 ? '' : ', ') + label;
-                } else return acc;
-            }, '');
-        },
-        labelFormation: function (formation) {
-            if (formation.niveau !== undefined && formation.domaine !== undefined) {
-                return formation.niveau + ' en ' + formation.domaine + ' ' + (formation.exige ? 'exigé' : 'souhaité');
-            } else return null;
-        },
-        permis: function(offre) {
-            return offre.permis.reduce(function(acc, p, index) {
-                return acc + (index === 0 ? '' : ', ') + app.labelPermis(p);
-            }, '');
-        },
-        labelPermis: function(permis) {
-            return 'Permis ' + permis.label + ' ' + (permis.exige ? 'exigé' : 'souhaité');
-        },
-        langues: function(offre) {
-            return offre.langues.reduce(function(acc, l, index) {
-                return acc + (index === 0 ? '' : ', ') + app.labelLangue(l);
-            }, '');
-        },
-        labelLangue: function(langue) {
-            return langue.label + ' ' + (langue.exige ? 'exigé' : 'souhaité');
-        },
         chargerPageSuivante: function (critere) {
-            this.indexCourant = critere;
+            this.indexPaginationOffre = critere;
             app.$refs.pagination.pageSuivanteChargee(0, null); // pas de page suivante
         },
         chargerPagePrecedente: function (critere, index) {
-            this.indexCourant = critere;
+            this.indexPaginationOffre = critere;
             app.$refs.pagination.pagePrecedenteChargee(index);
         },
         calculerPages: function () {
@@ -125,34 +100,56 @@ var app = new Vue({
             }
             return result;
         },
-        doitAfficherIndex: function (index) {
-            return index >= this.indexCourant && index < (this.indexCourant + this.nbOffresParPage);
+        doitAfficherOffre: function (index) {
+            return index >= this.indexPaginationOffre && index < (this.indexPaginationOffre + this.nbOffresParPage);
         },
         doitAfficherOffreSuivante: function() {
-            return this.indexCourant !== (this.offres.length - 1);
+            return this.indexNavigationOffre !== (this.offres.length - 1);
         },
         doitAfficherOffrePrecedente: function() {
-            return this.indexCourant !== 0;
+            return this.indexNavigationOffre !== 0;
         },
         afficherOffre: function (offre, index) {
             this.display.contact = false;
             if (offre.id !== this.offreCourante) {
                 this.offreCourante = offre;
-                this.indexCourant = index;
+                this.indexNavigationOffre = index;
 
                 $('#js-modaleDetailOffre').modal('show');
             } else {
                 this.offreCourante = null;
-                this.indexCourant = null;
+                this.indexNavigationOffre = null;
             }
         },
         afficherOffreSuivante: function() {
-            this.indexCourant = this.indexCourant + 1;
-            this.offreCourante = this.offres[this.indexCourant];
+            this.display.contact = false;
+            this.indexNavigationOffre = this.indexNavigationOffre + 1;
+            this.offreCourante = this.offres[this.indexNavigationOffre];
         },
         afficherOffrePrecedente: function() {
-            this.indexCourant = this.indexCourant - 1;
-            this.offreCourante = this.offres[this.indexCourant];
+            this.display.contact = false;
+            this.indexNavigationOffre = this.indexNavigationOffre - 1;
+            this.offreCourante = this.offres[this.indexNavigationOffre];
+        },
+        doitAfficherMiseEnAvantInscription: function(index) {
+            return !this.isCandidatAuthentifie && this.indexPaginationOffre === 0 && index === 2;
+        },
+        doitAfficherMiseEnAvantCV: function(index) {
+            return this.isCandidatAuthentifie && !this.cv && this.indexPaginationOffre === 0 && index === 3;
+        },
+        afficherFiltres: function () {
+            if ($(".formulaireRecherche-jsResponsive").is(":visible")) {
+                $(".formulaireRecherche-conteneurFiltres").show();
+                $(".formulaireRecherche-retourListeResultats").show();
+                $(".rechercheOffres-nbResultats").hide();
+            }
+        },
+        cacherFiltres: function () {
+            if ($(".formulaireRecherche-jsResponsive").is(":visible")) {
+                $(".formulaireRecherche-conteneurFiltres").hide();
+                $(".formulaireRecherche-retourListeResultats").hide();
+                $(".rechercheOffres-nbResultats").show();
+            }
         },
         rechercherOffres: function() {
             var formData = $("#js-rechercheOffresForm").serializeArray();
@@ -164,6 +161,7 @@ var app = new Vue({
                 dataType: "json"
             }).done(function (response) {
                 app.offres = response.offres;
+                app.cacherFiltres();
             }).fail(function () {
             });
         }

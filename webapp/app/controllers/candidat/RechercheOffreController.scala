@@ -3,11 +3,13 @@ package controllers.candidat
 import authentification.infra.play.{CandidatAuthentifieAction, OptionalCandidatAuthentifieAction, OptionalCandidatAuthentifieRequest}
 import conf.WebAppConfig
 import controllers.AssetsFinder
-import fr.poleemploi.perspectives.commun.domain.{CodeSecteurActivite, RayonRecherche}
+import controllers.FlashMessages.FlashMessage
+import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite, Metier, RayonRecherche}
+import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
 import fr.poleemploi.perspectives.offre.domain.{CriteresRechercheOffre, TypeContrat}
 import fr.poleemploi.perspectives.projections.candidat._
 import javax.inject.{Inject, Singleton}
-import play.api.libs.json.Json
+import play.api.libs.json.{JsArray, Json}
 import play.api.mvc._
 import play.filters.csrf.CSRF
 
@@ -24,29 +26,47 @@ class RechercheOffreController @Inject()(cc: ControllerComponents,
                                          candidatQueryHandler: CandidatQueryHandler) extends AbstractController(cc) {
 
   def index(motCle: Option[String], codePostal: Option[String], lieuTravail: Option[String], rayonRecherche: Option[Int]): Action[AnyContent] = optionalCandidatAuthentifieAction.async { implicit optCandidatAuthentifieRequest: OptionalCandidatAuthentifieRequest[AnyContent] =>
-    candidatQueryHandler.handle(OffresCandidatQuery(CriteresRechercheOffre(
-      motCle = motCle,
-      codePostal = codePostal,
-      rayonRecherche = rayonRecherche.flatMap(RayonRecherche.from),
-      typesContrats = Nil,
-      secteursActivites = Nil
-    ))).map(offresCandidatQueryResult =>
+    for {
+      candidatQueryResult <- optCandidatAuthentifieRequest.candidatAuthentifie.map(c =>
+        candidatQueryHandler.handle(CandidatPourRechercheOffreQuery(c.candidatId)).map(Some(_))
+      ).getOrElse(Future.successful(None))
+      critereLieuTravail = lieuTravail.orElse(candidatQueryResult.flatMap(_.commune))
+      critereCodePostal = codePostal.orElse(candidatQueryResult.flatMap(_.codePostal))
+      critereRayonRecherche = rayonRecherche.flatMap(RayonRecherche.from)
+        .orElse(optCandidatAuthentifieRequest.flash.rayonRechercheModifie)
+        .orElse(candidatQueryResult.flatMap(_.rayonRecherche))
+      offresCandidatQueryResult <- candidatQueryHandler.handle(OffresCandidatQuery(CriteresRechercheOffre(
+        motCle = motCle,
+        codePostal = critereCodePostal,
+        rayonRecherche = critereRayonRecherche,
+        typesContrats = Nil,
+        secteursActivites = Nil,
+        metiers = Nil
+      )))
+    } yield {
       Ok(views.html.candidat.rechercheOffres(
         candidatAuthentifie = optCandidatAuthentifieRequest.candidatAuthentifie,
         jsData = Json.obj(
           "candidatAuthentifie" -> optCandidatAuthentifieRequest.isCandidatAuthentifie,
+          "cv" -> candidatQueryResult.exists(_.cv),
           "offres" -> offresCandidatQueryResult.offres,
           "csrfToken" -> CSRF.getToken.map(_.value),
           "recherche" -> Json.obj(
             "motCle" -> motCle,
-            "lieuTravail" -> lieuTravail,
-            "codePostal" -> codePostal,
-            "rayonRecherche" -> rayonRecherche
+            "lieuTravail" -> critereLieuTravail,
+            "codePostal" -> critereCodePostal,
+            "rayonRecherche" -> critereRayonRecherche.map(_.value),
+            "metiersEvalues" -> JsArray(candidatQueryResult.map(_.metiersEvalues).getOrElse(List[Metier]()).map(m =>
+              Json.obj(
+                "label" -> m.label,
+                "value" -> m.codeROME
+              )
+            ))
           ),
           "algoliaPlacesConfig" -> webAppConfig.algoliaPlacesConfig
         )
       ))
-    )
+    }
   }
 
   def rechercherOffres: Action[AnyContent] = optionalCandidatAuthentifieAction.async { request: OptionalCandidatAuthentifieRequest[AnyContent] =>
@@ -57,7 +77,8 @@ class RechercheOffreController @Inject()(cc: ControllerComponents,
           codePostal = rechercheOffresForm.codePostal,
           rayonRecherche = rechercheOffresForm.rayonRecherche.flatMap(RayonRecherche.from),
           typesContrats = rechercheOffresForm.typesContrats.flatMap(TypeContrat.from),
-          secteursActivites = rechercheOffresForm.secteursActivites.flatMap(CodeSecteurActivite.from)
+          secteursActivites = rechercheOffresForm.secteursActivites.flatMap(CodeSecteurActivite.from),
+          metiers = rechercheOffresForm.metiers.map(CodeROME)
         )
 
       RechercheOffresForm.form.bindFromRequest.fold(

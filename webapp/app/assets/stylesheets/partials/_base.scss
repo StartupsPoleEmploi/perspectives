@@ -11,6 +11,10 @@ body {
   font-family: $font-family;
 }
 
+input[type="text"], select {
+  font-family: $font-family;
+}
+
 %titrePrincipal {
   font-weight: 300;
   font-size: 2em;
@@ -32,11 +36,4 @@ body {
   margin: 0;
   padding: 0;
   list-style-type: none;
-}
-
-@mixin make-col-auto() {
-  -ms-flex: 0 0 auto;
-  flex: 0 0 auto;
-  width: auto;
-  max-width: none;
 }

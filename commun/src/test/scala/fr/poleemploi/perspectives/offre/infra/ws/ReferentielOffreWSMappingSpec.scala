@@ -1,6 +1,6 @@
 package fr.poleemploi.perspectives.offre.infra.ws
 
-import fr.poleemploi.perspectives.commun.domain.{CodeSecteurActivite, RayonRecherche}
+import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite, RayonRecherche}
 import fr.poleemploi.perspectives.offre.domain.{CriteresRechercheOffre, Experience, TypeContrat}
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
@@ -21,6 +21,7 @@ class ReferentielOffreWSMappingSpec extends WordSpec
     when(criteresRechercheOffre.rayonRecherche) thenReturn None
     when(criteresRechercheOffre.typesContrats) thenReturn Nil
     when(criteresRechercheOffre.secteursActivites) thenReturn Nil
+    when(criteresRechercheOffre.metiers) thenReturn Nil
     when(criteresRechercheOffre.experience) thenReturn Experience.DEBUTANT
 
     offreResponse = mock[OffreResponse]
@@ -98,6 +99,26 @@ class ReferentielOffreWSMappingSpec extends WordSpec
 
       // Then
       request.params.exists(p => p._1 == "typeContrat" && p._2 == "CDD,CDI") mustBe true
+    }
+    "ne pas valoriser le parametre codeROME lorsqu'il n'est pas renseigne" in {
+      // Given
+      when(criteresRechercheOffre.metiers) thenReturn Nil
+
+      // When
+      val request = mapping.buildRechercherOffresRequest(criteresRechercheOffre = criteresRechercheOffre, codeINSEE = None)
+
+      // Then
+      request.params.exists(p => p._1 == "codeROME") mustBe false
+    }
+    "doit valoriser le parametre codeROME lorsqu'il est renseigne" in {
+      // Given
+      when(criteresRechercheOffre.metiers) thenReturn List(CodeROME("A1401"), CodeROME("K2204"))
+
+      // When
+      val request = mapping.buildRechercherOffresRequest(criteresRechercheOffre = criteresRechercheOffre, codeINSEE = None)
+
+      // Then
+      request.params.exists(p => p._1 == "codeROME" && p._2 == "A1401,K2204") mustBe true
     }
   }
   "buildOffre" should {
