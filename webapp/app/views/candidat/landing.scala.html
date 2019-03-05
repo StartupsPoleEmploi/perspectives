@@ -10,7 +10,7 @@
             <div class="landingCandidat-rechercheOffres rechercheOffres">
                 <h2 class="rechercheOffres-titre titreLanding">Retrouvez un job,
                     sans qualifications ou experiences !</h2>
-                <form class="formulaireRecherche">
+                <form class="formulaireRecherche" v-on:submit.prevent="rechercherOffres">
                     <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurLocalisation">
                         <div class="rechercheOffres-localisation">
                             <div class="rechercheOffres-conteneurlieuTravail">
@@ -29,7 +29,7 @@
                         </div>
                     </div>
                     <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurRechercher">
-                        <button class="bouton bouton--blancSurVert boutonAction" v-on:click="rechercherOffres">Je trouve un job</button>
+                        <button type="submit" class="bouton bouton--blancSurVert boutonAction">Je trouve un job</button>
                     </div>
                 </form>
             </div>

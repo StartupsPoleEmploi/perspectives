@@ -87,7 +87,7 @@
                                         <p class="detailOffre-info detailOffre-info--sansMarge">Veuillez adresser votre CV et une lettre de motivation en précisant le numéro de l'offre : <span class="detailOffre-info--gras">n°{{offreCourante.id}}</span></p>
                                     </div>
                                     <div class="postuler-cta">
-                                        <button class="bouton bouton--blancSurVert boutonPostuler" v-show="!display.contact" v-on:click="display.contact = true">Je contacte le recruteur</button>
+                                        <button type="button" class="bouton bouton--blancSurVert boutonPostuler" v-show="!display.contact" v-on:click="display.contact = true">Je contacte le recruteur</button>
                                         <div class="infosPostuler" v-show="display.contact">
                                             <p class="infosPostuler-item" v-show="offreCourante.contact.nom"><b>{{offreCourante.nomContact}}</b></p>
                                             <p class="infosPostuler-item" v-show="offreCourante.contact.coordonnees1">{{offreCourante.contact.coordonnees1}}</p>
@@ -228,7 +228,7 @@
                                         <p class="detailOffre-info detailOffre-info--sansMarge">Veuillez adresser votre CV et une lettre de motivation en précisant le numéro de l'offre : <span class="detailOffre-info--gras">n°{{offreCourante.id}}</span></p>
                                     </div>
                                     <div class="postuler-cta">
-                                        <button class="bouton bouton--blancSurVert boutonPostuler" v-show="!display.contact" v-on:click="display.contact = true">Je contacte le recruteur</button>
+                                        <button type="button" class="bouton bouton--blancSurVert boutonPostuler" v-show="!display.contact" v-on:click="display.contact = true">Je contacte le recruteur</button>
                                         <div class="infosPostuler" v-show="display.contact">
                                             <p class="infosPostuler-item" v-show="offreCourante.contact.nom"><b>{{offreCourante.nomContact}}</b></p>
                                             <p class="infosPostuler-item" v-show="offreCourante.contact.coordonnees1">{{offreCourante.contact.coordonnees1}}</p>
@@ -265,7 +265,7 @@
                 <section class="rechercheOffres-formulaire">
                     <span class="formulaireRecherche-jsResponsive"></span>
                     <p class="formulaireRecherche-retourListeResultats" v-on:click="cacherFiltres">Retour à la liste</p>
-                    <form id="js-rechercheOffresForm" class="formulaireRecherche">
+                    <form id="js-rechercheOffresForm" class="formulaireRecherche" v-on:submit.prevent="rechercherOffres">
                         <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurAffichageFiltres"
                              v-on:click="afficherFiltres">
                             <div class="rechercheOffres-localisation">
@@ -330,7 +330,7 @@
                             </ul>
                         </div>
                         <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurRechercher">
-                            <button class="bouton bouton--blancSurVert boutonRecherche" v-on:click="rechercherOffres">Rechercher</button>
+                            <button type="submit" class="bouton bouton--blancSurVert boutonRecherche">Rechercher</button>
                         </div>
                     </form>
                 </section>
