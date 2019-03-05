@@ -39,7 +39,7 @@ Vue.filter('frequenceAlerte', function (value) {
 });
 
 Vue.filter('typeContrat', function (value) {
-    return (value !== undefined && typesContrats[value] !== undefined) ? typesContrats[value].label : '';
+    return (value !== undefined && typesContrats[value] !== undefined) ? typesContrats[value].label : value;
 });
 
 Vue.filter('secteurActivite', function (value) {

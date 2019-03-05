@@ -220,6 +220,10 @@
     &--SAI {
       background-color: #BA5002;
     }
+
+    &--default {
+      background-color: #798182;
+    }
   }
 
   .miseEnAvant {
@@ -347,7 +351,7 @@
         border-width: 3px 0 0 3px;
 
         @include media-breakpoint-up(sm) {
-          top: 2px;
+          top: 4px;
           left: -10px;
         }
         @include media-breakpoint-down(sm) {
@@ -372,7 +376,7 @@
         border-width: 3px 3px 0 0;
 
         @include media-breakpoint-up(sm) {
-          top: 2px;
+          top: 4px;
           right: -10px;
         }
         @include media-breakpoint-down(sm) {
@@ -421,11 +425,11 @@
     }
 
     &-informationsCles {
-      background-color: #E9F2F5;
+      background-color: rgba(233, 242, 245, 0.5);
     }
 
     &-profil {
-      background-color: rgba(234, 235, 237, 0.5);
+      background-color: #E9F2F5;
     }
 
     &-info {
@@ -442,6 +446,10 @@
       &--sansMarge {
         margin-bottom: 0;
       }
+    }
+
+    &--description {
+      line-height: 1.625rem;
     }
 
     &-titreSection {
@@ -513,7 +521,7 @@
       @include make-col-ready();
 
       @include media-breakpoint-up(md) {
-        @include make-col(8);
+        @include make-col(9);
       }
       @include media-breakpoint-down(md) {
         @include make-col(12);
@@ -523,7 +531,7 @@
       @include make-col-ready();
 
       @include media-breakpoint-up(md) {
-        @include make-col(4);
+        @include make-col(3);
       }
       @include media-breakpoint-down(md) {
         @include make-col(12);

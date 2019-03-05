@@ -8,9 +8,10 @@
     width: 100%;
     border: 1px solid #F2F2F2;
     border-radius: 2px;
-    padding: 0.75rem 0.5rem;
+    padding: 1rem;
     color: $perspectives-bleu-nuit;
     font-size: 0.875rem;
+    font-style: italic;
   }
 
   &-localisation {
@@ -74,7 +75,7 @@
   }
   .ap-nostyle {
     &-input {
-      padding: 0.75rem 1rem 0.75rem 1.4rem;
+      padding: 0.85rem 1rem 1rem 2.5rem;
 
       &-icon {
         background-color: transparent;
@@ -93,8 +94,8 @@
       }
       &-pin {
         position: absolute;
-        top: 9px;
-        left: -5px;
+        top: 10px;
+        left: 5px;
 
         & path {
           fill: $perspectives-vert-emeraude;

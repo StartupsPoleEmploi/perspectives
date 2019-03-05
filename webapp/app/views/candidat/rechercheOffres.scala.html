@@ -109,7 +109,7 @@
                             </div>
                             <div class="detailOffre-section" v-show="offreCourante.description">
                                 <h3 class="detailOffre-titreSection">Description</h3>
-                                <p class="detailOffre-info">{{offreCourante.description}}</p>
+                                <p class="detailOffre-info detailOffre--description">{{offreCourante.description}}</p>
                             </div>
                         </div>
                     </div>
@@ -158,7 +158,7 @@
                                     <ul class="listeInfosProfil">
                                         <template v-for="permis in offreCourante.permis">
                                             <div class="detailOffre-info detailOffre-info--petite">
-                                                <div class="infoProfil">
+                                                <div class="infoProfil" v-bind:class="[permis.exige ? 'infoProfil--exige' : '']">
                                                     <span class="infoProfil-puce" v-bind:class="[permis.exige ? 'infoProfil-puce--exige' : 'infoProfil-puce--souhaite']"></span>
                                                     {{'Permis ' + permis.label}}
                                                 </div>
@@ -166,15 +166,15 @@
                                         </template>
                                         <template v-for="formation in offreCourante.formations">
                                             <div class="detailOffre-info detailOffre-info--petite">
-                                                <div class="infoProfil">
+                                                <div class="infoProfil" v-bind:class="[formation.exige ? 'infoProfil--exige' : '']">
                                                     <span class="infoProfil-puce" v-bind:class="[formation.exige ? 'infoProfil-puce--exige' : 'infoProfil-puce--souhaite']"></span>
-                                                    {{formation.niveau + ' en ' + formation.domaine}}
+                                                    {{formation.niveau + (formation.domaine ? ' en ' + formation.domaine : '')}}
                                                 </div>
                                             </div>
                                         </template>
                                         <template v-for="langue in offreCourante.langues">
                                             <div class="detailOffre-info detailOffre-info--petite">
-                                                <div class="infoProfil">
+                                                <div class="infoProfil" v-bind:class="[langue.exige ? 'infoProfil--exige' : '']">
                                                     <span class="infoProfil-puce" v-bind:class="[langue.exige ? 'infoProfil-puce--exige' : 'infoProfil-puce--souhaite']"></span>
                                                     {{langue.label}}
                                                 </div>
@@ -187,7 +187,7 @@
                                     </h4>
                                     <ul class="listeInfosProfil" v-show="offreCourante.competences && offreCourante.competences.length > 0">
                                         <li class="detailOffre-info detailOffre-info--petite" v-for="competence in offreCourante.competences">
-                                            <div class="infoProfil">
+                                            <div class="infoProfil" v-bind:class="[competence.exige ? 'infoProfil--exige' : '']">
                                                 <span class="infoProfil-puce" v-bind:class="[competence.exige ? 'infoProfil-puce--exige' : 'infoProfil-puce--souhaite']"></span>
                                                 {{competence.label}}
                                             </div>
@@ -200,7 +200,7 @@
                                     <ul class="listeInfosProfil" v-show="offreCourante.qualitesProfessionnelles && offreCourante.qualitesProfessionnelles.length > 0">
                                         <li class="detailOffre-info detailOffre-info--petite" v-for="qualite in offreCourante.qualitesProfessionnelles">
                                             <div class="infoProfil">
-                                                <span class="infoProfil-puce infoProfil-puce--exige"></span>
+                                                <span class="infoProfil-puce infoProfil-puce--souhaite"></span>
                                                 {{qualite.label}}
                                             </div>
                                         </li>
@@ -349,7 +349,7 @@
                             </div>
                             <div class="offre-typeContrat">
                                 <span class="typeContrat"
-                                      v-bind:class="'typeContrat--' + offre.contrat.code">{{offre.contrat.code | typeContrat}}</span>
+                                      v-bind:class="cssTypeContrat(offre)">{{offre.contrat.code | typeContrat}}</span>
                             </div>
                         </div>
                         <div v-if="doitAfficherMiseEnAvantInscription(index)"

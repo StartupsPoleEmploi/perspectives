@@ -100,6 +100,11 @@ var app = new Vue({
             }
             return result;
         },
+        cssTypeContrat: function (offre) {
+            return (offre !== undefined &&
+                offre.contrat !== undefined &&
+                typesContrats[offre.contrat.code] !== undefined) ? 'typeContrat--' + offre.contrat.code : 'typeContrat--default';
+        },
         doitAfficherOffre: function (index) {
             return index >= this.indexPaginationOffre && index < (this.indexPaginationOffre + this.nbOffresParPage);
         },
@@ -161,6 +166,8 @@ var app = new Vue({
                 dataType: "json"
             }).done(function (response) {
                 app.offres = response.offres;
+                app.$refs.pagination.modifierPagination(app.calculerPages());
+                app.indexPaginationOffre = 0;
                 app.cacherFiltres();
             }).fail(function () {
             });
