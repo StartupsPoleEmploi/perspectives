@@ -5,7 +5,7 @@
 @(jsData: JsObject)(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
 @layout(candidatAuthentifie = None) {
-    <div id="landingCandidat">
+    <div id="landingCandidat" v-cloak>
         <section class="landingCandidat-presentation presentation">
             <div class="landingCandidat-rechercheOffres rechercheOffres">
                 <h2 class="rechercheOffres-titre titreLanding">Retrouvez un job,
@@ -20,7 +20,7 @@
                                        v-model="recherche.lieuTravail"/>
                             </div>
                             <div class="rechercheOffres-conteneurRayonRecherche">
-                                <label for="js-rayonRecherche"class="rechercheOffres-label">Renseignez un rayon de recherche</label>
+                                <label for="js-rayonRecherche" class="rechercheOffres-label">Renseignez un rayon de recherche</label>
                                 <select id="js-rayonRecherche" name="rayonRecherche"
                                         v-model="recherche.rayonRecherche" class="rechercheOffres-rayonRecherche">
                                     <option v-for="rayonRecherche in rayonsRecherche" v-bind:key="rayonRecherche.value" v-bind:value="rayonRecherche.value">{{rayonRecherche.label}}</option>
@@ -30,6 +30,9 @@
                     </div>
                     <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurRechercher">
                         <button type="submit" class="bouton bouton--blancSurVert boutonAction">Je trouve un job</button>
+                    </div>
+                    <div class="erreurs" v-show="rechercheOffresFormErrors.length > 0">
+                        <div class="erreurs-item" v-for="error in rechercheOffresFormErrors">{{error.label}}</div>
                     </div>
                 </form>
             </div>

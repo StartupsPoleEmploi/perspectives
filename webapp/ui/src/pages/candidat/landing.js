@@ -26,6 +26,7 @@ var app = new Vue({
                 codePostal: null,
                 rayonRecherche: 10,
             },
+            rechercheOffresFormErrors: [],
             rayonsRecherche: rayonsRecherche,
             algoliaPlacesConfig: jsData.algoliaPlacesConfig
         }
@@ -59,18 +60,25 @@ var app = new Vue({
             this.recherche.codePostal = null;
             this.recherche.lieuTravail = null;
         },
+        hasError: function(champ) {
+            return this.rechercheOffresFormErrors.findIndex(function(element) {
+                return element.champ === champ;
+            }) !== -1;
+        },
         rechercherOffres: function() {
-            var params = [];
-            if (this.recherche.codePostal !== null && this.recherche.codePostal !== '') {
+            this.rechercheOffresFormErrors = [];
+            if (this.recherche.codePostal === null || this.recherche.codePostal === '') {
+                this.rechercheOffresFormErrors.push({champ: 'codePostal', label: 'Dites-nous où vous recherchez un job'});
+            }
+            if (this.recherche.rayonRecherche === null || this.recherche.rayonRecherche === '') {
+                this.rechercheOffresFormErrors.push({champ: 'rayonRecherche', label: 'Renseignez un rayon de recherche'});
+            }
+
+            if (this.rechercheOffresFormErrors.length === 0) {
+                var params = [];
                 params.push('codePostal=' + this.recherche.codePostal);
-            }
-            if (this.recherche.lieuTravail !== null && this.recherche.lieuTravail !== '') {
                 params.push('lieuTravail=' + this.recherche.lieuTravail);
-            }
-            if (this.recherche.rayonRecherche !== null && this.recherche.rayonRecherche !== '') {
                 params.push('rayonRecherche=' + this.recherche.rayonRecherche);
-            }
-            if (params.length > 0) {
                 var uri = encodeURI(params.reduce(function(acc, param, index) {
                     return acc + (index === 0 ? '?' : '&') + param;
                 }, '/candidat/offres'));
