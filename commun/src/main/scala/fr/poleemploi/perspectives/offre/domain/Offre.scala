@@ -22,7 +22,8 @@ case class Entreprise(nom: Option[String],
                       description: Option[String],
                       urlLogo: Option[String],
                       urlSite: Option[String],
-                      effectif: Option[String])
+                      effectif: Option[String],
+                      secteurActivite: Option[String])
 
 case class Salaire(libelle: Option[String],
                    commentaire: Option[String],
@@ -37,7 +38,7 @@ case class Contact(nom: Option[String],
                    email: Option[Email],
                    urlPostuler: Option[String])
 
-case class Contrat(code: String, label: String)
+case class Contrat(code: String, label: String, nature: Option[String])
 
 case class LieuTravail(libelle: Option[String], codePostal: Option[String])
 

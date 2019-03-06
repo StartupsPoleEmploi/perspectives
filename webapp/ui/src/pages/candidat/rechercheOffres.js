@@ -142,6 +142,18 @@ var app = new Vue({
         doitAfficherMiseEnAvantCV: function(index) {
             return this.isCandidatAuthentifie && !this.cv && this.indexPaginationOffre === 0 && index === 3;
         },
+        doitAfficherCoordonnees1: function(contact) {
+            return contact.coordonnees1 &&
+                contact.coordonnees1 !== contact.urlPostuler &&
+                contact.coordonnees1.indexOf(contact.email) === -1 &&
+                contact.coordonnees1.indexOf(contact.telephone) === -1;
+        },
+        doitAfficherLienOrigineOffre: function(contact) {
+            return !contact.email &&
+                !contact.telephone &&
+                !contact.urlPostuler &&
+                !contact.coordonnees1;
+        },
         afficherFiltres: function () {
             if ($(".formulaireRecherche-jsResponsive").is(":visible")) {
                 $(".formulaireRecherche-conteneurFiltres").show();

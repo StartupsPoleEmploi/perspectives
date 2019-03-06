@@ -135,6 +135,7 @@ case class OffreResponse(id: String,
                          romeLibelle: Option[String],
                          typeContrat: String,
                          typeContratLibelle: String,
+                         natureContrat: Option[String],
                          description: Option[String],
                          dureeTravailLibelle: Option[String],
                          alternance: Boolean,
@@ -145,6 +146,7 @@ case class OffreResponse(id: String,
                          complementExercice: Option[String],
                          conditionExercice: Option[String],
                          deplacementLibelle: Option[String],
+                         secteurActiviteLibelle: Option[String],
                          competences: List[CompetenceResponse],
                          qualitesProfessionnelles: List[QualiteProfessionnelleResponse],
                          permis: List[PermisResponse],
@@ -187,6 +189,7 @@ object OffreResponse {
       romeLibelle = (json \ "romeLibelle").asOpt[String],
       typeContrat = (json \ "typeContrat").as[String],
       typeContratLibelle = (json \ "typeContratLibelle").as[String],
+      natureContrat = (json \ "natureContrat").asOpt[String],
       description = (json \ "description").asOpt[String],
       dureeTravailLibelle = (json \ "dureeTravailLibelle").asOpt[String],
       alternance = (json \ "alternance").as[Boolean],
@@ -196,6 +199,7 @@ object OffreResponse {
       complementExercice = (json \ "complementExercice").asOpt[String],
       conditionExercice = (json \ "conditionExercice").asOpt[String],
       deplacementLibelle = (json \ "deplacementLibelle").asOpt[String],
+      secteurActiviteLibelle = (json \ "secteurActiviteLibelle").asOpt[String],
       trancheEffectifEtab = (json \ "trancheEffectifEtab").asOpt[String],
       competences = (json \ "competences").orElse(JsDefined(JsArray.empty)).as[List[CompetenceResponse]],
       qualitesProfessionnelles = (json \ "qualitesProfessionnelles").orElse(JsDefined(JsArray.empty)).as[List[QualiteProfessionnelleResponse]],
@@ -245,8 +249,9 @@ class ReferentielOffreWSMapping {
       case Nil => true
       case xs => xs.exists(s => offreResponse.romeCode.exists(r => r.startsWith(s.value)))
     }
+    val sansFormationExigee = !offreResponse.formations.exists(f => ExigenceResponse.EXIGE == f.exigence)
 
-    if (experienceCorrespondante && secteurActiviteCorrespondant)
+    if (experienceCorrespondante && secteurActiviteCorrespondant && sansFormationExigee)
       Some(Offre(
         id = OffreId(offreResponse.id),
         urlOrigine = offreResponse.urlOrigine,
@@ -255,7 +260,11 @@ class ReferentielOffreWSMapping {
           romeCode <- offreResponse.romeCode
           romeLibelle <- offreResponse.romeLibelle
         } yield Metier(codeROME = CodeROME(romeCode), label = romeLibelle),
-        contrat = Contrat(code = offreResponse.typeContrat, label = offreResponse.typeContratLibelle),
+        contrat = Contrat(
+          code = offreResponse.typeContrat,
+          label = offreResponse.typeContratLibelle,
+          nature = offreResponse.natureContrat
+        ),
         description = offreResponse.description,
         lieuTravail = LieuTravail(libelle = offreResponse.libelleLieuTravail, codePostal = offreResponse.codePostalLieuTravail),
         libelleDureeTravail = offreResponse.dureeTravailLibelle,
@@ -307,7 +316,8 @@ class ReferentielOffreWSMapping {
           description = offreResponse.descriptionEntreprise,
           urlLogo = offreResponse.logoEntreprise.map(l => s"https://entreprise.pole-emploi.fr/static/img/logos/$l.png"),
           urlSite = offreResponse.urlEntreprise,
-          effectif = offreResponse.trancheEffectifEtab
+          effectif = offreResponse.trancheEffectifEtab,
+          secteurActivite = offreResponse.secteurActiviteLibelle
         ),
         contact = Contact(
           nom = offreResponse.nomContact,

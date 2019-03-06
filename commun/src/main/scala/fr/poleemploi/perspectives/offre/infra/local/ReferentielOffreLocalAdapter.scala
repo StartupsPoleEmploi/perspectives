@@ -17,7 +17,7 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
         id = OffreId(s"083LRLN$n"),
         intitule = s"Manoeuvre bâtiment $n",
         urlOrigine = "https://candidat.pole-emploi.fr/offres/recherche/detail/083LRLN",
-        contrat = Contrat(code = "CDD", label = "Contrat à durée déterminée - 1 Mois"),
+        contrat = Contrat(code = "CDD", label = "Contrat à durée déterminée - 1 Mois", nature = Some("Contrat travail")),
         metier = Some(Metier(codeROME = CodeROME("H2903"), label = "Conduite d'équipement d'usinage")),
         description = Some("L'agence Osmose emploi recherche pour l'un de ses clients un MANŒUVRE (H/F) sur le secteur de Pau (64)\n\nVotre mission consiste a préparer le terrain, les outils et les matériaux nécessaires à l'exécution de travaux de construction, de réparation ou d'entretien dans le bâtiment, sur les routes ou voiries,selon les règles de sécurité.\n\nVous pouvez être amené a assister le maçon et développer vos compétences en maçonnerie.\n\nCe poste est ouvert a toutes les personnes qui souhaitent s'investir pleinement et devenir autonome et polyvalent sur différentes tâches."),
         lieuTravail = LieuTravail(libelle = Some("Tournai"), codePostal = None),
@@ -56,7 +56,8 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
           description = Some("Agence d'emplois, travail temporaire, Placements CDD, CDI"),
           urlLogo = Some("https://entreprise.pole-emploi.fr/static/img/logos/bveAgfMUYhAUWFSa5L0RHqDh7QY7saik.png"),
           urlSite = Some("http://recrutement@iello.fr"),
-          effectif = None
+          effectif = None,
+          secteurActivite = Some("Conseil pour les affaires et autres conseils de gestion")
         ),
         contact = Contact(
           nom = None,
@@ -74,7 +75,7 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
         id = OffreId(s"083NTLN$n"),
         intitule = s"Responsable contrôle métrologie en industrie $n",
         urlOrigine = "https://candidat.pole-emploi.fr/offres/recherche/detail/083NTLN",
-        contrat = Contrat(code = "CDI", label = "Contrat à durée indéterminée"),
+        contrat = Contrat(code = "CDI", label = "Contrat à durée indéterminée", nature = Some("Contrat apprentissage")),
         metier = Some(Metier(codeROME = CodeROME("H2903"), label = "Conduite d'équipement d'usinage")),
         description = Some("Rattaché à notre Business Line Chemicals & Pharma, le Responsable Métrologie H/F a pour principales missions : \n\n- Planifier et assurer la gestion métrologique des équipements ainsi que le suivi des maintenances (mise à jour, réparation)\n- Gérer et optimiser les consommables (envoi/réception et gestion des stocks)\n- Prendre en charge la gestion documentaire associée (gestion, archivage, mise en ligne des certificats)\n- Participer à la sélection et assurer le suivi des fournisseurs\n- Piloter la qualification des équipements selon les procédures en place\n- Participer à la rédaction des documents en rapport avec les équipements\n- Réaliser une veille sur les équipements et les nouvelles technologies\n\nBAC+2 Maintenance des Systèmes, maintenance industrielle/métrologie.\nVous avez une connaissance des équipements de laboratoire d'analyses et/ou formation en métrologie.\nVous maîtrisez Word et Excel. \nDes déplacements ponctuels sont à prévoir./F) sur le secteur de Pau (64)\n\nVotre mission consiste a préparer le terrain, les outils et les matériaux nécessaires à l'exécution de travaux de construction, de réparation ou d'entretien dans le bâtiment, sur les routes ou voiries,selon les règles de sécurité.\n\nVous pouvez être amené a assister le maçon et développer vos compétences en maçonnerie.\n\nCe poste est ouvert a toutes les personnes qui souhaitent s'investir pleinement et devenir autonome et polyvalent sur différentes tâches."),
         lieuTravail = LieuTravail(libelle = Some("13 - VITROLLES"), codePostal = Some("13127")),
@@ -100,7 +101,7 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
         ),
         langues = Nil,
         formations = List(
-          Formation(domaine = Some("Commerce international"), niveau = Some("Bac+3 ou équivalent"), exige = true),
+          Formation(domaine = Some("Commerce international"), niveau = Some("Bac+3 ou équivalent"), exige = false),
           Formation(domaine = Some("Commerce international"), niveau = Some("Bac+5 ou équivalent"), exige = false)
         ),
         entreprise = Entreprise(
@@ -108,7 +109,8 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
           description = Some("Entreprise de Charpente Couverture, Maison ossature bois, Escaliéteur, Dal'Alu, composée de 18 salariés. Entreprise créée il y a plus de 35 ans, disposant d'une excellente image dans la région grâce à l'aide de son équipe jeune, passionnée, formée en majorité dans cette entreprise chez les Compagnons du devoir."),
           urlLogo = Some("https://entreprise.pole-emploi.fr/static/img/logos/bveAgfMUYhAUWFSa5L0RHqDh7QY7saik.png"),
           urlSite = Some("http://recrutement@iello.fr"),
-          effectif = Some("3 à 5 salariés")
+          effectif = Some("3 à 5 salariés"),
+          secteurActivite = None
         ),
         contact = Contact(
           nom = Some("M. Bernard Baue"),
@@ -126,7 +128,7 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
         id = OffreId(s"083NHGQ$n"),
         intitule = s"Agent de fabrication polyvalent / Agente de fabrication pol (H/F) $n",
         urlOrigine = "https://candidat.pole-emploi.fr/offres/recherche/detail/083NHGQ",
-        contrat = Contrat(code = "MIS", label = "Travail intérimaire - 6 Mois"),
+        contrat = Contrat(code = "MIS", label = "Travail intérimaire - 6 Mois", nature = Some("Contrat travail")),
         metier = Some(Metier(codeROME = CodeROME("H2903"), label = "Conduite d'équipement d'usinage")),
         description = None,
         lieuTravail = LieuTravail(libelle = Some("13 - AUBAGNE"), codePostal = Some("13400")),
@@ -163,7 +165,8 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
           description = Some("Entreprise de Charpente Couverture, Maison ossature bois, Escaliéteur, Dal'Alu, composée de 18 salariés. Entreprise créée il y a plus de 35 ans, disposant d'une excellente image dans la région grâce à l'aide de son équipe jeune, passionnée, formée en majorité dans cette entreprise chez les Compagnons du devoir."),
           urlLogo = None,
           urlSite = None,
-          effectif = Some("20 à 30 salariés")
+          effectif = Some("20 à 30 salariés"),
+          secteurActivite = Some("Commerce de gros (commerce interentreprises) de parfumerie et de produits de beauté")
         ),
         contact = Contact(
           nom = Some("Mme ALEXANDRA SAULNERON"),
@@ -172,7 +175,7 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
           coordonnees3 = None,
           telephone = None,
           email = None,
-          urlPostuler = Some("https://parcasterix-recrute.talent-soft.com/offre-de-emploi/emploi-agent-polyvalent-de-restauration-en-contrat-de-professionnalisation_566.aspx")
+          urlPostuler = None
         ),
         dateActualisation = ZonedDateTime.now()
       )
@@ -181,7 +184,7 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
         id = OffreId(s"083NBGJ$n"),
         intitule = s"Ouvrier / Ouvrière d'entretien des espaces verts $n",
         urlOrigine = "https://candidat.pole-emploi.fr/offres/recherche/detail/083NBGJ",
-        contrat = Contrat(code = "DDI", label = "Contrat durée déterminée insertion - 4 Mois"),
+        contrat = Contrat(code = "DDI", label = "Contrat durée déterminée insertion - 4 Mois", nature = Some("Contrat travail")),
         metier = Some(Metier(codeROME = CodeROME("H2903"), label = "Conduite d'équipement d'usinage")),
         description = None,
         lieuTravail = LieuTravail(libelle = Some("13 - AUBAGNE"), codePostal = Some("13400")),
@@ -203,7 +206,7 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
           libelle = None,
           commentaire = Some("Selon profil et expérience"),
           complement1 = None,
-          complement2 = None
+          complement2 = Some("Action sociale sans hébergement n.c.a.")
         ),
         permis = Nil,
         langues = List(
@@ -214,20 +217,21 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
           Formation(domaine = None, niveau = Some("Bac+2 ou équivalent"), exige = false)
         ),
         entreprise = Entreprise(
-          nom = Some("FAB PRODUITS POUR COLLECTIVITES"),
+          nom = None,
           description = Some("Entreprise de Charpente Couverture, Maison ossature bois, Escaliéteur, Dal'Alu, composée de 18 salariés. Entreprise créée il y a plus de 35 ans, disposant d'une excellente image dans la région grâce à l'aide de son équipe jeune, passionnée, formée en majorité dans cette entreprise chez les Compagnons du devoir."),
           urlLogo = None,
           urlSite = None,
-          effectif = Some("20 à 30 salariés")
+          effectif = Some("20 à 30 salariés"),
+          secteurActivite = None
         ),
         contact = Contact(
           nom = Some("Mme ALEXANDRA SAULNERON"),
-          coordonnees1 = None,
+          coordonnees1 = Some("https://joinus.saint-gobain.com/fr/fra/spc/f/53332/564788/magasinier-cariste-preparation-hf-challans-85?source=PE&utm_source=PE&utm_medium=SourcTargetContent&utm_campaign=DispanoChallans_Logistique"),
           coordonnees2 = None,
           coordonnees3 = None,
           telephone = None,
           email = None,
-          urlPostuler = Some("https://parcasterix-recrute.talent-soft.com/offre-de-emploi/emploi-agent-polyvalent-de-restauration-en-contrat-de-professionnalisation_566.aspx")
+          urlPostuler = Some("https://joinus.saint-gobain.com/fr/fra/spc/f/53332/564788/magasinier-cariste-preparation-hf-challans-85?source=PE&utm_source=PE&utm_medium=SourcTargetContent&utm_campaign=DispanoChallans_Logistique")
         ),
         dateActualisation = ZonedDateTime.now()
       )

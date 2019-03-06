@@ -73,7 +73,12 @@ class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
   private def codeInsee(accessTokenResponse: AccessTokenResponse, codePostal: String): Future[String] =
     cacheApi
       .getOrElseUpdate(cacheKeyCommunes)(listerCommunes(accessTokenResponse))
-      .map(_.getOrElse(codePostal, throw new IllegalArgumentException(s"Aucun codeINSEE associé au codePostal : $codePostal")))
+      .map(_.getOrElse(codePostal match {
+        case "75000" => "75001"
+        case "69000" => "69001"
+        case "13000" => "13001"
+        case c@_ => c
+      }, throw new IllegalArgumentException(s"Aucun codeINSEE associé au codePostal : $codePostal")))
 
   private def listerCommunes(accessTokenResponse: AccessTokenResponse): Future[Map[String, String]] =
     for {

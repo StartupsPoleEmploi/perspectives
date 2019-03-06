@@ -133,6 +133,18 @@ class ReferentielOffreWSMappingSpec extends WordSpec
       // Then
       result mustBe None
     }
+    "ne pas retourner d'offre si une formation est exigée (l'API ne prend qu'un seul paramètre 'niveauFormation' qui ne permet pas de filtrer suffisamment, il faut filtrer à postériori)" in {
+      // Given
+      val formationResponse = mock[FormationResponse]
+      when(formationResponse.exigence) thenReturn ExigenceResponse.EXIGE
+      when(offreResponse.formations) thenReturn List(formationResponse)
+
+      // When
+      val result = mapping.buildOffre(criteresRechercheOffre, offreResponse)
+
+      // Then
+      result mustBe None
+    }
     "retourner une offre si l'expérience demandée n'est pas débutant" in {
       // Given
       when(criteresRechercheOffre.experience) thenReturn Experience("UN_PRO")

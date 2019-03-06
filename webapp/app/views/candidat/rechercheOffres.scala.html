@@ -10,35 +10,42 @@
     <div id="rechercheOffres" v-cloak>
         <div id="js-modaleDetailOffre" class="modal" tabindex="-1" role="dialog" aria-labelledby="titreModaleDetailOffre">
             <div class="modal-dialog modaleDetailOffre" role="document">
-                <div class="modal-content">
-                    <div class="modaleDetailOffre-wrapper">
-                        <div class="navigationOffres">
-                            <div class="navigationOffres-item navigationOffres-item--noir navigationOffres-page"
-                                 v-show="!doitAfficherOffrePrecedente()">
-                            </div>
-                            <div class="navigationOffres-item navigationOffres-item--noir navigationOffres-page"
-                                 v-show="doitAfficherOffrePrecedente()" v-on:click="afficherOffrePrecedente">
-                                <span class="navigationOffres-iconePrecedent"></span>
-                                <span class="navigationOffres-action">Précedent</span>
-                            </div>
-                            <div class="navigationOffres-item navigationOffres-item--noir navigationOffres-pageCourante">
-                                {{indexNavigationOffre + 1}} / {{offres.length}}
-                            </div>
-                            <div class="navigationOffres-item navigationOffres-item--vert navigationOffres-page"
-                                 v-show="doitAfficherOffreSuivante()" v-on:click="afficherOffreSuivante">
-                                <span class="navigationOffres-action">Suivant</span>
-                                <span class="navigationOffres-iconeSuivant"></span>
-                            </div>
-                            <div class="navigationOffres-item navigationOffres-item--noir navigationOffres-fermer" data-dismiss="modal">
-                                <span class="navigationOffres-action">Fermer</span>
-                                <span class="navigationOffres-iconeFermer">&times;</span>
+                <div class="modal-content modaleDetailOffre-contenu">
+                    <div class="modaleDetailOffre-navigation">
+                        <div class="modaleDetailOffre-wrapper">
+                            <div class="navigationOffres">
+                                <div class="navigationOffres-item navigationOffres-page"
+                                     v-show="!doitAfficherOffrePrecedente()">
+                                </div>
+                                <div class="navigationOffres-item navigationOffres-item--noir navigationOffres-page"
+                                     v-show="doitAfficherOffrePrecedente()" v-on:click="afficherOffrePrecedente">
+                                    <span class="navigationOffres-iconePrecedent"></span>
+                                    <span class="navigationOffres-action">Précedent</span>
+                                </div>
+                                <div class="navigationOffres-item navigationOffres-item--noir navigationOffres-pageCourante">
+                                    {{indexNavigationOffre + 1}} / {{offres.length}}
+                                </div>
+                                <div class="navigationOffres-item navigationOffres-page"
+                                     v-show="!doitAfficherOffreSuivante()">
+                                </div>
+                                <div class="navigationOffres-item navigationOffres-item--vert navigationOffres-page"
+                                     v-show="doitAfficherOffreSuivante()" v-on:click="afficherOffreSuivante">
+                                    <span class="navigationOffres-action">Suivant</span>
+                                    <span class="navigationOffres-iconeSuivant"></span>
+                                </div>
+                                <div class="navigationOffres-item navigationOffres-item--noir navigationOffres-fermer" data-dismiss="modal">
+                                    <span class="navigationOffres-action">Fermer</span>
+                                    <span class="navigationOffres-iconeFermer">&times;</span>
+                                </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="modaleDetailOffre-wrapper">
                         <div class="detailOffre">
-                            <h2 id="titreModaleDetailOffre" class="detailOffre-section detailOffre-intitule">{{offreCourante.intitule}}</h2>
-                            <div class="detailOffre-section">
-                                <div class="resumeDetailOffre">
-                                    <p class="resumeDetailOffre-colonne detailOffre-info detailOffre-info--petite">
+                            <h2 id="titreModaleDetailOffre" class="detailOffre-sousSection detailOffre-intitule">{{offreCourante.intitule}}</h2>
+                            <div class="detailOffre-sousSection detailOffre-resume">
+                                <ul class="listeInfosProfil resumeDetailOffre">
+                                    <li class="resumeDetailOffre-item detailOffre-info detailOffre-info--petite">
                                         <svg class="resumeDetailOffre-icone" width="16px" height="15px" viewBox="0 0 16 15" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                                             <title>1C61C206-676C-488C-AEE5-E0B88F09C67C</title>
                                             <defs></defs>
@@ -50,9 +57,10 @@
                                                 </g>
                                             </g>
                                         </svg>
-                                        {{offreCourante.contrat.label}}
-                                    </p>
-                                    <p class="resumeDetailOffre-colonne detailOffre-info detailOffre-info--petite">
+                                        <span>{{offreCourante.contrat.label}}</span>
+                                        <span class="detailOffre-natureContrat" v-show="offreCourante.contrat.nature">{{offreCourante.contrat.nature}}</span>
+                                    </li>
+                                    <li v-show="offreCourante.entreprise.nom" class="resumeDetailOffre-item detailOffre-info detailOffre-info--petite">
                                         <svg class="resumeDetailOffre-icone" width="15px" height="16px" viewBox="0 0 15 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                                             <title>3647910A-22D1-4551-A15F-7BED9D51D20F</title>
                                             <defs></defs>
@@ -63,8 +71,8 @@
                                             </g>
                                         </svg>
                                         {{offreCourante.entreprise.nom | capitalize}}
-                                    </p>
-                                    <p class="resumeDetailOffre-colonne detailOffre-info detailOffre-info--petite">
+                                    </li>
+                                    <li class="resumeDetailOffre-item detailOffre-info detailOffre-info--petite">
                                         <svg class="resumeDetailOffre-icone" width="12px" height="16px" viewBox="0 0 12 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                                             <title>69B209B8-AC7F-44DD-A4C7-425EC4E8DE33</title>
                                             <defs></defs>
@@ -77,8 +85,8 @@
                                             </g>
                                         </svg>
                                         {{offreCourante.lieuTravail.libelle}} <span v-show="offreCourante.lieuTravail.codePostal">({{offreCourante.lieuTravail.codePostal}})</span>
-                                    </p>
-                                </div>
+                                    </li>
+                                </ul>
                             </div>
                             <div class="detailOffre-section">
                                 <div class="postuler">
@@ -87,27 +95,31 @@
                                         <p class="detailOffre-info detailOffre-info--sansMarge">Veuillez adresser votre CV et une lettre de motivation en précisant le numéro de l'offre : <span class="detailOffre-info--gras">n°{{offreCourante.id}}</span></p>
                                     </div>
                                     <div class="postuler-cta">
-                                        <button type="button" class="bouton bouton--blancSurVert boutonPostuler" v-show="!display.contact" v-on:click="display.contact = true">Je contacte le recruteur</button>
-                                        <div class="infosPostuler" v-show="display.contact">
-                                            <p class="infosPostuler-item" v-show="offreCourante.contact.nom"><b>{{offreCourante.nomContact}}</b></p>
-                                            <p class="infosPostuler-item" v-show="offreCourante.contact.coordonnees1">{{offreCourante.contact.coordonnees1}}</p>
+                                        <button type="button" class="bouton bouton--blancSurVert boutonPostuler" v-show="!display.contact && !doitAfficherLienOrigineOffre(offreCourante.contact)" v-on:click="display.contact = true">Je contacte le recruteur</button>
+                                        <a target="_blank" class="bouton bouton--blancSurVert boutonPostuler"
+                                            v-show="doitAfficherLienOrigineOffre(offreCourante.contact)" v-bind:href="offreCourante.urlOrigine">
+                                            Voir l'offre sur Pôle Emploi
+                                        </a>
+                                        <div class="infosPostuler" v-show="display.contact && !doitAfficherLienOrigineOffre(offreCourante.contact)">
+                                            <p class="infosPostuler-item detailOffre-info--gras" v-show="offreCourante.contact.nom">{{offreCourante.contact.nom}}</p>
+                                            <p class="infosPostuler-item" v-show="doitAfficherCoordonnees1(offreCourante.contact)">{{offreCourante.contact.coordonnees1}}</p>
                                             <p class="infosPostuler-item" v-show="offreCourante.contact.coordonnees2">{{offreCourante.contact.coordonnees2}}</p>
                                             <p class="infosPostuler-item" v-show="offreCourante.contact.coordonnees3">{{offreCourante.contact.coordonnees3}}</p>
                                             <p class="infosPostuler-item" v-show="offreCourante.contact.telephone">Téléphone : {{offreCourante.contact.telephone}}</p>
-                                            <p class="infosPostuler-item" v-show="offreCourante.contact.email">{{offreCourante.contact.email}}</p>
+                                            <p class="infosPostuler-item" v-show="offreCourante.contact.email">Courriel : {{offreCourante.contact.email}}</p>
                                             <p>
                                                 <a class="infosPostuler-item" target="_blank" v-show="offreCourante.contact.urlPostuler" v-bind:href="offreCourante.contact.urlPostuler">
                                                     Postuler directement sur le site du recruteur
                                                 </a>
                                             </p>
-                                            <p>
+                                            <p v-show="doitAfficherLienOrigineOffre(offreCourante.contact)">
                                                 <a class="infosPostuler-item" target="_blank" v-bind:href="offreCourante.urlOrigine">Voir l'offre sur Pole Emploi</a>
                                             </p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="detailOffre-section" v-show="offreCourante.description">
+                            <div class="detailOffre-section detailOffre-sectionDescription" v-show="offreCourante.description">
                                 <h3 class="detailOffre-titreSection">Description</h3>
                                 <p class="detailOffre-info detailOffre--description">{{offreCourante.description}}</p>
                             </div>
@@ -134,9 +146,9 @@
                                             </p>
                                         </div>
                                         <div class="infosClesDetailOffre-colonne">
-                                            <p class="detailOffre-info detailOffre-info--petite detailOffre-info--sansMarge" v-if="offreCourante.salaire.libelle">
+                                            <p class="detailOffre-info detailOffre-info--petite detailOffre-info--sansMarge" v-if="offreCourante.salaire.libelle || offreCourante.salaire.commentaire">
                                                 <img class="infosClesDetailOffre-icone" src="@assetsFinder.path("images/pages/candidat/rechercheOffres/salaire.svg")" alt="Salaire" height="16" width="16" />
-                                                {{offreCourante.salaire.libelle}}
+                                                {{offreCourante.salaire.libelle || offreCourante.salaire.commentaire}}
                                             </p>
                                             <ul class="detailOffre-info detailOffre-info--petite" v-if="offreCourante.salaire.complement1 || offreCourante.salaire.complement2">
                                                 <li v-if="offreCourante.salaire.complement1">{{offreCourante.salaire.complement1}}</li>
@@ -153,8 +165,12 @@
                             <div class="detailOffre">
                                 <div class="detailOffre-section">
                                     <h3 class="detailOffre-titreSection">Votre profil</h3>
+                                    <div class="infoProfil detailOffre-info--petite">
+                                        <span class="infoProfil-puce infoProfil-puce--souhaite"></span>
+                                        Débutant accepté
+                                    </div>
 
-                                    <h4 class="detailOffre-titreSousSection" v-show="offreCourante.permis.length > 0 || offreCourante.formations.length > 0 || offreCourante.langues.length > 0">Vous avez :</h4>
+                                    <h4 class="detailOffre-sousTitreSection" v-show="offreCourante.permis.length > 0 || offreCourante.formations.length > 0 || offreCourante.langues.length > 0">Vous avez :</h4>
                                     <ul class="listeInfosProfil">
                                         <template v-for="permis in offreCourante.permis">
                                             <div class="detailOffre-info detailOffre-info--petite">
@@ -182,19 +198,19 @@
                                         </template>
                                     </ul>
 
-                                    <h4 class="detailOffre-titreSousSection" v-show="offreCourante.competences && offreCourante.competences.length > 0">
+                                    <h4 class="detailOffre-sousTitreSection" v-show="offreCourante.competences && offreCourante.competences.length > 0">
                                         Vous savez :
                                     </h4>
                                     <ul class="listeInfosProfil" v-show="offreCourante.competences && offreCourante.competences.length > 0">
                                         <li class="detailOffre-info detailOffre-info--petite" v-for="competence in offreCourante.competences">
                                             <div class="infoProfil" v-bind:class="[competence.exige ? 'infoProfil--exige' : '']">
                                                 <span class="infoProfil-puce" v-bind:class="[competence.exige ? 'infoProfil-puce--exige' : 'infoProfil-puce--souhaite']"></span>
-                                                {{competence.label}}
+                                                {{(competence.exige ? 'Exigé : ' : '') + competence.label}}
                                             </div>
                                         </li>
                                     </ul>
 
-                                    <h4 class="detailOffre-titreSousSection" v-show="offreCourante.qualitesProfessionnelles && offreCourante.qualitesProfessionnelles.length > 0">
+                                    <h4 class="detailOffre-sousTitreSection" v-show="offreCourante.qualitesProfessionnelles && offreCourante.qualitesProfessionnelles.length > 0">
                                         Vous êtes :
                                     </h4>
                                     <ul class="listeInfosProfil" v-show="offreCourante.qualitesProfessionnelles && offreCourante.qualitesProfessionnelles.length > 0">
@@ -217,6 +233,7 @@
                                     <img v-bind:alt="'Logo ' + offreCourante.entreprise.nom" v-bind:src="offreCourante.entreprise.urlLogo" height="100"/>
                                 </p>
                                 <p class="detailOffre-info detailOffre-info--petite" v-show="offreCourante.entreprise.nom">{{offreCourante.entreprise.nom}}</p>
+                                <p class="detailOffre-info detailOffre-info--petite" v-show="offreCourante.entreprise.secteurActivite">Secteur d'activité : {{offreCourante.entreprise.secteurActivite}}</p>
                                 <p class="detailOffre-info detailOffre-info--petite" v-show="offreCourante.entreprise.description">{{offreCourante.entreprise.description}}</p>
                                 <p class="detailOffre-info detailOffre-info--petite" v-show="offreCourante.entreprise.effectif">{{offreCourante.entreprise.effectif}}</p>
                                 <a class="detailOffre-info detailOffre-info--petite" v-show="offreCourante.entreprise.urlSite" v-bind:href="offreCourante.entreprise.urlSite" target="_blank">{{offreCourante.entreprise.urlSite}}</a>
@@ -228,21 +245,22 @@
                                         <p class="detailOffre-info detailOffre-info--sansMarge">Veuillez adresser votre CV et une lettre de motivation en précisant le numéro de l'offre : <span class="detailOffre-info--gras">n°{{offreCourante.id}}</span></p>
                                     </div>
                                     <div class="postuler-cta">
-                                        <button type="button" class="bouton bouton--blancSurVert boutonPostuler" v-show="!display.contact" v-on:click="display.contact = true">Je contacte le recruteur</button>
-                                        <div class="infosPostuler" v-show="display.contact">
-                                            <p class="infosPostuler-item" v-show="offreCourante.contact.nom"><b>{{offreCourante.nomContact}}</b></p>
-                                            <p class="infosPostuler-item" v-show="offreCourante.contact.coordonnees1">{{offreCourante.contact.coordonnees1}}</p>
+                                        <button type="button" class="bouton bouton--blancSurVert boutonPostuler" v-show="!display.contact && !doitAfficherLienOrigineOffre(offreCourante.contact)" v-on:click="display.contact = true">Je contacte le recruteur</button>
+                                        <a target="_blank" class="bouton bouton--blancSurVert boutonPostuler"
+                                            v-show="doitAfficherLienOrigineOffre(offreCourante.contact)" v-bind:href="offreCourante.urlOrigine">
+                                            Voir l'offre sur Pôle Emploi
+                                        </a>
+                                        <div class="infosPostuler" v-show="display.contact && !doitAfficherLienOrigineOffre(offreCourante.contact)">
+                                            <p class="infosPostuler-item detailOffre-info--gras" v-show="offreCourante.contact.nom">{{offreCourante.contact.nom}}</p>
+                                            <p class="infosPostuler-item" v-show="doitAfficherCoordonnees1(offreCourante.contact)">{{offreCourante.contact.coordonnees1}}</p>
                                             <p class="infosPostuler-item" v-show="offreCourante.contact.coordonnees2">{{offreCourante.contact.coordonnees2}}</p>
                                             <p class="infosPostuler-item" v-show="offreCourante.contact.coordonnees3">{{offreCourante.contact.coordonnees3}}</p>
                                             <p class="infosPostuler-item" v-show="offreCourante.contact.telephone">Téléphone : {{offreCourante.contact.telephone}}</p>
-                                            <p class="infosPostuler-item" v-show="offreCourante.contact.email">{{offreCourante.contact.email}}</p>
+                                            <p class="infosPostuler-item" v-show="offreCourante.contact.email">Courriel : {{offreCourante.contact.email}}</p>
                                             <p>
                                                 <a class="infosPostuler-item" target="_blank" v-show="offreCourante.contact.urlPostuler" v-bind:href="offreCourante.contact.urlPostuler">
                                                     Postuler directement sur le site du recruteur
                                                 </a>
-                                            </p>
-                                            <p>
-                                                <a class="infosPostuler-item" target="_blank" v-bind:href="offreCourante.urlOrigine">Voir l'offre sur Pole Emploi</a>
                                             </p>
                                         </div>
                                     </div>
@@ -255,12 +273,8 @@
         </div>
         <div class="rechercheOffresConteneur">
             <div class="rechercheOffres">
-                <section class="rechercheOffres-nbResultats">
-                    <template v-if="offres.length === 0">
-                        <p><b>Désolé, nous n'avons pas d'offres à vous proposer pour l'instant :(</b></p>
-                        <p>Vous pouvez modifier vos critères ou réessayer plus tard</p>
-                    </template>
-                    <p class="offres-titre" v-show="offres.length > 0">{{offres.length}} offres sans expérience exigée peuvent vous intéresser</p>
+                <section class="rechercheOffres-nbResultats" v-if="offres.length > 0">
+                    <p class="offres-titre">{{offres.length}} offres sans expérience exigée peuvent vous intéresser</p>
                 </section>
                 <section class="rechercheOffres-formulaire">
                     <span class="formulaireRecherche-jsResponsive"></span>
@@ -335,6 +349,10 @@
                     </form>
                 </section>
                 <section class="rechercheOffres-resultats offres">
+                    <template v-if="offres.length === 0">
+                        <p class="detailOffre-info--gras">Désolé, nous n'avons pas d'offres à vous proposer pour l'instant :(</p>
+                        <p>Vous pouvez modifier vos critères ou réessayer plus tard</p>
+                    </template>
                     <template v-show="offres.length > 0" v-for="(offre, index) in offres">
                         <div v-show="doitAfficherOffre(index)"
                              v-on:click="afficherOffre(offre, index)"

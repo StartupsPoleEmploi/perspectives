@@ -268,12 +268,17 @@
   }
 
   .modaleDetailOffre {
-    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
     max-width: 100%;
+    margin: 0;
 
     &-wrapper {
       @include make-container();
       @include make-container-max-widths();
+    }
+
+    &-contenu {
+      border: none;
+      border-radius: unset;
     }
 
     &-fermer {
@@ -281,6 +286,10 @@
       font-size: 2rem;
       padding: 0;
       margin: 0;
+    }
+
+    &-navigation {
+      border-bottom: 1px solid rgba(216, 216, 216, 0.5);
     }
   }
 
@@ -307,6 +316,9 @@
     }
 
     &-pageCourante {
+      border-right: 1px solid rgba(216, 216, 216, 0.5);
+      border-left: 1px solid rgba(216, 216, 216, 0.5);
+
       @include media-breakpoint-up(sm) {
         @include make-col(2);
       }
@@ -409,11 +421,30 @@
 
       @include media-breakpoint-up(md) {
         padding-top: 1rem;
-        padding-bottom: 1rem;
+        padding-bottom: 2rem;
       }
       @include media-breakpoint-down(md) {
         padding-top: 0.5rem;
         padding-bottom: 0.5rem;
+      }
+    }
+
+    &-sousSection {
+      @include make-col(12);
+      @include make-col-ready();
+    }
+
+    &-resume {
+      padding-bottom: 1rem;
+      padding-top: 1rem;
+    }
+
+    &-sectionDescription {
+      @include media-breakpoint-up(md) {
+        @include make-col(9);
+      }
+      @include media-breakpoint-down(md) {
+        @include make-col(12);
       }
     }
 
@@ -422,6 +453,7 @@
       color: $perspectives-bleu-nuit;
       font-size: 2rem;
       margin-bottom: 0;
+      padding-top: 2rem;
     }
 
     &-informationsCles {
@@ -450,6 +482,12 @@
 
     &--description {
       line-height: 1.625rem;
+      white-space: pre-wrap;
+    }
+
+    &-natureContrat {
+      display: block;
+      padding-left: 1.8rem;
     }
 
     &-titreSection {
@@ -460,7 +498,7 @@
       color: $perspectives-bleu-nuit;
     }
 
-    &-titreSousSection {
+    &-sousTitreSection {
       font-weight: 700;
       font-size: 1.125rem;
       padding: 1rem 0;
@@ -472,16 +510,22 @@
   .resumeDetailOffre {
     @include make-row();
 
-    &-colonne {
-      margin: 0;
-      @include make-col-ready();
+    @include media-breakpoint-down(md) {
+      display: block;
+    }
+
+    &-item {
+      padding-right: 15px;
+      padding-left: 15px;
+
+      &:not(:last-child) {
+        margin-bottom: 0.5rem;
+      }
 
       @include media-breakpoint-up(md) {
-        @include make-col(4);
-      }
-      @include media-breakpoint-down(md) {
-        @include make-col(12);
-        margin-bottom: 1rem;
+        &:not(:last-child) {
+          margin-right: 2rem;
+        }
       }
     }
 
