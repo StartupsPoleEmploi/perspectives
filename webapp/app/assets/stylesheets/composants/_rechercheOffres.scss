@@ -8,7 +8,7 @@
     width: 100%;
     border: 1px solid #F2F2F2;
     border-radius: 2px;
-    padding: 1rem;
+    padding: 0.85rem;
     color: $perspectives-bleu-nuit;
     font-size: 0.875rem;
     font-style: italic;
@@ -43,7 +43,7 @@
       content: '';
       position: absolute;
       right: 0.5rem;
-      top: 14px;
+      top: 15px;
       width: 10px;
       height: 10px;
       border: solid $perspectives-vert-emeraude;
@@ -57,7 +57,7 @@
   &-rayonRecherche {
     width: 100%;
     font-size: 0.875rem;
-    padding: 0.75rem;
+    padding: 0.85rem;
     border: none;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -75,7 +75,7 @@
   }
   .ap-nostyle {
     &-input {
-      padding: 0.85rem 1rem 1rem 2.5rem;
+      padding: 0.85rem 1rem 0.85rem 2.5rem;
 
       &-icon {
         background-color: transparent;
