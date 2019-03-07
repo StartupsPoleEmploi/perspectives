@@ -50,6 +50,7 @@ class RechercheOffreController @Inject()(cc: ControllerComponents,
           "candidatAuthentifie" -> optCandidatAuthentifieRequest.isCandidatAuthentifie,
           "cv" -> candidatQueryResult.exists(_.cv),
           "offres" -> offresCandidatQueryResult.offres,
+          "nbOffresTotal" -> offresCandidatQueryResult.nbOffresTotal,
           "csrfToken" -> CSRF.getToken.map(_.value),
           "recherche" -> Json.obj(
             "motCle" -> motCle,
@@ -87,7 +88,8 @@ class RechercheOffreController @Inject()(cc: ControllerComponents,
           candidatQueryHandler.handle(OffresCandidatQuery(buildCriteresRechercheOffre(rechercheOffresForm)))
             .map(offresCandidatQueryResult =>
               Ok(Json.obj(
-                "offres" -> offresCandidatQueryResult.offres
+                "offres" -> offresCandidatQueryResult.offres,
+                "nbOffresTotal" -> offresCandidatQueryResult.nbOffresTotal
               ))
             )
       )

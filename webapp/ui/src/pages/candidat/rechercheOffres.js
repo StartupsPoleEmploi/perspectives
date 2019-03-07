@@ -17,6 +17,7 @@ var app = new Vue({
             csrfToken: jsData.csrfToken,
             nbOffresParPage: 10,
             offres: jsData.offres,
+            nbOffresTotal: jsData.nbOffresTotal,
             indexPaginationOffre: 0,
             indexNavigationOffre: 0,
             offreCourante: {
@@ -178,6 +179,7 @@ var app = new Vue({
                 dataType: "json"
             }).done(function (response) {
                 app.offres = response.offres;
+                app.nbOffresTotal = response.nbOffresTotal;
                 app.$refs.pagination.modifierPagination(app.calculerPages());
                 app.indexPaginationOffre = 0;
                 app.cacherFiltres();

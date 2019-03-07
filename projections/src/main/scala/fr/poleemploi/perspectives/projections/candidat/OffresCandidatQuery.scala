@@ -5,4 +5,5 @@ import fr.poleemploi.perspectives.offre.domain._
 
 case class OffresCandidatQuery(criteresRechercheOffre: CriteresRechercheOffre) extends Query[OffresCandidatQueryResult]
 
-case class OffresCandidatQueryResult(offres: List[Offre]) extends QueryResult
+case class OffresCandidatQueryResult(offres: List[Offre],
+                                     nbOffresTotal: Int) extends QueryResult

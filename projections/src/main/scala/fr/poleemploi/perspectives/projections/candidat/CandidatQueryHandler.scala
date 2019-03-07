@@ -30,7 +30,7 @@ class CandidatQueryHandler(candidatProjection: CandidatProjection,
     case q: RechercherCandidatsQuery => candidatProjection.rechercherCandidats(q)
     case q: MetiersEvaluesNouvelInscritQuery => metiersEvaluesNouvelInscrit(q)
     case _: CodeROMEParDepartementQuery => referentielHabiletesMRS.codeROMEsParDepartement.map(CodeROMEParDepartementQueryResult(_))
-    case q: OffresCandidatQuery => referentielOffre.rechercherOffres(q.criteresRechercheOffre).map(OffresCandidatQueryResult)
+    case q: OffresCandidatQuery => referentielOffre.rechercherOffres(q.criteresRechercheOffre).map(r => OffresCandidatQueryResult(offres = r.offres, nbOffresTotal = r.nbOffresTotal))
     case q: CandidatPourRechercheOffreQuery => candidatProjection.candidatPourRechercheOffre(q)
   }
 

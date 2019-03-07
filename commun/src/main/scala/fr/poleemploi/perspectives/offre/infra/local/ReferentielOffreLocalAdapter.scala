@@ -6,12 +6,15 @@ import fr.poleemploi.perspectives.commun.domain.{CodeROME, Metier, NumeroTelepho
 import fr.poleemploi.perspectives.offre.domain._
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Random
 
 class ReferentielOffreLocalAdapter extends ReferentielOffre {
 
-  override def rechercherOffres(criteres: CriteresRechercheOffre): Future[List[Offre]] =
-    Future.successful(List.tabulate(40)(n =>
+  val nbResultats = 40
+
+  override def rechercherOffres(criteres: CriteresRechercheOffre): Future[RechercheOffreResult] =
+    Future.successful(List.tabulate(nbResultats)(n =>
     if (n % 4 == 0)
       Offre(
         id = OffreId(s"083LRLN$n"),
@@ -235,5 +238,9 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
         ),
         dateActualisation = ZonedDateTime.now()
       )
-  ).drop(Random.nextInt(40))) // pour ne pas toujours renvoyer le même nombre de résultats
+  ).drop(Random.nextInt(nbResultats))) // pour ne pas toujours renvoyer le même nombre de résultats
+    .map(offres => RechercheOffreResult(
+      offres = offres,
+      nbOffresTotal = offres.size
+    ))
 }

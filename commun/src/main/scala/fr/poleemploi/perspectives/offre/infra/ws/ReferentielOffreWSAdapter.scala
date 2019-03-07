@@ -2,7 +2,7 @@ package fr.poleemploi.perspectives.offre.infra.ws
 
 import fr.poleemploi.perspectives.commun.infra.ws.{WSAdapter, WebServiceException}
 import fr.poleemploi.perspectives.metier.infra.ws.AccessTokenResponse
-import fr.poleemploi.perspectives.offre.domain.{CriteresRechercheOffre, Offre, ReferentielOffre}
+import fr.poleemploi.perspectives.offre.domain.{CriteresRechercheOffre, RechercheOffreResult, ReferentielOffre}
 import play.api.cache.AsyncCacheApi
 import play.api.libs.json.JsArray
 import play.api.libs.ws.WSClient
@@ -21,8 +21,8 @@ class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
     * L'API est limitée en nombre d'appels par seconde, il faut donc gérer le statut 429. <br />
     * Ne gère que 3 CodeROME pour l'instant (découpage des requêtes à refaire pour en gérer plus)
     */
-  def rechercherOffres(criteres: CriteresRechercheOffre): Future[List[Offre]] = {
-    def callWS(accessTokenResponse: AccessTokenResponse, request: RechercheOffreRequest): Future[List[Offre]] =
+  def rechercherOffres(criteres: CriteresRechercheOffre): Future[RechercheOffreResult] = {
+    def callWS(accessTokenResponse: AccessTokenResponse, request: RechercheOffreRequest): Future[RechercheOffreResult] =
       wsClient.url(s"${config.urlApi}/offresdemploi/v2/offres/search")
         .addQueryStringParameters(request.params: _ *)
         .addHttpHeaders(
@@ -33,13 +33,21 @@ class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
         .get()
         .flatMap(r => filtreStatutReponse(response = r, statutNonGere = s => s != 200 && s != 206))
         .map(r =>
-          (r.json \ "resultats").as[JsArray].value.map(_.as[OffreResponse])
-            .flatMap(offreResponse => mapping.buildOffre(criteres, offreResponse)).toList
+          // On a pas le nombre de résultat total dans un seul champ : il correspond à la totalité des nbResultats contenus dans un filtre : on prend le premier qu'on trouve
+          RechercheOffreResult(
+            nbOffresTotal = ((r.json \ "filtresPossibles").as[JsArray].head \\ "nbResultats").map(_.as[Int]).sum,
+            offres = (r.json \ "resultats").as[JsArray].value
+              .map(_.as[OffreResponse])
+              .flatMap(offreResponse => mapping.buildOffre(criteres, offreResponse)).toList
+          )
         )
         .recoverWith {
           case e: WebServiceException if e.statut == 429 =>
             referentielOffreWSLogger.error(e.getMessage)
-            Future.successful(Nil)
+            Future.successful(RechercheOffreResult(
+              offres = Nil,
+              nbOffresTotal = 0
+            ))
         }
 
     for {
@@ -47,14 +55,17 @@ class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
       codeInsee <- criteres.codePostal
         .map(c => codeInsee(accessTokenResponse, c).map(Some(_)))
         .getOrElse(Future.successful(None))
-      offres <- callWS(
+      rechercheOffreResult <- callWS(
         accessTokenResponse = accessTokenResponse,
         request = mapping.buildRechercherOffresRequest(criteres, codeInsee)
       )
     } yield {
-      offres
-        .distinct
-        .sortWith((o1, o2) => o1.dateActualisation.isAfter(o2.dateActualisation))
+      RechercheOffreResult(
+        offres = rechercheOffreResult.offres
+          .distinct
+          .sortWith((o1, o2) => o1.dateActualisation.isAfter(o2.dateActualisation)),
+        nbOffresTotal = rechercheOffreResult.nbOffresTotal
+      )
     }
   }
 

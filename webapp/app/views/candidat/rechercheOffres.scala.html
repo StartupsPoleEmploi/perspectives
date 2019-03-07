@@ -23,7 +23,7 @@
                                     <span class="navigationOffres-action">Précedent</span>
                                 </div>
                                 <div class="navigationOffres-item navigationOffres-item--noir navigationOffres-pageCourante">
-                                    {{indexNavigationOffre + 1}} / {{offres.length}}
+                                    {{indexNavigationOffre + 1}} / {{nbOffresTotal}}
                                 </div>
                                 <div class="navigationOffres-item navigationOffres-page"
                                      v-show="!doitAfficherOffreSuivante()">
@@ -273,8 +273,8 @@
         </div>
         <div class="rechercheOffresConteneur">
             <div class="rechercheOffres">
-                <section class="rechercheOffres-nbResultats" v-if="offres.length > 0">
-                    <p class="offres-titre">{{offres.length}} offres sans expérience exigée peuvent vous intéresser</p>
+                <section class="rechercheOffres-nbResultats" v-if="nbOffresTotal > 0">
+                    <p class="offres-titre">{{nbOffresTotal}} offres sans expérience exigée peuvent vous intéresser</p>
                 </section>
                 <section class="rechercheOffres-formulaire">
                     <span class="formulaireRecherche-jsResponsive"></span>
