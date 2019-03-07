@@ -6,10 +6,11 @@
 @import "../../ui/node_modules/bootstrap/scss/modal";
 @import "../../ui/node_modules/bootstrap/scss/reboot";
 
-@import "partials/base";
-@import "partials/mixins";
-@import "partials/inputs";
-@import "partials/blocks";
+@import "objects/base";
+@import "objects/colors";
+@import "objects/mixins";
+@import "objects/blocks";
+@import "objects/inputs";
 
 @import "modules/navigation";
 @import "modules/flashMessages";
