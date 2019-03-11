@@ -24,12 +24,14 @@ trait AppendOnlyStore {
              datas: List[AppendOnlyData]): Future[Unit]
 
   /**
-    * Load records for a streamName.
+    * Load records for a streamName, ordered by their version. <br />
+    * If a version is specified, only the records after the version will be loaded.
     *
     * @param streamName Identifier of the stream
+    * @param version Optional version of the stream
     * @return List of <code>AppendedEvent</code> : empty when there is no records
     */
-  def readRecords(streamName: String): Future[List[AppendedEvent]]
+  def readRecords(streamName: String, version: Option[Int] = None): Future[List[AppendedEvent]]
 }
 
 /**

@@ -8,8 +8,3 @@ trait Aggregate {
 
   def version: Int
 }
-
-trait AggregateState {
-
-  def apply(event: Event): AggregateState
-}

@@ -7,8 +7,9 @@ import com.google.inject._
 import com.google.inject.name.Named
 import fr.poleemploi.eventsourcing.eventstore.{AppendOnlyStore, EventStore, EventStoreListener}
 import fr.poleemploi.eventsourcing.infra.akka.AkkaEventStoreListener
-import fr.poleemploi.eventsourcing.infra.jackson.EventStoreObjectMapperBuilder
-import fr.poleemploi.eventsourcing.infra.postgresql.{PostgreSQLAppendOnlyStore, PostgresDriver => EventSourcingPostgresDriver}
+import fr.poleemploi.eventsourcing.infra.jackson.EventSourcingObjectMapperBuilder
+import fr.poleemploi.eventsourcing.infra.postgresql.{PostgreSQLAppendOnlyStore, PostgreSQLSnapshotStore, PostgresDriver => EventSourcingPostgresDriver}
+import fr.poleemploi.eventsourcing.snapshotstore.SnapshotStore
 import fr.poleemploi.perspectives.authentification.infra.peconnect.PEConnectAdapter
 import fr.poleemploi.perspectives.authentification.infra.peconnect.jwt.PEConnectJWTAdapter
 import fr.poleemploi.perspectives.authentification.infra.peconnect.sql.PEConnectSqlAdapter
@@ -63,9 +64,9 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
-  @Named("eventStoreObjectMapper")
-  def eventObjectMapper: ObjectMapper =
-    EventStoreObjectMapperBuilder(PerspectivesEventSourcingModule).build()
+  @Named("eventSourcingObjectMapper")
+  def eventSourcingObjectMapper: ObjectMapper =
+    EventSourcingObjectMapperBuilder(PerspectivesEventSourcingModule).build()
 
   @Provides
   @Singleton
@@ -74,7 +75,7 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   def postgreSqlAppendOnlyStore(database: Database,
-                                @Named("eventStoreObjectMapper") objectMapper: ObjectMapper): PostgreSQLAppendOnlyStore =
+                                @Named("eventSourcingObjectMapper") objectMapper: ObjectMapper): PostgreSQLAppendOnlyStore =
     new PostgreSQLAppendOnlyStore(
       driver = EventSourcingPostgresDriver,
       database = database,
@@ -97,8 +98,21 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
+  def postgreSQLSnapshotStore(database: Database): PostgreSQLSnapshotStore =
+    new PostgreSQLSnapshotStore(
+      driver = EventSourcingPostgresDriver,
+      database = database
+    )
+
+  @Provides
+  @Singleton
+  def snapshotStore(postgreSQLSnapshotStore: Provider[PostgreSQLSnapshotStore]): SnapshotStore =
+    postgreSQLSnapshotStore.get()
+
+  @Provides
+  @Singleton
   def database(lifecycle: ApplicationLifecycle,
-                      configuration: Configuration): Database = {
+               configuration: Configuration): Database = {
     val database = Database.forConfig(
       path = "db.postgresql",
       config = configuration.underlying

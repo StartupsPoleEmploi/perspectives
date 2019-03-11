@@ -6,8 +6,9 @@ import com.google.inject.name.Named
 import com.google.inject.{AbstractModule, Provider, Provides, Singleton}
 import fr.poleemploi.eventsourcing.eventstore.{AppendOnlyStore, EventStore, EventStoreListener}
 import fr.poleemploi.eventsourcing.infra.akka.AkkaEventStoreListener
-import fr.poleemploi.eventsourcing.infra.jackson.EventStoreObjectMapperBuilder
-import fr.poleemploi.eventsourcing.infra.postgresql.{PostgreSQLAppendOnlyStore, PostgresDriver => EventSourcingPostgresDriver}
+import fr.poleemploi.eventsourcing.infra.jackson.EventSourcingObjectMapperBuilder
+import fr.poleemploi.eventsourcing.infra.postgresql.{PostgreSQLAppendOnlyStore, PostgreSQLSnapshotStore, PostgresDriver => EventSourcingPostgresDriver}
+import fr.poleemploi.eventsourcing.snapshotstore.SnapshotStore
 import fr.poleemploi.perspectives.authentification.infra.peconnect.sql.PEConnectSqlAdapter
 import fr.poleemploi.perspectives.candidat.dhae.infra.csv.{HabiletesDHAECsvAdapter, ImportHabiletesDHAECsvAdapter}
 import fr.poleemploi.perspectives.candidat.dhae.infra.local.ImportHabiletesDHAELocal
@@ -50,9 +51,9 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
-  @Named("eventStoreObjectMapper")
-  def eventObjectMapper: ObjectMapper =
-    EventStoreObjectMapperBuilder(PerspectivesEventSourcingModule).build()
+  @Named("eventSourcingObjectMapper")
+  def eventSourcingObjectMapper: ObjectMapper =
+    EventSourcingObjectMapperBuilder(PerspectivesEventSourcingModule).build()
 
   @Provides
   @Singleton
@@ -61,7 +62,7 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   def postgreSqlAppendOnlyStore(database: Database,
-                                @Named("eventStoreObjectMapper") objectMapper: ObjectMapper): PostgreSQLAppendOnlyStore =
+                                @Named("eventSourcingObjectMapper") objectMapper: ObjectMapper): PostgreSQLAppendOnlyStore =
     new PostgreSQLAppendOnlyStore(
       driver = EventSourcingPostgresDriver,
       database = database,
@@ -81,6 +82,19 @@ class InfraModule extends AbstractModule with ScalaModule {
       eventStoreListener = eventStoreListener,
       appendOnlyStore = appendOnlyStore
     )
+
+  @Provides
+  @Singleton
+  def postgreSQLSnapshotStore(database: Database): PostgreSQLSnapshotStore =
+    new PostgreSQLSnapshotStore(
+      driver = EventSourcingPostgresDriver,
+      database = database
+    )
+
+  @Provides
+  @Singleton
+  def snapshotStore(postgreSQLSnapshotStore: Provider[PostgreSQLSnapshotStore]): SnapshotStore =
+    postgreSQLSnapshotStore.get()
 
   @Provides
   @Singleton

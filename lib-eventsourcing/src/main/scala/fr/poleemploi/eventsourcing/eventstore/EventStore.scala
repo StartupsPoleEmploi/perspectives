@@ -6,7 +6,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 /**
-  * Class for high-level data access to the store. <br />
+  * Class for high-level data access to the event store. <br />
   * Handle concurrency exception and publish events.
   */
 class EventStore(eventStoreListener: EventStoreListener,
@@ -19,11 +19,21 @@ class EventStore(eventStoreListener: EventStoreListener,
     * @return
     */
   def loadEventStream(aggregateId: AggregateId): Future[EventStream] =
-    appendOnlyStore.readRecords(aggregateId.value).map { events =>
-      events.foldRight(EventStream(0, Nil))((ev, es) =>
-        EventStream(if (es.version < ev.streamVersion) ev.streamVersion else es.version, ev.event :: es.events)
-      )
-    }
+    appendOnlyStore
+      .readRecords(streamName = aggregateId.value, version = None)
+      .map(appendedEvents => buildEventStream(appendedEvents = appendedEvents, version = 0))
+
+  /**
+    * Load the EventStream corresponding to an aggregate after a specific version
+    *
+    * @param aggregateId id of the aggregate
+    * @param version Version of the aggregate
+    * @return
+    */
+  def loadEventStreamAfterVersion(aggregateId: AggregateId, version: Int): Future[EventStream] =
+    appendOnlyStore
+      .readRecords(streamName = aggregateId.value, version = Some(version))
+      .map(appendedEvents => buildEventStream(appendedEvents = appendedEvents, version = version))
 
   /**
     * Append events for the provided aggregate.
@@ -76,6 +86,14 @@ class EventStore(eventStoreListener: EventStoreListener,
       }
     )
   }
+
+  private def buildEventStream(appendedEvents: List[AppendedEvent], version: Int): EventStream =
+    appendedEvents.foldRight(EventStream(version, Nil))((ae, es) =>
+      EventStream(
+        version = if (es.version < ae.streamVersion) ae.streamVersion else es.version,
+        events = ae.event :: es.events
+      )
+    )
 }
 
 case class EventStream(version: Int, events: List[Event])

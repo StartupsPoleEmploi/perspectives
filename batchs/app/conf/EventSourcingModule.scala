@@ -1,8 +1,11 @@
 package conf
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.google.inject.name.Named
 import com.google.inject.{AbstractModule, Provides}
 import fr.poleemploi.cqrs.command.Command
 import fr.poleemploi.eventsourcing.eventstore.EventStore
+import fr.poleemploi.eventsourcing.snapshotstore.SnapshotStore
 import fr.poleemploi.eventsourcing.{AggregateRepository, Event}
 import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielHabiletesMRS
@@ -16,9 +19,21 @@ class EventSourcingModule extends AbstractModule {
 
   @Provides
   @Singleton
-  def candidatRepository(eventStore: EventStore): CandidatRepository =
+  def candidatSnapshotRepository(snapshotStore: SnapshotStore,
+                                 @Named("eventSourcingObjectMapper")
+                                 objectMapper: ObjectMapper): CandidatSnapshotRepository =
+    new CandidatSnapshotRepository(
+      snapshotStore = snapshotStore,
+      objectMapper = objectMapper
+    )
+
+  @Provides
+  @Singleton
+  def candidatRepository(eventStore: EventStore,
+                         snapshotRepository: CandidatSnapshotRepository): CandidatRepository =
     new CandidatRepository(
-      eventStore = eventStore
+      eventStore = eventStore,
+      snapshotRepository = snapshotRepository
     )
 
   @Provides

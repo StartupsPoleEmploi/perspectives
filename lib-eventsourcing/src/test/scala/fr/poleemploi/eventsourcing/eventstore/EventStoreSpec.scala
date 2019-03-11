@@ -33,7 +33,7 @@ class EventStoreSpec extends AsyncWordSpec with MustMatchers
   "loadEventStream" should {
     "retourner une version à 0 lorsqu'aucun evenement n'existe" in {
       // Given
-      when(appendOnlyStore.readRecords(aggregateId.value)) thenReturn Future.successful(List())
+      when(appendOnlyStore.readRecords(aggregateId.value, version = None)) thenReturn Future.successful(List())
 
       // When
       val future = eventStore.loadEventStream(aggregateId)
@@ -41,10 +41,20 @@ class EventStoreSpec extends AsyncWordSpec with MustMatchers
       // Then
       future map (eventStream => eventStream.version mustBe 0)
     }
+    "retourner un stream vide d'evenement lorsqu'aucun evenement n'existe" in {
+      // Given
+      when(appendOnlyStore.readRecords(aggregateId.value, version = None)) thenReturn Future.successful(List())
+
+      // When
+      val future = eventStore.loadEventStream(aggregateId)
+
+      // Then
+      future map (eventStream => eventStream.events.isEmpty mustBe true)
+    }
     "retourner la version de l'evenement lorsqu'il existe" in {
       // Given
       val datas = mockAppendedEvents(aggregateId.value, 1)
-      when(appendOnlyStore.readRecords(aggregateId.value)) thenReturn Future.successful(datas)
+      when(appendOnlyStore.readRecords(aggregateId.value, version = None)) thenReturn Future.successful(datas)
 
       // When
       val future = eventStore.loadEventStream(aggregateId)
@@ -55,7 +65,18 @@ class EventStoreSpec extends AsyncWordSpec with MustMatchers
     "retourner la version du dernier evenement lorsque des evenements existent" in {
       // Given
       val datas = mockAppendedEvents(aggregateId.value, 7)
-      when(appendOnlyStore.readRecords(aggregateId.value)) thenReturn Future.successful(datas)
+      when(appendOnlyStore.readRecords(aggregateId.value, version = None)) thenReturn Future.successful(datas)
+
+      // When
+      val future = eventStore.loadEventStream(aggregateId)
+
+      // Then
+      future map (eventStream => eventStream.version mustBe 7)
+    }
+    "retourner la version du dernier evenement lorsque des evenements existent et qu'il y a un trou dans les événements (solidité)" in {
+      // Given
+      val datas = mockAppendedEvents(aggregateId.value, 7)
+      when(appendOnlyStore.readRecords(aggregateId.value, version = None)) thenReturn Future.successful(datas.drop(2))
 
       // When
       val future = eventStore.loadEventStream(aggregateId)
@@ -66,7 +87,7 @@ class EventStoreSpec extends AsyncWordSpec with MustMatchers
     "retourner les evenements" in {
       // Given
       val datas = mockAppendedEvents(aggregateId.value, 4)
-      when(appendOnlyStore.readRecords(aggregateId.value)) thenReturn Future.successful(datas)
+      when(appendOnlyStore.readRecords(aggregateId.value, version = None)) thenReturn Future.successful(datas)
 
       // When
       val future = eventStore.loadEventStream(aggregateId)
@@ -77,7 +98,7 @@ class EventStoreSpec extends AsyncWordSpec with MustMatchers
     "retourner un stream d'evenements ordonnés" in {
       // Given
       val datas = mockAppendedEvents(aggregateId.value, 5)
-      when(appendOnlyStore.readRecords(aggregateId.value)) thenReturn Future.successful(datas)
+      when(appendOnlyStore.readRecords(aggregateId.value, version = None)) thenReturn Future.successful(datas)
 
       // When
       val future = eventStore.loadEventStream(aggregateId)

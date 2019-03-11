@@ -49,6 +49,12 @@ class PostgreSQLAppendOnlyStore(val driver: PostgresDriver,
       .sortBy(_.streamVersion.asc)
   }
 
+  val readRecordsAfterVersionQuery = Compiled { (streamName: Rep[String], version: Rep[Int]) =>
+    eventsTable
+      .filter(e => e.streamName === streamName && e.streamVersion > version)
+      .sortBy(_.streamVersion.asc)
+  }
+
   override def append(streamName: String,
                       expectedStreamVersion: Int,
                       datas: List[AppendOnlyData]): Future[Unit] = {
@@ -71,8 +77,10 @@ class PostgreSQLAppendOnlyStore(val driver: PostgresDriver,
       }
   }
 
-  override def readRecords(streamName: String): Future[List[AppendedEvent]] =
-    database.run(readRecordsQuery(streamName).result)
+  override def readRecords(streamName: String, version: Option[Int]): Future[List[AppendedEvent]] =
+    database.run(version
+      .map(v => readRecordsAfterVersionQuery(streamName, v))
+      .getOrElse(readRecordsQuery(streamName)).result)
       .map(_.toList.map(eventRecord =>
         AppendedEvent(
           streamName = eventRecord.streamName,

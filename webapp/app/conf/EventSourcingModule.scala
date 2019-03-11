@@ -1,8 +1,11 @@
 package conf
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.google.inject.name.Named
 import com.google.inject.{AbstractModule, Provides}
 import fr.poleemploi.cqrs.command.Command
 import fr.poleemploi.eventsourcing.eventstore.EventStore
+import fr.poleemploi.eventsourcing.snapshotstore.SnapshotStore
 import fr.poleemploi.eventsourcing.{AggregateRepository, Event}
 import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.candidat.cv.domain.CVService
@@ -23,9 +26,21 @@ class EventSourcingModule extends AbstractModule {
 
   @Provides
   @Singleton
-  def candidatRepository(eventStore: EventStore): CandidatRepository =
+  def candidatSnapshotRepository(snapshotStore: SnapshotStore,
+                                 @Named("eventSourcingObjectMapper")
+                                 objectMapper: ObjectMapper): CandidatSnapshotRepository =
+    new CandidatSnapshotRepository(
+      snapshotStore = snapshotStore,
+      objectMapper = objectMapper
+    )
+
+  @Provides
+  @Singleton
+  def candidatRepository(eventStore: EventStore,
+                         snapshotRepository: CandidatSnapshotRepository): CandidatRepository =
     new CandidatRepository(
-      eventStore = eventStore
+      eventStore = eventStore,
+      snapshotRepository = snapshotRepository
     )
 
   @Provides
@@ -57,9 +72,21 @@ class EventSourcingModule extends AbstractModule {
 
   @Provides
   @Singleton
-  def recruteurRepository(eventStore: EventStore): RecruteurRepository =
+  def recruteurSnapshotRepository(snapshotStore: SnapshotStore,
+                                  @Named("eventSourcingObjectMapper")
+                                  objectMapper: ObjectMapper): RecruteurSnapshotRepository =
+    new RecruteurSnapshotRepository(
+      snapshotStore = snapshotStore,
+      objectMapper = objectMapper
+    )
+
+  @Provides
+  @Singleton
+  def recruteurRepository(eventStore: EventStore,
+                          snapshotRepository: RecruteurSnapshotRepository): RecruteurRepository =
     new RecruteurRepository(
-      eventStore = eventStore
+      eventStore = eventStore,
+      snapshotRepository = snapshotRepository
     )
 
   @Provides
