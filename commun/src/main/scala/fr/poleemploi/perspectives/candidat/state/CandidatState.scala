@@ -17,7 +17,7 @@ trait CandidatState {
   def inscrire(context: CandidatContext, command: InscrireCandidatCommand, localisationService: LocalisationService): Future[List[Event]] =
     Future(default(context, command))
 
-  def modifierCriteres(context: CandidatContext, command: ModifierCriteresRechercheCommand): List[Event] =
+  def modifierCandidat(context: CandidatContext, command: ModifierCandidatCommand): List[Event] =
     default(context, command)
 
   def connecter(context: CandidatContext, command: ConnecterCandidatCommand, localisationService: LocalisationService): Future[List[Event]] =

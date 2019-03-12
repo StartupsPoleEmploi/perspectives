@@ -8,15 +8,13 @@ import controllers.AssetsFinder
 import controllers.FlashMessages._
 import fr.poleemploi.cqrs.projection.UnauthorizedQueryException
 import fr.poleemploi.perspectives.candidat.CandidatId
-import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite, Coordonnees, Localisation}
-import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
+import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite, Coordonnees}
 import fr.poleemploi.perspectives.projections.candidat._
 import fr.poleemploi.perspectives.projections.candidat.cv.CVCandidatPourRecruteurQuery
-import fr.poleemploi.perspectives.projections.rechercheCandidat.RechercheCandidatQueryHandler
+import fr.poleemploi.perspectives.projections.metier.{MetierQueryHandler, MetierRechercheParCodeROMEQuery, SecteurActiviteParCodeQuery, SecteursActiviteQuery}
 import fr.poleemploi.perspectives.projections.recruteur._
 import fr.poleemploi.perspectives.projections.recruteur.alerte.AlertesRecruteurQuery
 import fr.poleemploi.perspectives.recruteur._
-import fr.poleemploi.perspectives.recruteur.alerte.domain.{AlerteId, FrequenceAlerte}
 import fr.poleemploi.perspectives.recruteur.commentaire.domain.ContexteRecherche
 import javax.inject.{Inject, Singleton}
 import play.api.http.HttpEntity
@@ -35,7 +33,7 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
                                             candidatQueryHandler: CandidatQueryHandler,
                                             recruteurQueryHandler: RecruteurQueryHandler,
                                             recruteurCommandHandler: RecruteurCommandHandler,
-                                            rechercheCandidatQueryHandler: RechercheCandidatQueryHandler,
+                                            metierQueryHandler: MetierQueryHandler,
                                             recruteurAuthentifieAction: RecruteurAuthentifieAction) extends AbstractController(cc) {
 
   def index(secteurActivite: Option[String], metier: Option[String],
@@ -55,29 +53,34 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
         (for {
           alertesRecruteurQueryResult <- recruteurQueryHandler.handle(AlertesRecruteurQuery(recruteurAuthentifieRequest.recruteurId))
           typeRecruteur <- getTypeRecruteur(recruteurAuthentifieRequest)
-          query = RechercherCandidatsQuery(
+          query = RechercheCandidatsQuery(
             typeRecruteur = typeRecruteur,
-            codeSecteurActivite = rechercheCandidatForm.secteurActivite.map(CodeSecteurActivite(_)),
+            codeSecteurActivite = rechercheCandidatForm.secteurActivite.map(CodeSecteurActivite),
             codeROME = rechercheCandidatForm.metier.map(CodeROME),
             coordonnees = rechercheCandidatForm.coordonnees,
             nbPagesACharger = 4,
             page = None
           )
           rechercheCandidatQueryResult <- candidatQueryHandler.handle(query)
+          secteursActiviteQueryResult <- metierQueryHandler.handle(SecteursActiviteQuery)
+          metierChoisi <- rechercheCandidatForm.metier
+            .map(m => metierQueryHandler.handle(MetierRechercheParCodeROMEQuery(CodeROME(m))).map(r => Some(r.metier)))
+            .getOrElse(Future.successful(None))
+          secteurActiviteChoisi <- rechercheCandidatForm.secteurActivite
+            .map(s => metierQueryHandler.handle(SecteurActiviteParCodeQuery(CodeSecteurActivite(s))).map(r => Some(r.secteurActiviteDTO)))
+            .getOrElse(Future.successful(None))
         } yield {
-          val secteursAvecMetiers = rechercheCandidatQueryHandler.secteursProposes
           Ok(views.html.recruteur.rechercheCandidat(
             rechercheCandidatForm = RechercheCandidatForm.form.fill(rechercheCandidatForm),
             recruteurAuthentifie = recruteurAuthentifieRequest.recruteurAuthentifie,
             rechercheCandidatQueryResult = rechercheCandidatQueryResult,
-            metierChoisi = rechercheCandidatForm.metier.flatMap(c => rechercheCandidatQueryHandler.metierProposeParCode(CodeROME(c))),
-            secteurActiviteChoisi = rechercheCandidatForm.secteurActivite.map(s => rechercheCandidatQueryHandler.secteurProposeParCode(CodeSecteurActivite(s))),
-            secteursActivites = rechercheCandidatQueryHandler.secteursProposes,
+            metierChoisi = metierChoisi,
+            secteurActiviteChoisi = secteurActiviteChoisi,
+            secteursActivites = secteursActiviteQueryResult.secteursActivites,
             jsData = Json.obj(
               "secteurActivite" -> rechercheCandidatForm.secteurActivite,
-              "secteursActivites" -> secteursAvecMetiers,
+              "secteursActivites" -> secteursActiviteQueryResult.secteursActivites,
               "metier" -> rechercheCandidatForm.metier,
-              "metiers" -> secteursAvecMetiers.flatMap(_.metiers),
               "localisation" -> rechercheCandidatForm.coordonnees.map(c => Json.obj(
                 "label" -> localisation,
                 "latitude" -> c.latitude,
@@ -107,9 +110,9 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
         rechercheCandidatForm => {
           (for {
             typeRecruteur <- getTypeRecruteur(recruteurAuthentifieRequest)
-            query = RechercherCandidatsQuery(
+            query = RechercheCandidatsQuery(
               typeRecruteur = typeRecruteur,
-              codeSecteurActivite = rechercheCandidatForm.secteurActivite.map(CodeSecteurActivite(_)),
+              codeSecteurActivite = rechercheCandidatForm.secteurActivite.map(CodeSecteurActivite),
               codeROME = rechercheCandidatForm.metier.map(CodeROME),
               coordonnees = rechercheCandidatForm.coordonnees,
               nbPagesACharger = rechercheCandidatForm.pagination.map(_ => 1).getOrElse(4),
@@ -120,14 +123,21 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
               ))
             )
             rechercheCandidatQueryResult <- candidatQueryHandler.handle(query)
+            secteursActiviteQueryResult <- metierQueryHandler.handle(SecteursActiviteQuery)
+            metierChoisi <- rechercheCandidatForm.metier
+              .map(m => metierQueryHandler.handle(MetierRechercheParCodeROMEQuery(CodeROME(m))).map(r => Some(r.metier)))
+              .getOrElse(Future.successful(None))
+            secteurActiviteChoisi <- rechercheCandidatForm.secteurActivite
+              .map(s => metierQueryHandler.handle(SecteurActiviteParCodeQuery(CodeSecteurActivite(s))).map(r => Some(r.secteurActiviteDTO)))
+              .getOrElse(Future.successful(None))
           } yield {
             Ok(
               Json.obj(
                 "html" -> views.html.recruteur.partials.resultatsRecherche(
                   rechercheCandidatQueryResult = rechercheCandidatQueryResult,
-                  metierChoisi = rechercheCandidatForm.metier.flatMap(c => rechercheCandidatQueryHandler.metierProposeParCode(CodeROME(c))),
-                  secteurActiviteChoisi = rechercheCandidatForm.secteurActivite.map(s => rechercheCandidatQueryHandler.secteurProposeParCode(CodeSecteurActivite(s))),
-                  secteursActivites = rechercheCandidatQueryHandler.secteursProposes
+                  metierChoisi = metierChoisi,
+                  secteurActiviteChoisi = secteurActiviteChoisi,
+                  secteursActivites = secteursActiviteQueryResult.secteursActivites,
                 ).body.replaceAll("\n", ""),
                 "nbCandidatsTotal" -> rechercheCandidatQueryResult.nbCandidatsTotal,
                 "nbCandidats" -> rechercheCandidatQueryResult.nbCandidats,
@@ -183,8 +193,8 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
             CommenterListeCandidatsCommand(
               id = recruteurAuthentifieRequest.recruteurId,
               contexteRecherche = ContexteRecherche(
-                secteurActivite = commenterListeCandidatsForm.secteurActiviteRecherche.map(s => rechercheCandidatQueryHandler.secteurProposeParCode(CodeSecteurActivite(s))),
-                metier = commenterListeCandidatsForm.metierRecherche.flatMap(c => rechercheCandidatQueryHandler.metierProposeParCode(CodeROME(c))),
+                secteurActivite = commenterListeCandidatsForm.secteurActiviteRecherche,
+                metier = commenterListeCandidatsForm.metierRecherche,
                 localisation = commenterListeCandidatsForm.localisationRecherche
               ),
               commentaire = commenterListeCandidatsForm.commentaire
@@ -195,41 +205,7 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
     }(recruteurAuthentifieRequest)
   }
 
-  def creerAlerte: Action[AnyContent] = recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
-    messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
-      CreerAlerteForm.form.bindFromRequest.fold(
-        formWithErrors => Future.successful(BadRequest(formWithErrors.errorsAsJson)),
-        creerAlerteForm => {
-          val alerteId = recruteurCommandHandler.newAlerteId
-          recruteurCommandHandler.handle(
-            CreerAlerteCommand(
-              id = recruteurAuthentifieRequest.recruteurId,
-              alerteId = alerteId,
-              codeSecteurActivite = creerAlerteForm.secteurActivite.map(CodeSecteurActivite(_)),
-              codeROME = creerAlerteForm.metier.map(CodeROME),
-              localisation = creerAlerteForm.localisation.map(l => Localisation(
-                label = l.label,
-                coordonnees = Coordonnees(
-                  latitude = l.latitude,
-                  longitude = l.longitude
-                )
-              )),
-              frequenceAlerte = FrequenceAlerte.frequenceAlerte(creerAlerteForm.frequence).get
-            )
-          ).map(_ => Created(alerteId.value))
-        }
-      )
-    }(recruteurAuthentifieRequest)
-  }
 
-  def supprimerAlerte(alerteId: String): Action[AnyContent] = recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
-    messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
-      recruteurCommandHandler.handle(SupprimerAlerteCommand(
-        id = recruteurAuthentifieRequest.recruteurId,
-        alerteId = AlerteId(alerteId)
-      )).map(_ => NoContent)
-    }(recruteurAuthentifieRequest)
-  }
 }
 
 case class ProfilRecruteurIncompletException() extends Exception

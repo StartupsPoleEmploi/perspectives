@@ -21,7 +21,8 @@ object PerspectivesEventSourcingModule extends EventSourcingModule {
   addStringValueObject(classOf[Prenom], Prenom(_))
   addStringValueObject(classOf[Email], Email)
   addStringValueObject(classOf[CodeROME], CodeROME)
-  addStringValueObject(classOf[CodeSecteurActivite], CodeSecteurActivite(_))
+  addStringValueObject(classOf[CodeSecteurActivite], CodeSecteurActivite)
+  addStringValueObject(classOf[CodeDomaineProfessionnel], CodeDomaineProfessionnel)
   addStringValueObject(classOf[CodeDepartement], CodeDepartement)
   addStringValueObject(classOf[TypeRecruteur], TypeRecruteur(_))
   addStringValueObject(classOf[StatutDemandeurEmploi], StatutDemandeurEmploi(_))
@@ -29,7 +30,6 @@ object PerspectivesEventSourcingModule extends EventSourcingModule {
   addStringValueObject(classOf[TypeMedia], TypeMedia(_))
   addStringValueObject(classOf[AlerteId], AlerteId)
   addStringValueObject(classOf[FrequenceAlerte], FrequenceAlerte(_))
-  addStringValueObject(classOf[Habilete], Habilete(_))
-
-  addIntValueObject(classOf[RayonRecherche], RayonRecherche(_))
+  addStringValueObject(classOf[Habilete], Habilete)
+  addStringValueObject(classOf[UniteLongueur], UniteLongueur(_))
 }

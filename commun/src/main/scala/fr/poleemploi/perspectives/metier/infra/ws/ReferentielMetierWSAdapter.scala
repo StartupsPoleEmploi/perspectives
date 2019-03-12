@@ -1,8 +1,8 @@
 package fr.poleemploi.perspectives.metier.infra.ws
 
-import fr.poleemploi.perspectives.commun.domain.{CodeROME, Metier}
+import fr.poleemploi.perspectives.commun.domain.CodeROME
 import fr.poleemploi.perspectives.commun.infra.ws.WSAdapter
-import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
+import fr.poleemploi.perspectives.metier.domain.Metier
 import play.api.cache.AsyncCacheApi
 import play.api.libs.ws.WSClient
 
@@ -13,8 +13,9 @@ import scala.concurrent.Future
   * Se base sur l'API infotravail de l'emploi store
   */
 class ReferentielMetierWSAdapter(config: ReferentielMetierWSAdapterConfig,
+                                 mapping: ReferentielMetierWSMapping,
                                  cacheApi: AsyncCacheApi,
-                                 wsClient: WSClient) extends ReferentielMetier with WSAdapter {
+                                 wsClient: WSClient) extends WSAdapter {
 
   private val metiersResourceId = "767d0c4a-277b-493c-84b7-00143933efce"
   private val cacheKeyMetiers = "referentiel.metiers"
@@ -22,7 +23,7 @@ class ReferentielMetierWSAdapter(config: ReferentielMetierWSAdapterConfig,
   /**
     * Renvoie une exception si le Métier n'est associé à aucun code.
     */
-  override def metiersParCode(codesROME: List[CodeROME]): Future[List[Metier]] =
+  def metiersParCode(codesROME: Set[CodeROME]): Future[Set[Metier]] =
     cacheApi.getOrElseUpdate(cacheKeyMetiers)(
       for {
         accessToken <- genererAccessToken
@@ -67,7 +68,8 @@ class ReferentielMetierWSAdapter(config: ReferentielMetierWSAdapterConfig,
     futures.map { l =>
       l.flatMap(_.records)
         .foldLeft(Map[CodeROME, Metier]())(
-          (map, romeCardResponse) => map + (CodeROME(romeCardResponse.romeProfessionCardCode) -> romeCardResponse.toMetier)
+          (map, romeCardResponse) =>
+            map + (CodeROME(romeCardResponse.romeProfessionCardCode) -> mapping.buildMetier(romeCardResponse))
         )
     }
   }

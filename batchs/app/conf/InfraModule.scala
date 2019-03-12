@@ -25,10 +25,11 @@ import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetEmailingService
 import fr.poleemploi.perspectives.emailing.infra.sql.MailjetSqlAdapter
 import fr.poleemploi.perspectives.emailing.infra.ws.{MailjetWSAdapter, MailjetWSMapping}
 import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
-import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapter
-import fr.poleemploi.perspectives.projections.candidat.infra.elasticsearch.CandidatProjectionElasticsearchAdapter
+import fr.poleemploi.perspectives.metier.infra.ReferentielMetierImpl
+import fr.poleemploi.perspectives.metier.infra.elasticsearch.ReferentielMetierElasticsearchAdapter
+import fr.poleemploi.perspectives.metier.infra.ws.{ReferentielMetierWSAdapter, ReferentielMetierWSMapping}
+import fr.poleemploi.perspectives.projections.candidat.infra.elasticsearch.{CandidatProjectionElasticsearchAdapter, CandidatProjectionElasticsearchMapping}
 import fr.poleemploi.perspectives.projections.recruteur.alerte.infra.sql.AlerteRecruteurSqlAdapter
-import fr.poleemploi.perspectives.rechercheCandidat.domain.RechercheCandidatService
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
 import play.api.cache.AsyncCacheApi
@@ -183,13 +184,35 @@ class InfraModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
+  def referentielMetierWSMapping: ReferentielMetierWSMapping =
+    new ReferentielMetierWSMapping()
+
+  @Provides
   def referentielMetierWSAdapter(wsClient: WSClient,
+                                 mapping: ReferentielMetierWSMapping,
                                  batchsConfig: BatchsConfig,
                                  cacheApi: AsyncCacheApi): ReferentielMetierWSAdapter =
     new ReferentielMetierWSAdapter(
       config = batchsConfig.referentielMetierWSAdapterConfig,
+      mapping = mapping,
       wsClient = wsClient,
       cacheApi = cacheApi
+    )
+
+  @Provides
+  def referentielMetierElasticsearchAdapter(wsClient: WSClient,
+                                            batchsConfig: BatchsConfig): ReferentielMetierElasticsearchAdapter =
+    new ReferentielMetierElasticsearchAdapter(
+      esConfig = batchsConfig.esConfig,
+      wsClient = wsClient
+    )
+
+  @Provides
+  def referentielMetierImpl(referentielMetierWSAdapter: ReferentielMetierWSAdapter,
+                            referentielMetierElasticsearchAdapter: ReferentielMetierElasticsearchAdapter): ReferentielMetierImpl =
+    new ReferentielMetierImpl(
+      wsAdapter = referentielMetierWSAdapter,
+      elasticsearchAdapter = referentielMetierElasticsearchAdapter
     )
 
   @Provides
@@ -243,22 +266,24 @@ class InfraModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
-  def candidatProjectionElasticsearchAdapter(batchsConfig: BatchsConfig,
-                                             wsClient: WSClient,
-                                             referentielMetier: ReferentielMetier,
-                                             rechercheCandidatService: RechercheCandidatService): CandidatProjectionElasticsearchAdapter =
-    new CandidatProjectionElasticsearchAdapter(
-      wsClient = wsClient,
-      esConfig = batchsConfig.esConfig,
-      referentielMetier = referentielMetier,
-      rechercheCandidatService = rechercheCandidatService
+  def candidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetier): CandidatProjectionElasticsearchMapping =
+    new CandidatProjectionElasticsearchMapping(
+      referentielMetier = referentielMetier
     )
 
   @Provides
-  def alerteRecruteurSqlAdapter(database: Database,
-                                rechercheCandidatService: RechercheCandidatService): AlerteRecruteurSqlAdapter =
+  def candidatProjectionElasticsearchAdapter(batchsConfig: BatchsConfig,
+                                             wsClient: WSClient,
+                                             mapping: CandidatProjectionElasticsearchMapping): CandidatProjectionElasticsearchAdapter =
+    new CandidatProjectionElasticsearchAdapter(
+      wsClient = wsClient,
+      esConfig = batchsConfig.esConfig,
+      mapping = mapping
+    )
+
+  @Provides
+  def alerteRecruteurSqlAdapter(database: Database): AlerteRecruteurSqlAdapter =
     new AlerteRecruteurSqlAdapter(
-      database = database,
-      rechercheCandidatService = rechercheCandidatService
+      database = database
     )
 }

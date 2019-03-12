@@ -2,32 +2,33 @@ package fr.poleemploi.perspectives.projections.recruteur.alerte
 
 import fr.poleemploi.cqrs.projection.{Query, QueryResult}
 import fr.poleemploi.perspectives.commun.domain._
-import fr.poleemploi.perspectives.recruteur.alerte.domain.{AlerteId, FrequenceAlerte}
-import fr.poleemploi.perspectives.recruteur.{RecruteurId, TypeRecruteur}
 import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
+import fr.poleemploi.perspectives.recruteur.alerte.domain.{AlerteId, FrequenceAlerte, LocalisationAlerte}
+import fr.poleemploi.perspectives.recruteur.{RecruteurId, TypeRecruteur}
 import play.api.libs.json.{Json, Writes}
 
 case class AlertesRecruteurQuery(recruteurId: RecruteurId) extends Query[AlertesRecruteurQueryResult]
 
-case class AlertesRecruteurQueryResult(alertes: List[AlerteRecruteurDto]) extends QueryResult
+case class AlertesRecruteurQueryResult(alertes: List[AlerteRecruteurDTO]) extends QueryResult
 
-case class AlerteRecruteurDto(recruteurId: RecruteurId,
+case class AlerteRecruteurDTO(recruteurId: RecruteurId,
                               typeRecruteur: TypeRecruteur,
                               email: Email,
                               alerteId: AlerteId,
                               frequence: FrequenceAlerte,
-                              secteurActivite: Option[SecteurActivite],
-                              metier: Option[Metier],
-                              localisation: Option[Localisation])
+                              codeSecteurActivite: Option[CodeSecteurActivite],
+                              codeROME: Option[CodeROME],
+                              localisation: Option[LocalisationAlerte])
 
-object AlerteRecruteurDto {
+object AlerteRecruteurDTO {
 
-  implicit val writes: Writes[AlerteRecruteurDto] = Writes { a =>
+  // FIXME : writes utilisé pour le front et DTO utilisé pour les batchs : REUSE NAZE
+  implicit val writes: Writes[AlerteRecruteurDTO] = Writes { a =>
     Json.obj(
       "id" -> a.alerteId,
       "frequence" -> a.frequence,
-      "secteurActivite" -> a.secteurActivite.map(_.code.value),
-      "metier" -> a.metier.map(_.codeROME.value),
+      "secteurActivite" -> a.codeSecteurActivite,
+      "codeROME" -> a.codeROME,
       "localisation" -> Json.obj(
         "label" -> a.localisation.map(_.label),
         "latitude" -> a.localisation.map(_.coordonnees.latitude),

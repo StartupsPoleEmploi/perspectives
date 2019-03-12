@@ -4,70 +4,23 @@
     background: linear-gradient(to bottom right, rgba(255, 255, 255, 1) 0%, rgba(130, 204, 221, 0.15) 100%);
   }
 
-  .intro {
-    @include make-container();
-    @include make-container-max-widths();
-    padding-bottom: 3rem;
-
-    &-titre {
-      @extend %titrePrincipal;
-      color: $noir;
-      text-align: left;
-      width: 65%;
-
-      @include media-breakpoint-down(md) {
-        width: 100%;
-        text-align: center;
-      }
-    }
+  .titreLanding {
+    font-weight: 300;
+    font-size: 2em;
+    letter-spacing: 1px;
+    line-height: 1.2;
   }
 
   .introVersion {
-    color: $noir;
     font-size: 0.8em;
-    text-transform: uppercase;
-    font-weight: 700;
     letter-spacing: 1.42px;
     line-height: 19px;
-    padding-top: 3em;
 
     &-deco {
       background: $bleu-ciel;
       width: 5px;
       height: 5px;
       display: inline-block;
-    }
-  }
-
-  .introTitres {
-    padding: 0.5em 0 3em 0;
-  }
-
-  .presentation {
-    @include make-row();
-  }
-
-  .introIllustration {
-    @include make-col-ready();
-
-    @include media-breakpoint-up(lg) {
-      @include make-col(6);
-    }
-
-    @include media-breakpoint-down(lg) {
-      display: none;
-    }
-  }
-
-  .avantages {
-    @include make-col-ready();
-
-    @include media-breakpoint-up(lg) {
-      @include make-col(6);
-    }
-
-    @include media-breakpoint-down(lg) {
-      @include make-col(12);
     }
   }
 
@@ -94,8 +47,6 @@
   }
 
   .introActions {
-    text-align: center;
-
     &-sponsor {
       color: $noir;
       padding-top: 0.7em;
@@ -109,8 +60,6 @@
     margin-bottom: 2em;
 
     &-titre {
-      @extend %titrePrincipal;
-      color: $noir;
       padding: 3rem 0;
       margin: 0;
     }
@@ -136,23 +85,12 @@
   }
 
   .definition {
-    @include make-container();
-    @include make-container-max-widths();
-    padding-top: 3rem;
-    padding-bottom: 3rem;
-
     &-texte {
       text-align: center;
       color: $noir;
       font-size: 20px;
       letter-spacing: 1px;
       line-height: 32px;
-    }
-
-    &-titre {
-      @extend %titrePrincipal;
-      color: $noir;
-      text-align: center;
     }
 
     &-lien {
@@ -165,34 +103,10 @@
     }
   }
 
-  .definitionTitres {
-    padding-bottom: 3rem;
-  }
-
-  .temoignagesRecruteur {
-    @include make-container();
-    @include make-container-max-widths();
-
-    &-titre {
-      @extend %titrePrincipal;
-      color: $noir;
-      text-align: center;
-      padding-bottom: 3rem;
-    }
-
-    .temoignage {
-      color: $noir;
-    }
-  }
-
   .videoPresentation {
     position: relative;
     height: 0;
     padding-bottom: 56.25%;
     margin-bottom: 3rem;
-  }
-
-  .inscription {
-    text-align: center;
   }
 }

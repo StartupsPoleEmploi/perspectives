@@ -84,10 +84,10 @@ var app = new Vue({
                 app.candidats.forEach(function(c, index, array) {
                     if (c.candidatId === form.candidatId) {candidatIndex = index}
                 });
-                if (app.candidats[candidatIndex].metiersEvalues.find(function(m) {
+                if (app.candidats[candidatIndex].metiersValides.find(function(m) {
                     return m.codeROME === form.codeROME;
                 }) === undefined) {
-                    app.candidats[candidatIndex].metiersEvalues.push({codeROME: form.codeROME, label: ""});
+                    app.candidats[candidatIndex].metiersValides.push({codeROME: form.codeROME, label: ""});
                 }
             }).fail(function (jqXHR) {
                 if (jqXHR.status === 400) {

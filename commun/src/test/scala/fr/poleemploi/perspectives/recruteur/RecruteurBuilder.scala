@@ -4,7 +4,7 @@ import java.util.UUID
 
 import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.perspectives.commun.domain._
-import fr.poleemploi.perspectives.recruteur.alerte.domain.{AlerteId, FrequenceAlerte}
+import fr.poleemploi.perspectives.recruteur.alerte.domain.{AlerteId, FrequenceAlerte, LocalisationAlerte}
 
 import scala.collection.mutable.ListBuffer
 
@@ -52,7 +52,7 @@ class RecruteurBuilder {
                  frequenceAlerte: Option[FrequenceAlerte] = None,
                  codeSecteurActivite: Option[CodeSecteurActivite] = None,
                  codeROME: Option[CodeROME] = None,
-                 localisation: Option[Localisation] = None): RecruteurBuilder = {
+                 localisation: Option[LocalisationAlerte] = None): RecruteurBuilder = {
     events += AlerteRecruteurCreeEvent(
       recruteurId = recruteurId,
       typeRecruteur = typeRecruteur.getOrElse(TypeRecruteur.ENTREPRISE),
@@ -61,7 +61,7 @@ class RecruteurBuilder {
       frequence = frequenceAlerte.getOrElse(FrequenceAlerte.HEBDOMADAIRE),
       codeSecteurActivite = codeSecteurActivite.orElse(Some(CodeSecteurActivite("H"))),
       codeROME = codeROME.orElse(Some(CodeROME("H2909"))),
-      localisation = localisation.orElse(Some(Localisation(
+      localisation = localisation.orElse(Some(LocalisationAlerte(
         label = "85",
         coordonnees = Coordonnees(
           latitude = 46.8329,

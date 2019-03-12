@@ -9,11 +9,6 @@
     padding: 3rem 1rem 0 1rem;
   }
 
-  .boutonRecherche {
-    @include boutonAction();
-    width: 100%;
-  }
-
   .rechercheOffres {
     @include make-row();
 
@@ -120,18 +115,6 @@
   .filtre {
     @extend %liste;
     font-size: 0.875rem;
-
-    &-item {
-      color: $noir;
-
-      &:not(:last-child) {
-        margin-bottom: 0.5rem;
-      }
-    }
-  }
-
-  .filtreContrat {
-    margin-bottom: 1rem;
   }
 
   .offres {
@@ -259,8 +242,6 @@
     }
 
     &-bouton {
-      @include boutonAction();
-
       @include media-breakpoint-down(md) {
         width: 100%;
       }
@@ -649,11 +630,6 @@
       left: 10px;
       top: 10px;
     }
-  }
-
-  .boutonPostuler {
-    @include boutonAction();
-    width: 100%;
   }
 
   .infosPostuler {

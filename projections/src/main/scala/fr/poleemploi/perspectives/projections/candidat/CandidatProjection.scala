@@ -14,6 +14,7 @@ trait CandidatProjection extends Projection {
 
   override def onEvent: ReceiveEvent = {
     case e: CandidatInscritEvent => onCandidatInscritEvent(e)
+    case e: VisibiliteRecruteurModifieeEvent => onVisibiliteRecruteurModifieeEvent(e)
     case e: CandidatConnecteEvent => onCandidatConnecteEvent(e)
     case e: ProfilCandidatModifieEvent => onProfilModifieEvent(e)
     case e: CriteresRechercheModifiesEvent => onCriteresRechercheModifiesEvent(e)
@@ -26,19 +27,25 @@ trait CandidatProjection extends Projection {
     case e: RepriseEmploiDeclareeParConseillerEvent => onRepriseEmploiDeclareeParConseillerEvent(e)
   }
 
-  def candidatSaisieCriteresRecherche(query: CandidatSaisieCriteresRechercheQuery): Future[CandidatSaisieCriteresRechercheQueryResult]
+  def saisieCriteresRecherche(query: CandidatSaisieCriteresRechercheQuery): Future[CandidatSaisieCriteresRechercheQueryResult]
 
-  def candidatCriteresRecherche(query: CandidatCriteresRechercheQuery): Future[CandidatCriteresRechercheQueryResult]
+  def localisation(query: CandidatLocalisationQuery): Future[CandidatLocalisationQueryResult]
 
-  def candidatPourRechercheOffre(query: CandidatPourRechercheOffreQuery): Future[CandidatPourRechercheOffreQueryResult]
+  def metiersValides(query: CandidatMetiersValidesQuery): Future[CandidatMetiersValidesQueryResult]
 
-  def candidatContactRecruteur(candidatId: CandidatId): Future[CandidatContactRecruteurDto]
+  def depotCV(query: CandidatDepotCVQuery): Future[CandidatDepotCVQueryResult]
 
-  def rechercherCandidats(query: RechercherCandidatsQuery): Future[RechercheCandidatQueryResult]
+  def rechercheOffre(query: CandidatPourRechercheOffreQuery): Future[CandidatPourRechercheOffreQueryResult]
+
+  def candidatContactRecruteur(candidatId: CandidatId): Future[CandidatContactRecruteurQueryResult]
+
+  def rechercherCandidats(query: RechercheCandidatsQuery): Future[RechercheCandidatQueryResult]
 
   def listerPourConseiller(query: CandidatsPourConseillerQuery): Future[CandidatsPourConseillerQueryResult]
 
   def onCandidatInscritEvent(event: CandidatInscritEvent): Future[Unit]
+
+  def onVisibiliteRecruteurModifieeEvent(event: VisibiliteRecruteurModifieeEvent): Future[Unit]
 
   def onCandidatConnecteEvent(event: CandidatConnecteEvent): Future[Unit]
 

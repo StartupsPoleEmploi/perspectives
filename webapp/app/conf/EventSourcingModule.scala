@@ -54,7 +54,7 @@ class EventSourcingModule extends AbstractModule {
 
       override def configure: PartialFunction[Command[Candidat], Candidat => Future[List[Event]]] = {
         case command: InscrireCandidatCommand => c => c.inscrire(command, localisationService)
-        case command: ModifierCriteresRechercheCommand => c => Future(c.modifierCriteres(command))
+        case command: ModifierCandidatCommand => c => Future(c.modifierCandidat(command))
         case command: ConnecterCandidatCommand => c => c.connecter(command, localisationService)
         case command: AjouterCVCommand => c => c.ajouterCV(command, cvService)
         case command: RemplacerCVCommand => c => c.remplacerCV(command, cvService)

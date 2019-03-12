@@ -47,7 +47,7 @@ class MRSValideesCandidatsCSVAdapter(val actorSystem: ActorSystem) {
       ).map(data =>
       MRSValideeCandidatPEConnect(
         peConnectId = PEConnectId(data("dc_ididentiteexterne")),
-        codeROME = CodeROME(data("dc_rome_id")), // Pas de validation du code ROME, on fait confiance au SI Pole Emploi
+        codeROME = CodeROME(data("dc_rome_id")),
         codeDepartement = CodeDepartement(data("dc_siteprescripteur").take(2)),
         dateEvaluation = data.get("dd_daterealisation").map(s => LocalDate.parse(s.take(10), dateTimeFormatter)).get
       )

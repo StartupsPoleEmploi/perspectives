@@ -9,18 +9,16 @@
   padding-top: 2rem;
   justify-content: center;
 
-  &-titre {
-    @include make-col($grid-columns);
-    @extend %titrePrincipal;
-    color: $noir;
-    padding-bottom: 0.5rem;
-    text-align: center;
-  }
-
   &-description {
     @include make-col($grid-columns);
     margin-bottom: 0.5rem;
-    @extend %descriptionTitrePrincipal;
+    color: $noir;
+    font-size: 1.2em;
+    letter-spacing: 1.12px;
+    font-weight: lighter;
+    line-height: 1.2;
+    white-space: pre-line;
+    text-align: center;
   }
 }
 
@@ -129,11 +127,6 @@
 
 .erreurs {
   margin-left: 2.5rem;
-
-  &-item {
-    color: $rouge-erreur;
-    font-weight: bold;
-  }
 }
 
 .succes {
@@ -143,4 +136,8 @@
     color: green;
     font-weight: bold;
   }
+}
+
+.cursor-pointer {
+  cursor: pointer;
 }

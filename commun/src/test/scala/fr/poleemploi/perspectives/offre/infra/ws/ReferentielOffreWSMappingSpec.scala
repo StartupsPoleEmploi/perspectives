@@ -1,6 +1,6 @@
 package fr.poleemploi.perspectives.offre.infra.ws
 
-import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite, RayonRecherche}
+import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite, RayonRecherche, UniteLongueur}
 import fr.poleemploi.perspectives.offre.domain.{CriteresRechercheOffre, Experience, TypeContrat}
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
@@ -68,7 +68,7 @@ class ReferentielOffreWSMappingSpec extends WordSpec
     }
     "doit valoriser le parametre rayonRecherche lorsqu'il est renseigné avec le codeINSEE" in {
       // Given
-      when(criteresRechercheOffre.rayonRecherche) thenReturn Some(RayonRecherche(10))
+      when(criteresRechercheOffre.rayonRecherche) thenReturn Some(RayonRecherche(10, uniteLongueur = UniteLongueur.KM))
 
       // When
       val request = mapping.buildRechercherOffresRequest(criteresRechercheOffre = criteresRechercheOffre, codeINSEE = Some(codeINSEE))
@@ -78,7 +78,7 @@ class ReferentielOffreWSMappingSpec extends WordSpec
     }
     "ne doit pas valoriser le parametre rayonRecherche lorsque le codeINSEE n'est pas renseigné" in {
       // Given
-      when(criteresRechercheOffre.rayonRecherche) thenReturn Some(RayonRecherche(10))
+      when(criteresRechercheOffre.rayonRecherche) thenReturn Some(RayonRecherche(10, uniteLongueur = UniteLongueur.KM))
 
       // When
       val request = mapping.buildRechercherOffresRequest(criteresRechercheOffre = criteresRechercheOffre, codeINSEE = None)

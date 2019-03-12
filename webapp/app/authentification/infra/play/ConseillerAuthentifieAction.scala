@@ -35,7 +35,7 @@ class ConseillerAdminAuthentifieAction @Inject()(override val parser: BodyParser
     SessionConseillerAuthentifie
       .get(request.session)
       .flatMap(c => if (autorisationService.hasRole(c.conseillerId, RoleConseiller.ADMIN)) Some(c) else None)
-      .map(candidat => block(ConseillerAuthentifieRequest(candidat, request)))
+      .map(c => block(ConseillerAuthentifieRequest(c, request)))
       .getOrElse(Future.successful(Results.Status(UNAUTHORIZED)))
   }
 }

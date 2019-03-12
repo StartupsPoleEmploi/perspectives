@@ -32,33 +32,22 @@
         "commune": {
           "type": "text"
         },
-        "rayon_recherche": {
-          "type": "integer"
+        "latitude": {
+          "type": "double"
         },
-        "mobilite": {
-          "type": "geo_shape",
-          "tree": "quadtree",
-          "precision": "100m"
+        "longitude": {
+          "type": "double"
         },
-        "recherche_metiers_evalues": {
-          "type": "boolean"
-        },
-        "metiers_evalues": {
-          "type": "keyword"
-        },
-        "recherche_autres_metiers" : {
-          "type": "boolean"
-        },
-        "metiers_recherches": {
+        "metiers_valides": {
           "type": "keyword"
         },
         "habiletes": {
           "type": "text"
         },
-        "contacte_par_agence_interim": {
+        "contact_recruteur": {
           "type": "boolean"
         },
-        "contacte_par_organisme_formation": {
+        "contact_formation": {
           "type": "boolean"
         },
         "cv_id": {
@@ -72,6 +61,40 @@
         },
         "date_derniere_connexion": {
           "type": "date"
+        },
+        "criteres_recherche": {
+          "properties": {
+            "metiers_valides": {
+              "type": "keyword"
+            },
+            "metiers": {
+              "type": "keyword"
+            },
+            "domaines_professionnels": {
+              "type": "keyword"
+            },
+            "code_postal": {
+              "type": "keyword"
+            },
+            "commune": {
+              "type": "text"
+            },
+            "rayon": {
+              "properties": {
+                "value": {
+                  "type": "integer"
+                },
+                "unite_longueur": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "zone": {
+              "type": "geo_shape",
+              "tree": "quadtree",
+              "precision": "100m"
+            }
+          }
         }
       }
     }

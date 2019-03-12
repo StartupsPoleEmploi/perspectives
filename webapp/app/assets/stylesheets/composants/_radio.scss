@@ -1,0 +1,67 @@
+.radioDeuxChoix {
+
+  &-label {
+    padding: 1rem 2rem;
+    cursor: pointer;
+    @include userSelect(none);
+  }
+
+  &-choix1 {
+    border-radius: 100px 0 0 100px;
+  }
+
+  &-choix2 {
+    border-radius: 0 100px 100px 0;
+  }
+
+  &-input {
+    @include hiddenInput();
+
+    &:checked ~ .radioDeuxChoix-label {
+      color: white;
+      background-color: #FA6300;
+    }
+
+    &:not(:checked) ~ .radioDeuxChoix-label {
+      color: $black;
+      background-color: white;
+    }
+
+    &:not(:checked) ~ .radioDeuxChoix-choix1 {
+      border-right: 0.5px solid $black;
+    }
+
+    &:hover ~ .radioDeuxChoix-label {
+      color: white;
+      background-color: #FFA630;
+    }
+  }
+}
+
+.radioMultiChoix {
+
+  &-label {
+    cursor: pointer;
+    border-radius: 27px;
+    @include userSelect(none);
+  }
+
+  &-input {
+    @include hiddenInput();
+
+    &:checked ~ .radioMultiChoix-label {
+      color: white;
+      background-color: #FA6300;
+    }
+
+    &:not(:checked) ~ .radioMultiChoix-label {
+      color: $black;
+      background-color: white;
+    }
+
+    &:hover ~ .radioMultiChoix-label {
+      color: white;
+      background-color: #FFA630;
+    }
+  }
+}

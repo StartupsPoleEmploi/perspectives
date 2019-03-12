@@ -1,8 +1,18 @@
 package fr.poleemploi.perspectives.metier.infra.ws
 
-import fr.poleemploi.perspectives.commun.domain.{CodeROME, Metier}
+import fr.poleemploi.perspectives.commun.domain.CodeROME
+import fr.poleemploi.perspectives.metier.domain.Metier
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsPath, Reads}
+
+class ReferentielMetierWSMapping {
+
+  def buildMetier(response: RomeCardResponse): Metier =
+    Metier(
+      codeROME = CodeROME(response.romeProfessionCardCode),
+      label = response.romeProfessionCardName
+    )
+}
 
 case class AccessTokenResponse(accessToken: String,
                                tokenType: String,
@@ -48,13 +58,7 @@ object ListeMetiersResponse {
 }
 
 case class RomeCardResponse(romeProfessionCardName: String,
-                            romeProfessionCardCode: String) {
-
-  def toMetier: Metier = new Metier(
-    codeROME = CodeROME(romeProfessionCardCode),
-    label = romeProfessionCardName
-  )
-}
+                            romeProfessionCardCode: String)
 
 object RomeCardResponse {
 

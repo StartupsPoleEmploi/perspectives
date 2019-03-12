@@ -9,8 +9,8 @@ case class FrequenceAlerte(value: String) extends StringValueObject
 
 object FrequenceAlerte {
 
-  val QUOTIDIENNE = FrequenceAlerte("Quotidienne")
-  val HEBDOMADAIRE = FrequenceAlerte("Hebdomadaire")
+  val QUOTIDIENNE = FrequenceAlerte("QUOTIDIENNE")
+  val HEBDOMADAIRE = FrequenceAlerte("HEBDOMADAIRE")
 
   private val values: Map[String, FrequenceAlerte] = Map(
     QUOTIDIENNE.value -> QUOTIDIENNE,

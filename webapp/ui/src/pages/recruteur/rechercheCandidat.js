@@ -7,35 +7,7 @@ import '../../composants/alerteRecruteur.js';
 import { intituleAlerte, buildAlerte } from '../../domain/recruteur/alerte/alerteService.js';
 
 $(document).ready(function () {
-    var placesAutocomplete = places({
-        appId: jsData.algoliaPlacesConfig.appId,
-        apiKey: jsData.algoliaPlacesConfig.apiKey,
-        container: document.querySelector('#js-localisation'),
-        type: 'city',
-        aroundLatLngViaIP: false,
-        style: true,
-        useDeviceLocation: false,
-        language: 'fr',
-        countries: ['fr']
-    });
-    placesAutocomplete.on('change', function(e) {
-        app.localiser({
-            label: e.suggestion.name,
-            latitude: e.suggestion.latlng.lat,
-            longitude: e.suggestion.latlng.lng
-        });
-    });
-    placesAutocomplete.on('clear', function(e) {
-        app.localiser({
-            label: '',
-            latitude: null,
-            longitude: null
-        });
-    });
-
     var body = $("body");
-    var selecteurSecteursActivites = $("#js-secteursActivites-selecteur");
-    var selecteurMetiers = $("#js-metiers-selecteur");
     var inputLocalisation = $("#js-localisation");
 
     app.initialiserTableau();
@@ -123,8 +95,8 @@ $(document).ready(function () {
         });
         $("#js-envoyerCommentaire").click(function(e) {
             e.preventDefault();
-            $("#js-commentaireSecteurActivite").val(selecteurSecteursActivites.val());
-            $("#js-commentaireMetier").val(selecteurMetiers.val());
+            $("#js-commentaireSecteurActivite").val($("#js-secteursActivites-selecteur option:selected").text());
+            $("#js-commentaireMetier").val($("#js-metiers-selecteur option:selected").text());
             $("#js-commentaireLocalisation").val(inputLocalisation.val());
             if (commentaireRecruteur.val() !== '') {
                 $.ajax({
@@ -156,8 +128,8 @@ var app = new Vue({
             csrfToken: jsData.csrfToken,
             nbCandidatsParPage: jsData.nbCandidatsParPage,
             pagesInitiales: jsData.pagesInitiales,
-            alertes: jsData.alertes.map(function(alerte) {
-                return buildAlerte(alerte, jsData.metiers, jsData.secteursActivites);
+            alertes: jsData.alertes.map(function(alerte) { // FIXME: supprimer alertes
+                return buildAlerte(alerte, [], jsData.secteursActivites);
             }),
             secteurActivite: jsData.secteurActivite !== undefined && jsData.secteurActivite !== null ? jsData.secteurActivite : '',
             secteursActivites: jsData.secteursActivites,
@@ -167,24 +139,49 @@ var app = new Vue({
                 latitude: null,
                 longitude: null
             },
-            labelTousLesMetiers: 'Tous les métiers',
             titreCompteurResultats: null
         }
     },
     beforeMount: function() {
         this.titreCompteurResultats = this.getTitreCompteurResultats(jsData.nbCandidatsTotal);
     },
+    mounted: function() {
+        var self = this;
+        var placesAutocomplete = places({
+            appId: jsData.algoliaPlacesConfig.appId,
+            apiKey: jsData.algoliaPlacesConfig.apiKey,
+            container: document.querySelector('#js-localisation'),
+            type: 'city',
+            aroundLatLngViaIP: false,
+            style: true,
+            useDeviceLocation: false,
+            language: 'fr',
+            countries: ['fr']
+        });
+        placesAutocomplete.on('change', function(e) {
+            self.localisation = {
+                label: e.suggestion.name,
+                latitude: e.suggestion.latlng.lat,
+                longitude: e.suggestion.latlng.lng
+            };
+        });
+        placesAutocomplete.on('clear', function(e) {
+            self.localisation = {
+                label: '',
+                latitude: null,
+                longitude: null
+            };
+        });
+    },
     computed: {
         metiers: function() {
             var secteurActivite = this.secteurActivite;
             if (secteurActivite !== null && secteurActivite !== '') {
-                this.labelTousLesMetiers = 'Tous les métiers du secteur';
                 return this.secteursActivites.find(function(s) {
                     return s.code === secteurActivite;
                 }).metiers;
             } else {
-                this.labelTousLesMetiers = 'Tous les métiers';
-                return jsData.metiers;
+                return [];
             }
         }
     },
@@ -209,9 +206,6 @@ var app = new Vue({
         },
         getSuffixeCandidats: function(nbCandidats) {
             return (nbCandidats === 1 ? "est validé" : "sont validés") + " par la <abbr title='Méthode de Recrutement par Simulation' data-toggle='modal' data-target='#js-modaleVideo'>MRS</abbr>";
-        },
-        localiser: function(localisation) {
-            this.localisation = localisation;
         },
         rechercherCandidats: function() {
             var formData = [
@@ -238,13 +232,11 @@ var app = new Vue({
         },
         modifierMetiersPourSecteur: function() {
             if (this.secteurActivite !== '') {
-                this.labelTousLesMetiers = 'Tous les métiers du secteur';
                 this.metiers = this.secteursActivites.find(function(s) {
                     return s.code === app.secteurActivite;
                 }).metiers;
             } else {
-                this.labelTousLesMetiers = 'Tous les métiers';
-                this.metiers = jsData.metiers;
+                this.metiers = [];
             }
         },
         chargerPageSuivante: function(critere) {

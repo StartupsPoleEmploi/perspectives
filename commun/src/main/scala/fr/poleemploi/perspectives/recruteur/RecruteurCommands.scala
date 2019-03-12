@@ -2,7 +2,7 @@ package fr.poleemploi.perspectives.recruteur
 
 import fr.poleemploi.cqrs.command.Command
 import fr.poleemploi.perspectives.commun.domain._
-import fr.poleemploi.perspectives.recruteur.alerte.domain.{AlerteId, FrequenceAlerte}
+import fr.poleemploi.perspectives.recruteur.alerte.domain.{AlerteId, FrequenceAlerte, LocalisationAlerte}
 import fr.poleemploi.perspectives.recruteur.commentaire.domain.ContexteRecherche
 
 case class InscrireRecruteurCommand(id: RecruteurId,
@@ -32,7 +32,7 @@ case class CreerAlerteCommand(id: RecruteurId,
                               alerteId: AlerteId,
                               codeSecteurActivite: Option[CodeSecteurActivite],
                               codeROME: Option[CodeROME],
-                              localisation: Option[Localisation],
+                              localisation: Option[LocalisationAlerte],
                               frequenceAlerte: FrequenceAlerte) extends Command[Recruteur]
 
 case class SupprimerAlerteCommand(id: RecruteurId,

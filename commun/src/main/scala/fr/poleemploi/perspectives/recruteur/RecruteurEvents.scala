@@ -2,7 +2,7 @@ package fr.poleemploi.perspectives.recruteur
 
 import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.perspectives.commun.domain._
-import fr.poleemploi.perspectives.recruteur.alerte.domain.{AlerteId, FrequenceAlerte}
+import fr.poleemploi.perspectives.recruteur.alerte.domain.{AlerteId, FrequenceAlerte, LocalisationAlerte}
 
 sealed trait RecruteurEvent extends Event {
 
@@ -37,7 +37,7 @@ case class AlerteRecruteurCreeEvent(recruteurId: RecruteurId,
                                     frequence: FrequenceAlerte,
                                     codeROME: Option[CodeROME],
                                     codeSecteurActivite: Option[CodeSecteurActivite],
-                                    localisation: Option[Localisation]) extends RecruteurEvent
+                                    localisation: Option[LocalisationAlerte]) extends RecruteurEvent
 
 case class AlerteRecruteurSupprimeeEvent(recruteurId: RecruteurId,
                                          alerteId: AlerteId) extends RecruteurEvent

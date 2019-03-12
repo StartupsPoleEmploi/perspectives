@@ -9,7 +9,7 @@ class CandidatRepository(override val eventStore: EventStore,
                          override val snapshotRepository: SnapshotRepository[Candidat])
   extends AggregateRepository[Candidat] {
 
-  def newId: CandidatId = CandidatId(UUID.randomUUID().toString)
+  override def newId: CandidatId = CandidatId(UUID.randomUUID().toString)
 
   override def createFromStream(candidatId: CandidatId, eventStream: EventStream): Candidat =
     new Candidat(

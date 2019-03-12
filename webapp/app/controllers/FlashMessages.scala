@@ -1,7 +1,9 @@
 package controllers
 
-import fr.poleemploi.perspectives.commun.domain.RayonRecherche
+import fr.poleemploi.perspectives.candidat.LocalisationRecherche
+import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
 import fr.poleemploi.perspectives.recruteur.TypeRecruteur
+import play.api.libs.json.Json
 import play.api.mvc.Flash
 
 object FlashMessages {
@@ -15,7 +17,7 @@ object FlashMessages {
 
   private val keyInscriptionCandidat = "candidat_inscrit"
   private val keyConnexionCandidat = "candidat_connecte"
-  private val keyRayonRechercheModifieCandidat = "candidat_rayon_recherche_modifie"
+  private val keyLocalisationRechercheCandidat = "candidat_localisation_recherche_modifiee"
 
   implicit class FlashMessage[T](f: Flash) {
 
@@ -42,7 +44,10 @@ object FlashMessages {
     def candidatConnecte: Boolean = f.get(keyConnexionCandidat).contains("true")
     def withCandidatConnecte: Flash = f + (keyConnexionCandidat -> "true")
 
-    def rayonRechercheModifie: Option[RayonRecherche] = f.get(keyRayonRechercheModifieCandidat).map(s => RayonRecherche(s.toInt))
-    def withRayonRechercheModifie(rayonRecherche: RayonRecherche): Flash = f + (keyRayonRechercheModifieCandidat -> rayonRecherche.value.toString)
+    def candidatLocalisationRechercheModifiee: Option[LocalisationRecherche] =
+      f.get(keyLocalisationRechercheCandidat).flatMap(s => Json.parse(s).asOpt[LocalisationRecherche])
+
+    def withCandidatLocalisationRecherche(localisationRecherche: LocalisationRecherche): Flash =
+      f + (keyLocalisationRechercheCandidat -> Json.stringify(Json.toJson(localisationRecherche)))
   }
 }

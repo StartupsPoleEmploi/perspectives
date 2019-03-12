@@ -23,10 +23,10 @@ class AlerteRecruteurProjection(adapter: AlerteRecruteurSqlAdapter) extends Proj
     case _ => Future.successful(())
   }
 
-  def alertesQuotidiennes: Source[AlerteRecruteurDto, NotUsed] =
+  def alertesQuotidiennes: Source[AlerteRecruteurDTO, NotUsed] =
     adapter.alertesQuotidiennes
 
-  def alertesHebdomaraires: Source[AlerteRecruteurDto, NotUsed] =
+  def alertesHebdomaraires: Source[AlerteRecruteurDTO, NotUsed] =
     adapter.alertesHebdomaraires
 
   def alertesParRecruteur(query: AlertesRecruteurQuery): Future[AlertesRecruteurQueryResult] =

@@ -5,17 +5,15 @@ import akka.stream.scaladsl.Source
 import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
 import fr.poleemploi.perspectives.projections.recruteur.alerte._
-import fr.poleemploi.perspectives.rechercheCandidat.domain.RechercheCandidatService
 import fr.poleemploi.perspectives.recruteur._
-import fr.poleemploi.perspectives.recruteur.alerte.domain.{AlerteId, FrequenceAlerte}
+import fr.poleemploi.perspectives.recruteur.alerte.domain.{AlerteId, FrequenceAlerte, LocalisationAlerte}
 import slick.jdbc.JdbcBackend.Database
 import slick.jdbc.{ResultSetConcurrency, ResultSetType}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class AlerteRecruteurSqlAdapter(database: Database,
-                                rechercheCandidatService: RechercheCandidatService) {
+class AlerteRecruteurSqlAdapter(database: Database) {
 
   import PostgresDriver.api._
 
@@ -80,10 +78,10 @@ class AlerteRecruteurSqlAdapter(database: Database,
       )
     )
 
-  def alertesQuotidiennes: Source[AlerteRecruteurDto, NotUsed] =
+  def alertesQuotidiennes: Source[AlerteRecruteurDTO, NotUsed] =
     streamAlertes(FrequenceAlerte.QUOTIDIENNE)
 
-  def alertesHebdomaraires: Source[AlerteRecruteurDto, NotUsed] =
+  def alertesHebdomaraires: Source[AlerteRecruteurDTO, NotUsed] =
     streamAlertes(FrequenceAlerte.HEBDOMADAIRE)
 
   def onAlerteRecruteurCreeEvent(event: AlerteRecruteurCreeEvent): Future[Unit] =
@@ -105,7 +103,7 @@ class AlerteRecruteurSqlAdapter(database: Database,
       event.email
     )).map(_ => ())
 
-  private def streamAlertes(frequenceAlerte: FrequenceAlerte): Source[AlerteRecruteurDto, NotUsed] =
+  private def streamAlertes(frequenceAlerte: FrequenceAlerte): Source[AlerteRecruteurDTO, NotUsed] =
     Source.fromPublisher {
       database.stream(
         alertesParFrequenceQuery(frequenceAlerte)
@@ -119,25 +117,26 @@ class AlerteRecruteurSqlAdapter(database: Database,
       ).mapResult(toAlerteRecruteurDto)
     }
 
-  private def toAlerteRecruteurDto(alerteRecruteurRecord: AlerteRecruteurRecord): AlerteRecruteurDto =
-    AlerteRecruteurDto(
+  // FIXME : mapping direct
+  private def toAlerteRecruteurDto(alerteRecruteurRecord: AlerteRecruteurRecord): AlerteRecruteurDTO =
+    AlerteRecruteurDTO(
       recruteurId = alerteRecruteurRecord.recruteurId,
       typeRecruteur = alerteRecruteurRecord.typeRecruteur,
       email = alerteRecruteurRecord.emailRecruteur,
       alerteId = alerteRecruteurRecord.alerteId,
       frequence = alerteRecruteurRecord.frequence,
-      secteurActivite = alerteRecruteurRecord.codeSecteurActivite.map(rechercheCandidatService.secteurActiviteParCode),
-      metier = alerteRecruteurRecord.codeROME.flatMap(rechercheCandidatService.metierProposeParCode),
+      codeSecteurActivite = alerteRecruteurRecord.codeSecteurActivite,
+      codeROME = alerteRecruteurRecord.codeROME,
       localisation = buildLocalisation(alerteRecruteurRecord)
     )
 
-  private def buildLocalisation(alerteRecruteurRecord: AlerteRecruteurRecord): Option[Localisation] =
+  private def buildLocalisation(alerteRecruteurRecord: AlerteRecruteurRecord): Option[LocalisationAlerte] =
     for {
       label <- alerteRecruteurRecord.labelLocalisation
       latitude <- alerteRecruteurRecord.latitude
       longitude <- alerteRecruteurRecord.longitude
     } yield
-      Localisation(
+      LocalisationAlerte(
         label = label,
         coordonnees = Coordonnees(
           latitude = latitude,

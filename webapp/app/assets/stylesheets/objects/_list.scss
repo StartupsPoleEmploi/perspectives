@@ -1,0 +1,10 @@
+.list-no-style {
+  list-style-type: none;
+}
+
+// FIXME : supprimer et utiliser la classe
+%liste {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}

@@ -2,7 +2,7 @@ error.required=Veuillez saisir une valeur pour ce champ
 error.zonedatetime=La date n''est pas valide
 error.date=La date n''est pas valide
 
-constraint.criteres.selectionmetiers=Choisissez vos métiers dans la liste
+constraint.criteres.numeroTelephoneContact=Vous devez renseigner un numéro de téléphone pour être contacté
 constraint.numeroSiret=Le numéro de SIRET n''est pas valide
 constraint.numeroTelephone=Le numéro de téléphone n''est pas valide
 constraint.typeRecruteur=Le type de recruteur n''est pas valide

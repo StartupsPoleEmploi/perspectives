@@ -4,7 +4,8 @@ import java.time.LocalDate
 
 import fr.poleemploi.perspectives.candidat.mrs.domain.{MRSValidee, ReferentielHabiletesMRS}
 import fr.poleemploi.perspectives.commun.domain.{CodeDepartement, CodeROME, Habilete}
-import org.mockito.Mockito.when
+import org.mockito.ArgumentMatchers
+import org.mockito.Mockito._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{AsyncWordSpec, BeforeAndAfter, MustMatchers}
@@ -32,10 +33,7 @@ class AjouterMRSValideeSpec extends AsyncWordSpec
 
   before {
     referentielHabiletesMRS = mock[ReferentielHabiletesMRS]
-
-    commande.mrsValidees.foreach(m =>
-      when(referentielHabiletesMRS.habiletes(m.codeROME, m.codeDepartement)) thenReturn Future.successful(Nil)
-    )
+    when(referentielHabiletesMRS.habiletes(ArgumentMatchers.any[CodeROME](), ArgumentMatchers.any[CodeDepartement]())) thenReturn Future.successful(Set.empty[Habilete])
   }
 
   "ajouterMRSValidee" should {
@@ -79,8 +77,9 @@ class AjouterMRSValideeSpec extends AsyncWordSpec
 
       // When
       val future = candidat.ajouterMRSValidee(
-        command = commande.copy(mrsValidees = Nil),
-        referentielHabiletesMRS = referentielHabiletesMRS
+        command = commande.copy(
+          mrsValidees = Nil
+        ), referentielHabiletesMRS
       )
 
       // Then
@@ -91,10 +90,7 @@ class AjouterMRSValideeSpec extends AsyncWordSpec
       val candidat = candidatBuilder.avecInscription().build
 
       // When
-      val future = candidat.ajouterMRSValidee(
-        command = commande,
-        referentielHabiletesMRS = referentielHabiletesMRS
-      )
+      val future = candidat.ajouterMRSValidee(commande, referentielHabiletesMRS)
 
       // Then
       future map (events => events.size mustBe 1)
@@ -113,15 +109,9 @@ class AjouterMRSValideeSpec extends AsyncWordSpec
           dateEvaluation = LocalDate.now()
         ))
       )
-      commandeMultiMRS.mrsValidees.foreach(m =>
-        when(referentielHabiletesMRS.habiletes(m.codeROME, m.codeDepartement)) thenReturn Future.successful(Nil)
-      )
 
       // When
-      val future = candidat.ajouterMRSValidee(
-        command = commandeMultiMRS,
-        referentielHabiletesMRS = referentielHabiletesMRS
-      )
+      val future = candidat.ajouterMRSValidee(commandeMultiMRS, referentielHabiletesMRS)
 
       // Then
       future map (events => events.size mustBe commandeMultiMRS.mrsValidees.size)
@@ -129,20 +119,17 @@ class AjouterMRSValideeSpec extends AsyncWordSpec
     "générer un événement contenant la MRS ajoutée" in {
       // Given
       val candidat = candidatBuilder.avecInscription().build
-      val habiletes = List(Habilete("Maintenir son attention dans la durée"))
+      val habiletes = Set(Habilete("Maintenir son attention dans la durée"))
       when(referentielHabiletesMRS.habiletes(mrsValidee.codeROME, mrsValidee.codeDepartement)) thenReturn Future.successful(habiletes)
 
       // When
-      val future = candidat.ajouterMRSValidee(
-        command = commande,
-        referentielHabiletesMRS = referentielHabiletesMRS
-      )
+      val future = candidat.ajouterMRSValidee(commande, referentielHabiletesMRS)
 
       // Then
       future map (events => {
         val event = events.head.asInstanceOf[MRSAjouteeEvent]
         event.candidatId mustBe commande.id
-        event.metier mustBe commande.mrsValidees.head.codeROME
+        event.codeROME mustBe commande.mrsValidees.head.codeROME
         event.habiletes mustBe habiletes
         event.departement mustBe commande.mrsValidees.head.codeDepartement
         event.dateEvaluation mustBe commande.mrsValidees.head.dateEvaluation

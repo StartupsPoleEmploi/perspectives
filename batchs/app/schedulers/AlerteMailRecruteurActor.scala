@@ -65,14 +65,14 @@ class AlerteMailRecruteurActor(emailingService: EmailingService,
       log.error(t, "Erreur lors de l'envoi des alertes mails aux recruteurs")
   }
 
-  private def envoyerAlertes(alertes: Source[AlerteRecruteurDto, NotUsed],
+  private def envoyerAlertes(alertes: Source[AlerteRecruteurDTO, NotUsed],
                              apresDateInscription: ZonedDateTime): Future[Unit] =
     alertes.runForeach(alerteRecruteurDto => {
       for {
-        rechercheCandidatQueryResult <- candidatProjection.rechercherCandidats(RechercherCandidatsQuery(
+        rechercheCandidatQueryResult <- candidatProjection.rechercherCandidats(RechercheCandidatsQuery(
           typeRecruteur = alerteRecruteurDto.typeRecruteur,
-          codeROME = alerteRecruteurDto.metier.map(_.codeROME),
-          codeSecteurActivite = alerteRecruteurDto.secteurActivite.map(_.code),
+          codeROME = alerteRecruteurDto.codeROME,
+          codeSecteurActivite = alerteRecruteurDto.codeSecteurActivite,
           coordonnees = alerteRecruteurDto.localisation.map(l => l.coordonnees),
           nbPagesACharger = 1,
           page = Some(KeysetRechercherCandidats(
@@ -93,7 +93,7 @@ class AlerteMailRecruteurActor(emailingService: EmailingService,
       } yield ()
     }).map(_ => ()) pipeTo self
 
-  private def buildAlerteMailRecruteur(alerteRecruteurDto: AlerteRecruteurDto,
+  private def buildAlerteMailRecruteur(alerteRecruteurDto: AlerteRecruteurDTO,
                                        rechercheCandidatQueryResult: RechercheCandidatQueryResult,
                                        apresDateInscription: ZonedDateTime): AlerteMailRecruteur = {
     def nbCandidats: String = rechercheCandidatQueryResult.nbCandidatsTotal match {
@@ -115,16 +115,18 @@ class AlerteMailRecruteurActor(emailingService: EmailingService,
 
     def localisation: String = alerteRecruteurDto.localisation.map(l => s"à ${l.label}").getOrElse("")
 
-    def metier: String = alerteRecruteurDto.metier.map(m => s"sur le métier ${m.label}").getOrElse("")
+    def metier: String = ""
+      //alerteRecruteurDto.codeROME.map(m => s"sur le métier ${m.label}").getOrElse("")
 
-    def secteur: String = alerteRecruteurDto.secteurActivite.map(s => s"dans le secteur ${s.label}").getOrElse("")
+    def secteur: String = ""
+      //alerteRecruteurDto.codeSecteurActivite.map(s => s"dans le secteur ${s.label}").getOrElse("")
 
-    val textes = alerteRecruteurDto.metier.map(_ =>
+    val textes = alerteRecruteurDto.codeROME.map(_ =>
       (
         s"$nbCandidats $metier $localisation",
         s"$nbCandidatsInscrits $metier $localisation $dateRechercheCandidat"
       )
-    ).orElse(alerteRecruteurDto.secteurActivite.map(_ =>
+    ).orElse(alerteRecruteurDto.codeSecteurActivite.map(_ =>
       (
         s"$nbCandidats $secteur $localisation",
         s"$nbCandidatsInscrits $secteur $localisation $dateRechercheCandidat"
@@ -137,8 +139,8 @@ class AlerteMailRecruteurActor(emailingService: EmailingService,
     )).getOrElse(throw new IllegalArgumentException("Type d'alerte non géré"))
 
     val lienConnexion = List(
-      alerteRecruteurDto.metier.map(m => s"metier=${m.codeROME.value}"),
-      alerteRecruteurDto.secteurActivite.map(s => s"secteurActivite=${s.code.value}"),
+      alerteRecruteurDto.codeROME.map(c => s"metier=${c.value}"),
+      alerteRecruteurDto.codeSecteurActivite.map(c => s"secteurActivite=${c.value}"),
       alerteRecruteurDto.localisation.map(l => s"localisation=${URLEncoder.encode(l.label, "UTF-8")}&latitude=${l.coordonnees.latitude}&longitude=${l.coordonnees.longitude}")
     ).flatten.foldLeft(s"$webappURL/recruteur/recherche")((url, param) => s"$url&$param")
         .replaceFirst("&", "?")

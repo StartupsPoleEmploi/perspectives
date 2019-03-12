@@ -1,0 +1,27 @@
+{
+  "settings": {
+    "number_of_shards": 1
+  },
+  "mappings": {
+    "_doc": {
+      "properties": {
+        "code": {
+          "type": "keyword"
+        },
+        "label": {
+          "type": "keyword"
+        },
+        "sous_secteurs": {
+          "properties": {
+            "code": {
+              "type": "keyword"
+            },
+            "label": {
+              "type": "keyword"
+            }
+          }
+        }
+      }
+    }
+  }
+}

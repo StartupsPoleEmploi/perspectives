@@ -1,4 +1,5 @@
 const path = require('path');
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 module.exports = {
     entry: {
@@ -9,6 +10,7 @@ module.exports = {
         candidatLanding: './src/pages/candidat/landing.js',
         candidatRechercheOffres: './src/pages/candidat/rechercheOffres.js',
         candidatSaisieCriteresRecherche: './src/pages/candidat/saisieCriteresRecherche.js',
+        candidatDepotCV: './src/pages/candidat/depotCV.js',
         menuNavigation: './src/modules/menuNavigation.js'
     },
     output: {
@@ -20,6 +22,14 @@ module.exports = {
             'vue$': 'vue/dist/vue.esm.js'
         }
     },
+    module: {
+        rules: [
+            { test: /\.vue$/, use: 'vue-loader' }
+        ]
+    },
+    plugins: [
+        new VueLoaderPlugin()
+    ],
     optimization: {
         splitChunks: {
             chunks: 'initial',

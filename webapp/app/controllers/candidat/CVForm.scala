@@ -12,12 +12,11 @@ case class CVForm(nomFichier: String,
 
 object CVForm {
 
-  val maxLength: Long = 5L * 1024 * 1024
+  val maxLengthLabel: String = "5 Mo"
+  val maxLengthInBytes: Long = 5L * 1024 * 1024
 
-  def bindFromMultipart(request: MultipartFormData[Files.TemporaryFile]): Either[String, CVForm] = {
-    val fichierCV = request.file("cv")
-
-    fichierCV.map(f => {
+  def bindFromMultipart(request: MultipartFormData[Files.TemporaryFile]): Either[String, CVForm] =
+    request.file("cv").map(f => {
       f.contentType.flatMap(TypeMedia.typeMediaCV).map(t =>
         Right(CVForm(
           nomFichier = f.filename,
@@ -26,5 +25,4 @@ object CVForm {
         ))
       ).getOrElse(Left("Le type de fichier n'est pas valide"))
     }).getOrElse(Left("Aucun fichier reçu"))
-  }
 }

@@ -1,32 +1,69 @@
 package fr.poleemploi.perspectives.projections.candidat.infra.elasticsearch
 
-import fr.poleemploi.perspectives.candidat.CandidatId
-import fr.poleemploi.perspectives.commun.domain.{CodeROME, RayonRecherche}
-import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
+import fr.poleemploi.perspectives.commun.domain.{CodeDomaineProfessionnel, CodeROME}
 import play.api.libs.functional.syntax._
-import play.api.libs.json.{JsPath, Reads}
+import play.api.libs.json._
 
-case class CandidatCriteresRechercheDocument(candidatId: CandidatId,
-                                             rechercheMetiersEvalues: Option[Boolean],
-                                             metiersEvalues: List[CodeROME],
-                                             rechercheAutresMetiers: Option[Boolean],
-                                             metiersRecherches: List[CodeROME],
+case class CandidatCriteresRechercheDocument(metiersValides: Set[CodeROME],
+                                             metiers: Set[CodeROME],
+                                             domainesProfessionels: Set[CodeDomaineProfessionnel],
                                              codePostal: Option[String],
                                              commune: Option[String],
-                                             rayonRecherche: Option[RayonRecherche])
+                                             rayon: Option[RayonRechercheDocument],
+                                             zone: Option[ZoneDocument])
 
 object CandidatCriteresRechercheDocument {
 
-  import CandidatProjectionElasticsearchEsMapping._
+  import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
 
   implicit val reads: Reads[CandidatCriteresRechercheDocument] = (
-    (JsPath \ candidat_id).read[CandidatId] and
-      (JsPath \ recherche_metiers_evalues).readNullable[Boolean] and
-      (JsPath \ metiers_evalues).read[List[CodeROME]] and
-      (JsPath \ recherche_autres_metiers).readNullable[Boolean] and
-      (JsPath \ metiers_recherches).read[List[CodeROME]] and
-      (JsPath \ code_postal).readNullable[String] and
-      (JsPath \ commune).readNullable[String] and
-      (JsPath \ rayon_recherche).readNullable[RayonRecherche]
+    (JsPath \ "metiers_valides").read[Set[CodeROME]] and
+      (JsPath \ "metiers").read[Set[CodeROME]] and
+      (JsPath \ "domaines_professionnels").read[Set[CodeDomaineProfessionnel]] and
+      (JsPath \ "code_postal").readNullable[String] and
+      (JsPath \ "commune").readNullable[String] and
+      (JsPath \ "rayon").readNullable[RayonRechercheDocument] and
+      (JsPath \ "zone").readNullable[ZoneDocument]
     ) (CandidatCriteresRechercheDocument.apply _)
+
+  implicit val writes: Writes[CandidatCriteresRechercheDocument] = (
+    (JsPath \ "metiers_valides").write[Set[CodeROME]] and
+      (JsPath \ "metiers").write[Set[CodeROME]] and
+      (JsPath \ "domaines_professionnels").write[Set[CodeDomaineProfessionnel]] and
+      (JsPath \ "code_postal").writeNullable[String] and
+      (JsPath \ "commune").writeNullable[String] and
+      (JsPath \ "rayon").writeNullable[RayonRechercheDocument] and
+      (JsPath \ "zone").writeNullable[ZoneDocument]
+    ) (unlift(CandidatCriteresRechercheDocument.unapply))
+}
+
+case class ZoneDocument(typeMobilite: String,
+                        longitude: Double,
+                        latitude: Double,
+                        radius: Option[String])
+
+object ZoneDocument {
+
+  implicit val reads: Reads[ZoneDocument] = (
+    (JsPath \ "type").read[String] and
+      (JsPath \ "coordinates" \ 0).read[Double] and
+      (JsPath \ "coordinates" \ 1).read[Double] and
+      (JsPath \ "radius").readNullable[String]
+    ) (ZoneDocument.apply _)
+
+  implicit val writes: Writes[ZoneDocument] = Writes(mobilite =>
+    mobilite.radius.map(radius =>
+      Json.obj(
+        "type" -> s"${mobilite.typeMobilite}",
+        "coordinates" -> JsArray(Seq(JsNumber(mobilite.longitude), JsNumber(mobilite.latitude))),
+        "radius" -> s"${radius}km" //FIXME : unite
+      )
+    ).getOrElse(
+      Json.obj(
+        "type" -> s"${mobilite.typeMobilite}",
+        "coordinates" -> JsArray(Seq(JsNumber(mobilite.longitude), JsNumber(mobilite.latitude)))
+      )
+    )
+  )
+
 }

@@ -61,13 +61,13 @@ trait PostgresDriver extends ExPostgresProfile
 
     implicit val statutDemandeurEmploiColumnType: BaseColumnType[StatutDemandeurEmploi] = mapStringValueObject(StatutDemandeurEmploi(_))
 
-    implicit val rayonRechercheColumnType: BaseColumnType[RayonRecherche] = mapIntValueObject(RayonRecherche(_))
+    implicit val uniteMesureColumnType: BaseColumnType[UniteLongueur] = mapStringValueObject(UniteLongueur(_))
 
     implicit val typeMediaColumnType: BaseColumnType[TypeMedia] = mapStringValueObject(TypeMedia(_))
 
     implicit val frequenceAlerteColumnType: BaseColumnType[FrequenceAlerte] = mapStringValueObject(FrequenceAlerte(_))
 
-    implicit val codeSecteurActiviteColumnType: BaseColumnType[CodeSecteurActivite] = mapStringValueObject(CodeSecteurActivite(_))
+    implicit val codeSecteurActiviteColumnType: BaseColumnType[CodeSecteurActivite] = mapStringValueObject(CodeSecteurActivite)
 
     implicit val codeDepartementColumnType: BaseColumnType[CodeDepartement] = mapStringValueObject(CodeDepartement)
 

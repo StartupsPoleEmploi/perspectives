@@ -3,6 +3,7 @@ package fr.poleemploi.perspectives.authentification.infra.peconnect
 import fr.poleemploi.perspectives.authentification.infra.peconnect.jwt.PEConnectJWTAdapter
 import fr.poleemploi.perspectives.authentification.infra.peconnect.sql.{CandidatPEConnect, PEConnectSqlAdapter, RecruteurPEConnect}
 import fr.poleemploi.perspectives.authentification.infra.peconnect.ws._
+import fr.poleemploi.perspectives.candidat.mrs.domain.MRSValidee
 import fr.poleemploi.perspectives.candidat.{Adresse, CandidatId, StatutDemandeurEmploi}
 import fr.poleemploi.perspectives.commun.EitherUtils._
 import fr.poleemploi.perspectives.commun.infra.oauth.{OauthService, OauthTokens}
@@ -48,6 +49,9 @@ class PEConnectAdapter(oauthService: OauthService,
 
   def getInfosCandidat(accessToken: AccessToken): Future[PEConnectCandidatInfos] =
     peConnectWSAdapter.getInfosCandidat(accessToken)
+
+  def getPrestationsCandidat(accessToken: AccessToken): Future[List[MRSValidee]] =
+    peConnectWSAdapter.getPrestationsCandidat(accessToken)
 
   def getAdresseCandidat(accessToken: AccessToken): Future[Adresse] =
     peConnectWSAdapter.getCoordonneesCandidat(accessToken)

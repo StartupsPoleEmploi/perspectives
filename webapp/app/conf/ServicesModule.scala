@@ -15,12 +15,11 @@ import fr.poleemploi.perspectives.emailing.domain.EmailingService
 import fr.poleemploi.perspectives.emailing.infra.local.LocalEmailingService
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetEmailingService
 import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
-import fr.poleemploi.perspectives.metier.infra.file.ReferentielMetierFileAdapter
-import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapter
+import fr.poleemploi.perspectives.metier.infra.ReferentielMetierImpl
+import fr.poleemploi.perspectives.metier.infra.local.ReferentielMetierLocalAdapter
 import fr.poleemploi.perspectives.offre.domain.ReferentielOffre
 import fr.poleemploi.perspectives.offre.infra.local.ReferentielOffreLocalAdapter
 import fr.poleemploi.perspectives.offre.infra.ws.ReferentielOffreWSAdapter
-import fr.poleemploi.perspectives.rechercheCandidat.domain.RechercheCandidatService
 import fr.poleemploi.perspectives.recruteur.commentaire.domain.CommentaireService
 import fr.poleemploi.perspectives.recruteur.commentaire.infra.local.CommentaireLocalAdapter
 import fr.poleemploi.perspectives.recruteur.commentaire.infra.slack.CommentaireSlackAdapter
@@ -73,18 +72,13 @@ class ServicesModule extends AbstractModule {
 
   @Provides
   @Singleton
-  def referentielMetier(referentielMetierWSAdapter: Provider[ReferentielMetierWSAdapter],
-                        referentielMetierFileAdapter: Provider[ReferentielMetierFileAdapter],
+  def referentielMetier(referentielMetierLocalAdapter: Provider[ReferentielMetierLocalAdapter],
+                        referentielMetierImpl: Provider[ReferentielMetierImpl],
                         webAppConfig: WebAppConfig): ReferentielMetier =
     if (webAppConfig.useReferentielMetier)
-      referentielMetierWSAdapter.get()
+      referentielMetierImpl.get()
     else
-      referentielMetierFileAdapter.get()
-
-  @Provides
-  @Singleton
-  def rechercheCandidatService: RechercheCandidatService =
-    new RechercheCandidatService
+      referentielMetierLocalAdapter.get()
 
   @Provides
   @Singleton

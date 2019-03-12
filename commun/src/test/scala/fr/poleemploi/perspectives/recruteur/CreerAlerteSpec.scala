@@ -1,7 +1,7 @@
 package fr.poleemploi.perspectives.recruteur
 
-import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite, Localisation}
-import fr.poleemploi.perspectives.recruteur.alerte.domain.FrequenceAlerte
+import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite}
+import fr.poleemploi.perspectives.recruteur.alerte.domain.{FrequenceAlerte, LocalisationAlerte}
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{MustMatchers, WordSpec}
 
@@ -69,7 +69,7 @@ class CreerAlerteSpec extends WordSpec with MustMatchers with MockitoSugar {
         .avecInscription()
         .avecProfil()
       val recruteur = (1 to 10).toList.foldLeft(builder)((b, acc) => b.avecAlerte(
-        localisation = Some(mock[Localisation])
+        localisation = Some(mock[LocalisationAlerte])
       )).build
 
       // When
@@ -82,7 +82,7 @@ class CreerAlerteSpec extends WordSpec with MustMatchers with MockitoSugar {
     }
     "renvoyer une erreur lorsqu'une alerte existe déjà avec les mêmes critères" in {
       // Given
-      val localisation = mock[Localisation]
+      val localisation = mock[LocalisationAlerte]
       val recruteur = recruteurBuilder
         .avecInscription()
         .avecProfil()

@@ -38,8 +38,8 @@
     &:after {
       content: '';
       position: absolute;
-      right: 0.5rem;
-      top: 15px;
+      right: 0.2rem;
+      top: 17px;
       width: 10px;
       height: 10px;
       border: solid $vert-emeraude;
@@ -54,13 +54,11 @@
   &-rayonRecherche {
     width: 100%;
     font-size: 0.875rem;
-    padding: 0.85rem;
+    padding: 0.85rem 0.85rem 0.85rem 0.3rem;
     border: none;
     -webkit-appearance: none;
     -moz-appearance: none;
     background-color: white;
     color: $noir;
   }
-
-
 }

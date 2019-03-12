@@ -13,35 +13,52 @@ object CandidatInscritState extends CandidatState {
 
   override def name: String = "Inscrit"
 
-  override def modifierCriteres(context: CandidatContext, command: ModifierCriteresRechercheCommand): List[Event] = {
-    val criteresRechercheModifiesEvent =
-      if (!context.rechercheMetierEvalue.contains(command.rechercheMetierEvalue) ||
-        !context.rechercheAutreMetier.contains(command.rechercheAutreMetier) ||
-        !context.metiersRecherches.forall(command.metiersRecherches.contains) ||
-        !command.metiersRecherches.forall(context.metiersRecherches.contains) ||
-        !context.etreContacteParAgenceInterim.contains(command.etreContacteParAgenceInterim) ||
-        !context.etreContacteParOrganismeFormation.contains(command.etreContacteParOrganismeFormation) ||
-        !context.rayonRecherche.contains(command.rayonRecherche)) {
-        Some(CriteresRechercheModifiesEvent(
-          candidatId = command.id,
-          rechercheMetierEvalue = command.rechercheMetierEvalue,
-          rechercheAutreMetier = command.rechercheAutreMetier,
-          metiersRecherches = command.metiersRecherches,
-          etreContacteParAgenceInterim = command.etreContacteParAgenceInterim,
-          etreContacteParOrganismeFormation = command.etreContacteParOrganismeFormation,
-          rayonRecherche = command.rayonRecherche
-        ))
-      } else None
+  override def modifierCandidat(context: CandidatContext, command: ModifierCandidatCommand): List[Event] = {
+    if (command.contactFormation && command.numeroTelephone.isEmpty) {
+      throw new IllegalArgumentException("Le numéro de téléphone doit être renseigné lorsque le contactFormation est souhaité")
+    }
+    if (command.contactRecruteur && command.numeroTelephone.isEmpty) {
+      throw new IllegalArgumentException("Le numéro de téléphone doit être renseigné lorsque le contactRecruteur est souhaité")
+    }
+    val codesROMEValides = context.mrsValidees.map(_.codeROME)
+    if (command.codesROMEValidesRecherches.exists(c => !codesROMEValides.contains(c))) {
+      throw new IllegalArgumentException("Un codeROME ne fait pas partie des codesROME validés par le candidat")
+    }
 
-    val numeroTelephoneModifieEvent =
-      if (!context.numeroTelephone.contains(command.numeroTelephone)) {
+    val visibiliteRecruteurModifieeEvent =
+      if (!context.contactRecruteur.contains(command.contactRecruteur) ||
+        !context.contactFormation.contains(command.contactFormation))
+        Some(VisibiliteRecruteurModifieeEvent(
+          candidatId = command.id,
+          contactFormation = command.contactFormation,
+          contactRecruteur = command.contactRecruteur,
+        ))
+      else None
+
+    val numeroTelephoneModifieEvent = command.numeroTelephone.flatMap(n =>
+      if (!context.numeroTelephone.contains(n)) {
         Some(NumeroTelephoneModifieEvent(
           candidatId = command.id,
-          numeroTelephone = command.numeroTelephone
+          numeroTelephone = command.numeroTelephone.get
+        ))
+      } else None
+    )
+
+    val criteresRechercheModifiesEvent =
+      if (!context.codesROMEValidesRecherches.forall(command.codesROMEValidesRecherches.contains) ||
+        !context.codesROMERecherches.forall(command.codesROMERecherches.contains) ||
+        !context.codesDomaineProfessionnelRecherches.forall(command.codesDomaineProfessionnelRecherches.contains) ||
+        !context.localisationRecherche.contains(command.localisationRecherche)) {
+        Some(CriteresRechercheModifiesEvent(
+          candidatId = command.id,
+          localisationRecherche = command.localisationRecherche,
+          codesROMEValidesRecherches = command.codesROMEValidesRecherches,
+          codesROMERecherches = command.codesROMERecherches,
+          codesDomaineProfessionnelRecherches = command.codesDomaineProfessionnelRecherches
         ))
       } else None
 
-    List(criteresRechercheModifiesEvent, numeroTelephoneModifieEvent).flatten
+    List(visibiliteRecruteurModifieeEvent, numeroTelephoneModifieEvent, criteresRechercheModifiesEvent).flatten
   }
 
   override def connecter(context: CandidatContext,
@@ -66,17 +83,15 @@ object CandidatInscritState extends CandidatState {
     val adresseModifieeEvent = command.adresse.map(adresse =>
       if (!context.adresse.contains(adresse)) {
         localisationService.localiser(adresse).map(optCoordonnees =>
-          optCoordonnees.flatMap(coordonnees =>
-            if (!context.coordonnees.contains(coordonnees)) {
-              Some(
-                AdresseModifieeEvent(
-                  candidatId = command.id,
-                  adresse = adresse,
-                  coordonnees = optCoordonnees
-                )
-              )
-            } else None
-          )
+          for {
+            coordonnees <- optCoordonnees if !context.coordonnees.contains(coordonnees)
+          } yield {
+            AdresseModifieeEvent(
+              candidatId = command.id,
+              adresse = adresse,
+              coordonnees = coordonnees
+            )
+          }
         ).recover {
           case _: Throwable => None
         }
@@ -136,7 +151,8 @@ object CandidatInscritState extends CandidatState {
     ))
   }
 
-  override def ajouterMRSValidee(context: CandidatContext, command: AjouterMRSValideesCommand,
+  override def ajouterMRSValidee(context: CandidatContext,
+                                 command: AjouterMRSValideesCommand,
                                  referentielHabiletesMRS: ReferentielHabiletesMRS): Future[List[Event]] = {
     // Un candidat peut potentiellement passer la même MRS à une date différente (la repasser) : aux projections de gérer si elles veulent afficher un historique ou simplement savoir les métiers validés
     val mrsDejaValidees = context.mrsValidees.intersect(command.mrsValidees)
@@ -154,7 +170,7 @@ object CandidatInscritState extends CandidatState {
         ).map(habiletes =>
           MRSAjouteeEvent(
             candidatId = command.id,
-            metier = m.codeROME,
+            codeROME = m.codeROME,
             departement = m.codeDepartement,
             habiletes = habiletes,
             dateEvaluation = m.dateEvaluation

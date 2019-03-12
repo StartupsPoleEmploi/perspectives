@@ -1,43 +1,36 @@
 package fr.poleemploi.perspectives.projections.candidat.infra.elasticsearch
 
 import fr.poleemploi.perspectives.candidat.CandidatId
-import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
-import fr.poleemploi.perspectives.commun.domain._
-import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
+import fr.poleemploi.perspectives.commun.domain.{CodeROME, NumeroTelephone}
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsPath, Reads}
 
 case class CandidatSaisieCriteresRechercheDocument(candidatId: CandidatId,
-                                                   nom: Nom,
-                                                   prenom: Prenom,
-                                                   rechercheMetierEvalue: Option[Boolean],
-                                                   metiersEvalues: List[CodeROME],
-                                                   rechercheAutreMetier: Option[Boolean],
-                                                   metiersRecherches: List[CodeROME],
-                                                   contacteParAgenceInterim: Option[Boolean],
-                                                   contacteParOrganismeFormation: Option[Boolean],
-                                                   rayonRecherche: Option[RayonRecherche],
+                                                   contactRecruteur: Option[Boolean],
+                                                   contactFormation: Option[Boolean],
+                                                   metiersValides: Set[CodeROME],
+                                                   commune: Option[String],
+                                                   codePostal: Option[String],
+                                                   latitude: Option[Double],
+                                                   longitude: Option[Double],
                                                    numeroTelephone: Option[NumeroTelephone],
-                                                   cvId: Option[CVId],
-                                                   cvTypeMedia: Option[TypeMedia])
+                                                   criteresRecherche: CandidatCriteresRechercheDocument)
 
 object CandidatSaisieCriteresRechercheDocument {
 
-  import CandidatProjectionElasticsearchEsMapping._
+  import CandidatProjectionElasticsearchMapping._
+  import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
 
   implicit val reads: Reads[CandidatSaisieCriteresRechercheDocument] = (
     (JsPath \ candidat_id).read[CandidatId] and
-      (JsPath \ nom).read[Nom] and
-      (JsPath \ prenom).read[Prenom] and
-      (JsPath \ recherche_metiers_evalues).readNullable[Boolean] and
-      (JsPath \ metiers_evalues).read[List[CodeROME]] and
-      (JsPath \ recherche_autres_metiers).readNullable[Boolean] and
-      (JsPath \ metiers_recherches).read[List[CodeROME]] and
-      (JsPath \ contacte_par_agence_interim).readNullable[Boolean] and
-      (JsPath \ contacte_par_organisme_formation).readNullable[Boolean] and
-      (JsPath \ rayon_recherche).readNullable[RayonRecherche] and
+      (JsPath \ contact_recruteur).readNullable[Boolean] and
+      (JsPath \ contact_formation).readNullable[Boolean] and
+      (JsPath \ metiers_valides).read[Set[CodeROME]] and
+      (JsPath \ commune).readNullable[String] and
+      (JsPath \ code_postal).readNullable[String] and
+      (JsPath \ latitude).readNullable[Double] and
+      (JsPath \ longitude).readNullable[Double] and
       (JsPath \ numero_telephone).readNullable[NumeroTelephone] and
-      (JsPath \ cv_id).readNullable[CVId] and
-      (JsPath \ cv_type_media).readNullable[TypeMedia]
+      (JsPath \ criteres_recherche).read[CandidatCriteresRechercheDocument]
     ) (CandidatSaisieCriteresRechercheDocument.apply _)
 }

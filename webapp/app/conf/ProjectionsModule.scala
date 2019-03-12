@@ -1,10 +1,9 @@
 package conf
 
 import com.google.inject._
-import fr.poleemploi.cqrs.projection.{Query, QueryResult}
 import fr.poleemploi.eventsourcing.eventstore.EventStoreListener
 import fr.poleemploi.perspectives.candidat.cv.domain.CVService
-import fr.poleemploi.perspectives.candidat.mrs.domain.{ReferentielHabiletesMRS, ReferentielMRSCandidat}
+import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielHabiletesMRS
 import fr.poleemploi.perspectives.emailing.domain.EmailingService
 import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
 import fr.poleemploi.perspectives.offre.domain.ReferentielOffre
@@ -12,16 +11,14 @@ import fr.poleemploi.perspectives.projections.candidat._
 import fr.poleemploi.perspectives.projections.candidat.infra.elasticsearch.CandidatProjectionElasticsearchAdapter
 import fr.poleemploi.perspectives.projections.candidat.infra.local.CandidatNotificationLocalAdapter
 import fr.poleemploi.perspectives.projections.candidat.infra.slack.CandidatNotificationSlackAdapter
+import fr.poleemploi.perspectives.projections.conseiller.ConseillerQueryHandler
 import fr.poleemploi.perspectives.projections.emailing.{CandidatEmailProjection, RecruteurEmailProjection}
-import fr.poleemploi.perspectives.projections.rechercheCandidat.RechercheCandidatQueryHandler
+import fr.poleemploi.perspectives.projections.metier.MetierQueryHandler
 import fr.poleemploi.perspectives.projections.recruteur._
+import fr.poleemploi.perspectives.projections.recruteur.alerte.AlerteRecruteurProjection
 import fr.poleemploi.perspectives.projections.recruteur.alerte.infra.sql.AlerteRecruteurSqlAdapter
-import fr.poleemploi.perspectives.projections.recruteur.alerte.{AlerteRecruteurProjection, AlertesRecruteurQuery}
 import fr.poleemploi.perspectives.projections.recruteur.infra.sql.RecruteurProjectionSqlAdapter
-import fr.poleemploi.perspectives.rechercheCandidat.domain.RechercheCandidatService
 import net.codingwell.scalaguice.ScalaModule
-
-import scala.concurrent.Future
 
 class RegisterProjections @Inject()(eventStoreListener: EventStoreListener,
                                     candidatProjection: CandidatProjection,
@@ -60,17 +57,11 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
   def candidatQueryHandler(candidatProjection: CandidatProjection,
                            recruteurProjection: RecruteurProjection,
                            cvService: CVService,
-                           referentielMRSCandidat: ReferentielMRSCandidat,
-                           referentielMetier: ReferentielMetier,
-                           referentielHabiletesMRS: ReferentielHabiletesMRS,
                            referentielOffre: ReferentielOffre): CandidatQueryHandler =
     new CandidatQueryHandler(
       candidatProjection = candidatProjection,
       recruteurProjection = recruteurProjection,
       cvService = cvService,
-      referentielMRSCandidat = referentielMRSCandidat,
-      referentielMetier = referentielMetier,
-      referentielHabiletesMRS = referentielHabiletesMRS,
       referentielOffre = referentielOffre
     )
 
@@ -99,20 +90,9 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
   @Singleton
   def recruteurQueryHandler(recruteurProjection: RecruteurProjection,
                             alerteRecruteurProjection: AlerteRecruteurProjection): RecruteurQueryHandler =
-    new RecruteurQueryHandler {
-      override def configure: PartialFunction[Query[_ <: QueryResult], Future[QueryResult]] = {
-        case q: TypeRecruteurQuery => recruteurProjection.typeRecruteur(q)
-        case q: ProfilRecruteurQuery => recruteurProjection.profilRecruteur(q)
-        case q: RecruteursPourConseillerQuery => recruteurProjection.listerPourConseiller(q)
-        case q: AlertesRecruteurQuery => alerteRecruteurProjection.alertesParRecruteur(q)
-      }
-    }
-
-  @Provides
-  @Singleton
-  def rechercheCandidatQueryHandler(rechercheCandidatService: RechercheCandidatService): RechercheCandidatQueryHandler =
-    new RechercheCandidatQueryHandler(
-      rechercheCandidatService = rechercheCandidatService
+    new RecruteurQueryHandler(
+      recruteurProjection = recruteurProjection,
+      alerteRecruteurProjection = alerteRecruteurProjection
     )
 
   @Provides
@@ -120,6 +100,20 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
   def alerteRecruteurProjection(alerteRecruteurSqlAdapter: AlerteRecruteurSqlAdapter): AlerteRecruteurProjection =
     new AlerteRecruteurProjection(
       adapter = alerteRecruteurSqlAdapter
+    )
+
+  @Provides
+  @Singleton
+  def metierQueryHandler(referentielMetier: ReferentielMetier): MetierQueryHandler =
+    new MetierQueryHandler(
+      referentielMetier = referentielMetier
+    )
+
+  @Provides
+  @Singleton
+  def conseillerQueryHandler(referentielHabiletesMRS: ReferentielHabiletesMRS): ConseillerQueryHandler =
+    new ConseillerQueryHandler(
+      referentielHabiletesMRS = referentielHabiletesMRS
     )
 
 }
