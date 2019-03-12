@@ -350,6 +350,9 @@
 
     &-iconePrecedent {
       position: relative;
+      @include media-breakpoint-down(sm) {
+        display: block;
+      }
 
       &:after {
         content: '';
@@ -368,13 +371,16 @@
         }
         @include media-breakpoint-down(sm) {
           top: 5px;
-          left: 0;
+          left: 10px;
         }
       }
     }
 
     &-iconeSuivant {
       position: relative;
+      @include media-breakpoint-down(sm) {
+        display: block;
+      }
 
       &:after {
         content: '';
@@ -393,7 +399,7 @@
         }
         @include media-breakpoint-down(sm) {
           top: 5px;
-          right: 0;
+          right: 10px;
         }
       }
     }
@@ -407,7 +413,7 @@
       }
       @include media-breakpoint-down(sm) {
         top: 10px;
-        right: 45%;
+        left: 23px;
       }
     }
   }
