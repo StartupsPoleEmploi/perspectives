@@ -17,10 +17,10 @@
                                 <div class="navigationOffres-item navigationOffres-page"
                                      v-show="!doitAfficherOffrePrecedente()">
                                 </div>
-                                <div class="navigationOffres-item navigationOffres-item--noir navigationOffres-page gtm-candidat-detailOffre"
+                                <div class="navigationOffres-item navigationOffres-item--noir navigationOffres-page gtm-candidat-detail-offre"
                                      v-show="doitAfficherOffrePrecedente()" v-on:click="afficherOffrePrecedente">
-                                    <span class="navigationOffres-iconePrecedent gtm-candidat-detailOffre"></span>
-                                    <span class="navigationOffres-action gtm-candidat-detailOffre">Précedent</span>
+                                    <span class="navigationOffres-iconePrecedent gtm-candidat-detail-offre"></span>
+                                    <span class="navigationOffres-action gtm-candidat-detail-offre">Précedent</span>
                                 </div>
                                 <div class="navigationOffres-item navigationOffres-item--noir navigationOffres-pageCourante">
                                     {{indexNavigationOffre + 1}} / {{nbOffresTotal}}
@@ -28,10 +28,10 @@
                                 <div class="navigationOffres-item navigationOffres-page"
                                      v-show="!doitAfficherOffreSuivante()">
                                 </div>
-                                <div class="navigationOffres-item navigationOffres-item--vert navigationOffres-page gtm-candidat-detailOffre"
+                                <div class="navigationOffres-item navigationOffres-item--vert navigationOffres-page gtm-candidat-detail-offre"
                                      v-show="doitAfficherOffreSuivante()" v-on:click="afficherOffreSuivante">
-                                    <span class="navigationOffres-action gtm-candidat-detailOffre">Suivant</span>
-                                    <span class="navigationOffres-iconeSuivant gtm-candidat-detailOffre"></span>
+                                    <span class="navigationOffres-action gtm-candidat-detail-offre">Suivant</span>
+                                    <span class="navigationOffres-iconeSuivant gtm-candidat-detail-offre"></span>
                                 </div>
                                 <div class="navigationOffres-item navigationOffres-item--noir navigationOffres-fermer" data-dismiss="modal">
                                     <span class="navigationOffres-action">Fermer</span>
@@ -95,8 +95,8 @@
                                         <p class="detailOffre-info detailOffre-info--sansMarge">Veuillez adresser votre CV et une lettre de motivation en précisant le numéro de l'offre : <span class="detailOffre-info--gras">n°{{offreCourante.id}}</span></p>
                                     </div>
                                     <div class="postuler-cta">
-                                        <button type="button" class="bouton bouton--blancSurVert boutonPostuler gtm-candidat-postulerOffre" v-show="!display.contact && !doitAfficherLienOrigineOffre(offreCourante.contact)" v-on:click="display.contact = true">Je contacte le recruteur</button>
-                                        <a target="_blank" class="bouton bouton--blancSurVert boutonPostuler gtm-candidat-postulerOffre"
+                                        <button type="button" class="bouton bouton--blancSurVert boutonPostuler gtm-candidat-detail-postuler" v-show="!display.contact && !doitAfficherLienOrigineOffre(offreCourante.contact)" v-on:click="display.contact = true">Je contacte le recruteur</button>
+                                        <a target="_blank" class="bouton bouton--blancSurVert boutonPostuler gtm-candidat-detail-postuler"
                                             v-show="doitAfficherLienOrigineOffre(offreCourante.contact)" v-bind:href="offreCourante.urlOrigine">
                                             Voir l'offre sur Pôle Emploi
                                         </a>
@@ -245,8 +245,8 @@
                                         <p class="detailOffre-info detailOffre-info--sansMarge">Veuillez adresser votre CV et une lettre de motivation en précisant le numéro de l'offre : <span class="detailOffre-info--gras">n°{{offreCourante.id}}</span></p>
                                     </div>
                                     <div class="postuler-cta">
-                                        <button type="button" class="bouton bouton--blancSurVert boutonPostuler gtm-candidat-postulerOffre" v-show="!display.contact && !doitAfficherLienOrigineOffre(offreCourante.contact)" v-on:click="display.contact = true">Je contacte le recruteur</button>
-                                        <a target="_blank" class="bouton bouton--blancSurVert boutonPostuler gtm-candidat-postulerOffre"
+                                        <button type="button" class="bouton bouton--blancSurVert boutonPostuler gtm-candidat-detail-postuler" v-show="!display.contact && !doitAfficherLienOrigineOffre(offreCourante.contact)" v-on:click="display.contact = true">Je contacte le recruteur</button>
+                                        <a target="_blank" class="bouton bouton--blancSurVert boutonPostuler gtm-candidat-detail-postuler"
                                             v-show="doitAfficherLienOrigineOffre(offreCourante.contact)" v-bind:href="offreCourante.urlOrigine">
                                             Voir l'offre sur Pôle Emploi
                                         </a>
@@ -279,7 +279,7 @@
                 <section class="rechercheOffres-formulaire">
                     <span class="formulaireRecherche-jsResponsive"></span>
                     <p class="formulaireRecherche-retourListeResultats" v-on:click="cacherFiltres">Retour à la liste</p>
-                    <form id="js-rechercheOffresForm" class="formulaireRecherche" v-on:submit.prevent="rechercherOffres">
+                    <form id="js-rechercheOffresForm" class="formulaireRecherche gtm-candidat-offres-form" v-on:submit.prevent="rechercherOffres">
                         <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurAffichageFiltres"
                              v-on:click="afficherFiltres">
                             <div class="rechercheOffres-localisation">
@@ -356,17 +356,17 @@
                     <template v-show="offres.length > 0" v-for="(offre, index) in offres">
                         <div v-show="doitAfficherOffre(index)"
                              v-on:click="afficherOffre(offre, index)"
-                             class="offres-item offre gtm-candidat-detailOffre">
-                            <div class="offre-resume gtm-candidat-detailOffre">
-                                <p class="offre-info offre-intitule gtm-candidat-detailOffre">{{offre.intitule | capitalize}}</p>
-                                <p class="offre-info offre-nomEntreprise gtm-candidat-detailOffre">{{offre.entreprise.nom | capitalize}}</p>
-                                <p class="offre-info offre-localisation gtm-candidat-detailOffre">
+                             class="offres-item offre gtm-candidat-detail-offre">
+                            <div class="offre-resume gtm-candidat-detail-offre">
+                                <p class="offre-info offre-intitule gtm-candidat-detail-offre">{{offre.intitule | capitalize}}</p>
+                                <p class="offre-info offre-nomEntreprise gtm-candidat-detail-offre">{{offre.entreprise.nom | capitalize}}</p>
+                                <p class="offre-info offre-localisation gtm-candidat-detail-offre">
                                     <img alt="Localisation" src="@assetsFinder.path("images/commun/localisation.svg")" height="16" width="16" />
                                     {{offre.lieuTravail.libelle}}
                                 </p>
                             </div>
-                            <div class="offre-typeContrat gtm-candidat-detailOffre">
-                                <span class="typeContrat gtm-candidat-detailOffre"
+                            <div class="offre-typeContrat gtm-candidat-detail-offre">
+                                <span class="typeContrat gtm-candidat-detail-offre"
                                       v-bind:class="cssTypeContrat(offre)">{{offre.contrat.code | typeContrat}}</span>
                             </div>
                         </div>
@@ -375,7 +375,7 @@
                             <div class="miseEnAvant-texte">Mettez en avant votre profil !
                                 Des recruteurs pourront vous contacter</div>
                             <div class="miseEnAvant-action">
-                                <a class="bouton bouton--blancSurVert miseEnAvant-bouton" href="@controllers.candidat.routes.InscriptionController.inscription()">Je m'inscris</a>
+                                <a class="bouton bouton--blancSurVert miseEnAvant-bouton gtm-candidat-offres-incentive-inscription" href="@controllers.candidat.routes.InscriptionController.inscription()">Je m'inscris</a>
                             </div>
                         </div>
                         <div v-if="doitAfficherMiseEnAvantCV(index)"
@@ -383,7 +383,7 @@
                             <div class="miseEnAvant-texte">Ajoutez votre CV !
                                 Des recruteurs pourront le consulter et vous contacter</div>
                             <div class="miseEnAvant-action">
-                                <a class="bouton bouton--vertSurBlanc miseEnAvant-bouton" href="@controllers.candidat.routes.SaisieCriteresRechercheController.saisieCriteresRecherche()">Je mets à jour mon profil</a>
+                                <a class="bouton bouton--vertSurBlanc miseEnAvant-bouton gtm-candidat-offres-incentive-cv" href="@controllers.candidat.routes.SaisieCriteresRechercheController.saisieCriteresRecherche()">Je mets à jour mon profil</a>
                             </div>
                         </div>
                     </template>

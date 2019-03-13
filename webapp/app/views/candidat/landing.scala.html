@@ -10,7 +10,7 @@
             <div class="landingCandidat-rechercheOffres rechercheOffres">
                 <h2 class="rechercheOffres-titre titreLanding">Retrouvez un job,
                     sans qualifications ou experiences !</h2>
-                <form class="formulaireRecherche" v-on:submit.prevent="rechercherOffres">
+                <form class="formulaireRecherche gtm-candidat-landing-form" v-on:submit.prevent="rechercherOffres">
                     <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurLocalisation">
                         <div class="rechercheOffres-localisation">
                             <div class="rechercheOffres-conteneurlieuTravail">
@@ -58,7 +58,7 @@
                     <li class="etapesInscription-item">Ajouter votre CV</li>
                     <li class="etapesInscription-item">Trouvez un emploi !</li>
                 </ol>
-                <a class="bouton bouton--blancSurVert boutonAction" href="@controllers.candidat.routes.InscriptionController.inscription()">Je m'inscris avec mon identifiant Pôle Emploi</a>
+                <a class="bouton bouton--blancSurVert boutonAction gtm-candidat-landing-connexion" href="@controllers.candidat.routes.InscriptionController.inscription()">Je m'inscris avec mon identifiant Pôle Emploi</a>
                 <p class="valorisation-abbreviation">* MRS : Méthode de recrutement par simulation</p>
             </div>
         </section>
@@ -67,7 +67,7 @@
             <temoignages v-bind:temoignages="temoignages"></temoignages>
         </section>
         <section class="landingCandidat-infoLegales infoLegales">
-            <a class="infoLegales-lien" href="/infos-legales.html">Infos légales</a>
+            <a class="infoLegales-lien" href="#">Infos légales</a>
         </section>
     </div>
     @components.jsData(jsData)
