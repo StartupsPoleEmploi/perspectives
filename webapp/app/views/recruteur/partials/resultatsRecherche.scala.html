@@ -107,16 +107,16 @@
         @for(candidatRechercheDto <- candidatRechercheDtos) {
             <div class="listeResultatsRecherche-conteneur">
                 <div id="js-ligne-@candidatRechercheDto.candidatId.value" class="listeResultatsRecherche-ligne">
-                    <div class="listeResultatsRecherche-colonne listeResultatsRecherche-candidat info--gras">
+                    <div class="listeResultatsRecherche-colonne listeResultatsRecherche-candidat info--gras gtm-recruteur-profils-detail">
                         @candidatRechercheDto.prenom.capitalize @candidatRechercheDto.nom.capitalize
                     </div>
-                    <div class="listeResultatsRecherche-colonne listeResultatsRecherche-mrs">
+                    <div class="listeResultatsRecherche-colonne listeResultatsRecherche-mrs gtm-recruteur-profils-detail">
                         @candidatRechercheDto.metiersEvalues.map(_.label).mkString(", ")
                     </div>
-                    <div class="listeResultatsRecherche-colonne listeResultatsRecherche-interessePar">
+                    <div class="listeResultatsRecherche-colonne listeResultatsRecherche-interessePar gtm-recruteur-profils-detail">
                         @interessePar(candidatRechercheDto)
                     </div>
-                    <div class="listeResultatsRecherche-colonne listeResultatsRecherche-voirProfil">
+                    <div class="listeResultatsRecherche-colonne listeResultatsRecherche-voirProfil gtm-recruteur-profils-detail">
                         <img src="@assetsFinder.path("images/commun/ouvrir-detail.svg")"
                              alt="Détails du profil candidat" height="16" width="16"
                              class="voirProfil--ferme"/>
@@ -161,13 +161,13 @@
                         <ul class="listeActions">
                             @if(candidatRechercheDto.possedeCV) {
                                 <li class="listeActions-item">
-                                    <a class="bouton bouton-actionCandidat bouton-actionCandidat--large bouton--noirSurBlanc" target="_blank" href="/recruteur/cv/telecharger/@candidatRechercheDto.candidatId.value/@candidatRechercheDto.nomCV">
+                                    <a class="bouton bouton-actionCandidat bouton-actionCandidat--large bouton--noirSurBlanc gtm-recruteur-profils-detail-cv" target="_blank" href="/recruteur/cv/telecharger/@candidatRechercheDto.candidatId.value/@candidatRechercheDto.nomCV">
                                         CV
                                     </a>
                                 </li>
                             }
                             <li class="listeActions-item">
-                                <span class="bouton bouton-actionCandidat bouton--bleu bouton-actionCandidat--large js-boutonCandidat">
+                                <span class="bouton bouton-actionCandidat bouton--bleu bouton-actionCandidat--large js-boutonCandidat gtm-recruteur-profils-detail-telephone">
                                     Téléphone</span>
                                 <span class="bouton bouton-infoCandidat bouton--noirSurBlanc js-infoCandidat">@candidatRechercheDto.numeroTelephone.value</span>
                                 <input class="copiePressePapier js-copiePressePapier" type="text" value="@candidatRechercheDto.numeroTelephone.value" />
