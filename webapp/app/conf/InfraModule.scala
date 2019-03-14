@@ -290,13 +290,11 @@ class InfraModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
-  def candidatNotificationLocalAdapter(webAppConfig: WebAppConfig,
-                                       wsClient: WSClient): CandidatNotificationLocalAdapter =
+  def candidatNotificationLocalAdapter: CandidatNotificationLocalAdapter =
     new CandidatNotificationLocalAdapter()
 
   @Provides
-  def referentielOffreWSMapping(wsClient: WSClient,
-                                webAppConfig: WebAppConfig): ReferentielOffreWSMapping =
+  def referentielOffreWSMapping: ReferentielOffreWSMapping =
     new ReferentielOffreWSMapping()
 
   @Provides
