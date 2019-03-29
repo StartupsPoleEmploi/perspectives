@@ -41,9 +41,7 @@ class EventSourcingModule extends AbstractModule {
   def candidatCommandHandler(candidatRepository: CandidatRepository,
                              referentielHabiletesMRS: ReferentielHabiletesMRS): CandidatCommandHandler =
     new CandidatCommandHandler {
-      override def repository: AggregateRepository[Candidat] = candidatRepository
-
-      override def newCandidatId: CandidatId = candidatRepository.newCandidatId
+      override val repository: AggregateRepository[Candidat] = candidatRepository
 
       override def configure: PartialFunction[Command[Candidat], Candidat => Future[List[Event]]] = {
         case command: AjouterMRSValideesCommand => c => c.ajouterMRSValidee(command, referentielHabiletesMRS)

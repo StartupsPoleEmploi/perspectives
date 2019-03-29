@@ -10,7 +10,7 @@ class RecruteurRepository(override val eventStore: EventStore,
                           override val snapshotRepository: SnapshotRepository[Recruteur])
   extends AggregateRepository[Recruteur] {
 
-  def newRecruteurId: RecruteurId = RecruteurId(UUID.randomUUID().toString)
+  def newId: RecruteurId = RecruteurId(UUID.randomUUID().toString)
 
   def newAlerteId: AlerteId = AlerteId(UUID.randomUUID().toString)
 

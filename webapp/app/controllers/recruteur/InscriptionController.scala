@@ -24,7 +24,7 @@ class InscriptionController @Inject()(cc: ControllerComponents,
     } else inscriptionSimple()
 
   private def inscriptionSimple(): Action[AnyContent] = Action.async { implicit request =>
-    val recruteurId = recruteurCommandHandler.newRecruteurId
+    val recruteurId = recruteurCommandHandler.newId
     val command = InscrireRecruteurCommand(
       id = recruteurId,
       nom = "michu",

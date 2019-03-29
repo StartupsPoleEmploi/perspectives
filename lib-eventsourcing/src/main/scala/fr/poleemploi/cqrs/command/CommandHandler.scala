@@ -7,6 +7,8 @@ import scala.concurrent.Future
 
 trait CommandHandler[A <: Aggregate] {
 
+  def newId: A#Id = repository.newId
+
   def repository: AggregateRepository[A]
 
   def configure: PartialFunction[Command[A], A => Future[List[Event]]]
@@ -19,8 +21,8 @@ trait CommandHandler[A <: Aggregate] {
 
   private def execute(aggregateId: A#Id, f: A => Future[List[Event]]): Future[Unit] =
     for {
-      candidat <- repository.getById(aggregateId)
-      events <- f(candidat)
-      _ <- repository.save(candidat, events)
+      aggregate <- repository.getById(aggregateId)
+      events <- f(aggregate)
+      _ <- repository.save(aggregate, events)
     } yield ()
 }

@@ -50,9 +50,7 @@ class EventSourcingModule extends AbstractModule {
                              referentielHabiletesMRS: ReferentielHabiletesMRS,
                              localisationService: LocalisationService): CandidatCommandHandler =
     new CandidatCommandHandler {
-      override def repository: AggregateRepository[Candidat] = candidatRepository
-
-      override def newCandidatId: CandidatId = candidatRepository.newCandidatId
+      override val repository: AggregateRepository[Candidat] = candidatRepository
 
       override def configure: PartialFunction[Command[Candidat], Candidat => Future[List[Event]]] = {
         case command: InscrireCandidatCommand => c => c.inscrire(command, localisationService)
@@ -94,9 +92,7 @@ class EventSourcingModule extends AbstractModule {
   def recruteurCommandHandler(recruteurRepository: RecruteurRepository,
                               commentaireService: CommentaireService): RecruteurCommandHandler =
     new RecruteurCommandHandler {
-      override def repository: AggregateRepository[Recruteur] = recruteurRepository
-
-      override def newRecruteurId: RecruteurId = recruteurRepository.newRecruteurId
+      override val repository: AggregateRepository[Recruteur] = recruteurRepository
 
       override def newAlerteId: AlerteId = recruteurRepository.newAlerteId
 

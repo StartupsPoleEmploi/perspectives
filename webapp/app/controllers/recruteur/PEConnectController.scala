@@ -128,7 +128,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
   }
 
   private def inscrire(peConnectRecruteurInfos: PEConnectRecruteurInfos): Future[RecruteurId] = {
-    val recruteurId = recruteurCommandHandler.newRecruteurId
+    val recruteurId = recruteurCommandHandler.newId
     val command = InscrireRecruteurCommand(
       id = recruteurId,
       nom = peConnectRecruteurInfos.nom,

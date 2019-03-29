@@ -7,6 +7,8 @@ import scala.concurrent.Future
 
 trait AggregateRepository[A <: Aggregate] {
 
+  def newId: A#Id
+
   def eventStore: EventStore
 
   def snapshotRepository: SnapshotRepository[A]
