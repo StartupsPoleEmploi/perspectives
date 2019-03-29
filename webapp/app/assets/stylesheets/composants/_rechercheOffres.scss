@@ -62,46 +62,5 @@
     color: $perspectives-bleu-nuit;
   }
 
-  // Algolia places
-  .algolia-places-nostyle {
-    width: 100%;
-  }
 
-  .ap-footer {
-    display: none;
-  }
-  .ap-nostyle {
-    &-input {
-      padding: 0.85rem 1rem 0.85rem 2.5rem;
-
-      &-icon {
-        background-color: transparent;
-        border: none;
-      }
-    }
-    &-icon {
-      &-clear {
-        position: absolute;
-        top: 9px;
-        right: 0;
-
-        & path {
-          fill: #798182;
-        }
-      }
-      &-pin {
-        position: absolute;
-        top: 10px;
-        left: 5px;
-
-        & path {
-          fill: $perspectives-vert-emeraude;
-        }
-      }
-    }
-    &-suggestions {
-      cursor: pointer;
-      background-color: white;
-    }
-  }
 }

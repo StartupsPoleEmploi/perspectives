@@ -17,11 +17,12 @@
 @import "modules/navigation";
 @import "modules/vuejs";
 
+@import "composants/alerteRecruteur";
+@import "composants/algoliaPlaces";
 @import "composants/checkbox";
 @import "composants/pagination";
-@import "composants/alerteRecruteur";
-@import "composants/temoignages";
 @import "composants/rechercheOffres";
+@import "composants/temoignages";
 
 @import "pages/candidat/landing";
 @import "pages/candidat/saisieCriteresRecherche";
