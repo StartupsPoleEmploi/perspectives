@@ -81,7 +81,7 @@
   }
 
   .titreLanding {
-    color: $perspectives-bleu-nuit;
+    color: $noir;
     @include media-breakpoint-up(md) {
       font-size: 2rem;
     }
@@ -175,7 +175,7 @@
 
   .temoignagesCandidat {
     background-color: rgba(13, 122, 147, 0.1);
-    color: $perspectives-bleu-nuit;
+    color: $noir;
 
     &-titre {
       margin: 0 auto 2rem;
@@ -183,7 +183,7 @@
   }
 
   .infoLegales {
-    background-color: $perspectives-bleu-nuit;
+    background-color: $noir;
     padding: 1rem;
 
     &-lien {

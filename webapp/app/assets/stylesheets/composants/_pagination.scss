@@ -5,7 +5,7 @@
 
   &-pageCourante {
     color: white;
-    background-color: #334051;
+    background-color: $noir;
 
     &:hover {
       color: white;
@@ -13,11 +13,11 @@
   }
 
   &-page {
-    color: #334051;
+    color: $noir;
     background-color: #EAEBED;
 
     &:hover {
-      color: #334051;
+      color: $noir;
     }
   }
 

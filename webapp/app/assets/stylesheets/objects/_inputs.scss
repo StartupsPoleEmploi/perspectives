@@ -66,7 +66,7 @@
 
   &--degradeBleu {
     color: white;
-    background: linear-gradient(0deg, $perspectives-bleu-ciel 0%, #6A89CC 100%);
+    background: linear-gradient(0deg, $bleu-ciel 0%, #6A89CC 100%);
     box-shadow: 0 0 30px 0 rgba(57, 92, 99, 0.15);
 
     &:hover {
@@ -75,22 +75,22 @@
   }
 
   &--noirSurBlanc {
-    color: $perspectives-bleu-nuit;
+    color: $noir;
     background-color: white;
-    border: 1px solid $perspectives-bleu-nuit;
+    border: 1px solid $noir;
   }
 
   &--noir {
-    color: $perspectives-bleu-nuit;
+    color: $noir;
 
     &:hover {
-      color: $perspectives-bleu-nuit;
+      color: $noir;
     }
   }
 
   &--blancSurNoir {
     color: white;
-    background-color: $perspectives-bleu-nuit;
+    background-color: $noir;
 
     &:hover {
       color: white;
@@ -103,13 +103,13 @@
   }
 
   &--noirSurGris {
-    color: $perspectives-bleu-nuit;
+    color: $noir;
     background-color: #EAEBED;
   }
 
   &--bleu {
     color: white;
-    background-color: $perspectives-bleu-ciel;
+    background-color: $bleu-ciel;
     border: 1px solid transparent;
 
     &:hover {
@@ -123,7 +123,7 @@
 
   &--blancSurVert {
     color: white;
-    background-color: $perspectives-vert-emeraude;
+    background-color: $vert-emeraude;
     border: none;
 
     &:hover {
@@ -132,12 +132,12 @@
   }
 
   &--vertSurBlanc {
-    color: $perspectives-vert-emeraude;
+    color: $vert-emeraude;
     background-color: white;
-    border: 2px solid $perspectives-vert-emeraude;
+    border: 2px solid $vert-emeraude;
 
     &:hover {
-      color: $perspectives-vert-emeraude;
+      color: $vert-emeraude;
     }
   }
 }
@@ -159,7 +159,7 @@
   padding-top: 5px;
   height: 36px;
   cursor: pointer;
-  border: 1px solid $perspectives-bleu-nuit;
+  border: 1px solid $noir;
   border-radius: 4px;
   @include userSelect(none);
   text-align: center;
@@ -184,16 +184,16 @@
       background-color: #364252;
 
       .boutonRadio-cercle {
-        background-color: $perspectives-bleu-ciel;
+        background-color: $bleu-ciel;
       }
     }
 
     &:not(:checked) ~ .boutonRadio {
-      color: $perspectives-bleu-nuit;
+      color: $noir;
       background-color: white;
 
       .boutonRadio-cercle {
-        border: 1px solid $perspectives-bleu-nuit;
+        border: 1px solid $noir;
       }
     }
   }
@@ -203,7 +203,7 @@
   min-width: 40%;
   padding: 10px;
   border: none;
-  border-bottom: 1px solid $perspectives-bleu-nuit;
+  border-bottom: 1px solid $noir;
   box-sizing: border-box;
   caret-color: #1157F0;
 }
@@ -235,7 +235,7 @@ select::-ms-expand {
     top: 15px;
     width: 12px;
     height: 12px;
-    border: solid $perspectives-bleu-nuit;
+    border: solid $noir;
     border-width: 0 3px 3px 0;
     -webkit-transform: rotate(45deg);
     -ms-transform: rotate(45deg);
@@ -294,7 +294,7 @@ select::-ms-expand {
   &-barreProgression {
     width: 0;
     color: white;
-    background-color: $perspectives-bleu-nuit;
+    background-color: $noir;
     text-align: center;
   }
 }

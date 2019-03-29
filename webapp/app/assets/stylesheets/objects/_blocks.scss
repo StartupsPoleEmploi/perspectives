@@ -12,7 +12,7 @@
   &-titre {
     @include make-col($grid-columns);
     @extend %titrePrincipal;
-    color: #334051;
+    color: $noir;
     padding-bottom: 0.5rem;
     text-align: center;
   }
@@ -32,7 +32,7 @@
 
   &-ligne {
     box-sizing: border-box;
-    border: 0.5px solid #334051;
+    border: 0.5px solid $noir;
     opacity: 0.6;
     width: 16.5%;
   }
@@ -46,13 +46,13 @@
     height: 22px;
     width: 22px;
     color: white;
-    background-color: #334051;
+    background-color: $noir;
     border-radius: 50%;
     display: inline-block;
     text-align: center;
 
     &--erreur {
-      background-color: $perspectives-text-required;
+      background-color: $rouge-erreur;
     }
   }
 
@@ -60,7 +60,7 @@
     @include make-col-ready();
     @include make-col(11);
 
-    color: #334051;
+    color: $noir;
     font-size: 1em;
     font-weight: 700;
   }
@@ -70,13 +70,13 @@
     @include make-col(11);
     padding-left: 38px;
 
-    color: #334051;
+    color: $noir;
     font-size: 1em;
     font-style: italic;
   }
 
   &-requise {
-    color: $perspectives-text-required;
+    color: $rouge-erreur;
   }
 }
 
@@ -86,13 +86,13 @@
 
   &-texte {
     @include make-col-ready();
-    color: #334051;
+    color: $noir;
     font-size: 1em;
     font-weight: 700;
   }
 
   &-requise {
-    color: $perspectives-text-required;
+    color: $rouge-erreur;
   }
 
   &-aide {
@@ -123,7 +123,7 @@
 
 .erreur {
   display: block;
-  color: $perspectives-text-required;
+  color: $rouge-erreur;
   font-weight: bold;
 }
 
@@ -131,7 +131,7 @@
   margin-left: 2.5rem;
 
   &-item {
-    color: $perspectives-text-required;
+    color: $rouge-erreur;
     font-weight: bold;
   }
 }

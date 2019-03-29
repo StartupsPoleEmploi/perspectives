@@ -11,7 +11,7 @@
 
     &-titre {
       @extend %titrePrincipal;
-      color: #334051;
+      color: $noir;
       text-align: left;
       width: 65%;
 
@@ -23,7 +23,7 @@
   }
 
   .introVersion {
-    color: #334051;
+    color: $noir;
     font-size: 0.8em;
     text-transform: uppercase;
     font-weight: 700;
@@ -32,7 +32,7 @@
     padding-top: 3em;
 
     &-deco {
-      background: $perspectives-bleu-ciel;
+      background: $bleu-ciel;
       width: 5px;
       height: 5px;
       display: inline-block;
@@ -78,7 +78,7 @@
 
     &-item {
       margin-bottom: 2em;
-      color: #334051;
+      color: $noir;
       font-size: 1.2em;
       letter-spacing: 1px;
       line-height: 28px;
@@ -88,7 +88,7 @@
       content: "";
       position: absolute;
       left: 15px;
-      border-left: 1px solid #334051;
+      border-left: 1px solid $noir;
       height: 24px;
     }
   }
@@ -97,7 +97,7 @@
     text-align: center;
 
     &-sponsor {
-      color: #334051;
+      color: $noir;
       padding-top: 0.7em;
       letter-spacing: -0.8px;
       font-size: 1.1em;
@@ -110,7 +110,7 @@
 
     &-titre {
       @extend %titrePrincipal;
-      color: $perspectives-bleu-nuit;
+      color: $noir;
       padding: 3rem 0;
       margin: 0;
     }
@@ -143,7 +143,7 @@
 
     &-texte {
       text-align: center;
-      color: #334051;
+      color: $noir;
       font-size: 20px;
       letter-spacing: 1px;
       line-height: 32px;
@@ -151,7 +151,7 @@
 
     &-titre {
       @extend %titrePrincipal;
-      color: #334051;
+      color: $noir;
       text-align: center;
     }
 
@@ -175,13 +175,13 @@
 
     &-titre {
       @extend %titrePrincipal;
-      color: #334051;
+      color: $noir;
       text-align: center;
       padding-bottom: 3rem;
     }
 
     .temoignage {
-      color: $perspectives-bleu-nuit;
+      color: $noir;
     }
   }
 

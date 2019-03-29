@@ -27,7 +27,7 @@
     justify-content: center;
     align-items: center;
     border-radius: 4px;
-    background-color: $perspectives-bleu-ciel;
+    background-color: $bleu-ciel;
 
     &-item {
       @include make-col(3);
@@ -36,12 +36,12 @@
   }
 
   .critereLocalisation {
-    color: $perspectives-bleu-nuit;
+    color: $noir;
     height: 47px;
   }
 
   .rechercherCandidats {
-    background-color: $perspectives-bleu-nuit;
+    background-color: $noir;
     border-radius: 4px;
     height: 45px;
     width: 90px;
@@ -68,7 +68,7 @@
       position: relative;
       padding-top: 2.5em;
       font-size: 1.375em;
-      color: $perspectives-bleu-nuit;
+      color: $noir;
     }
   }
 
@@ -94,7 +94,7 @@
       align-items: center;
       cursor: pointer;
       background-color: white;
-      color: $perspectives-bleu-nuit;
+      color: $noir;
     }
 
     &-colonne {
@@ -131,7 +131,7 @@
   .profilCandidat {
     @include make-row();
     color: white;
-    background-color: $perspectives-bleu-nuit;
+    background-color: $noir;
 
     &-colonne {
       @include make-col-ready();
@@ -201,7 +201,7 @@
     left: 37%;
     display: none;
     width: 64px;
-    background-color: $perspectives-bleu-ciel;
+    background-color: $bleu-ciel;
     box-shadow: 4px 2px 4px 0 rgba(0, 0, 0, 0.2);
     cursor: pointer;
     border-radius: 2px;
@@ -216,7 +216,7 @@
       left: 32px;
       height: 10px;
       width: 10px;
-      background: $perspectives-bleu-ciel;
+      background: $bleu-ciel;
       box-sizing: border-box;
       transform: rotate(45deg) translate(-7px);
       border-bottom: inherit;
@@ -234,7 +234,7 @@
     &-header {
       display: flex;
       justify-content: space-between;
-      background-color: $perspectives-bleu-nuit;
+      background-color: $noir;
       color: white;
     }
 
@@ -268,7 +268,7 @@
     padding: 2em;
 
     &-titre {
-      color: $perspectives-bleu-nuit;
+      color: $noir;
       font-size: 1.2em;
       padding-bottom: 1em;
       margin: 0;
@@ -279,7 +279,7 @@
     }
 
     &-action {
-      border: 1px solid $perspectives-bleu-nuit;
+      border: 1px solid $noir;
       padding: 0.5em 2.4em;
       margin: 0.5em;
       border-radius: 4px;

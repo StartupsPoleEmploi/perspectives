@@ -78,7 +78,7 @@
 
   &-iconeFermeture {
     font-size: 2rem;
-    color: $perspectives-vert-emeraude;
+    color: $vert-emeraude;
     display: none;
   }
 }
@@ -109,11 +109,11 @@
     }
 
     &--actif {
-      color: $perspectives-vert-emeraude;
-      border-bottom: 2px solid $perspectives-vert-emeraude;
+      color: $vert-emeraude;
+      border-bottom: 2px solid $vert-emeraude;
 
       &:hover {
-        color: $perspectives-vert-emeraude;
+        color: $vert-emeraude;
       }
     }
 
@@ -132,7 +132,7 @@
 
   &--deconnecte {
     @include media-breakpoint-up(md) {
-      border-left: 1px solid $perspectives-bleu-nuit;
+      border-left: 1px solid $noir;
     }
   }
 
@@ -149,7 +149,7 @@
       top: 11px;
       width: 8px;
       height: 8px;
-      border: solid $perspectives-bleu-nuit;
+      border: solid $noir;
       border-width: 0 2px 2px 0;
       -webkit-transform: rotate(45deg);
       -ms-transform: rotate(45deg);
@@ -163,13 +163,13 @@
 
   &-titre {
     &--connecte {
-      color: $perspectives-vert-emeraude;
+      color: $vert-emeraude;
       font-size: 0.875rem;
       font-weight: 600;
       text-transform: capitalize;
     }
     &--deconnecte {
-      color: $perspectives-bleu-nuit;
+      color: $noir;
       font-size: 0.75rem;
     }
   }
@@ -214,12 +214,12 @@
     font-size: 0.75rem;
     text-transform: uppercase;
     text-decoration: none;
-    color: $perspectives-bleu-nuit;
+    color: $noir;
     vertical-align: middle;
 
     &:hover {
       text-decoration: none;
-      color: $perspectives-bleu-nuit;
+      color: $noir;
     }
   }
 }

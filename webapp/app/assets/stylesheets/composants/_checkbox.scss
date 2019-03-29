@@ -24,7 +24,7 @@
     width: 20px;
 
     &--petite {
-      border: 1px solid $perspectives-bleu-nuit;
+      border: 1px solid $noir;
 
       &:after {
         top: 0;
@@ -33,7 +33,7 @@
     }
 
     &--grande {
-      border: 2px solid $perspectives-bleu-nuit;
+      border: 2px solid $noir;
 
       &:after {
         bottom: 2px;
@@ -58,7 +58,7 @@
 
       width: 10px;
       height: 15px;
-      border: solid $perspectives-bleu-ciel;
+      border: solid $bleu-ciel;
       border-width: 0 3px 3px 0;
       -webkit-transform: rotate(40deg);
       -ms-transform: rotate(40deg);

@@ -38,7 +38,7 @@
       align-items: center;
       cursor: pointer;
       background-color: white;
-      color: $perspectives-bleu-nuit;
+      color: $noir;
     }
 
     &-colonne {
@@ -64,7 +64,7 @@
   .profilCandidat {
     @include make-row();
     color: white;
-    background-color: $perspectives-bleu-nuit;
+    background-color: $noir;
 
     &-colonne {
       @include make-col-ready();

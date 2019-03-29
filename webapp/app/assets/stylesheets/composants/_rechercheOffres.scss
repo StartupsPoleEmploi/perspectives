@@ -5,7 +5,7 @@
     border: 1px solid #F2F2F2;
     border-radius: 2px;
     padding: 0.85rem;
-    color: $perspectives-bleu-nuit;
+    color: $noir;
     font-size: 0.875rem;
     font-style: italic;
   }
@@ -27,7 +27,7 @@
   &-lieuTravail {
     width: 100%;
     border: none;
-    color: $perspectives-bleu-nuit;
+    color: $noir;
     font-size: 0.875rem;
   }
 
@@ -42,7 +42,7 @@
       top: 15px;
       width: 10px;
       height: 10px;
-      border: solid $perspectives-vert-emeraude;
+      border: solid $vert-emeraude;
       border-width: 0 3px 3px 0;
       -webkit-transform: rotate(45deg);
       -ms-transform: rotate(45deg);
@@ -59,7 +59,7 @@
     -webkit-appearance: none;
     -moz-appearance: none;
     background-color: white;
-    color: $perspectives-bleu-nuit;
+    color: $noir;
   }
 
 

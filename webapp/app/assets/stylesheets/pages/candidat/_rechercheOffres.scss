@@ -59,7 +59,7 @@
     @include make-row();
 
     &-titre {
-      color: $perspectives-bleu-nuit;
+      color: $noir;
       font-weight: 700;
       margin: 0.5rem 0;
     }
@@ -92,7 +92,7 @@
       position: relative;
       display: none;
       font-size: 0.875rem;
-      color: $perspectives-bleu-nuit;
+      color: $noir;
       padding-left: 1rem;
 
       &:after {
@@ -105,7 +105,7 @@
         -webkit-transform: rotate(-45deg);
         -ms-transform: rotate(-45deg);
         transform: rotate(-45deg);
-        border: solid $perspectives-bleu-nuit;
+        border: solid $noir;
         border-width: 2px 0 0 2px;
       }
     }
@@ -122,7 +122,7 @@
     font-size: 0.875rem;
 
     &-item {
-      color: $perspectives-bleu-nuit;
+      color: $noir;
 
       &:not(:last-child) {
         margin-bottom: 0.5rem;
@@ -145,7 +145,7 @@
     }
 
     &-titre {
-      color: $perspectives-bleu-nuit;
+      color: $noir;
     }
   }
 
@@ -155,7 +155,7 @@
     cursor: pointer;
 
     &-info {
-      color: $perspectives-bleu-nuit;
+      color: $noir;
     }
 
     &-resume {
@@ -232,7 +232,7 @@
     &-texte {
       font-size: 1.5rem;
       font-weight: 700;
-      color: $perspectives-bleu-nuit;
+      color: $noir;
       white-space: pre-line;
 
       @include media-breakpoint-up(md) {
@@ -303,10 +303,10 @@
       font-size: 0.875rem;
 
       &--noir {
-        color: $perspectives-bleu-nuit;
+        color: $noir;
       }
       &--vert {
-        color: $perspectives-vert-emeraude;
+        color: $vert-emeraude;
       }
     }
 
@@ -362,7 +362,7 @@
         -webkit-transform: rotate(-45deg);
         -ms-transform: rotate(-45deg);
         transform: rotate(-45deg);
-        border: solid $perspectives-bleu-nuit;
+        border: solid $noir;
         border-width: 3px 0 0 3px;
 
         @include media-breakpoint-up(sm) {
@@ -390,7 +390,7 @@
         -webkit-transform: rotate(45deg);
         -ms-transform: rotate(45deg);
         transform: rotate(45deg);
-        border: solid $perspectives-vert-emeraude;
+        border: solid $vert-emeraude;
         border-width: 3px 3px 0 0;
 
         @include media-breakpoint-up(sm) {
@@ -456,7 +456,7 @@
 
     &-intitule {
       font-weight: 700;
-      color: $perspectives-bleu-nuit;
+      color: $noir;
       font-size: 2rem;
       margin-bottom: 0;
       padding-top: 2rem;
@@ -471,7 +471,7 @@
     }
 
     &-info {
-      color: $perspectives-bleu-nuit;
+      color: $noir;
 
       &--petite {
         font-size: 0.875rem;
@@ -501,7 +501,7 @@
       font-size: 1.5rem;
       padding: 1rem 0;
       margin: 0;
-      color: $perspectives-bleu-nuit;
+      color: $noir;
     }
 
     &-sousTitreSection {
@@ -509,7 +509,7 @@
       font-size: 1.125rem;
       padding: 1rem 0;
       margin: 0;
-      color: $perspectives-bleu-nuit;
+      color: $noir;
     }
   }
 
@@ -539,7 +539,7 @@
       margin-right: 0.5rem;
 
       path {
-        fill: $perspectives-vert-emeraude;
+        fill: $vert-emeraude;
       }
     }
   }
@@ -629,13 +629,13 @@
         background-color: white;
 
         &:after {
-          border: solid $perspectives-vert-emeraude;
+          border: solid $vert-emeraude;
           border-width: 0 3px 3px 0;
         }
       }
 
       &--exige {
-        background-color: $perspectives-vert-emeraude;
+        background-color: $vert-emeraude;
 
         &:after {
           border: solid white;
@@ -658,7 +658,7 @@
 
   .infosPostuler {
     background-color: #F4F9FA;
-    color: $perspectives-bleu-nuit;
+    color: $noir;
     font-size: 0.875rem;
     padding: 1rem;
     border-radius: 8px;

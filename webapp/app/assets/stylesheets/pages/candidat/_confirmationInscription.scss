@@ -7,7 +7,7 @@
   .confirmationTitre {
     margin: 2rem;
     @extend %titrePrincipal;
-    color: #334051;
+    color: $noir;
   }
 
   .confirmationTexte {
