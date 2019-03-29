@@ -1,10 +1,12 @@
 package fr.poleemploi.perspectives.conseiller
 
-case class RoleConseiller(value: String)
+import fr.poleemploi.eventsourcing.StringValueObject
+
+case class RoleConseiller(value: String) extends StringValueObject
 
 object RoleConseiller {
 
-  val ADMIN = RoleConseiller(value = "admin")
+  val ADMIN = RoleConseiller(value = "ADMIN")
 
   private val values = Map(
     ADMIN.value -> ADMIN
