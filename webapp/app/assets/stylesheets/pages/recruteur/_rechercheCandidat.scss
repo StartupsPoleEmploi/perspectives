@@ -35,10 +35,6 @@
     }
   }
 
-  .localisationLabel {
-    @include sr-only();
-  }
-
   .critereLocalisation {
     color: $perspectives-bleu-nuit;
     height: 47px;

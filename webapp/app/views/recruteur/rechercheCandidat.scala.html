@@ -34,7 +34,7 @@
             @form(action = controllers.recruteur.routes.RechercheCandidatController.rechercherCandidats(), 'id -> "criteresRechercheForm") {
                 <div class="criteres">
                     <div class="criteres-item conteneurSelecteur">
-                        <label for="js-secteursActivites-selecteur" class="conteneurSelecteur-label">Choisissez un secteur d'activité</label>
+                        <label for="js-secteursActivites-selecteur" class="sr-only">Choisissez un secteur d'activité</label>
                         <select id="js-secteursActivites-selecteur" name="secteurActivite" class="conteneurSelecteur-selecteur"
                                 v-model="secteurActivite" v-on:change="onSecteurActiviteModifie">
                             <option value="">Tous les secteurs</option>
@@ -42,7 +42,7 @@
                         </select>
                     </div>
                     <div class="criteres-item conteneurSelecteur">
-                        <label for="js-metiers-selecteur" class="conteneurSelecteur-label">Chosissez un métier</label>
+                        <label for="js-metiers-selecteur" class="sr-only">Chosissez un métier</label>
                         <select id="js-metiers-selecteur" name="metier" class="conteneurSelecteur-selecteur"
                                 v-model="metier">
                             <option value="">{{labelTousLesMetiers}}</option>
@@ -50,7 +50,7 @@
                         </select>
                     </div>
                     <div class="criteres-item">
-                        <label for="js-localisation" class="localisationLabel">Choisissez un lieu de travail</label>
+                        <label for="js-localisation" class="sr-only">Choisissez un lieu de travail</label>
                         <input id="js-localisation" type="search" v-model="localisation.label" placeholder="Lieu de travail"
                                class="critereLocalisation"/>
                     </div>

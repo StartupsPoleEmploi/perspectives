@@ -227,9 +227,6 @@ select::-ms-expand {
     -webkit-appearance: none;
     -moz-appearance: none;
   }
-  &-label {
-    @include sr-only();
-  }
 
   &:after {
     content: '';
