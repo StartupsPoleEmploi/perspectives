@@ -5,9 +5,7 @@
   padding-left: 40px;
 
   &-input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
+    @include hiddenInput();
 
     &:checked ~ .checkbox {
       .checkbox-checkmark:after {

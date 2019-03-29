@@ -12,6 +12,12 @@
   max-width: none;
 }
 
+@mixin hiddenInput {
+  opacity: 0;
+  position: absolute;
+  left: -1000px;
+}
+
 %titrePrincipal {
   font-weight: 300;
   font-size: 2em;

@@ -175,9 +175,7 @@
   }
 
   &-input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
+    @include hiddenInput();
 
     &:checked ~ .boutonRadio {
       color: white;
@@ -271,8 +269,7 @@ select::-ms-expand {
   }
 
   &-input {
-    position: absolute;
-    opacity: 0;
+    @include hiddenInput();
   }
 
   &-item {
