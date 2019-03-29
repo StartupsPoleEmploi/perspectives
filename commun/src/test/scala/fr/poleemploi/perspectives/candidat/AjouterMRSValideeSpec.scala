@@ -44,9 +44,9 @@ class AjouterMRSValideeSpec extends AsyncWordSpec
       val candidat = candidatBuilder.build
 
       // When & Then
-      recoverToExceptionIf[IllegalArgumentException] {
+      recoverToExceptionIf[IllegalStateException](
         candidat.ajouterMRSValidee(commande, referentielHabiletesMRS)
-      }.map(ex =>
+      ).map(ex =>
         ex.getMessage mustBe s"Le candidat ${candidat.id.value} dans l'état Nouveau ne peut pas gérer la commande ${commande.getClass.getSimpleName}"
       )
     }
@@ -55,9 +55,9 @@ class AjouterMRSValideeSpec extends AsyncWordSpec
       val candidat = candidatBuilder.avecInscription().avecMRSValidee(mrsValidee).build
 
       // When & Then
-      recoverToExceptionIf[IllegalArgumentException] {
+      recoverToExceptionIf[IllegalArgumentException](
         candidat.ajouterMRSValidee(commande, referentielHabiletesMRS)
-      }.map(ex =>
+      ).map(ex =>
         ex.getMessage must startWith(s"Le candidat ${candidat.id.value} a déjà validé les MRS suivantes")
       )
     }
@@ -67,9 +67,9 @@ class AjouterMRSValideeSpec extends AsyncWordSpec
       when(referentielHabiletesMRS.habiletes(mrsValidee.codeROME, mrsValidee.codeDepartement)) thenReturn Future.failed(new RuntimeException("erreur de service"))
 
       // When & Then
-      recoverToExceptionIf[RuntimeException] {
+      recoverToExceptionIf[RuntimeException](
         candidat.ajouterMRSValidee(commande, referentielHabiletesMRS)
-      }.map(ex =>
+      ).map(ex =>
         ex.getMessage mustBe "erreur de service"
       )
     }

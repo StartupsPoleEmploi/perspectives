@@ -29,13 +29,12 @@ trait CandidatState {
   def remplacerCV(context: CandidatContext, command: RemplacerCVCommand, cvService: CVService): Future[List[Event]] =
     Future(default(context, command))
 
-  def ajouterMRSValidee(context: CandidatContext, command: AjouterMRSValideesCommand,
-                        referentielHabiletesMRS: ReferentielHabiletesMRS): Future[List[Event]] =
+  def ajouterMRSValidee(context: CandidatContext, command: AjouterMRSValideesCommand, referentielHabiletesMRS: ReferentielHabiletesMRS): Future[List[Event]] =
     Future(default(context, command))
 
   def declarerRepriseEmploiParConseiller(context: CandidatContext, command: DeclarerRepriseEmploiParConseillerCommand): List[Event] =
     default(context, command)
 
   private def default(context: CandidatContext, command: Command[Candidat]) =
-    throw new IllegalArgumentException(s"Le candidat ${command.id.value} dans l'état $name ne peut pas gérer la commande ${command.getClass.getSimpleName}")
+    throw new IllegalStateException(s"Le candidat ${command.id.value} dans l'état $name ne peut pas gérer la commande ${command.getClass.getSimpleName}")
 }

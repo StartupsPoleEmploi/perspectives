@@ -38,9 +38,9 @@ class AjouterCVCandidatSpec extends AsyncWordSpec
       val candidat = candidatBuilder.build
 
       // When & Then
-      recoverToExceptionIf[IllegalArgumentException] {
+      recoverToExceptionIf[IllegalStateException](
         candidat.ajouterCV(commande, cvService)
-      }.map(ex =>
+      ).map(ex =>
         ex.getMessage mustBe s"Le candidat ${candidat.id.value} dans l'état Nouveau ne peut pas gérer la commande ${commande.getClass.getSimpleName}"
       )
     }
@@ -49,9 +49,9 @@ class AjouterCVCandidatSpec extends AsyncWordSpec
       val candidat = candidatBuilder.avecInscription().avecCV(cvId).build
 
       // When & Then
-      recoverToExceptionIf[IllegalArgumentException] {
+      recoverToExceptionIf[IllegalArgumentException](
         candidat.ajouterCV(commande, cvService)
-      }.map(ex =>
+      ).map(ex =>
         ex.getMessage mustBe s"Impossible d'ajouter un CV au candidat ${candidat.id.value}, il existe déjà"
       )
     }
@@ -61,9 +61,9 @@ class AjouterCVCandidatSpec extends AsyncWordSpec
       when(cvService.save(cvId, commande.id, commande.nomFichier, commande.typeMedia, commande.path)) thenReturn Future.failed(new RuntimeException("erreur de service"))
 
       // When & Then
-      recoverToExceptionIf[RuntimeException] {
+      recoverToExceptionIf[RuntimeException](
         candidat.ajouterCV(commande, cvService)
-      }.map(ex =>
+      ).map(ex =>
         ex.getMessage mustBe "erreur de service"
       )
     }

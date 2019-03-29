@@ -25,7 +25,7 @@ class CreerAlerteSpec extends WordSpec with MustMatchers with MockitoSugar {
       val recruteur = recruteurBuilder.build
 
       // When
-      val ex = intercept[IllegalArgumentException] {
+      val ex = intercept[IllegalStateException] {
         recruteur.creerAlerte(commande)
       }
 
@@ -37,7 +37,7 @@ class CreerAlerteSpec extends WordSpec with MustMatchers with MockitoSugar {
       val recruteur = recruteurBuilder.avecInscription().build
 
       // When
-      val ex = intercept[IllegalArgumentException] {
+      val ex = intercept[IllegalStateException] {
         recruteur.creerAlerte(commande)
       }
 

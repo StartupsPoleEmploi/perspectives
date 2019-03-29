@@ -33,5 +33,5 @@ trait RecruteurState {
     default(context, command)
 
   private def default(context: RecruteurContext, command: Command[Recruteur]) =
-    throw new IllegalArgumentException(s"Le recruteur ${command.id.value} dans l'état $name ne peut pas gérer la commande ${command.getClass.getSimpleName}")
+    throw new IllegalStateException(s"Le recruteur ${command.id.value} dans l'état $name ne peut pas gérer la commande ${command.getClass.getSimpleName}")
 }

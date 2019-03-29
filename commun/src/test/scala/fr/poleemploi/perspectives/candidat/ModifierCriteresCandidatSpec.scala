@@ -27,7 +27,7 @@ class ModifierCriteresCandidatSpec extends WordSpec
       val candidat = candidatBuilder.build
 
       // When
-      val ex = intercept[IllegalArgumentException] {
+      val ex = intercept[IllegalStateException] {
         candidat.modifierCriteres(commande)
       }
 

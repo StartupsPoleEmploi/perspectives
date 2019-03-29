@@ -24,7 +24,7 @@ class ModifierProfilRecruteurSpec extends WordSpec with MustMatchers with Mockit
       val recruteur = recruteurBuilder.build
 
       // When
-      val ex = intercept[IllegalArgumentException] {
+      val ex = intercept[IllegalStateException] {
         recruteur.modifierProfil(commande)
       }
 

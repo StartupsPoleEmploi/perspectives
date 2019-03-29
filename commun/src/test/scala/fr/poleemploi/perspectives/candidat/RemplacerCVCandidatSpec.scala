@@ -38,9 +38,9 @@ class RemplacerCVCandidatSpec extends AsyncWordSpec
       val candidat = candidatBuilder.build
 
       // When & Then
-      recoverToExceptionIf[IllegalArgumentException] {
+      recoverToExceptionIf[IllegalStateException](
         candidat.remplacerCV(commande, cvService)
-      }.map(ex =>
+      ).map(ex =>
         ex.getMessage mustBe s"Le candidat ${candidat.id.value} dans l'état Nouveau ne peut pas gérer la commande ${commande.getClass.getSimpleName}"
       )
     }
@@ -49,9 +49,9 @@ class RemplacerCVCandidatSpec extends AsyncWordSpec
       val candidat = candidatBuilder.avecInscription().build
 
       // When & Then
-      recoverToExceptionIf[IllegalArgumentException] {
+      recoverToExceptionIf[IllegalArgumentException](
         candidat.remplacerCV(commande, cvService)
-      }.map(ex =>
+      ).map(ex =>
         ex.getMessage mustBe s"Impossible de remplacer le CV inexistant du candidat ${candidat.id.value}"
       )
     }
@@ -61,9 +61,9 @@ class RemplacerCVCandidatSpec extends AsyncWordSpec
       when(cvService.update(commande.cvId, commande.nomFichier, commande.typeMedia, commande.path)) thenReturn Future.failed(new RuntimeException("erreur de service"))
 
       // When & Then
-      recoverToExceptionIf[RuntimeException] {
+      recoverToExceptionIf[RuntimeException](
         candidat.remplacerCV(commande, cvService)
-      }.map(ex =>
+      ).map(ex =>
         ex.getMessage mustBe "erreur de service"
       )
     }

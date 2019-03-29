@@ -23,7 +23,7 @@ class ConnecterRecruteurSpec extends WordSpec
       val recruteur = recruteurBuilder.build
 
       // When
-      val ex = intercept[IllegalArgumentException] {
+      val ex = intercept[IllegalStateException] {
         recruteur.connecter(commande)
       }
 

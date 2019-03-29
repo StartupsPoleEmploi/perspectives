@@ -36,9 +36,9 @@ class InscrireCandidatSpec extends AsyncWordSpec
       val candidat = candidatBuilder.avecInscription().build
 
       // When & Then
-      recoverToExceptionIf[IllegalArgumentException] {
+      recoverToExceptionIf[IllegalStateException](
         candidat.inscrire(commande, localisationService)
-      }.map(ex =>
+      ).map(ex =>
         ex.getMessage mustBe s"Le candidat ${candidat.id.value} dans l'état Inscrit ne peut pas gérer la commande ${commande.getClass.getSimpleName}"
       )
     }

@@ -34,9 +34,9 @@ class CommenterListeCandidatsSpec extends AsyncWordSpec
       val recruteur = recruteurBuilder.build
 
       // When & Then
-      recoverToExceptionIf[IllegalArgumentException] {
+      recoverToExceptionIf[IllegalStateException](
         recruteur.commenterListeCandidats(commande, commentaireService)
-      }.map(ex =>
+      ).map(ex =>
         ex.getMessage mustBe s"Le recruteur ${commande.id.value} dans l'état Nouveau ne peut pas gérer la commande ${commande.getClass.getSimpleName}"
       )
     }
@@ -45,9 +45,9 @@ class CommenterListeCandidatsSpec extends AsyncWordSpec
       val recruteur = recruteurBuilder.avecInscription().build
 
       // When & Then
-      recoverToExceptionIf[IllegalArgumentException] {
+      recoverToExceptionIf[IllegalStateException](
         recruteur.commenterListeCandidats(commande, commentaireService)
-      }.map(ex =>
+      ).map(ex =>
         ex.getMessage mustBe s"Le recruteur ${commande.id.value} dans l'état Inscrit ne peut pas gérer la commande ${commande.getClass.getSimpleName}"
       )
     }

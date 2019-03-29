@@ -19,7 +19,7 @@ class SupprimerAlerteSpec extends WordSpec with MustMatchers with MockitoSugar {
       val recruteur = recruteurBuilder.build
 
       // When
-      val ex = intercept[IllegalArgumentException] {
+      val ex = intercept[IllegalStateException] {
         recruteur.supprimerAlerte(commande)
       }
 
@@ -31,7 +31,7 @@ class SupprimerAlerteSpec extends WordSpec with MustMatchers with MockitoSugar {
       val recruteur = recruteurBuilder.avecInscription().build
 
       // When
-      val ex = intercept[IllegalArgumentException] {
+      val ex = intercept[IllegalStateException] {
         recruteur.supprimerAlerte(commande)
       }
 
