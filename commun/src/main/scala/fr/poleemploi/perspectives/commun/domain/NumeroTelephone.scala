@@ -3,13 +3,10 @@ package fr.poleemploi.perspectives.commun.domain
 import fr.poleemploi.eventsourcing.StringValueObject
 
 /**
-  * Value Object Metier
+  * Value Object NumeroTelephone
   */
 case class NumeroTelephone(value: String) extends StringValueObject
 
-/**
-  * Methodes pour construire et valider un NumeroTelephone
-  */
 object NumeroTelephone {
 
   def from(value: String): Option[NumeroTelephone] =
