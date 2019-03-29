@@ -16,14 +16,14 @@ class RecruteurBuilder {
 
   private var events: ListBuffer[Event] = ListBuffer()
 
-  def avecInscription(nom: Option[String] = None,
-                      prenom: Option[String] = None,
+  def avecInscription(nom: Option[Nom] = None,
+                      prenom: Option[Prenom] = None,
                       email: Option[Email] = None,
                       genre: Option[Genre] = None): RecruteurBuilder = {
     events += RecruteurInscritEvent(
       recruteurId = recruteurId,
-      nom = nom.getOrElse("recruteur"),
-      prenom = prenom.getOrElse("bob"),
+      nom = nom.getOrElse(Nom("recruteur")),
+      prenom = prenom.getOrElse(Prenom("bob")),
       email = email.getOrElse(Email("bob.recruteur@mail.com")),
       genre = genre.getOrElse(Genre.HOMME)
     )

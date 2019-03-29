@@ -9,8 +9,8 @@ import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.conseiller.ConseillerId
 
 case class InscrireCandidatCommand(id: CandidatId,
-                                   nom: String,
-                                   prenom: String,
+                                   nom: Nom,
+                                   prenom: Prenom,
                                    email: Email,
                                    genre: Genre,
                                    adresse: Option[Adresse],
@@ -27,8 +27,8 @@ case class ModifierCriteresRechercheCommand(id: CandidatId,
                                             numeroTelephone: NumeroTelephone) extends Command[Candidat]
 
 case class ConnecterCandidatCommand(id: CandidatId,
-                                    nom: String,
-                                    prenom: String,
+                                    nom: Nom,
+                                    prenom: Prenom,
                                     email: Email,
                                     genre: Genre,
                                     adresse: Option[Adresse],

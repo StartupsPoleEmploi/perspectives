@@ -1,7 +1,7 @@
 package fr.poleemploi.perspectives.authentification.infra.peconnect.ws
 
 import fr.poleemploi.perspectives.candidat.{Adresse, StatutDemandeurEmploi}
-import fr.poleemploi.perspectives.commun.domain.{Email, Genre}
+import fr.poleemploi.perspectives.commun.domain.{Email, Genre, Nom, Prenom}
 import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsPath, Reads}
@@ -38,14 +38,14 @@ object AccessTokenResponse {
 }
 
 case class PEConnectCandidatInfos(peConnectId: PEConnectId,
-                                  nom: String,
-                                  prenom: String,
+                                  nom: Nom,
+                                  prenom: Prenom,
                                   email: Email,
                                   genre: Genre)
 
 case class PEConnectRecruteurInfos(peConnectId: PEConnectId,
-                                   nom: String,
-                                   prenom: String,
+                                   nom: Nom,
+                                   prenom: Prenom,
                                    email: Email,
                                    genre: Genre,
                                    certifie: Boolean)
@@ -59,8 +59,8 @@ private[ws] case class UserInfosResponse(sub: String,
   def toPEConnectCandidatInfos: PEConnectCandidatInfos =
     PEConnectCandidatInfos(
       peConnectId = PEConnectId(sub),
-      nom = familyName.toLowerCase,
-      prenom = givenName.toLowerCase,
+      nom = Nom(familyName),
+      prenom = Prenom(givenName),
       email = Email(email.toLowerCase), // on fait confiance à PEConnect pour avoir un email valide
       genre = PEConnectWSMapping.extractGender(gender)
     )
@@ -87,8 +87,8 @@ private[ws] case class UserInfosEntrepriseResponse(sub: String,
   def toPEConnectRecruteurInfos: PEConnectRecruteurInfos =
     PEConnectRecruteurInfos(
       peConnectId = PEConnectId(sub),
-      nom = familyName.toLowerCase,
-      prenom = givenName.toLowerCase,
+      nom = Nom(familyName),
+      prenom = Prenom(givenName),
       email = Email(email.toLowerCase), // on fait confiance à PEConnect pour avoir un email valide
       genre = PEConnectWSMapping.extractGender(gender),
       certifie = PEConnectWSMapping.extractCertifie(habilitation)

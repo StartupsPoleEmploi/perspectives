@@ -124,7 +124,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
                                     cvForm: CVForm): AjouterCVCommand =
     AjouterCVCommand(
       id = candidat.candidatId,
-      nomFichier = s"${candidat.nom.toLowerCase}-${candidat.prenom.toLowerCase}.${TypeMedia.getExtensionFichier(cvForm.typeMedia)}",
+      nomFichier = buildNomFichier(candidat, cvForm),
       typeMedia = cvForm.typeMedia,
       path = cvForm.path
     )
@@ -135,8 +135,12 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
     RemplacerCVCommand(
       id = candidat.candidatId,
       cvId = cvId,
-      nomFichier = s"${candidat.nom.toLowerCase}-${candidat.prenom.toLowerCase}.${TypeMedia.getExtensionFichier(cvForm.typeMedia)}",
+      nomFichier = buildNomFichier(candidat, cvForm),
       typeMedia = cvForm.typeMedia,
       path = cvForm.path
     )
+
+  private def buildNomFichier(candidat: CandidatSaisieCriteresRechercheQueryResult,
+                              cvForm: CVForm): String =
+    s"${candidat.prenom.value} ${candidat.nom.value}.${TypeMedia.getExtensionFichier(cvForm.typeMedia)}"
 }

@@ -21,6 +21,8 @@ object JsonFormats {
   implicit val formatAlerteId: Format[AlerteId] = formatStringValueObject(AlerteId)
 
   implicit val formatGenre: Format[Genre] = formatStringValueObject(Genre(_))
+  implicit val formatNom: Format[Nom] = formatStringValueObject(Nom(_))
+  implicit val formatPrenom: Format[Prenom] = formatStringValueObject(Prenom(_))
   implicit val formatCodeDepartement: Format[CodeDepartement] = formatStringValueObject(CodeDepartement)
   implicit val formatEmail: Format[Email] = formatStringValueObject(Email)
   implicit val formatRayonRecherche: Format[RayonRecherche] = formatIntValueObject(RayonRecherche(_))
@@ -46,9 +48,7 @@ object JsonFormats {
     case _ => JsError("Not a string")
   }
 
-  def writesAggregateId[T <: AggregateId]: Writes[T] = Writes { id =>
-    JsString(id.value)
-  }
+  def writesAggregateId[T <: AggregateId]: Writes[T] = Writes(id => JsString(id.value))
 
   def formatAggregateId[T <: AggregateId](deserialize: String => T): Format[T] =
     Format(readsAggregateId[T](deserialize), writesAggregateId[T])
@@ -58,9 +58,7 @@ object JsonFormats {
     case _ => JsError("Not a string")
   }
 
-  def writesStringValueObject[T <: StringValueObject]: Writes[T] = Writes { s =>
-    JsString(s.value)
-  }
+  def writesStringValueObject[T <: StringValueObject]: Writes[T] = Writes(s => JsString(s.value))
 
   def formatStringValueObject[T <: StringValueObject](deserialize: String => T): Format[T] =
     Format(readsStringValueObject[T](deserialize), writesStringValueObject[T])
@@ -70,9 +68,7 @@ object JsonFormats {
     case _ => JsError("Not a number")
   }
 
-  def writesIntValueObject[T <: IntValueObject]: Writes[T] = Writes { i =>
-    JsNumber(i.value)
-  }
+  def writesIntValueObject[T <: IntValueObject]: Writes[T] = Writes(i => JsNumber(i.value))
 
   def formatIntValueObject[T <: IntValueObject](deserialize: Int => T): Format[T] =
     Format(readsIntValueObject[T](deserialize), writesIntValueObject[T])

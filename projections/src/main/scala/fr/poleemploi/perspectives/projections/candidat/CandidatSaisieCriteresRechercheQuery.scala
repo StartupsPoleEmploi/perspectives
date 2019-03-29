@@ -3,13 +3,13 @@ package fr.poleemploi.perspectives.projections.candidat
 import fr.poleemploi.cqrs.projection.{Query, QueryResult}
 import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
-import fr.poleemploi.perspectives.commun.domain.{CodeROME, Metier, NumeroTelephone, RayonRecherche}
+import fr.poleemploi.perspectives.commun.domain._
 
 case class CandidatSaisieCriteresRechercheQuery(candidatId: CandidatId) extends Query[CandidatSaisieCriteresRechercheQueryResult]
 
 case class CandidatSaisieCriteresRechercheQueryResult(candidatId: CandidatId,
-                                                      nom: String,
-                                                      prenom: String,
+                                                      nom: Nom,
+                                                      prenom: Prenom,
                                                       rechercheMetierEvalue: Option[Boolean],
                                                       metiersEvalues: List[Metier],
                                                       rechercheAutreMetier: Option[Boolean],
@@ -23,5 +23,5 @@ case class CandidatSaisieCriteresRechercheQueryResult(candidatId: CandidatId,
 
   def possedeCV: Boolean = cvId.isDefined
 
-  def nomCV: Option[String] = cvTypeMedia.map(t => s"$nom-$prenom.${TypeMedia.getExtensionFichier(t)}")
+  def nomCV: Option[String] = cvTypeMedia.map(t => s"${prenom.value} ${nom.value}.${TypeMedia.getExtensionFichier(t)}")
 }

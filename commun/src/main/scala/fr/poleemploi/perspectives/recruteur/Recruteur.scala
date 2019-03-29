@@ -1,7 +1,7 @@
 package fr.poleemploi.perspectives.recruteur
 
 import fr.poleemploi.eventsourcing.{Aggregate, Event}
-import fr.poleemploi.perspectives.commun.domain.{Email, Genre, NumeroTelephone}
+import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.recruteur.alerte.domain.{AlerteId, CriteresAlerte}
 import fr.poleemploi.perspectives.recruteur.commentaire.domain.CommentaireService
 import fr.poleemploi.perspectives.recruteur.state.{NouveauRecruteurState, RecruteurInscritState, RecruteurProfilCompletState, RecruteurState}
@@ -81,8 +81,8 @@ class Recruteur(override val id: RecruteurId,
     state.supprimerAlerte(context = context, command = command)
 }
 
-private[recruteur] case class RecruteurContext(nom: Option[String] = None,
-                                               prenom: Option[String] = None,
+private[recruteur] case class RecruteurContext(nom: Option[Nom] = None,
+                                               prenom: Option[Prenom] = None,
                                                email: Option[Email] = None,
                                                genre: Option[Genre] = None,
                                                raisonSociale: Option[String] = None,

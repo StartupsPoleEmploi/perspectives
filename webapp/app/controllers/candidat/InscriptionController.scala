@@ -6,7 +6,7 @@ import controllers.AssetsFinder
 import controllers.FlashMessages._
 import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
 import fr.poleemploi.perspectives.candidat._
-import fr.poleemploi.perspectives.commun.domain.{Email, Genre}
+import fr.poleemploi.perspectives.commun.domain.{Email, Genre, Nom, Prenom}
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
 
@@ -30,8 +30,8 @@ class InscriptionController @Inject()(cc: ControllerComponents,
     val candidatId = candidatCommandHandler.newId
     val command = InscrireCandidatCommand(
       id = candidatId,
-      nom = "perspectives",
-      prenom = "mickael",
+      nom = Nom("perspectives"),
+      prenom = Prenom("mickael"),
       email = Email("mickael.perspectives@mail.com"),
       genre = Genre.HOMME,
       adresse = Some(Adresse(

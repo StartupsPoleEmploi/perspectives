@@ -18,8 +18,8 @@ case class CandidatsPourConseillerQueryResult(candidats: List[CandidatPourConsei
                                               pageSuivante: Option[KeysetCandidatsPourConseiller]) extends QueryResult
 
 case class CandidatPourConseillerDto(candidatId: CandidatId,
-                                     nom: String,
-                                     prenom: String,
+                                     nom: Nom,
+                                     prenom: Prenom,
                                      genre: Genre,
                                      email: Email,
                                      statutDemandeurEmploi: Option[StatutDemandeurEmploi],

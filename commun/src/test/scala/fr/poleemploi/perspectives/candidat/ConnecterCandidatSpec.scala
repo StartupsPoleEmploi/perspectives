@@ -1,7 +1,7 @@
 package fr.poleemploi.perspectives.candidat
 
 import fr.poleemploi.perspectives.candidat.localisation.domain.LocalisationService
-import fr.poleemploi.perspectives.commun.domain.{Coordonnees, Email, Genre}
+import fr.poleemploi.perspectives.commun.domain._
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{AsyncWordSpec, BeforeAndAfter, MustMatchers}
@@ -25,8 +25,8 @@ class ConnecterCandidatSpec extends AsyncWordSpec
   val commande: ConnecterCandidatCommand =
     ConnecterCandidatCommand(
       id = candidatBuilder.candidatId,
-      nom = "nouveau nom",
-      prenom = "nouveau prenom",
+      nom = Nom("nouveau nom"),
+      prenom = Prenom("nouveau prenom"),
       email = Email("nouveau email"),
       genre = Genre.HOMME,
       adresse = None,
@@ -83,12 +83,12 @@ class ConnecterCandidatSpec extends AsyncWordSpec
     "générer un événement si le nom a été modifié" in {
       // Given
       val candidat = candidatBuilder
-        .avecInscription(nom = Some("ancien nom"))
+        .avecInscription(nom = Some(Nom("ancien nom")))
         .build
 
       // When
       val future = candidat.connecter(commande.copy(
-        nom = "nouveau nom"
+        nom = Nom("nouveau nom")
       ), localisationService)
 
       // Then
@@ -97,12 +97,12 @@ class ConnecterCandidatSpec extends AsyncWordSpec
     "générer un événement si le prénom a été modifié" in {
       // Given
       val candidat = candidatBuilder
-        .avecInscription(prenom = Some("ancien prénom"))
+        .avecInscription(prenom = Some(Prenom("ancien prénom")))
         .build
 
       // When
       val future = candidat.connecter(commande.copy(
-        prenom = "nouveau prénom"
+        prenom = Prenom("nouveau prénom")
       ), localisationService)
 
       // Then

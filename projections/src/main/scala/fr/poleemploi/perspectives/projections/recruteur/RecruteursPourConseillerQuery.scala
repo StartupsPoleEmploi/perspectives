@@ -3,7 +3,7 @@ package fr.poleemploi.perspectives.projections.recruteur
 import java.time.ZonedDateTime
 
 import fr.poleemploi.cqrs.projection.{Query, QueryResult}
-import fr.poleemploi.perspectives.commun.domain.{Email, Genre, NumeroTelephone}
+import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.recruteur.{NumeroSiret, RecruteurId, TypeRecruteur}
 import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
 import play.api.libs.json.{Json, Writes}
@@ -18,8 +18,8 @@ case class RecruteursPourConseillerQueryResult(recruteurs: List[RecruteurPourCon
                                                pageSuivante: Option[KeysetRecruteursPourConseiller]) extends QueryResult
 
 case class RecruteurPourConseillerDto(recruteurId: RecruteurId,
-                                      nom: String,
-                                      prenom: String,
+                                      nom: Nom,
+                                      prenom: Prenom,
                                       email: Email,
                                       genre: Genre,
                                       typeRecruteur: Option[TypeRecruteur],

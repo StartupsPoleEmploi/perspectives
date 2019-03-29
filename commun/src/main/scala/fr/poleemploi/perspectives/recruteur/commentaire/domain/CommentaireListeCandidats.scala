@@ -1,7 +1,9 @@
 package fr.poleemploi.perspectives.recruteur.commentaire.domain
 
-case class CommentaireListeCandidats(nomRecruteur: String,
-                                     prenomRecruteur: String,
+import fr.poleemploi.perspectives.commun.domain.{Nom, Prenom}
+
+case class CommentaireListeCandidats(nomRecruteur: Nom,
+                                     prenomRecruteur: Prenom,
                                      raisonSociale: String,
                                      contexteRecherche: ContexteRecherche,
                                      commentaire: String) {

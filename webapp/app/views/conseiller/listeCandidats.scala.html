@@ -73,7 +73,7 @@
             <div class="listeResultatsRecherche-ligne"
                  v-on:click="toggleProfilCandidatCourant(candidat)">
                 <div class="listeResultatsRecherche-colonne listeResultatsRecherche-candidat">
-                    {{candidat.prenom | capitalize }} {{candidat.nom | capitalize }}
+                    {{candidat.prenom}} {{candidat.nom}}
                 </div>
                 <div class="listeResultatsRecherche-colonne listeResultatsRecherche-metiersEvalues">
                     <div v-if="candidat.rechercheMetiersEvalues !== undefined">Recherche métiers évalués : {{candidat.rechercheMetiersEvalues | boolean}}</div>

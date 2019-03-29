@@ -10,8 +10,8 @@ sealed trait RecruteurEvent extends Event {
 }
 
 case class RecruteurInscritEvent(recruteurId: RecruteurId,
-                                 nom: String,
-                                 prenom: String,
+                                 nom: Nom,
+                                 prenom: Prenom,
                                  email: Email,
                                  genre: Genre) extends RecruteurEvent
 
@@ -25,8 +25,8 @@ case class ProfilModifieEvent(recruteurId: RecruteurId,
                               contactParCandidats: Boolean) extends RecruteurEvent
 
 case class ProfilGerantModifieEvent(recruteurId: RecruteurId,
-                                    nom: String,
-                                    prenom: String,
+                                    nom: Nom,
+                                    prenom: Prenom,
                                     email: Email,
                                     genre: Genre) extends RecruteurEvent
 

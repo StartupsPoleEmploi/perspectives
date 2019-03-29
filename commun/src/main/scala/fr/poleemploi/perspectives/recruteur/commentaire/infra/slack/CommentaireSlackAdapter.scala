@@ -18,7 +18,7 @@ class CommentaireSlackAdapter(config: CommentaireSlackConfig,
       .post(Json.obj(
         "text" ->
           s"""
-             |Commentaire sur la recherche candidats de ${commentaire.nomRecruteur.capitalize} ${commentaire.prenomRecruteur.capitalize}, société ${commentaire.raisonSociale} :
+             |Commentaire sur la recherche candidats de ${commentaire.nomRecruteur.value} ${commentaire.prenomRecruteur.value}, société ${commentaire.raisonSociale} :
              |Secteur : ${commentaire.labelSecteurActiviteRecherche.getOrElse("")}
              |Métier : ${commentaire.labelMetierRecherche.getOrElse("")}
              |Département : ${commentaire.labelLocalisationRecherche.getOrElse("")}

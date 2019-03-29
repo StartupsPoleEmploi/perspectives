@@ -1,6 +1,7 @@
 package authentification.infra.play
 
 import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
+import fr.poleemploi.perspectives.commun.domain.{Nom, Prenom}
 import fr.poleemploi.perspectives.recruteur.RecruteurId
 import play.api.mvc.Session
 
@@ -14,8 +15,8 @@ object SessionRecruteurAuthentifie {
   def get(session: Session): Option[RecruteurAuthentifie] =
     for {
       recruteurId <- session.get(recruteurIdAttribute).map(RecruteurId)
-      nom <- session.get(nomAttribute)
-      prenom <- session.get(prenomAttribute)
+      nom <- session.get(nomAttribute).map(Nom(_))
+      prenom <- session.get(prenomAttribute).map(Prenom(_))
     } yield RecruteurAuthentifie(
       recruteurId = recruteurId,
       nom = nom,
@@ -24,7 +25,7 @@ object SessionRecruteurAuthentifie {
 
   def set(recruteurAuthentifie: RecruteurAuthentifie,
           session: Session): Session =
-    session + (recruteurIdAttribute -> recruteurAuthentifie.recruteurId.value) + (nomAttribute -> recruteurAuthentifie.nom) + (prenomAttribute -> recruteurAuthentifie.prenom)
+    session + (recruteurIdAttribute -> recruteurAuthentifie.recruteurId.value) + (nomAttribute -> recruteurAuthentifie.nom.value) + (prenomAttribute -> recruteurAuthentifie.prenom.value)
 
   def remove(session: Session): Session =
     session - recruteurIdAttribute - nomAttribute - prenomAttribute

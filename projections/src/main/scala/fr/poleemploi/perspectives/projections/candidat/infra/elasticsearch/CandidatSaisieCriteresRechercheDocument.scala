@@ -2,14 +2,14 @@ package fr.poleemploi.perspectives.projections.candidat.infra.elasticsearch
 
 import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
-import fr.poleemploi.perspectives.commun.domain.{CodeROME, NumeroTelephone, RayonRecherche}
+import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsPath, Reads}
 
 case class CandidatSaisieCriteresRechercheDocument(candidatId: CandidatId,
-                                                   nom: String,
-                                                   prenom: String,
+                                                   nom: Nom,
+                                                   prenom: Prenom,
                                                    rechercheMetierEvalue: Option[Boolean],
                                                    metiersEvalues: List[CodeROME],
                                                    rechercheAutreMetier: Option[Boolean],
@@ -27,8 +27,8 @@ object CandidatSaisieCriteresRechercheDocument {
 
   implicit val reads: Reads[CandidatSaisieCriteresRechercheDocument] = (
     (JsPath \ candidat_id).read[CandidatId] and
-      (JsPath \ nom).read[String] and
-      (JsPath \ prenom).read[String] and
+      (JsPath \ nom).read[Nom] and
+      (JsPath \ prenom).read[Prenom] and
       (JsPath \ recherche_metiers_evalues).readNullable[Boolean] and
       (JsPath \ metiers_evalues).read[List[CodeROME]] and
       (JsPath \ recherche_autres_metiers).readNullable[Boolean] and

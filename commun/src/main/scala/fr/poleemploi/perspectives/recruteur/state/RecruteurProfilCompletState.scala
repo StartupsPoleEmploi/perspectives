@@ -1,6 +1,7 @@
 package fr.poleemploi.perspectives.recruteur.state
 
 import fr.poleemploi.eventsourcing.Event
+import fr.poleemploi.perspectives.commun.domain.{Nom, Prenom}
 import fr.poleemploi.perspectives.recruteur._
 import fr.poleemploi.perspectives.recruteur.alerte.domain.CriteresAlerte
 import fr.poleemploi.perspectives.recruteur.commentaire.domain.{CommentaireListeCandidats, CommentaireService}
@@ -21,8 +22,8 @@ object RecruteurProfilCompletState extends RecruteurState {
   override def commenterListeCandidats(context: RecruteurContext, command: CommenterListeCandidatsCommand, commentaireService: CommentaireService): Future[List[Event]] =
     commentaireService.commenterListeCandidats(
       CommentaireListeCandidats(
-        nomRecruteur = context.nom.getOrElse(""),
-        prenomRecruteur = context.prenom.getOrElse(""),
+        nomRecruteur = context.nom.getOrElse(Nom("")),
+        prenomRecruteur = context.prenom.getOrElse(Prenom("")),
         raisonSociale = context.raisonSociale.getOrElse(""),
         contexteRecherche = command.contexteRecherche,
         commentaire = command.commentaire

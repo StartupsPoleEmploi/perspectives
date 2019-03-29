@@ -6,7 +6,7 @@
     @candidatAuthentifie.map { candidatAuthentifie =>
     <div class="menuNavigation-item menuConnexion">
         <img alt="Candidat connecté" class="menuConnexion-icone" src="@assetsFinder.path("images/modules/menuNavigation/connecte.svg")">
-        <span class="menuConnexion-titre--connecte">@candidatAuthentifie.prenom @candidatAuthentifie.nom</span>
+        <span class="menuConnexion-titre--connecte">@candidatAuthentifie.prenom.value @candidatAuthentifie.nom.value</span>
         <ul class="menuConnexionActions">
             <li class="menuConnexionActions-item">
                 <a class="menuConnexionActions-lien" href="@controllers.candidat.routes.SaisieCriteresRechercheController.saisieCriteresRecherche()">

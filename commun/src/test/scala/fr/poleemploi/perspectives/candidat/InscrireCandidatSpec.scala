@@ -1,7 +1,7 @@
 package fr.poleemploi.perspectives.candidat
 
 import fr.poleemploi.perspectives.candidat.localisation.domain.LocalisationService
-import fr.poleemploi.perspectives.commun.domain.{Coordonnees, Email, Genre}
+import fr.poleemploi.perspectives.commun.domain._
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{AsyncWordSpec, BeforeAndAfter, MustMatchers}
@@ -16,8 +16,8 @@ class InscrireCandidatSpec extends AsyncWordSpec
   val commande: InscrireCandidatCommand =
     InscrireCandidatCommand(
       id = candidatBuilder.candidatId,
-      nom = "nom",
-      prenom = "prenom",
+      nom = Nom("nom"),
+      prenom = Prenom("prenom"),
       email = Email("email@domain.com"),
       genre = Genre.HOMME,
       adresse = None,

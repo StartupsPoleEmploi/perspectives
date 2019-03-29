@@ -9,8 +9,8 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsPath, Reads}
 
 case class CandidatPourConseillerDocument(candidatId: CandidatId,
-                                          nom: String,
-                                          prenom: String,
+                                          nom: Nom,
+                                          prenom: Prenom,
                                           genre: Genre,
                                           email: Email,
                                           statutDemandeurEmploi: Option[StatutDemandeurEmploi],
@@ -33,8 +33,8 @@ object CandidatPourConseillerDocument {
 
   implicit val reads: Reads[CandidatPourConseillerDocument] = (
     (JsPath \ candidat_id).read[CandidatId] and
-      (JsPath \ nom).read[String] and
-      (JsPath \ prenom).read[String] and
+      (JsPath \ nom).read[Nom] and
+      (JsPath \ prenom).read[Prenom] and
       (JsPath \ genre).read[Genre] and
       (JsPath \ email).read[Email] and
       (JsPath \ statut_demandeur_emploi).readNullable[StatutDemandeurEmploi] and

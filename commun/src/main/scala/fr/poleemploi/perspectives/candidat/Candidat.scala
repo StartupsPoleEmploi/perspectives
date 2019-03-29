@@ -93,8 +93,8 @@ class Candidat(override val id: CandidatId,
     state.declarerRepriseEmploiParConseiller(context = context, command = command)
 }
 
-private[candidat] case class CandidatContext(nom: Option[String] = None,
-                                             prenom: Option[String] = None,
+private[candidat] case class CandidatContext(nom: Option[Nom] = None,
+                                             prenom: Option[Prenom] = None,
                                              email: Option[Email] = None,
                                              genre: Option[Genre] = None,
                                              adresse: Option[Adresse] = None,

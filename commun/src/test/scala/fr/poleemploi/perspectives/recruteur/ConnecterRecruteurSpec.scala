@@ -1,6 +1,6 @@
 package fr.poleemploi.perspectives.recruteur
 
-import fr.poleemploi.perspectives.commun.domain.{Email, Genre}
+import fr.poleemploi.perspectives.commun.domain.{Email, Genre, Nom, Prenom}
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, MustMatchers, WordSpec}
 
@@ -11,8 +11,8 @@ class ConnecterRecruteurSpec extends WordSpec
 
   val commande: ConnecterRecruteurCommand = ConnecterRecruteurCommand(
     id = recruteurBuilder.recruteurId,
-    nom = "nom",
-    prenom = "prenom",
+    nom = Nom("nom"),
+    prenom = Prenom("prenom"),
     email = Email("email@domain.com"),
     genre = Genre.HOMME
   )
@@ -70,12 +70,12 @@ class ConnecterRecruteurSpec extends WordSpec
     "générer un événement si le nom a été modifié" in {
       // Given
       val recruteur = recruteurBuilder
-        .avecInscription(nom = Some("ancien nom"))
+        .avecInscription(nom = Some(Nom("ancien nom")))
         .build
 
       // When
       val result = recruteur.connecter(commande.copy(
-        nom = "nouveau nom"
+        nom = Nom("nouveau nom")
       ))
 
       // Then
@@ -84,12 +84,12 @@ class ConnecterRecruteurSpec extends WordSpec
     "générer un événement si le prénom a été modifié" in {
       // Given
       val recruteur = recruteurBuilder
-        .avecInscription(prenom = Some("ancien nom"))
+        .avecInscription(prenom = Some(Prenom("ancien nom")))
         .build
 
       // When
       val result = recruteur.connecter(commande.copy(
-        prenom = "nouveau prénom"
+        prenom = Prenom("nouveau prénom")
       ))
 
       // Then

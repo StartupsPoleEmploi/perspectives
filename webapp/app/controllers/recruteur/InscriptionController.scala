@@ -4,7 +4,7 @@ import authentification.infra.play.{RecruteurAuthentifieAction, SessionRecruteur
 import conf.WebAppConfig
 import controllers.FlashMessages._
 import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
-import fr.poleemploi.perspectives.commun.domain.{Email, Genre}
+import fr.poleemploi.perspectives.commun.domain.{Email, Genre, Nom, Prenom}
 import fr.poleemploi.perspectives.recruteur.{InscrireRecruteurCommand, RecruteurCommandHandler}
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
@@ -27,8 +27,8 @@ class InscriptionController @Inject()(cc: ControllerComponents,
     val recruteurId = recruteurCommandHandler.newId
     val command = InscrireRecruteurCommand(
       id = recruteurId,
-      nom = "michu",
-      prenom = "robert",
+      nom = Nom("michu"),
+      prenom = Prenom("robert"),
       email = Email("robert.michu@maboite.com"),
       genre = Genre.HOMME
     )

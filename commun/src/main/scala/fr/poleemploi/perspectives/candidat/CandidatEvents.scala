@@ -13,8 +13,8 @@ sealed trait CandidatEvent extends Event {
 }
 
 case class CandidatInscritEvent(candidatId: CandidatId,
-                                nom: String,
-                                prenom: String,
+                                nom: Nom,
+                                prenom: Prenom,
                                 email: Email,
                                 genre: Genre) extends CandidatEvent
 
@@ -29,8 +29,8 @@ case class CriteresRechercheModifiesEvent(candidatId: CandidatId,
                                           rayonRecherche: RayonRecherche) extends CandidatEvent
 
 case class ProfilCandidatModifieEvent(candidatId: CandidatId,
-                                      nom: String,
-                                      prenom: String,
+                                      nom: Nom,
+                                      prenom: Prenom,
                                       email: Email,
                                       genre: Genre) extends CandidatEvent
 

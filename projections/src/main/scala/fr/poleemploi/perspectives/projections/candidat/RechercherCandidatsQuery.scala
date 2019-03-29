@@ -49,8 +49,8 @@ case class RechercheCandidatParMetierQueryResult(candidatsEvaluesSurMetier: List
                                                  pageSuivante: Option[KeysetRechercherCandidats]) extends RechercheCandidatQueryResult
 
 case class CandidatRechercheDto(candidatId: CandidatId,
-                                nom: String,
-                                prenom: String,
+                                nom: Nom,
+                                prenom: Prenom,
                                 email: Email,
                                 metiersEvalues: List[Metier],
                                 habiletes: List[Habilete],
@@ -63,7 +63,7 @@ case class CandidatRechercheDto(candidatId: CandidatId,
 
   def possedeCV: Boolean = cvId.isDefined
 
-  def nomCV: Option[String] = cvTypeMedia.map(t => s"$nom-$prenom.${TypeMedia.getExtensionFichier(t)}")
+  def nomCV: Option[String] = cvTypeMedia.map(t => s"${prenom.value} ${nom.value}.${TypeMedia.getExtensionFichier(t)}")
 }
 
 case class KeysetRechercherCandidats(score: Option[Int],

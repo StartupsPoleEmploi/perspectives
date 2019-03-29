@@ -6,8 +6,8 @@ import fr.poleemploi.perspectives.recruteur.alerte.domain.{AlerteId, FrequenceAl
 import fr.poleemploi.perspectives.recruteur.commentaire.domain.ContexteRecherche
 
 case class InscrireRecruteurCommand(id: RecruteurId,
-                                    nom: String,
-                                    prenom: String,
+                                    nom: Nom,
+                                    prenom: Prenom,
                                     email: Email,
                                     genre: Genre) extends Command[Recruteur]
 
@@ -19,8 +19,8 @@ case class ModifierProfilCommand(id: RecruteurId,
                                  contactParCandidats: Boolean) extends Command[Recruteur]
 
 case class ConnecterRecruteurCommand(id: RecruteurId,
-                                     nom: String,
-                                     prenom: String,
+                                     nom: Nom,
+                                     prenom: Prenom,
                                      email: Email,
                                      genre: Genre) extends Command[Recruteur]
 

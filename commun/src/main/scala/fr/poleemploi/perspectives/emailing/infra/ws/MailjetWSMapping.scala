@@ -11,11 +11,11 @@ class MailjetWSMapping {
   def buildRequestCandidatInscrit(candidatInscrit: CandidatInscrit): ManageContactRequest =
     ManageContactRequest(
       email = candidatInscrit.email.value,
-      name = Some(s"${candidatInscrit.nom.capitalize} ${candidatInscrit.prenom.capitalize}"),
+      name = Some(s"${candidatInscrit.nom.value} ${candidatInscrit.prenom.value}"),
       action = "addnoforce",
       properties = Json.obj(
-        "nom" -> candidatInscrit.nom.capitalize,
-        "prénom" -> candidatInscrit.prenom.capitalize, // doit comporter l'accent
+        "nom" -> candidatInscrit.nom.value,
+        "prénom" -> candidatInscrit.prenom.value, // le nom de l'attribut doit comporter l'accent
         "genre" -> buildGenre(candidatInscrit.genre),
         "cv" -> candidatInscrit.cv
       )
@@ -24,11 +24,11 @@ class MailjetWSMapping {
   def buildRequestRecruteurInscrit(recruteurInscrit: RecruteurInscrit): ManageContactRequest =
     ManageContactRequest(
       email = recruteurInscrit.email.value,
-      name = Some(s"${recruteurInscrit.nom.capitalize} ${recruteurInscrit.prenom.capitalize}"),
+      name = Some(s"${recruteurInscrit.nom.value} ${recruteurInscrit.prenom.value}"),
       action = "addnoforce",
       properties = Json.obj(
-        "nom" -> recruteurInscrit.nom.capitalize,
-        "prénom" -> recruteurInscrit.prenom.capitalize, // doit comporter l'accent
+        "nom" -> recruteurInscrit.nom.value,
+        "prénom" -> recruteurInscrit.prenom.value, // le nom de l'attribut doit comporter l'accent
         "genre" -> buildGenre(recruteurInscrit.genre)
       )
     )

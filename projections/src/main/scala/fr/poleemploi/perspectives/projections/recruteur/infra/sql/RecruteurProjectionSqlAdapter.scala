@@ -2,7 +2,7 @@ package fr.poleemploi.perspectives.projections.recruteur.infra.sql
 
 import java.time.ZonedDateTime
 
-import fr.poleemploi.perspectives.commun.domain.{Email, Genre, NumeroTelephone}
+import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
 import fr.poleemploi.perspectives.projections.recruteur._
 import fr.poleemploi.perspectives.recruteur._
@@ -21,9 +21,9 @@ class RecruteurProjectionSqlAdapter(database: Database) {
 
     def recruteurId = column[RecruteurId]("recruteur_id")
 
-    def nom = column[String]("nom")
+    def nom = column[Nom]("nom")
 
-    def prenom = column[String]("prenom")
+    def prenom = column[Prenom]("prenom")
 
     def email = column[Email]("email")
 

@@ -16,7 +16,7 @@
 <div id="inscriptionRecruteur">
     <section class="introductionFormulaire">
         <header class="introductionFormulaireTitres">
-            <h2 class="introductionFormulaireTitres-titre">Bonjour @recruteurAuthentifie.prenom.capitalize</h2>
+            <h2 class="introductionFormulaireTitres-titre">Bonjour @recruteurAuthentifie.prenom.value</h2>
             @if(profilForm("nouveauRecruteur").value.exists(_.toBoolean)) {
                 <p class="introductionFormulaireTitres-description">Bienvenue sur Perspectives.
                     Finalisez votre inscription en renseignant votre profil

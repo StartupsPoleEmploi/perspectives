@@ -108,7 +108,7 @@
             <div class="listeResultatsRecherche-conteneur">
                 <div id="js-ligne-@candidatRechercheDto.candidatId.value" class="listeResultatsRecherche-ligne">
                     <div class="listeResultatsRecherche-colonne listeResultatsRecherche-candidat info--gras gtm-recruteur-profils-detail">
-                        @candidatRechercheDto.prenom.capitalize @candidatRechercheDto.nom.capitalize
+                        @candidatRechercheDto.prenom.value @candidatRechercheDto.nom.value
                     </div>
                     <div class="listeResultatsRecherche-colonne listeResultatsRecherche-mrs gtm-recruteur-profils-detail">
                         @candidatRechercheDto.metiersEvalues.map(_.label).mkString(", ")
