@@ -3,14 +3,14 @@
 @()(implicit flash: Flash)
 
 @if(flash.hasMessages) {
-    <div class="flashMessages">
+    <div class="container">
     @if(flash.getMessageSucces.isDefined) {
-        <div class="flashMessage alert alert-success">
+        <div class="col-xs-12 col-md-6 offset-md-3 alert alert-success text-center">
         @flash.getMessageSucces
         </div>
     }
     @if(flash.getMessageErreur.isDefined) {
-        <div class="flashMessage alert alert-danger">
+        <div class="col-xs-12 col-md-6 offset-md-3 alert alert-danger text-center">
         @flash.getMessageErreur
         </div>
     }
