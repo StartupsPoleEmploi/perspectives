@@ -18,7 +18,7 @@ var app = new Vue({
                 },
                 {
                     source: "Jessica H.",
-                    texte: "Je viens de décrocher un poste aux Sables d'olonne en tant qu'aide à domicile. Je vous remercie pour votre investissement !"
+                    texte: "Je viens de décrocher un poste aux Sables d'Olonne en tant qu'aide à domicile. Je vous remercie pour votre investissement !"
                 }
             ],
             recherche: {

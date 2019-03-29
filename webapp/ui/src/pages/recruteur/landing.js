@@ -12,7 +12,7 @@ new Vue({
                 },
                 {
                     source: "Matthieu V. - Manufacture Baizet",
-                    texte: "Les profils correspondent, en termes d'aptitudes, au profils que je recherche. Cela me permet d'être plus efficient. Je suis très satisfait de votre service."
+                    texte: "Les profils correspondent, en termes d'aptitudes, aux profils que je recherche. Cela me permet d'être plus efficient. Je suis très satisfait de votre service."
                 }
             ]
         }
