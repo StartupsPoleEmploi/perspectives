@@ -42,7 +42,6 @@ class MailjetWSMapping {
       )
     )
 
-  //FIXME : lié au service de mail et pas à Mailjet
   private def buildGenre(genre: Genre): String = genre match {
     case Genre.HOMME => "M."
     case Genre.FEMME => "Mme"
