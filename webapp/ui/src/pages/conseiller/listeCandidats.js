@@ -63,7 +63,6 @@ var app = new Vue({
             this.afficherCandidats = false;
         },
         ajouterMRSCandidat: function (e) {
-            e.preventDefault();
             var form = this.mrsCandidatFormData;
 
             $.ajax({

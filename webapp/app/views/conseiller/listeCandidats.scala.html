@@ -7,7 +7,7 @@
 
 @layout(conseillerAuthentifie = conseillerAuthentifie) {
 <div id="listeCandidats" v-cloak>
-    <form id="ajouterMRSCandidatForm" class="ajouterMRSCandidatForm" v-on:submit="ajouterMRSCandidat" v-show="afficherMRSCandidatForm"
+    <form id="ajouterMRSCandidatForm" class="ajouterMRSCandidatForm" v-on:submit.prevent="ajouterMRSCandidat" v-show="afficherMRSCandidatForm"
           action="@controllers.conseiller.routes.ConseillerController.ajouterMRSCandidat()" method="post">
         <header class="ajouterMRSCandidatForm-titre">Ajouter une MRS pour {{mrsCandidatFormData.prenomCandidat | capitalize}} {{mrsCandidatFormData.nomCandidat | capitalize}}</header>
         <input type="hidden" name="candidatId" v-model="mrsCandidatFormData.candidatId" />
