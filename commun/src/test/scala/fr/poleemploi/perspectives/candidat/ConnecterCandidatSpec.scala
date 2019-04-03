@@ -69,6 +69,64 @@ class ConnecterCandidatSpec extends AsyncWordSpec
       // Then
       future map (events => events.count(_.isInstanceOf[CandidatConnecteEvent]) mustBe 1)
     }
+    "ne pas générer d'événement de modification d'adresse lorsque le service de localisation échoue (pas d'intérêt pour la recherche)" in {
+      // Given
+      val nouvelleAdresse = adresse.copy(voie = "nouvelle voie")
+      when(localisationService.localiser(nouvelleAdresse)) thenReturn Future.failed(new RuntimeException("erreur de service"))
+      val candidat = candidatBuilder
+        .avecInscription()
+        .avecAdresse(adresse.copy(voie = "ancienne voie"))
+        .build
+
+      // When
+      val future = candidat.connecter(commande.copy(
+        adresse = Some(nouvelleAdresse)
+      ), localisationService)
+
+      // Then
+      future map (events => events.count(_.isInstanceOf[AdresseModifieeEvent]) mustBe 0)
+    }
+    "ne pas générer d'événement de modification d'adresse lorsque l'adresse n'a pas de coordonnées (pas d'intérêt pour la recherche)" in {
+      // Given
+      val nouvelleAdresse = adresse.copy(voie = "nouvelle voie")
+      when(localisationService.localiser(nouvelleAdresse)) thenReturn Future.successful(None)
+      val candidat = candidatBuilder
+        .avecInscription()
+        .avecAdresse(adresse.copy(voie = "ancienne voie"))
+        .build
+
+      // When
+      val future = candidat.connecter(commande.copy(
+        adresse = Some(nouvelleAdresse)
+      ), localisationService)
+
+      // Then
+      future map (events => events.count(_.isInstanceOf[AdresseModifieeEvent]) mustBe 0)
+    }
+    "ne pas générer d'événement de modification d'adresse si elle a été modifiée, mais que ces coordonnées GPS restent les mêmes (modification d'un libellé simple de rue)" in {
+      // Given
+      val coordonnees = Coordonnees(
+        latitude = 47.114503,
+        longitude = -2.127197
+      )
+      val nouvelleAdresse = adresse.copy(voie = "16 rue notre-dame")
+      when(localisationService.localiser(nouvelleAdresse)) thenReturn Future.successful(Some(coordonnees))
+      val candidat = candidatBuilder
+        .avecInscription()
+        .avecAdresse(
+          adresse = adresse.copy(voie = "16 rue notre dame"),
+          coordonnees = Some(coordonnees)
+        )
+        .build
+
+      // When
+      val future = candidat.connecter(commande.copy(
+        adresse = Some(nouvelleAdresse)
+      ), localisationService)
+
+      // Then
+      future map (events => events.count(_.isInstanceOf[AdresseModifieeEvent]) mustBe 0)
+    }
     "générer un événement si une information de profil a été saisie pour la premiere fois" in {
       // Given
       val candidat = candidatBuilder.avecInscription()
@@ -155,13 +213,23 @@ class ConnecterCandidatSpec extends AsyncWordSpec
         event.genre mustBe commande.genre
       })
     }
-    "générer un événement si l'adresse a été modifiée" in {
+    "générer un événement lorsque l'adresse a été modifiée" in {
       // Given
-      val nouvelleAdresse = adresse.copy(voie = "nouvelle voie")
-      when(localisationService.localiser(nouvelleAdresse)) thenReturn Future.successful(None)
+      val coordonnees = Coordonnees(
+        latitude = 47.114503,
+        longitude = -2.127197
+      )
+      val nouvelleAdresse = adresse.copy(voie = "33 boulevard soultz")
+      when(localisationService.localiser(nouvelleAdresse)) thenReturn Future.successful(Some(coordonnees))
       val candidat = candidatBuilder
         .avecInscription()
-        .avecAdresse(adresse.copy(voie = "ancienne voie"))
+        .avecAdresse(
+          adresse.copy(voie = "52 boulevard soultz"),
+          coordonnees = Some(Coordonnees(
+            latitude = 47.114503,
+            longitude = -2.127900
+          ))
+        )
         .build
 
       // When
@@ -193,28 +261,6 @@ class ConnecterCandidatSpec extends AsyncWordSpec
         event.candidatId mustBe commande.id
         event.adresse.voie mustBe "nouvelle voie"
         event.coordonnees mustBe Some(coordonnees)
-      })
-    }
-    "générer un événement contenant l'adresse modifiée même lorsque le service de localisation échoue" in {
-      // Given
-      val nouvelleAdresse = adresse.copy(voie = "nouvelle voie")
-      when(localisationService.localiser(nouvelleAdresse)) thenReturn Future.failed(new RuntimeException("erreur de service"))
-      val candidat = candidatBuilder
-        .avecInscription()
-        .avecAdresse(adresse.copy(voie = "ancienne voie"))
-        .build
-
-      // When
-      val future = candidat.connecter(commande.copy(
-        adresse = Some(nouvelleAdresse)
-      ), localisationService)
-
-      // Then
-      future map (events => {
-        val event = events.filter(_.isInstanceOf[AdresseModifieeEvent]).head.asInstanceOf[AdresseModifieeEvent]
-        event.candidatId mustBe commande.id
-        event.adresse.voie mustBe "nouvelle voie"
-        event.coordonnees mustBe None
       })
     }
     "générer un événement contenant le statut de demandeur d'emploi modifié" in {

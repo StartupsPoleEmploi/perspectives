@@ -65,20 +65,20 @@ object CandidatInscritState extends CandidatState {
 
     val adresseModifieeEvent = command.adresse.map(adresse =>
       if (!context.adresse.contains(adresse)) {
-        localisationService.localiser(adresse).map(optCoordonnees => Some(
-          AdresseModifieeEvent(
-            candidatId = command.id,
-            adresse = adresse,
-            coordonnees = optCoordonnees
+        localisationService.localiser(adresse).map(optCoordonnees =>
+          optCoordonnees.flatMap(coordonnees =>
+            if (!context.coordonnees.contains(coordonnees)) {
+              Some(
+                AdresseModifieeEvent(
+                  candidatId = command.id,
+                  adresse = adresse,
+                  coordonnees = optCoordonnees
+                )
+              )
+            } else None
           )
-        )).recover {
-          case _: Throwable => Some(
-            AdresseModifieeEvent(
-              candidatId = command.id,
-              adresse = adresse,
-              coordonnees = None
-            )
-          )
+        ).recover {
+          case _: Throwable => None
         }
       } else Future.successful(None)
     ).getOrElse(Future.successful(None))

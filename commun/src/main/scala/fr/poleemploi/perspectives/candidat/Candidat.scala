@@ -52,7 +52,10 @@ class Candidat(override val id: CandidatId,
       case e: NumeroTelephoneModifieEvent =>
         context.copy(numeroTelephone = Some(e.numeroTelephone))
       case e: AdresseModifieeEvent =>
-        context.copy(adresse = Some(e.adresse))
+        context.copy(
+          adresse = Some(e.adresse),
+          coordonnees = e.coordonnees
+        )
       case e: StatutDemandeurEmploiModifieEvent =>
         context.copy(statutDemandeurEmploi = Some(e.statutDemandeurEmploi))
       case e: CVAjouteEvent =>
@@ -98,6 +101,7 @@ private[candidat] case class CandidatContext(nom: Option[Nom] = None,
                                              email: Option[Email] = None,
                                              genre: Option[Genre] = None,
                                              adresse: Option[Adresse] = None,
+                                             coordonnees: Option[Coordonnees] = None,
                                              statutDemandeurEmploi: Option[StatutDemandeurEmploi] = None,
                                              rechercheMetierEvalue: Option[Boolean] = None,
                                              rechercheAutreMetier: Option[Boolean] = None,
