@@ -232,7 +232,7 @@ class ReferentielOffreWSMapping {
         case Nil => None
         case l@_ => Some("typeContrat" -> l.map(_.value).mkString(","))
       },
-      criteresRechercheOffre.metiers match {
+      criteresRechercheOffre.codesROME match {
         case Nil => None
         case l@_ => Some("codeROME" -> l.map(_.value).mkString(","))
       },
@@ -256,10 +256,7 @@ class ReferentielOffreWSMapping {
         id = OffreId(offreResponse.id),
         urlOrigine = offreResponse.urlOrigine,
         intitule = offreResponse.intitule,
-        metier = for {
-          romeCode <- offreResponse.romeCode
-          romeLibelle <- offreResponse.romeLibelle
-        } yield Metier(codeROME = CodeROME(romeCode), label = romeLibelle),
+        codeROME = offreResponse.romeCode.map(CodeROME),
         contrat = Contrat(
           code = offreResponse.typeContrat,
           label = offreResponse.typeContratLibelle,

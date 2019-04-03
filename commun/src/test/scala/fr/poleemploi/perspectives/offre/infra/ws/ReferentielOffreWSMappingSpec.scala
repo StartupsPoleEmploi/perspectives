@@ -21,7 +21,7 @@ class ReferentielOffreWSMappingSpec extends WordSpec
     when(criteresRechercheOffre.rayonRecherche) thenReturn None
     when(criteresRechercheOffre.typesContrats) thenReturn Nil
     when(criteresRechercheOffre.secteursActivites) thenReturn Nil
-    when(criteresRechercheOffre.metiers) thenReturn Nil
+    when(criteresRechercheOffre.codesROME) thenReturn Nil
     when(criteresRechercheOffre.experience) thenReturn Experience.DEBUTANT
 
     offreResponse = mock[OffreResponse]
@@ -102,7 +102,7 @@ class ReferentielOffreWSMappingSpec extends WordSpec
     }
     "ne pas valoriser le parametre codeROME lorsqu'il n'est pas renseigne" in {
       // Given
-      when(criteresRechercheOffre.metiers) thenReturn Nil
+      when(criteresRechercheOffre.codesROME) thenReturn Nil
 
       // When
       val request = mapping.buildRechercherOffresRequest(criteresRechercheOffre = criteresRechercheOffre, codeINSEE = None)
@@ -112,7 +112,7 @@ class ReferentielOffreWSMappingSpec extends WordSpec
     }
     "doit valoriser le parametre codeROME lorsqu'il est renseigne" in {
       // Given
-      when(criteresRechercheOffre.metiers) thenReturn List(CodeROME("A1401"), CodeROME("K2204"))
+      when(criteresRechercheOffre.codesROME) thenReturn List(CodeROME("A1401"), CodeROME("K2204"))
 
       // When
       val request = mapping.buildRechercherOffresRequest(criteresRechercheOffre = criteresRechercheOffre, codeINSEE = None)

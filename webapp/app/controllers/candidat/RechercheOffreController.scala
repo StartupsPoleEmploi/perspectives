@@ -41,7 +41,7 @@ class RechercheOffreController @Inject()(cc: ControllerComponents,
         rayonRecherche = critereRayonRecherche,
         typesContrats = Nil,
         secteursActivites = Nil,
-        metiers = Nil
+        codesROME = Nil
       )))
     } yield {
       Ok(views.html.candidat.rechercheOffres(
@@ -79,7 +79,7 @@ class RechercheOffreController @Inject()(cc: ControllerComponents,
           rayonRecherche = rechercheOffresForm.rayonRecherche.flatMap(RayonRecherche.from),
           typesContrats = rechercheOffresForm.typesContrats.flatMap(TypeContrat.from),
           secteursActivites = rechercheOffresForm.secteursActivites.flatMap(CodeSecteurActivite.from),
-          metiers = rechercheOffresForm.metiers.map(CodeROME)
+          codesROME = rechercheOffresForm.metiers.map(CodeROME)
         )
 
       RechercheOffresForm.form.bindFromRequest.fold(

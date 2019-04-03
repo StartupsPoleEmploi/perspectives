@@ -3,7 +3,7 @@ package fr.poleemploi.perspectives.offre.domain
 import java.time.ZonedDateTime
 
 import fr.poleemploi.eventsourcing.StringValueObject
-import fr.poleemploi.perspectives.commun.domain.{Email, Metier, NumeroTelephone}
+import fr.poleemploi.perspectives.commun.domain.{CodeROME, Email, NumeroTelephone}
 import play.api.libs.json.{Json, Writes}
 
 case class QualiteProfessionnelle(label: String, description: String)
@@ -52,7 +52,7 @@ case class Offre(id: OffreId,
                  intitule: String,
                  urlOrigine: String,
                  contrat: Contrat,
-                 metier: Option[Metier],
+                 codeROME: Option[CodeROME],
                  description: Option[String],
                  lieuTravail: LieuTravail,
                  libelleDureeTravail: Option[String],

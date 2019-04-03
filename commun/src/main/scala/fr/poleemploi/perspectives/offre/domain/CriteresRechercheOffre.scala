@@ -7,7 +7,7 @@ case class CriteresRechercheOffre(motCle: Option[String],
                                   rayonRecherche: Option[RayonRecherche],
                                   typesContrats: List[TypeContrat],
                                   secteursActivites: List[CodeSecteurActivite],
-                                  metiers: List[CodeROME]) {
+                                  codesROME: List[CodeROME]) {
 
   val experience: Experience = Experience.DEBUTANT
 }
