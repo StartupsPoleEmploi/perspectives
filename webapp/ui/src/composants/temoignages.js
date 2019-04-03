@@ -35,8 +35,8 @@ var component = Vue.component('temoignages', {
         '<div> ' +
             '<div class="temoignage" v-for="(temoignage, index) in temoignages" v-show="isTemoignageCourant(index)"> ' +
                 '<img alt="Citation" class="temoignage-image temoignage-debutCitation" width="35" height="35" src="/assets/images/composants/temoignages/debut_citation.svg" /> ' +
-                '<div>{{temoignage.texte}}</div> ' +
-                '<span class="temoignage-source">{{temoignage.source}}</span> ' +
+                '<p class="texte-noir mb-0">{{temoignage.texte}}</p> ' +
+                '<span class="texte-noir font-weight-bold">{{temoignage.source}}</span> ' +
                 '<img alt="Citation" class="temoignage-image temoignage-finCitation" width="35" height="35" src="/assets/images/composants/temoignages/fin_citation.svg" /> ' +
             '</div> ' +
             '<div class="paginationTemoignages"> ' +
