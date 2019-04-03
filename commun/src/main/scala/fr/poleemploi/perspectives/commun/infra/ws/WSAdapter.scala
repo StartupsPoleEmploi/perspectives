@@ -11,8 +11,8 @@ trait WSAdapter {
   def jsonContentType: (String, String) = ("Content-Type", "application/json")
 
   def filtreStatutReponse(response: WSResponse,
-                       statutErreur: Int => Boolean = s => s >= 400,
-                       statutNonGere: Int => Boolean = s => s != 200 && s != 201): Future[WSResponse] =
+                          statutErreur: Int => Boolean = s => s >= 400,
+                          statutNonGere: Int => Boolean = s => s != 200 && s != 201): Future[WSResponse] =
     response.status match {
       case s if statutErreur(s) => Future.failed(WebServiceException(
         statut = response.status,
