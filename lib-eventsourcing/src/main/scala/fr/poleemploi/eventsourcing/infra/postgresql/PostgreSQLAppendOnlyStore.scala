@@ -61,7 +61,7 @@ class PostgreSQLAppendOnlyStore(val driver: PostgresDriver,
     // TODO : selectionner la derniere version du stream dans la meme transaction que l'insert
     val actions = datas.map(
       d => eventsTable.map(e => (e.streamName, e.streamVersion, e.eventType, e.data))
-        += (streamName, d.streamVersion, d.eventType, JsonString(serializeData(d.event)))
+        += (streamName, d.streamVersion, d.eventType, serializeEvent(d.event))
     )
 
     database.run(DBIO.sequence(actions))
@@ -85,7 +85,7 @@ class PostgreSQLAppendOnlyStore(val driver: PostgresDriver,
         AppendedEvent(
           streamName = eventRecord.streamName,
           streamVersion = eventRecord.streamVersion,
-          event = unserializeData(eventRecord.data.value)
+          event = unserializeEvent(eventRecord.data)
         )
       ))
 
@@ -105,16 +105,16 @@ class PostgreSQLAppendOnlyStore(val driver: PostgresDriver,
         AppendedEvent(
           streamName = eventRecord.streamName,
           streamVersion = eventRecord.streamVersion,
-          event = unserializeData(eventRecord.data.value)
+          event = unserializeEvent(eventRecord.data)
         )
       )
     }
 
   private def getLastStreamVersion(streamName: String): Int = 0
 
-  private def serializeData(event: Event): String = Event.toJson(event)(objectMapper)
+  private def serializeEvent(event: Event): JsonString = JsonString(Event.toJson(event)(objectMapper))
 
-  private def unserializeData(data: String): Event = Event.fromJson(data)(objectMapper)
+  private def unserializeEvent(data: JsonString): Event = Event.fromJson(data.value)(objectMapper)
 }
 
 private[postgresql] case class EventRecordPostgreSql(id: Long,
