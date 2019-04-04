@@ -120,7 +120,7 @@ object CandidatInscritState extends CandidatState {
     cvService.save(
       cvId = cvId,
       candidatId = command.id,
-      nomFichier = command.nomFichier,
+      nomFichier = buildNomCV(context).getOrElse(throw new IllegalArgumentException("Erreur lors de la construction du nom du CV")),
       typeMedia = command.typeMedia,
       path = command.path
     ).map(_ => List(
@@ -139,7 +139,7 @@ object CandidatInscritState extends CandidatState {
 
     cvService.update(
       cvId = command.cvId,
-      nomFichier = command.nomFichier,
+      nomFichier = buildNomCV(context).getOrElse(throw new IllegalArgumentException("Erreur lors de la construction du nom du CV")),
       typeMedia = command.typeMedia,
       path = command.path
     ).map(_ => List(
@@ -150,6 +150,12 @@ object CandidatInscritState extends CandidatState {
       )
     ))
   }
+
+  private def buildNomCV(context: CandidatContext): Option[String] =
+    for {
+      nom <- context.nom
+      prenom <- context.prenom
+    } yield s"${prenom.value} ${nom.value}"
 
   override def ajouterMRSValidee(context: CandidatContext,
                                  command: AjouterMRSValideesCommand,

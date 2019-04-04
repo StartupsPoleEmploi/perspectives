@@ -177,7 +177,7 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
     wsClient
       .url(s"$baseUrl/$indexName/$docType/${query.candidatId.value}")
       .withQueryStringParameters(
-        ("_source", s"$candidat_id,$nom,$prenom,$cv_id,$cv_type_media")
+        ("_source", s"$candidat_id,$cv_id,$cv_type_media")
       )
       .get()
       .flatMap(filtreStatutReponse(_))

@@ -176,7 +176,8 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
         body = HttpEntity.Streamed(
           data = source,
           contentLength = Some(cvCandidat.cv.data.length.toLong),
-          contentType = Some(cvCandidat.cv.typeMedia.value))
+          contentType = Some(cvCandidat.cv.typeMedia.value)
+        )
       )
     }).recover {
       case _: UnauthorizedQueryException =>

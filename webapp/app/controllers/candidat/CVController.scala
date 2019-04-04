@@ -85,7 +85,6 @@ class CVController @Inject()(components: ControllerComponents,
                                     cvForm: CVForm): AjouterCVCommand =
     AjouterCVCommand(
       id = candidat.candidatId,
-      nomFichier = buildNomFichier(candidat, cvForm),
       typeMedia = cvForm.typeMedia,
       path = cvForm.path
     )
@@ -96,13 +95,8 @@ class CVController @Inject()(components: ControllerComponents,
     RemplacerCVCommand(
       id = candidat.candidatId,
       cvId = cvId,
-      nomFichier = buildNomFichier(candidat, cvForm), // FIXME : construire le nom dans la commande (pas besoin du nom et du prénom dans la query du coup)
       typeMedia = cvForm.typeMedia,
       path = cvForm.path
     )
-
-  private def buildNomFichier(candidat: CandidatDepotCVQueryResult,
-                             cvForm: CVForm): String =
-    s"${candidat.prenom.value} ${candidat.nom.value}.${TypeMedia.getExtensionFichier(cvForm.typeMedia)}"
 
 }

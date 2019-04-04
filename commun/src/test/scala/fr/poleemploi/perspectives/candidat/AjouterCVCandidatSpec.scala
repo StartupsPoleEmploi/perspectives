@@ -6,6 +6,7 @@ import java.util.UUID
 import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, CVService, TypeMedia}
 import org.mockito.Mockito.when
 import org.scalatest.concurrent.ScalaFutures
+import org.mockito.ArgumentMatchers
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{AsyncWordSpec, BeforeAndAfter, MustMatchers}
 
@@ -20,7 +21,6 @@ class AjouterCVCandidatSpec extends AsyncWordSpec
   val commande: AjouterCVCommand =
     AjouterCVCommand(
       id = candidatBuilder.candidatId,
-      nomFichier = "cv.doc",
       typeMedia = TypeMedia.DOC,
       path = mock[Path]
     )
@@ -58,7 +58,7 @@ class AjouterCVCandidatSpec extends AsyncWordSpec
     "renvoyer une erreur lorsque le service externe qui enregistre le CV echoue" in {
       // Given
       val candidat = candidatBuilder.avecInscription().build
-      when(cvService.save(cvId, commande.id, commande.nomFichier, commande.typeMedia, commande.path)) thenReturn Future.failed(new RuntimeException("erreur de service"))
+      when(cvService.save(ArgumentMatchers.eq(cvId), ArgumentMatchers.eq(commande.id), ArgumentMatchers.any[String](), ArgumentMatchers.eq(commande.typeMedia), ArgumentMatchers.eq(commande.path))) thenReturn Future.failed(new RuntimeException("erreur de service"))
 
       // When & Then
       recoverToExceptionIf[RuntimeException](
@@ -70,7 +70,7 @@ class AjouterCVCandidatSpec extends AsyncWordSpec
     "generer un evenement lorsque le CV est ajouté" in {
       // Given
       val candidat = candidatBuilder.avecInscription().build
-      when(cvService.save(cvId, commande.id, commande.nomFichier, commande.typeMedia, commande.path)) thenReturn Future.successful(())
+      when(cvService.save(ArgumentMatchers.eq(cvId), ArgumentMatchers.eq(commande.id), ArgumentMatchers.any[String](), ArgumentMatchers.eq(commande.typeMedia), ArgumentMatchers.eq(commande.path))) thenReturn Future.successful(())
 
       // When
       val future = candidat.ajouterCV(commande, cvService)
@@ -81,7 +81,7 @@ class AjouterCVCandidatSpec extends AsyncWordSpec
     "genere un événement contenant les informations modifiees" in {
       // Given
       val candidat = candidatBuilder.avecInscription().build
-      when(cvService.save(cvId, commande.id, commande.nomFichier, commande.typeMedia, commande.path)) thenReturn Future.successful(())
+      when(cvService.save(ArgumentMatchers.eq(cvId), ArgumentMatchers.eq(commande.id), ArgumentMatchers.any[String](), ArgumentMatchers.eq(commande.typeMedia), ArgumentMatchers.eq(commande.path))) thenReturn Future.successful(())
 
       // When
       val future = candidat.ajouterCV(commande, cvService)

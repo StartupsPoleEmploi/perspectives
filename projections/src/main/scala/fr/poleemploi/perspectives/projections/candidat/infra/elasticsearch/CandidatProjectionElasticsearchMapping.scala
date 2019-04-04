@@ -60,8 +60,6 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
   def buildCandidatDepotCVQueryResult(document: CandidatDepotCVDocument): CandidatDepotCVQueryResult =
     CandidatDepotCVQueryResult(
       candidatId = document.candidatId,
-      nom = document.nom,
-      prenom = document.prenom,
       cvId = document.cvId,
       cvTypeMedia = document.cvTypeMedia
     )

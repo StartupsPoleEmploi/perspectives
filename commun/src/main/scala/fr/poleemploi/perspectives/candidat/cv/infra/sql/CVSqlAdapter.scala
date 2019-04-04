@@ -68,7 +68,7 @@ class CVSqlAdapter(val driver: PostgresDriver,
     database
       .run(cvCandidatTable.map(
         c => (c.cvId, c.candidatId, c.nomFichier, c.fichier, c.typeMedia, c.date))
-        += (cvId, candidatId, nomFichier, Files.readAllBytes(path), typeMedia, ZonedDateTime.now()))
+        += (cvId, candidatId, s"$nomFichier.${TypeMedia.getExtensionFichier(typeMedia)}", Files.readAllBytes(path), typeMedia, ZonedDateTime.now()))
       .map(_ => ())
 
   override def update(cvId: CVId,
@@ -76,7 +76,7 @@ class CVSqlAdapter(val driver: PostgresDriver,
                       typeMedia: TypeMedia,
                       path: Path): Future[Unit] =
     database.run(updateCVQuery(cvId).update((
-      nomFichier,
+      s"$nomFichier.${TypeMedia.getExtensionFichier(typeMedia)}",
       Files.readAllBytes(path),
       typeMedia,
       ZonedDateTime.now()

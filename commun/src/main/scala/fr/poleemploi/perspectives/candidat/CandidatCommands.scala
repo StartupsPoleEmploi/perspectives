@@ -34,13 +34,11 @@ case class ConnecterCandidatCommand(id: CandidatId,
                                     statutDemandeurEmploi: Option[StatutDemandeurEmploi]) extends Command[Candidat]
 
 case class AjouterCVCommand(id: CandidatId,
-                            nomFichier: String,
                             typeMedia: TypeMedia,
                             path: Path) extends Command[Candidat]
 
 case class RemplacerCVCommand(id: CandidatId,
                               cvId: CVId,
-                              nomFichier: String,
                               typeMedia: TypeMedia,
                               path: Path) extends Command[Candidat]
 
