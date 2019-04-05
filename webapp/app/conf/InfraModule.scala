@@ -38,7 +38,6 @@ import fr.poleemploi.perspectives.offre.infra.ws.{ReferentielOffreWSAdapter, Ref
 import fr.poleemploi.perspectives.projections.candidat.infra.elasticsearch.{CandidatProjectionElasticsearchAdapter, CandidatProjectionElasticsearchMapping}
 import fr.poleemploi.perspectives.projections.candidat.infra.local.CandidatNotificationLocalAdapter
 import fr.poleemploi.perspectives.projections.candidat.infra.slack.CandidatNotificationSlackAdapter
-import fr.poleemploi.perspectives.projections.recruteur.alerte.infra.sql.AlerteRecruteurSqlAdapter
 import fr.poleemploi.perspectives.projections.recruteur.infra.sql.RecruteurProjectionSqlAdapter
 import fr.poleemploi.perspectives.recruteur.commentaire.infra.local.CommentaireLocalAdapter
 import fr.poleemploi.perspectives.recruteur.commentaire.infra.slack.CommentaireSlackAdapter
@@ -361,12 +360,6 @@ class InfraModule extends AbstractModule with ScalaModule {
   @Provides
   def recruteurProjectionSqlAdapter(database: Database): RecruteurProjectionSqlAdapter =
     new RecruteurProjectionSqlAdapter(
-      database = database
-    )
-
-  @Provides
-  def alerteRecruteurSqlAdapter(database: Database): AlerteRecruteurSqlAdapter =
-    new AlerteRecruteurSqlAdapter(
       database = database
     )
 }

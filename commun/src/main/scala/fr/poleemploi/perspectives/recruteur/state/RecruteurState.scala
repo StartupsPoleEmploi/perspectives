@@ -26,12 +26,6 @@ trait RecruteurState {
                               commentaireService: CommentaireService): Future[List[Event]] =
     Future(default(context, command))
 
-  def creerAlerte(context: RecruteurContext, command: CreerAlerteCommand): List[Event] =
-    default(context, command)
-
-  def supprimerAlerte(context: RecruteurContext, command: SupprimerAlerteCommand): List[Event] =
-    default(context, command)
-
   private def default(context: RecruteurContext, command: Command[Recruteur]) =
     throw new IllegalStateException(s"Le recruteur ${command.id.value} dans l'état $name ne peut pas gérer la commande ${command.getClass.getSimpleName}")
 }

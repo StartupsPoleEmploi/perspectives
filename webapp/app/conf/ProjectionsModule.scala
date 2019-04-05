@@ -15,8 +15,6 @@ import fr.poleemploi.perspectives.projections.conseiller.ConseillerQueryHandler
 import fr.poleemploi.perspectives.projections.emailing.{CandidatEmailProjection, RecruteurEmailProjection}
 import fr.poleemploi.perspectives.projections.metier.MetierQueryHandler
 import fr.poleemploi.perspectives.projections.recruteur._
-import fr.poleemploi.perspectives.projections.recruteur.alerte.AlerteRecruteurProjection
-import fr.poleemploi.perspectives.projections.recruteur.alerte.infra.sql.AlerteRecruteurSqlAdapter
 import fr.poleemploi.perspectives.projections.recruteur.infra.sql.RecruteurProjectionSqlAdapter
 import net.codingwell.scalaguice.ScalaModule
 
@@ -25,10 +23,9 @@ class RegisterProjections @Inject()(eventStoreListener: EventStoreListener,
                                     candidatNotificationProjection: CandidatNotificationProjection,
                                     candidatMailProjection: CandidatEmailProjection,
                                     recruteurProjection: RecruteurProjection,
-                                    recruteurEmailProjection: RecruteurEmailProjection,
-                                    alerteRecruteurProjection: AlerteRecruteurProjection) {
+                                    recruteurEmailProjection: RecruteurEmailProjection) {
   eventStoreListener.subscribe(candidatProjection, candidatMailProjection, candidatNotificationProjection)
-  eventStoreListener.subscribe(recruteurProjection, recruteurEmailProjection, alerteRecruteurProjection)
+  eventStoreListener.subscribe(recruteurProjection, recruteurEmailProjection)
 }
 
 class ProjectionsModule extends AbstractModule with ScalaModule {
@@ -88,18 +85,9 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
-  def recruteurQueryHandler(recruteurProjection: RecruteurProjection,
-                            alerteRecruteurProjection: AlerteRecruteurProjection): RecruteurQueryHandler =
+  def recruteurQueryHandler(recruteurProjection: RecruteurProjection): RecruteurQueryHandler =
     new RecruteurQueryHandler(
-      recruteurProjection = recruteurProjection,
-      alerteRecruteurProjection = alerteRecruteurProjection
-    )
-
-  @Provides
-  @Singleton
-  def alerteRecruteurProjection(alerteRecruteurSqlAdapter: AlerteRecruteurSqlAdapter): AlerteRecruteurProjection =
-    new AlerteRecruteurProjection(
-      adapter = alerteRecruteurSqlAdapter
+      recruteurProjection = recruteurProjection
     )
 
   @Provides

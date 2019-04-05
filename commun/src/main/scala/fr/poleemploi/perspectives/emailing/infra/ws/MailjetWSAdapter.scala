@@ -25,7 +25,6 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
   val idListeCandidatsInscrits: Int = 9908
   val idListeRecruteursInscrits: Int = 9909
   val idListeTesteurs: Int = 20603
-  val alerteMailRecruteurTemplateId: Int = 570953
 
   def ajouterCandidatInscrit(candidatInscrit: CandidatInscrit): Future[MailjetContactId] =
     manageContact(
@@ -44,21 +43,6 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
       idListeContact = idListeRecruteursInscrits,
       request = mailjetWSMapping.buildRequestRecruteurInscrit(recruteurInscrit)
     ).map(_.contactId)
-
-  def envoyerAlerteMailRecruteur(alerteMailRecruteur: AlerteMailRecruteur): Future[Unit] =
-    sendTemplate(MailjetTemplateEmail(
-      messages = List(MailjetTemplateMessage(
-        from = MailjetSender(email = sender, name = ""),
-        to = List(MailjetRecipient(email = alerteMailRecruteur.email.value, name = "")),
-        subject = alerteMailRecruteur.sujet,
-        templateID = alerteMailRecruteurTemplateId,
-        templateLanguage = true,
-        variables = Map(
-          "texteInscription" -> alerteMailRecruteur.recapitulatifInscriptions,
-          "lienConnexion" -> alerteMailRecruteur.lienConnexion
-        )
-      ))
-    ))
 
   private def sendTemplate(mailjetTemplateEmail: MailjetTemplateEmail): Future[Unit] =
     wsClient

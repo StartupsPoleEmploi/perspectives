@@ -2,7 +2,6 @@ import Vue from 'vue';
 import secteursActivites from '../domain/commun/secteurActivite.js';
 import statutsDemandeurEmploi from '../domain/candidat/statutDemandeurEmploi.js';
 import typesRecruteur from '../domain/recruteur/typeRecruteur.js';
-import frequencesAlertes from '../domain/recruteur/alerte/frequenceAlerte.js';
 import typesContrats from '../domain/offre/typeContrat.js';
 
 Vue.filter('capitalize', function (value) {
@@ -32,10 +31,6 @@ Vue.filter('statutDemandeurEmploi', function (value) {
 
 Vue.filter('typeRecruteur', function (value) {
     return (value !== undefined && typesRecruteur[value] !== undefined) ? typesRecruteur[value] : '';
-});
-
-Vue.filter('frequenceAlerte', function (value) {
-    return (value !== undefined && frequencesAlertes[value] !== undefined) ? frequencesAlertes[value] : '';
 });
 
 Vue.filter('typeContrat', function (value) {

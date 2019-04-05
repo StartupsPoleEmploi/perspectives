@@ -26,8 +26,6 @@ GET           /recruteur/recherche                                     controlle
 POST          /recruteur/recherche                                     controllers.recruteur.RechercheCandidatController.rechercherCandidats
 POST          /recruteur/recherche/commenterListeCandidats             controllers.recruteur.RechercheCandidatController.commenterListeCandidats
 GET           /recruteur/cv/telecharger/:candidatId/:nomFichier        controllers.recruteur.RechercheCandidatController.telechargerCV(candidatId, nomFichier)
-POST          /recruteur/alerte                                        controllers.recruteur.AlerteController.creerAlerte
-DELETE        /recruteur/alerte/:alerteId                              controllers.recruteur.AlerteController.supprimerAlerte(alerteId: String)
 
 GET           /conseiller/candidats                                    controllers.conseiller.ConseillerController.listeCandidats
 POST          /conseiller/paginerCandidats                             controllers.conseiller.ConseillerController.paginerCandidats

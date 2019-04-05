@@ -2,7 +2,6 @@ package fr.poleemploi.perspectives.recruteur
 
 import fr.poleemploi.eventsourcing.{Aggregate, Event}
 import fr.poleemploi.perspectives.commun.domain._
-import fr.poleemploi.perspectives.recruteur.alerte.domain.{AlerteId, CriteresAlerte}
 import fr.poleemploi.perspectives.recruteur.commentaire.domain.CommentaireService
 import fr.poleemploi.perspectives.recruteur.state.{NouveauRecruteurState, RecruteurInscritState, RecruteurProfilCompletState, RecruteurState}
 
@@ -45,19 +44,6 @@ class Recruteur(override val id: RecruteurId,
           email = Some(e.email),
           genre = Some(e.genre)
         )
-      case e: AlerteRecruteurCreeEvent =>
-        context.copy(
-          alertes = context.alertes + (e.alerteId -> CriteresAlerte(
-            frequence = e.frequence,
-            codeROME = e.codeROME,
-            codeSecteurActivite = e.codeSecteurActivite,
-            localisation = e.localisation
-          ))
-        )
-      case e: AlerteRecruteurSupprimeeEvent =>
-        context.copy(
-          alertes = context.alertes - e.alerteId
-        )
       case _ => context
     })
 
@@ -73,12 +59,6 @@ class Recruteur(override val id: RecruteurId,
   def commenterListeCandidats(command: CommenterListeCandidatsCommand,
                               commentaireService: CommentaireService): Future[List[Event]] =
     state.commenterListeCandidats(context = context, command = command, commentaireService = commentaireService)
-
-  def creerAlerte(command: CreerAlerteCommand): List[Event] =
-    state.creerAlerte(context = context, command = command)
-
-  def supprimerAlerte(command: SupprimerAlerteCommand): List[Event] =
-    state.supprimerAlerte(context = context, command = command)
 }
 
 private[recruteur] case class RecruteurContext(nom: Option[Nom] = None,
@@ -89,5 +69,4 @@ private[recruteur] case class RecruteurContext(nom: Option[Nom] = None,
                                                numeroSiret: Option[NumeroSiret] = None,
                                                typeRecruteur: Option[TypeRecruteur] = None,
                                                contactParCandidats: Option[Boolean] = None,
-                                               numeroTelephone: Option[NumeroTelephone] = None,
-                                               alertes: Map[AlerteId, CriteresAlerte] = Map())
+                                               numeroTelephone: Option[NumeroTelephone] = None)

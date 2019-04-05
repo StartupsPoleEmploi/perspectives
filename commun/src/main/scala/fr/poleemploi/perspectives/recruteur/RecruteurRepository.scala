@@ -4,15 +4,12 @@ import java.util.UUID
 
 import fr.poleemploi.eventsourcing.eventstore.{EventStore, EventStream}
 import fr.poleemploi.eventsourcing.{AggregateRepository, Event, SnapshotRepository}
-import fr.poleemploi.perspectives.recruteur.alerte.domain.AlerteId
 
 class RecruteurRepository(override val eventStore: EventStore,
                           override val snapshotRepository: SnapshotRepository[Recruteur])
   extends AggregateRepository[Recruteur] {
 
   override def newId: RecruteurId = RecruteurId(UUID.randomUUID().toString)
-
-  def newAlerteId: AlerteId = AlerteId(UUID.randomUUID().toString)
 
   override def createFromStream(recruteurId: RecruteurId, eventStream: EventStream) =
     new Recruteur(

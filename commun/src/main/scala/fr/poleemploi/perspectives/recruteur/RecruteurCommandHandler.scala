@@ -1,9 +1,5 @@
 package fr.poleemploi.perspectives.recruteur
 
 import fr.poleemploi.cqrs.command.CommandHandler
-import fr.poleemploi.perspectives.recruteur.alerte.domain.AlerteId
 
-trait RecruteurCommandHandler extends CommandHandler[Recruteur] {
-
-  def newAlerteId: AlerteId
-}
+trait RecruteurCommandHandler extends CommandHandler[Recruteur]

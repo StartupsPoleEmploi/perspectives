@@ -2,7 +2,6 @@ package fr.poleemploi.perspectives.recruteur.state
 
 import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.perspectives.recruteur._
-import fr.poleemploi.perspectives.recruteur.alerte.domain.CriteresAlerte
 import fr.poleemploi.perspectives.recruteur.commentaire.domain.{CommentaireListeCandidats, CommentaireService}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -34,44 +33,4 @@ object RecruteurProfilCompletState extends RecruteurState {
         )
       ).map(_ => Nil)
     }).getOrElse(Future.successful(Nil))
-
-  override def creerAlerte(context: RecruteurContext, command: CreerAlerteCommand): List[Event] = {
-    if (command.localisation.orElse(command.codeSecteurActivite).orElse(command.codeROME).isEmpty) {
-      throw new IllegalArgumentException("Au moins un critère doit être renseigné pour une alerte")
-    }
-    if (context.alertes.size == 10) {
-      throw new IllegalArgumentException(s"Le recruteur ${command.id.value} a atteint le nombre maximum d'alertes")
-    }
-    val criteresAlerte = CriteresAlerte(
-      frequence = command.frequenceAlerte,
-      codeROME = command.codeROME,
-      codeSecteurActivite = command.codeSecteurActivite,
-      localisation = command.localisation
-    )
-    if (context.alertes.values.toList.contains(criteresAlerte)) {
-      throw new IllegalArgumentException(s"Une alerte existe déjà pour le recruteur ${command.id.value} avec les critères suivants : $criteresAlerte")
-    }
-
-    List(AlerteRecruteurCreeEvent(
-      recruteurId = command.id,
-      email = context.email.get,
-      typeRecruteur = context.typeRecruteur.get,
-      alerteId = command.alerteId,
-      frequence = command.frequenceAlerte,
-      codeROME = command.codeROME,
-      codeSecteurActivite = command.codeSecteurActivite,
-      localisation = command.localisation
-    ))
-  }
-
-  override def supprimerAlerte(context: RecruteurContext, command: SupprimerAlerteCommand): List[Event] = {
-    if (context.alertes.get(command.alerteId).isEmpty) {
-      throw new IllegalArgumentException(s"L'alerte ${command.alerteId.value} n'existe pas")
-    }
-
-    List(AlerteRecruteurSupprimeeEvent(
-      recruteurId = command.id,
-      alerteId = command.alerteId
-    ))
-  }
 }

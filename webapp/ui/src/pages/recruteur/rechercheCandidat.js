@@ -3,8 +3,6 @@ import $ from 'jquery';
 import places from 'places.js';
 import 'bootstrap/js/dist/modal';
 import pagination from '../../composants/pagination.js';
-import '../../composants/alerteRecruteur.js';
-import { intituleAlerte, buildAlerte } from '../../domain/recruteur/alerte/alerteService.js';
 
 $(document).ready(function () {
     var body = $("body");
@@ -128,9 +126,6 @@ var app = new Vue({
             csrfToken: jsData.csrfToken,
             nbCandidatsParPage: jsData.nbCandidatsParPage,
             pagesInitiales: jsData.pagesInitiales,
-            alertes: jsData.alertes.map(function(alerte) { // FIXME: supprimer alertes
-                return buildAlerte(alerte, [], jsData.secteursActivites);
-            }),
             secteurActivite: jsData.secteurActivite !== undefined && jsData.secteurActivite !== null ? jsData.secteurActivite : '',
             secteursActivites: jsData.secteursActivites,
             metier: jsData.metier !== undefined && jsData.metier !== null ? jsData.metier : '',
@@ -274,72 +269,6 @@ var app = new Vue({
         initialiserTableau: function() {
             $(".js-infoCandidat").hide();
             $(".js-profilCandidat").hide();
-        },
-        creerAlerte: function(frequence) {
-            var formData = [
-                {name: "csrfToken", value: this.csrfToken},
-                {name: "secteurActivite", value: this.secteurActivite},
-                {name: "metier", value: this.metier},
-                {name: "localisation.label", value: this.localisation !== null ? this.localisation.label: null},
-                {name: "localisation.latitude", value: this.localisation !== null ? this.localisation.latitude: null},
-                {name: "localisation.longitude", value: this.localisation !== null ? this.localisation.longitude: null},
-                {name: "frequence", value: frequence}
-            ];
-            var intituleAlerte = intituleAlerte({
-                metier: this.metier,
-                secteurActivite: this.secteurActivite,
-                localisation: this.localisation
-            }, this.metiers, this.secteursActivites);
-            var labelFrequence = app.$refs.alertesRecruteur.frequences.find(function(f) {
-                return f.value === frequence;
-            }).label;
-
-            if (this.secteurActivite === '' && this.metier === '' && (this.localisation === null || this.localisation.latitude === null || this.localisation.longitude === null)) {
-                app.$refs.alertesRecruteur.onErreur('Choisissez au moins un critère pour créer une alerte');
-            } else if (app.$refs.alertesRecruteur.alertes.findIndex(function(el) {
-                return el.intitule === intituleAlerte && el.frequence === labelFrequence;
-            }) !== -1) { // FIXME : ne pas chercher sur l'intitulé : pas solide
-                app.$refs.alertesRecruteur.onErreur('Une alerte existe déjà avec ces critères');
-            } else {
-                $.ajax({
-                    type: "POST",
-                    url: "/recruteur/alerte",
-                    data: formData,
-                    dataType: 'text'
-                }).done(function (alerteId) {
-                    app.$refs.alertesRecruteur.onAlerteCree({
-                        id: alerteId,
-                        intitule: intituleAlerte,
-                        frequence: labelFrequence,
-                        criteres: {
-                            codeSecteurActivite: app.secteurActivite,
-                            codeROME: app.metier,
-                            localisation: app.localisation
-                        }
-                    });
-                }).fail(function () {
-                    app.$refs.alertesRecruteur.onErreur('Une erreur est survenue, veuillez réessayer ultérieurement');
-                });
-            }
-        },
-        supprimerAlerte: function(alerteId) {
-            $.ajax({
-                type: "DELETE",
-                url: "/recruteur/alerte/" + encodeURIComponent(alerteId) + "?csrfToken=" + this.csrfToken,
-                data: '',
-                dataType: 'text'
-            }).done(function () {
-                app.$refs.alertesRecruteur.onAlerteSupprimee(alerteId);
-            }).fail(function () {
-                app.$refs.alertesRecruteur.onErreur('Une erreur est survenue, veuillez réessayer ultérieurement');
-            });
-        },
-        selectionnerAlerte: function(criteres) {
-            this.secteurActivite = criteres.codeSecteurActivite;
-            this.metier = criteres.codeROME;
-            this.localisation = criteres.localisation;
-
-            this.rechercherCandidats();
         }
     }
 });

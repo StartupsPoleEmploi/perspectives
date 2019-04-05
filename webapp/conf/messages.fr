@@ -7,7 +7,5 @@ constraint.numeroSiret=Le numéro de SIRET n''est pas valide
 constraint.numeroTelephone=Le numéro de téléphone n''est pas valide
 constraint.typeRecruteur=Le type de recruteur n''est pas valide
 constraint.rayonRecherche=Le rayon de recherche n''est pas valide
-constraint.frequenceAlerte=La fréquence de l''alerte n''est pas valide
-constraint.alerte.selectioncriteres=Choisissez au moins un critère pour créer une alerte
 
 format.zonedatetime=ZonedDateTime

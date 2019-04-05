@@ -29,7 +29,6 @@ import fr.poleemploi.perspectives.metier.infra.ReferentielMetierImpl
 import fr.poleemploi.perspectives.metier.infra.elasticsearch.ReferentielMetierElasticsearchAdapter
 import fr.poleemploi.perspectives.metier.infra.ws.{ReferentielMetierWSAdapter, ReferentielMetierWSMapping}
 import fr.poleemploi.perspectives.projections.candidat.infra.elasticsearch.{CandidatProjectionElasticsearchAdapter, CandidatProjectionElasticsearchMapping}
-import fr.poleemploi.perspectives.projections.recruteur.alerte.infra.sql.AlerteRecruteurSqlAdapter
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
 import play.api.cache.AsyncCacheApi
@@ -279,11 +278,5 @@ class InfraModule extends AbstractModule with ScalaModule {
       wsClient = wsClient,
       esConfig = batchsConfig.esConfig,
       mapping = mapping
-    )
-
-  @Provides
-  def alerteRecruteurSqlAdapter(database: Database): AlerteRecruteurSqlAdapter =
-    new AlerteRecruteurSqlAdapter(
-      database = database
     )
 }

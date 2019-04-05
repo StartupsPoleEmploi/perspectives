@@ -13,7 +13,6 @@ import fr.poleemploi.perspectives.projections.candidat._
 import fr.poleemploi.perspectives.projections.candidat.cv.CVCandidatPourRecruteurQuery
 import fr.poleemploi.perspectives.projections.metier.{MetierQueryHandler, MetierRechercheParCodeROMEQuery, SecteurActiviteParCodeQuery, SecteursActiviteQuery}
 import fr.poleemploi.perspectives.projections.recruteur._
-import fr.poleemploi.perspectives.projections.recruteur.alerte.AlertesRecruteurQuery
 import fr.poleemploi.perspectives.recruteur._
 import fr.poleemploi.perspectives.recruteur.commentaire.domain.ContexteRecherche
 import javax.inject.{Inject, Singleton}
@@ -51,7 +50,6 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
           pagination = None
         )
         (for {
-          alertesRecruteurQueryResult <- recruteurQueryHandler.handle(AlertesRecruteurQuery(recruteurAuthentifieRequest.recruteurId))
           typeRecruteur <- getTypeRecruteur(recruteurAuthentifieRequest)
           query = RechercheCandidatsQuery(
             typeRecruteur = typeRecruteur,
@@ -86,7 +84,6 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
                 "latitude" -> c.latitude,
                 "longitude" -> c.longitude
               )),
-              "alertes" -> alertesRecruteurQueryResult.alertes,
               "nbCandidatsTotal" -> rechercheCandidatQueryResult.nbCandidatsTotal,
               "nbCandidats" -> rechercheCandidatQueryResult.nbCandidats,
               "nbCandidatsParPage" -> query.nbCandidatsParPage,

@@ -5,7 +5,6 @@ import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
 import fr.poleemploi.perspectives.candidat.{CandidatId, LocalisationRecherche, StatutDemandeurEmploi}
 import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.offre.domain.OffreId
-import fr.poleemploi.perspectives.recruteur.alerte.domain.{AlerteId, FrequenceAlerte, LocalisationAlerte}
 import fr.poleemploi.perspectives.recruteur.{NumeroSiret, RecruteurId, TypeRecruteur}
 import play.api.libs.json._
 
@@ -18,7 +17,6 @@ object JsonFormats {
   implicit val formatRecruteurId: Format[RecruteurId] = formatAggregateId(RecruteurId)
   implicit val formatCvId: Format[CVId] = formatStringValueObject(CVId)
   implicit val formatOffreId: Format[OffreId] = formatStringValueObject(OffreId)
-  implicit val formatAlerteId: Format[AlerteId] = formatStringValueObject(AlerteId)
 
   implicit val formatGenre: Format[Genre] = formatStringValueObject(Genre(_))
   implicit val formatNom: Format[Nom] = formatStringValueObject(Nom(_))
@@ -30,7 +28,6 @@ object JsonFormats {
   implicit val formatNumeroTelephone: Format[NumeroTelephone] = formatStringValueObject(NumeroTelephone(_))
   implicit val formatStatutDemandeurEmploi: Format[StatutDemandeurEmploi] = formatStringValueObject(StatutDemandeurEmploi(_))
   implicit val formatTypeMedia: Format[TypeMedia] = formatStringValueObject(TypeMedia(_))
-  implicit val formatFrequenceAlerte: Format[FrequenceAlerte] = formatStringValueObject(FrequenceAlerte(_))
 
   implicit val formatCodeROME: Format[CodeROME] = formatStringValueObject(CodeROME)
   implicit val formatCodeSecteurActivite: Format[CodeSecteurActivite] = formatStringValueObject(CodeSecteurActivite)
@@ -38,7 +35,6 @@ object JsonFormats {
   implicit val formatHabilete: Format[Habilete] = formatStringValueObject(Habilete)
 
   implicit val formatCoordonnees: Format[Coordonnees] = Json.format[Coordonnees]
-  implicit val formatLocalisation: Format[LocalisationAlerte] = Json.format[LocalisationAlerte]
   implicit val formatLocalisationRecherche: Format[LocalisationRecherche] = Json.format[LocalisationRecherche]
 
   implicit val formatTypeRecruteur: Format[TypeRecruteur] = formatStringValueObject(TypeRecruteur(_))
