@@ -25,7 +25,5 @@ case class CandidatSaisieCriteresRechercheQueryResult(candidatId: CandidatId,
                                                       latitudeRecherche: Option[Double],
                                                       longitudeRecherche: Option[Double]) extends QueryResult {
   def saisieComplete: Boolean =
-    List(contactRecruteur, contactFormation, codePostalRecherche, communeRecherche, rayonRecherche).forall(_.isDefined) &&
-      contactRecruteur.forall(_ => numeroTelephone.isDefined) &&
-      contactFormation.forall(_ => numeroTelephone.isDefined)
+    List(contactRecruteur, contactFormation, codePostalRecherche, communeRecherche).forall(_.isDefined)
 }
