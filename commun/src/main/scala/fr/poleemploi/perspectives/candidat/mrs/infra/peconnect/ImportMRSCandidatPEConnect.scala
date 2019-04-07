@@ -5,9 +5,9 @@ import java.nio.file.Path
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{FileIO, Sink}
-import fr.poleemploi.perspectives.authentification.infra.peconnect.sql.PEConnectSqlAdapter
 import fr.poleemploi.perspectives.candidat.mrs.domain.{ImportMRSCandidat, MRSValideeCandidat}
 import fr.poleemploi.perspectives.commun.infra.file.ImportFileAdapter
+import fr.poleemploi.perspectives.commun.infra.peconnect.sql.PEConnectSqlAdapter
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -30,7 +30,7 @@ class ImportMRSCandidatPEConnect(override val config: ImportMRSCandidatPEConnect
         if (streamMRSValideesCandidatsPEConnect.isEmpty)
           Future.successful(Stream.empty)
         else
-          peConnectSqlAdapter.getAllCandidats.runWith(Sink.collection)
+          peConnectSqlAdapter.streamCandidats.runWith(Sink.collection)
     } yield
       streamMRSValideesCandidatsPEConnect.flatMap(mrsValideeCandidatPEConnect =>
         streamCandidatsPEConnect.find(c => c.peConnectId == mrsValideeCandidatPEConnect.peConnectId).map(c =>

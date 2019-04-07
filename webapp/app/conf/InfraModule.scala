@@ -10,10 +10,9 @@ import fr.poleemploi.eventsourcing.infra.akka.AkkaEventStoreListener
 import fr.poleemploi.eventsourcing.infra.jackson.EventSourcingObjectMapperBuilder
 import fr.poleemploi.eventsourcing.infra.postgresql.{PostgreSQLAppendOnlyStore, PostgreSQLSnapshotStore, PostgresDriver => EventSourcingPostgresDriver}
 import fr.poleemploi.eventsourcing.snapshotstore.SnapshotStore
-import fr.poleemploi.perspectives.authentification.infra.peconnect.PEConnectAdapter
+import fr.poleemploi.perspectives.authentification.infra.peconnect.PEConnectAuthAdapter
 import fr.poleemploi.perspectives.authentification.infra.peconnect.jwt.PEConnectJWTAdapter
-import fr.poleemploi.perspectives.authentification.infra.peconnect.sql.PEConnectSqlAdapter
-import fr.poleemploi.perspectives.authentification.infra.peconnect.ws.{PEConnectWSAdapter, PEConnectWSMapping}
+import fr.poleemploi.perspectives.authentification.infra.peconnect.ws.PEConnectAuthWSAdapter
 import fr.poleemploi.perspectives.candidat.cv.infra.sql.CVSqlAdapter
 import fr.poleemploi.perspectives.candidat.localisation.infra.local.LocalisationLocalAdapter
 import fr.poleemploi.perspectives.candidat.localisation.infra.ws.{LocalisationWSAdapter, LocalisationWSMapping}
@@ -22,6 +21,9 @@ import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.{MRSValideesCandi
 import fr.poleemploi.perspectives.candidat.mrs.infra.sql.ReferentielHabiletesMRSSqlAdapter
 import fr.poleemploi.perspectives.commun.infra.jackson.PerspectivesEventSourcingModule
 import fr.poleemploi.perspectives.commun.infra.oauth.OauthService
+import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectAdapter
+import fr.poleemploi.perspectives.commun.infra.peconnect.sql.PEConnectSqlAdapter
+import fr.poleemploi.perspectives.commun.infra.peconnect.ws.{PEConnectWSAdapter, PEConnectWSMapping}
 import fr.poleemploi.perspectives.commun.infra.play.cache.InMemoryCacheApi
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
 import fr.poleemploi.perspectives.emailing.infra.local.LocalEmailingService
@@ -131,10 +133,12 @@ class InfraModule extends AbstractModule with ScalaModule {
     new PlayOauthService(tokenProvider = tokenProvider)
 
   @Provides
-  def peConnectSqlAdapter(database: Database): PEConnectSqlAdapter =
-    new PEConnectSqlAdapter(
-      driver = PostgresDriver,
-      database = database
+  def peConnectAuthWSAdapter(webAppConfig: WebAppConfig,
+                             wsClient: WSClient): PEConnectAuthWSAdapter =
+    new PEConnectAuthWSAdapter(
+      wsClient = wsClient,
+      recruteurOauthConfig = webAppConfig.recruteurOauthConfig,
+      candidatOauthConfig = webAppConfig.candidatOauthConfig
     )
 
   @Provides
@@ -142,6 +146,13 @@ class InfraModule extends AbstractModule with ScalaModule {
     new PEConnectJWTAdapter(
       recruteurOauthConfig = webAppConfig.recruteurOauthConfig,
       candidatOauthConfig = webAppConfig.candidatOauthConfig
+    )
+
+  @Provides
+  def peConnectSqlAdapter(database: Database): PEConnectSqlAdapter =
+    new PEConnectSqlAdapter(
+      driver = PostgresDriver,
+      database = database
     )
 
   @Provides
@@ -162,15 +173,22 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
-  def peConnectService(oauthService: OauthService,
-                       peConnectWSAdapter: PEConnectWSAdapter,
-                       peConnectSqlAdapter: PEConnectSqlAdapter,
-                       peConnectJWTAdapter: PEConnectJWTAdapter): PEConnectAdapter =
-    new PEConnectAdapter(
+  def peConnectAuthAdapter(oauthService: OauthService,
+                           peConnectAuthWSAdapter: PEConnectAuthWSAdapter,
+                           peConnectJWTAdapter: PEConnectJWTAdapter): PEConnectAuthAdapter =
+    new PEConnectAuthAdapter(
       oauthService = oauthService,
-      peConnectWSAdapter = peConnectWSAdapter,
-      peConnectSqlAdapter = peConnectSqlAdapter,
+      peConnectAuthWSAdapter = peConnectAuthWSAdapter,
       peConnectJWTAdapter = peConnectJWTAdapter
+    )
+
+  @Provides
+  @Singleton
+  def peConnectAdapter(peConnectWSAdapter: PEConnectWSAdapter,
+                       peConnectSqlAdapter: PEConnectSqlAdapter): PEConnectAdapter =
+    new PEConnectAdapter(
+      peConnectWSAdapter = peConnectWSAdapter,
+      peConnectSqlAdapter = peConnectSqlAdapter
     )
 
   @Provides

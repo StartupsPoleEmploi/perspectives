@@ -1,9 +1,9 @@
-package fr.poleemploi.perspectives.authentification.infra.peconnect.sql
+package fr.poleemploi.perspectives.commun.infra.peconnect.sql
 
 import akka.NotUsed
 import akka.stream.scaladsl.Source
 import fr.poleemploi.perspectives.candidat.CandidatId
-import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
+import fr.poleemploi.perspectives.commun.infra.peconnect.{CandidatPEConnect, PEConnectId, RecruteurPEConnect}
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
 import fr.poleemploi.perspectives.recruteur.RecruteurId
 import slick.jdbc.JdbcBackend.Database
@@ -11,12 +11,6 @@ import slick.jdbc.{ResultSetConcurrency, ResultSetType}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-
-case class CandidatPEConnect(candidatId: CandidatId,
-                             peConnectId: PEConnectId)
-
-case class RecruteurPEConnect(recruteurId: RecruteurId,
-                              peConnectId: PEConnectId)
 
 class PEConnectSqlAdapter(val driver: PostgresDriver,
                           database: Database) {
@@ -41,9 +35,6 @@ class PEConnectSqlAdapter(val driver: PostgresDriver,
   val getCandidatQuery = Compiled { candidatId: Rep[CandidatId] =>
     candidatsPEConnectTable.filter(c => c.candidatId === candidatId)
   }
-  val findCandidatIdQuery = Compiled { peConnectId: Rep[PEConnectId] =>
-    candidatsPEConnectTable.filter(c => c.peConnectId === peConnectId).map(_.candidatId)
-  }
 
   class RecruteurPEConnectTable(tag: Tag) extends Table[RecruteurPEConnect](tag, "recruteurs_peconnect") {
 
@@ -67,7 +58,7 @@ class PEConnectSqlAdapter(val driver: PostgresDriver,
   def getCandidat(candidatId: CandidatId): Future[CandidatPEConnect] =
     database.run(getCandidatQuery(candidatId).result.head)
 
-  def getAllCandidats: Source[CandidatPEConnect, NotUsed] =
+  def streamCandidats: Source[CandidatPEConnect, NotUsed] =
     Source.fromPublisher {
       database.stream(
         candidatsPEConnectTable
@@ -80,9 +71,6 @@ class PEConnectSqlAdapter(val driver: PostgresDriver,
           )
       )
     }
-
-  def findCandidatId(peConnectId: PEConnectId): Future[Option[CandidatId]] =
-    database.run(findCandidatIdQuery(peConnectId).result.headOption)
 
   def saveCandidat(candidat: CandidatPEConnect): Future[Unit] =
     database

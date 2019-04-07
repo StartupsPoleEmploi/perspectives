@@ -1,10 +1,10 @@
-package fr.poleemploi.perspectives.authentification.infra.peconnect.ws
+package fr.poleemploi.perspectives.commun.infra.peconnect.ws
 
 import java.time.ZonedDateTime
 
 import fr.poleemploi.perspectives.candidat.mrs.domain.MRSValidee
 import fr.poleemploi.perspectives.candidat.{Adresse, StatutDemandeurEmploi}
-import fr.poleemploi.perspectives.commun.domain.{CodeDepartement, CodeROME, Email, Genre, Nom, Prenom}
+import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsPath, Json, Reads, __}
@@ -27,7 +27,7 @@ class PEConnectWSMapping {
       nom = Nom(response.familyName),
       prenom = Prenom(response.givenName),
       email = Email(response.email.toLowerCase),
-      genre = extractGender(response.gender)
+      genre = buildGender(response.gender)
     )
 
   def buildPEConnectRecruteurInfos(response: UserInfosEntrepriseResponse): PEConnectRecruteurInfos =
@@ -36,8 +36,8 @@ class PEConnectWSMapping {
       nom = Nom(response.familyName),
       prenom = Prenom(response.givenName),
       email = Email(response.email.toLowerCase),
-      genre = extractGender(response.gender),
-      certifie = extractCertifie(response.habilitation)
+      genre = buildGender(response.gender),
+      certifie = buildCertifie(response.habilitation)
     )
 
   def buildStatutDemandeurEmploi(response: StatutCandidatReponse): StatutDemandeurEmploi =
@@ -55,33 +55,16 @@ class PEConnectWSMapping {
       libellePays = response.libellePays.toLowerCase.capitalize
     )
 
-  private def extractGender(gender: String): Genre = gender match {
+  private def buildGender(gender: String): Genre = gender match {
     case "male" => Genre.HOMME
     case "female" => Genre.FEMME
     case g@_ => throw new IllegalArgumentException(s"Gender non géré : $g")
   }
 
-  private def extractCertifie(habilitation: String): Boolean = habilitation match {
+  private def buildCertifie(habilitation: String): Boolean = habilitation match {
     case "recruteurcertifie" => true
     case _ => false
   }
-}
-
-case class AccessToken(value: String)
-
-case class JWTToken(value: String)
-
-case class AccessTokenResponse(accessToken: AccessToken,
-                               idToken: JWTToken,
-                               nonce: String)
-
-object AccessTokenResponse {
-
-  implicit val accessTokenResponseReads: Reads[AccessTokenResponse] = (
-    (JsPath \ "access_token").read[String].map(AccessToken) and
-      (JsPath \ "id_token").read[String].map(JWTToken) and
-      (JsPath \ "nonce").read[String]
-    ) (AccessTokenResponse.apply _)
 }
 
 case class PEConnectCandidatInfos(peConnectId: PEConnectId,

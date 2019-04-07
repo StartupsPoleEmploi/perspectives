@@ -1,6 +1,6 @@
 package authentification.infra.play
 
-import fr.poleemploi.perspectives.authentification.infra.peconnect.ws.JWTToken
+import fr.poleemploi.perspectives.authentification.infra.peconnect.jwt.JWTToken
 import javax.inject.Inject
 import play.api.mvc._
 

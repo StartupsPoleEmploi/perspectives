@@ -1,4 +1,4 @@
-package fr.poleemploi.perspectives.authentification.infra.peconnect.ws
+package fr.poleemploi.perspectives.commun.infra.peconnect.ws
 
 import java.time.ZonedDateTime
 

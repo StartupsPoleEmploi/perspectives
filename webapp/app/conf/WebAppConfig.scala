@@ -1,11 +1,11 @@
 package conf
 
-import fr.poleemploi.perspectives.authentification.infra.peconnect.ws.PEConnectWSAdapterConfig
 import fr.poleemploi.perspectives.candidat.localisation.infra.algolia.AlgoliaPlacesConfig
 import fr.poleemploi.perspectives.candidat.localisation.infra.ws.LocalisationWSAdapterConfig
 import fr.poleemploi.perspectives.commun.infra.Environnement
 import fr.poleemploi.perspectives.commun.infra.elasticsearch.EsConfig
 import fr.poleemploi.perspectives.commun.infra.oauth.OauthConfig
+import fr.poleemploi.perspectives.commun.infra.peconnect.ws.PEConnectWSAdapterConfig
 import fr.poleemploi.perspectives.emailing.infra.ws.MailjetWSAdapterConfig
 import fr.poleemploi.perspectives.infra.BuildInfo
 import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapterConfig
