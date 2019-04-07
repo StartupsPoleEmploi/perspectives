@@ -95,11 +95,9 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
             value = r.value,
             uniteLongueur = r.uniteLongueur
           )),
-          "zone" -> ZoneDocument( // FIXME : mapping
-            typeMobilite = event.localisationRecherche.rayonRecherche.map(_ => "circle").getOrElse("point"),
-            latitude = event.localisationRecherche.coordonnees.latitude,
-            longitude = event.localisationRecherche.coordonnees.longitude,
-            radius = event.localisationRecherche.rayonRecherche.map(r => (r.value * 1.2).toString) // 20% de marge sur les rayons de recherche pour ne pas louper les candidats à quelques kilomètres près
+          "zone" -> mapping.buildZoneDocument(
+            coordonnees = event.localisationRecherche.coordonnees,
+            rayonRecherche = event.localisationRecherche.rayonRecherche
           )
         )
       ))

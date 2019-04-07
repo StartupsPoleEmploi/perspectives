@@ -16,54 +16,13 @@ object CandidatCriteresRechercheDocument {
 
   import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
 
-  implicit val reads: Reads[CandidatCriteresRechercheDocument] = (
-    (JsPath \ "metiers_valides").read[Set[CodeROME]] and
-      (JsPath \ "metiers").read[Set[CodeROME]] and
-      (JsPath \ "domaines_professionnels").read[Set[CodeDomaineProfessionnel]] and
-      (JsPath \ "code_postal").readNullable[String] and
-      (JsPath \ "commune").readNullable[String] and
-      (JsPath \ "rayon").readNullable[RayonRechercheDocument] and
-      (JsPath \ "zone").readNullable[ZoneDocument]
-    ) (CandidatCriteresRechercheDocument.apply _)
-
-  implicit val writes: Writes[CandidatCriteresRechercheDocument] = (
-    (JsPath \ "metiers_valides").write[Set[CodeROME]] and
-      (JsPath \ "metiers").write[Set[CodeROME]] and
-      (JsPath \ "domaines_professionnels").write[Set[CodeDomaineProfessionnel]] and
-      (JsPath \ "code_postal").writeNullable[String] and
-      (JsPath \ "commune").writeNullable[String] and
-      (JsPath \ "rayon").writeNullable[RayonRechercheDocument] and
-      (JsPath \ "zone").writeNullable[ZoneDocument]
-    ) (unlift(CandidatCriteresRechercheDocument.unapply))
-}
-
-case class ZoneDocument(typeMobilite: String,
-                        longitude: Double,
-                        latitude: Double,
-                        radius: Option[String])
-
-object ZoneDocument {
-
-  implicit val reads: Reads[ZoneDocument] = (
-    (JsPath \ "type").read[String] and
-      (JsPath \ "coordinates" \ 0).read[Double] and
-      (JsPath \ "coordinates" \ 1).read[Double] and
-      (JsPath \ "radius").readNullable[String]
-    ) (ZoneDocument.apply _)
-
-  implicit val writes: Writes[ZoneDocument] = Writes(mobilite =>
-    mobilite.radius.map(radius =>
-      Json.obj(
-        "type" -> s"${mobilite.typeMobilite}",
-        "coordinates" -> JsArray(Seq(JsNumber(mobilite.longitude), JsNumber(mobilite.latitude))),
-        "radius" -> s"${radius}km" //FIXME : unite
-      )
-    ).getOrElse(
-      Json.obj(
-        "type" -> s"${mobilite.typeMobilite}",
-        "coordinates" -> JsArray(Seq(JsNumber(mobilite.longitude), JsNumber(mobilite.latitude)))
-      )
-    )
-  )
-
+  implicit val format: Format[CandidatCriteresRechercheDocument] = (
+    (JsPath \ "metiers_valides").format[Set[CodeROME]] and
+      (JsPath \ "metiers").format[Set[CodeROME]] and
+      (JsPath \ "domaines_professionnels").format[Set[CodeDomaineProfessionnel]] and
+      (JsPath \ "code_postal").formatNullable[String] and
+      (JsPath \ "commune").formatNullable[String] and
+      (JsPath \ "rayon").formatNullable[RayonRechercheDocument] and
+      (JsPath \ "zone").formatNullable[ZoneDocument]
+    ) (CandidatCriteresRechercheDocument.apply, unlift(CandidatCriteresRechercheDocument.unapply))
 }
