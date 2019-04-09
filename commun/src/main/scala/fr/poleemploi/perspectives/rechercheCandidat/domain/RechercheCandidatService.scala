@@ -75,10 +75,6 @@ object RechercheCandidatService {
     codeROME = CodeROME("H2402"),
     label = "Mécanicien en confection"
   )
-  val PILOTAGE_CENTRALE_BETON = Metier(
-    codeROME = CodeROME("H2701"),
-    label = "Pilotage de centrale à béton"
-  )
   val SOUDAGE = Metier(
     codeROME = CodeROME("H2913"),
     label = "Soudage"
@@ -173,8 +169,7 @@ object RechercheCandidatService {
       SOUDAGE,
       FABRICATION_PIECES,
       TRI_EMBALLAGE,
-      MECANICIEN_CONFECTION,
-      PILOTAGE_CENTRALE_BETON
+      MECANICIEN_CONFECTION
     ))
 
   val TRANSPORT_LOGISTIQUE: SecteurActivite = SecteurActivite(
