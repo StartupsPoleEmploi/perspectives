@@ -17,6 +17,9 @@ class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
 
   private val cacheKeyCommunes = "referentielOffre.communes"
 
+  // Nombre d'offres maximum renvoyé pour un appel à l'API
+  private val offset = 150
+
   /**
     * L'API est limitée en nombre d'appels par seconde, il faut donc gérer le statut 429. <br />
     * Ne gère que 3 CodeROME pour l'instant (découpage des requêtes à refaire pour en gérer plus)
@@ -64,7 +67,11 @@ class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
         offres = rechercheOffreResult.offres
           .distinct
           .sortWith((o1, o2) => o1.dateActualisation.isAfter(o2.dateActualisation)),
-        nbOffresTotal = rechercheOffreResult.nbOffresTotal
+        nbOffresTotal =
+          if (rechercheOffreResult.nbOffresTotal <= offset)
+          rechercheOffreResult.offres.size
+        else
+            rechercheOffreResult.nbOffresTotal
       )
     }
   }

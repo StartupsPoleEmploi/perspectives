@@ -5,7 +5,6 @@ import 'bootstrap/js/dist/modal';
 import '../../commun/filters.js';
 import '../../composants/pagination.js';
 import rayonsRecherche from '../../domain/commun/rayonRecherche.js';
-import secteursActivites from '../../domain/commun/secteurActivite.js';
 import typesContrats from '../../domain/offre/typeContrat.js';
 
 var app = new Vue({
@@ -41,7 +40,7 @@ var app = new Vue({
             },
             rayonsRecherche: rayonsRecherche,
             typesContrats: typesContrats,
-            secteursActivites: secteursActivites,
+            secteursActivites: [],
             metiersEvalues: jsData.recherche.metiersEvalues,
             algoliaPlacesConfig: jsData.algoliaPlacesConfig,
             display: {

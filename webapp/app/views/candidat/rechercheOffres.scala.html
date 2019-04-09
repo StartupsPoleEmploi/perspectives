@@ -330,7 +330,7 @@
                                     </label>
                                 </li>
                             </ul>
-                            <p class="formulaireRecherche-titre">Filtrer par secteurs d'activité :</p>
+                            <p class="formulaireRecherche-titre" v-if="secteursActivites.length > 0">Filtrer par secteurs d'activité :</p>
                             <ul class="filtre">
                                 <li v-for="secteurActivite in secteursActivites" v-bind:key="secteurActivite.value" class="filtre-item">
                                     <input v-bind:id="'secteurActivite-' + secteurActivite.value" type="checkbox"
