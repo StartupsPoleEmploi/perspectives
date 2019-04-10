@@ -27,8 +27,8 @@ class ConseillerAuthentifieAction @Inject()(override val parser: BodyParsers.Def
 }
 
 class ConseillerAdminAuthentifieAction @Inject()(override val parser: BodyParsers.Default,
-                                            autorisationService: AutorisationService)
-                                           (implicit val executionContext: ExecutionContext)
+                                                 autorisationService: AutorisationService)
+                                                (implicit val executionContext: ExecutionContext)
   extends ActionBuilder[ConseillerAuthentifieRequest, AnyContent] {
 
   override def invokeBlock[A](request: Request[A], block: ConseillerAuthentifieRequest[A] => Future[Result]): Future[Result] = {
