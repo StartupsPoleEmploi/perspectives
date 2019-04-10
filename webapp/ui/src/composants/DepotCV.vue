@@ -14,16 +14,6 @@
                 <label v-bind:for="'input-CV-' + id" class="bouton bouton--blancSurVert depotCV-bouton mb-0">J'ajoute mon CV</label>
                 <p class="texte-noir-50 font-size-xs mb-0 mt-4">Fichiers acceptés : {{extensionsValides.join(", ")}} ({{tailleMaxLabel}} max)</p>
             </div>
-            <div v-show="display.ajoutSucces">
-                <div>
-                    <img alt="CV ajouté" src="/assets/images/composants/depotCV/fichier-ajoute.svg" />
-                </div>
-                <div class="my-2 d-flex justify-content-center align-items-center">
-                    <span class="texte-noir font-size-sm">{{nomFichier}}</span>
-                    <span class="texte-noir font-size-md cursor-pointer ml-2" v-on:click="supprimerFichierAjoute">&times;</span>
-                </div>
-                <button type="submit" class="bouton bouton--blancSurVert depotCV-bouton">Je télécharge mon CV</button>
-            </div>
             <div v-show="display.telechargement">
                 <div>
                     <img alt="Deposer CV" src="/assets/images/composants/depotCV/chargement.svg" />
@@ -51,7 +41,6 @@
 <script>
 import $ from 'jquery';
 
-// FIXME : onDrop + télécharger CV
 export default {
     props: {
         action: String,
@@ -68,14 +57,10 @@ export default {
             erreurs: [],
             display: {
                 ajout: true,
-                ajoutSucces: false,
                 telechargement: false,
                 telechargementSucces: false
             }
         }
-    },
-    computed: {
-
     },
     mounted () {
         this.id = 'depotCV-' + this._uid
@@ -84,27 +69,15 @@ export default {
         onChange: function(e) {
             this.ajouter(e.target.files[0]);
         },
-        onDrop: function(e) {
-            console.log("FICHIER AJOUTER " + e.dataTransfer);
-            console.log("FICHIER AJOUTER " + e.dataTransfer.files[0].name);
-            console.log("FICHIER AJOUTER " + e.dataTransfer.files[0].type);
-
-            this.ajouter(e.dataTransfer.files[0]);
-        },
         ajouter: function(fichier) {
             this.erreurs = this.valider(fichier);
 
             if (this.erreurs.length === 0) {
                 this.nomFichier = fichier.name.length > 30 ? fichier.name.substring(0, 30) + "..." : fichier.name;
-                this.display.ajoutSucces = true;
+                this.telecharger();
             }
             this.display.ajout = false;
             this.display.telechargementSucces = false;
-        },
-        supprimerFichierAjoute: function() {
-            this.display.ajout = true;
-            this.display.ajoutSucces = false;
-            document.getElementById(this.id).reset();
         },
         valider: function(file) {
             var erreurs = [];
@@ -117,7 +90,7 @@ export default {
             return erreurs;
         },
         telecharger: function() {
-            this.display.ajoutSucces = false;
+            this.display.ajout = false;
             this.display.telechargement = true;
             var self = this;
             $.ajax({
