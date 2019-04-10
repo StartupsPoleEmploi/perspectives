@@ -5,19 +5,13 @@
 .texte-vert-emeraude { color: $vert-emeraude; }
 .texte-orange { color: #FA6300; }
 
-// FIXME : utiliser les classes bootstrap directement
+.text-preline { white-space: pre-line; }
+
 .texte-majuscule { text-transform: uppercase; }
 
-.font-weight-bold { font-weight: $font-weight-bold; }
+.bg-bleu-ciel { background-color: #E9F2F5; }
 
 .font-size-xs { font-size: $font-size-xs; }
 .font-size-sm { font-size: $font-size-sm; }
 .font-size-md { font-size: $font-size-md; }
 .font-size-lg { font-size: $font-size-lg; }
-.font-size-legend { font-size: 1.5rem; }
-.font-italic { font-style: italic; }
-
-.text-align-right  { text-align: right; }
-.text-preline { white-space: pre-line; }
-
-.bg-bleu-ciel { background-color: #E9F2F5; }

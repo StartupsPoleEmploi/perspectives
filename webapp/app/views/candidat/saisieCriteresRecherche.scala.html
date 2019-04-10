@@ -11,7 +11,7 @@
         <div id="js-modaleContactRecruteur" class="modal" tabindex="-1" role="dialog" aria-labelledby="titreModaleContactRecruteur">
             <div class="modal-dialog modaleSaisie" role="document">
                 <div class="modal-content py-3 px-4">
-                    <div class="text-align-right mb-2">
+                    <div class="text-right mb-2">
                         <span class="texte-noir font-size-sm modaleSaisie-fermer" data-dismiss="modal">Fermer</span>
                         <span class="texte-noir ml-2 modaleSaisie-fermer" data-dismiss="modal">&times;</span>
                     </div>
@@ -33,7 +33,7 @@
         <div id="js-modaleMetiers" class="modal" tabindex="-1" role="dialog" aria-labelledby="titreModaleMetiers">
             <div class="modal-dialog modaleSaisie" role="document">
                 <div class="modal-content py-3 px-4">
-                    <div class="text-align-right mb-2">
+                    <div class="text-right mb-2">
                         <span class="texte-noir font-size-sm modaleSaisie-fermer" data-dismiss="modal">Fermer</span>
                         <span class="texte-noir ml-2 modaleSaisie-fermer" data-dismiss="modal">&times;</span>
                     </div>
@@ -64,7 +64,7 @@
                     @CSRF.formField
                     <input type="hidden" name="nouveauCandidat" v-bind:value="criteresRechercheFormData.nouveauCandidat" />
                     <fieldset v-show="display.etape1">
-                        <legend class="texte-noir font-size-legend mb-4">
+                        <legend class="texte-noir font-size-md mb-4">
                             Sur Perspectives, les recruteurs peuvent vous contacter directement.</legend>
                         <ol class="listeChamps list-unstyled">
                             <li class="listeChamps-item">
@@ -130,7 +130,7 @@
                         </div>
                     </fieldset>
                     <fieldset v-show="display.etape2">
-                        <legend class="texte-noir font-size-legend mb-4">Ok, commençons à vous chercher un job !</legend>
+                        <legend class="texte-noir font-size-md mb-4">Ok, commençons à vous chercher un job !</legend>
                         <ol class="listeChamps list-unstyled">
                             <li class="listeChamps-item row">
                                 <label class="col-12 texte-noir mb-3" for="js-communeRecherche">
@@ -174,7 +174,7 @@
                         </div>
                     </fieldset>
                     <fieldset v-show="display.etape3">
-                        <legend class="texte-noir font-size-legend mb-4">
+                        <legend class="texte-noir font-size-md mb-4">
                             <template v-if="metiersValides.length > 0">
                                 Votre profil Pôle Emploi indique que vous avez passé une <abbr title="Méthode de Recrutement par Simulation">MRS</abbr>
                             </template>
