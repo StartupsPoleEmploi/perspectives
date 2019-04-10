@@ -12,40 +12,21 @@ class ReferentielMetierLocalAdapter extends ReferentielMetier {
     SecteurActivite(
       code = CodeSecteurActivite("A"),
       label = "Agriculture et espaces verts",
-      domainesProfessionnels = List(
-        DomaineProfessionnel(
-          code = CodeDomaineProfessionnel("A11"),
-          label = "Conduite d'engins (tracteurs...)"
-        ),
-        DomaineProfessionnel(
-          code = CodeDomaineProfessionnel("A12"),
-          label = "Entretien des Espaces verts (jardinier...)"
-        ),
-        DomaineProfessionnel(
-          code = CodeDomaineProfessionnel("A14"),
-          label = "Ouvrier Agricole (fruits, légumes, vin, élevage d'animaux…)"
-        ),
-        DomaineProfessionnel(
-          code = CodeDomaineProfessionnel("A15"),
-          label = "Soins aux animaux (soigneur, aide vétérinaire, toilettage...)"
-        )
-      ),
-      metiers = Nil
+      domainesProfessionnels = Nil,
+      metiers = List(
+        Metier(codeROME = CodeROME("A11"), label = "Conduite d'engins (tracteurs...)"),
+        Metier(codeROME = CodeROME("A12"), label = "Entretien des Espaces verts (jardinier...)"),
+        Metier(codeROME = CodeROME("A14"), label = "Ouvrier Agricole (fruits, légumes, vin, élevage d'animaux…)"),
+        Metier(codeROME = CodeROME("A15"), label = "Soins aux animaux (soigneur, aide vétérinaire, toilettage...)")
+      )
     ),
     SecteurActivite(
       code = CodeSecteurActivite("D"),
       label = "Commerce",
-      domainesProfessionnels = List(
-        DomaineProfessionnel(
-          code = CodeDomaineProfessionnel("D14"),
-          label = "Commercial (vente, téléconseiller…)"
-        ),
-        DomaineProfessionnel(
-          code = CodeDomaineProfessionnel("D15"),
-          label = "Grande distribution (caisse, mise en rayon…)"
-        )
-      ),
+      domainesProfessionnels = Nil,
       metiers = List(
+        Metier(codeROME = CodeROME("D14"), label = "Commercial (vente, téléconseiller…)"),
+        Metier(codeROME = CodeROME("D15"), label = "Grande distribution (caisse, mise en rayon…)"),
         Metier(codeROME = CodeROME("D1106"), label = "Alimentation générale (fruits et légumes, produits frais...)"),
         Metier(codeROME = CodeROME("D1101"), label = "Boucherie Charcuterie"),
         Metier(codeROME = CodeROME("D1102"), label = "Boulangerie Patisserie"),
