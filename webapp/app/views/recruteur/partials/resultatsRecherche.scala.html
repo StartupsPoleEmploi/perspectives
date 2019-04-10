@@ -1,12 +1,13 @@
-@import fr.poleemploi.perspectives.commun.domain.{CodeSecteurActivite, Metier, RayonRecherche, SecteurActivite}
-@import fr.poleemploi.perspectives.projections.candidat.{CandidatRechercheDto, RechercheCandidatParLocalisationQueryResult, RechercheCandidatParMetierQueryResult, RechercheCandidatParSecteurQueryResult, RechercheCandidatQueryResult}
+@import fr.poleemploi.perspectives.commun.domain.{CodeSecteurActivite, RayonRecherche}
+@import fr.poleemploi.perspectives.projections.candidat.{CandidatRechercheRecruteurDto, RechercheCandidatParLocalisationQueryResult, RechercheCandidatParMetierQueryResult, RechercheCandidatParSecteurQueryResult, RechercheCandidatQueryResult}
+@import fr.poleemploi.perspectives.projections.metier.{MetierDTO, SecteurActiviteDTO}
 
 @(rechercheCandidatQueryResult: RechercheCandidatQueryResult,
-        metierChoisi: Option[Metier] = None,
-        secteurActiviteChoisi: Option[SecteurActivite] = None,
-        secteursActivites: List[SecteurActivite])(implicit assetsFinder: AssetsFinder)
+        metierChoisi: Option[MetierDTO] = None,
+        secteurActiviteChoisi: Option[SecteurActiviteDTO] = None,
+        secteursActivites: List[SecteurActiviteDTO])(implicit assetsFinder: AssetsFinder)
 
-@getTitreForCandidats(candidatRechercheDtos: List[CandidatRechercheDto], titreSingulier: String) = @{
+@getTitreForCandidats(candidatRechercheDtos: List[CandidatRechercheRecruteurDto], titreSingulier: String) = @{
     candidatRechercheDtos match {
         case Nil => None
         case x::Nil => Some(titreSingulier)
@@ -14,9 +15,9 @@
     }
 }
 
-@interessePar(candidatRechercheDto: CandidatRechercheDto) = @{
+@interessePar(candidatRechercheDto: CandidatRechercheRecruteurDto) = @{
     metierChoisi.map(metier =>
-        if (!candidatRechercheDto.metiersEvalues.contains(metier) && candidatRechercheDto.metiersRecherches.contains(metier))
+        if (!candidatRechercheDto.metiersValides.contains(metier) && candidatRechercheDto.metiersRecherches.contains(metier))
             metier.label
         else ""
     ).orElse(secteurActiviteChoisi.map(secteurActivite =>
@@ -24,16 +25,15 @@
             secteurActivite.label
         else ""
     )).getOrElse(candidatRechercheDto.metiersRecherches
-            .map(m => CodeSecteurActivite.fromCodeROME(m.codeROME))
-            .distinct
+            .map(m => m.codeROME.codeSecteurActivite)
             .flatMap(c => secteursActivites.find(_.code == c).map(_.label))
             .mkString(", ")
     )
 }
 
-@interesseParDetail(candidatRechercheDto: CandidatRechercheDto) = @{
+@interesseParDetail(candidatRechercheDto: CandidatRechercheRecruteurDto) = @{
     metierChoisi.map(metier =>
-        secteursActivites.find(_.code == CodeSecteurActivite.fromCodeROME(metier.codeROME))
+        secteursActivites.find(_.code == metier.codeROME.codeSecteurActivite)
                   .map(s =>
                         if (candidatRechercheDto.metiersRecherches.intersect(s.metiers).nonEmpty)
                             Map(s -> candidatRechercheDto.metiersRecherches.intersect(s.metiers))
@@ -47,7 +47,7 @@
             else
                 Map()
     )).getOrElse(candidatRechercheDto.metiersRecherches
-            .groupBy(m => CodeSecteurActivite.fromCodeROME(m.codeROME))
+            .groupBy(m => m.codeROME.codeSecteurActivite)
             .map(v => (secteursActivites.find(_.code == v._1).get, v._2)))
 }
 
@@ -89,7 +89,7 @@
     }
 }
 
-@affichageResultats(titre: Option[String] = None, candidatRechercheDtos: List[CandidatRechercheDto]) = {
+@affichageResultats(titre: Option[String] = None, candidatRechercheDtos: List[CandidatRechercheRecruteurDto]) = {
     @if(candidatRechercheDtos.nonEmpty) {
         @if(titre.isDefined) {
             <div class="resultatsRecherche-titreConteneur">
@@ -111,7 +111,7 @@
                         @candidatRechercheDto.prenom.value @candidatRechercheDto.nom.value
                     </div>
                     <div class="listeResultatsRecherche-colonne listeResultatsRecherche-mrs gtm-recruteur-profils-detail">
-                        @candidatRechercheDto.metiersEvalues.map(_.label).mkString(", ")
+                        @candidatRechercheDto.metiersValides.map(_.label).mkString(", ")
                     </div>
                     <div class="listeResultatsRecherche-colonne listeResultatsRecherche-interessePar gtm-recruteur-profils-detail">
                         @interessePar(candidatRechercheDto)
@@ -152,10 +152,9 @@
                     </div>
                     <div class="profilCandidat-colonne profilCandidat-mobilite">
                         <div>Mobilité</div>
-                        @(candidatRechercheDto.rayonRecherche match {
-                            case RayonRecherche.MAX_100 => "+50km"
-                            case r@_ => s"${r.value}km"
-                        }) autour de @candidatRechercheDto.commune.capitalize
+                        @(candidatRechercheDto.rayonRecherche map {
+                            case r@_ => s"${r.value}km autour de"
+                        }) @candidatRechercheDto.commune.capitalize
                     </div>
                     <div class="profilCandidat-colonne profilCandidat-actions">
                         <ul class="listeActions">

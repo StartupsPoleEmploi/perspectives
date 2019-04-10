@@ -5,6 +5,7 @@
 @import "../../ui/node_modules/bootstrap/scss/grid";
 @import "../../ui/node_modules/bootstrap/scss/tables";
 @import "../../ui/node_modules/bootstrap/scss/alert";
+@import "../../ui/node_modules/bootstrap/scss/buttons";
 @import "../../ui/node_modules/bootstrap/scss/modal";
 @import "../../ui/node_modules/bootstrap/scss/utilities";
 
@@ -12,22 +13,25 @@
 @import "objects/colors";
 @import "objects/mixins";
 @import "objects/text";
+@import "objects/list";
 @import "objects/blocks";
+@import "objects/buttons";
 @import "objects/inputs";
 
 @import "modules/navigation";
 @import "modules/vuejs";
 
-@import "composants/alerteRecruteur";
 @import "composants/algoliaPlaces";
 @import "composants/checkbox";
+@import "composants/depotCV";
 @import "composants/pagination";
+@import "composants/radio";
 @import "composants/rechercheOffres";
 @import "composants/temoignages";
 
+@import "pages/candidat/depotCV";
 @import "pages/candidat/landing";
 @import "pages/candidat/saisieCriteresRecherche";
-@import "pages/candidat/confirmationInscription";
 @import "pages/candidat/rechercheOffres";
 
 @import "pages/recruteur/landing";

@@ -1,276 +1,274 @@
 @import conf.WebAppConfig
-@import controllers.candidat.SaisieCriteresRechercheForm
 @import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
-@import fr.poleemploi.perspectives.candidat.cv.domain.TypeMedia
-@import fr.poleemploi.perspectives.commun.domain.{Metier, RayonRecherche, SecteurActivite}
-@import fr.poleemploi.perspectives.projections.candidat.CandidatSaisieCriteresRechercheQueryResult
 @import helper._
+@import play.api.libs.json.JsObject
 
-@(saisieCriteresRechercheForm: Form[SaisieCriteresRechercheForm],
-        candidatSaisieCriteresRecherche: Option[CandidatSaisieCriteresRechercheQueryResult],
-        metiersEvaluesCandidat: List[Metier],
-        secteursActivites: List[SecteurActivite],
-        rayonsRecherche: List[RayonRecherche],
-        candidatAuthentifie: CandidatAuthentifie)(implicit request: MessagesRequestHeader, flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
-
-@hasErrors(field:String) = @{
-    saisieCriteresRechercheForm(field).hasErrors
-}
-
-@erreurSelectionMetier() = @{
-    saisieCriteresRechercheForm.globalErrors.find(_.messages.contains("constraint.criteres.selectionmetiers"))
-}
+@(candidatAuthentifie: CandidatAuthentifie,
+        jsData: JsObject)(implicit request: MessagesRequestHeader, flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
 @layout(candidatAuthentifie = Some(candidatAuthentifie)) {
-<div id="saisieCriteresRechercheCandidat">
-    <section class="introductionFormulaire">
-        <header class="introductionFormulaireTitres">
-            <h2 class="introductionFormulaireTitres-titre">Bonjour @candidatAuthentifie.prenom.value</h2>
-            @if(metiersEvaluesCandidat.nonEmpty) {
-                <div class="mrsValidees">
-                    @if(metiersEvaluesCandidat.size == 1) {
-                        Vous avez été évalué sur le métier suivant :
-                    } else {
-                        Vous avez été évalué sur les métiers suivants :
-                    }
-                    <ul class="listeMrsValidees">
-                    @for(metierEvalue <- metiersEvaluesCandidat) {
-                        <li class="listeMrsValidees-item">@metierEvalue.label</li>
-                    }
-                    </ul>
-                </div>
-            }
-            @if(saisieCriteresRechercheForm("nouveauCandidat").value.exists(_.toBoolean)) {
-                <p class="introductionFormulaireTitres-description">Finalisez votre inscription en répondant aux questions ci-dessous.</p>
-            } else {
-                <p class="introductionFormulaireTitres-description">Vous êtes déjà inscrit, vous pouvez, si vous le souhaitez, modifier votre profil.</p>
-            }
-        </header>
-        <div class="separation">
-            <span class="separation-ligne"></span>
-        </div>
-    </section>
-
-    <section class="criteres">
-        @form(action = controllers.candidat.routes.SaisieCriteresRechercheController.modifierCriteresRecherche(), 'id -> "criteresRechercheForm") {
-        @CSRF.formField
-        <input type="hidden" name="nouveauCandidat" value="@saisieCriteresRechercheForm("nouveauCandidat").value" />
-        <dl class="critere">
-            <dt class="question">
-                <span class="question-puce @if(hasErrors("rechercheMetierEvalue")){question-puce--erreur}">1</span>
-                <div class="question-texte">
-                    @if(metiersEvaluesCandidat.size <= 1) { @** Il est possible qu'on ne récupère pas tout de suite son métier, mais on affiche quand meme la question *@
-                        Cherchez vous sur le métier pour lequel vous avez été évalué ?
-                    } else {
-                        Cherchez-vous sur les métiers pour lesquels vous avez été évalué ?
-                    }
-                    <span class="question-requise">*</span>
-                </div>
-                <small class="question-info">Le métier et vos habilités MRS seront visibles par les recruteurs</small>
-            </dt>
-            <dd class="choix">
-                @components.boutonRadio(form = saisieCriteresRechercheForm, name = "rechercheMetierEvalue", values = List("true" -> "Oui", "false" -> "Non"))
-            </dd>
-            @if(hasErrors("rechercheMetierEvalue")) {
-            <dd class="erreurs">
-                <span class="erreurs-item">@saisieCriteresRechercheForm("rechercheMetierEvalue").errors.map(_.format).mkString(", ")</span>
-            </dd>
-            }
-        </dl>
-        <dl class="critere">
-            <dt class="question">
-                <span class="question-puce @if(hasErrors("rechercheAutreMetier")){question-puce--erreur}">2</span>
-                <div class="question-texte">
-                    Êtes-vous également intéressé par un autre métier ?
-                    <span class="question-requise">*</span>
-                </div>
-                <small class="question-info">Vos habilités MRS validées peuvent concerner d’autres métiers</small>
-            </dt>
-            <dd class="choix">
-                @components.boutonRadio(form = saisieCriteresRechercheForm, name = "rechercheAutreMetier", values = List("true" -> "Oui", "false" -> "Non"))
-            </dd>
-            @if(hasErrors("rechercheAutreMetier")) {
-            <dd class="erreurs">
-                <span class="erreurs-item">@saisieCriteresRechercheForm("rechercheAutreMetier").errors.map(_.format).mkString(", ")</span>
-            </dd>
-            }
-            @if(erreurSelectionMetier.isDefined) {
-            <dd class="erreurs">
-                <span class="erreurs-item">@erreurSelectionMetier.get.format</span>
-            </dd>
-            }
-        </dl>
-        <dl id="js-critere-metiers" class="critere">
-            <dt class="sousQuestion">
-                <div class="sousQuestion-texte">
-                    Dans cette liste quels métiers vous intéresse ?
-                    <span class="sousQuestion-requise">*</span>
-                </div>
-                <p class="sousQuestion-aide">Choisissez-en autant que vous le souhaitez</p>
-            </dt>
-            <dd class="choixMetiers">
-                <ul class="secteursActivites">
-                    @for(secteurActivite <- secteursActivites) {
-                        <li class="secteursActivites-item">
-                            @components.checkbox(
-                                form = saisieCriteresRechercheForm,
-                                name = "secteurActivite",
-                                value = secteurActivite.code.value,
-                                label = secteurActivite.label,
-                                checkboxClasses = List("checkbox-checkmark--grande"),
-                                labelClasses = List("secteurActivite")
-                            )
-                            <ul class="metiers">
-                            @for(metier <- secteurActivite.metiers) {
-                                <li class="metiers-item">
-                                @components.checkbox(
-                                    form = saisieCriteresRechercheForm,
-                                    name = "listeMetiersRecherches",
-                                    value = metier.codeROME.value,
-                                    label = metier.label,
-                                    checkboxClasses = List("checkbox-checkmark--petite")
-                                )
-                                </li>
-                            }
-                            </ul>
-                        </li>
-                    }
-                </ul>
-            </dd>
-            @if(hasErrors("listeMetiersRecherches")) {
-            <dd class="erreurs">
-                <span class="erreurs-item">@saisieCriteresRechercheForm("listeMetiersRecherches").errors.map(_.format).mkString(", ")</span>
-            </dd>
-            }
-        </dl>
-        <dl class="critere">
-            <dt class="question">
-                <span class="question-puce @if(hasErrors("contactInterim")){question-puce--erreur}">3</span>
-                <div class="question-texte">
-                    Acceptez-vous les missions d'interim ?
-                    <span class="question-requise">*</span>
-                </div>
-            </dt>
-            <dd class="choix">
-                @components.boutonRadio(form = saisieCriteresRechercheForm, name = "contactInterim", values = List("true" -> "Oui", "false" -> "Non"))
-            </dd>
-            @if(hasErrors("contactInterim")) {
-            <dd class="erreurs">
-                <span class="erreurs-item">@saisieCriteresRechercheForm("contactInterim").errors.map(_.format).mkString(", ")</span>
-            </dd>
-            }
-        </dl>
-        <dl class="critere">
-            <dt class="question">
-                <span class="question-puce @if(hasErrors("contactFormation")){question-puce--erreur}">4</span>
-                <div class="question-texte">
-                    Souhaitez-vous être contacté par des organismes de formation ?
-                    <span class="question-requise">*</span>
-                </div>
-            </dt>
-            <dd class="choix">
-                @components.boutonRadio(form = saisieCriteresRechercheForm, name = "contactFormation", values = List("true" -> "Oui", "false" -> "Non"))
-            </dd>
-            @if(hasErrors("contactFormation")) {
-            <dd class="erreurs">
-                <span class="erreurs-item">@saisieCriteresRechercheForm("contactFormation").errors.map(_.format).mkString(", ")</span>
-            </dd>
-            }
-        </dl>
-        <dl class="critere">
-            <dt class="question">
-                <span class="question-puce @if(hasErrors("rayonRecherche")){question-puce--erreur}">5</span>
-                <div class="question-texte">
-                    Combien de km acceptez-vous de faire ?
-                    <span class="question-requise">*</span>
-                </div>
-            </dt>
-            <dd class="choix">
-            @components.boutonRadio(
-                form = saisieCriteresRechercheForm,
-                name = "rayonRecherche",
-                cssClass = Some("choix-item"),
-                values = rayonsRecherche.map(r => (r.value.toString, r match {
-                    case RayonRecherche.MAX_100 => "Plus de 50km"
-                    case r@_ => s"Moins de ${r.value}km"
-                }))
-            )
-            </dd>
-            @if(hasErrors("rayonRecherche")) {
-            <dd class="erreurs">
-                <span class="erreurs-item">@saisieCriteresRechercheForm("rayonRecherche").errors.map(_.format).mkString(", ")</span>
-            </dd>
-            }
-        </dl>
-        <dl class="critere">
-            <dt class="question">
-                <span class="question-puce @if(hasErrors("numeroTelephone")){question-puce--erreur}">6</span>
-                <div class="question-texte">
-                    Quel est votre numéro de téléphone ?
-                    <span class="question-requise">*</span>
-                </div>
-            </dt>
-            <dd class="choix">
-                <input id="numeroTelephone"
-                       name="numeroTelephone"
-                       type="text" class="inputText"
-                       maxlength="11"
-                       placeholder="Saisissez votre numéro de téléphone ici"
-                       value="@saisieCriteresRechercheForm("numeroTelephone").value"/>
-            </dd>
-            @if(hasErrors("numeroTelephone")) {
-            <dd class="erreurs">
-                <span class="erreurs-item">@saisieCriteresRechercheForm("numeroTelephone").errors.map(_.format).mkString(", ")</span>
-            </dd>
-            }
-        </dl>
-        <dl class="critere">
-            <dt class="question">
-                <span class="question-puce @if(hasErrors("cv")){question-puce--erreur}">7</span>
-                <div class="question-texte">
-                    @if(candidatSaisieCriteresRecherche.exists(_.possedeCV)) {
-                        @defining(candidatSaisieCriteresRecherche.get) { c =>
-                            Remplacez votre dernier CV envoyé (@TypeMedia.extensionsCV.mkString(", ")) :
-                            <a class="telechargerCV" href="/candidat/cv/telecharger/@c.nomCV" target="_blank">Voir mon CV</a>
-                        }
-                    } else {
-                        Optionnel : Ajoutez votre CV pour obtenir plus de visibilité auprès des recruteurs (@TypeMedia.extensionsCV.mkString(", ")) :
-                    }
-                </div>
-            </dt>
-            <dd class="choix">
-                <div class="telechargementFichier">
-                    <label class="parcourirFichier telechargementFichier-item" for="js-inputCV">
-                        <span id="js-nomFichier" class="parcourirFichier-nom bouton bouton--noirSurGris">
-                            @candidatSaisieCriteresRecherche.flatMap(_.cvId).map(_ => "Remplacer mon CV").getOrElse("Ajouter mon CV")
-                        </span>
-                        <span class="telechargementFichier-bouton bouton bouton--blancSurNoir">Parcourir</span>
-                        <input id="js-inputCV" class="telechargementFichier-input" name="cv" type="file" accept="@TypeMedia.typesMediasCV.mkString(",")"/>
-                    </label>
-                    <span id="js-validerCV" class="telechargementFichier-item telechargementFichier-bouton bouton bouton--fondBleu">Valider mon CV</span>
-                    <span id="js-indicationTaille" class="telechargementFichier-item telechargementFichier-indicationTaille">(poids maximum du document 5mo)</span>
-                    <div id="js-progression" class="telechargementFichier-item telechargementFichier-block telechargementFichier-progression">
-                        <div id="js-barreProgression" class="telechargementFichier-bouton telechargementFichier-barreProgression"></div>
+    <div id="saisieCriteresRechercheCandidat" class="bg-bleu-ciel" v-cloak>
+        <div id="js-modaleContactRecruteur" class="modal" tabindex="-1" role="dialog" aria-labelledby="titreModaleContactRecruteur">
+            <div class="modal-dialog modaleSaisie" role="document">
+                <div class="modal-content py-3 px-4">
+                    <div class="text-align-right mb-2">
+                        <span class="texte-noir font-size-sm modaleSaisie-fermer" data-dismiss="modal">Fermer</span>
+                        <span class="texte-noir ml-2 modaleSaisie-fermer" data-dismiss="modal">&times;</span>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-sm-11">
+                            <h3 id="titreModaleContactRecruteur" class="texte-noir font-size-md">Êtes-vous sur de ne pas vouloir être contacté par des recruteurs ?</h3>
+                            <p class="texte-noir font-size-sm">En acceptant, vous apparaissez dans la liste de résultat de recherche des recruteurs et augmentez vos chances d'être recruté !</p>
+                        </div>
+                        <div class="col-12 col-sm-9 px-3 mb-3">
+                            <button class="bouton bouton--block bouton--blancSurVert boutonModale mb-3" type="button"
+                                data-dismiss="modal" v-on:click="accepterContactRecruteur">Ok, j'accepte d'être contacté par les recruteurs</button>
+                            <button class="bouton bouton--block bouton--vertSurBlanc boutonModale" type="button"
+                                data-dismiss="modal" v-on:click="continuerSansContactRecruteur">Je déciderai plus tard</button>
+                        </div>
                     </div>
                 </div>
-            </dd>
-            <dd id="js-succesCV" class="succes"></dd>
-            <dd id="js-erreursCV" class="erreurs">
-                @for(erreur <- saisieCriteresRechercheForm("cv").errors.map(_.format)) {
-                    <div class="erreurs-item">@erreur</div>
-                }
-            </dd>
-        </dl>
-        <div class="validerCriteres">
-            <button id="js-validerCriteres" class="bouton bouton-actionPrincipale bouton--fondBleu" type="submit">
-                Valider mes informations
-            </button>
+            </div>
         </div>
-        }
-    </section>
-</div>
-<script src="@assetsFinder.path("javascripts/vendor/jquery.js")" type="text/javascript"></script>
-<script src="@assetsFinder.path("javascripts/vendor/jquery.ui.widget.js")" type="text/javascript"></script>
-<script src="@assetsFinder.path("javascripts/vendor/jquery.fileupload.js")" type="text/javascript"></script>
-<script src="@assetsFinder.path("javascripts/candidatSaisieCriteresRecherche.js")" type="text/javascript"></script>
+        <div id="js-modaleMetiers" class="modal" tabindex="-1" role="dialog" aria-labelledby="titreModaleMetiers">
+            <div class="modal-dialog modaleSaisie" role="document">
+                <div class="modal-content py-3 px-4">
+                    <div class="text-align-right mb-2">
+                        <span class="texte-noir font-size-sm modaleSaisie-fermer" data-dismiss="modal">Fermer</span>
+                        <span class="texte-noir ml-2 modaleSaisie-fermer" data-dismiss="modal">&times;</span>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-sm-11">
+                            <h3 id="titreModaleMetiers" class="texte-noir font-size-md">Êtes-vous sur de ne pas vouloir de métiers ?</h3>
+                            <p class="texte-noir font-size-sm">Les entreprises recherchent des candidats sur certains secteurs. Faites votre sélection pour apparaître dans la liste de résultat de recherche et augmentez vos chances d’être recruter.</p>
+                        </div>
+                        <div class="col-12 col-sm-9 px-3 mb-3">
+                            <button class="bouton bouton--block bouton--blancSurVert boutonModale mb-3" type="button"
+                            data-dismiss="modal" v-on:click="resaisirMetiers">Ok, je fais ma sélection</button>
+                            <button class="bouton bouton--block bouton--vertSurBlanc boutonModale" type="button"
+                            data-dismiss="modal" v-on:click="accepterAucunMetiers">Je le ferai plus tard</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <section class="container py-md-5 py-2">
+            <div class="row justify-content-center">
+                <h2 class="col-lg-8 col-12 texte-noir font-weight-bold font-size-lg" v-show="display.etape1">
+                    Bonjour @candidatAuthentifie.prenom.value @candidatAuthentifie.nom.value
+                </h2>
+                @form(action = controllers.candidat.routes.SaisieCriteresRechercheController.modifierCriteresRecherche(),
+                    'id -> "criteresRechercheForm",
+                    'class -> "col-lg-8 col-12",
+                    Symbol("v-on:submit.prevent") -> "validerCriteres") {
+                    @CSRF.formField
+                    <input type="hidden" name="nouveauCandidat" v-bind:value="criteresRechercheFormData.nouveauCandidat" />
+                    <fieldset v-show="display.etape1">
+                        <legend class="texte-noir font-size-legend mb-4">
+                            Sur Perspectives, les recruteurs peuvent vous contacter directement.</legend>
+                        <ol class="listeChamps">
+                            <li class="listeChamps-item">
+                                <p class="texte-noir">
+                                    Acceptez-vous d'être contacté par des recruteurs ? <span>*</span>
+                                </p>
+                                <div class="d-flex">
+                                    <span>
+                                        <input id="contactRecruteur-true" name="contactRecruteur"
+                                               type="radio" value="true" class="radioDeuxChoix-input" v-model="criteresRechercheFormData.contactRecruteur" />
+                                        <label class="radioDeuxChoix-label radioDeuxChoix-choix1 font-size-sm texte-majuscule" for="contactRecruteur-true">Oui</label>
+                                    </span>
+                                    <span>
+                                        <input id="contactRecruteur-false" name="contactRecruteur"
+                                               type="radio" value="false" class="radioDeuxChoix-input" v-model="criteresRechercheFormData.contactRecruteur" />
+                                        <label class="radioDeuxChoix-label radioDeuxChoix-choix2 font-size-sm texte-majuscule" for="contactRecruteur-false">Non</label>
+                                    </span>
+                                </div>
+                                <div v-for="error in criteresRechercheFormErrors.contactRecruteur" class="texte-erreur font-size-sm">{{error}}</div>
+                            </li>
+                            <li class="listeChamps-item">
+                                <p class="texte-noir">
+                                    Acceptez-vous d'être contacté par des organismes de formation ? <span>*</span>
+                                </p>
+                                <div class="d-flex">
+                                    <span>
+                                        <input id="contactFormation-true" name="contactFormation"
+                                               type="radio" value="true" class="radioDeuxChoix-input" v-model="criteresRechercheFormData.contactFormation" />
+                                        <label class="radioDeuxChoix-label radioDeuxChoix-choix1 font-size-sm texte-majuscule" for="contactFormation-true">Oui</label>
+                                    </span>
+                                    <span>
+                                        <input id="contactFormation-false" name="contactFormation"
+                                               type="radio" value="false" class="radioDeuxChoix-input" v-model="criteresRechercheFormData.contactFormation" />
+                                        <label class="radioDeuxChoix-label radioDeuxChoix-choix2 font-size-sm texte-majuscule" for="contactFormation-false">Non</label>
+                                    </span>
+                                </div>
+                                <div v-for="error in criteresRechercheFormErrors.contactFormation" class="texte-erreur font-size-sm">{{error}}</div>
+                            </li>
+                            <li class="listeChamps-item row" v-show="criteresRechercheFormData.contactRecruteur === 'true' || criteresRechercheFormData.contactFormation === 'true'">
+                                <label class="col-12 texte-noir mb-3" for="numeroTelephone">
+                                    A quel numéro peuvent-ils vous joindre ? <span>*</span>
+                                </label>
+                                <div class="col-12 col-lg-5">
+                                    <input id="numeroTelephone"
+                                            name="numeroTelephone"
+                                            type="text" class="texte-noir font-size-sm font-italic px-3 py-3 input"
+                                            maxlength="10"
+                                            placeholder="06 XX XX XX XX"
+                                            v-model="criteresRechercheFormData.numeroTelephone"
+                                            v-bind:class="{ 'input--erreur': criteresRechercheFormErrors.numeroTelephone.length > 0 }" />
+                                </div>
+                                <div v-for="error in criteresRechercheFormErrors.numeroTelephone" class="col-12 texte-erreur font-size-sm mt-1">{{error}}</div>
+                            </li>
+                        </ol>
+                        <div class="row">
+                            <div class="col-md-6 col text-center">
+                                <button class="bouton bouton--blancSurVert boutonFormulaire" type="button"
+                                        v-on:click="validerEtape1">
+                                    Bien, où cherchez-vous?
+                                </button>
+                                <p class="texte-noir-50 font-size-sm my-3">Il vous reste juste 2 étapes :-)</p>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <fieldset v-show="display.etape2">
+                        <legend class="texte-noir font-size-legend mb-4">Ok, commençons à vous chercher un job !</legend>
+                        <ol class="listeChamps">
+                            <li class="listeChamps-item row">
+                                <label class="col-12 texte-noir mb-3" for="js-communeRecherche">
+                                    Dans quelle ville recherchez-vous ? <span>*</span>
+                                </label>
+                                <div class="col-12 col-lg-5">
+                                    <input type="hidden" name="localisation.codePostal" v-model="criteresRechercheFormData.localisation.codePostal" />
+                                    <input type="hidden" name="localisation.latitude" v-model="criteresRechercheFormData.localisation.latitude" />
+                                    <input type="hidden" name="localisation.longitude" v-model="criteresRechercheFormData.localisation.longitude" />
+                                    <input id="js-communeRecherche" type="text" name="localisation.commune" class="texte-noir font-size-sm input"
+                                           v-model="criteresRechercheFormData.localisation.commune"/>
+                                </div>
+                                <div v-for="error in criteresRechercheFormErrors.localisation" class="col-12 texte-erreur font-size-sm mt-1">{{error}}</div>
+                            </li>
+                            <li class="listeChamps-item">
+                                <p class="texte-noir">
+                                    Et quelle distance êtes-vous prêts à parcourir ? <span>*</span>
+                                </p>
+                                <span class="mr-3 d-block d-sm-inline-block" v-for="rayonRecherche in rayonsRecherche">
+                                    <input v-bind:id="'rayonRecherche-' + rayonRecherche.value" name="rayonRecherche"
+                                           v-model="criteresRechercheFormData.rayonRecherche"
+                                           type="radio" v-bind:value="rayonRecherche.value" class="radioMultiChoix-input" />
+                                    <label class="radioMultiChoix-label texte-noir font-size-sm px-4 py-3" v-bind:for="'rayonRecherche-' + rayonRecherche.value">
+                                        {{rayonRecherche.label}}
+                                    </label>
+                                </span>
+                                <div v-for="error in criteresRechercheFormErrors.rayonRecherche" class="texte-erreur font-size-sm">{{error}}</div>
+                            </li>
+                        </ol>
+                        <div class="row">
+                            <div class="col-1" v-on:click="retourEtape1">
+                                <span class="retour-icone"></span>
+                                <span class="texte-noir font-size-sm retour d-none d-md-block">Retour</span>
+                            </div>
+                            <div class="col-md-6 col text-center">
+                                <button class="bouton bouton--blancSurVert boutonFormulaire" type="button" v-on:click="validerEtape2">
+                                    Ok, passons à vos préférences
+                                </button>
+                                <p class="texte-noir-50 font-size-sm my-3">On arrive au bout \../</p>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <fieldset v-show="display.etape3">
+                        <legend class="texte-noir font-size-legend mb-4">
+                            <template v-if="metiersValides.length > 0">
+                                Votre profil Pôle Emploi indique que vous avez passé une <abbr title="Méthode de Recrutement par Simulation">MRS</abbr>
+                            </template>
+                            <template v-else>
+                                Dans quels autres secteurs recherchez-vous un emploi ?
+                            </template>
+                        </legend>
+                        <ol class="listeChamps">
+                            <li class="listeChamps-item" v-if="metiersValides.length > 0">
+                                <p class="texte-noir">Recherchez-vous toujours sur ces métiers ?</p>
+                                <ul class="list-no-style px-0">
+                                    <li class="mb-2" v-for="metierValide in metiersValides">
+                                        <input v-bind:id="'metierValide-' + metierValide.codeROME" name="metiersValidesRecherches[]"
+                                                type="checkbox" v-bind:value="metierValide.codeROME" class="checkbox-input"
+                                                v-model="criteresRechercheFormData.metiersValidesRecherches" />
+                                        <label class="checkbox-label checkbox-label--with-hover metierValide row align-items-center no-gutters py-3 mb-0" v-bind:for="'metierValide-' + metierValide.codeROME">
+                                            <div class="col-1 mx-3 d-none d-md-flex justify-content-center">
+                                                <img width="45" height="45" alt="Secteur d'activité"
+                                                    v-bind:src="'/assets/images/commun/secteursActivite/' + metierValide.codeROME.charAt(0) + '.svg'" />
+                                                <img width="25" height="25" class="iconeMetierValide"
+                                                     alt="Métier validé" src="@assetsFinder.path("images/pages/candidat/saisieCriteresRecherche/badge.svg")" />
+                                            </div>
+                                            <div class="col-9">
+                                                <p class="font-size-sm mb-0">{{metierValide.label}}</p>
+                                            </div>
+                                            <div class="col-1 text-center">
+                                                <span class="checkbox-checkmark checkbox-checkmark--lg"></span>
+                                            </div>
+                                        </label>
+                                    </li>
+                                </ul>
+                                <div v-for="error in criteresRechercheFormErrors.metiersValidesRecherches" class="texte-erreur font-size-sm">{{error}}</div>
+                            </li>
+                            <li class="listeChamps-item">
+                                <p class="texte-noir" v-if="metiersValides.length > 0">Dans quels autres métiers recherchez-vous un emploi ?</p>
+                                <ul class="list-no-style px-0">
+                                    <li class="secteurActivite pt-3 mb-2"
+                                        v-for="secteurActivite in secteursActivites"
+                                        v-bind:class="[display.secteursActivites[secteurActivite.code] ? 'pb-5' : 'pb-3']">
+                                        <div class="row align-items-center no-gutters" v-on:click="deplierSecteur(secteurActivite.code)">
+                                            <div class="col-1 mx-3 d-none d-md-flex justify-content-center">
+                                                <img v-bind:alt="secteurActivite.label" v-bind:src="'/assets/images/commun/secteursActivite/' + secteurActivite.code + '.svg'" width="45" height="45" />
+                                            </div>
+                                            <div class="col-9">
+                                                <p class="texte-majuscule texte-noir mb-0">{{secteurActivite.label}}</p>
+                                                <p class="mb-0" v-show="!display.secteursActivites[secteurActivite.code]">
+                                                    <span v-for="metier in display.metiersSelectionnesParSecteur[secteurActivite.code]" class="metierSelectionne font-size-sm px-3">{{metier.label}}</span>
+                                                </p>
+                                            </div>
+                                            <span class="col-1 texte-noir font-size-lg text-center">
+                                                <span v-show="!display.secteursActivites[secteurActivite.code]">+</span>
+                                                <span v-show="display.secteursActivites[secteurActivite.code]">&minus;</span>
+                                            </span>
+                                        </div>
+                                        <ul class="list-no-style px-0" v-show="display.secteursActivites[secteurActivite.code]">
+                                            <li class="metierRecherche" v-for="(metierRecherche, index) in secteurActivite.metiers">
+                                                <input v-bind:id="'metierRecherche-' + metierRecherche.codeROME" name="metiersRecherches[]"
+                                                        type="checkbox" class="checkbox-input"
+                                                        v-bind:value="metierRecherche.codeROME" v-on:change="ajouterMetierSelectionne(metierRecherche, secteurActivite.code)"
+                                                        v-model="criteresRechercheFormData.metiersRecherches" />
+                                                <label class="checkbox-label checkbox-label--with-hover row align-items-center no-gutters py-2 mb-0"
+                                                        v-bind:for="'metierRecherche-' + metierRecherche.codeROME">
+                                                    <div class="col-1 mx-3 d-none d-md-flex"></div>
+                                                    <div class="col-9">
+                                                        <p class="font-size-sm mb-0">{{metierRecherche.label}}</p>
+                                                    </div>
+                                                    <div class="col-1 text-center">
+                                                        <span class="checkbox-checkmark"></span>
+                                                    </div>
+                                                </label>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                                <div v-for="error in criteresRechercheFormErrors.metiersRecherches" class="texte-erreur font-size-sm">{{error}}</div>
+                                <div v-for="error in criteresRechercheFormErrors.domainesProfessionnelsRecherches" class="texte-erreur font-size-sm">{{error}}</div>
+                            </li>
+                        </ol>
+                        <div class="row">
+                            <div class="col-1" v-on:click="retourEtape2">
+                                <span class="retour-icone"></span>
+                                <span class="texte-noir font-size-sm retour d-none d-md-block">Retour</span>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col text-center">
+                                <button class="bouton bouton--blancSurVert boutonFormulaire" type="submit">
+                                    Parfait !
+                                </button>
+                            </div>
+                        </div>
+                    </fieldset>
+                }
+            </div>
+        </section>
+    </div>
+    @commun.jsData(jsData)
+    <script src="@assetsFinder.path("javascripts/candidatSaisieCriteresRecherche.js")" type="text/javascript"></script>
 }

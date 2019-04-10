@@ -14,7 +14,6 @@ import fr.poleemploi.perspectives.emailing.infra.local.LocalEmailingService
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetEmailingService
 import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
 import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapter
-import fr.poleemploi.perspectives.rechercheCandidat.domain.RechercheCandidatService
 
 class ServicesModule extends AbstractModule {
 
@@ -44,11 +43,6 @@ class ServicesModule extends AbstractModule {
   @Singleton
   def referentielMetier(referentielMetierWSAdapter: Provider[ReferentielMetierWSAdapter]): ReferentielMetier =
     referentielMetierWSAdapter.get()
-
-  @Provides
-  @Singleton
-  def rechercheCandidatService: RechercheCandidatService =
-    new RechercheCandidatService
 
   @Provides
   @Singleton

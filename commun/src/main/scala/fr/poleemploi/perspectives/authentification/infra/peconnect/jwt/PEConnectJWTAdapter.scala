@@ -2,7 +2,6 @@ package fr.poleemploi.perspectives.authentification.infra.peconnect.jwt
 
 import java.util.Base64
 
-import fr.poleemploi.perspectives.authentification.infra.peconnect.ws.JWTToken
 import fr.poleemploi.perspectives.commun.infra.oauth.OauthConfig
 import play.api.libs.json.Json
 

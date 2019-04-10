@@ -7,8 +7,8 @@ import scala.concurrent.Future
 
 class ReferentielHabiletesMRSLocal extends ReferentielHabiletesMRS {
 
-  override def habiletes(codeROME: CodeROME, codeDepartement: CodeDepartement): Future[List[Habilete]] =
-    Future.successful(List(
+  override def habiletes(codeROME: CodeROME, codeDepartement: CodeDepartement): Future[Set[Habilete]] =
+    Future.successful(Set(
       Habilete("Respecter des normes et des consignes"),
       Habilete("Travailler en équipe")
     ))

@@ -46,45 +46,18 @@
                             <div class="detailOffre-sousSection detailOffre-resume">
                                 <ul class="listeInfosProfil resumeDetailOffre">
                                     <li class="resumeDetailOffre-item detailOffre-info detailOffre-info--petite">
-                                        <svg class="resumeDetailOffre-icone" width="16px" height="15px" viewBox="0 0 16 15" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                                            <title>1C61C206-676C-488C-AEE5-E0B88F09C67C</title>
-                                            <defs></defs>
-                                            <g id="1C61C206-676C-488C-AEE5-E0B88F09C67C" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" opacity="0.5">
-                                                <g id="D_Perspective_Fiche-view" transform="translate(-142.000000, -184.000000)" fill="#843D6A">
-                                                    <g id="work-2" transform="translate(142.000000, 184.000000)">
-                                                        <path d="M14.4,3.15789474 L11.2,3.15789474 L11.2,1.57894737 L9.6,0 L6.4,0 L4.8,1.57894737 L4.8,3.15789474 L1.6,3.15789474 C0.72,3.15789474 0,3.86842105 0,4.73684211 L0,13.4210526 C0,14.2894737 0.72,15 1.6,15 L14.4,15 C15.28,15 16,14.2894737 16,13.4210526 L16,4.73684211 C16,3.86842105 15.28,3.15789474 14.4,3.15789474 L14.4,3.15789474 Z M9.6,3.15789474 L6.4,3.15789474 L6.4,1.57894737 L9.6,1.57894737 L9.6,3.15789474 L9.6,3.15789474 Z" id="Shape"></path>
-                                                    </g>
-                                                </g>
-                                            </g>
-                                        </svg>
+                                        <img class="resumeDetailOffre-icone" src="@assetsFinder.path("images/pages/candidat/rechercheOffres/contrat.svg")" alt="Duree de travail" height="16" width="16" />
                                         <span>{{offreCourante.contrat.label}}</span>
                                         <span class="detailOffre-natureContrat" v-show="offreCourante.contrat.nature">{{offreCourante.contrat.nature}}</span>
                                     </li>
                                     <li v-show="offreCourante.entreprise.nom" class="resumeDetailOffre-item detailOffre-info detailOffre-info--petite">
-                                        <svg class="resumeDetailOffre-icone" width="15px" height="16px" viewBox="0 0 15 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                                            <title>3647910A-22D1-4551-A15F-7BED9D51D20F</title>
-                                            <defs></defs>
-                                            <g id="3647910A-22D1-4551-A15F-7BED9D51D20F" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" opacity="0.5">
-                                                <g id="D_Perspective_Fiche-view" transform="translate(-472.000000, -183.000000)" fill="#843D6A">
-                                                    <path d="M482,190.578947 L482,185.526316 L479.5,183 L477,185.526316 L477,187.210526 L472,187.210526 L472,199 L487,199 L487,190.578947 L482,190.578947 L482,190.578947 Z M475.333333,197.315789 L473.666667,197.315789 L473.666667,195.631579 L475.333333,195.631579 L475.333333,197.315789 L475.333333,197.315789 Z M475.333333,193.947368 L473.666667,193.947368 L473.666667,192.263158 L475.333333,192.263158 L475.333333,193.947368 L475.333333,193.947368 Z M475.333333,190.578947 L473.666667,190.578947 L473.666667,188.894737 L475.333333,188.894737 L475.333333,190.578947 L475.333333,190.578947 Z M480.333333,197.315789 L478.666667,197.315789 L478.666667,195.631579 L480.333333,195.631579 L480.333333,197.315789 L480.333333,197.315789 Z M480.333333,193.947368 L478.666667,193.947368 L478.666667,192.263158 L480.333333,192.263158 L480.333333,193.947368 L480.333333,193.947368 Z M480.333333,190.578947 L478.666667,190.578947 L478.666667,188.894737 L480.333333,188.894737 L480.333333,190.578947 L480.333333,190.578947 Z M480.333333,187.210526 L478.666667,187.210526 L478.666667,185.526316 L480.333333,185.526316 L480.333333,187.210526 L480.333333,187.210526 Z M485.333333,197.315789 L483.666667,197.315789 L483.666667,195.631579 L485.333333,195.631579 L485.333333,197.315789 L485.333333,197.315789 Z M485.333333,193.947368 L483.666667,193.947368 L483.666667,192.263158 L485.333333,192.263158 L485.333333,193.947368 L485.333333,193.947368 Z" id="Shape-Copy-2"></path>
-                                                </g>
-                                            </g>
-                                        </svg>
+                                        <img class="resumeDetailOffre-icone" src="@assetsFinder.path("images/pages/candidat/rechercheOffres/entreprise.svg")" alt="Duree de travail" height="16" width="16" />
                                         {{offreCourante.entreprise.nom | capitalize}}
                                     </li>
                                     <li class="resumeDetailOffre-item detailOffre-info detailOffre-info--petite">
-                                        <svg class="resumeDetailOffre-icone" width="12px" height="16px" viewBox="0 0 12 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                                            <title>69B209B8-AC7F-44DD-A4C7-425EC4E8DE33</title>
-                                            <defs></defs>
-                                            <g id="69B209B8-AC7F-44DD-A4C7-425EC4E8DE33" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                                <g id="D_Perspective_Liste-nolog-" transform="translate(-401.000000, -260.000000)" fill="#334051" fill-rule="nonzero">
-                                                    <g id="Offre" transform="translate(361.000000, 179.000000)">
-                                                        <path d="M45.5424352,81 C48.6544733,81 51.0852296,83.4246675 51.0852296,86.538027 C51.0852296,89.1876415 49.2376315,92.6749658 45.5424352,97 C41.8474784,92.6697122 40,89.1823879 40,86.538027 C40,83.4611167 42.4303971,81 45.5424352,81 Z M45.5221239,87.9380531 C46.5387188,87.9380531 47.3628319,87.1139401 47.3628319,86.0973451 C47.3628319,85.0807502 46.5387188,84.2566372 45.5221239,84.2566372 C44.505529,84.2566372 43.6814159,85.0807502 43.6814159,86.0973451 C43.6814159,87.1139401 44.505529,87.9380531 45.5221239,87.9380531 Z" id="VP_localisation-Copy"></path>
-                                                    </g>
-                                                </g>
-                                            </g>
-                                        </svg>
-                                        {{offreCourante.lieuTravail.libelle}} <span v-show="offreCourante.lieuTravail.codePostal">({{offreCourante.lieuTravail.codePostal}})</span>
+                                        <img class="resumeDetailOffre-icone" src="@assetsFinder.path("images/pages/candidat/rechercheOffres/lieuTravail.svg")" alt="Duree de travail" height="16" width="16" />
+                                        {{offreCourante.lieuTravail.libelle}}
+                                        <span v-show="offreCourante.lieuTravail.codePostal">({{offreCourante.lieuTravail.codePostal}})</span>
                                     </li>
                                 </ul>
                             </div>
@@ -95,8 +68,8 @@
                                         <p class="detailOffre-info detailOffre-info--sansMarge">Veuillez adresser votre CV et une lettre de motivation en précisant le numéro de l'offre : <span class="detailOffre-info--gras">n°{{offreCourante.id}}</span></p>
                                     </div>
                                     <div class="postuler-cta">
-                                        <button type="button" class="bouton bouton--blancSurVert boutonPostuler gtm-candidat-detail-postuler" v-show="!display.contact && !doitAfficherLienOrigineOffre(offreCourante.contact)" v-on:click="display.contact = true">Je contacte le recruteur</button>
-                                        <a target="_blank" class="bouton bouton--blancSurVert boutonPostuler gtm-candidat-detail-postuler"
+                                        <button type="button" class="bouton bouton-action bouton--block bouton--blancSurVert gtm-candidat-detail-postuler" v-show="!display.contact && !doitAfficherLienOrigineOffre(offreCourante.contact)" v-on:click="display.contact = true">Je contacte le recruteur</button>
+                                        <a target="_blank" class="bouton bouton-action bouton--block bouton--blancSurVert gtm-candidat-detail-postuler"
                                             v-show="doitAfficherLienOrigineOffre(offreCourante.contact)" v-bind:href="offreCourante.urlOrigine">
                                             Voir l'offre sur Pôle Emploi
                                         </a>
@@ -245,8 +218,8 @@
                                         <p class="detailOffre-info detailOffre-info--sansMarge">Veuillez adresser votre CV et une lettre de motivation en précisant le numéro de l'offre : <span class="detailOffre-info--gras">n°{{offreCourante.id}}</span></p>
                                     </div>
                                     <div class="postuler-cta">
-                                        <button type="button" class="bouton bouton--blancSurVert boutonPostuler gtm-candidat-detail-postuler" v-show="!display.contact && !doitAfficherLienOrigineOffre(offreCourante.contact)" v-on:click="display.contact = true">Je contacte le recruteur</button>
-                                        <a target="_blank" class="bouton bouton--blancSurVert boutonPostuler gtm-candidat-detail-postuler"
+                                        <button type="button" class="bouton bouton-action bouton--block bouton--blancSurVert gtm-candidat-detail-postuler" v-show="!display.contact && !doitAfficherLienOrigineOffre(offreCourante.contact)" v-on:click="display.contact = true">Je contacte le recruteur</button>
+                                        <a target="_blank" class="bouton bouton-action bouton--block bouton--blancSurVert gtm-candidat-detail-postuler"
                                             v-show="doitAfficherLienOrigineOffre(offreCourante.contact)" v-bind:href="offreCourante.urlOrigine">
                                             Voir l'offre sur Pôle Emploi
                                         </a>
@@ -292,6 +265,7 @@
                                     <label for="js-rayonRecherche" class="sr-only">Renseignez un rayon de recherche</label>
                                     <select id="js-rayonRecherche" name="rayonRecherche"
                                             v-model="recherche.rayonRecherche" class="rechercheOffres-rayonRecherche">
+                                        <option value="0">Lieu exact</option>
                                         <option v-for="rayonRecherche in rayonsRecherche" v-bind:key="rayonRecherche.value" v-bind:value="rayonRecherche.value">{{rayonRecherche.label}}</option>
                                     </select>
                                 </div>
@@ -304,47 +278,47 @@
                                    v-model="recherche.motCle" name="motCle" class="rechercheOffres-metier" />
                         </div>
                         <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurFiltres">
-                            <template v-if="metiersEvalues.length > 0">
+                            <template v-if="metiersValides.length > 0">
                                 <p class="formulaireRecherche-titre">Filtrer par MRS :</p>
                                 <ul class="filtre">
-                                    <li v-for="metierEvalue in metiersEvalues" v-bind:key="metierEvalue.value" class="filtre-item">
-                                        <input v-bind:id="'metierEvalue-' + metierEvalue.value" type="checkbox"
+                                    <li v-for="metierValide in metiersValides" v-bind:key="metierValide.codeROME" class="mb-3">
+                                        <input v-bind:id="'metierValide-' + metierValide.codeROME" type="checkbox"
                                                name="metiers[]" class="checkbox-input"
-                                               v-bind:value="metierEvalue.value" v-model="recherche.metiersEvalues" />
-                                        <label class="checkbox" v-bind:for="'metierEvalue-' + metierEvalue.value">
-                                            <span class="checkbox-checkmark checkbox-checkmark--blanche"></span>
-                                            {{metierEvalue.label}}
+                                               v-bind:value="metierValide.codeROME" v-model="recherche.metiersValides" />
+                                        <label class="checkbox-label d-flex" v-bind:for="'metierValide-' + metierValide.codeROME">
+                                            <span class="checkbox-checkmark checkbox-checkmark--md mr-2"></span>
+                                            <span class="col">{{metierValide.label}}</span>
                                         </label>
                                     </li>
                                 </ul>
                             </template>
                             <p class="formulaireRecherche-titre">Filtrer par contrat :</p>
-                            <ul class="filtre filtreContrat">
-                                <li v-for="typeContrat in typesContrats" v-bind:key="typeContrat.value" class="filtre-item">
+                            <ul class="filtre mb-3">
+                                <li v-for="typeContrat in typesContrats" v-bind:key="typeContrat.value" class="mb-3">
                                     <input v-bind:id="'typeContrat-' + typeContrat.value" type="checkbox"
                                             name="typesContrats[]" class="checkbox-input"
                                             v-bind:value="typeContrat.value" v-model="recherche.typesContrats" />
-                                    <label class="checkbox" v-bind:for="'typeContrat-' + typeContrat.value">
-                                        <span class="checkbox-checkmark checkbox-checkmark--blanche"></span>
-                                        {{typeContrat.label}}
+                                    <label class="checkbox-label d-flex" v-bind:for="'typeContrat-' + typeContrat.value">
+                                        <span class="checkbox-checkmark checkbox-checkmark--md mr-2"></span>
+                                        <span class="col">{{typeContrat.label}}</span>
                                     </label>
                                 </li>
                             </ul>
                             <p class="formulaireRecherche-titre" v-if="secteursActivites.length > 0">Filtrer par secteurs d'activité :</p>
                             <ul class="filtre">
-                                <li v-for="secteurActivite in secteursActivites" v-bind:key="secteurActivite.value" class="filtre-item">
+                                <li v-for="secteurActivite in secteursActivites" v-bind:key="secteurActivite.value" class="mb-3">
                                     <input v-bind:id="'secteurActivite-' + secteurActivite.value" type="checkbox"
                                             name="secteursActivites[]" class="checkbox-input"
                                             v-bind:value="secteurActivite.value" v-model="recherche.secteursActivites" />
-                                    <label class="checkbox" v-bind:for="'secteurActivite-' + secteurActivite.value">
-                                        <span class="checkbox-checkmark checkbox-checkmark--blanche"></span>
-                                        {{secteurActivite.label}}
+                                    <label class="checkbox-label d-flex" v-bind:for="'secteurActivite-' + secteurActivite.value">
+                                        <span class="checkbox-checkmark checkbox-checkmark--md mr-2"></span>
+                                        <span class="col">{{secteurActivite.label}}</span>
                                     </label>
                                 </li>
                             </ul>
                         </div>
                         <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurRechercher">
-                            <button type="submit" class="bouton bouton--blancSurVert boutonRecherche">Rechercher</button>
+                            <button type="submit" class="bouton bouton-action bouton--block bouton--blancSurVert">Rechercher</button>
                         </div>
                     </form>
                 </section>
@@ -375,7 +349,7 @@
                             <div class="miseEnAvant-texte">Mettez en avant votre profil !
                                 Des recruteurs pourront vous contacter</div>
                             <div class="miseEnAvant-action">
-                                <a class="bouton bouton--blancSurVert miseEnAvant-bouton gtm-candidat-offres-incentive-inscription" href="@controllers.candidat.routes.InscriptionController.inscription()">Je m'inscris</a>
+                                <a class="bouton bouton-action bouton--blancSurVert miseEnAvant-bouton gtm-candidat-offres-incentive-inscription" href="@controllers.candidat.routes.InscriptionController.inscription()">Je m'inscris</a>
                             </div>
                         </div>
                         <div v-if="doitAfficherMiseEnAvantCV(index)"
@@ -383,7 +357,7 @@
                             <div class="miseEnAvant-texte">Ajoutez votre CV !
                                 Des recruteurs pourront le consulter et vous contacter</div>
                             <div class="miseEnAvant-action">
-                                <a class="bouton bouton--vertSurBlanc miseEnAvant-bouton gtm-candidat-offres-incentive-cv" href="@controllers.candidat.routes.SaisieCriteresRechercheController.saisieCriteresRecherche()">Je mets à jour mon profil</a>
+                                <a class="bouton bouton-action bouton--vertSurBlanc miseEnAvant-bouton gtm-candidat-offres-incentive-cv" href="@controllers.candidat.routes.SaisieCriteresRechercheController.saisieCriteresRecherche()">Je mets à jour mon profil</a>
                             </div>
                         </div>
                     </template>

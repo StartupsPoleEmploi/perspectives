@@ -23,16 +23,15 @@
                                 <label for="js-rayonRecherche" class="sr-only">Renseignez un rayon de recherche</label>
                                 <select id="js-rayonRecherche" name="rayonRecherche"
                                         v-model="recherche.rayonRecherche" class="rechercheOffres-rayonRecherche">
+                                    <option value="0">Lieu exact</option>
                                     <option v-for="rayonRecherche in rayonsRecherche" v-bind:key="rayonRecherche.value" v-bind:value="rayonRecherche.value">{{rayonRecherche.label}}</option>
                                 </select>
                             </div>
                         </div>
+                        <div class="texte-erreur font-size-sm" v-for="error in rechercheOffresFormErrors">{{error.label}}</div>
                     </div>
                     <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurRechercher">
-                        <button type="submit" class="bouton bouton--blancSurVert boutonAction">Je trouve un job</button>
-                    </div>
-                    <div class="erreurs" v-show="rechercheOffresFormErrors.length > 0">
-                        <div class="erreurs-item" v-for="error in rechercheOffresFormErrors">{{error.label}}</div>
+                        <button type="submit" class="bouton bouton-action bouton--blancSurVert">Je trouve un job</button>
                     </div>
                 </form>
             </div>
@@ -58,7 +57,7 @@
                     <li class="etapesInscription-item">Ajouter votre CV</li>
                     <li class="etapesInscription-item">Trouvez un emploi !</li>
                 </ol>
-                <a class="bouton bouton--blancSurVert boutonAction gtm-candidat-landing-connexion" href="@controllers.candidat.routes.InscriptionController.inscription()">Je m'inscris avec mon identifiant Pôle Emploi</a>
+                <a class="bouton bouton-action bouton--blancSurVert gtm-candidat-landing-connexion" href="@controllers.candidat.routes.InscriptionController.inscription()">Je m'inscris avec mon identifiant Pôle Emploi</a>
                 <p class="valorisation-abbreviation">* MRS : Méthode de recrutement par simulation</p>
             </div>
         </section>

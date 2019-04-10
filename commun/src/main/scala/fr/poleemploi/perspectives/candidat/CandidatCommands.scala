@@ -16,15 +16,14 @@ case class InscrireCandidatCommand(id: CandidatId,
                                    adresse: Option[Adresse],
                                    statutDemandeurEmploi: Option[StatutDemandeurEmploi]) extends Command[Candidat]
 
-// FIXME : Le numéro de téléphone est sur le formulaire des critères de recherche pour l'instant
-case class ModifierCriteresRechercheCommand(id: CandidatId,
-                                            rechercheMetierEvalue: Boolean,
-                                            rechercheAutreMetier: Boolean,
-                                            metiersRecherches: Set[CodeROME],
-                                            etreContacteParOrganismeFormation: Boolean,
-                                            etreContacteParAgenceInterim: Boolean,
-                                            rayonRecherche: RayonRecherche,
-                                            numeroTelephone: NumeroTelephone) extends Command[Candidat]
+case class ModifierCandidatCommand(id: CandidatId,
+                                   contactRecruteur: Boolean,
+                                   contactFormation: Boolean,
+                                   numeroTelephone: Option[NumeroTelephone],
+                                   localisationRecherche: LocalisationRecherche,
+                                   codesROMEValidesRecherches: Set[CodeROME],
+                                   codesROMERecherches: Set[CodeROME],
+                                   codesDomaineProfessionnelRecherches: Set[CodeDomaineProfessionnel]) extends Command[Candidat]
 
 case class ConnecterCandidatCommand(id: CandidatId,
                                     nom: Nom,
@@ -35,13 +34,11 @@ case class ConnecterCandidatCommand(id: CandidatId,
                                     statutDemandeurEmploi: Option[StatutDemandeurEmploi]) extends Command[Candidat]
 
 case class AjouterCVCommand(id: CandidatId,
-                            nomFichier: String,
                             typeMedia: TypeMedia,
                             path: Path) extends Command[Candidat]
 
 case class RemplacerCVCommand(id: CandidatId,
                               cvId: CVId,
-                              nomFichier: String,
                               typeMedia: TypeMedia,
                               path: Path) extends Command[Candidat]
 

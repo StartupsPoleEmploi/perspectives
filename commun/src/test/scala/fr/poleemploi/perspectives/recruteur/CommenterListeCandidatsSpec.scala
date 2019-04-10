@@ -59,9 +59,9 @@ class CommenterListeCandidatsSpec extends AsyncWordSpec
       when(commentaireService.commenterListeCandidats(ArgumentMatchers.any[CommentaireListeCandidats]())) thenReturn Future.failed(new RuntimeException("erreur de service"))
 
       // When & Then
-      recoverToExceptionIf[RuntimeException] {
+      recoverToExceptionIf[RuntimeException](
         recruteur.commenterListeCandidats(commande, commentaireService)
-      }.map(ex =>
+      ).map(ex =>
         ex.getMessage mustBe "erreur de service"
       )
     }

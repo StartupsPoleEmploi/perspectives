@@ -4,6 +4,7 @@ import java.nio.file.Path
 import java.util.UUID
 
 import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, CVService, TypeMedia}
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import org.scalatest._
 import org.scalatest.concurrent.ScalaFutures
@@ -21,7 +22,6 @@ class RemplacerCVCandidatSpec extends AsyncWordSpec
     RemplacerCVCommand(
       id = candidatBuilder.candidatId,
       cvId = cvId,
-      nomFichier = "cv.doc",
       typeMedia = TypeMedia.DOC,
       path = mock[Path]
     )
@@ -58,7 +58,7 @@ class RemplacerCVCandidatSpec extends AsyncWordSpec
     "renvoyer une erreur lorsque le service externe qui enregistre le CV echoue" in {
       // Given
       val candidat = candidatBuilder.avecInscription().avecCV(cvId).build
-      when(cvService.update(commande.cvId, commande.nomFichier, commande.typeMedia, commande.path)) thenReturn Future.failed(new RuntimeException("erreur de service"))
+      when(cvService.update(ArgumentMatchers.eq(cvId), ArgumentMatchers.any[String](), ArgumentMatchers.eq(commande.typeMedia), ArgumentMatchers.eq(commande.path))) thenReturn Future.failed(new RuntimeException("erreur de service"))
 
       // When & Then
       recoverToExceptionIf[RuntimeException](
@@ -70,7 +70,7 @@ class RemplacerCVCandidatSpec extends AsyncWordSpec
     "generer un evenement lorsque le CV est remplacé" in {
       // Given
       val candidat = candidatBuilder.avecInscription().avecCV(cvId).build
-      when(cvService.update(commande.cvId, commande.nomFichier, commande.typeMedia, commande.path)) thenReturn Future.successful(())
+      when(cvService.update(ArgumentMatchers.eq(cvId), ArgumentMatchers.any[String](), ArgumentMatchers.eq(commande.typeMedia), ArgumentMatchers.eq(commande.path))) thenReturn Future.successful(())
 
       // When
       val future = candidat.remplacerCV(commande, cvService)
@@ -81,7 +81,7 @@ class RemplacerCVCandidatSpec extends AsyncWordSpec
     "genere un événement contenant les informations modifiees" in {
       // Given
       val candidat = candidatBuilder.avecInscription().avecCV(cvId).build
-      when(cvService.update(commande.cvId, commande.nomFichier, commande.typeMedia, commande.path)) thenReturn Future.successful(())
+      when(cvService.update(ArgumentMatchers.eq(cvId), ArgumentMatchers.any[String](), ArgumentMatchers.eq(commande.typeMedia), ArgumentMatchers.eq(commande.path))) thenReturn Future.successful(())
 
       // When
       val future = candidat.remplacerCV(commande, cvService)

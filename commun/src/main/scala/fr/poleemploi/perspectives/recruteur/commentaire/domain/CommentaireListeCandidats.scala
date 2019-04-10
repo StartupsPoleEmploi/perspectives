@@ -1,6 +1,6 @@
 package fr.poleemploi.perspectives.recruteur.commentaire.domain
 
-import fr.poleemploi.perspectives.commun.domain.{Nom, Prenom}
+import fr.poleemploi.perspectives.commun.domain._
 
 case class CommentaireListeCandidats(nomRecruteur: Nom,
                                      prenomRecruteur: Prenom,
@@ -8,9 +8,9 @@ case class CommentaireListeCandidats(nomRecruteur: Nom,
                                      contexteRecherche: ContexteRecherche,
                                      commentaire: String) {
 
-  def labelSecteurActiviteRecherche: Option[String] = contexteRecherche.secteurActivite.map(_.label)
+  def secteurActivite: Option[String] = contexteRecherche.secteurActivite
 
-  def labelMetierRecherche: Option[String] = contexteRecherche.metier.map(_.label)
+  def metier: Option[String] = contexteRecherche.metier
 
-  def labelLocalisationRecherche: Option[String] = contexteRecherche.localisation
+  def localisation: Option[String] = contexteRecherche.localisation
 }

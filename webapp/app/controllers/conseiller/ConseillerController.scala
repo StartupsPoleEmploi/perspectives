@@ -3,12 +3,13 @@ package controllers.conseiller
 import authentification.infra.play.{ConseillerAdminAuthentifieAction, ConseillerAuthentifieRequest}
 import conf.WebAppConfig
 import controllers.AssetsFinder
-import fr.poleemploi.perspectives.candidat.mrs.domain.MRSValidee
 import fr.poleemploi.perspectives.candidat._
+import fr.poleemploi.perspectives.candidat.mrs.domain.MRSValidee
 import fr.poleemploi.perspectives.commun.domain.{CodeDepartement, CodeROME}
 import fr.poleemploi.perspectives.commun.infra.play.http.HttpCommandHandler
-import fr.poleemploi.perspectives.projections.candidat.mrs.CodeROMEParDepartementQuery
 import fr.poleemploi.perspectives.projections.candidat.{CandidatQueryHandler, CandidatsPourConseillerQuery, KeysetCandidatsPourConseiller}
+import fr.poleemploi.perspectives.projections.conseiller.ConseillerQueryHandler
+import fr.poleemploi.perspectives.projections.conseiller.mrs.CodeROMEParDepartementQuery
 import fr.poleemploi.perspectives.projections.recruteur.{KeysetRecruteursPourConseiller, RecruteurQueryHandler, RecruteursPourConseillerQuery}
 import fr.poleemploi.perspectives.recruteur.RecruteurId
 import javax.inject.Inject
@@ -25,6 +26,7 @@ class ConseillerController @Inject()(cc: ControllerComponents,
                                      conseillerAdminAuthentifieAction: ConseillerAdminAuthentifieAction,
                                      messagesAction: MessagesActionBuilder,
                                      candidatQueryHandler: CandidatQueryHandler,
+                                     conseillerQueryHandler: ConseillerQueryHandler,
                                      candidatCommandHandler: HttpCommandHandler[Candidat],
                                      recruteurQueryHandler: RecruteurQueryHandler) extends AbstractController(cc) {
 
@@ -34,7 +36,7 @@ class ConseillerController @Inject()(cc: ControllerComponents,
       page = None
     )
     for {
-      codeROMEsParDepartementQueryResult <- candidatQueryHandler.handle(CodeROMEParDepartementQuery())
+      codeROMEsParDepartementQueryResult <- conseillerQueryHandler.handle(CodeROMEParDepartementQuery)
       candidatsPourConseillerQueryResult <- candidatQueryHandler.handle(query)
     } yield {
       Ok(views.html.conseiller.listeCandidats(

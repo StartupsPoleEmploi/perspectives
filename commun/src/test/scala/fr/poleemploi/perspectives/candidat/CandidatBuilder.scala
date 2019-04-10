@@ -40,19 +40,19 @@ class CandidatBuilder {
   }
 
   def avecMRSValidee(mrsValidee: MRSValidee,
-                     habiletes: List[Habilete] = Nil): CandidatBuilder = {
+                     habiletes: Set[Habilete] = Set.empty): CandidatBuilder = {
     events += MRSAjouteeEvent(
       candidatId = candidatId,
-      metier = mrsValidee.codeROME,
+      codeROME = mrsValidee.codeROME,
       departement = mrsValidee.codeDepartement,
       dateEvaluation = mrsValidee.dateEvaluation,
       habiletes =
         if (habiletes.isEmpty)
-          List(
+          Set(
             Habilete("S'adapter au changement"),
             Habilete("Maintenir son attention dans la durée")
-          ) else
-          habiletes
+          )
+        else habiletes
     )
     this
   }
@@ -62,7 +62,7 @@ class CandidatBuilder {
     events += AdresseModifieeEvent(
       candidatId = candidatId,
       adresse = adresse,
-      coordonnees = coordonnees
+      coordonnees = coordonnees.getOrElse(Coordonnees(48.864716, 2.349014))
     )
     this
   }
@@ -75,20 +75,31 @@ class CandidatBuilder {
     this
   }
 
-  def avecCriteresRecherche(rechercheMetierEvalue: Option[Boolean] = None,
-                            rechercheAutreMetier: Option[Boolean] = None,
-                            metiersRecherches: Option[Set[CodeROME]] = None,
-                            etreContacteParAgenceInterim: Option[Boolean] = None,
-                            etreContacteParOrganismeFormation: Option[Boolean] = None,
-                            rayonRecherche: Option[RayonRecherche] = None): CandidatBuilder = {
+  def avecVisibiliteRecruteur(contactRecruteur: Option[Boolean] = None,
+                              contactFormation: Option[Boolean] = None): CandidatBuilder = {
+    events += VisibiliteRecruteurModifieeEvent(
+      candidatId = candidatId,
+      contactRecruteur = contactRecruteur.getOrElse(true),
+      contactFormation = contactFormation.getOrElse(true)
+    )
+    this
+  }
+
+  def avecCriteresRecherche(codesROMEValidesRecherches: Set[CodeROME] = Set.empty,
+                            codesROMERecherches: Set[CodeROME] = Set.empty,
+                            codesDomaineProfessionnelRecherches: Set[CodeDomaineProfessionnel] = Set.empty,
+                            localisationRecherche: Option[LocalisationRecherche] = None): CandidatBuilder = {
     events += CriteresRechercheModifiesEvent(
       candidatId = candidatId,
-      rechercheMetierEvalue = rechercheMetierEvalue.getOrElse(true),
-      rechercheAutreMetier = rechercheAutreMetier.getOrElse(true),
-      metiersRecherches = metiersRecherches.getOrElse(Set.empty),
-      etreContacteParAgenceInterim = etreContacteParAgenceInterim.getOrElse(true),
-      etreContacteParOrganismeFormation = etreContacteParOrganismeFormation.getOrElse(true),
-      rayonRecherche = rayonRecherche.getOrElse(RayonRecherche.MAX_10)
+      localisationRecherche = localisationRecherche.getOrElse(LocalisationRecherche(
+        commune = "La Roche Sur Yon",
+        codePostal = "85300",
+        coordonnees = Coordonnees(1.42, 48.5),
+        rayonRecherche = Some(RayonRecherche.MAX_10)
+      )),
+      codesROMEValidesRecherches = codesROMEValidesRecherches,
+      codesROMERecherches = codesROMERecherches,
+      codesDomaineProfessionnelRecherches = codesDomaineProfessionnelRecherches
     )
     this
   }

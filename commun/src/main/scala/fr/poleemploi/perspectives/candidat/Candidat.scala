@@ -39,22 +39,25 @@ class Candidat(override val id: CandidatId,
           email = Some(e.email),
           genre = Some(e.genre)
         )
+      case e: VisibiliteRecruteurModifieeEvent =>
+        context.copy(
+          contactRecruteur = Some(e.contactRecruteur),
+          contactFormation = Some(e.contactFormation),
+          rechercheEmploi = Some(e.contactRecruteur || e.contactFormation)
+        )
       case e: CriteresRechercheModifiesEvent =>
         context.copy(
-          rechercheMetierEvalue = Some(e.rechercheMetierEvalue),
-          rechercheAutreMetier = Some(e.rechercheAutreMetier),
-          metiersRecherches = e.metiersRecherches,
-          etreContacteParAgenceInterim = Some(e.etreContacteParAgenceInterim),
-          etreContacteParOrganismeFormation = Some(e.etreContacteParOrganismeFormation),
-          rayonRecherche = Some(e.rayonRecherche),
-          rechercheEmploi = Some(e.rechercheMetierEvalue || e.rechercheAutreMetier)
+          codesROMEValidesRecherches = e.codesROMEValidesRecherches,
+          codesROMERecherches = e.codesROMERecherches,
+          codesDomaineProfessionnelRecherches = e.codesDomaineProfessionnelRecherches,
+          localisationRecherche = Some(e.localisationRecherche)
         )
       case e: NumeroTelephoneModifieEvent =>
         context.copy(numeroTelephone = Some(e.numeroTelephone))
       case e: AdresseModifieeEvent =>
         context.copy(
           adresse = Some(e.adresse),
-          coordonnees = e.coordonnees
+          coordonnees = Some(e.coordonnees)
         )
       case e: StatutDemandeurEmploiModifieEvent =>
         context.copy(statutDemandeurEmploi = Some(e.statutDemandeurEmploi))
@@ -65,7 +68,7 @@ class Candidat(override val id: CandidatId,
       case e: MRSAjouteeEvent =>
         context.copy(
           mrsValidees = MRSValidee(
-            codeROME = e.metier,
+            codeROME = e.codeROME,
             codeDepartement = e.departement,
             dateEvaluation = e.dateEvaluation) :: context.mrsValidees
         )
@@ -77,8 +80,8 @@ class Candidat(override val id: CandidatId,
   def inscrire(command: InscrireCandidatCommand, localisationService: LocalisationService): Future[List[Event]] =
     state.inscrire(context = context, command = command, localisationService = localisationService)
 
-  def modifierCriteres(command: ModifierCriteresRechercheCommand): List[Event] =
-    state.modifierCriteres(context = context, command = command)
+  def modifierCandidat(command: ModifierCandidatCommand): List[Event] =
+    state.modifierCandidat(context = context, command = command)
 
   def connecter(command: ConnecterCandidatCommand, localisationService: LocalisationService): Future[List[Event]] =
     state.connecter(context = context, command = command, localisationService = localisationService)
@@ -103,13 +106,13 @@ private[candidat] case class CandidatContext(nom: Option[Nom] = None,
                                              adresse: Option[Adresse] = None,
                                              coordonnees: Option[Coordonnees] = None,
                                              statutDemandeurEmploi: Option[StatutDemandeurEmploi] = None,
-                                             rechercheMetierEvalue: Option[Boolean] = None,
-                                             rechercheAutreMetier: Option[Boolean] = None,
+                                             contactRecruteur: Option[Boolean] = None,
+                                             contactFormation: Option[Boolean] = None,
                                              mrsValidees: List[MRSValidee] = Nil,
-                                             metiersRecherches: Set[CodeROME] = Set.empty,
-                                             etreContacteParAgenceInterim: Option[Boolean] = None,
-                                             etreContacteParOrganismeFormation: Option[Boolean] = None,
-                                             rayonRecherche: Option[RayonRecherche] = None,
+                                             codesROMEValidesRecherches: Set[CodeROME] = Set.empty,
+                                             codesROMERecherches: Set[CodeROME] = Set.empty,
+                                             codesDomaineProfessionnelRecherches: Set[CodeDomaineProfessionnel] = Set.empty,
+                                             localisationRecherche: Option[LocalisationRecherche] = None,
                                              numeroTelephone: Option[NumeroTelephone] = None,
                                              cvId: Option[CVId] = None,
                                              rechercheEmploi: Option[Boolean] = None)

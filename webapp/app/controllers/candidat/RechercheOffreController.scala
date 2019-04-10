@@ -4,12 +4,14 @@ import authentification.infra.play.{CandidatAuthentifieAction, OptionalCandidatA
 import conf.WebAppConfig
 import controllers.AssetsFinder
 import controllers.FlashMessages.FlashMessage
-import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite, Metier, RayonRecherche}
-import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
+import fr.poleemploi.cqrs.projection.QueryException
+import fr.poleemploi.perspectives.candidat.LocalisationRecherche
+import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite, RayonRecherche}
 import fr.poleemploi.perspectives.offre.domain.{CriteresRechercheOffre, TypeContrat}
 import fr.poleemploi.perspectives.projections.candidat._
 import javax.inject.{Inject, Singleton}
-import play.api.libs.json.{JsArray, Json}
+import play.api.Logger
+import play.api.libs.json.Json
 import play.api.mvc._
 import play.filters.csrf.CSRF
 
@@ -26,19 +28,28 @@ class RechercheOffreController @Inject()(cc: ControllerComponents,
                                          candidatQueryHandler: CandidatQueryHandler) extends AbstractController(cc) {
 
   def index(motCle: Option[String], codePostal: Option[String], lieuTravail: Option[String], rayonRecherche: Option[Int]): Action[AnyContent] = optionalCandidatAuthentifieAction.async { implicit optCandidatAuthentifieRequest: OptionalCandidatAuthentifieRequest[AnyContent] =>
-    for {
+    def buildLocalisationRechercheFromRequest: Option[LocalisationRecherche] =
+      for {
+        commune <- lieuTravail
+        codePostal <- codePostal
+      } yield LocalisationRecherche(
+        commune = commune,
+        codePostal = codePostal,
+        coordonnees = null,
+        rayonRecherche = rayonRecherche.flatMap(RayonRecherche.from)
+      )
+
+    (for {
       candidatQueryResult <- optCandidatAuthentifieRequest.candidatAuthentifie.map(c =>
         candidatQueryHandler.handle(CandidatPourRechercheOffreQuery(c.candidatId)).map(Some(_))
       ).getOrElse(Future.successful(None))
-      critereLieuTravail = lieuTravail.orElse(candidatQueryResult.flatMap(_.commune))
-      critereCodePostal = codePostal.orElse(candidatQueryResult.flatMap(_.codePostal))
-      critereRayonRecherche = rayonRecherche.flatMap(RayonRecherche.from)
-        .orElse(optCandidatAuthentifieRequest.flash.rayonRechercheModifie)
-        .orElse(candidatQueryResult.flatMap(_.rayonRecherche))
+      localisationRecherche = optCandidatAuthentifieRequest.flash.candidatLocalisationRechercheModifiee
+        .orElse(buildLocalisationRechercheFromRequest)
+        .orElse(candidatQueryResult.flatMap(_.localisationRecherche))
       offresCandidatQueryResult <- candidatQueryHandler.handle(OffresCandidatQuery(CriteresRechercheOffre(
         motCle = motCle,
-        codePostal = critereCodePostal,
-        rayonRecherche = critereRayonRecherche,
+        codePostal = localisationRecherche.map(_.codePostal),
+        rayonRecherche = localisationRecherche.flatMap(_.rayonRecherche),
         typesContrats = Nil,
         secteursActivites = Nil,
         codesROME = Nil
@@ -49,24 +60,26 @@ class RechercheOffreController @Inject()(cc: ControllerComponents,
         jsData = Json.obj(
           "candidatAuthentifie" -> optCandidatAuthentifieRequest.isCandidatAuthentifie,
           "cv" -> candidatQueryResult.exists(_.cv),
+          "metiersValides" -> candidatQueryResult.map(_.metiersValides),
           "offres" -> offresCandidatQueryResult.offres,
           "nbOffresTotal" -> offresCandidatQueryResult.nbOffresTotal,
           "csrfToken" -> CSRF.getToken.map(_.value),
           "recherche" -> Json.obj(
             "motCle" -> motCle,
-            "lieuTravail" -> critereLieuTravail,
-            "codePostal" -> critereCodePostal,
-            "rayonRecherche" -> critereRayonRecherche.map(_.value),
-            "metiersEvalues" -> JsArray(candidatQueryResult.map(_.metiersEvalues).getOrElse(List[Metier]()).map(m =>
-              Json.obj(
-                "label" -> m.label,
-                "value" -> m.codeROME
-              )
-            ))
+            "lieuTravail" -> localisationRecherche.map(_.commune),
+            "codePostal" -> localisationRecherche.map(_.codePostal),
+            "rayonRecherche" -> localisationRecherche
+              .flatMap(_.rayonRecherche.map(_.value))
+              .orElse(Some(0)) // FIXME : unite
           ),
           "algoliaPlacesConfig" -> webAppConfig.algoliaPlacesConfig
         )
       ))
+    }).recover {
+      case t: QueryException =>
+        Logger.error("Erreur lors de la recherche d'offres", t)
+        Redirect(routes.LandingController.landing())
+          .flashing(optCandidatAuthentifieRequest.flash.withMessageErreur("Notre service en actuellement en cours de maintenance, veuillez réessayer ultérieurement."))
     }
   }
 
@@ -78,7 +91,7 @@ class RechercheOffreController @Inject()(cc: ControllerComponents,
           codePostal = rechercheOffresForm.codePostal,
           rayonRecherche = rechercheOffresForm.rayonRecherche.flatMap(RayonRecherche.from),
           typesContrats = rechercheOffresForm.typesContrats.flatMap(TypeContrat.from),
-          secteursActivites = rechercheOffresForm.secteursActivites.flatMap(CodeSecteurActivite.from),
+          secteursActivites = rechercheOffresForm.secteursActivites.map(CodeSecteurActivite),
           codesROME = rechercheOffresForm.metiers.map(CodeROME)
         )
 

@@ -3,39 +3,9 @@ import $ from 'jquery';
 import places from 'places.js';
 import 'bootstrap/js/dist/modal';
 import pagination from '../../composants/pagination.js';
-import '../../composants/alerteRecruteur.js';
-import { intituleAlerte, buildAlerte } from '../../domain/recruteur/alerte/alerteService.js';
 
 $(document).ready(function () {
-    var placesAutocomplete = places({
-        appId: jsData.algoliaPlacesConfig.appId,
-        apiKey: jsData.algoliaPlacesConfig.apiKey,
-        container: document.querySelector('#js-localisation'),
-        type: 'city',
-        aroundLatLngViaIP: false,
-        style: true,
-        useDeviceLocation: false,
-        language: 'fr',
-        countries: ['fr']
-    });
-    placesAutocomplete.on('change', function(e) {
-        app.localiser({
-            label: e.suggestion.name,
-            latitude: e.suggestion.latlng.lat,
-            longitude: e.suggestion.latlng.lng
-        });
-    });
-    placesAutocomplete.on('clear', function(e) {
-        app.localiser({
-            label: '',
-            latitude: null,
-            longitude: null
-        });
-    });
-
     var body = $("body");
-    var selecteurSecteursActivites = $("#js-secteursActivites-selecteur");
-    var selecteurMetiers = $("#js-metiers-selecteur");
     var inputLocalisation = $("#js-localisation");
 
     app.initialiserTableau();
@@ -123,8 +93,8 @@ $(document).ready(function () {
         });
         $("#js-envoyerCommentaire").click(function(e) {
             e.preventDefault();
-            $("#js-commentaireSecteurActivite").val(selecteurSecteursActivites.val());
-            $("#js-commentaireMetier").val(selecteurMetiers.val());
+            $("#js-commentaireSecteurActivite").val($("#js-secteursActivites-selecteur option:selected").text());
+            $("#js-commentaireMetier").val($("#js-metiers-selecteur option:selected").text());
             $("#js-commentaireLocalisation").val(inputLocalisation.val());
             if (commentaireRecruteur.val() !== '') {
                 $.ajax({
@@ -156,9 +126,6 @@ var app = new Vue({
             csrfToken: jsData.csrfToken,
             nbCandidatsParPage: jsData.nbCandidatsParPage,
             pagesInitiales: jsData.pagesInitiales,
-            alertes: jsData.alertes.map(function(alerte) {
-                return buildAlerte(alerte, jsData.metiers, jsData.secteursActivites);
-            }),
             secteurActivite: jsData.secteurActivite !== undefined && jsData.secteurActivite !== null ? jsData.secteurActivite : '',
             secteursActivites: jsData.secteursActivites,
             metier: jsData.metier !== undefined && jsData.metier !== null ? jsData.metier : '',
@@ -167,24 +134,49 @@ var app = new Vue({
                 latitude: null,
                 longitude: null
             },
-            labelTousLesMetiers: 'Tous les métiers',
             titreCompteurResultats: null
         }
     },
     beforeMount: function() {
         this.titreCompteurResultats = this.getTitreCompteurResultats(jsData.nbCandidatsTotal);
     },
+    mounted: function() {
+        var self = this;
+        var placesAutocomplete = places({
+            appId: jsData.algoliaPlacesConfig.appId,
+            apiKey: jsData.algoliaPlacesConfig.apiKey,
+            container: document.querySelector('#js-localisation'),
+            type: 'city',
+            aroundLatLngViaIP: false,
+            style: true,
+            useDeviceLocation: false,
+            language: 'fr',
+            countries: ['fr']
+        });
+        placesAutocomplete.on('change', function(e) {
+            self.localisation = {
+                label: e.suggestion.name,
+                latitude: e.suggestion.latlng.lat,
+                longitude: e.suggestion.latlng.lng
+            };
+        });
+        placesAutocomplete.on('clear', function(e) {
+            self.localisation = {
+                label: '',
+                latitude: null,
+                longitude: null
+            };
+        });
+    },
     computed: {
         metiers: function() {
             var secteurActivite = this.secteurActivite;
             if (secteurActivite !== null && secteurActivite !== '') {
-                this.labelTousLesMetiers = 'Tous les métiers du secteur';
                 return this.secteursActivites.find(function(s) {
                     return s.code === secteurActivite;
                 }).metiers;
             } else {
-                this.labelTousLesMetiers = 'Tous les métiers';
-                return jsData.metiers;
+                return [];
             }
         }
     },
@@ -209,9 +201,6 @@ var app = new Vue({
         },
         getSuffixeCandidats: function(nbCandidats) {
             return (nbCandidats === 1 ? "est validé" : "sont validés") + " par la <abbr title='Méthode de Recrutement par Simulation' data-toggle='modal' data-target='#js-modaleVideo'>MRS</abbr>";
-        },
-        localiser: function(localisation) {
-            this.localisation = localisation;
         },
         rechercherCandidats: function() {
             var formData = [
@@ -238,13 +227,11 @@ var app = new Vue({
         },
         modifierMetiersPourSecteur: function() {
             if (this.secteurActivite !== '') {
-                this.labelTousLesMetiers = 'Tous les métiers du secteur';
                 this.metiers = this.secteursActivites.find(function(s) {
                     return s.code === app.secteurActivite;
                 }).metiers;
             } else {
-                this.labelTousLesMetiers = 'Tous les métiers';
-                this.metiers = jsData.metiers;
+                this.metiers = [];
             }
         },
         chargerPageSuivante: function(critere) {
@@ -282,72 +269,6 @@ var app = new Vue({
         initialiserTableau: function() {
             $(".js-infoCandidat").hide();
             $(".js-profilCandidat").hide();
-        },
-        creerAlerte: function(frequence) {
-            var formData = [
-                {name: "csrfToken", value: this.csrfToken},
-                {name: "secteurActivite", value: this.secteurActivite},
-                {name: "metier", value: this.metier},
-                {name: "localisation.label", value: this.localisation !== null ? this.localisation.label: null},
-                {name: "localisation.latitude", value: this.localisation !== null ? this.localisation.latitude: null},
-                {name: "localisation.longitude", value: this.localisation !== null ? this.localisation.longitude: null},
-                {name: "frequence", value: frequence}
-            ];
-            var intituleAlerte = intituleAlerte({
-                metier: this.metier,
-                secteurActivite: this.secteurActivite,
-                localisation: this.localisation
-            }, this.metiers, this.secteursActivites);
-            var labelFrequence = app.$refs.alertesRecruteur.frequences.find(function(f) {
-                return f.value === frequence;
-            }).label;
-
-            if (this.secteurActivite === '' && this.metier === '' && (this.localisation === null || this.localisation.latitude === null || this.localisation.longitude === null)) {
-                app.$refs.alertesRecruteur.onErreur('Choisissez au moins un critère pour créer une alerte');
-            } else if (app.$refs.alertesRecruteur.alertes.findIndex(function(el) {
-                return el.intitule === intituleAlerte && el.frequence === labelFrequence;
-            }) !== -1) { // FIXME : ne pas chercher sur l'intitulé : pas solide
-                app.$refs.alertesRecruteur.onErreur('Une alerte existe déjà avec ces critères');
-            } else {
-                $.ajax({
-                    type: "POST",
-                    url: "/recruteur/alerte",
-                    data: formData,
-                    dataType: 'text'
-                }).done(function (alerteId) {
-                    app.$refs.alertesRecruteur.onAlerteCree({
-                        id: alerteId,
-                        intitule: intituleAlerte,
-                        frequence: labelFrequence,
-                        criteres: {
-                            codeSecteurActivite: app.secteurActivite,
-                            codeROME: app.metier,
-                            localisation: app.localisation
-                        }
-                    });
-                }).fail(function () {
-                    app.$refs.alertesRecruteur.onErreur('Une erreur est survenue, veuillez réessayer ultérieurement');
-                });
-            }
-        },
-        supprimerAlerte: function(alerteId) {
-            $.ajax({
-                type: "DELETE",
-                url: "/recruteur/alerte/" + encodeURIComponent(alerteId) + "?csrfToken=" + this.csrfToken,
-                data: '',
-                dataType: 'text'
-            }).done(function () {
-                app.$refs.alertesRecruteur.onAlerteSupprimee(alerteId);
-            }).fail(function () {
-                app.$refs.alertesRecruteur.onErreur('Une erreur est survenue, veuillez réessayer ultérieurement');
-            });
-        },
-        selectionnerAlerte: function(criteres) {
-            this.secteurActivite = criteres.codeSecteurActivite;
-            this.metier = criteres.codeROME;
-            this.localisation = criteres.localisation;
-
-            this.rechercherCandidats();
         }
     }
 });

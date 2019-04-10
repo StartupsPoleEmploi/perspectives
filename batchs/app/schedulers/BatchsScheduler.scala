@@ -8,13 +8,11 @@ import com.typesafe.akka.extension.quartz.QuartzSchedulerExtension
 class BatchsScheduler(actorSystem: ActorSystem,
                       candidatsMrsValideesActor: ActorRef,
                       habiletesMRSActor: ActorRef,
-                      habiletesDHAEActor: ActorRef,
-                      alerteMailRecruteurActor: ActorRef) {
+                      habiletesDHAEActor: ActorRef) {
 
-  import AlerteMailRecruteurActor._
   import CandidatsMRSValideesActor._
-  import HabiletesMRSActor._
   import HabiletesDHAEActor._
+  import HabiletesMRSActor._
 
   val scheduler: QuartzSchedulerExtension = QuartzSchedulerExtension(actorSystem)
 
@@ -22,8 +20,5 @@ class BatchsScheduler(actorSystem: ActorSystem,
     scheduler.schedule("ImportCandidatsMRSValidees", candidatsMrsValideesActor, StartImportCandidatsMRSValidees)
     scheduler.schedule("ImportHabiletesMRS", habiletesMRSActor, StartImportHabiletesMRS)
     scheduler.schedule("ImportHabiletesDHAE", habiletesDHAEActor, StartImportHabiletesDHAE)
-
-    scheduler.schedule("AlerteMailQuotidiennesRecruteurs", alerteMailRecruteurActor, EnvoyerAlertesQuotidiennes)
-    scheduler.schedule("AlerteMailHebdomadairesRecruteurs", alerteMailRecruteurActor, EnvoyerAlertesHebdomadaires)
   }
 }

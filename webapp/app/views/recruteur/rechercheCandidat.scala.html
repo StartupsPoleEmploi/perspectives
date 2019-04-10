@@ -1,17 +1,17 @@
 @import conf.WebAppConfig
 @import controllers.recruteur.RechercheCandidatForm
 @import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
-@import fr.poleemploi.perspectives.commun.domain.{Metier, SecteurActivite}
 @import fr.poleemploi.perspectives.projections.candidat.RechercheCandidatQueryResult
+@import fr.poleemploi.perspectives.projections.metier.{MetierDTO, SecteurActiviteDTO}
 @import helper._
 @import play.api.libs.json.JsObject
 
 @(rechercheCandidatForm: Form[RechercheCandidatForm],
         recruteurAuthentifie: RecruteurAuthentifie,
         rechercheCandidatQueryResult: RechercheCandidatQueryResult,
-        metierChoisi: Option[Metier] = None,
-        secteurActiviteChoisi: Option[SecteurActivite] = None,
-        secteursActivites: List[SecteurActivite],
+        metierChoisi: Option[MetierDTO] = None,
+        secteurActiviteChoisi: Option[SecteurActiviteDTO] = None,
+        secteursActivites: List[SecteurActiviteDTO],
         jsData: JsObject)(implicit request: MessagesRequestHeader, flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
 @layout(recruteurAuthentifie = Some(recruteurAuthentifie)) {
@@ -44,8 +44,9 @@
                     <div class="criteres-item conteneurSelecteur">
                         <label for="js-metiers-selecteur" class="sr-only">Chosissez un métier</label>
                         <select id="js-metiers-selecteur" name="metier" class="conteneurSelecteur-selecteur"
-                                v-model="metier">
-                            <option value="">{{labelTousLesMetiers}}</option>
+                                v-model="metier" v-bind:disabled="secteurActivite === null || secteurActivite === ''">
+                            <option value="" v-if="secteurActivite === null || secteurActivite === ''">Choisissez un secteur</option>
+                            <option value="" v-else>Tous les métiers du secteur</option>
                             <option v-for="metier in metiers" v-bind:value="metier.codeROME">{{metier.label}}</option>
                         </select>
                     </div>

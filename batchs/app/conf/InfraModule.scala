@@ -9,7 +9,6 @@ import fr.poleemploi.eventsourcing.infra.akka.AkkaEventStoreListener
 import fr.poleemploi.eventsourcing.infra.jackson.EventSourcingObjectMapperBuilder
 import fr.poleemploi.eventsourcing.infra.postgresql.{PostgreSQLAppendOnlyStore, PostgreSQLSnapshotStore, PostgresDriver => EventSourcingPostgresDriver}
 import fr.poleemploi.eventsourcing.snapshotstore.SnapshotStore
-import fr.poleemploi.perspectives.authentification.infra.peconnect.sql.PEConnectSqlAdapter
 import fr.poleemploi.perspectives.candidat.dhae.infra.csv.{HabiletesDHAECsvAdapter, ImportHabiletesDHAECsvAdapter}
 import fr.poleemploi.perspectives.candidat.dhae.infra.local.ImportHabiletesDHAELocal
 import fr.poleemploi.perspectives.candidat.dhae.infra.sql.ReferentielHabiletesDHAESqlAdapter
@@ -18,6 +17,7 @@ import fr.poleemploi.perspectives.candidat.mrs.infra.local.{ImportHabiletesMRSLo
 import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.{ImportMRSCandidatPEConnect, MRSValideesCandidatsCSVAdapter, MRSValideesCandidatsSqlAdapter}
 import fr.poleemploi.perspectives.candidat.mrs.infra.sql.ReferentielHabiletesMRSSqlAdapter
 import fr.poleemploi.perspectives.commun.infra.jackson.PerspectivesEventSourcingModule
+import fr.poleemploi.perspectives.commun.infra.peconnect.sql.PEConnectSqlAdapter
 import fr.poleemploi.perspectives.commun.infra.play.cache.InMemoryCacheApi
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
 import fr.poleemploi.perspectives.emailing.infra.local.LocalEmailingService
@@ -25,10 +25,9 @@ import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetEmailingService
 import fr.poleemploi.perspectives.emailing.infra.sql.MailjetSqlAdapter
 import fr.poleemploi.perspectives.emailing.infra.ws.{MailjetWSAdapter, MailjetWSMapping}
 import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
-import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapter
-import fr.poleemploi.perspectives.projections.candidat.infra.elasticsearch.CandidatProjectionElasticsearchAdapter
-import fr.poleemploi.perspectives.projections.recruteur.alerte.infra.sql.AlerteRecruteurSqlAdapter
-import fr.poleemploi.perspectives.rechercheCandidat.domain.RechercheCandidatService
+import fr.poleemploi.perspectives.metier.infra.elasticsearch.ReferentielMetierElasticsearchAdapter
+import fr.poleemploi.perspectives.metier.infra.ws.{ReferentielMetierWSAdapter, ReferentielMetierWSMapping}
+import fr.poleemploi.perspectives.projections.candidat.infra.elasticsearch.{CandidatProjectionElasticsearchAdapter, CandidatProjectionElasticsearchMapping}
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
 import play.api.cache.AsyncCacheApi
@@ -183,13 +182,29 @@ class InfraModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
+  def referentielMetierElasticsearchAdapter(wsClient: WSClient,
+                                            batchsConfig: BatchsConfig): ReferentielMetierElasticsearchAdapter =
+    new ReferentielMetierElasticsearchAdapter(
+      esConfig = batchsConfig.esConfig,
+      wsClient = wsClient
+    )
+
+  @Provides
+  def referentielMetierWSMapping: ReferentielMetierWSMapping =
+    new ReferentielMetierWSMapping()
+
+  @Provides
   def referentielMetierWSAdapter(wsClient: WSClient,
+                                 mapping: ReferentielMetierWSMapping,
                                  batchsConfig: BatchsConfig,
-                                 cacheApi: AsyncCacheApi): ReferentielMetierWSAdapter =
+                                 cacheApi: AsyncCacheApi,
+                                 referentielMetierElasticsearchAdapter: ReferentielMetierElasticsearchAdapter): ReferentielMetierWSAdapter =
     new ReferentielMetierWSAdapter(
       config = batchsConfig.referentielMetierWSAdapterConfig,
+      mapping = mapping,
       wsClient = wsClient,
-      cacheApi = cacheApi
+      cacheApi = cacheApi,
+      elasticsearchAdapter = referentielMetierElasticsearchAdapter
     )
 
   @Provides
@@ -243,22 +258,18 @@ class InfraModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
-  def candidatProjectionElasticsearchAdapter(batchsConfig: BatchsConfig,
-                                             wsClient: WSClient,
-                                             referentielMetier: ReferentielMetier,
-                                             rechercheCandidatService: RechercheCandidatService): CandidatProjectionElasticsearchAdapter =
-    new CandidatProjectionElasticsearchAdapter(
-      wsClient = wsClient,
-      esConfig = batchsConfig.esConfig,
-      referentielMetier = referentielMetier,
-      rechercheCandidatService = rechercheCandidatService
+  def candidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetier): CandidatProjectionElasticsearchMapping =
+    new CandidatProjectionElasticsearchMapping(
+      referentielMetier = referentielMetier
     )
 
   @Provides
-  def alerteRecruteurSqlAdapter(database: Database,
-                                rechercheCandidatService: RechercheCandidatService): AlerteRecruteurSqlAdapter =
-    new AlerteRecruteurSqlAdapter(
-      database = database,
-      rechercheCandidatService = rechercheCandidatService
+  def candidatProjectionElasticsearchAdapter(batchsConfig: BatchsConfig,
+                                             wsClient: WSClient,
+                                             mapping: CandidatProjectionElasticsearchMapping): CandidatProjectionElasticsearchAdapter =
+    new CandidatProjectionElasticsearchAdapter(
+      wsClient = wsClient,
+      esConfig = batchsConfig.esConfig,
+      mapping = mapping
     )
 }

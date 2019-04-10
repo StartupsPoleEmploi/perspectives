@@ -1,135 +1,233 @@
-$(document).ready(function () {
-    var secteursActivites = $("input[type='checkbox'][name='secteurActivite[]']");
+import Vue from "vue";
+import $ from 'jquery';
+import 'bootstrap/js/dist/modal';
+import places from 'places.js';
 
-    $("#rechercheAutreMetier-true").each(function () {
-        $('#js-critere-metiers').toggle($(this).prop("checked"));
-    });
-
-    $("input[type='radio'][name='rechercheAutreMetier']").click(function () {
-        $('#js-critere-metiers').toggle($(this).prop("value") === "true");
-    });
-
-    // Initialisation des secteurs d'activités : coche la case si tous les métiers sont sélectionnés
-    secteursActivites.each(function () {
-        var secteurActivite = $(this);
-
-        var metiers = secteurActivite.siblings(".metiers").find("input[type='checkbox'][name='listeMetiersRecherches[]']");
-        var metiersSelectionnes = secteurActivite.siblings(".metiers").find("input[type='checkbox'][name='listeMetiersRecherches[]']:checked");
-        secteurActivite.prop("checked", metiers.length === metiersSelectionnes.length);
-    });
-
-    secteursActivites.click(function () {
-        var clickedSecteurActivite = $(this);
-        var isChecked = clickedSecteurActivite.prop("checked");
-
-        clickedSecteurActivite.siblings(".metiers").find("input[type='checkbox'][name='listeMetiersRecherches[]']").each(function() {
-            $(this).prop("checked", isChecked);
+var app = new Vue({
+    el: '#saisieCriteresRechercheCandidat',
+    data: function () {
+        return {
+            criteresRechercheFormData: Object.assign({
+                nouveauCandidat: false,
+                contactRecruteur: null,
+                contactFormation: null,
+                numeroTelephone: null,
+                localisation: {
+                    commune: null,
+                    codePostal: null,
+                    latitude: null,
+                    longitude: null,
+                },
+                rayonRecherche: null,
+                metiersValidesRecherches: [],
+                metiersRecherches: [],
+                domainesProfessionnelsRecherches: []
+            }, jsData.criteresRechercheFormData),
+            criteresRechercheFormErrors: Object.assign({
+                contactRecruteur: [],
+                contactFormation: [],
+                numeroTelephone: [],
+                localisation: [],
+                rayonRecherche: [],
+                metiersValidesRecherches: [],
+                metiersRecherches: [],
+                domainesProfessionnelsRecherches: []
+            }, jsData.criteresRechercheFormErrors),
+            rayonsRecherche: [
+                {value: 0, label: 'Dans ma ville'},
+                {value: 10, label: 'Moins de 10km'},
+                {value: 30, label: 'Moins de 30km'},
+                {value: 50, label: 'Moins de 50km'}
+            ],
+            metiersValides: Object.assign([], jsData.metiersValides),
+            secteursActivites: jsData.secteursActivites,
+            display: {
+                etape1: true,
+                etape2: false,
+                etape3: false,
+                secteursActivites: {},
+                metiersSelectionnesParSecteur: {}
+            },
+            algoliaPlacesConfig: jsData.algoliaPlacesConfig
+        }
+    },
+    beforeMount: function() {
+        var secteursActivites = {};
+        var metiersSelectionnesParSecteur = {};
+        jsData.secteursActivites.forEach(function(secteur) {
+            secteursActivites[secteur.code] = false;
+            metiersSelectionnesParSecteur[secteur.code] = [];
         });
-    });
+        jsData.criteresRechercheFormData.metiersRecherches.forEach(function(codeROME) {
+            var metier = jsData.secteursActivites.find(function(s) {
+                return s.code === codeROME.charAt(0);
+            }).metiers.find(function(m) {
+                return m.codeROME === codeROME;
+            });
+            metiersSelectionnesParSecteur[codeROME.charAt(0)].push(metier);
+        });
+        this.display.secteursActivites = secteursActivites;
+        this.display.metiersSelectionnesParSecteur = metiersSelectionnesParSecteur;
+    },
+    mounted: function () {
+        var self = this;
+        var placesAutocomplete = places({
+            appId: self.algoliaPlacesConfig.appId,
+            apiKey: self.algoliaPlacesConfig.apiKey,
+            container: document.querySelector('#js-communeRecherche'),
+            type: 'city',
+            aroundLatLngViaIP: false,
+            style: false,
+            useDeviceLocation: false,
+            language: 'fr',
+            countries: ['fr']
+        });
+        placesAutocomplete.on('change', function (e) {
+            self.algoliaPlacesChange(e.suggestion);
+        });
+        placesAutocomplete.on('clear', function () {
+            self.algoliaPlacesClear();
+        });
 
-    if (window.FileReader) {
-        var validerCriteres = $("#js-validerCriteres");
-        var inputCV = $("#js-inputCV");
-        var validerCV = $("#js-validerCV");
-        var texteInitialValiderCV = validerCV.text();
-        var erreursCV = $("#js-erreursCV");
-        var succesCV = $("#js-succesCV");
-        var nomFichier = $("#js-nomFichier");
-        var nomFichierInitial = nomFichier.text();
-        var indicationTailleMax = $("#js-indicationTaille");
-        var progression = $("#js-progression");
-        progression.hide();
-        var barreProgression = $("#js-barreProgression");
-        validerCV.hide();
-        var tailleMaximumFichierBytes = 5 * 1000 * 1000;
-        // FIXME : recupérer du back
-        var mediaTypesValides = ["application/pdf", "application/vnd.oasis.opendocument.text", "image/jpeg", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
-
-        inputCV.fileupload({
-            url: '/candidat/modifierCV', // on utilise pas l'url du formulaire qui gère tous les champs en plus du CV
-            dataType: 'json',
-            formData: function (form) { // on envoit juste le token CSRF
-                return form.serializeArray().filter(function(field) {
-                    return field.name === "csrfToken";
-                });
-            },
-            dropZone: null, // pas de drag and drop
-            limitMultiFileUploads: 1,
-            autoUpload: false,
-            add: function (event, data) {
-                var fichier = data.files[0];
-                viderErreurs();
-                viderSucces();
-                var erreurs = [];
-
-                if (fichier !== undefined) {
-                    if (fichier.size > tailleMaximumFichierBytes) {
-                        erreurs.push("Le fichier dépasse la taille maximale autorisée");
-                    }
-                    if (!mediaTypesValides.includes(fichier.type)) {
-                        erreurs.push("Le type de fichier n'est pas valide");
-                    }
-                    nomFichier.text(fichier.name.length > 15 ? fichier.name.substring(0, 15) + "..." : fichier.name);
-                } else {
-                    nomFichier.text(nomFichierInitial);
-                }
-
-                if (erreurs.length > 0) {
-                    erreurs.forEach(function (e) {
-                        addErreur(e);
-                    });
-                    reinitialiser();
-                } else {
-                    validerCV.show();
-                    indicationTailleMax.hide();
-                    validerCV.click(function () {
-                        validerCV.hide();
-                        progression.show();
-                        data.submit();
-                        validerCriteres.prop("disabled", "disabled");
-                    });
-                }
-            },
-            progressall: function (event, data) {
-                var progress = parseInt(data.loaded / data.total * 100, 10);
-                barreProgression.text(progress + "%");
-                barreProgression.css({"width": progress + "%"});
-            },
-            fail: function (event, data) {
-                reinitialiser();
-                addErreur("Une erreur est survenue pendant le téléchargement");
-            },
-            done: function (event, data) {
-                reinitialiser();
-                addSucces("Votre fichier a bien été envoyé");
+        $('#js-modaleContactRecruteur').modal({show: false});
+        $('#js-modaleMetiers').modal({show: false});
+    },
+    methods: {
+        algoliaPlacesChange: function (suggestion) {
+            this.criteresRechercheFormData.localisation = {
+                codePostal: suggestion.postcode,
+                commune: suggestion.name,
+                latitude: suggestion.latlng.lat,
+                longitude: suggestion.latlng.lng
             }
-        });
-    }
+        },
+        algoliaPlacesClear: function () {
+            this.criteresRechercheFormData.localisation = {
+                codePostal: null,
+                commune: null,
+                latitude: null,
+                longitude: null
+            };
+        },
+        validerEtape1: function () {
+            this.criteresRechercheFormErrors.contactRecruteur = [];
+            this.criteresRechercheFormErrors.contactFormation = [];
+            this.criteresRechercheFormErrors.numeroTelephone = [];
 
-    function addErreur(text) {
-        erreursCV.append("<div class='erreurs-item'>" + text + "</div>");
-    }
+            if (!this.criteresRechercheFormData.contactRecruteur) {
+                this.criteresRechercheFormErrors.contactRecruteur = ["Veuillez saisir une valeur pour ce champ"];
+            }
+            if (!this.criteresRechercheFormData.contactFormation) {
+                this.criteresRechercheFormErrors.contactFormation = ["Veuillez saisir une valeur pour ce champ"];
+            }
+            if ((this.criteresRechercheFormData.contactRecruteur === "true" || this.criteresRechercheFormData.contactFormation === "true") &&
+                (!this.criteresRechercheFormData.numeroTelephone || this.criteresRechercheFormData.numeroTelephone === "" || this.criteresRechercheFormData.numeroTelephone.length < 10)) {
+                this.criteresRechercheFormErrors.numeroTelephone = ["Vous devez renseigner un numéro de téléphone valide pour être contacté"];
+            }
 
-    function viderErreurs() {
-        erreursCV.html("");
-    }
+            if (this.criteresRechercheFormErrors.contactRecruteur.length === 0 &&
+                this.criteresRechercheFormErrors.contactFormation.length === 0 &&
+                this.criteresRechercheFormErrors.numeroTelephone.length === 0) {
+                if (this.criteresRechercheFormData.contactRecruteur === "false" &&
+                    this.criteresRechercheFormData.contactFormation === "false") {
+                    $('#js-modaleContactRecruteur').modal('show');
+                } else {
+                    this.display.etape1 = false;
+                    this.display.etape2 = true;
+                }
 
-    function addSucces(text) {
-        succesCV.append("<div class='succes-item'>" + text + "</div>");
-    }
+                if (this.criteresRechercheFormData.nouveauCandidat) {
+                    this.recupererLocalisation();
+                    this.recupererMetiersValides();
+                }
+            }
+        },
+        validerEtape2: function () {
+            this.criteresRechercheFormErrors.localisation = [];
+            this.criteresRechercheFormErrors.rayonRecherche = [];
 
-    function viderSucces() {
-        succesCV.html("");
-    }
+            if (!this.criteresRechercheFormData.localisation.latitude ||
+                !this.criteresRechercheFormData.localisation.longitude) {
+                this.criteresRechercheFormErrors.localisation = ["Veuillez saisir une valeur pour ce champ"];
+            }
+            if (!this.criteresRechercheFormData.rayonRecherche === null) {
+                this.criteresRechercheFormErrors.rayonRecherche = ["Veuillez saisir une valeur pour ce champ"];
+            }
 
-    function reinitialiser() {
-        progression.hide();
-        barreProgression.text("");
-        barreProgression.css({"width": 0});
-        validerCV.unbind("click");
-        validerCV.hide();
-        validerCV.html(texteInitialValiderCV);
-        indicationTailleMax.show();
-        validerCriteres.prop("disabled", "");
+            if (this.criteresRechercheFormData.localisation.latitude &&
+                this.criteresRechercheFormData.localisation.longitude &&
+                this.criteresRechercheFormData.rayonRecherche !== null) {
+                this.display.etape2 = false;
+                this.display.etape3 = true;
+            }
+        },
+        retourEtape1: function () {
+            this.display.etape1 = true;
+            this.display.etape2 = false;
+        },
+        retourEtape2: function () {
+            this.display.etape2 = true;
+            this.display.etape3 = false;
+        },
+        accepterContactRecruteur: function () {
+            this.criteresRechercheFormData.contactRecruteur = "true";
+
+            if ((!this.criteresRechercheFormData.numeroTelephone || this.criteresRechercheFormData.numeroTelephone === "")) {
+                this.criteresRechercheFormErrors.numeroTelephone = ["Vous devez renseigner un numéro de téléphone pour être contacté"];
+            } else {
+                this.display.etape1 = false;
+                this.display.etape2 = true;
+            }
+        },
+        continuerSansContactRecruteur: function() {
+            this.display.etape1 = false;
+            this.display.etape2 = true;
+        },
+        accepterAucunMetiers: function () {
+            $('#criteresRechercheForm').submit();
+        },
+        resaisirMetiers: function() {
+            $('#js-modaleMetiers').modal('hide');
+        },
+        recupererLocalisation: function() {
+            $.ajax({
+                type: "GET",
+                url: "/candidat/localisation",
+                dataType: "json"
+            }).done(function (response) {
+                app.criteresRechercheFormData.localisation = response.localisation;
+            });
+        },
+        recupererMetiersValides: function() {
+            $.ajax({
+                type: "GET",
+                url: "/candidat/metiers-valides",
+                dataType: "json"
+            }).done(function (response) {
+                app.metiersValides = response.metiersValides;
+            });
+        },
+        ajouterMetierSelectionne: function(metier, codeSecteur) {
+            var checked = this.criteresRechercheFormData.metiersRecherches.indexOf(metier.codeROME) !== -1;
+            if (checked) {
+                this.display.metiersSelectionnesParSecteur[codeSecteur].push(metier);
+            } else {
+                this.display.metiersSelectionnesParSecteur[codeSecteur] = this.display.metiersSelectionnesParSecteur[codeSecteur].filter(function(m) {
+                   return m.codeROME !== metier.codeROME;
+                });
+            }
+        },
+        deplierSecteur: function(codeSecteur) {
+            this.display.secteursActivites[codeSecteur] = !this.display.secteursActivites[codeSecteur];
+        },
+        validerCriteres: function() {
+            if (this.criteresRechercheFormData.metiersValidesRecherches.length === 0 &&
+                this.criteresRechercheFormData.metiersRecherches.length === 0 &&
+                this.criteresRechercheFormData.domainesProfessionnelsRecherches.length === 0) {
+                $('#js-modaleMetiers').modal('show');
+            } else {
+                $('#criteresRechercheForm').submit();
+            }
+        }
     }
 });

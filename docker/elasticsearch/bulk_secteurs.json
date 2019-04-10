@@ -1,0 +1,26 @@
+{"index": {"_index": "secteurs", "_type": "_doc", "_id": "A"}}
+{"code": "A", "label": "Agriculture et espaces verts", "sous_secteurs": [{"code": "A11", "label": "Conduite d'engins (tracteurs...)"}, {"code": "A12", "label": "Entretien des Espaces verts"}, {"code": "A14", "label": "Ouvrier Agricole"}]}
+{"index": {"_index": "secteurs", "_type": "_doc", "_id": "B"}}
+{"code": "B", "label": "Artisanat", "sous_secteurs": [{"code": "B13", "label": "Métiers d'art (travail du bois, verre, métal...)"}, {"code": "B18", "label": "Travail du Tissu et du cuir (maroquinerie, couture...)"}]}
+{"index": {"_index": "secteurs", "_type": "_doc", "_id": "C"}}
+{"code": "C", "label": "Banque assurance immobilier", "sous_secteurs": [{"code": "C14", "label": "Agent administratif"}, {"code": "C11", "label": "Conseil et gestion en assurances"}]}
+{"index": {"_index": "secteurs", "_type": "_doc", "_id": "D"}}
+{"code": "D", "label": "Commerce", "sous_secteurs": [{"code": "D1106", "label": "Alimentation générale"}, {"code": "D1101", "label": "Boucherie Charcuterie"}, {"code": "D1102", "label": "Boulangerie Pâtisserie"}, {"code": "D1105", "label": "Poissonnerie"}, {"code": "D15", "label": "Grande distribution"}, {"code": "D1207", "label": "Prêt à porter"}, {"code": "D1209", "label": "Végétaux, Fleurs..."}, {"code": "D1211", "label": "Livres, CD, Loisirs créatifs..."}, {"code": "D1212", "label": "Déco, cuisines, salles de bain..."}, {"code": "D1213", "label": "Vente en gros"}, {"code": "D14", "label": "Commercial, Téléconseiller"}]}
+{"index": {"_index": "secteurs", "_type": "_doc", "_id": "E"}}
+{"code": "E", "label": "Industrie graphique", "sous_secteurs": [{"code": "E13", "label": "Imprimerie, Industrie graphique"}]}
+{"index": {"_index": "secteurs", "_type": "_doc", "_id": "F"}}
+{"code": "F", "label": "Bâtiment", "sous_secteurs": [{"code": "F16", "label": "Second œuvre (electricité, plomberie, placo, peinture…)"}, {"code": "F17", "label": "Gros œuvre (maçonnerie, manœuvre, béton…)"}, {"code": "F13", "label": "Conduite d'Engins (grue, tracto-pelle...)"}, {"code": "F15", "label": "Montage de structures (Charpente, Echaffaudage...)"}]}
+{"index": {"_index": "secteurs", "_type": "_doc", "_id": "G"}}
+{"code": "G", "label": "Hôtellerie restauration tourisme", "sous_secteurs": [{"code": "G11", "label": "Accueil (agent d'accueil, réceptionniste…)"}, {"code": "G12", "label": "Animation (centre de loisirs, parcs de loisirs...)"}, {"code": "G14", "label": "Manager en restauration"}, {"code": "G15", "label": "Hôtellerie (entretien des chambres…)"}, {"code": "G16", "label": "Cuisine (aide de cuisine, agent polyvalent…)"}, {"code": "G17", "label": "Acceuil en hôtellerie"}, {"code": "G18", "label": "Service en Restauration"}]}
+{"index": {"_index": "secteurs", "_type": "_doc", "_id": "H"}}
+{"code": "H", "label": "Industrie", "sous_secteurs": [{"code": "H2101", "label": "Découpage et abattage de viande"}, {"code": "H2102", "label": "Agro-alimentaire"}, {"code": "H33", "label": "Préparation et conditionnement"}, {"code": "H24", "label": "Textile (assemblage, montage)"}, {"code": "H29", "label": "Métaux (chaudronnier, soudeur...)"}, {"code": "H22", "label": "Bois (montage, assemblage, ebenisterie...)"}, {"code": "H34", "label": "Traitement (sableur, peintre industriel...)"}, {"code": "H23", "label": "Chimie/Pharmaceutique"}, {"code": "H26", "label": "Electronique (câblage, montage...)"}, {"code": "H28", "label": "Matériaux (conduite d'équipement, façonnage...)"}, {"code": "H31", "label": "Fabrication de papier et carton"}, {"code": "H32", "label": "Plastique/Caoutchouc (fabrication de pièces...)"}]}
+{"index": {"_index": "secteurs", "_type": "_doc", "_id": "I"}}
+{"code": "I", "label": "Maintenance et entretien", "sous_secteurs": [{"code": "I12", "label": "Entretien et maintenance des locaux, bâtiments..."}, {"code": "I13", "label": "Installation et maintenance télécoms"}, {"code": "I16", "label": "Maintenance de véhicules, engins de chantier, bateaux…"}]}
+{"index": {"_index": "secteurs", "_type": "_doc", "_id": "J"}}
+{"code": "J", "label": "Santé", "sous_secteurs": [{"code": "J13", "label": "Agent des services hospitaliers"}]}
+{"index": {"_index": "secteurs", "_type": "_doc", "_id": "K"}}
+{"code": "K", "label": "Services", "sous_secteurs": [{"code": "K13", "label": "Aide à la vie quotidienne (personnes agées, adultes, enfants…)"}, {"code": "K21", "label": "Aide de vie scolaire"}, {"code": "K22", "label": "Nettoyage et propreté"}, {"code": "K23", "label": "Tri des déchets"}, {"code": "K25", "label": "Sécurité (gardiennage, agent de sécurité…)"}]}
+{"index": {"_index": "secteurs", "_type": "_doc", "_id": "M"}}
+{"code": "M", "label": "Administratif", "sous_secteurs": [{"code": "M1601", "label": "Agent d'accueil"}, {"code": "M1603", "label": "Distribution de documents (boites aux lettres)"}, {"code": "M1605", "label": "Secrétariat"}]}
+{"index": {"_index": "secteurs", "_type": "_doc"}}
+{"code": "N", "label": "Transport et logistique", "sous_secteurs": [{"code": "N11", "label": "Magasinage, manutention"}, {"code": "N41", "label": "Transport routier (conduite poids lourd...)"}]}

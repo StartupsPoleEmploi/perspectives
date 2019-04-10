@@ -107,6 +107,7 @@ class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
           jsonContentType
         )
         .get()
+        .flatMap(filtreStatutReponse(_))
         .map(r => r.json.as[List[CommuneResponse]].map(c => c.codePostal -> c.code).toMap)
     } yield communes
 

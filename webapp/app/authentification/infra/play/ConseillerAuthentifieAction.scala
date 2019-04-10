@@ -27,15 +27,15 @@ class ConseillerAuthentifieAction @Inject()(override val parser: BodyParsers.Def
 }
 
 class ConseillerAdminAuthentifieAction @Inject()(override val parser: BodyParsers.Default,
-                                            autorisationService: AutorisationService)
-                                           (implicit val executionContext: ExecutionContext)
+                                                 autorisationService: AutorisationService)
+                                                (implicit val executionContext: ExecutionContext)
   extends ActionBuilder[ConseillerAuthentifieRequest, AnyContent] {
 
   override def invokeBlock[A](request: Request[A], block: ConseillerAuthentifieRequest[A] => Future[Result]): Future[Result] = {
     SessionConseillerAuthentifie
       .get(request.session)
       .flatMap(c => if (autorisationService.hasRole(c.conseillerId, RoleConseiller.ADMIN)) Some(c) else None)
-      .map(candidat => block(ConseillerAuthentifieRequest(candidat, request)))
+      .map(c => block(ConseillerAuthentifieRequest(c, request)))
       .getOrElse(Future.successful(Results.Status(UNAUTHORIZED)))
   }
 }

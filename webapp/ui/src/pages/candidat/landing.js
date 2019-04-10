@@ -24,7 +24,7 @@ var app = new Vue({
             recherche: {
                 lieuTravail: null,
                 codePostal: null,
-                rayonRecherche: 10,
+                rayonRecherche: 0,
             },
             rechercheOffresFormErrors: [],
             rayonsRecherche: rayonsRecherche,

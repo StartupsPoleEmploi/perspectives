@@ -20,13 +20,15 @@ case class CandidatInscritEvent(candidatId: CandidatId,
 
 case class CandidatConnecteEvent(candidatId: CandidatId) extends CandidatEvent
 
+case class VisibiliteRecruteurModifieeEvent(candidatId: CandidatId,
+                                            contactRecruteur: Boolean,
+                                            contactFormation: Boolean) extends CandidatEvent
+
 case class CriteresRechercheModifiesEvent(candidatId: CandidatId,
-                                          rechercheMetierEvalue: Boolean,
-                                          rechercheAutreMetier: Boolean,
-                                          metiersRecherches: Set[CodeROME],
-                                          etreContacteParOrganismeFormation: Boolean,
-                                          etreContacteParAgenceInterim: Boolean,
-                                          rayonRecherche: RayonRecherche) extends CandidatEvent
+                                          localisationRecherche: LocalisationRecherche,
+                                          codesROMEValidesRecherches: Set[CodeROME],
+                                          codesROMERecherches: Set[CodeROME],
+                                          codesDomaineProfessionnelRecherches: Set[CodeDomaineProfessionnel]) extends CandidatEvent
 
 case class ProfilCandidatModifieEvent(candidatId: CandidatId,
                                       nom: Nom,
@@ -39,7 +41,7 @@ case class NumeroTelephoneModifieEvent(candidatId: CandidatId,
 
 case class AdresseModifieeEvent(candidatId: CandidatId,
                                 adresse: Adresse,
-                                coordonnees: Option[Coordonnees]) extends CandidatEvent
+                                coordonnees: Coordonnees) extends CandidatEvent
 
 case class StatutDemandeurEmploiModifieEvent(candidatId: CandidatId,
                                              statutDemandeurEmploi: StatutDemandeurEmploi) extends CandidatEvent
@@ -53,9 +55,9 @@ case class CVRemplaceEvent(candidatId: CandidatId,
                            typeMedia: TypeMedia) extends CandidatEvent
 
 case class MRSAjouteeEvent(candidatId: CandidatId,
-                           metier: CodeROME,
+                           codeROME: CodeROME,
                            departement: CodeDepartement,
-                           habiletes: List[Habilete],
+                           habiletes: Set[Habilete],
                            dateEvaluation: LocalDate) extends CandidatEvent
 
 case class RepriseEmploiDeclareeParConseillerEvent(candidatId: CandidatId,

@@ -18,8 +18,6 @@ class RecruteurProjection(adapter: RecruteurProjectionSqlAdapter) extends Projec
     case e: RecruteurConnecteEvent => adapter.onRecruteurConnecteEvent(e)
     case e: ProfilModifieEvent => adapter.onProfilModifieEvent(e)
     case e: ProfilGerantModifieEvent => adapter.onProfilGerantModifieEvent(e)
-    case e: AlerteRecruteurCreeEvent => Future.successful(())
-    case e: AlerteRecruteurSupprimeeEvent => Future.successful(())
   }
 
   def typeRecruteur(query: TypeRecruteurQuery): Future[TypeRecruteurQueryResult] =

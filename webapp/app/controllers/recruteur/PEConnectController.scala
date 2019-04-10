@@ -4,11 +4,11 @@ import authentification.infra.play._
 import conf.WebAppConfig
 import controllers.FlashMessages._
 import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
-import fr.poleemploi.perspectives.authentification.infra.peconnect.PEConnectAdapter
-import fr.poleemploi.perspectives.authentification.infra.peconnect.sql.RecruteurPEConnect
-import fr.poleemploi.perspectives.authentification.infra.peconnect.ws.PEConnectRecruteurInfos
+import fr.poleemploi.perspectives.authentification.infra.peconnect.PEConnectAuthAdapter
 import fr.poleemploi.perspectives.commun.EitherUtils._
 import fr.poleemploi.perspectives.commun.infra.oauth.OauthConfig
+import fr.poleemploi.perspectives.commun.infra.peconnect.ws.PEConnectRecruteurInfos
+import fr.poleemploi.perspectives.commun.infra.peconnect.{PEConnectAdapter, RecruteurPEConnect}
 import fr.poleemploi.perspectives.projections.recruteur.{ProfilRecruteurQuery, RecruteurQueryHandler}
 import fr.poleemploi.perspectives.recruteur.{ConnecterRecruteurCommand, InscrireRecruteurCommand, RecruteurCommandHandler, RecruteurId}
 import javax.inject.{Inject, Singleton}
@@ -22,16 +22,17 @@ import scala.concurrent.Future
 class PEConnectController @Inject()(cc: ControllerComponents,
                                     webAppConfig: WebAppConfig,
                                     recruteurPEConnectAction: RecruteurPEConnectAction,
-                                    peConnectAdapter: PEConnectAdapter,
                                     recruteurCommandHandler: RecruteurCommandHandler,
-                                    recruteurQueryHandler: RecruteurQueryHandler) extends AbstractController(cc) {
+                                    recruteurQueryHandler: RecruteurQueryHandler,
+                                    peConnectAuthAdapter: PEConnectAuthAdapter,
+                                    peConnectAdapter: PEConnectAdapter) extends AbstractController(cc) {
 
   val redirectUri: Call = routes.PEConnectController.connexionCallback()
   val oauthConfig: OauthConfig = webAppConfig.recruteurOauthConfig
 
   def inscription: Action[AnyContent] = Action { request =>
     Redirect(routes.PEConnectController.connexion()).withSession(
-      SessionOauthTokens.setOauthTokensRecruteur(peConnectAdapter.generateTokens, request.session)
+      SessionOauthTokens.setOauthTokensRecruteur(peConnectAuthAdapter.generateTokens, request.session)
     )
   }
 
@@ -64,8 +65,8 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       authorizationCode <- request.getQueryString("code").toRight("Aucun code d'autorisation n'a été retourné").toFuture
       stateCallback <- request.getQueryString("state").toRight("Aucun state n'a été retourné").toFuture
       oauthTokens <- SessionOauthTokens.getOauthTokensRecruteur(request.session).toRight("Aucun token n'a été stocké en session").toFuture
-      _ <- Either.cond(peConnectAdapter.verifyState(oauthTokens, stateCallback), (), "La comparaison du state a échoué").toFuture
-      accessTokenResponse <- peConnectAdapter.getAccessTokenRecruteur(
+      _ <- Either.cond(peConnectAuthAdapter.verifyState(oauthTokens, stateCallback), (), "La comparaison du state a échoué").toFuture
+      accessTokenResponse <- peConnectAuthAdapter.getAccessTokenRecruteur(
         authorizationCode = authorizationCode,
         redirectUri = redirectUri.absoluteURL(),
         oauthTokens = oauthTokens
@@ -96,9 +97,8 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       case t: Throwable =>
         Logger.error("Erreur lors du callback recruteur via PEConnect", t)
         // Nettoyage de session et redirect
-        Redirect(routes.LandingController.landing()).withSession(
-          SessionOauthTokens.removeOauthTokensRecruteur(request.session)
-        )
+        Redirect(routes.LandingController.landing()).withSession(SessionOauthTokens.removeOauthTokensRecruteur(request.session))
+          .flashing(request.flash.withMessageErreur("Notre service en actuellement en cours de maintenance, veuillez réessayer ultérieurement."))
     }
   }
 

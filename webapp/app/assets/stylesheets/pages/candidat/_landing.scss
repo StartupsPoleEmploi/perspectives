@@ -92,10 +92,6 @@
     line-height: 2.5rem;
   }
 
-  .boutonAction {
-    @include boutonAction();
-  }
-
   .presentation {
     background-image: url("/assets/images/pages/candidat/landing/presentation.jpg");
     background-repeat: no-repeat;

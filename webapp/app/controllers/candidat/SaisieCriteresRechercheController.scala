@@ -5,14 +5,13 @@ import conf.WebAppConfig
 import controllers.FlashMessages._
 import controllers.{AssetsFinder, FormHelpers}
 import fr.poleemploi.perspectives.candidat._
-import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
-import fr.poleemploi.perspectives.commun.domain.{CodeROME, NumeroTelephone, RayonRecherche}
-import fr.poleemploi.perspectives.projections.candidat.mrs.MetiersEvaluesNouvelInscritQuery
-import fr.poleemploi.perspectives.projections.candidat.{CandidatQueryHandler, CandidatSaisieCriteresRechercheQuery, CandidatSaisieCriteresRechercheQueryResult}
-import fr.poleemploi.perspectives.projections.rechercheCandidat.RechercheCandidatQueryHandler
+import fr.poleemploi.perspectives.commun.domain._
+import fr.poleemploi.perspectives.commun.infra.play.http.HttpCommandHandler
+import fr.poleemploi.perspectives.projections.candidat.{CandidatLocalisationQuery, CandidatMetiersValidesQuery, CandidatQueryHandler, CandidatSaisieCriteresRechercheQuery}
+import fr.poleemploi.perspectives.projections.metier.{MetierQueryHandler, SecteursActiviteQuery}
 import javax.inject.Inject
-import play.api.libs.Files
-import play.api.mvc._
+import play.api.libs.json.Json
+import play.api.mvc.{Action, _}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -21,39 +20,31 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
                                                   implicit val assets: AssetsFinder,
                                                   implicit val webAppConfig: WebAppConfig,
                                                   messagesAction: MessagesActionBuilder,
-                                                  candidatCommandHandler: CandidatCommandHandler,
+                                                  candidatCommandHandler: HttpCommandHandler[Candidat],
                                                   candidatQueryHandler: CandidatQueryHandler,
-                                                  rechercheCandidatQueryHandler: RechercheCandidatQueryHandler,
+                                                  metierQueryHandler: MetierQueryHandler,
                                                   candidatAuthentifieAction: CandidatAuthentifieAction) extends AbstractController(components) {
-
-  val rayonsRecherche: List[RayonRecherche] = List(
-    RayonRecherche.MAX_10,
-    RayonRecherche.MAX_30,
-    RayonRecherche.MAX_50,
-    RayonRecherche.MAX_100
-  )
 
   def saisieCriteresRecherche: Action[AnyContent] = candidatAuthentifieAction.async { candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
       for {
-        candidatSaisieCriteresRecherche <-
+        secteursActivitesQueryResult <- metierQueryHandler.handle(SecteursActiviteQuery)
+        candidatSaisieCriteresQueryResult <-
           if (messagesRequest.flash.candidatInscrit) Future.successful(None)
           else candidatQueryHandler.handle(CandidatSaisieCriteresRechercheQuery(candidatAuthentifieRequest.candidatId)).map(Some(_))
-        metiersEvaluesCandidat <-
-          if (messagesRequest.flash.candidatInscrit) candidatQueryHandler.handle(MetiersEvaluesNouvelInscritQuery(candidatAuthentifieRequest.candidatId)).map(_.metiers)
-          else Future(candidatSaisieCriteresRecherche.map(c => c.metiersEvalues).getOrElse(Nil))
       } yield {
-        val form = candidatSaisieCriteresRecherche
-          .map(SaisieCriteresRechercheForm.fromCandidatCriteresRechercheDto)
+        val form = candidatSaisieCriteresQueryResult
+          .map(SaisieCriteresRechercheForm.fromCandidatCriteresRechercheQueryResult)
           .getOrElse(SaisieCriteresRechercheForm.nouveauCandidat)
 
         Ok(views.html.candidat.saisieCriteresRecherche(
-          saisieCriteresRechercheForm = form,
-          candidatSaisieCriteresRecherche = candidatSaisieCriteresRecherche,
-          metiersEvaluesCandidat = metiersEvaluesCandidat,
           candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie,
-          secteursActivites = rechercheCandidatQueryHandler.secteursProposes,
-          rayonsRecherche = rayonsRecherche
+          jsData = Json.obj(
+            "metiersValides" -> candidatSaisieCriteresQueryResult.map(_.metiersValides),
+            "secteursActivites" -> secteursActivitesQueryResult.secteursActivites,
+            "criteresRechercheFormData" -> form.value,
+            "algoliaPlacesConfig" -> webAppConfig.algoliaPlacesConfig
+          )
         ))
       }
     }(candidatAuthentifieRequest)
@@ -61,86 +52,69 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
 
   def modifierCriteresRecherche: Action[AnyContent] = candidatAuthentifieAction.async { candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
-      candidatQueryHandler.handle(CandidatSaisieCriteresRechercheQuery(candidatAuthentifieRequest.candidatId))
-        .flatMap(candidatSaisieCriteresRecherche => {
-          SaisieCriteresRechercheForm.form.bindFromRequest.fold(
-            formWithErrors =>
-              Future.successful(BadRequest(views.html.candidat.saisieCriteresRecherche(
-                saisieCriteresRechercheForm = formWithErrors,
-                candidatSaisieCriteresRecherche = Some(candidatSaisieCriteresRecherche),
-                metiersEvaluesCandidat = candidatSaisieCriteresRecherche.metiersEvalues,
-                candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie,
-                secteursActivites = rechercheCandidatQueryHandler.secteursProposes,
-                rayonsRecherche = rayonsRecherche
-              ))),
-            saisieCriteresRechercheForm => {
-              val modifierCriteresCommand = buildModifierCriteresRechercheCommand(candidatSaisieCriteresRecherche.candidatId, saisieCriteresRechercheForm)
-
-              candidatCommandHandler.handle(modifierCriteresCommand).map(_ =>
-                if (saisieCriteresRechercheForm.nouveauCandidat) {
-                  Redirect(routes.InscriptionController.confirmationInscription())
-                } else {
-                  Redirect(routes.RechercheOffreController.index())
-                    .flashing(messagesRequest.flash.withRayonRechercheModifie(modifierCriteresCommand.rayonRecherche))
-                }
+      SaisieCriteresRechercheForm.form.bindFromRequest.fold(
+        formWithErrors =>
+          for {
+            secteursActivitesQueryResult <- metierQueryHandler.handle(SecteursActiviteQuery)
+            candidatSaisieCriteresQueryResult <- candidatQueryHandler.handle(CandidatSaisieCriteresRechercheQuery(candidatAuthentifieRequest.candidatId))
+          } yield {
+            BadRequest(views.html.candidat.saisieCriteresRecherche(
+              candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie,
+              jsData = Json.obj(
+                "metiersValides" -> candidatSaisieCriteresQueryResult.metiersValides,
+                "secteursActivites" -> secteursActivitesQueryResult.secteursActivites,
+                "criteresRechercheFormErrors" -> formWithErrors.errorsAsJson,
+                "algoliaPlacesConfig" -> webAppConfig.algoliaPlacesConfig
               )
-            }
+            ))
+          },
+        saisieCriteresRechercheForm => {
+          val modifierCriteresCommand = buildModifierCandidatCommand(candidatAuthentifieRequest.candidatId, saisieCriteresRechercheForm)
+
+          candidatCommandHandler.handle(modifierCriteresCommand).map(_ =>
+            if (saisieCriteresRechercheForm.nouveauCandidat)
+              Redirect(routes.CVController.index())
+                .flashing(messagesRequest.flash.withCandidatInscrit)
+            else
+              Redirect(routes.RechercheOffreController.index())
+                .flashing(messagesRequest.flash.withCandidatLocalisationRecherche(modifierCriteresCommand.localisationRecherche))
           )
         })
     }(candidatAuthentifieRequest)
   }
 
-  def modifierCV: Action[MultipartFormData[Files.TemporaryFile]] =
-    candidatAuthentifieAction.async(parse.multipartFormData(CVForm.maxLength)) { implicit candidatAuthentifieRequest: CandidatAuthentifieRequest[MultipartFormData[Files.TemporaryFile]] =>
-      CVForm.bindFromMultipart(candidatAuthentifieRequest.body).fold(
-        erreur => Future.successful(BadRequest(erreur)),
-        cvForm => {
-          candidatQueryHandler.handle(CandidatSaisieCriteresRechercheQuery(candidatAuthentifieRequest.candidatId))
-            .flatMap(candidat =>
-              candidat.cvId
-                .map(cvId => candidatCommandHandler.handle(buildRemplacerCvCommand(candidat, cvId, cvForm)))
-                .getOrElse(candidatCommandHandler.handle(buildAjouterCvCommand(candidat, cvForm)))
-            ).map(_ => NoContent)
-        }
-      )
-    }
+  def localisation: Action[AnyContent] = candidatAuthentifieAction.async { candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
+    candidatQueryHandler.handle(CandidatLocalisationQuery(candidatAuthentifieRequest.candidatId)).map(queryResult =>
+      Ok(Json.obj("localisation" -> queryResult))
+    )
+  }
 
-  private def buildModifierCriteresRechercheCommand(candidatId: CandidatId, saisieCriteresRechercheForm: SaisieCriteresRechercheForm): ModifierCriteresRechercheCommand =
-    ModifierCriteresRechercheCommand(
+  def metiersValides: Action[AnyContent] = candidatAuthentifieAction.async { candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
+    candidatQueryHandler.handle(CandidatMetiersValidesQuery(candidatAuthentifieRequest.candidatId)).map(queryResult =>
+      Ok(Json.toJson(queryResult))
+    )
+  }
+
+  private def buildModifierCandidatCommand(candidatId: CandidatId, saisieCriteresRechercheForm: SaisieCriteresRechercheForm): ModifierCandidatCommand =
+    ModifierCandidatCommand(
       id = candidatId,
-      rechercheMetierEvalue = FormHelpers.stringToBoolean(saisieCriteresRechercheForm.rechercheMetierEvalue),
-      rechercheAutreMetier = FormHelpers.stringToBoolean(saisieCriteresRechercheForm.rechercheAutreMetier),
-      metiersRecherches =
-        if (FormHelpers.stringToBoolean(saisieCriteresRechercheForm.rechercheAutreMetier))
-          saisieCriteresRechercheForm.metiersRecherches.map(CodeROME)
-        else Set.empty,
-      etreContacteParOrganismeFormation = FormHelpers.stringToBoolean(saisieCriteresRechercheForm.etreContacteParOrganismeFormation),
-      etreContacteParAgenceInterim = FormHelpers.stringToBoolean(saisieCriteresRechercheForm.etreContacteParAgenceInterim),
-      rayonRecherche = RayonRecherche(saisieCriteresRechercheForm.rayonRecherche),
-      numeroTelephone = NumeroTelephone(saisieCriteresRechercheForm.numeroTelephone)
+      codesROMEValidesRecherches = saisieCriteresRechercheForm.metiersValidesRecherches.map(CodeROME),
+      codesROMERecherches = saisieCriteresRechercheForm.metiersRecherches.map(CodeROME),
+      codesDomaineProfessionnelRecherches = saisieCriteresRechercheForm.domainesProfessionnelsRecherches.map(CodeDomaineProfessionnel),
+      contactRecruteur = FormHelpers.stringToBoolean(saisieCriteresRechercheForm.contactRecruteur),
+      contactFormation = FormHelpers.stringToBoolean(saisieCriteresRechercheForm.contactFormation),
+      numeroTelephone = saisieCriteresRechercheForm.numeroTelephone.map(NumeroTelephone(_)),
+      localisationRecherche = LocalisationRecherche(
+        commune = saisieCriteresRechercheForm.localisation.commune,
+        codePostal = saisieCriteresRechercheForm.localisation.codePostal,
+        coordonnees = Coordonnees(
+          latitude = saisieCriteresRechercheForm.localisation.latitude,
+          longitude = saisieCriteresRechercheForm.localisation.longitude
+        ),
+        rayonRecherche = saisieCriteresRechercheForm.rayonRecherche.flatMap(r =>
+          if (r == 0) None
+          else Some(RayonRecherche(r, UniteLongueur.KM))
+        )
+      )
     )
-
-  private def buildAjouterCvCommand(candidat: CandidatSaisieCriteresRechercheQueryResult,
-                                    cvForm: CVForm): AjouterCVCommand =
-    AjouterCVCommand(
-      id = candidat.candidatId,
-      nomFichier = buildNomFichier(candidat, cvForm),
-      typeMedia = cvForm.typeMedia,
-      path = cvForm.path
-    )
-
-  private def buildRemplacerCvCommand(candidat: CandidatSaisieCriteresRechercheQueryResult,
-                                      cvId: CVId,
-                                      cvForm: CVForm): RemplacerCVCommand =
-    RemplacerCVCommand(
-      id = candidat.candidatId,
-      cvId = cvId,
-      nomFichier = buildNomFichier(candidat, cvForm),
-      typeMedia = cvForm.typeMedia,
-      path = cvForm.path
-    )
-
-  private def buildNomFichier(candidat: CandidatSaisieCriteresRechercheQueryResult,
-                              cvForm: CVForm): String =
-    s"${candidat.prenom.value} ${candidat.nom.value}.${TypeMedia.getExtensionFichier(cvForm.typeMedia)}"
 }

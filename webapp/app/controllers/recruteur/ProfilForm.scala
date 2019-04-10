@@ -31,7 +31,7 @@ object ProfilForm {
   val form = Form(
     mapping(
       "nouveauRecruteur" -> boolean,
-      "typeRecruteur" -> nonEmptyText,
+      "typeRecruteur" -> nonEmptyText.verifying(typeRecruteurConstraint),
       "raisonSociale" -> nonEmptyText,
       "numeroSiret" -> nonEmptyText.verifying(numeroSiretConstraint),
       "numeroTelephone" -> nonEmptyText.verifying(FormHelpers.numeroTelephoneConstraint),

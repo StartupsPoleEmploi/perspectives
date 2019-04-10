@@ -1,6 +1,6 @@
 package controllers.candidat
 
-import authentification.infra.play.{CandidatAuthentifieAction, CandidatAuthentifieRequest, SessionCandidatAuthentifie}
+import authentification.infra.play.{CandidatAuthentifieAction, SessionCandidatAuthentifie}
 import conf.WebAppConfig
 import controllers.AssetsFinder
 import controllers.FlashMessages._
@@ -11,7 +11,6 @@ import javax.inject.{Inject, Singleton}
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 @Singleton
 class InscriptionController @Inject()(cc: ControllerComponents,
@@ -52,9 +51,5 @@ class InscriptionController @Inject()(cc: ControllerComponents,
         .withSession(SessionCandidatAuthentifie.set(candidatAuthentifie, request.session))
         .flashing(request.flash.withCandidatInscrit)
     }
-  }
-
-  def confirmationInscription(): Action[AnyContent] = candidatAuthentifieAction.async { implicit candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
-    Future(Ok(views.html.candidat.confirmationInscription(candidatAuthentifieRequest.candidatAuthentifie)))
   }
 }

@@ -36,12 +36,12 @@ var app = new Vue({
                 rayonRecherche: jsData.recherche.rayonRecherche,
                 typesContrats: [],
                 secteursActivites: [],
-                metiersEvalues: []
+                metiersValides: []
             },
             rayonsRecherche: rayonsRecherche,
             typesContrats: typesContrats,
             secteursActivites: [],
-            metiersEvalues: jsData.recherche.metiersEvalues,
+            metiersValides: Object.assign([], jsData.metiersValides),
             algoliaPlacesConfig: jsData.algoliaPlacesConfig,
             display: {
                 contact: false,

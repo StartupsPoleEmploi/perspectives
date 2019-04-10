@@ -6,16 +6,16 @@
 @layout(recruteurAuthentifie = None) {
     <div id="landingRecruteur" v-cloak>
         <section class="introArrierePlan">
-            <div class="intro">
-                <div class="introVersion">
-                    Recruteur
-                    <span class="introVersion-deco"></span>
-                </div>
-                <header class="introTitres">
-                    <h2 class="intro-titre">Notre mission, faciliter la rencontre entre une entreprise et un candidat.</h2>
+            <div class="container py-5">
+                <header class="row pb-5">
+                    <p class="col-12 introVersion texte-noir texte-majuscule font-weight-bold mb-2">
+                        Recruteur
+                        <span class="introVersion-deco"></span>
+                    </p>
+                    <h2 class="col col-lg-8 titreLanding texte-noir text-center text-lg-left">Notre mission, faciliter la rencontre entre une entreprise et un candidat.</h2>
                 </header>
-                <div class="presentation">
-                    <aside class="avantages">
+                <div class="row">
+                    <aside class="col-12 col-lg-6">
                         <ul class="listeAvantages">
                             <li class="listeAvantages-item">
                                 En vous proposant des profils validés par la <a href="#definitionMRS" class="definition-lien" title="Comment les candidats sont-ils validés ?">Méthode de recrutement par simulation (MRS Pôle Emploi)</a>
@@ -23,7 +23,7 @@
                             <li class="listeAvantages-item">Contactez des <b>candidats disponibles</b></li>
                             <li class="listeAvantages-item">Vous n'avez <b>pas d'offre à déposer</b></li>
                         </ul>
-                        <div class="introActions">
+                        <div class="text-center">
                             <a class="bouton bouton-actionPrincipale bouton--degradeBleu" href="@controllers.recruteur.routes.InscriptionController.inscription()">
                                 Je m'inscris
                                 <small class="bouton-small">en moins de 30 secondes</small>
@@ -31,7 +31,7 @@
                             <p class="introActions-sponsor">Crée par Pôle Emploi<p>
                         </div>
                     </aside>
-                    <aside class="introIllustration">
+                    <aside class="col-lg-6 d-none d-lg-block">
                         <img src="@assetsFinder.path("images/pages/recruteur/landing/intro-landing.svg")"
                         alt="Perspectives : recrutez des candidats"/>
                     </aside>
@@ -39,7 +39,7 @@
             </div>
         </section>
         <section class="sponsors">
-            <h2 class="sponsors-titre">Ils recrutent avec Perspectives</h2>
+            <h2 class="sponsors-titre titreLanding texte-noir">Ils recrutent avec Perspectives</h2>
             <ul class="listeSponsors">
                 <li class="listeSponsors-item"><img alt="Franaud" src="@assetsFinder.path("images/commun/sponsors/sponsor-franaud.png")" width="155" height="60"/></li>
                 <li class="listeSponsors-item"><img alt="Afpa" src="@assetsFinder.path("images/commun/sponsors/sponsor-afpa.png")" width="145" height="75"/></li>
@@ -49,16 +49,16 @@
             </ul>
         </section>
         <section id="definitionMRS" class="definitionArrierePlan">
-            <div class="definition">
-                <header class="definitionTitres">
-                    <h2 class="definition-titre">La Méthode de Recrutement par Simulation : Comment les candidats sont-ils validés ?</h2>
+            <div class="container py-5">
+                <header class="pb-5">
+                    <h2 class="titreLanding texte-noir text-center">La Méthode de Recrutement par Simulation : Comment les candidats sont-ils validés ?</h2>
                     <p class="definition-texte">La Méthode de Recrutement par Simulation reproduit les conditions de travail et permet de tester les aptitudes des candidats à exercer un nouveau métier</p>
                 </header>
                 <div class="videoPresentation">
                     <iframe src="https://www.youtube.com/embed/VpQOnDxUQek?ecver=2" style="position:absolute;width:100%;height:100%;left:0" width="640" height="360" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>
                     </iframe>
                 </div>
-                <div class="inscription">
+                <div class="text-center">
                     <a class="bouton bouton-actionPrincipale bouton--degradeBleu" href="@controllers.recruteur.routes.InscriptionController.inscription()">
                         Je m'inscris
                         <small class="bouton-small">en moins de 30 secondes</small>
@@ -66,10 +66,10 @@
                 </div>
             </div>
         </section>
-        <section class="temoignagesRecruteur">
-            <h2 class="temoignagesRecruteur-titre">Témoignages</h2>
+        <section class="container py-5">
+            <h2 class="titreLanding texte-noir text-center pb-5">Témoignages</h2>
             <temoignages v-bind:temoignages="temoignages"></temoignages>
-            <div class="inscription">
+            <div class="text-center">
                 <a class="bouton bouton-actionPrincipale bouton--degradeBleu" href="@controllers.recruteur.routes.InscriptionController.inscription()">
                     Je m'inscris
                     <small class="bouton-small">en moins de 30 secondes</small>

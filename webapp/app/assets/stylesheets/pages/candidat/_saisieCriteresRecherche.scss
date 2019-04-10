@@ -1,83 +1,97 @@
 #saisieCriteresRechercheCandidat {
+  min-height: 95vh;
 
-  .mrsValidees {
-    text-align: center;
-    color: $noir;
-    margin-bottom: 1em;
+  .boutonFormulaire {
+    font-weight: $font-weight-bold;
+    text-transform: uppercase;
+    @include button-size(1rem, 1rem, $font-size-sm, 1.5, 8px);
+    width: 100%;
   }
 
-  .listeMrsValidees {
+  .boutonModale {
+    font-weight: $font-weight-bold;
+    text-transform: uppercase;
+    @include button-size(1rem, 1rem, $font-size-sm, 1.5, 8px);
+  }
+
+  .listeChamps {
     @extend %liste;
-  }
 
-  .criteres {
-    @include make-container();
-    @include make-container-max-widths();
-  }
-
-  .critere {
-    margin-bottom: 1.5rem;
-
-    @include media-breakpoint-up(md) {
-      @include make-col-offset(1);
+    &-item {
+      padding-bottom: 2rem;
     }
   }
 
-  .choixMetiers {
-    @include make-row();
+  .input {
+    border: none;
+    width: 100%;
 
-    margin-left: 1.5rem;
+    &--erreur {
+      color: $rouge-erreur;
+      border: 1px solid $rouge-erreur;
+    }
   }
 
-  .secteursActivites {
-    @include make-col(11);
+  .retour {
+    cursor: pointer;
 
-    list-style-type: none;
-    padding-left: 1em;
+    &-icone {
+      cursor: pointer;
 
-    &-item:not(:last-child) {
-      margin-bottom: 1.5rem;
+      &:after {
+        @include media-breakpoint-down(md) {
+          top: 15px;
+          right: 0;
+          @include after(20px, 20px, solid $noir, 3px 0 0 3px, -45deg);
+        }
+        @include media-breakpoint-up(md) {
+          top: 7px;
+          left: 0;
+          @include after(9px, 9px, solid $noir, 2px 0 0 2px, -45deg);
+        }
+      }
     }
+  }
+
+  .modaleSaisie {
+    max-width: 700px;
+
+    &-fermer {
+      cursor: pointer;
+    }
+  }
+
+  .metierValide {
+    background-color: white;
+    border-radius: 40px;
   }
 
   .secteurActivite {
-    margin-bottom: 1rem;
-    color: $noir;
-    font-weight: 900;
-    font-size: 1.2em;
-    text-transform: uppercase;
+    background-color: white;
+    border-radius: 40px;
+    cursor: pointer;
   }
 
-  .metiers {
-    @include make-row();
+  .metierSelectionne {
+    color: #FA6300;
+    position: relative;
 
-    list-style-type: none;
-    padding-left: 1em;
+    &:after {
+      top: -2px;
+      left: 0;
 
-    &-item {
-      @include media-breakpoint-up(md) {
-        @include make-col(4);
-      }
-      @include media-breakpoint-down(md) {
-        @include make-col(12);
-      }
-
-      color: #274056;
-      font-size: 1em;
-      margin-bottom: 0.5rem;
+      @include after(10px, 15px, solid #FA6300, 0 3px 3px 0, 40deg);
     }
   }
 
-  .validerCriteres {
-    text-align: center;
-    margin: 3rem 0;
+  .metierRecherche:nth-child(even) {
+    background-color: #F5F9FB;
   }
 
-  .telechargerCV {
-    font-weight: 300;
-    padding-left: 15px;
-    color: $noir;
-    text-decoration: underline;
+  .iconeMetierValide {
+    position: absolute;
+    top: 25px;
+    left: 41px;
   }
 }
 

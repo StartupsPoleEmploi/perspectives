@@ -2,26 +2,28 @@ package fr.poleemploi.perspectives.projections.candidat
 
 import fr.poleemploi.cqrs.projection.{Query, QueryResult}
 import fr.poleemploi.perspectives.candidat.CandidatId
-import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
 import fr.poleemploi.perspectives.commun.domain._
+import fr.poleemploi.perspectives.projections.metier.MetierDTO
 
 case class CandidatSaisieCriteresRechercheQuery(candidatId: CandidatId) extends Query[CandidatSaisieCriteresRechercheQueryResult]
 
 case class CandidatSaisieCriteresRechercheQueryResult(candidatId: CandidatId,
-                                                      nom: Nom,
-                                                      prenom: Prenom,
-                                                      rechercheMetierEvalue: Option[Boolean],
-                                                      metiersEvalues: List[Metier],
-                                                      rechercheAutreMetier: Option[Boolean],
-                                                      metiersRecherches: List[CodeROME],
-                                                      contacteParAgenceInterim: Option[Boolean],
-                                                      contacteParOrganismeFormation: Option[Boolean],
-                                                      rayonRecherche: Option[RayonRecherche],
+                                                      contactRecruteur: Option[Boolean],
+                                                      contactFormation: Option[Boolean],
+                                                      metiersValides: Set[MetierDTO],
+                                                      metiersValidesRecherches: Set[CodeROME],
+                                                      metiersRecherches: Set[CodeROME],
+                                                      domainesProfessionnelsRecherches: Set[CodeDomaineProfessionnel],
                                                       numeroTelephone: Option[NumeroTelephone],
-                                                      cvId: Option[CVId],
-                                                      cvTypeMedia: Option[TypeMedia]) extends QueryResult {
-
-  def possedeCV: Boolean = cvId.isDefined
-
-  def nomCV: Option[String] = cvTypeMedia.map(t => s"${prenom.value} ${nom.value}.${TypeMedia.getExtensionFichier(t)}")
+                                                      codePostal: Option[String],
+                                                      commune: Option[String],
+                                                      latitude: Option[Double],
+                                                      longitude: Option[Double],
+                                                      codePostalRecherche: Option[String],
+                                                      communeRecherche: Option[String],
+                                                      rayonRecherche: Option[RayonRecherche],
+                                                      latitudeRecherche: Option[Double],
+                                                      longitudeRecherche: Option[Double]) extends QueryResult {
+  def saisieComplete: Boolean =
+    List(contactRecruteur, contactFormation, codePostalRecherche, communeRecherche).forall(_.isDefined)
 }

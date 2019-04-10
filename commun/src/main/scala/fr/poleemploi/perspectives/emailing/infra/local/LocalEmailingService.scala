@@ -14,7 +14,4 @@ class LocalEmailingService extends EmailingService {
 
   override def ajouterRecruteurInscrit(recruteurInscrit: RecruteurInscrit): Future[Unit] =
     Future.successful(())
-
-  override def envoyerAlerteMailRecruteur(alerteMailRecruteur: AlerteMailRecruteur): Future[Unit] =
-    Future.successful(())
 }

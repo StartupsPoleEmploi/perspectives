@@ -6,6 +6,7 @@ import controllers.AssetsFinder
 import javax.inject._
 import play.api.libs.json.Json
 import play.api.mvc._
+import controllers.FlashMessages.FlashMessage
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -19,18 +20,23 @@ class LandingController @Inject()(cc: ControllerComponents,
 
   def landing(): Action[AnyContent] = optionalRecruteurAuthentifieAction.async { optionalRecruteurAuthentifieRequest: OptionalRecruteurAuthentifieRequest[AnyContent] =>
     optionalCandidatAuthentifieAction.async { implicit optionalCandidatAuthentifieRequest: OptionalCandidatAuthentifieRequest[AnyContent] =>
-      if (optionalCandidatAuthentifieRequest.isCandidatAuthentifie)
+      val result = Future {
+        Ok(views.html.candidat.landing(
+          jsData = Json.obj(
+            "algoliaPlacesConfig" -> webAppConfig.algoliaPlacesConfig
+          )
+        ))
+      }
+
+      // Redirection du candidat ou du recruteur connecté vers sa page principale, sauf en cas d'erreur
+      if (optionalCandidatAuthentifieRequest.flash.getMessageErreur.isDefined)
+        result
+      else if (optionalCandidatAuthentifieRequest.isCandidatAuthentifie)
         Future.successful(Redirect(controllers.candidat.routes.RechercheOffreController.index()))
       else if (optionalRecruteurAuthentifieRequest.isRecruteurAuthentifie)
         Future.successful(Redirect(controllers.recruteur.routes.RechercheCandidatController.index()))
       else
-        Future {
-          Ok(views.html.candidat.landing(
-            jsData = Json.obj(
-              "algoliaPlacesConfig" -> webAppConfig.algoliaPlacesConfig
-            )
-          ))
-        }
+        result
     }(optionalRecruteurAuthentifieRequest)
   }
 }

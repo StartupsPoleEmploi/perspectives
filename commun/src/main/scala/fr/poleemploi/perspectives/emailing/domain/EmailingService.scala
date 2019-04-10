@@ -9,6 +9,4 @@ trait EmailingService {
   def mettreAJourCVCandidat(miseAJourCVCandidat: MiseAJourCVCandidat): Future[Unit]
 
   def ajouterRecruteurInscrit(recruteurInscrit: RecruteurInscrit): Future[Unit]
-
-  def envoyerAlerteMailRecruteur(alerteMailRecruteur: AlerteMailRecruteur): Future[Unit]
 }

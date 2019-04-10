@@ -38,7 +38,4 @@ class MailjetEmailingService(mailjetSqlAdapter: MailjetSqlAdapter,
       )
     } yield ()
   }
-
-  override def envoyerAlerteMailRecruteur(alerteMailRecruteur: AlerteMailRecruteur): Future[Unit] =
-    mailjetWSAdapter.envoyerAlerteMailRecruteur(alerteMailRecruteur)
 }

@@ -1,0 +1,155 @@
+.bouton {
+  @include userSelect(none);
+
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  &-small {
+    display: block;
+    font-weight: normal;
+
+    &--opaque {
+      opacity: 0.6;
+    }
+  }
+
+  &-action {
+    text-transform: uppercase;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 700;
+    padding: 1rem;
+  }
+
+  &-actionPrincipale {
+    font-size: 1.4em;
+    font-weight: 700;
+    letter-spacing: -0.90px;
+    line-height: 1.5em;
+    border-radius: 10px;
+    padding: .350em 1.8em;
+    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+  }
+
+  &-actionSecondaire {
+    font-size: 1.1em;
+    font-weight: 700;
+    letter-spacing: -0.76px;
+    line-height: 1.5em;
+    border-radius: 10px;
+    padding: 1.35em 1.8em;
+  }
+
+  &--fondBlanc {
+    color: #6A89CC;
+    background-color: white;
+    border: 1px solid #6A89CC;
+
+    &:hover {
+      color: #6A89CC;
+    }
+  }
+
+  &--fondBleu {
+    color: white;
+    background-color: #6A89CC;
+    border: 1px solid transparent;
+    box-shadow: 0 0 30px 0 rgba(106, 137, 204, 0.25);
+
+    &:hover {
+      color: white;
+    }
+
+    &:disabled {
+      background-color: #B4C3E5;
+    }
+  }
+
+  &--degradeBleu {
+    color: white;
+    background: linear-gradient(0deg, $bleu-ciel 0%, #6A89CC 100%);
+    box-shadow: 0 0 30px 0 rgba(57, 92, 99, 0.15);
+
+    &:hover {
+      color: white;
+    }
+  }
+
+  &--noirSurBlanc {
+    color: $black;
+    background-color: white;
+    border: 1px solid $black;
+  }
+
+  &--noir {
+    color: $black;
+
+    &:hover {
+      color: $black;
+    }
+  }
+
+  &--blancSurNoir {
+    color: white;
+    background-color: $black;
+
+    &:hover {
+      color: white;
+      background-color: #7B99C2;
+    }
+
+    &:active {
+      background-color: #1D242F;
+    }
+  }
+
+  &--noirSurGris {
+    color: $black;
+    background-color: #EAEBED;
+  }
+
+  &--bleu {
+    color: white;
+    background-color: $bleu-ciel;
+    border: 1px solid transparent;
+
+    &:hover {
+      background-color: #AEDEE9;
+    }
+
+    &:active {
+      background-color: #6DAFBF;
+    }
+  }
+
+  &--blancSurVert {
+    color: white;
+    background-color: $vert-emeraude;
+    border: none;
+
+    &:hover {
+      color: white;
+    }
+  }
+
+  &--vertSurBlanc {
+    color: $vert-emeraude;
+    background-color: white;
+    border: 2px solid $vert-emeraude;
+
+    &:hover {
+      color: $vert-emeraude;
+    }
+  }
+
+  &--block {
+    width: 100%;
+  }
+}

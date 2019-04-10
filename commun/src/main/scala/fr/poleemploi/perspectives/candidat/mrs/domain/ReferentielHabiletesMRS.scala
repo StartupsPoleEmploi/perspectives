@@ -6,7 +6,7 @@ import scala.concurrent.Future
 
 trait ReferentielHabiletesMRS {
 
-  def habiletes(codeROME: CodeROME, codeDepartement: CodeDepartement): Future[List[Habilete]]
+  def habiletes(codeROME: CodeROME, codeDepartement: CodeDepartement): Future[Set[Habilete]]
 
   /**
     * Liste les départements pour lesquels il y a des CodeROME avec des habiletés

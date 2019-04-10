@@ -48,12 +48,12 @@ class ReferentielHabiletesMRSSqlAdapter(val driver: PostgresDriver,
     database.run(bulkInsert).map(_.getOrElse(0))
   }
 
-  override def habiletes(codeROME: CodeROME, codeDepartement: CodeDepartement): Future[List[Habilete]] =
+  override def habiletes(codeROME: CodeROME, codeDepartement: CodeDepartement): Future[Set[Habilete]] =
     database.run(habiletesParMRSQuery(codeROME, codeDepartement).result.headOption).map(_.map(
-      h => h.habiletes
-    ).getOrElse(Nil))
+      h => h.habiletes.toSet
+    ).getOrElse(Set.empty))
 
   override def codeROMEsParDepartement: Future[Map[CodeDepartement, List[CodeROME]]] =
-    database.run(habiletesMRSTable.map(h => (h.codeDepartement, h.codeROME)).result)
+    database.run(habiletesMRSTable.map(h => (h.codeDepartement, h.codeROME)).sortBy(h => (h._1, h._2)).result)
       .map(_.toList.groupBy(_._1).map(v => (v._1, v._2.map(l => l._2))))
 }

@@ -5,7 +5,6 @@ import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
 import fr.poleemploi.perspectives.candidat.{CandidatId, StatutDemandeurEmploi}
 import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.conseiller.ConseillerId
-import fr.poleemploi.perspectives.recruteur.alerte.domain.{AlerteId, FrequenceAlerte}
 import fr.poleemploi.perspectives.recruteur.{NumeroSiret, RecruteurId, TypeRecruteur}
 
 object PerspectivesEventSourcingModule extends EventSourcingModule {
@@ -21,15 +20,13 @@ object PerspectivesEventSourcingModule extends EventSourcingModule {
   addStringValueObject(classOf[Prenom], Prenom(_))
   addStringValueObject(classOf[Email], Email)
   addStringValueObject(classOf[CodeROME], CodeROME)
-  addStringValueObject(classOf[CodeSecteurActivite], CodeSecteurActivite(_))
+  addStringValueObject(classOf[CodeSecteurActivite], CodeSecteurActivite)
+  addStringValueObject(classOf[CodeDomaineProfessionnel], CodeDomaineProfessionnel)
   addStringValueObject(classOf[CodeDepartement], CodeDepartement)
   addStringValueObject(classOf[TypeRecruteur], TypeRecruteur(_))
   addStringValueObject(classOf[StatutDemandeurEmploi], StatutDemandeurEmploi(_))
   addStringValueObject(classOf[CVId], CVId)
   addStringValueObject(classOf[TypeMedia], TypeMedia(_))
-  addStringValueObject(classOf[AlerteId], AlerteId)
-  addStringValueObject(classOf[FrequenceAlerte], FrequenceAlerte(_))
-  addStringValueObject(classOf[Habilete], Habilete(_))
-
-  addIntValueObject(classOf[RayonRecherche], RayonRecherche(_))
+  addStringValueObject(classOf[Habilete], Habilete)
+  addStringValueObject(classOf[UniteLongueur], UniteLongueur(_))
 }

@@ -6,6 +6,7 @@ import fr.poleemploi.cqrs.projection.{Query, QueryResult}
 import fr.poleemploi.perspectives.candidat.{CandidatId, StatutDemandeurEmploi}
 import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
+import fr.poleemploi.perspectives.projections.metier.MetierDTO
 import play.api.libs.json._
 
 case class CandidatsPourConseillerQuery(nbPagesACharger: Int,
@@ -20,17 +21,15 @@ case class CandidatsPourConseillerQueryResult(candidats: List[CandidatPourConsei
 case class CandidatPourConseillerDto(candidatId: CandidatId,
                                      nom: Nom,
                                      prenom: Prenom,
-                                     genre: Genre,
                                      email: Email,
                                      statutDemandeurEmploi: Option[StatutDemandeurEmploi],
-                                     rechercheMetiersEvalues: Option[Boolean],
-                                     metiersEvalues: List[Metier],
-                                     rechercheAutresMetiers: Option[Boolean],
-                                     metiersRecherches: List[Metier],
-                                     contacteParAgenceInterim: Option[Boolean],
-                                     contacteParOrganismeFormation: Option[Boolean],
-                                     commune: Option[String],
-                                     codePostal: Option[String],
+                                     metiersValides: Set[MetierDTO],
+                                     metiersValidesRecherches: Set[MetierDTO],
+                                     metiersRecherches: Set[MetierDTO],
+                                     contactRecruteur: Option[Boolean],
+                                     contactFormation: Option[Boolean],
+                                     communeRecherche: Option[String],
+                                     codePostalRecherche: Option[String],
                                      rayonRecherche: Option[RayonRecherche],
                                      numeroTelephone: Option[NumeroTelephone],
                                      dateInscription: LocalDateTime,
@@ -38,11 +37,11 @@ case class CandidatPourConseillerDto(candidatId: CandidatId,
 
   /**
     * Ne se base pas sur statutDemandeurEmploi car il n'est pas forcément actualisé tout de suite
-    * par le candidat et cela implique une reconnexion du candidat via un service externe.
+    * par le candidat et cela implique une reconnexion via un service externe.
     */
   val rechercheEmploi: Boolean =
-    (rechercheMetiersEvalues.isEmpty && rechercheAutresMetiers.isEmpty) ||
-      rechercheMetiersEvalues.getOrElse(false) || rechercheAutresMetiers.getOrElse(false)
+    metiersValidesRecherches.nonEmpty ||
+      metiersRecherches.nonEmpty
 }
 
 object CandidatPourConseillerDto {

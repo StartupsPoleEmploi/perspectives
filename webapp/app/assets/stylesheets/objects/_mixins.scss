@@ -12,31 +12,21 @@
   max-width: none;
 }
 
+@mixin after($width, $height, $border, $border-width, $rotate) {
+  content: "";
+  position: absolute;
+
+  width: $width;
+  height: $height;
+  border: $border;
+  border-width: $border-width;
+  -webkit-transform: rotate($rotate);
+  -ms-transform: rotate($rotate);
+  transform: rotate($rotate);
+}
+
 @mixin hiddenInput {
   opacity: 0;
   position: absolute;
   left: -1000px;
-}
-
-%titrePrincipal {
-  font-weight: 300;
-  font-size: 2em;
-  letter-spacing: 1px;
-  line-height: 1.2;
-}
-
-%descriptionTitrePrincipal {
-  color: $noir;
-  font-size: 1.2em;
-  letter-spacing: 1.12px;
-  font-weight: lighter;
-  line-height: 1.2;
-  white-space: pre-line;
-  text-align: center;
-}
-
-%liste {
-  margin: 0;
-  padding: 0;
-  list-style-type: none;
 }

@@ -10,9 +10,9 @@ class CommentaireLocalAdapter extends CommentaireService {
     Future.successful(println(
       s"""
          |Commentaire sur la recherche candidats de ${commentaire.nomRecruteur.value} ${commentaire.prenomRecruteur.value}, société ${commentaire.raisonSociale} :
-         |Secteur : ${commentaire.labelSecteurActiviteRecherche.getOrElse("")}
-         |Métier : ${commentaire.labelMetierRecherche.getOrElse("")}
-         |Département : ${commentaire.labelLocalisationRecherche.getOrElse("")}
+         ${commentaire.secteurActivite.map(s => s"|Secteur : $s").getOrElse("")}
+         ${commentaire.metier.map(m => s"|Métier : $m").getOrElse("")}
+         ${commentaire.localisation.map(l => s"|Localisation : $l").getOrElse("")}
          |Commentaire : ${commentaire.commentaire}""".stripMargin
     ))
   }

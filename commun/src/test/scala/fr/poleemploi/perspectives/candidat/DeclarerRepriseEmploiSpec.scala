@@ -49,9 +49,9 @@ class DeclarerRepriseEmploiSpec extends WordSpec with MustMatchers with MockitoS
       // Given
       val candidat = candidatBuilder
         .avecInscription()
-        .avecCriteresRecherche(
-          rechercheMetierEvalue = Some(false),
-          rechercheAutreMetier = Some(false)
+        .avecVisibiliteRecruteur(
+          contactRecruteur = Some(false),
+          contactFormation = Some(false)
         ).build
 
       // When

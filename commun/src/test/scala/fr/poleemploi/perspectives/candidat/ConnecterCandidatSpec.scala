@@ -260,7 +260,7 @@ class ConnecterCandidatSpec extends AsyncWordSpec
         val event = events.filter(_.isInstanceOf[AdresseModifieeEvent]).head.asInstanceOf[AdresseModifieeEvent]
         event.candidatId mustBe commande.id
         event.adresse.voie mustBe "nouvelle voie"
-        event.coordonnees mustBe Some(coordonnees)
+        event.coordonnees mustBe coordonnees
       })
     }
     "générer un événement contenant le statut de demandeur d'emploi modifié" in {
