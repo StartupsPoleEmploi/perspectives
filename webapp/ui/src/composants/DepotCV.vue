@@ -2,7 +2,7 @@
     <form method="POST" enctype="multipart/form-data" class="row"
           v-bind:id="id" v-bind:action="action" v-on:submit.prevent="telecharger">
         <input type="hidden" name="csrfToken" v-bind:value="csrfToken" />
-        <div class="depotCV col col-lg-6 text-center py-4">
+        <div class="depotCV col col-lg-9 text-center py-4">
             <input class="depotCV-input" name="cv" type="file"
                    v-bind:id="'input-CV-' + id"
                    v-bind:accept="typesMediasValides.join(',')"

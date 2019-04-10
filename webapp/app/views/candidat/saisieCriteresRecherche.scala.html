@@ -53,218 +53,220 @@
             </div>
         </div>
         <section class="container py-md-5 py-2">
-            <h2 class="texte-noir font-weight-bold font-size-lg" v-show="display.etape1">
-                Bonjour @candidatAuthentifie.prenom.value @candidatAuthentifie.nom.value
-            </h2>
-            @form(action = controllers.candidat.routes.SaisieCriteresRechercheController.modifierCriteresRecherche(),
-                'id -> "criteresRechercheForm", Symbol("v-on:submit.prevent") -> "validerCriteres") {
-                @CSRF.formField
-                <input type="hidden" name="nouveauCandidat" v-bind:value="criteresRechercheFormData.nouveauCandidat" />
-                <fieldset v-show="display.etape1">
-                    <legend class="texte-noir font-size-legend mb-4">
-                        Sur Perspectives, les recruteurs peuvent vous contacter directement.</legend>
-                    <ol class="listeChamps">
-                        <li class="listeChamps-item">
-                            <p class="texte-noir">
-                                Acceptez-vous d'être contacté par des recruteurs ? <span>*</span>
-                            </p>
-                            <div class="d-flex">
-                                <span>
-                                    <input id="contactRecruteur-true" name="contactRecruteur"
-                                        type="radio" value="true" class="radioDeuxChoix-input" v-model="criteresRechercheFormData.contactRecruteur" />
-                                    <label class="radioDeuxChoix-label radioDeuxChoix-choix1 font-size-sm texte-majuscule" for="contactRecruteur-true">Oui</label>
-                                </span>
-                                <span>
-                                    <input id="contactRecruteur-false" name="contactRecruteur"
-                                        type="radio" value="false" class="radioDeuxChoix-input" v-model="criteresRechercheFormData.contactRecruteur" />
-                                    <label class="radioDeuxChoix-label radioDeuxChoix-choix2 font-size-sm texte-majuscule" for="contactRecruteur-false">Non</label>
-                                </span>
-                            </div>
-                            <div v-for="error in criteresRechercheFormErrors.contactRecruteur" class="texte-erreur font-size-sm">{{error}}</div>
-                        </li>
-                        <li class="listeChamps-item">
-                            <p class="texte-noir">
-                                Acceptez-vous d'être contacté par des organismes de formation ? <span>*</span>
-                            </p>
-                            <div class="d-flex">
-                                <span>
-                                    <input id="contactFormation-true" name="contactFormation"
-                                    type="radio" value="true" class="radioDeuxChoix-input" v-model="criteresRechercheFormData.contactFormation" />
-                                    <label class="radioDeuxChoix-label radioDeuxChoix-choix1 font-size-sm texte-majuscule" for="contactFormation-true">Oui</label>
-                                </span>
-                                <span>
-                                    <input id="contactFormation-false" name="contactFormation"
-                                    type="radio" value="false" class="radioDeuxChoix-input" v-model="criteresRechercheFormData.contactFormation" />
-                                    <label class="radioDeuxChoix-label radioDeuxChoix-choix2 font-size-sm texte-majuscule" for="contactFormation-false">Non</label>
-                                </span>
-                            </div>
-                            <div v-for="error in criteresRechercheFormErrors.contactFormation" class="texte-erreur font-size-sm">{{error}}</div>
-                        </li>
-                        <li class="listeChamps-item row" v-show="criteresRechercheFormData.contactRecruteur === 'true' || criteresRechercheFormData.contactFormation === 'true'">
-                            <label class="col-12 texte-noir mb-3" for="numeroTelephone">
-                                A quel numéro peuvent-ils vous joindre ? <span>*</span>
-                            </label>
-                            <div class="col-12 col-lg-5">
-                                <input id="numeroTelephone"
-                                    name="numeroTelephone"
-                                    type="text" class="texte-noir font-size-sm font-italic px-3 py-3 input"
-                                    maxlength="10"
-                                    placeholder="06 XX XX XX XX"
-                                    v-model="criteresRechercheFormData.numeroTelephone"
-                                    v-bind:class="{ 'input--erreur': criteresRechercheFormErrors.numeroTelephone.length > 0 }" />
-                            </div>
-                            <div v-for="error in criteresRechercheFormErrors.numeroTelephone" class="col-12 texte-erreur font-size-sm mt-1">{{error}}</div>
-                        </li>
-                    </ol>
-                    <div class="row">
-                        <div class="col-lg-4 col-md-6 col text-center">
-                            <button class="bouton bouton--blancSurVert boutonFormulaire" type="button"
-                                    v-on:click="validerEtape1">
-                                Bien, où cherchez-vous?
-                            </button>
-                            <p class="texte-noir-50 font-size-sm my-3">Il vous reste juste 2 étapes :-)</p>
-                        </div>
-                    </div>
-                </fieldset>
-                <fieldset v-show="display.etape2">
-                    <legend class="texte-noir font-size-legend mb-4">Ok, commençons à vous chercher un job !</legend>
-                    <ol class="listeChamps">
-                        <li class="listeChamps-item row">
-                            <label class="col-12 texte-noir mb-3" for="js-communeRecherche">
-                                Dans quelle ville recherchez-vous ? <span>*</span>
-                            </label>
-                            <div class="col-12 col-lg-5">
-                                <input type="hidden" name="localisation.codePostal" v-model="criteresRechercheFormData.localisation.codePostal" />
-                                <input type="hidden" name="localisation.latitude" v-model="criteresRechercheFormData.localisation.latitude" />
-                                <input type="hidden" name="localisation.longitude" v-model="criteresRechercheFormData.localisation.longitude" />
-                                <input id="js-communeRecherche" type="text" name="localisation.commune" class="texte-noir font-size-sm input"
-                                        v-model="criteresRechercheFormData.localisation.commune"/>
-                            </div>
-                            <div v-for="error in criteresRechercheFormErrors.localisation" class="col-12 texte-erreur font-size-sm mt-1">{{error}}</div>
-                        </li>
-                        <li class="listeChamps-item">
-                            <p class="texte-noir">
-                                Et quelle distance êtes-vous prêts à parcourir ? <span>*</span>
-                            </p>
-                            <span class="mr-3 d-block d-sm-inline-block" v-for="rayonRecherche in rayonsRecherche">
-                                <input v-bind:id="'rayonRecherche-' + rayonRecherche.value" name="rayonRecherche"
-                                        v-model="criteresRechercheFormData.rayonRecherche"
-                                        type="radio" v-bind:value="rayonRecherche.value" class="radioMultiChoix-input" />
-                                <label class="radioMultiChoix-label texte-noir font-size-sm px-4 py-3" v-bind:for="'rayonRecherche-' + rayonRecherche.value">
-                                    {{rayonRecherche.label}}
+            <div class="row justify-content-center">
+                <h2 class="col-lg-8 col-12 texte-noir font-weight-bold font-size-lg" v-show="display.etape1">
+                    Bonjour @candidatAuthentifie.prenom.value @candidatAuthentifie.nom.value
+                </h2>
+                @form(action = controllers.candidat.routes.SaisieCriteresRechercheController.modifierCriteresRecherche(),
+                    'id -> "criteresRechercheForm",
+                    'class -> "col-lg-8 col-12",
+                    Symbol("v-on:submit.prevent") -> "validerCriteres") {
+                    @CSRF.formField
+                    <input type="hidden" name="nouveauCandidat" v-bind:value="criteresRechercheFormData.nouveauCandidat" />
+                    <fieldset v-show="display.etape1">
+                        <legend class="texte-noir font-size-legend mb-4">
+                            Sur Perspectives, les recruteurs peuvent vous contacter directement.</legend>
+                        <ol class="listeChamps">
+                            <li class="listeChamps-item">
+                                <p class="texte-noir">
+                                    Acceptez-vous d'être contacté par des recruteurs ? <span>*</span>
+                                </p>
+                                <div class="d-flex">
+                                    <span>
+                                        <input id="contactRecruteur-true" name="contactRecruteur"
+                                               type="radio" value="true" class="radioDeuxChoix-input" v-model="criteresRechercheFormData.contactRecruteur" />
+                                        <label class="radioDeuxChoix-label radioDeuxChoix-choix1 font-size-sm texte-majuscule" for="contactRecruteur-true">Oui</label>
+                                    </span>
+                                    <span>
+                                        <input id="contactRecruteur-false" name="contactRecruteur"
+                                               type="radio" value="false" class="radioDeuxChoix-input" v-model="criteresRechercheFormData.contactRecruteur" />
+                                        <label class="radioDeuxChoix-label radioDeuxChoix-choix2 font-size-sm texte-majuscule" for="contactRecruteur-false">Non</label>
+                                    </span>
+                                </div>
+                                <div v-for="error in criteresRechercheFormErrors.contactRecruteur" class="texte-erreur font-size-sm">{{error}}</div>
+                            </li>
+                            <li class="listeChamps-item">
+                                <p class="texte-noir">
+                                    Acceptez-vous d'être contacté par des organismes de formation ? <span>*</span>
+                                </p>
+                                <div class="d-flex">
+                                    <span>
+                                        <input id="contactFormation-true" name="contactFormation"
+                                               type="radio" value="true" class="radioDeuxChoix-input" v-model="criteresRechercheFormData.contactFormation" />
+                                        <label class="radioDeuxChoix-label radioDeuxChoix-choix1 font-size-sm texte-majuscule" for="contactFormation-true">Oui</label>
+                                    </span>
+                                    <span>
+                                        <input id="contactFormation-false" name="contactFormation"
+                                               type="radio" value="false" class="radioDeuxChoix-input" v-model="criteresRechercheFormData.contactFormation" />
+                                        <label class="radioDeuxChoix-label radioDeuxChoix-choix2 font-size-sm texte-majuscule" for="contactFormation-false">Non</label>
+                                    </span>
+                                </div>
+                                <div v-for="error in criteresRechercheFormErrors.contactFormation" class="texte-erreur font-size-sm">{{error}}</div>
+                            </li>
+                            <li class="listeChamps-item row" v-show="criteresRechercheFormData.contactRecruteur === 'true' || criteresRechercheFormData.contactFormation === 'true'">
+                                <label class="col-12 texte-noir mb-3" for="numeroTelephone">
+                                    A quel numéro peuvent-ils vous joindre ? <span>*</span>
                                 </label>
-                            </span>
-                            <div v-for="error in criteresRechercheFormErrors.rayonRecherche" class="texte-erreur font-size-sm">{{error}}</div>
-                        </li>
-                    </ol>
-                    <div class="row">
-                        <div class="col-1" v-on:click="retourEtape1">
-                            <span class="retour-icone"></span>
-                            <span class="texte-noir font-size-sm retour d-none d-md-block">Retour</span>
+                                <div class="col-12 col-lg-5">
+                                    <input id="numeroTelephone"
+                                            name="numeroTelephone"
+                                            type="text" class="texte-noir font-size-sm font-italic px-3 py-3 input"
+                                            maxlength="10"
+                                            placeholder="06 XX XX XX XX"
+                                            v-model="criteresRechercheFormData.numeroTelephone"
+                                            v-bind:class="{ 'input--erreur': criteresRechercheFormErrors.numeroTelephone.length > 0 }" />
+                                </div>
+                                <div v-for="error in criteresRechercheFormErrors.numeroTelephone" class="col-12 texte-erreur font-size-sm mt-1">{{error}}</div>
+                            </li>
+                        </ol>
+                        <div class="row">
+                            <div class="col-md-6 col text-center">
+                                <button class="bouton bouton--blancSurVert boutonFormulaire" type="button"
+                                        v-on:click="validerEtape1">
+                                    Bien, où cherchez-vous?
+                                </button>
+                                <p class="texte-noir-50 font-size-sm my-3">Il vous reste juste 2 étapes :-)</p>
+                            </div>
                         </div>
-                        <div class="col-lg-4 col-md-6 col text-center">
-                            <button class="bouton bouton--blancSurVert boutonFormulaire" type="button" v-on:click="validerEtape2">
-                                Ok, passons à vos préférences
-                            </button>
-                            <p class="texte-noir-50 font-size-sm my-3">On arrive au bout \../</p>
-                        </div>
-                    </div>
-                </fieldset>
-                <fieldset v-show="display.etape3">
-                    <legend class="texte-noir font-size-legend mb-4">
-                        <template v-if="metiersValides.length > 0">
-                            Votre profil Pôle Emploi indique que vous avez passé une <abbr title="Méthode de Recrutement par Simulation">MRS</abbr>
-                        </template>
-                        <template v-else>
-                            Dans quels autres secteurs recherchez-vous un emploi ?
-                        </template>
-                    </legend>
-                    <ol class="listeChamps">
-                        <li class="listeChamps-item" v-if="metiersValides.length > 0">
-                            <p class="texte-noir">Recherchez-vous toujours sur ces métiers ?</p>
-                            <ul class="list-no-style px-2">
-                                <li class="secteurActivite mb-2" v-for="metierValide in metiersValides">
-                                    <input v-bind:id="'metierValide-' + metierValide.codeROME" name="metiersValidesRecherches[]"
-                                            type="checkbox" v-bind:value="metierValide.codeROME" class="checkbox-input"
-                                            v-model="criteresRechercheFormData.metiersValidesRecherches" />
-                                    <label class="checkbox-label row align-items-center px-3 py-3 mb-0" v-bind:for="'metierValide-' + metierValide.codeROME">
-                                        <div class="col-1 d-none d-md-flex">
-                                            <img width="41" height="38" alt="Secteur d'activité"
-                                                v-bind:src="'/assets/images/commun/secteursActivite/' + metierValide.codeROME.charAt(0) + '.svg'" />
-                                            <img width="25" height="25" class="iconeMetierValide"
-                                                 alt="Métier validé" src="@assetsFinder.path("images/pages/candidat/saisieCriteresRecherche/badge.svg")" />
-                                        </div>
-                                        <div class="col-10">
-                                            <p class="font-size-sm mb-0">{{metierValide.label}}</p>
-                                        </div>
-                                        <div class="col-1">
-                                            <span class="checkbox-checkmark checkbox-checkmark--lg"></span>
-                                        </div>
+                    </fieldset>
+                    <fieldset v-show="display.etape2">
+                        <legend class="texte-noir font-size-legend mb-4">Ok, commençons à vous chercher un job !</legend>
+                        <ol class="listeChamps">
+                            <li class="listeChamps-item row">
+                                <label class="col-12 texte-noir mb-3" for="js-communeRecherche">
+                                    Dans quelle ville recherchez-vous ? <span>*</span>
+                                </label>
+                                <div class="col-12 col-lg-5">
+                                    <input type="hidden" name="localisation.codePostal" v-model="criteresRechercheFormData.localisation.codePostal" />
+                                    <input type="hidden" name="localisation.latitude" v-model="criteresRechercheFormData.localisation.latitude" />
+                                    <input type="hidden" name="localisation.longitude" v-model="criteresRechercheFormData.localisation.longitude" />
+                                    <input id="js-communeRecherche" type="text" name="localisation.commune" class="texte-noir font-size-sm input"
+                                           v-model="criteresRechercheFormData.localisation.commune"/>
+                                </div>
+                                <div v-for="error in criteresRechercheFormErrors.localisation" class="col-12 texte-erreur font-size-sm mt-1">{{error}}</div>
+                            </li>
+                            <li class="listeChamps-item">
+                                <p class="texte-noir">
+                                    Et quelle distance êtes-vous prêts à parcourir ? <span>*</span>
+                                </p>
+                                <span class="mr-3 d-block d-sm-inline-block" v-for="rayonRecherche in rayonsRecherche">
+                                    <input v-bind:id="'rayonRecherche-' + rayonRecherche.value" name="rayonRecherche"
+                                           v-model="criteresRechercheFormData.rayonRecherche"
+                                           type="radio" v-bind:value="rayonRecherche.value" class="radioMultiChoix-input" />
+                                    <label class="radioMultiChoix-label texte-noir font-size-sm px-4 py-3" v-bind:for="'rayonRecherche-' + rayonRecherche.value">
+                                        {{rayonRecherche.label}}
                                     </label>
-                                </li>
-                            </ul>
-                            <div v-for="error in criteresRechercheFormErrors.metiersValidesRecherches" class="texte-erreur font-size-sm">{{error}}</div>
-                        </li>
-                        <li class="listeChamps-item">
-                            <p class="texte-noir" v-if="metiersValides.length > 0">Dans quels autres métiers recherchez-vous un emploi ?</p>
-                            <ul class="list-no-style px-2">
-                                <li class="secteurActivite px-3 pt-3 mb-2"
-                                    v-for="secteurActivite in secteursActivites"
-                                    v-bind:class="[display.secteursActivites[secteurActivite.code] ? 'pb-5' : 'pb-3']">
-                                    <div class="row align-items-center" v-on:click="deplierSecteur(secteurActivite.code)">
-                                        <img v-bind:alt="secteurActivite.label" v-bind:src="'/assets/images/commun/secteursActivite/' + secteurActivite.code + '.svg'" width="41" height="38"
-                                             class="col-1 d-none d-md-flex" />
-                                        <div class="col-10">
-                                            <p class="texte-majuscule texte-noir mb-1">{{secteurActivite.label}}</p>
-                                            <p class="texte-gris mb-0" v-show="!display.secteursActivites[secteurActivite.code] && display.metiersSelectionnesParSecteur[secteurActivite.code].length === 0">Exemple : {{secteurActivite.metiers.map(function(d) {
-                                                return d.label;
-                                                }).slice(0, 3).join(', ') + '...'}}</p>
-                                            <p class="mb-0" v-show="!display.secteursActivites[secteurActivite.code]">
-                                                <span v-for="metier in display.metiersSelectionnesParSecteur[secteurActivite.code]" class="metierSelectionne px-3">{{metier.label}}</span>
-                                            </p>
+                                </span>
+                                <div v-for="error in criteresRechercheFormErrors.rayonRecherche" class="texte-erreur font-size-sm">{{error}}</div>
+                            </li>
+                        </ol>
+                        <div class="row">
+                            <div class="col-1" v-on:click="retourEtape1">
+                                <span class="retour-icone"></span>
+                                <span class="texte-noir font-size-sm retour d-none d-md-block">Retour</span>
+                            </div>
+                            <div class="col-md-6 col text-center">
+                                <button class="bouton bouton--blancSurVert boutonFormulaire" type="button" v-on:click="validerEtape2">
+                                    Ok, passons à vos préférences
+                                </button>
+                                <p class="texte-noir-50 font-size-sm my-3">On arrive au bout \../</p>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <fieldset v-show="display.etape3">
+                        <legend class="texte-noir font-size-legend mb-4">
+                            <template v-if="metiersValides.length > 0">
+                                Votre profil Pôle Emploi indique que vous avez passé une <abbr title="Méthode de Recrutement par Simulation">MRS</abbr>
+                            </template>
+                            <template v-else>
+                                Dans quels autres secteurs recherchez-vous un emploi ?
+                            </template>
+                        </legend>
+                        <ol class="listeChamps">
+                            <li class="listeChamps-item" v-if="metiersValides.length > 0">
+                                <p class="texte-noir">Recherchez-vous toujours sur ces métiers ?</p>
+                                <ul class="list-no-style px-0">
+                                    <li class="mb-2" v-for="metierValide in metiersValides">
+                                        <input v-bind:id="'metierValide-' + metierValide.codeROME" name="metiersValidesRecherches[]"
+                                                type="checkbox" v-bind:value="metierValide.codeROME" class="checkbox-input"
+                                                v-model="criteresRechercheFormData.metiersValidesRecherches" />
+                                        <label class="checkbox-label checkbox-label--with-hover metierValide row align-items-center no-gutters py-3 mb-0" v-bind:for="'metierValide-' + metierValide.codeROME">
+                                            <div class="col-1 mx-3 d-none d-md-flex justify-content-center">
+                                                <img width="45" height="45" alt="Secteur d'activité"
+                                                    v-bind:src="'/assets/images/commun/secteursActivite/' + metierValide.codeROME.charAt(0) + '.svg'" />
+                                                <img width="25" height="25" class="iconeMetierValide"
+                                                     alt="Métier validé" src="@assetsFinder.path("images/pages/candidat/saisieCriteresRecherche/badge.svg")" />
+                                            </div>
+                                            <div class="col-9">
+                                                <p class="font-size-sm mb-0">{{metierValide.label}}</p>
+                                            </div>
+                                            <div class="col-1 text-center">
+                                                <span class="checkbox-checkmark checkbox-checkmark--lg"></span>
+                                            </div>
+                                        </label>
+                                    </li>
+                                </ul>
+                                <div v-for="error in criteresRechercheFormErrors.metiersValidesRecherches" class="texte-erreur font-size-sm">{{error}}</div>
+                            </li>
+                            <li class="listeChamps-item">
+                                <p class="texte-noir" v-if="metiersValides.length > 0">Dans quels autres métiers recherchez-vous un emploi ?</p>
+                                <ul class="list-no-style px-0">
+                                    <li class="secteurActivite pt-3 mb-2"
+                                        v-for="secteurActivite in secteursActivites"
+                                        v-bind:class="[display.secteursActivites[secteurActivite.code] ? 'pb-5' : 'pb-3']">
+                                        <div class="row align-items-center no-gutters" v-on:click="deplierSecteur(secteurActivite.code)">
+                                            <div class="col-1 mx-3 d-none d-md-flex justify-content-center">
+                                                <img v-bind:alt="secteurActivite.label" v-bind:src="'/assets/images/commun/secteursActivite/' + secteurActivite.code + '.svg'" width="45" height="45" />
+                                            </div>
+                                            <div class="col-9">
+                                                <p class="texte-majuscule texte-noir mb-0">{{secteurActivite.label}}</p>
+                                                <p class="mb-0" v-show="!display.secteursActivites[secteurActivite.code]">
+                                                    <span v-for="metier in display.metiersSelectionnesParSecteur[secteurActivite.code]" class="metierSelectionne font-size-sm px-3">{{metier.label}}</span>
+                                                </p>
+                                            </div>
+                                            <span class="col-1 texte-noir font-size-lg text-center">
+                                                <span v-show="!display.secteursActivites[secteurActivite.code]">+</span>
+                                                <span v-show="display.secteursActivites[secteurActivite.code]">&minus;</span>
+                                            </span>
                                         </div>
-                                        <span class="col-1 texte-noir font-size-lg">
-                                            <span v-show="!display.secteursActivites[secteurActivite.code]">+</span>
-                                            <span v-show="display.secteursActivites[secteurActivite.code]">&minus;</span>
-                                        </span>
-                                    </div>
-                                    <ul class="list-no-style px-0" v-show="display.secteursActivites[secteurActivite.code]">
-                                        <li v-for="(metierRecherche, index) in secteurActivite.metiers">
-                                            <input v-bind:id="'metierRecherche-' + metierRecherche.codeROME" name="metiersRecherches[]"
-                                                type="checkbox" class="checkbox-input"
-                                                v-bind:value="metierRecherche.codeROME" v-on:change="ajouterMetierSelectionne(metierRecherche, secteurActivite.code)"
-                                                v-model="criteresRechercheFormData.metiersRecherches" />
-                                            <label class="checkbox-label row align-items-center py-2 mb-0"
-                                                    v-bind:class="{'bg-bleu-ciel': index % 2 !== 0}"
-                                                    v-bind:for="'metierRecherche-' + metierRecherche.codeROME">
-                                                <div class="col-10 offset-md-1">
-                                                    <p class="font-size-sm mb-0">{{metierRecherche.label}}</p>
-                                                </div>
-                                                <div class="col-1">
-                                                    <span class="checkbox-checkmark"></span>
-                                                </div>
-                                            </label>
-                                        </li>
-                                    </ul>
-                                </li>
-                            </ul>
-                            <div v-for="error in criteresRechercheFormErrors.metiersRecherches" class="texte-erreur font-size-sm">{{error}}</div>
-                            <div v-for="error in criteresRechercheFormErrors.domainesProfessionnelsRecherches" class="texte-erreur font-size-sm">{{error}}</div>
-                        </li>
-                    </ol>
-                    <div class="row">
-                        <div class="col-1" v-on:click="retourEtape2">
-                            <span class="retour-icone"></span>
-                            <span class="texte-noir font-size-sm retour d-none d-md-block">Retour</span>
+                                        <ul class="list-no-style px-0" v-show="display.secteursActivites[secteurActivite.code]">
+                                            <li class="metierRecherche" v-for="(metierRecherche, index) in secteurActivite.metiers">
+                                                <input v-bind:id="'metierRecherche-' + metierRecherche.codeROME" name="metiersRecherches[]"
+                                                        type="checkbox" class="checkbox-input"
+                                                        v-bind:value="metierRecherche.codeROME" v-on:change="ajouterMetierSelectionne(metierRecherche, secteurActivite.code)"
+                                                        v-model="criteresRechercheFormData.metiersRecherches" />
+                                                <label class="checkbox-label checkbox-label--with-hover row align-items-center no-gutters py-2 mb-0"
+                                                        v-bind:for="'metierRecherche-' + metierRecherche.codeROME">
+                                                    <div class="col-1 mx-3 d-none d-md-flex"></div>
+                                                    <div class="col-9">
+                                                        <p class="font-size-sm mb-0">{{metierRecherche.label}}</p>
+                                                    </div>
+                                                    <div class="col-1 text-center">
+                                                        <span class="checkbox-checkmark"></span>
+                                                    </div>
+                                                </label>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                                <div v-for="error in criteresRechercheFormErrors.metiersRecherches" class="texte-erreur font-size-sm">{{error}}</div>
+                                <div v-for="error in criteresRechercheFormErrors.domainesProfessionnelsRecherches" class="texte-erreur font-size-sm">{{error}}</div>
+                            </li>
+                        </ol>
+                        <div class="row">
+                            <div class="col-1" v-on:click="retourEtape2">
+                                <span class="retour-icone"></span>
+                                <span class="texte-noir font-size-sm retour d-none d-md-block">Retour</span>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col text-center">
+                                <button class="bouton bouton--blancSurVert boutonFormulaire" type="submit">
+                                    Parfait !
+                                </button>
+                            </div>
                         </div>
-                        <div class="col-lg-4 col-md-6 col text-center">
-                            <button class="bouton bouton--blancSurVert boutonFormulaire" type="submit">
-                                Parfait !
-                            </button>
-                        </div>
-                    </div>
-                </fieldset>
-            }
+                    </fieldset>
+                }
+            </div>
         </section>
     </div>
     @commun.jsData(jsData)

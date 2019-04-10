@@ -9,20 +9,24 @@
 @layout(candidatAuthentifie = Some(candidatAuthentifie)) {
     <div id="depotCVCandidat" class="bg-bleu-ciel" v-cloak>
         <section class="container py-md-5 py-2">
-            <h2 class="texte-noir font-weight-bold font-size-lg mb-0"
-                v-if="nouveauCandidat">Parfait! Vous êtes inscrit.</h2>
-            <p class="texte-noir font-size-legend mb-4">
-                <template v-if="!avecCV">Augmentez vos chances d'être contacté en déposant votre CV !</template>
-                <template v-else>Maintenez votre CV à jour pour les recruteurs !</template>
-            </p>
-            <depot-cv action="@controllers.candidat.routes.CVController.modifierCV()" class="px-3"
-                v-bind:csrf-token="csrfToken"
-                v-bind:extensions-valides="extensionsValides"
-                v-bind:types-medias-valides="typesMediasValides"
-                v-bind:taille-max-in-bytes="tailleMaxInBytes"
-                v-bind:taille-max-label="tailleMaxLabel">
-            </depot-cv>
-            <a class="bouton bouton--vertSurBlanc boutonFormulaire mt-4" href="@controllers.candidat.routes.RechercheOffreController.index()">Plus tard! Je veux voir les offres</a>
+            <div class="row justify-content-center">
+                <div class="col-lg-8 col-12">
+                    <h2 class="texte-noir font-weight-bold font-size-lg mb-0"
+                        v-if="nouveauCandidat">Parfait! Vous êtes inscrit.</h2>
+                    <p class="texte-noir font-size-legend mb-4">
+                        <template v-if="!avecCV">Augmentez vos chances d'être contacté en déposant votre CV !</template>
+                        <template v-else>Maintenez votre CV à jour pour les recruteurs !</template>
+                    </p>
+                    <depot-cv action="@controllers.candidat.routes.CVController.modifierCV()" class="px-3"
+                            v-bind:csrf-token="csrfToken"
+                            v-bind:extensions-valides="extensionsValides"
+                            v-bind:types-medias-valides="typesMediasValides"
+                            v-bind:taille-max-in-bytes="tailleMaxInBytes"
+                            v-bind:taille-max-label="tailleMaxLabel">
+                    </depot-cv>
+                    <a class="bouton bouton--vertSurBlanc boutonFormulaire mt-4" href="@controllers.candidat.routes.RechercheOffreController.index()">Plus tard! Je veux voir les offres</a>
+                </div>
+            </div>
         </section>
     </div>
 

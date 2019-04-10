@@ -27,6 +27,11 @@
     &:not(:checked) ~ .checkbox-label {
       color: $noir;
     }
+
+    &:hover ~ .checkbox-label--with-hover {
+      color: white;
+      background-color: rgba(255, 164, 46, 0.76) !important;
+    }
   }
 
   &-checkmark {

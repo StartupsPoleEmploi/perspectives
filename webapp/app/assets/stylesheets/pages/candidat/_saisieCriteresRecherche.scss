@@ -61,9 +61,14 @@
     }
   }
 
+  .metierValide {
+    background-color: white;
+    border-radius: 40px;
+  }
+
   .secteurActivite {
     background-color: white;
-    border-radius: 53px;
+    border-radius: 40px;
     cursor: pointer;
   }
 
@@ -77,6 +82,10 @@
 
       @include after(10px, 15px, solid #FA6300, 0 3px 3px 0, 40deg);
     }
+  }
+
+  .metierRecherche:nth-child(even) {
+    background-color: #F5F9FB;
   }
 
   .iconeMetierValide {
