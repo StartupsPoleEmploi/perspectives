@@ -44,8 +44,9 @@
                     <div class="criteres-item conteneurSelecteur">
                         <label for="js-metiers-selecteur" class="sr-only">Chosissez un métier</label>
                         <select id="js-metiers-selecteur" name="metier" class="conteneurSelecteur-selecteur"
-                                v-model="metier">
-                            <option value="">Tous les métiers du secteur</option>
+                                v-model="metier" v-bind:disabled="secteurActivite === null || secteurActivite === ''">
+                            <option value="" v-if="secteurActivite === null || secteurActivite === ''">Choisissez un secteur</option>
+                            <option value="" v-else>Tous les métiers du secteur</option>
                             <option v-for="metier in metiers" v-bind:value="metier.codeROME">{{metier.label}}</option>
                         </select>
                     </div>
