@@ -108,7 +108,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
         // Nettoyage de session et redirect
         Redirect(routes.LandingController.landing())
           .withSession(SessionOauthTokens.removeOauthTokensCandidat(request.session))
-          .flashing(request.flash.withMessageErreur("Une erreur est survenue lors de l'accès au service de Pôle Emploi, veuillez réessayer ultérieurement"))
+          .flashing(request.flash.withMessageErreur("Notre service en actuellement en cours de maintenance, veuillez réessayer ultérieurement."))
     }
   }
 

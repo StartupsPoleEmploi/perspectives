@@ -4,11 +4,13 @@ import authentification.infra.play.{CandidatAuthentifieAction, OptionalCandidatA
 import conf.WebAppConfig
 import controllers.AssetsFinder
 import controllers.FlashMessages.FlashMessage
+import fr.poleemploi.cqrs.projection.QueryException
 import fr.poleemploi.perspectives.candidat.LocalisationRecherche
 import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite, RayonRecherche}
 import fr.poleemploi.perspectives.offre.domain.{CriteresRechercheOffre, TypeContrat}
 import fr.poleemploi.perspectives.projections.candidat._
 import javax.inject.{Inject, Singleton}
+import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc._
 import play.filters.csrf.CSRF
@@ -37,7 +39,7 @@ class RechercheOffreController @Inject()(cc: ControllerComponents,
         rayonRecherche = rayonRecherche.flatMap(RayonRecherche.from)
       )
 
-    for {
+    (for {
       candidatQueryResult <- optCandidatAuthentifieRequest.candidatAuthentifie.map(c =>
         candidatQueryHandler.handle(CandidatPourRechercheOffreQuery(c.candidatId)).map(Some(_))
       ).getOrElse(Future.successful(None))
@@ -73,6 +75,11 @@ class RechercheOffreController @Inject()(cc: ControllerComponents,
           "algoliaPlacesConfig" -> webAppConfig.algoliaPlacesConfig
         )
       ))
+    }).recover {
+      case t: QueryException =>
+        Logger.error("Erreur lors de la recherche d'offres", t)
+        Redirect(routes.LandingController.landing())
+          .flashing(optCandidatAuthentifieRequest.flash.withMessageErreur("Notre service en actuellement en cours de maintenance, veuillez réessayer ultérieurement."))
     }
   }
 

@@ -97,9 +97,8 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       case t: Throwable =>
         Logger.error("Erreur lors du callback recruteur via PEConnect", t)
         // Nettoyage de session et redirect
-        Redirect(routes.LandingController.landing()).withSession(
-          SessionOauthTokens.removeOauthTokensRecruteur(request.session)
-        )
+        Redirect(routes.LandingController.landing()).withSession(SessionOauthTokens.removeOauthTokensRecruteur(request.session))
+          .flashing(request.flash.withMessageErreur("Notre service en actuellement en cours de maintenance, veuillez réessayer ultérieurement."))
     }
   }
 

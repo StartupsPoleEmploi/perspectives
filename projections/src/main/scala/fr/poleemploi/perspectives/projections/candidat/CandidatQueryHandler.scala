@@ -1,6 +1,6 @@
 package fr.poleemploi.perspectives.projections.candidat
 
-import fr.poleemploi.cqrs.projection.{Query, QueryHandler, QueryResult, UnauthorizedQueryException}
+import fr.poleemploi.cqrs.projection._
 import fr.poleemploi.perspectives.candidat.cv.domain.{CV, CVService}
 import fr.poleemploi.perspectives.offre.domain.ReferentielOffre
 import fr.poleemploi.perspectives.projections.candidat.cv.{CVCandidatPourRecruteurQuery, CVCandidatPourRecruteurQueryResult, CVCandidatQuery, CVCandidatQueryResult}
@@ -24,7 +24,12 @@ class CandidatQueryHandler(candidatProjection: CandidatProjection,
     case q: CandidatsPourConseillerQuery => candidatProjection.listerPourConseiller(q)
     case q: RechercheCandidatsQuery => candidatProjection.rechercherCandidats(q)
     case q: CandidatMetiersValidesQuery => candidatProjection.metiersValides(q)
-    case q: OffresCandidatQuery => referentielOffre.rechercherOffres(q.criteresRechercheOffre).map(r => OffresCandidatQueryResult(offres = r.offres, nbOffresTotal = r.nbOffresTotal))
+    case q: OffresCandidatQuery =>
+      referentielOffre
+        .rechercherOffres(q.criteresRechercheOffre).map(r => OffresCandidatQueryResult(offres = r.offres, nbOffresTotal = r.nbOffresTotal))
+        .recover {
+          case t: Throwable => throw QueryException(t)
+        }
     case q: CandidatPourRechercheOffreQuery => candidatProjection.rechercheOffre(q)
   }
 
