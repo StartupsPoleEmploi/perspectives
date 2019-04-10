@@ -112,11 +112,6 @@
     }
   }
 
-  .filtre {
-    @extend %liste;
-    font-size: 0.875rem;
-  }
-
   .offres {
     &-item {
       display: flex;
@@ -568,10 +563,6 @@
         @include make-col(12);
       }
     }
-  }
-
-  .listeInfosProfil {
-    @extend %liste;
   }
 
   .infoProfil {

@@ -15,8 +15,6 @@
   }
 
   .listeChamps {
-    @extend %liste;
-
     &-item {
       padding-bottom: 2rem;
     }

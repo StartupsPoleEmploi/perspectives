@@ -44,7 +44,7 @@
                         <div class="detailOffre">
                             <h2 id="titreModaleDetailOffre" class="detailOffre-sousSection detailOffre-intitule">{{offreCourante.intitule}}</h2>
                             <div class="detailOffre-sousSection detailOffre-resume">
-                                <ul class="listeInfosProfil resumeDetailOffre">
+                                <ul class="list-unstyled resumeDetailOffre">
                                     <li class="resumeDetailOffre-item detailOffre-info detailOffre-info--petite">
                                         <img class="resumeDetailOffre-icone" src="@assetsFinder.path("images/pages/candidat/rechercheOffres/contrat.svg")" alt="Duree de travail" height="16" width="16" />
                                         <span>{{offreCourante.contrat.label}}</span>
@@ -144,7 +144,7 @@
                                     </div>
 
                                     <h4 class="detailOffre-sousTitreSection" v-show="offreCourante.permis.length > 0 || offreCourante.formations.length > 0 || offreCourante.langues.length > 0">Vous avez :</h4>
-                                    <ul class="listeInfosProfil">
+                                    <ul class="list-unstyled">
                                         <template v-for="permis in offreCourante.permis">
                                             <div class="detailOffre-info detailOffre-info--petite">
                                                 <div class="infoProfil" v-bind:class="[permis.exige ? 'infoProfil--exige' : '']">
@@ -174,7 +174,7 @@
                                     <h4 class="detailOffre-sousTitreSection" v-show="offreCourante.competences && offreCourante.competences.length > 0">
                                         Vous savez :
                                     </h4>
-                                    <ul class="listeInfosProfil" v-show="offreCourante.competences && offreCourante.competences.length > 0">
+                                    <ul class="list-unstyled" v-show="offreCourante.competences && offreCourante.competences.length > 0">
                                         <li class="detailOffre-info detailOffre-info--petite" v-for="competence in offreCourante.competences">
                                             <div class="infoProfil" v-bind:class="[competence.exige ? 'infoProfil--exige' : '']">
                                                 <span class="infoProfil-puce" v-bind:class="[competence.exige ? 'infoProfil-puce--exige' : 'infoProfil-puce--souhaite']"></span>
@@ -186,7 +186,7 @@
                                     <h4 class="detailOffre-sousTitreSection" v-show="offreCourante.qualitesProfessionnelles && offreCourante.qualitesProfessionnelles.length > 0">
                                         Vous êtes :
                                     </h4>
-                                    <ul class="listeInfosProfil" v-show="offreCourante.qualitesProfessionnelles && offreCourante.qualitesProfessionnelles.length > 0">
+                                    <ul class="list-unstyled" v-show="offreCourante.qualitesProfessionnelles && offreCourante.qualitesProfessionnelles.length > 0">
                                         <li class="detailOffre-info detailOffre-info--petite" v-for="qualite in offreCourante.qualitesProfessionnelles">
                                             <div class="infoProfil">
                                                 <span class="infoProfil-puce infoProfil-puce--souhaite"></span>
@@ -280,39 +280,39 @@
                         <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurFiltres">
                             <template v-if="metiersValides.length > 0">
                                 <p class="formulaireRecherche-titre">Filtrer par MRS :</p>
-                                <ul class="filtre">
+                                <ul class="list-unstyled">
                                     <li v-for="metierValide in metiersValides" v-bind:key="metierValide.codeROME" class="mb-3">
                                         <input v-bind:id="'metierValide-' + metierValide.codeROME" type="checkbox"
                                                name="metiers[]" class="checkbox-input"
                                                v-bind:value="metierValide.codeROME" v-model="recherche.metiersValides" />
                                         <label class="checkbox-label d-flex" v-bind:for="'metierValide-' + metierValide.codeROME">
                                             <span class="checkbox-checkmark checkbox-checkmark--md mr-2"></span>
-                                            <span class="col">{{metierValide.label}}</span>
+                                            <span class="col font-size-sm">{{metierValide.label}}</span>
                                         </label>
                                     </li>
                                 </ul>
                             </template>
                             <p class="formulaireRecherche-titre">Filtrer par contrat :</p>
-                            <ul class="filtre mb-3">
+                            <ul class="list-unstyled mb-3">
                                 <li v-for="typeContrat in typesContrats" v-bind:key="typeContrat.value" class="mb-3">
                                     <input v-bind:id="'typeContrat-' + typeContrat.value" type="checkbox"
                                             name="typesContrats[]" class="checkbox-input"
                                             v-bind:value="typeContrat.value" v-model="recherche.typesContrats" />
                                     <label class="checkbox-label d-flex" v-bind:for="'typeContrat-' + typeContrat.value">
                                         <span class="checkbox-checkmark checkbox-checkmark--md mr-2"></span>
-                                        <span class="col">{{typeContrat.label}}</span>
+                                        <span class="col font-size-sm">{{typeContrat.label}}</span>
                                     </label>
                                 </li>
                             </ul>
                             <p class="formulaireRecherche-titre" v-if="secteursActivites.length > 0">Filtrer par secteurs d'activité :</p>
-                            <ul class="filtre">
+                            <ul class="list-unstyled">
                                 <li v-for="secteurActivite in secteursActivites" v-bind:key="secteurActivite.value" class="mb-3">
                                     <input v-bind:id="'secteurActivite-' + secteurActivite.value" type="checkbox"
                                             name="secteursActivites[]" class="checkbox-input"
                                             v-bind:value="secteurActivite.value" v-model="recherche.secteursActivites" />
                                     <label class="checkbox-label d-flex" v-bind:for="'secteurActivite-' + secteurActivite.value">
                                         <span class="checkbox-checkmark checkbox-checkmark--md mr-2"></span>
-                                        <span class="col">{{secteurActivite.label}}</span>
+                                        <span class="col font-size-sm">{{secteurActivite.label}}</span>
                                     </label>
                                 </li>
                             </ul>

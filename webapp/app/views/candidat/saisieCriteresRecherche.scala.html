@@ -66,7 +66,7 @@
                     <fieldset v-show="display.etape1">
                         <legend class="texte-noir font-size-legend mb-4">
                             Sur Perspectives, les recruteurs peuvent vous contacter directement.</legend>
-                        <ol class="listeChamps">
+                        <ol class="listeChamps list-unstyled">
                             <li class="listeChamps-item">
                                 <p class="texte-noir">
                                     Acceptez-vous d'être contacté par des recruteurs ? <span>*</span>
@@ -131,7 +131,7 @@
                     </fieldset>
                     <fieldset v-show="display.etape2">
                         <legend class="texte-noir font-size-legend mb-4">Ok, commençons à vous chercher un job !</legend>
-                        <ol class="listeChamps">
+                        <ol class="listeChamps list-unstyled">
                             <li class="listeChamps-item row">
                                 <label class="col-12 texte-noir mb-3" for="js-communeRecherche">
                                     Dans quelle ville recherchez-vous ? <span>*</span>
@@ -182,10 +182,10 @@
                                 Dans quels autres secteurs recherchez-vous un emploi ?
                             </template>
                         </legend>
-                        <ol class="listeChamps">
+                        <ol class="listeChamps list-unstyled">
                             <li class="listeChamps-item" v-if="metiersValides.length > 0">
                                 <p class="texte-noir">Recherchez-vous toujours sur ces métiers ?</p>
-                                <ul class="list-no-style px-0">
+                                <ul class="list-unstyled">
                                     <li class="mb-2" v-for="metierValide in metiersValides">
                                         <input v-bind:id="'metierValide-' + metierValide.codeROME" name="metiersValidesRecherches[]"
                                                 type="checkbox" v-bind:value="metierValide.codeROME" class="checkbox-input"
@@ -210,7 +210,7 @@
                             </li>
                             <li class="listeChamps-item">
                                 <p class="texte-noir" v-if="metiersValides.length > 0">Dans quels autres métiers recherchez-vous un emploi ?</p>
-                                <ul class="list-no-style px-0">
+                                <ul class="list-unstyled">
                                     <li class="secteurActivite pt-3 mb-2"
                                         v-for="secteurActivite in secteursActivites"
                                         v-bind:class="[display.secteursActivites[secteurActivite.code] ? 'pb-5' : 'pb-3']">
@@ -229,7 +229,7 @@
                                                 <span v-show="display.secteursActivites[secteurActivite.code]">&minus;</span>
                                             </span>
                                         </div>
-                                        <ul class="list-no-style px-0" v-show="display.secteursActivites[secteurActivite.code]">
+                                        <ul class="list-unstyled" v-show="display.secteursActivites[secteurActivite.code]">
                                             <li class="metierRecherche" v-for="(metierRecherche, index) in secteurActivite.metiers">
                                                 <input v-bind:id="'metierRecherche-' + metierRecherche.codeROME" name="metiersRecherches[]"
                                                         type="checkbox" class="checkbox-input"

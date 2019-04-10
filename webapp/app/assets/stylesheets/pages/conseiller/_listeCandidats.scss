@@ -85,12 +85,7 @@
   }
 
   .listeActions {
-    @extend %liste;
-    display: inline-block;
-
     &-item {
-      display: block;
-      position: relative;
       padding: 10px;
     }
   }
