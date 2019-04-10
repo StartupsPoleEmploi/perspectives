@@ -25,7 +25,6 @@ import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetEmailingService
 import fr.poleemploi.perspectives.emailing.infra.sql.MailjetSqlAdapter
 import fr.poleemploi.perspectives.emailing.infra.ws.{MailjetWSAdapter, MailjetWSMapping}
 import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
-import fr.poleemploi.perspectives.metier.infra.ReferentielMetierImpl
 import fr.poleemploi.perspectives.metier.infra.elasticsearch.ReferentielMetierElasticsearchAdapter
 import fr.poleemploi.perspectives.metier.infra.ws.{ReferentielMetierWSAdapter, ReferentielMetierWSMapping}
 import fr.poleemploi.perspectives.projections.candidat.infra.elasticsearch.{CandidatProjectionElasticsearchAdapter, CandidatProjectionElasticsearchMapping}
@@ -183,22 +182,6 @@ class InfraModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
-  def referentielMetierWSMapping: ReferentielMetierWSMapping =
-    new ReferentielMetierWSMapping()
-
-  @Provides
-  def referentielMetierWSAdapter(wsClient: WSClient,
-                                 mapping: ReferentielMetierWSMapping,
-                                 batchsConfig: BatchsConfig,
-                                 cacheApi: AsyncCacheApi): ReferentielMetierWSAdapter =
-    new ReferentielMetierWSAdapter(
-      config = batchsConfig.referentielMetierWSAdapterConfig,
-      mapping = mapping,
-      wsClient = wsClient,
-      cacheApi = cacheApi
-    )
-
-  @Provides
   def referentielMetierElasticsearchAdapter(wsClient: WSClient,
                                             batchsConfig: BatchsConfig): ReferentielMetierElasticsearchAdapter =
     new ReferentielMetierElasticsearchAdapter(
@@ -207,10 +190,20 @@ class InfraModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
-  def referentielMetierImpl(referentielMetierWSAdapter: ReferentielMetierWSAdapter,
-                            referentielMetierElasticsearchAdapter: ReferentielMetierElasticsearchAdapter): ReferentielMetierImpl =
-    new ReferentielMetierImpl(
-      wsAdapter = referentielMetierWSAdapter,
+  def referentielMetierWSMapping: ReferentielMetierWSMapping =
+    new ReferentielMetierWSMapping()
+
+  @Provides
+  def referentielMetierWSAdapter(wsClient: WSClient,
+                                 mapping: ReferentielMetierWSMapping,
+                                 batchsConfig: BatchsConfig,
+                                 cacheApi: AsyncCacheApi,
+                                 referentielMetierElasticsearchAdapter: ReferentielMetierElasticsearchAdapter): ReferentielMetierWSAdapter =
+    new ReferentielMetierWSAdapter(
+      config = batchsConfig.referentielMetierWSAdapterConfig,
+      mapping = mapping,
+      wsClient = wsClient,
+      cacheApi = cacheApi,
       elasticsearchAdapter = referentielMetierElasticsearchAdapter
     )
 

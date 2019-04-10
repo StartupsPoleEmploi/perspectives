@@ -15,8 +15,8 @@ import fr.poleemploi.perspectives.emailing.domain.EmailingService
 import fr.poleemploi.perspectives.emailing.infra.local.LocalEmailingService
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetEmailingService
 import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
-import fr.poleemploi.perspectives.metier.infra.ReferentielMetierImpl
 import fr.poleemploi.perspectives.metier.infra.local.ReferentielMetierLocalAdapter
+import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapter
 import fr.poleemploi.perspectives.offre.domain.ReferentielOffre
 import fr.poleemploi.perspectives.offre.infra.local.ReferentielOffreLocalAdapter
 import fr.poleemploi.perspectives.offre.infra.ws.ReferentielOffreWSAdapter
@@ -72,11 +72,11 @@ class ServicesModule extends AbstractModule {
 
   @Provides
   @Singleton
-  def referentielMetier(referentielMetierLocalAdapter: Provider[ReferentielMetierLocalAdapter],
-                        referentielMetierImpl: Provider[ReferentielMetierImpl],
+  def referentielMetier(referentielMetierWSAdapter: Provider[ReferentielMetierWSAdapter],
+                        referentielMetierLocalAdapter: Provider[ReferentielMetierLocalAdapter],
                         webAppConfig: WebAppConfig): ReferentielMetier =
     if (webAppConfig.useReferentielMetier)
-      referentielMetierImpl.get()
+      referentielMetierWSAdapter.get()
     else
       referentielMetierLocalAdapter.get()
 
