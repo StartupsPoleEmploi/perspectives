@@ -1,8 +1,7 @@
 package controllers.candidat
 
-import authentification.infra.play.{CandidatAuthentifieAction, SessionCandidatAuthentifie}
+import authentification.infra.play.SessionCandidatAuthentifie
 import conf.WebAppConfig
-import controllers.AssetsFinder
 import controllers.FlashMessages._
 import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
 import fr.poleemploi.perspectives.candidat._
@@ -14,10 +13,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 @Singleton
 class InscriptionController @Inject()(cc: ControllerComponents,
-                                      implicit val assets: AssetsFinder,
                                       implicit val webAppConfig: WebAppConfig,
                                       candidatCommandHandler: CandidatCommandHandler,
-                                      candidatAuthentifieAction: CandidatAuthentifieAction,
                                       peConnectController: PEConnectController) extends AbstractController(cc) {
 
   def inscription(): Action[AnyContent] =

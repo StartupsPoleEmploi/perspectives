@@ -73,7 +73,6 @@ class PEConnectController @Inject()(cc: ControllerComponents,
         oauthTokens = oauthTokens
       )
       infosCandidat <- peConnectAdapter.getInfosCandidat(accessTokenResponse.accessToken)
-      // FIXME : adresse et statutDemandeurEmploi à récupérer en async via un PEConnectProcessManager + simplifier commandes inscrire et connecter
       optAdresse <- findAdresseCandidat(accessTokenResponse.accessToken)
       optStatutDemandeurEmploi <- findStatutDemandeurEmploi(accessTokenResponse.accessToken)
       optCandidat <- peConnectAdapter.findCandidat(infosCandidat.peConnectId)

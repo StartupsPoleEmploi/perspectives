@@ -7,8 +7,8 @@ import fr.poleemploi.perspectives.candidat.mrs.domain.{MRSValideeProcessManager,
 import net.codingwell.scalaguice.ScalaModule
 
 class RegisterProcessManagers @Inject()(eventStoreListener: EventStoreListener,
-                                        mrsValideeProcessPEConnectManager: MRSValideeProcessManager) {
-  eventStoreListener.subscribe(mrsValideeProcessPEConnectManager)
+                                        mrsValideeProcessProcessManager: MRSValideeProcessManager) {
+  eventStoreListener.subscribe(mrsValideeProcessProcessManager)
 }
 
 class ProcessManagersModule extends AbstractModule with ScalaModule {
