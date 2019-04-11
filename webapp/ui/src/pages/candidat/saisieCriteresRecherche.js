@@ -150,7 +150,7 @@ var app = new Vue({
                 !this.criteresRechercheFormData.localisation.longitude) {
                 this.criteresRechercheFormErrors.localisation = ["Veuillez saisir une valeur pour ce champ"];
             }
-            if (!this.criteresRechercheFormData.rayonRecherche === null) {
+            if (!this.criteresRechercheFormData.rayonRecherche) {
                 this.criteresRechercheFormErrors.rayonRecherche = ["Veuillez saisir une valeur pour ce champ"];
             }
 
