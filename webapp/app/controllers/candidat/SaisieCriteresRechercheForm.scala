@@ -93,7 +93,7 @@ object SaisieCriteresRechercheForm {
         latitude = candidat.latitudeRecherche.orElse(candidat.latitude).getOrElse(0),
         longitude = candidat.longitudeRecherche.orElse(candidat.longitude).getOrElse(0)
       ),
-      rayonRecherche = candidat.rayonRecherche.map(_.value).orElse(Some(0)),
+      rayonRecherche = candidat.rayonRecherche.map(_.value),
       metiersValidesRecherches = candidat.metiersValidesRecherches.map(_.value),
       metiersRecherches = candidat.metiersRecherches.map(_.value),
       domainesProfessionnelsRecherches = candidat.domainesProfessionnelsRecherches.map(_.value)

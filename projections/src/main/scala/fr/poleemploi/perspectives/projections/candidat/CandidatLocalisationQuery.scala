@@ -6,8 +6,8 @@ import play.api.libs.json.{Json, Writes}
 
 case class CandidatLocalisationQuery(candidatId: CandidatId) extends Query[CandidatLocalisationQueryResult]
 
-case class CandidatLocalisationQueryResult(commune: String,
-                                           codePostal: String,
+case class CandidatLocalisationQueryResult(commune: Option[String],
+                                           codePostal: Option[String],
                                            latitude: Option[Double],
                                            longitude: Option[Double]) extends QueryResult
 
