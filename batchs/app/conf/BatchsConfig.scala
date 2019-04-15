@@ -4,7 +4,7 @@ import java.nio.file.Paths
 
 import fr.poleemploi.perspectives.candidat.dhae.infra.csv.ImportHabiletesDHAECsvAdapterConfig
 import fr.poleemploi.perspectives.candidat.mrs.infra.csv.ImportHabiletesMRSCsvAdapterConfig
-import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.ImportMRSCandidatPEConnectConfig
+import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.ImportMRSPEConnectConfig
 import fr.poleemploi.perspectives.commun.infra.elasticsearch.EsConfig
 import fr.poleemploi.perspectives.commun.infra.oauth.OauthConfig
 import fr.poleemploi.perspectives.emailing.infra.ws.MailjetWSAdapterConfig
@@ -26,7 +26,8 @@ class BatchsConfig(configuration: Configuration) {
     clientId = configuration.get[String]("emploiStore.oauth2.clientId"),
     clientSecret = configuration.get[String]("emploiStore.oauth2.clientSecret"),
     urlAuthentification = configuration.get[String]("emploiStore.entreprise.urlAuthentification"),
-    realm = "partenaire"
+    realm = "partenaire",
+    scopes = Nil
   )
 
   val mailjetWSAdapterConfig: MailjetWSAdapterConfig = MailjetWSAdapterConfig(
@@ -37,7 +38,7 @@ class BatchsConfig(configuration: Configuration) {
     testeurs = configuration.getOptional[Seq[String]]("mailjet.testeurs").map(_.toList).getOrElse(Nil)
   )
 
-  val importMRSCandidatPEConnectConfig: ImportMRSCandidatPEConnectConfig = ImportMRSCandidatPEConnectConfig(
+  val importMRSPEConnectConfig: ImportMRSPEConnectConfig = ImportMRSPEConnectConfig(
     importDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.candidatsMrsValidees.importDirectory")),
     archiveDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.candidatsMrsValidees.archiveDirectory"))
   )

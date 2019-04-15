@@ -17,7 +17,7 @@ class BatchsScheduler(actorSystem: ActorSystem,
   val scheduler: QuartzSchedulerExtension = QuartzSchedulerExtension(actorSystem)
 
   def schedule: Date = {
-    scheduler.schedule("ImportCandidatsMRSValidees", candidatsMrsValideesActor, StartImportCandidatsMRSValidees)
+    scheduler.schedule("ImportCandidatsMRSValidees", candidatsMrsValideesActor, StartImportMRSValidees)
     scheduler.schedule("ImportHabiletesMRS", habiletesMRSActor, StartImportHabiletesMRS)
     scheduler.schedule("ImportHabiletesDHAE", habiletesDHAEActor, StartImportHabiletesDHAE)
   }

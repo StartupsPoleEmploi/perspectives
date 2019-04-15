@@ -1,6 +1,5 @@
 package fr.poleemploi.perspectives.commun.infra.peconnect
 
-import fr.poleemploi.perspectives.candidat.mrs.domain.MRSValidee
 import fr.poleemploi.perspectives.candidat.{Adresse, StatutDemandeurEmploi}
 import fr.poleemploi.perspectives.commun.infra.peconnect.sql.PEConnectSqlAdapter
 import fr.poleemploi.perspectives.commun.infra.peconnect.ws.{AccessToken, PEConnectCandidatInfos, PEConnectRecruteurInfos, PEConnectWSAdapter}
@@ -16,17 +15,14 @@ class PEConnectAdapter(peConnectWSAdapter: PEConnectWSAdapter,
   def saveCandidat(candidatPEConnect: CandidatPEConnect): Future[Unit] =
     peConnectSqlAdapter.saveCandidat(candidatPEConnect)
 
-  def getInfosCandidat(accessToken: AccessToken): Future[PEConnectCandidatInfos] =
-    peConnectWSAdapter.getInfosCandidat(accessToken)
+  def infosCandidat(accessToken: AccessToken): Future[PEConnectCandidatInfos] =
+    peConnectWSAdapter.infosCandidat(accessToken)
 
-  def getPrestationsCandidat(accessToken: AccessToken): Future[List[MRSValidee]] =
-    peConnectWSAdapter.getPrestationsCandidat(accessToken)
+  def adresseCandidat(accessToken: AccessToken): Future[Adresse] =
+    peConnectWSAdapter.coordonneesCandidat(accessToken)
 
-  def getAdresseCandidat(accessToken: AccessToken): Future[Adresse] =
-    peConnectWSAdapter.getCoordonneesCandidat(accessToken)
-
-  def getStatutDemandeurEmploiCandidat(accessToken: AccessToken): Future[StatutDemandeurEmploi] =
-    peConnectWSAdapter.getStatutDemandeurEmploiCandidat(accessToken)
+  def statutDemandeurEmploiCandidat(accessToken: AccessToken): Future[StatutDemandeurEmploi] =
+    peConnectWSAdapter.satutDemandeurEmploiCandidat(accessToken)
 
   def findRecruteur(peConnectId: PEConnectId): Future[Option[RecruteurPEConnect]] =
     peConnectSqlAdapter.findRecruteur(peConnectId)
@@ -34,6 +30,6 @@ class PEConnectAdapter(peConnectWSAdapter: PEConnectWSAdapter,
   def saveRecruteur(recruteurPEConnect: RecruteurPEConnect): Future[Unit] =
     peConnectSqlAdapter.saveRecruteur(recruteurPEConnect)
 
-  def getInfosRecruteur(accessToken: AccessToken): Future[PEConnectRecruteurInfos] =
-    peConnectWSAdapter.getInfosRecruteur(accessToken)
+  def infosRecruteur(accessToken: AccessToken): Future[PEConnectRecruteurInfos] =
+    peConnectWSAdapter.infosRecruteur(accessToken)
 }

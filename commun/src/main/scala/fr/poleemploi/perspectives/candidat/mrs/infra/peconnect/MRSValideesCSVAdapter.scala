@@ -18,7 +18,7 @@ import scala.concurrent.Future
 /**
   * Récupère les MRS validees des candidats issues d'un fichier CSV
   */
-class MRSValideesCandidatsCSVAdapter(val actorSystem: ActorSystem) {
+class MRSValideesCSVAdapter(val actorSystem: ActorSystem) {
 
   implicit val materializer: ActorMaterializer = ActorMaterializer()(actorSystem)
 
@@ -34,7 +34,7 @@ class MRSValideesCandidatsCSVAdapter(val actorSystem: ActorSystem) {
   val idPEConnectPattern: Pattern = Pattern.compile("^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$")
   val sitePrescripteurPattern: Pattern = Pattern.compile("[0-9]{5}")
 
-  def load(source: Source[ByteString, _]): Future[Stream[MRSValideeCandidatPEConnect]] = {
+  def load(source: Source[ByteString, _]): Future[Stream[MRSValideePEConnect]] = {
     source
       .via(CsvParsing.lineScanner(delimiter = ';'))
       .via(CsvToMap.toMapAsStrings())
@@ -45,7 +45,7 @@ class MRSValideesCandidatsCSVAdapter(val actorSystem: ActorSystem) {
           m.get("dd_daterealisation").exists(_.nonEmpty) &&
           m.get("kc_resultatsbeneficiaire_id").exists(resultatsBeneficiairesValides.contains)
       ).map(data =>
-      MRSValideeCandidatPEConnect(
+      MRSValideePEConnect(
         peConnectId = PEConnectId(data("dc_ididentiteexterne")),
         codeROME = CodeROME(data("dc_rome_id")),
         codeDepartement = CodeDepartement(data("dc_siteprescripteur").take(2)),

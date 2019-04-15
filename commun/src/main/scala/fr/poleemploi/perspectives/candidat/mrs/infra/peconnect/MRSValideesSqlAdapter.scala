@@ -15,12 +15,12 @@ import scala.concurrent.Future
 /**
   * Enregistre les MRS des candidats dans Postgres
   */
-class MRSValideesCandidatsSqlAdapter(val driver: PostgresDriver,
-                                     database: Database) {
+class MRSValideesSqlAdapter(val driver: PostgresDriver,
+                            database: Database) {
 
   import driver.api._
 
-  class MRSValideeCandidatsTable(tag: Tag) extends Table[MRSValideeCandidatPEConnect](tag, "candidats_mrs_validees") {
+  class MRSValideeCandidatsTable(tag: Tag) extends Table[MRSValideePEConnect](tag, "candidats_mrs_validees") {
 
     def id = column[Long]("id", O.PrimaryKey)
 
@@ -38,7 +38,7 @@ class MRSValideesCandidatsSqlAdapter(val driver: PostgresDriver,
 
     override def tableConstraints: Iterator[Constraint] = List(primaryKey("candidats_mrs_validees_unicite_mrs", (peConnectId, codeROME, codeDepartement))).toIterator
 
-    def * = (peConnectId, codeROME, codeDepartement, dateEvaluation) <> (MRSValideeCandidatPEConnect.tupled, MRSValideeCandidatPEConnect.unapply)
+    def * = (peConnectId, codeROME, codeDepartement, dateEvaluation) <> (MRSValideePEConnect.tupled, MRSValideePEConnect.unapply)
   }
 
   val mrsValideesCandidatsTable = TableQuery[MRSValideeCandidatsTable]
@@ -62,7 +62,7 @@ class MRSValideesCandidatsSqlAdapter(val driver: PostgresDriver,
     *
     * @return Le stream des MRS effectivement intégrées
     */
-  def ajouter(mrsValidees: Stream[MRSValideeCandidatPEConnect]): Future[Stream[MRSValideeCandidatPEConnect]] = {
+  def ajouter(mrsValidees: Stream[MRSValideePEConnect]): Future[Stream[MRSValideePEConnect]] = {
     val bulkInsert: DBIO[Option[Int]] = mrsValideesCandidatsTable.map(
       m => (m.peConnectId, m.codeROME, m.codeDepartement, m.dateEvaluation)
     ) insertOrUpdateAll mrsValidees.map(

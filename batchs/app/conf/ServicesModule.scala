@@ -3,11 +3,11 @@ package conf
 import com.google.inject.{AbstractModule, Provider, Provides, Singleton}
 import fr.poleemploi.perspectives.candidat.dhae.domain.ImportHabiletesDHAE
 import fr.poleemploi.perspectives.candidat.dhae.infra.csv.ImportHabiletesDHAECsvAdapter
-import fr.poleemploi.perspectives.candidat.dhae.infra.local.ImportHabiletesDHAELocal
-import fr.poleemploi.perspectives.candidat.mrs.domain.{ImportHabiletesMRS, ImportMRSCandidat, ReferentielHabiletesMRS}
+import fr.poleemploi.perspectives.candidat.dhae.infra.local.ImportHabiletesDHAELocalAdapter
+import fr.poleemploi.perspectives.candidat.mrs.domain.{ImportHabiletesMRS, ImportMRS, ReferentielHabiletesMRS}
 import fr.poleemploi.perspectives.candidat.mrs.infra.csv.ImportHabiletesMRSCsvAdapter
-import fr.poleemploi.perspectives.candidat.mrs.infra.local.{ImportHabiletesMRSLocal, ImportMRSCandidatLocal}
-import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.ImportMRSCandidatPEConnect
+import fr.poleemploi.perspectives.candidat.mrs.infra.local.{ImportHabiletesMRSLocalAdapter, ImportMRSLocalAdapter}
+import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.ImportMRSPEConnectAdapter
 import fr.poleemploi.perspectives.candidat.mrs.infra.sql.ReferentielHabiletesMRSSqlAdapter
 import fr.poleemploi.perspectives.emailing.domain.EmailingService
 import fr.poleemploi.perspectives.emailing.infra.local.LocalEmailingService
@@ -21,13 +21,13 @@ class ServicesModule extends AbstractModule {
 
   @Provides
   @Singleton
-  def importMRSCandidat(importMRSCandidatLocal: Provider[ImportMRSCandidatLocal],
-                        importMRSCandidatPEConnectAdapter: Provider[ImportMRSCandidatPEConnect],
-                        batchsConfig: BatchsConfig): ImportMRSCandidat =
+  def importMR(importMRSLocalAdapter: Provider[ImportMRSLocalAdapter],
+               importMRSPEConnectAdapter: Provider[ImportMRSPEConnectAdapter],
+               batchsConfig: BatchsConfig): ImportMRS =
     if (batchsConfig.usePEConnect)
-      importMRSCandidatPEConnectAdapter.get()
+      importMRSPEConnectAdapter.get()
     else
-      importMRSCandidatLocal.get()
+      importMRSLocalAdapter.get()
 
   @Provides
   @Singleton
@@ -52,20 +52,20 @@ class ServicesModule extends AbstractModule {
   @Provides
   @Singleton
   def importHabiletesMRS(importHabiletesMRSCsvAdapter: Provider[ImportHabiletesMRSCsvAdapter],
-                         importHabiletesMRSLocal: Provider[ImportHabiletesMRSLocal],
+                         importHabiletesMRSLocalAdapter: Provider[ImportHabiletesMRSLocalAdapter],
                          batchsConfig: BatchsConfig): ImportHabiletesMRS =
     if (batchsConfig.useImportHabiletesMRSCsv)
       importHabiletesMRSCsvAdapter.get()
     else
-      importHabiletesMRSLocal.get()
+      importHabiletesMRSLocalAdapter.get()
 
   @Provides
   @Singleton
   def importHabiletesDHAE(importHabiletesDHAECsvAdapter: Provider[ImportHabiletesDHAECsvAdapter],
-                          importHabiletesDHAELocal: Provider[ImportHabiletesDHAELocal],
+                          importHabiletesDHAELocalAdapter: Provider[ImportHabiletesDHAELocalAdapter],
                           batchsConfig: BatchsConfig): ImportHabiletesDHAE =
     if (batchsConfig.useImportHabiletesDHAECsv)
       importHabiletesDHAECsvAdapter.get()
     else
-      importHabiletesDHAELocal.get()
+      importHabiletesDHAELocalAdapter.get()
 }

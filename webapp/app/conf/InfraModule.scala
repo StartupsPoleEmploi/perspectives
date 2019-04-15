@@ -16,14 +16,14 @@ import fr.poleemploi.perspectives.authentification.infra.peconnect.ws.PEConnectA
 import fr.poleemploi.perspectives.candidat.cv.infra.sql.CVSqlAdapter
 import fr.poleemploi.perspectives.candidat.localisation.infra.local.LocalisationLocalAdapter
 import fr.poleemploi.perspectives.candidat.localisation.infra.ws.{LocalisationWSAdapter, LocalisationWSMapping}
-import fr.poleemploi.perspectives.candidat.mrs.infra.local.{ReferentielHabiletesMRSLocal, ReferentielMRSCandidatLocal}
-import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.{MRSValideesCandidatsSqlAdapter, ReferentielMRSCandidatPEConnect}
+import fr.poleemploi.perspectives.candidat.mrs.infra.local.{ReferentielHabiletesMRSLocalAdapter, ReferentielMRSLocalAdapter}
+import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.{MRSValideesSqlAdapter, ReferentielMRSPEConnect}
 import fr.poleemploi.perspectives.candidat.mrs.infra.sql.ReferentielHabiletesMRSSqlAdapter
 import fr.poleemploi.perspectives.commun.infra.jackson.PerspectivesEventSourcingModule
 import fr.poleemploi.perspectives.commun.infra.oauth.OauthService
-import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectAdapter
 import fr.poleemploi.perspectives.commun.infra.peconnect.sql.PEConnectSqlAdapter
 import fr.poleemploi.perspectives.commun.infra.peconnect.ws.{PEConnectWSAdapter, PEConnectWSMapping}
+import fr.poleemploi.perspectives.commun.infra.peconnect.{PEConnectAccessTokenStorage, PEConnectAdapter}
 import fr.poleemploi.perspectives.commun.infra.play.cache.InMemoryCacheApi
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
 import fr.poleemploi.perspectives.emailing.infra.local.LocalEmailingService
@@ -125,6 +125,7 @@ class InfraModule extends AbstractModule with ScalaModule {
   }
 
   @Provides
+  @Singleton
   def asyncCacheApi: AsyncCacheApi = new InMemoryCacheApi
 
   @Provides
@@ -155,19 +156,18 @@ class InfraModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
-  def peConnectWSWSMapping: PEConnectWSMapping =
+  def peConnectWSMapping: PEConnectWSMapping =
     new PEConnectWSMapping()
 
   @Provides
+  @Singleton
   def peConnectWSAdapter(webAppConfig: WebAppConfig,
                          mapping: PEConnectWSMapping,
                          wsClient: WSClient): PEConnectWSAdapter =
     new PEConnectWSAdapter(
       wsClient = wsClient,
       config = webAppConfig.peConnectWSAdapterConfig,
-      mapping = mapping,
-      recruteurOauthConfig = webAppConfig.recruteurOauthConfig,
-      candidatOauthConfig = webAppConfig.candidatOauthConfig
+      mapping = mapping
     )
 
   @Provides
@@ -198,8 +198,8 @@ class InfraModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
-  def mrsValideesCandidatsSqlAdapter(database: Database): MRSValideesCandidatsSqlAdapter =
-    new MRSValideesCandidatsSqlAdapter(
+  def mrsValideesSqlAdapter(database: Database): MRSValideesSqlAdapter =
+    new MRSValideesSqlAdapter(
       driver = PostgresDriver,
       database = database
     )
@@ -268,16 +268,32 @@ class InfraModule extends AbstractModule with ScalaModule {
     new ReferentielMetierLocalAdapter()
 
   @Provides
-  def referentielMRSCandidatPEConnect(mrsValideesCandidatsSqlAdapter: MRSValideesCandidatsSqlAdapter,
-                                      peConnectSqlAdapter: PEConnectSqlAdapter): ReferentielMRSCandidatPEConnect =
-    new ReferentielMRSCandidatPEConnect(
-      mrsValideesCandidatsSqlAdapter = mrsValideesCandidatsSqlAdapter,
-      peConnectSqlAdapter = peConnectSqlAdapter
+  @Singleton
+  def peConnectAccessTokenStorage(asyncCacheApi: AsyncCacheApi): PEConnectAccessTokenStorage =
+    new PEConnectAccessTokenStorage(
+      asyncCacheApi = asyncCacheApi
     )
 
   @Provides
-  def referentielMRSCandidatLocal: ReferentielMRSCandidatLocal =
-    new ReferentielMRSCandidatLocal
+  def referentielMRSPEConnect(wsClient: WSClient,
+                              webAppConfig: WebAppConfig,
+                              mrsValideesSqlAdapter: MRSValideesSqlAdapter,
+                              peConnectAccessTokenStorage: PEConnectAccessTokenStorage,
+                              peConnectWSAdapter: PEConnectWSAdapter,
+                              peConnectSqlAdapter: PEConnectSqlAdapter): ReferentielMRSPEConnect =
+    new ReferentielMRSPEConnect(
+      mrsValideesSqlAdapter = mrsValideesSqlAdapter,
+      peConnectAccessTokenStorage = peConnectAccessTokenStorage,
+      peConnectWSAdapter = peConnectWSAdapter,
+      peConnectSqlAdapter = peConnectSqlAdapter,
+      wsClient = wsClient,
+      slackConfig = webAppConfig.slackConfig,
+      environnement = webAppConfig.environnement
+    )
+
+  @Provides
+  def referentielMRSLocalAdapter: ReferentielMRSLocalAdapter =
+    new ReferentielMRSLocalAdapter
 
   @Provides
   def referentielHabiletesMRSSqlAdapter(database: Database): ReferentielHabiletesMRSSqlAdapter =
@@ -287,8 +303,8 @@ class InfraModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
-  def referentielHabiletesMRSLocal: ReferentielHabiletesMRSLocal =
-    new ReferentielHabiletesMRSLocal()
+  def referentielHabiletesMRSLocalAdapter: ReferentielHabiletesMRSLocalAdapter =
+    new ReferentielHabiletesMRSLocalAdapter()
 
   @Provides
   def commentaireLocalAdapter: CommentaireLocalAdapter =
@@ -299,7 +315,7 @@ class InfraModule extends AbstractModule with ScalaModule {
                               webAppConfig: WebAppConfig): CommentaireSlackAdapter =
     new CommentaireSlackAdapter(
       wsClient = wsClient,
-      config = webAppConfig.commentaireSlackConfig
+      config = webAppConfig.slackConfig
     )
 
   @Provides
@@ -340,12 +356,12 @@ class InfraModule extends AbstractModule with ScalaModule {
   def referentielOffreWSAdapter(wsClient: WSClient,
                                 webAppConfig: WebAppConfig,
                                 referentielOffreWSMapping: ReferentielOffreWSMapping,
-                                cacheApi: AsyncCacheApi): ReferentielOffreWSAdapter =
+                                asyncCacheApi: AsyncCacheApi): ReferentielOffreWSAdapter =
     new ReferentielOffreWSAdapter(
       config = webAppConfig.referentielOffreWSAdapterConfig,
       wsClient = wsClient,
       mapping = referentielOffreWSMapping,
-      cacheApi = cacheApi
+      cacheApi = asyncCacheApi
     )
 
   @Provides

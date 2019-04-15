@@ -8,7 +8,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class MRSValideeProcessManager(candidatCommandHandler: CandidatCommandHandler,
-                               referentielMRSCandidat: ReferentielMRSCandidat) extends Projection {
+                               referentielMRS: ReferentielMRS) extends Projection {
 
   override def listenTo: List[Class[_ <: Event]] = List(classOf[CandidatInscritEvent])
 
@@ -20,7 +20,7 @@ class MRSValideeProcessManager(candidatCommandHandler: CandidatCommandHandler,
 
   private def onCandidatInscritEvent(event: CandidatInscritEvent): Future[Unit] =
     for {
-      mrsValidees <- referentielMRSCandidat.mrsValideesParCandidat(event.candidatId)
+      mrsValidees <- referentielMRS.mrsValidees(event.candidatId)
       _ <- candidatCommandHandler.handle(
         AjouterMRSValideesCommand(
           id = event.candidatId,

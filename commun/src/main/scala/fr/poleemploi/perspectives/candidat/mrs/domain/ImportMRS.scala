@@ -12,7 +12,7 @@ case class MRSValideeCandidat(candidatId: CandidatId,
                               codeDepartement: CodeDepartement,
                               dateEvaluation: LocalDate)
 
-trait ImportMRSCandidat {
+trait ImportMRS {
 
   def integrerMRSValidees: Future[Stream[MRSValideeCandidat]]
 }

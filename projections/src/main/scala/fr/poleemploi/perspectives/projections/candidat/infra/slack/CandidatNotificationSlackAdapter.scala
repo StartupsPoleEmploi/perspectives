@@ -2,6 +2,7 @@ package fr.poleemploi.perspectives.projections.candidat.infra.slack
 
 import fr.poleemploi.perspectives.candidat.CandidatInscritEvent
 import fr.poleemploi.perspectives.commun.infra.Environnement
+import fr.poleemploi.perspectives.commun.infra.slack.SlackConfig
 import fr.poleemploi.perspectives.commun.infra.ws.WSAdapter
 import fr.poleemploi.perspectives.projections.candidat.CandidatNotificationProjection
 import play.api.libs.json.Json
@@ -10,8 +11,10 @@ import play.api.libs.ws.WSClient
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-case class CandidatNotificationSlackConfig(webhookURL: String,
-                                           environnement: Environnement)
+case class CandidatNotificationSlackConfig(slackConfig: SlackConfig,
+                                           environnement: Environnement) {
+  def webhookURL: String = slackConfig.webhookURL
+}
 
 class CandidatNotificationSlackAdapter(config: CandidatNotificationSlackConfig,
                                        wsClient: WSClient) extends CandidatNotificationProjection with WSAdapter {

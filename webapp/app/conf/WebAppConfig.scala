@@ -4,14 +4,14 @@ import fr.poleemploi.perspectives.candidat.localisation.infra.algolia.AlgoliaPla
 import fr.poleemploi.perspectives.candidat.localisation.infra.ws.LocalisationWSAdapterConfig
 import fr.poleemploi.perspectives.commun.infra.Environnement
 import fr.poleemploi.perspectives.commun.infra.elasticsearch.EsConfig
-import fr.poleemploi.perspectives.commun.infra.oauth.OauthConfig
+import fr.poleemploi.perspectives.commun.infra.oauth.{OauthConfig, OauthScope}
 import fr.poleemploi.perspectives.commun.infra.peconnect.ws.PEConnectWSAdapterConfig
+import fr.poleemploi.perspectives.commun.infra.slack.SlackConfig
 import fr.poleemploi.perspectives.emailing.infra.ws.MailjetWSAdapterConfig
 import fr.poleemploi.perspectives.infra.BuildInfo
 import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapterConfig
 import fr.poleemploi.perspectives.offre.infra.ws.ReferentielOffreWSAdapterConfig
 import fr.poleemploi.perspectives.projections.candidat.infra.slack.CandidatNotificationSlackConfig
-import fr.poleemploi.perspectives.recruteur.commentaire.infra.slack.CommentaireSlackConfig
 import play.api.Configuration
 
 class WebAppConfig(configuration: Configuration) {
@@ -32,21 +32,27 @@ class WebAppConfig(configuration: Configuration) {
     clientId = configuration.get[String]("emploiStore.oauth2.clientId"),
     clientSecret = configuration.get[String]("emploiStore.oauth2.clientSecret"),
     urlAuthentification = configuration.get[String]("emploiStore.candidat.urlAuthentification"),
-    realm = "individu"
+    realm = "individu",
+    scopes = List(OauthScope.API_INDIVIDU, OauthScope.API_COORDONNEES, OauthScope.API_STATUT, OauthScope.API_PRESTATIONS).flatten
   )
 
   val recruteurOauthConfig: OauthConfig = OauthConfig(
     clientId = configuration.get[String]("emploiStore.oauth2.clientId"),
     clientSecret = configuration.get[String]("emploiStore.oauth2.clientSecret"),
     urlAuthentification = configuration.get[String]("emploiStore.entreprise.urlAuthentification"),
-    realm = "employeur"
+    realm = "employeur",
+    scopes = OauthScope.API_ENTREPRISE
   )
 
   val partenaireOauthConfig: OauthConfig = OauthConfig(
     clientId = configuration.get[String]("emploiStore.oauth2.clientId"),
     clientSecret = configuration.get[String]("emploiStore.oauth2.clientSecret"),
     urlAuthentification = configuration.get[String]("emploiStore.entreprise.urlAuthentification"),
-    realm = "partenaire"
+    realm = "partenaire",
+    scopes = OauthScope.API_OFFRE ++
+      (if (Environnement.PRODUCTION == environnement)
+        List(OauthScope.API_OFFRE_QOS_SILVER)
+      else Nil)
   )
 
   val peConnectWSAdapterConfig: PEConnectWSAdapterConfig = PEConnectWSAdapterConfig(
@@ -55,13 +61,11 @@ class WebAppConfig(configuration: Configuration) {
 
   val googleTagManagerContainerId: String = configuration.get[String]("googleTagManager.containerId")
 
-  val candidatNotificationSlackConfig: CandidatNotificationSlackConfig = CandidatNotificationSlackConfig(
-    webhookURL = configuration.get[String]("slack.webhook.url"),
-    environnement = environnement
-  )
+  val slackConfig: SlackConfig = SlackConfig(configuration.get[String]("slack.webhook.url"))
 
-  val commentaireSlackConfig: CommentaireSlackConfig = CommentaireSlackConfig(
-    webhookURL = configuration.get[String]("slack.webhook.url")
+  val candidatNotificationSlackConfig: CandidatNotificationSlackConfig = CandidatNotificationSlackConfig(
+    slackConfig = slackConfig,
+    environnement = environnement
   )
 
   val mailjetWSAdapterConfig: MailjetWSAdapterConfig = MailjetWSAdapterConfig(
@@ -83,11 +87,7 @@ class WebAppConfig(configuration: Configuration) {
 
   val referentielOffreWSAdapterConfig: ReferentielOffreWSAdapterConfig = ReferentielOffreWSAdapterConfig(
     urlApi = configuration.get[String]("emploiStore.urlApi"),
-    oauthConfig = partenaireOauthConfig,
-    scopes = List("api_offresdemploiv2 o2dsoffre") ++
-      (if (Environnement.PRODUCTION == environnement)
-        List("qos_silver_offresdemploiv2")
-      else Nil)
+    oauthConfig = partenaireOauthConfig
   )
 
   val esConfig: EsConfig = EsConfig(

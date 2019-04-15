@@ -5,7 +5,7 @@ import fr.poleemploi.perspectives.commun.domain.{CodeDepartement, CodeROME, Habi
 
 import scala.concurrent.Future
 
-class ReferentielHabiletesMRSLocal extends ReferentielHabiletesMRS {
+class ReferentielHabiletesMRSLocalAdapter extends ReferentielHabiletesMRS {
 
   override def habiletes(codeROME: CodeROME, codeDepartement: CodeDepartement): Future[Set[Habilete]] =
     Future.successful(Set(

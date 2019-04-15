@@ -1,5 +1,6 @@
 package fr.poleemploi.perspectives.recruteur.commentaire.infra.slack
 
+import fr.poleemploi.perspectives.commun.infra.slack.SlackConfig
 import fr.poleemploi.perspectives.commun.infra.ws.WSAdapter
 import fr.poleemploi.perspectives.recruteur.commentaire.domain.{CommentaireListeCandidats, CommentaireService}
 import play.api.libs.json.Json
@@ -8,7 +9,7 @@ import play.api.libs.ws.WSClient
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class CommentaireSlackAdapter(config: CommentaireSlackConfig,
+class CommentaireSlackAdapter(config: SlackConfig,
                               wsClient: WSClient) extends CommentaireService with WSAdapter {
 
   override def commenterListeCandidats(commentaire: CommentaireListeCandidats): Future[Unit] =

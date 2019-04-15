@@ -8,8 +8,8 @@ import fr.poleemploi.perspectives.authentification.infra.peconnect.PEConnectAuth
 import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.commun.EitherUtils._
 import fr.poleemploi.perspectives.commun.infra.oauth.OauthConfig
-import fr.poleemploi.perspectives.commun.infra.peconnect.{CandidatPEConnect, PEConnectAdapter}
 import fr.poleemploi.perspectives.commun.infra.peconnect.ws.{AccessToken, PEConnectCandidatInfos}
+import fr.poleemploi.perspectives.commun.infra.peconnect.{CandidatPEConnect, PEConnectAccessTokenStorage, PEConnectAdapter}
 import fr.poleemploi.perspectives.projections.candidat.{CandidatQueryHandler, CandidatSaisieCriteresRechercheQuery}
 import javax.inject.{Inject, Singleton}
 import play.api.Logger
@@ -25,7 +25,8 @@ class PEConnectController @Inject()(cc: ControllerComponents,
                                     candidatQueryHandler: CandidatQueryHandler,
                                     candidatPEConnectAction: CandidatPEConnectAction,
                                     peConnectAuthAdapter: PEConnectAuthAdapter,
-                                    peConnectAdapter: PEConnectAdapter) extends AbstractController(cc) {
+                                    peConnectAdapter: PEConnectAdapter,
+                                    peConnectAccessTokenStorage: PEConnectAccessTokenStorage) extends AbstractController(cc) {
 
   val redirectUri: Call = routes.PEConnectController.connexionCallback()
   val oauthConfig: OauthConfig = webAppConfig.candidatOauthConfig
@@ -46,7 +47,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
             "realm" -> Seq(s"/${oauthConfig.realm}"),
             "response_type" -> Seq("code"),
             "client_id" -> Seq(oauthConfig.clientId),
-            "scope" -> Seq(s"application_${oauthConfig.clientId} api_peconnect-individuv1 api_peconnect-coordonneesv1 api_peconnect-statutv1 openid profile email coordonnees statut"),
+            "scope" -> Seq(OauthConfig.scopes(oauthConfig)),
             "redirect_uri" -> Seq(redirectUri.absoluteURL()),
             "state" -> Seq(oauthTokens.state),
             "nonce" -> Seq(oauthTokens.nonce)
@@ -72,7 +73,8 @@ class PEConnectController @Inject()(cc: ControllerComponents,
         redirectUri = redirectUri.absoluteURL(),
         oauthTokens = oauthTokens
       )
-      infosCandidat <- peConnectAdapter.getInfosCandidat(accessTokenResponse.accessToken)
+      infosCandidat <- peConnectAdapter.infosCandidat(accessTokenResponse.accessToken)
+      _ <- peConnectAccessTokenStorage.add(infosCandidat.peConnectId, accessTokenResponse.accessToken)
       optAdresse <- findAdresseCandidat(accessTokenResponse.accessToken)
       optStatutDemandeurEmploi <- findStatutDemandeurEmploi(accessTokenResponse.accessToken)
       optCandidat <- peConnectAdapter.findCandidat(infosCandidat.peConnectId)
@@ -176,7 +178,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
   }
 
   private def findAdresseCandidat(accessToken: AccessToken): Future[Option[Adresse]] =
-    peConnectAdapter.getAdresseCandidat(accessToken).map(Some(_))
+    peConnectAdapter.adresseCandidat(accessToken).map(Some(_))
       .recoverWith {
         case t: Throwable =>
           Logger.error("Erreur lors de la récupération de l'adresse", t)
@@ -184,7 +186,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       }
 
   private def findStatutDemandeurEmploi(accessToken: AccessToken): Future[Option[StatutDemandeurEmploi]] =
-    peConnectAdapter.getStatutDemandeurEmploiCandidat(accessToken).map(Some(_))
+    peConnectAdapter.statutDemandeurEmploiCandidat(accessToken).map(Some(_))
       .recoverWith {
         case t: Throwable =>
           Logger.error("Erreur lors de la récupération du statut demandeur d'emploi", t)

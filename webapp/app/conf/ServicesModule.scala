@@ -6,9 +6,9 @@ import fr.poleemploi.perspectives.candidat.cv.infra.sql.CVSqlAdapter
 import fr.poleemploi.perspectives.candidat.localisation.domain.LocalisationService
 import fr.poleemploi.perspectives.candidat.localisation.infra.local.LocalisationLocalAdapter
 import fr.poleemploi.perspectives.candidat.localisation.infra.ws.LocalisationWSAdapter
-import fr.poleemploi.perspectives.candidat.mrs.domain.{ReferentielHabiletesMRS, ReferentielMRSCandidat}
-import fr.poleemploi.perspectives.candidat.mrs.infra.local.{ReferentielHabiletesMRSLocal, ReferentielMRSCandidatLocal}
-import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.ReferentielMRSCandidatPEConnect
+import fr.poleemploi.perspectives.candidat.mrs.domain.{ReferentielHabiletesMRS, ReferentielMRS}
+import fr.poleemploi.perspectives.candidat.mrs.infra.local.{ReferentielHabiletesMRSLocalAdapter, ReferentielMRSLocalAdapter}
+import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.ReferentielMRSPEConnect
 import fr.poleemploi.perspectives.candidat.mrs.infra.sql.ReferentielHabiletesMRSSqlAdapter
 import fr.poleemploi.perspectives.conseiller.{AutorisationService, ConseillerId}
 import fr.poleemploi.perspectives.emailing.domain.EmailingService
@@ -42,18 +42,18 @@ class ServicesModule extends AbstractModule {
 
   @Provides
   @Singleton
-  def referentielMRSCandidat(referentielMRSCandidatPEConnect: Provider[ReferentielMRSCandidatPEConnect],
-                             referentielMRSCandidatLocal: Provider[ReferentielMRSCandidatLocal],
-                             webAppConfig: WebAppConfig): ReferentielMRSCandidat =
+  def referentielMRS(referentielMRSPEConnect: Provider[ReferentielMRSPEConnect],
+                     referentielMRSLocal: Provider[ReferentielMRSLocalAdapter],
+                     webAppConfig: WebAppConfig): ReferentielMRS =
     if (webAppConfig.usePEConnect)
-      referentielMRSCandidatPEConnect.get()
+      referentielMRSPEConnect.get()
     else
-      referentielMRSCandidatLocal.get()
+      referentielMRSLocal.get()
 
   @Provides
   @Singleton
   def referentielHabiletesMRS(referentielHabiletesMRSSqlAdapter: Provider[ReferentielHabiletesMRSSqlAdapter],
-                              referentielHabiletesMRSLocal: Provider[ReferentielHabiletesMRSLocal],
+                              referentielHabiletesMRSLocal: Provider[ReferentielHabiletesMRSLocalAdapter],
                               webAppConfig: WebAppConfig): ReferentielHabiletesMRS =
     if (webAppConfig.useReferentielHabiletesMRS)
       referentielHabiletesMRSSqlAdapter.get()
@@ -93,8 +93,8 @@ class ServicesModule extends AbstractModule {
   @Provides
   @Singleton
   def localisationService(localisationWSAdapter: Provider[LocalisationWSAdapter],
-                         localisationLocalAdapter: Provider[LocalisationLocalAdapter],
-                         webAppConfig: WebAppConfig): LocalisationService =
+                          localisationLocalAdapter: Provider[LocalisationLocalAdapter],
+                          webAppConfig: WebAppConfig): LocalisationService =
     if (webAppConfig.useLocalisationWS)
       localisationWSAdapter.get()
     else

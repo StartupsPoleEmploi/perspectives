@@ -1,5 +1,6 @@
 package fr.poleemploi.perspectives.offre.infra.ws
 
+import fr.poleemploi.perspectives.commun.infra.oauth.OauthConfig
 import fr.poleemploi.perspectives.commun.infra.ws.{WSAdapter, WebServiceException}
 import fr.poleemploi.perspectives.metier.infra.ws.AccessTokenResponse
 import fr.poleemploi.perspectives.offre.domain.{CriteresRechercheOffre, RechercheOffreResult, ReferentielOffre}
@@ -83,7 +84,7 @@ class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
         "grant_type" -> "client_credentials",
         "client_id" -> config.clientId,
         "client_secret" -> config.clientSecret,
-        "scope" -> s"application_${config.clientId} ${config.scopes.mkString(" ")}",
+        "scope" -> OauthConfig.scopes(config.oauthConfig),
       ))
       .flatMap(filtreStatutReponse(_))
       .map(_.json.as[AccessTokenResponse])

@@ -4,7 +4,7 @@ import akka.actor.{ActorRef, ActorSystem}
 import com.google.inject.{AbstractModule, Inject, Provides, Singleton}
 import fr.poleemploi.perspectives.candidat.CandidatCommandHandler
 import fr.poleemploi.perspectives.candidat.dhae.domain.ImportHabiletesDHAE
-import fr.poleemploi.perspectives.candidat.mrs.domain.{ImportHabiletesMRS, ImportMRSCandidat}
+import fr.poleemploi.perspectives.candidat.mrs.domain.{ImportHabiletesMRS, ImportMRS}
 import javax.inject.Named
 import net.codingwell.scalaguice.ScalaModule
 import play.api.libs.concurrent.AkkaGuiceSupport
@@ -26,10 +26,10 @@ class SchedulersModule extends AbstractModule with ScalaModule with AkkaGuiceSup
   }
 
   @Provides
-  def mrsValideesActor(importMRSCandidat: ImportMRSCandidat,
+  def mrsValideesActor(importMRS: ImportMRS,
                        candidatCommandHandler: CandidatCommandHandler): CandidatsMRSValideesActor =
     new CandidatsMRSValideesActor(
-      importMRSCandidat = importMRSCandidat,
+      importMRS = importMRS,
       candidatCommandHandler = candidatCommandHandler
     )
 

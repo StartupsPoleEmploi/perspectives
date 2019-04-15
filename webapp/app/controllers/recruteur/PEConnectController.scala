@@ -45,7 +45,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
           "realm" -> Seq(s"/${oauthConfig.realm}"),
           "response_type" -> Seq("code"),
           "client_id" -> Seq(oauthConfig.clientId),
-          "scope" -> Seq(s"application_${oauthConfig.clientId} api_peconnect-entreprisev1 habilitation openid profile email"),
+          "scope" -> Seq(OauthConfig.scopes(oauthConfig)),
           "redirect_uri" -> Seq(redirectUri.absoluteURL()),
           "state" -> Seq(oauthTokens.state),
           "nonce" -> Seq(oauthTokens.nonce)
@@ -71,7 +71,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
         redirectUri = redirectUri.absoluteURL(),
         oauthTokens = oauthTokens
       )
-      recruteurInfos <- peConnectAdapter.getInfosRecruteur(accessTokenResponse.accessToken)
+      recruteurInfos <- peConnectAdapter.infosRecruteur(accessTokenResponse.accessToken)
       optRecruteurPEConnnect <- peConnectAdapter.findRecruteur(recruteurInfos.peConnectId)
       optProfilRecruteur <- optRecruteurPEConnnect.map(r => recruteurQueryHandler.handle(ProfilRecruteurQuery(r.recruteurId)).map(Some(_))).getOrElse(Future.successful(None))
       recruteurId <- optRecruteurPEConnnect.map(r => connecter(r, recruteurInfos)).getOrElse(inscrire(recruteurInfos))

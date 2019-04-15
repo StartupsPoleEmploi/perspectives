@@ -15,7 +15,7 @@ class MRSValideesCandidatsCSVAdapterSpec extends AsyncWordSpec
   with MustMatchers with MockitoSugar with BeforeAndAfter with ScalaFutures {
 
   val actorSystem: ActorSystem = ActorSystem(this.getClass.getSimpleName)
-  val mrsValideesCSVAdapter: MRSValideesCandidatsCSVAdapter = new MRSValideesCandidatsCSVAdapter(actorSystem)
+  val mrsValideesCSVAdapter: MRSValideesCSVAdapter = new MRSValideesCSVAdapter(actorSystem)
 
   "integrerMRSValidees" should {
     "ne rien faire si aucune ligne n'est présente dans la source" in {

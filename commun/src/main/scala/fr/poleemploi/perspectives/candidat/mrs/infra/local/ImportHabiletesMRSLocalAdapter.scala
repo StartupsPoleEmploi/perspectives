@@ -4,7 +4,7 @@ import fr.poleemploi.perspectives.candidat.mrs.domain.{HabiletesMRS, ImportHabil
 
 import scala.concurrent.Future
 
-class ImportHabiletesMRSLocal extends ImportHabiletesMRS {
+class ImportHabiletesMRSLocalAdapter extends ImportHabiletesMRS {
 
   override def integrerHabiletesMRS: Future[Stream[HabiletesMRS]] =
     Future.successful(Stream.empty)

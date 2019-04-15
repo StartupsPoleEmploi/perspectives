@@ -4,7 +4,7 @@ import fr.poleemploi.perspectives.candidat.CandidatId
 
 import scala.concurrent.Future
 
-trait ReferentielMRSCandidat {
+trait ReferentielMRS {
 
-  def mrsValideesParCandidat(candidatId: CandidatId): Future[List[MRSValidee]]
+  def mrsValidees(candidatId: CandidatId): Future[List[MRSValidee]]
 }

@@ -3,7 +3,7 @@ package conf
 import com.google.inject.{AbstractModule, Inject, Provides, Singleton}
 import fr.poleemploi.eventsourcing.eventstore.EventStoreListener
 import fr.poleemploi.perspectives.candidat.CandidatCommandHandler
-import fr.poleemploi.perspectives.candidat.mrs.domain.{MRSValideeProcessManager, ReferentielMRSCandidat}
+import fr.poleemploi.perspectives.candidat.mrs.domain.{MRSValideeProcessManager, ReferentielMRS}
 import net.codingwell.scalaguice.ScalaModule
 
 class RegisterProcessManagers @Inject()(eventStoreListener: EventStoreListener,
@@ -20,10 +20,10 @@ class ProcessManagersModule extends AbstractModule with ScalaModule {
   @Provides
   @Singleton
   def mrsValideeProcessManager(candidatCommandHandler: CandidatCommandHandler,
-                               referentielMRSCandidat: ReferentielMRSCandidat): MRSValideeProcessManager =
+                               referentielMRS: ReferentielMRS): MRSValideeProcessManager =
     new MRSValideeProcessManager(
       candidatCommandHandler = candidatCommandHandler,
-      referentielMRSCandidat = referentielMRSCandidat
+      referentielMRS = referentielMRS
     )
 
 }
