@@ -54,9 +54,9 @@
         </div>
         <section class="container py-md-5 py-2">
             <div class="row justify-content-center">
-                <h2 class="col-lg-8 col-12 texte-noir font-weight-bold font-size-lg" v-show="display.etape1">
+                <h1 class="col-lg-8 col-12 texte-noir font-weight-bold font-size-lg" v-show="display.etape1">
                     Bonjour @candidatAuthentifie.prenom.value @candidatAuthentifie.nom.value
-                </h2>
+                </h1>
                 @form(action = controllers.candidat.routes.SaisieCriteresRechercheController.modifierCriteresRecherche(),
                     'id -> "criteresRechercheForm",
                     'class -> "col-lg-8 col-12",
