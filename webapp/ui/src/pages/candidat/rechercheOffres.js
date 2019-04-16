@@ -45,8 +45,10 @@ var app = new Vue({
             algoliaPlacesConfig: jsData.algoliaPlacesConfig,
             display: {
                 contact: false,
-                offreSuivante: this.offreCourante != null && false,
-                offrePrecedente: this.offreCourante != null &&  false
+                offreSuivante: this.offreCourante != null,
+                offrePrecedente: this.offreCourante != null,
+                chargement: false,
+                nbResultats: false
             }
         }
     },
@@ -73,6 +75,9 @@ var app = new Vue({
     computed: {
         pagesInitiales: function () {
             return this.calculerPages();
+        },
+        afficherNbResultats: function() {
+            return this.nbOffresTotal > 0 && !this.display.chargement;
         }
     },
     methods: {
@@ -139,6 +144,9 @@ var app = new Vue({
         doitAfficherMiseEnAvantInscription: function() {
             return !this.isCandidatAuthentifie;
         },
+        doitAfficherMiseEnAvantCV: function() {
+            return this.isCandidatAuthentifie && !this.cv;
+        },
         doitAfficherCoordonnees1: function(contact) {
             return contact.coordonnees1 &&
                 contact.coordonnees1 !== contact.urlPostuler &&
@@ -172,7 +180,10 @@ var app = new Vue({
                 type: "POST",
                 url: "/candidat/offres",
                 data: formData,
-                dataType: "json"
+                dataType: "json",
+                beforeSend: function(xhr) {
+                    app.display.chargement = true;
+                }
             }).done(function (response) {
                 app.offres = response.offres;
                 app.nbOffresTotal = response.nbOffresTotal;
@@ -180,6 +191,8 @@ var app = new Vue({
                 app.indexPaginationOffre = 0;
                 app.cacherFiltres();
             }).fail(function () {
+            }).always(function () {
+                app.display.chargement = false;
             });
         }
     }

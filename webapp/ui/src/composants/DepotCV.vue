@@ -16,7 +16,7 @@
             </div>
             <div v-show="display.telechargement">
                 <div>
-                    <img alt="Deposer CV" src="/assets/images/composants/depotCV/chargement.svg" />
+                    <img alt="Deposer CV" src="/assets/images/commun/chargement.gif" height="48" width="48"/>
                 </div>
             </div>
             <div v-show="display.telechargementSucces">

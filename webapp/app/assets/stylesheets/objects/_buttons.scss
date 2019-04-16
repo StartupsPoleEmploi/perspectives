@@ -138,6 +138,9 @@
     &:hover {
       color: white;
     }
+    &:disabled {
+      background-color: rgba(13, 122, 147, 0.5);
+    }
   }
 
   &--vertSurBlanc {

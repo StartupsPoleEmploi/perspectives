@@ -5,50 +5,11 @@
   }
 
   .rechercheOffresConteneur {
+    min-height: 90vh;
+
     @include make-container();
     @include make-container-max-widths();
     padding: 3rem 1rem 0 1rem;
-  }
-
-  .rechercheOffres {
-    @include make-row();
-
-    &-nbResultats {
-      @include make-col-ready();
-
-      @include media-breakpoint-up(md) {
-        @include make-col(8);
-        @include make-col-offset(4);
-      }
-
-      @include media-breakpoint-down(md) {
-        @include make-col(12);
-      }
-    }
-
-    &-formulaire {
-      @include make-col-ready();
-
-      @include media-breakpoint-up(md) {
-        @include make-col(4);
-      }
-
-      @include media-breakpoint-down(md) {
-        @include make-col(12);
-      }
-    }
-
-    &-resultats {
-      @include make-col-ready();
-
-      @include media-breakpoint-up(md) {
-        @include make-col(8);
-      }
-
-      @include media-breakpoint-down(md) {
-        @include make-col(12);
-      }
-    }
   }
 
   .formulaireRecherche {
@@ -121,10 +82,6 @@
       margin-bottom: 1rem;
       padding: 1rem 2rem;
       border-radius: 2px;
-    }
-
-    &-titre {
-      color: $noir;
     }
   }
 

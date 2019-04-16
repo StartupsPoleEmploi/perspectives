@@ -261,25 +261,30 @@
             <div class="container">
                 <template v-if="doitAfficherMiseEnAvantInscription()">
                     <div class="row align-items-center py-4">
-                        <p class="col-sm-6 col-12 mb-2 texte-blanc font-weight-bold font-size-md text-md-right">Faites-vous contacter par des recruteurs !</p>
-                        <a class="col-sm-5 col-12 bouton bouton-action bouton--noirSurBlanc gtm-candidat-offres-incentive-inscription" href="@controllers.candidat.routes.InscriptionController.inscription()">Je m'inscris avec mon identifiant Pôle Emploi</a>
+                        <p class="col-sm-7 col-12 mb-2 texte-blanc font-weight-bold font-size-md text-md-right">Faites-vous contacter par des recruteurs !</p>
+                        <div class="col-sm-5 col-12">
+                            <a class="bouton bouton-action bouton--noirSurBlanc gtm-candidat-offres-incentive-inscription" href="@controllers.candidat.routes.InscriptionController.inscription()">Je m'inscris avec mon identifiant Pôle Emploi</a>
+                        </div>
                     </div>
                 </template>
-                <template v-else>
+                <template v-if="doitAfficherMiseEnAvantCV()">
                     <div class="row align-items-center py-4">
                         <p class="col-sm-8 col-12 mb-2 texte-blanc font-weight-bold font-size-md text-md-right">Ajoutez votre CV ! Des recruteurs pourront le consulter</p>
-                        <a class="col-sm-4 col-12 bouton bouton-action bouton--blancSurNoir gtm-candidat-offres-incentive-cv" href="@controllers.candidat.routes.SaisieCriteresRechercheController.saisieCriteresRecherche()">Je mets à jour mon profil</a>
+                        <div class="col-sm-4 col-12">
+                            <a class="bouton bouton-action bouton--blancSurNoir gtm-candidat-offres-incentive-cv" href="@controllers.candidat.routes.CVController.index()">Je mets à jour mon profil</a>
+                        </div>
                     </div>
                 </template>
             </div>
         </div>
         <div class="rechercheOffresArrierePlan">
             <div class="rechercheOffresConteneur">
-                <div class="rechercheOffres">
-                    <section class="rechercheOffres-nbResultats" v-if="nbOffresTotal > 0">
-                        <p class="offres-titre">{{nbOffresTotal}} offres sans expérience exigée peuvent vous intéresser</p>
+                <div class="row">
+                    <section class="col-12 col-lg-8 offset-lg-4">
+                        <p class="texte-noir" v-show="afficherNbResultats">{{nbOffresTotal}} offres sans expérience exigée peuvent vous intéresser</p>
+                        <p class="texte-noir" v-show="display.chargement">Nous recherchons les offres...</p>
                     </section>
-                    <section class="rechercheOffres-formulaire">
+                    <section class="col-12 col-lg-4">
                         <span class="formulaireRecherche-jsResponsive"></span>
                         <p class="formulaireRecherche-retourListeResultats" v-on:click="cacherFiltres">Retour à la liste</p>
                         <form id="js-rechercheOffresForm" class="formulaireRecherche gtm-candidat-offres-form" v-on:submit.prevent="rechercherOffres">
@@ -348,19 +353,23 @@
                                 </ul>
                             </div>
                             <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurRechercher">
-                                <button type="submit" class="bouton bouton-action bouton--block bouton--blancSurVert">Rechercher</button>
+                                <button type="submit" class="bouton bouton-action bouton--block bouton--blancSurVert"
+                                        v-bind:disabled="display.chargement">Rechercher</button>
                             </div>
                         </form>
                     </section>
-                    <section class="rechercheOffres-resultats offres">
-                        <template v-if="offres.length === 0">
+                    <section class="col-12 col-lg-8">
+                        <div class="text-center" v-if="display.chargement">
+                            <img alt="Chargement" src="/assets/images/commun/chargement.gif" width="48" height="48" />
+                        </div>
+                        <template v-else-if="offres.length === 0">
                             <p class="detailOffre-info--gras">Désolé, nous n'avons pas d'offres à vous proposer pour l'instant :(</p>
                             <p>Vous pouvez modifier vos critères ou réessayer plus tard</p>
                         </template>
-                        <template v-show="offres.length > 0" v-for="(offre, index) in offres">
+                        <template v-else v-for="(offre, index) in offres">
                             <div v-show="doitAfficherOffre(index)"
-                            v-on:click="afficherOffre(offre, index)"
-                            class="offres-item offre gtm-candidat-detail-offre">
+                                 v-on:click="afficherOffre(offre, index)"
+                                 class="offres-item offre gtm-candidat-detail-offre">
                                 <div class="offre-resume gtm-candidat-detail-offre">
                                     <p class="offre-info offre-intitule gtm-candidat-detail-offre">{{offre.intitule | capitalize}}</p>
                                     <p class="offre-info offre-nomEntreprise gtm-candidat-detail-offre">{{offre.entreprise.nom | capitalize}}</p>
@@ -377,6 +386,7 @@
                             </div>
                         </template>
                         <pagination ref="pagination"
+                                    v-show="!display.chargement"
                                     v-bind:nb-par-page="nbOffresParPage"
                                     v-on:charger-page-suivante="chargerPageSuivante"
                                     v-on:charger-page-precedente="chargerPagePrecedente"
