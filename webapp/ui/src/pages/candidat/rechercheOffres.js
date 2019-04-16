@@ -48,7 +48,8 @@ var app = new Vue({
                 offreSuivante: this.offreCourante != null,
                 offrePrecedente: this.offreCourante != null,
                 chargement: false,
-                nbResultats: false
+                nbResultats: false,
+                modaleDetailOffre: false
             }
         }
     },
@@ -73,17 +74,20 @@ var app = new Vue({
         });
 
         window.location = '#';
-        $('#detailOffre').on('show.bs.modal', function () {
+        var modaleDetail = $('#detailOffre');
+        modaleDetail.on('show.bs.modal', function () {
+            self.display.modaleDetailOffre = true;
             window.location = '#detailOffre';
         }).on('hide.bs.modal', function () {
+            self.display.modaleDetailOffre = false;
             window.location = '#';
         });
         window.onpopstate = function (event) {
-            if (window.location.href.endsWith('#')) {
-                $('#detailOffre').modal('hide');
+            if (self.display.modaleDetailOffre && window.location.href.endsWith('#')) {
+                modaleDetail.modal('hide');
             }
-            if (window.location.href.endsWith('#detailOffre')) {
-                $('#detailOffre').modal('show');
+            if (!self.display.modaleDetailOffre &&  window.location.href.endsWith('#detailOffre')) {
+                modaleDetail.modal('show');
             }
         };
     },

@@ -280,10 +280,6 @@
         <div class="rechercheOffresArrierePlan">
             <div class="rechercheOffresConteneur">
                 <div class="row">
-                    <section class="col-12 col-lg-8 offset-lg-4">
-                        <p class="texte-noir" v-show="afficherNbResultats">{{nbOffresTotal}} offres sans expérience exigée peuvent vous intéresser</p>
-                        <p class="texte-noir" v-show="display.chargement">Nous recherchons les offres...</p>
-                    </section>
                     <section class="col-12 col-lg-4">
                         <span class="formulaireRecherche-jsResponsive"></span>
                         <p class="formulaireRecherche-retourListeResultats" v-on:click="cacherFiltres">Retour à la liste</p>
@@ -359,8 +355,10 @@
                         </form>
                     </section>
                     <section class="col-12 col-lg-8">
+                        <p class="texte-noir" v-show="afficherNbResultats">{{nbOffresTotal}} offres sans expérience exigée peuvent vous intéresser</p>
                         <div class="text-center" v-if="display.chargement">
                             <img alt="Chargement" src="/assets/images/commun/chargement.gif" width="48" height="48" />
+                            <p class="texte-vert-emeraude" v-show="display.chargement">Un peu de patience, nous recherchons les offres</p>
                         </div>
                         <template v-else-if="offres.length === 0">
                             <p class="detailOffre-info--gras">Désolé, nous n'avons pas d'offres à vous proposer pour l'instant :(</p>
