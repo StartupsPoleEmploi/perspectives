@@ -42,7 +42,10 @@
                     </div>
                     <div class="modaleDetailOffre-wrapper">
                         <div class="detailOffre">
-                            <h2 id="titreModaleDetailOffre" class="detailOffre-sousSection detailOffre-intitule">{{offreCourante.intitule}}</h2>
+                            <div class="detailOffre-sousSection">
+                                <h2 id="titreModaleDetailOffre" class="detailOffre-intitule">{{offreCourante.intitule}}</h2>
+                                <p class="texte-gris font-size-sm font-italic">Actualisée le {{offreCourante.dateActualisation | date}}</p>
+                            </div>
                             <div class="detailOffre-sousSection detailOffre-resume">
                                 <ul class="list-unstyled resumeDetailOffre">
                                     <li class="resumeDetailOffre-item detailOffre-info detailOffre-info--petite">
@@ -241,132 +244,145 @@
                             </div>
                         </div>
                     </div>
+                    <div class="bg-noir mt-5" v-if="doitAfficherMiseEnAvantInscription()">
+                        <div class="container">
+                            <div class="row align-items-center py-4">
+                                <p class="col-sm-8 col-12 mb-2 texte-blanc font-weight-bold font-size-md text-md-right">Inscrivez-vous et faites-vous contacter par des recruteurs !</p>
+                                <div class="col-sm-4 col-12 px-2">
+                                    <a class="bouton bouton-action bouton--noirSurBlanc gtm-candidat-offres-incentive-inscription" href="@controllers.candidat.routes.InscriptionController.inscription()">Je m'inscris avec mon identifiant Pôle Emploi</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="rechercheOffresConteneur">
-            <div class="rechercheOffres">
-                <section class="rechercheOffres-nbResultats" v-if="nbOffresTotal > 0">
-                    <p class="offres-titre">{{nbOffresTotal}} offres sans expérience exigée peuvent vous intéresser</p>
-                </section>
-                <section class="rechercheOffres-formulaire">
-                    <span class="formulaireRecherche-jsResponsive"></span>
-                    <p class="formulaireRecherche-retourListeResultats" v-on:click="cacherFiltres">Retour à la liste</p>
-                    <form id="js-rechercheOffresForm" class="formulaireRecherche gtm-candidat-offres-form" v-on:submit.prevent="rechercherOffres">
-                        <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurAffichageFiltres"
-                             v-on:click="afficherFiltres">
-                            <div class="rechercheOffres-localisation">
-                                <div class="rechercheOffres-conteneurlieuTravail">
-                                    <input type="hidden" name="codePostal" v-model="recherche.codePostal" />
-                                    <label for="js-lieuTravail" class="sr-only">Choisissez un lieu de travail</label>
-                                    <input id="js-lieuTravail" type="text" v-model="recherche.lieuTravail" name="lieuTravail" placeholder="Dans quelle ville ?" class="rechercheOffres-lieuTravail"/>
-                                </div>
-                                <div class="rechercheOffres-conteneurRayonRecherche">
-                                    <label for="js-rayonRecherche" class="sr-only">Renseignez un rayon de recherche</label>
-                                    <select id="js-rayonRecherche" name="rayonRecherche"
-                                            v-model="recherche.rayonRecherche" class="rechercheOffres-rayonRecherche">
-                                        <option value="0">Lieu exact</option>
-                                        <option v-for="rayonRecherche in rayonsRecherche" v-bind:key="rayonRecherche.value" v-bind:value="rayonRecherche.value">{{rayonRecherche.label}}</option>
-                                    </select>
+        <div class="bg-noir">
+            <div class="container">
+                <template v-if="doitAfficherMiseEnAvantInscription()">
+                    <div class="row align-items-center py-4">
+                        <p class="col-sm-6 col-12 mb-2 texte-blanc font-weight-bold font-size-md text-md-right">Faites-vous contacter par des recruteurs !</p>
+                        <a class="col-sm-5 col-12 bouton bouton-action bouton--noirSurBlanc gtm-candidat-offres-incentive-inscription" href="@controllers.candidat.routes.InscriptionController.inscription()">Je m'inscris avec mon identifiant Pôle Emploi</a>
+                    </div>
+                </template>
+                <template v-else>
+                    <div class="row align-items-center py-4">
+                        <p class="col-sm-8 col-12 mb-2 texte-blanc font-weight-bold font-size-md text-md-right">Ajoutez votre CV ! Des recruteurs pourront le consulter</p>
+                        <a class="col-sm-4 col-12 bouton bouton-action bouton--blancSurNoir gtm-candidat-offres-incentive-cv" href="@controllers.candidat.routes.SaisieCriteresRechercheController.saisieCriteresRecherche()">Je mets à jour mon profil</a>
+                    </div>
+                </template>
+            </div>
+        </div>
+        <div class="rechercheOffresArrierePlan">
+            <div class="rechercheOffresConteneur">
+                <div class="rechercheOffres">
+                    <section class="rechercheOffres-nbResultats" v-if="nbOffresTotal > 0">
+                        <p class="offres-titre">{{nbOffresTotal}} offres sans expérience exigée peuvent vous intéresser</p>
+                    </section>
+                    <section class="rechercheOffres-formulaire">
+                        <span class="formulaireRecherche-jsResponsive"></span>
+                        <p class="formulaireRecherche-retourListeResultats" v-on:click="cacherFiltres">Retour à la liste</p>
+                        <form id="js-rechercheOffresForm" class="formulaireRecherche gtm-candidat-offres-form" v-on:submit.prevent="rechercherOffres">
+                            <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurAffichageFiltres"
+                            v-on:click="afficherFiltres">
+                                <div class="rechercheOffres-localisation">
+                                    <div class="rechercheOffres-conteneurlieuTravail">
+                                        <input type="hidden" name="codePostal" v-model="recherche.codePostal" />
+                                        <label for="js-lieuTravail" class="sr-only">Choisissez un lieu de travail</label>
+                                        <input id="js-lieuTravail" type="text" v-model="recherche.lieuTravail" name="lieuTravail" placeholder="Dans quelle ville ?" class="rechercheOffres-lieuTravail"/>
+                                    </div>
+                                    <div class="rechercheOffres-conteneurRayonRecherche">
+                                        <label for="js-rayonRecherche" class="sr-only">Renseignez un rayon de recherche</label>
+                                        <select id="js-rayonRecherche" name="rayonRecherche"
+                                        v-model="recherche.rayonRecherche" class="rechercheOffres-rayonRecherche">
+                                            <option value="0">Lieu exact</option>
+                                            <option v-for="rayonRecherche in rayonsRecherche" v-bind:key="rayonRecherche.value" v-bind:value="rayonRecherche.value">{{rayonRecherche.label}}</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurAffichageFiltres"
-                             v-on:click="afficherFiltres">
-                            <label for="js-motCle" class="sr-only">Choisissez un métier</label>
-                            <input id="js-motCle" type="text" placeholder="Quel métier ?"
-                                   v-model="recherche.motCle" name="motCle" class="rechercheOffres-metier" />
-                        </div>
-                        <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurFiltres">
-                            <template v-if="metiersValides.length > 0">
-                                <p class="formulaireRecherche-titre">Filtrer par MRS :</p>
-                                <ul class="list-unstyled">
-                                    <li v-for="metierValide in metiersValides" v-bind:key="metierValide.codeROME" class="mb-3">
-                                        <input v-bind:id="'metierValide-' + metierValide.codeROME" type="checkbox"
-                                               name="metiers[]" class="checkbox-input"
-                                               v-bind:value="metierValide.codeROME" v-model="recherche.metiersValides" />
-                                        <label class="checkbox-label d-flex" v-bind:for="'metierValide-' + metierValide.codeROME">
+                            <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurAffichageFiltres"
+                            v-on:click="afficherFiltres">
+                                <label for="js-motCle" class="sr-only">Choisissez un métier</label>
+                                <input id="js-motCle" type="text" placeholder="Quel métier ?"
+                                v-model="recherche.motCle" name="motCle" class="rechercheOffres-metier" />
+                            </div>
+                            <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurFiltres">
+                                <template v-if="metiersValides.length > 0">
+                                    <p class="formulaireRecherche-titre">Filtrer par MRS :</p>
+                                    <ul class="list-unstyled">
+                                        <li v-for="metierValide in metiersValides" v-bind:key="metierValide.codeROME" class="mb-3">
+                                            <input v-bind:id="'metierValide-' + metierValide.codeROME" type="checkbox"
+                                            name="metiers[]" class="checkbox-input"
+                                            v-bind:value="metierValide.codeROME" v-model="recherche.metiersValides" />
+                                            <label class="checkbox-label d-flex" v-bind:for="'metierValide-' + metierValide.codeROME">
+                                                <span class="checkbox-checkmark checkbox-checkmark--md mr-2"></span>
+                                                <span class="col font-size-sm">{{metierValide.label}}</span>
+                                            </label>
+                                        </li>
+                                    </ul>
+                                </template>
+                                <p class="formulaireRecherche-titre">Filtrer par contrat :</p>
+                                <ul class="list-unstyled mb-3">
+                                    <li v-for="typeContrat in typesContrats" v-bind:key="typeContrat.value" class="mb-3">
+                                        <input v-bind:id="'typeContrat-' + typeContrat.value" type="checkbox"
+                                        name="typesContrats[]" class="checkbox-input"
+                                        v-bind:value="typeContrat.value" v-model="recherche.typesContrats" />
+                                        <label class="checkbox-label d-flex" v-bind:for="'typeContrat-' + typeContrat.value">
                                             <span class="checkbox-checkmark checkbox-checkmark--md mr-2"></span>
-                                            <span class="col font-size-sm">{{metierValide.label}}</span>
+                                            <span class="col font-size-sm">{{typeContrat.label}}</span>
                                         </label>
                                     </li>
                                 </ul>
-                            </template>
-                            <p class="formulaireRecherche-titre">Filtrer par contrat :</p>
-                            <ul class="list-unstyled mb-3">
-                                <li v-for="typeContrat in typesContrats" v-bind:key="typeContrat.value" class="mb-3">
-                                    <input v-bind:id="'typeContrat-' + typeContrat.value" type="checkbox"
-                                            name="typesContrats[]" class="checkbox-input"
-                                            v-bind:value="typeContrat.value" v-model="recherche.typesContrats" />
-                                    <label class="checkbox-label d-flex" v-bind:for="'typeContrat-' + typeContrat.value">
-                                        <span class="checkbox-checkmark checkbox-checkmark--md mr-2"></span>
-                                        <span class="col font-size-sm">{{typeContrat.label}}</span>
-                                    </label>
-                                </li>
-                            </ul>
-                            <p class="formulaireRecherche-titre" v-if="secteursActivites.length > 0">Filtrer par secteurs d'activité :</p>
-                            <ul class="list-unstyled">
-                                <li v-for="secteurActivite in secteursActivites" v-bind:key="secteurActivite.value" class="mb-3">
-                                    <input v-bind:id="'secteurActivite-' + secteurActivite.value" type="checkbox"
-                                            name="secteursActivites[]" class="checkbox-input"
-                                            v-bind:value="secteurActivite.value" v-model="recherche.secteursActivites" />
-                                    <label class="checkbox-label d-flex" v-bind:for="'secteurActivite-' + secteurActivite.value">
-                                        <span class="checkbox-checkmark checkbox-checkmark--md mr-2"></span>
-                                        <span class="col font-size-sm">{{secteurActivite.label}}</span>
-                                    </label>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurRechercher">
-                            <button type="submit" class="bouton bouton-action bouton--block bouton--blancSurVert">Rechercher</button>
-                        </div>
-                    </form>
-                </section>
-                <section class="rechercheOffres-resultats offres">
-                    <template v-if="offres.length === 0">
-                        <p class="detailOffre-info--gras">Désolé, nous n'avons pas d'offres à vous proposer pour l'instant :(</p>
-                        <p>Vous pouvez modifier vos critères ou réessayer plus tard</p>
-                    </template>
-                    <template v-show="offres.length > 0" v-for="(offre, index) in offres">
-                        <div v-show="doitAfficherOffre(index)"
-                             v-on:click="afficherOffre(offre, index)"
-                             class="offres-item offre gtm-candidat-detail-offre">
-                            <div class="offre-resume gtm-candidat-detail-offre">
-                                <p class="offre-info offre-intitule gtm-candidat-detail-offre">{{offre.intitule | capitalize}}</p>
-                                <p class="offre-info offre-nomEntreprise gtm-candidat-detail-offre">{{offre.entreprise.nom | capitalize}}</p>
-                                <p class="offre-info offre-localisation gtm-candidat-detail-offre">
-                                    <img alt="Localisation" src="@assetsFinder.path("images/commun/localisation.svg")" height="16" width="16" />
-                                    {{offre.lieuTravail.libelle}}
-                                </p>
+                                <p class="formulaireRecherche-titre" v-if="secteursActivites.length > 0">Filtrer par secteurs d'activité :</p>
+                                <ul class="list-unstyled">
+                                    <li v-for="secteurActivite in secteursActivites" v-bind:key="secteurActivite.value" class="mb-3">
+                                        <input v-bind:id="'secteurActivite-' + secteurActivite.value" type="checkbox"
+                                        name="secteursActivites[]" class="checkbox-input"
+                                        v-bind:value="secteurActivite.value" v-model="recherche.secteursActivites" />
+                                        <label class="checkbox-label d-flex" v-bind:for="'secteurActivite-' + secteurActivite.value">
+                                            <span class="checkbox-checkmark checkbox-checkmark--md mr-2"></span>
+                                            <span class="col font-size-sm">{{secteurActivite.label}}</span>
+                                        </label>
+                                    </li>
+                                </ul>
                             </div>
-                            <div class="offre-typeContrat gtm-candidat-detail-offre">
-                                <span class="typeContrat gtm-candidat-detail-offre"
-                                      v-bind:class="cssTypeContrat(offre)">{{offre.contrat.code | typeContrat}}</span>
+                            <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurRechercher">
+                                <button type="submit" class="bouton bouton-action bouton--block bouton--blancSurVert">Rechercher</button>
                             </div>
-                        </div>
-                        <div v-if="doitAfficherMiseEnAvantInscription(index)"
-                             class="offres-item miseEnAvant">
-                            <div class="miseEnAvant-texte">Mettez en avant votre profil !
-                                Des recruteurs pourront vous contacter</div>
-                            <div class="miseEnAvant-action">
-                                <a class="bouton bouton-action bouton--blancSurVert miseEnAvant-bouton gtm-candidat-offres-incentive-inscription" href="@controllers.candidat.routes.InscriptionController.inscription()">Je m'inscris</a>
+                        </form>
+                    </section>
+                    <section class="rechercheOffres-resultats offres">
+                        <template v-if="offres.length === 0">
+                            <p class="detailOffre-info--gras">Désolé, nous n'avons pas d'offres à vous proposer pour l'instant :(</p>
+                            <p>Vous pouvez modifier vos critères ou réessayer plus tard</p>
+                        </template>
+                        <template v-show="offres.length > 0" v-for="(offre, index) in offres">
+                            <div v-show="doitAfficherOffre(index)"
+                            v-on:click="afficherOffre(offre, index)"
+                            class="offres-item offre gtm-candidat-detail-offre">
+                                <div class="offre-resume gtm-candidat-detail-offre">
+                                    <p class="offre-info offre-intitule gtm-candidat-detail-offre">{{offre.intitule | capitalize}}</p>
+                                    <p class="offre-info offre-nomEntreprise gtm-candidat-detail-offre">{{offre.entreprise.nom | capitalize}}</p>
+                                    <p class="texte-noir font-size-sm mb-0 gtm-candidat-detail-offre">
+                                        <img alt="Localisation" src="@assetsFinder.path("images/commun/localisation.svg")" height="16" width="16" />
+                                        {{offre.lieuTravail.libelle}}
+                                    </p>
+                                    <p class="texte-gris font-size-sm font-italic mb-0 gtm-candidat-detail-offre">Actualisée le {{offre.dateActualisation | date}}</p>
+                                </div>
+                                <div class="offre-typeContrat gtm-candidat-detail-offre">
+                                    <span class="typeContrat gtm-candidat-detail-offre"
+                                    v-bind:class="cssTypeContrat(offre)">{{offre.contrat.code | typeContrat}}</span>
+                                </div>
                             </div>
-                        </div>
-                        <div v-if="doitAfficherMiseEnAvantCV(index)"
-                             class="offres-item miseEnAvant">
-                            <div class="miseEnAvant-texte">Ajoutez votre CV !
-                                Des recruteurs pourront le consulter et vous contacter</div>
-                            <div class="miseEnAvant-action">
-                                <a class="bouton bouton-action bouton--vertSurBlanc miseEnAvant-bouton gtm-candidat-offres-incentive-cv" href="@controllers.candidat.routes.SaisieCriteresRechercheController.saisieCriteresRecherche()">Je mets à jour mon profil</a>
-                            </div>
-                        </div>
-                    </template>
-                    <pagination ref="pagination"
-                                v-bind:nb-par-page="nbOffresParPage"
-                                v-on:charger-page-suivante="chargerPageSuivante"
-                                v-on:charger-page-precedente="chargerPagePrecedente"
-                                v-bind:pages-initiales="pagesInitiales"></pagination>
-                </section>
+                        </template>
+                        <pagination ref="pagination"
+                                    v-bind:nb-par-page="nbOffresParPage"
+                                    v-on:charger-page-suivante="chargerPageSuivante"
+                                    v-on:charger-page-precedente="chargerPagePrecedente"
+                                    v-bind:pages-initiales="pagesInitiales"></pagination>
+                    </section>
+                </div>
             </div>
         </div>
     </div>

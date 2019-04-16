@@ -1,6 +1,6 @@
 package fr.poleemploi.perspectives.offre.domain
 
-import java.time.ZonedDateTime
+import java.time.LocalDateTime
 
 import fr.poleemploi.eventsourcing.StringValueObject
 import fr.poleemploi.perspectives.commun.domain.{CodeROME, Email, NumeroTelephone}
@@ -68,7 +68,7 @@ case class Offre(id: OffreId,
                  formations: List[Formation],
                  entreprise: Entreprise,
                  contact: Contact,
-                 dateActualisation: ZonedDateTime) {
+                 dateActualisation: LocalDateTime) {
 
   override def equals(that: Any): Boolean =
     that match {

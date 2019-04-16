@@ -136,11 +136,8 @@ var app = new Vue({
             this.indexNavigationOffre = this.indexNavigationOffre - 1;
             this.offreCourante = this.offres[this.indexNavigationOffre];
         },
-        doitAfficherMiseEnAvantInscription: function(index) {
-            return !this.isCandidatAuthentifie && this.indexPaginationOffre === 0 && index === 2;
-        },
-        doitAfficherMiseEnAvantCV: function(index) {
-            return this.isCandidatAuthentifie && !this.cv && this.indexPaginationOffre === 0 && index === 3;
+        doitAfficherMiseEnAvantInscription: function() {
+            return !this.isCandidatAuthentifie;
         },
         doitAfficherCoordonnees1: function(contact) {
             return contact.coordonnees1 &&

@@ -1,6 +1,6 @@
 package fr.poleemploi.perspectives.offre.infra.ws
 
-import java.time.ZonedDateTime
+import java.time.LocalDateTime
 
 import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.offre.domain._
@@ -152,7 +152,7 @@ case class OffreResponse(id: String,
                          permis: List[PermisResponse],
                          formations: List[FormationResponse],
                          langues: List[LangueResponse],
-                         dateActualisation: ZonedDateTime,
+                         dateActualisation: LocalDateTime,
                          private val entreprise: Option[EntrepriseResponse],
                          private val salaire: Option[SalaireResponse],
                          private val lieuTravail: Option[LieuTravailResponse],
@@ -206,7 +206,7 @@ object OffreResponse {
       permis = (json \ "permis").orElse(JsDefined(JsArray.empty)).as[List[PermisResponse]],
       formations = (json \ "formations").orElse(JsDefined(JsArray.empty)).as[List[FormationResponse]],
       langues = (json \ "langues").orElse(JsDefined(JsArray.empty)).as[List[LangueResponse]],
-      dateActualisation = (json \ "dateActualisation").as[ZonedDateTime],
+      dateActualisation = (json \ "dateActualisation").as[LocalDateTime],
       entreprise = (json \ "entreprise").asOpt[EntrepriseResponse],
       salaire = (json \ "salaire").asOpt[SalaireResponse],
       lieuTravail = (json \ "lieuTravail").asOpt[LieuTravailResponse],

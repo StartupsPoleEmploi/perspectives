@@ -1,6 +1,6 @@
 package fr.poleemploi.perspectives.offre.infra.local
 
-import java.time.ZonedDateTime
+import java.time.LocalDateTime
 
 import fr.poleemploi.perspectives.commun.domain.{CodeROME, NumeroTelephone}
 import fr.poleemploi.perspectives.offre.domain._
@@ -71,7 +71,7 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
             email = None,
             urlPostuler = None
           ),
-          dateActualisation = ZonedDateTime.now()
+          dateActualisation = LocalDateTime.now()
         )
       else if (n % 3 == 0)
         Offre(
@@ -124,7 +124,7 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
             email = None,
             urlPostuler = None
           ),
-          dateActualisation = ZonedDateTime.now()
+          dateActualisation = LocalDateTime.now()
         )
       else if (n % 2 == 0)
         Offre(
@@ -180,7 +180,7 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
             email = None,
             urlPostuler = None
           ),
-          dateActualisation = ZonedDateTime.now()
+          dateActualisation = LocalDateTime.now()
         )
       else
         Offre(
@@ -236,7 +236,7 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
             email = None,
             urlPostuler = Some("https://joinus.saint-gobain.com/fr/fra/spc/f/53332/564788/magasinier-cariste-preparation-hf-challans-85?source=PE&utm_source=PE&utm_medium=SourcTargetContent&utm_campaign=DispanoChallans_Logistique")
           ),
-          dateActualisation = ZonedDateTime.now()
+          dateActualisation = LocalDateTime.now()
         )
     ).drop(Random.nextInt(nbResultats))) // pour ne pas toujours renvoyer le même nombre de résultats
       .map(offres => RechercheOffreResult(

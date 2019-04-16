@@ -1,5 +1,6 @@
 .texte-noir-50 { color: rgba($noir, .5); }
 .texte-noir { color: $noir; }
+.texte-blanc { color: white; }
 .texte-gris { color: $gris; }
 .texte-erreur { color: $rouge-erreur; }
 .texte-vert-emeraude { color: $vert-emeraude; }
@@ -10,6 +11,7 @@
 .texte-majuscule { text-transform: uppercase; }
 
 .bg-bleu-ciel { background-color: #E9F2F5; }
+.bg-noir { background-color: $noir; }
 
 .font-size-xs { font-size: $font-size-xs; }
 .font-size-sm { font-size: $font-size-sm; }

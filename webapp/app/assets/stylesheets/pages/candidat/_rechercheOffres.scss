@@ -1,7 +1,8 @@
 #rechercheOffres {
 
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1) inset;
-  background-color: #F4F5F6;
+  .rechercheOffresArrierePlan {
+    background-color: #F4F5F6;
+  }
 
   .rechercheOffresConteneur {
     @include make-container();
@@ -169,11 +170,6 @@
       font-size: 0.875rem;
       margin-bottom: 1rem;
     }
-
-    &-localisation {
-      font-size: 0.875rem;
-      margin-bottom: 0;
-    }
   }
 
   .typeContrat {
@@ -201,45 +197,6 @@
 
     &--default {
       background-color: #798182;
-    }
-  }
-
-  .miseEnAvant {
-    background-color: #E9F2F5;
-
-    &-texte {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: $noir;
-      white-space: pre-line;
-
-      @include media-breakpoint-up(md) {
-        @include make-col(9);
-        padding: 1rem 0;
-      }
-
-      @include media-breakpoint-down(md) {
-        @include make-col(12);
-      }
-    }
-
-    &-action {
-      @include media-breakpoint-up(md) {
-        @include make-col(3);
-        text-align: right;
-      }
-
-      @include media-breakpoint-down(md) {
-        @include make-col(12);
-        text-align: center;
-        margin-top: 1rem;
-      }
-    }
-
-    &-bouton {
-      @include media-breakpoint-down(md) {
-        width: 100%;
-      }
     }
   }
 

@@ -83,9 +83,13 @@
   }
 
   &--noirSurBlanc {
-    color: $black;
+    color: $noir;
     background-color: white;
-    border: 1px solid $black;
+    border: 1px solid $noir;
+
+    &:hover {
+      color: $noir;
+    }
   }
 
   &--noir {
@@ -98,15 +102,12 @@
 
   &--blancSurNoir {
     color: white;
-    background-color: $black;
+    background-color: $noir;
+    border: 2px solid white;
 
     &:hover {
       color: white;
-      background-color: #7B99C2;
-    }
-
-    &:active {
-      background-color: #1D242F;
+      background-color: rgba(255, 255, 255, 0.2);
     }
   }
 
