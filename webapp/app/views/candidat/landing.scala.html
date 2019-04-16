@@ -8,7 +8,7 @@
     <div id="landingCandidat" v-cloak>
         <section class="landingCandidat-presentation presentation">
             <div class="landingCandidat-rechercheOffres rechercheOffres">
-                <h1 class="rechercheOffres-titre titreLanding">Retrouvez un job,
+                <h1 class="rechercheOffres-titre titreLanding">Retrouvez un emploi,
                     sans qualifications ou experiences !</h1>
                 <form class="formulaireRecherche gtm-candidat-landing-form" v-on:submit.prevent="rechercherOffres">
                     <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurLocalisation">
@@ -31,7 +31,7 @@
                         <div class="texte-erreur font-size-sm" v-for="error in rechercheOffresFormErrors">{{error.label}}</div>
                     </div>
                     <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurRechercher">
-                        <button type="submit" class="bouton bouton-action bouton--blancSurVert">Je trouve un job</button>
+                        <button type="submit" class="bouton bouton-action bouton--blancSurVert">Je trouve un emploi</button>
                     </div>
                 </form>
             </div>
@@ -62,7 +62,7 @@
             </div>
         </section>
         <section class="landingCandidat-temoignages temoignagesCandidat">
-            <h2 class="temoignagesCandidat-titre titreLanding">Ils ont trouvé un job sur Perspectives :</h2>
+            <h2 class="temoignagesCandidat-titre titreLanding">Ils ont trouvé un emploi sur Perspectives :</h2>
             <temoignages v-bind:temoignages="temoignages"></temoignages>
         </section>
         <section class="landingCandidat-infoLegales infoLegales">

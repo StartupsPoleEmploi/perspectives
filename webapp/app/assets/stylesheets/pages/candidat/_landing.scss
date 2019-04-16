@@ -120,7 +120,7 @@
 
     &-conteneurLocalisation {
       @include media-breakpoint-up(lg) {
-        @include make-col(8);
+        @include make-col(7);
       }
 
       @include media-breakpoint-down(lg) {
@@ -132,7 +132,7 @@
       text-align: center;
 
       @include media-breakpoint-up(lg) {
-        @include make-col(4);
+        @include make-col(5);
       }
 
       @include media-breakpoint-down(lg) {

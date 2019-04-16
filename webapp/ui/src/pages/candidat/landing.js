@@ -68,7 +68,7 @@ var app = new Vue({
         rechercherOffres: function() {
             this.rechercheOffresFormErrors = [];
             if (this.recherche.codePostal === null || this.recherche.codePostal === '') {
-                this.rechercheOffresFormErrors.push({champ: 'codePostal', label: 'Dites-nous où vous recherchez un job'});
+                this.rechercheOffresFormErrors.push({champ: 'codePostal', label: 'Dites-nous où vous recherchez un emploi'});
             }
             if (this.recherche.rayonRecherche === null || this.recherche.rayonRecherche === '') {
                 this.rechercheOffresFormErrors.push({champ: 'rayonRecherche', label: 'Renseignez un rayon de recherche'});
