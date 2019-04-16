@@ -71,6 +71,21 @@ var app = new Vue({
         placesAutocomplete.on('clear', function() {
             self.algoliaPlacesClear();
         });
+
+        window.location = '#';
+        $('#detailOffre').on('show.bs.modal', function () {
+            window.location = '#detailOffre';
+        }).on('hide.bs.modal', function () {
+            window.location = '#';
+        });
+        window.onpopstate = function (event) {
+            if (window.location.href.endsWith('#')) {
+                $('#detailOffre').modal('hide');
+            }
+            if (window.location.href.endsWith('#detailOffre')) {
+                $('#detailOffre').modal('show');
+            }
+        };
     },
     computed: {
         pagesInitiales: function () {
@@ -125,7 +140,7 @@ var app = new Vue({
                 this.offreCourante = offre;
                 this.indexNavigationOffre = index;
 
-                $('#js-modaleDetailOffre').modal('show');
+                $('#detailOffre').modal('show');
             } else {
                 this.offreCourante = null;
                 this.indexNavigationOffre = null;

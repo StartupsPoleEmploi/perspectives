@@ -8,7 +8,7 @@
 
 @layout(candidatAuthentifie = candidatAuthentifie) {
     <div id="rechercheOffres" v-cloak>
-        <div id="js-modaleDetailOffre" class="modal" tabindex="-1" role="dialog" aria-labelledby="titreModaleDetailOffre">
+        <div id="detailOffre" class="modal" tabindex="-1" role="dialog" aria-labelledby="titreModaleDetailOffre">
             <div class="modal-dialog modaleDetailOffre" role="document">
                 <div class="modal-content modaleDetailOffre-contenu">
                     <div class="modaleDetailOffre-navigation">
@@ -247,7 +247,7 @@
                     <div class="bg-noir mt-5" v-if="doitAfficherMiseEnAvantInscription()">
                         <div class="container">
                             <div class="row align-items-center py-4">
-                                <p class="col-sm-8 col-12 mb-2 texte-blanc font-weight-bold font-size-md text-md-right">Inscrivez-vous et faites-vous contacter par des recruteurs !</p>
+                                <p class="col-sm-8 col-12 mb-2 mb-sm-0 texte-blanc font-weight-bold font-size-md text-md-right">Inscrivez-vous et faites-vous contacter par des recruteurs !</p>
                                 <div class="col-sm-4 col-12 px-2">
                                     <a class="bouton bouton-action bouton--noirSurBlanc gtm-candidat-offres-incentive-inscription" href="@controllers.candidat.routes.InscriptionController.inscription()">Je m'inscris avec mon identifiant Pôle Emploi</a>
                                 </div>
@@ -261,7 +261,7 @@
             <div class="container">
                 <template v-if="doitAfficherMiseEnAvantInscription()">
                     <div class="row align-items-center py-4">
-                        <p class="col-sm-7 col-12 mb-2 texte-blanc font-weight-bold font-size-md text-md-right">Faites-vous contacter par des recruteurs !</p>
+                        <p class="col-sm-7 col-12 mb-2 mb-sm-0 texte-blanc font-weight-bold font-size-md text-md-right">Faites-vous contacter par des recruteurs !</p>
                         <div class="col-sm-5 col-12">
                             <a class="bouton bouton-action bouton--noirSurBlanc gtm-candidat-offres-incentive-inscription" href="@controllers.candidat.routes.InscriptionController.inscription()">Je m'inscris avec mon identifiant Pôle Emploi</a>
                         </div>
@@ -269,7 +269,7 @@
                 </template>
                 <template v-if="doitAfficherMiseEnAvantCV()">
                     <div class="row align-items-center py-4">
-                        <p class="col-sm-8 col-12 mb-2 texte-blanc font-weight-bold font-size-md text-md-right">Ajoutez votre CV ! Des recruteurs pourront le consulter</p>
+                        <p class="col-sm-8 col-12 mb-2 mb-sm-0 texte-blanc font-weight-bold font-size-md text-md-right">Ajoutez votre CV ! Des recruteurs pourront le consulter</p>
                         <div class="col-sm-4 col-12">
                             <a class="bouton bouton-action bouton--blancSurNoir gtm-candidat-offres-incentive-cv" href="@controllers.candidat.routes.CVController.index()">Je mets à jour mon profil</a>
                         </div>
