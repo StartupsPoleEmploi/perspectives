@@ -202,8 +202,6 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
       )
     }(recruteurAuthentifieRequest)
   }
-
-
 }
 
 case class ProfilRecruteurIncompletException() extends Exception
