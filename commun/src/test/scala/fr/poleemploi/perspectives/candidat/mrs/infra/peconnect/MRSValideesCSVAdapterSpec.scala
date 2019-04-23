@@ -11,7 +11,7 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{AsyncWordSpec, BeforeAndAfter, MustMatchers}
 
-class MRSValideesCandidatsCSVAdapterSpec extends AsyncWordSpec
+class MRSValideesCSVAdapterSpec extends AsyncWordSpec
   with MustMatchers with MockitoSugar with BeforeAndAfter with ScalaFutures {
 
   val actorSystem: ActorSystem = ActorSystem(this.getClass.getSimpleName)
