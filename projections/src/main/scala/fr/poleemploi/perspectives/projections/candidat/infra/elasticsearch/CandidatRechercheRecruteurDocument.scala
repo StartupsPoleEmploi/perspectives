@@ -13,6 +13,7 @@ case class CandidatRechercheRecruteurDocument(candidatId: CandidatId,
                                               numeroTelephone: NumeroTelephone,
                                               metiersValides: List[CodeROME],
                                               habiletes: Set[Habilete],
+                                              metiersValidesRecherches: List[CodeROME],
                                               metiersRecherches: List[CodeROME],
                                               communeRecherche: String,
                                               rayonRecherche: Option[RayonRechercheDocument],
@@ -32,6 +33,7 @@ object CandidatRechercheRecruteurDocument {
       (JsPath \ numero_telephone).read[NumeroTelephone] and
       (JsPath \ metiers_valides).read[List[CodeROME]] and
       (JsPath \ habiletes).read[Set[Habilete]] and
+      (JsPath \ criteres_recherche \ "metiers_valides").read[List[CodeROME]] and
       (JsPath \ criteres_recherche \ "metiers").read[List[CodeROME]] and
       (JsPath \ criteres_recherche \ "commune").read[String] and
       (JsPath \ criteres_recherche \ "rayon").readNullable[RayonRechercheDocument] and

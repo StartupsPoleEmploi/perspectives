@@ -2,6 +2,14 @@
 
   margin-top: 2em;
 
+  .font-size-candidat {
+    font-size: 0.9em;
+  }
+
+  .font-size-titreSectionCandidat {
+    font-size: 1.375em;
+  }
+
   .compteurResultats {
     @include make-container();
     @include make-container-max-widths();
@@ -12,7 +20,6 @@
       letter-spacing: 0.6px;
       line-height: 24px;
       font-weight: 400;
-      white-space: pre-line;
     }
   }
 
@@ -58,100 +65,6 @@
   .resultatsRecherche {
     margin-top: 1em;
     background-color: rgba(234, 235, 237, 0.5);
-
-    &-titreConteneur {
-      @include make-container();
-      @include make-container-max-widths();
-    }
-
-    &-titre {
-      position: relative;
-      padding-top: 2.5em;
-      font-size: 1.375em;
-      color: $noir;
-    }
-  }
-
-  .listeResultatsRecherche {
-    &-separation {
-      height: 5px;
-    }
-
-    &-conteneur {
-      @include make-container();
-      @include make-container-max-widths();
-      text-align: left;
-      font-size: 0.9em;
-    }
-
-    &-ligneTitre {
-      @include make-row();
-      color: rgba(51, 64, 81, 0.5);
-    }
-
-    &-ligne {
-      @include make-row();
-      align-items: center;
-      cursor: pointer;
-      background-color: white;
-      color: $noir;
-    }
-
-    &-colonne {
-      @include make-col-ready();
-      padding-top: 27px;
-      padding-bottom: 27px;
-    }
-
-    &-candidat {
-      @include make-col(2);
-      font-weight: 700;
-    }
-
-    &-mrs {
-      @include make-col(4);
-    }
-
-    &-interessePar {
-      @include make-col(4);
-    }
-
-    &-voirProfil {
-      @include make-col(2);
-      text-align: center;
-    }
-  }
-
-  .voirProfil {
-    &--ouvert {
-      display: none;
-    }
-  }
-
-  .profilCandidat {
-    @include make-row();
-    color: white;
-    background-color: $noir;
-
-    &-colonne {
-      @include make-col-ready();
-      padding-top: 15px;
-      padding-bottom: 15px;
-    }
-
-    &-habiletes {
-      @include make-col(4);
-    }
-    &-interessePar {
-      @include make-col(4);
-    }
-    &-mobilite {
-      @include make-col(2);
-    }
-    &-actions {
-      @include make-col(2);
-      text-align: center;
-    }
   }
 
   .detailsProfils {
@@ -220,11 +133,6 @@
       border-right: inherit;
       box-shadow: inherit;
     }
-  }
-
-  .copiePressePapier {
-    position: absolute;
-    left: -9999px;
   }
 
   .modaleVideo {

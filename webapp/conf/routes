@@ -22,7 +22,7 @@ GET           /recruteur/peconnect/deconnexion/callback                controlle
 GET           /recruteur/deconnexion                                   controllers.recruteur.AuthentificationController.deconnexion
 GET           /recruteur/profil                                        controllers.recruteur.ProfilController.modificationProfil
 POST          /recruteur/profil                                        controllers.recruteur.ProfilController.modifierProfil
-GET           /recruteur/recherche                                     controllers.recruteur.RechercheCandidatController.index(secteurActivite: Option[String] ?= None, metier: Option[String] ?= None, localisation: Option[String] ?= None, latitude: Option[String] ?= None, longitude: Option[String] ?= None)
+GET           /recruteur/recherche                                     controllers.recruteur.RechercheCandidatController.index
 POST          /recruteur/recherche                                     controllers.recruteur.RechercheCandidatController.rechercherCandidats
 POST          /recruteur/recherche/commenterListeCandidats             controllers.recruteur.RechercheCandidatController.commenterListeCandidats
 GET           /recruteur/cv/telecharger/:candidatId/:nomFichier        controllers.recruteur.RechercheCandidatController.telechargerCV(candidatId, nomFichier)

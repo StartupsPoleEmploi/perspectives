@@ -99,6 +99,7 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
         email = d.email,
         metiersValides = d.metiersValides.map(c => buildMetierDTO(mapMetiersValides.get(c).head.head)),
         habiletes = d.habiletes,
+        metiersValidesRecherches = d.metiersValidesRecherches.map(c => buildMetierDTO(mapMetiersValides.get(c).head.head)),
         metiersRecherches = d.metiersRecherches.map(c => buildMetierDTO(mapMetiersRecherches.get(c).head.head)),
         numeroTelephone = d.numeroTelephone,
         rayonRecherche = d.rayonRecherche.map(buildRayonRecherche),

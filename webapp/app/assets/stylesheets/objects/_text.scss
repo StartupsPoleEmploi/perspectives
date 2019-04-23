@@ -2,6 +2,7 @@
 .texte-noir { color: $noir; }
 .texte-blanc { color: white; }
 .texte-gris { color: $gris; }
+.texte-gris-50 { color: rgba(51, 64, 81, 0.5); }
 .texte-erreur { color: $rouge-erreur; }
 .texte-vert-emeraude { color: $vert-emeraude; }
 .texte-orange { color: #FA6300; }
@@ -12,6 +13,7 @@
 
 .bg-bleu-ciel { background-color: #E9F2F5; }
 .bg-noir { background-color: $noir; }
+.bg-blanc { background-color: white; }
 
 .font-size-xs { font-size: $font-size-xs; }
 .font-size-sm { font-size: $font-size-sm; }

@@ -1,3 +1,7 @@
+.hiddenInput {
+  @include hiddenInput();
+}
+
 .boutonRadio { // FIXME : supprimer et modifier profil.scala.html
   margin: 0 30px 0 0;
   position: relative;

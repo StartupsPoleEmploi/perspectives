@@ -17,43 +17,13 @@ case class RechercheCandidatsQuery(typeRecruteur: TypeRecruteur,
   val nbCandidatsParPage: Int = 25
 }
 
-sealed trait RechercheCandidatQueryResult extends QueryResult {
-
-  def nbCandidats: Int
-
-  def nbCandidatsTotal: Int
-
-  def pages: List[KeysetRechercherCandidats]
-
-  def pageSuivante: Option[KeysetRechercherCandidats]
-}
-
-case class RechercheCandidatParLocalisationQueryResult(candidats: List[CandidatRechercheRecruteurDto],
-                                                       nbCandidats: Int,
-                                                       nbCandidatsTotal: Int,
-                                                       pages: List[KeysetRechercherCandidats],
-                                                       pageSuivante: Option[KeysetRechercherCandidats]) extends RechercheCandidatQueryResult
-
-case class RechercheCandidatParSecteurQueryResult(candidatsEvaluesSurSecteur: List[CandidatRechercheRecruteurDto],
-                                                  candidatsInteressesParAutreSecteur: List[CandidatRechercheRecruteurDto],
-                                                  nbCandidats: Int,
-                                                  nbCandidatsTotal: Int,
-                                                  pages: List[KeysetRechercherCandidats],
-                                                  pageSuivante: Option[KeysetRechercherCandidats]) extends RechercheCandidatQueryResult
-
-case class RechercheCandidatParMetierQueryResult(candidatsEvaluesSurMetier: List[CandidatRechercheRecruteurDto],
-                                                 candidatsInteressesParMetier: List[CandidatRechercheRecruteurDto],
-                                                 nbCandidats: Int,
-                                                 nbCandidatsTotal: Int,
-                                                 pages: List[KeysetRechercherCandidats],
-                                                 pageSuivante: Option[KeysetRechercherCandidats]) extends RechercheCandidatQueryResult
-
 case class CandidatRechercheRecruteurDto(candidatId: CandidatId,
                                          nom: Nom,
                                          prenom: Prenom,
                                          email: Email,
                                          metiersValides: List[MetierDTO],
                                          habiletes: Set[Habilete],
+                                         metiersValidesRecherches: List[MetierDTO],
                                          metiersRecherches: List[MetierDTO],
                                          numeroTelephone: NumeroTelephone,
                                          rayonRecherche: Option[RayonRecherche],
@@ -61,9 +31,15 @@ case class CandidatRechercheRecruteurDto(candidatId: CandidatId,
                                          cvId: Option[CVId],
                                          cvTypeMedia: Option[TypeMedia]) {
 
-  def possedeCV: Boolean = cvId.isDefined
-
   def nomCV: Option[String] = cvTypeMedia.map(t => s"${prenom.value} ${nom.value}.${TypeMedia.getExtensionFichier(t)}")
+}
+
+object CandidatRechercheRecruteurDto {
+
+  import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
+
+  implicit val writes: Writes[CandidatRechercheRecruteurDto] = (c: CandidatRechercheRecruteurDto) =>
+    Json.writes[CandidatRechercheRecruteurDto].writes(c) ++ Json.obj("nomCV" -> c.nomCV)
 }
 
 case class KeysetRechercherCandidats(score: Option[Int],
@@ -72,7 +48,20 @@ case class KeysetRechercherCandidats(score: Option[Int],
 
 object KeysetRechercherCandidats {
 
-  import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats.formatCandidatId
+  import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
 
   implicit val writes: Writes[KeysetRechercherCandidats] = Json.writes[KeysetRechercherCandidats]
+}
+
+case class RechercheCandidatQueryResult(candidats: List[CandidatRechercheRecruteurDto],
+                                        nbCandidats: Int,
+                                        nbCandidatsTotal: Int,
+                                        pages: List[KeysetRechercherCandidats],
+                                        pageSuivante: Option[KeysetRechercherCandidats]) extends QueryResult
+
+object RechercheCandidatQueryResult {
+
+  import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
+
+  implicit val writes: Writes[RechercheCandidatQueryResult] = Json.writes[RechercheCandidatQueryResult]
 }

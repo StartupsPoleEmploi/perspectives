@@ -226,121 +226,54 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
       }
 
   override def rechercherCandidats(query: RechercheCandidatsQuery): Future[RechercheCandidatQueryResult] =
-    query.codeROME.map(codeROME => rechercherCandidatsParMetier(query = query, codeROME = codeROME))
-      .orElse(query.codeSecteurActivite.map(codeSecteurActivite => rechercherCandidatsParSecteur(query = query, codeSecteurActivite = codeSecteurActivite)))
-      .getOrElse {
-        wsClient
-          .url(s"$baseUrl/$indexName/_search")
-          .withHttpHeaders(jsonContentType)
-          .post(mapping.buildRechercheCandidatsParLocalisationQuery(query))
-          .flatMap { response =>
-            val json = Json.parse(response.body)
-            val hits = (json \ "hits" \ "hits").as[JsArray]
-            val candidats = (hits \\ "_source").take(query.nbCandidatsParPage).map(_.as[CandidatRechercheRecruteurDocument])
-            val pages = (hits \\ "sort").zipWithIndex
-              .filter(v => v._2 == 0 || (v._2 + 1) % query.nbCandidatsParPage == 0)
-              .map(v => KeysetRechercherCandidats(
-                score = None,
-                dateInscription = if (v._2 == 0) (v._1 \ 0).as[Long] + 1L else (v._1 \ 0).as[Long],
-                candidatId = Some((v._1 \ 1).as[CandidatId])
-              )).toList
-            val nbCandidatsTotal = (json \ "hits" \ "total").as[Int]
-
-            mapping.buildCandidatsRechercheDto(candidats).map(dtos =>
-              RechercheCandidatParLocalisationQueryResult(
-                candidats = dtos,
-                nbCandidats = candidats.size,
-                nbCandidatsTotal = nbCandidatsTotal,
-                pages = query.page.map(k => k :: pages.tail).getOrElse(pages),
-                pageSuivante = pages.reverse.headOption
-              )
-            )
-          }
-      }
-
-  private def rechercherCandidatsParSecteur(query: RechercheCandidatsQuery,
-                                            codeSecteurActivite: CodeSecteurActivite): Future[RechercheCandidatQueryResult] =
     wsClient
       .url(s"$baseUrl/$indexName/_search")
       .withHttpHeaders(jsonContentType)
-      .post(mapping.buildRechercheCandidatsParSecteurQuery(query, codeSecteurActivite))
+      .post(
+        query.codeROME.map(c => mapping.buildRechercheCandidatsParMetierQuery(query, c))
+          .orElse(query.codeSecteurActivite.map(c => mapping.buildRechercheCandidatsParSecteurQuery(query, c)))
+          .getOrElse(mapping.buildRechercheCandidatsParLocalisationQuery(query))
+      )
       .flatMap { response =>
         val json = Json.parse(response.body)
         val hits = (json \ "hits" \ "hits").as[JsArray]
+        val candidats = (hits \\ "_source").take(query.nbCandidatsParPage).map(_.as[CandidatRechercheRecruteurDocument])
         val pages = buildKeysetRechercheCandidats(query, hits)
         val nbCandidatsTotal = (json \ "hits" \ "total").as[Int]
 
-        val candidats = hits.value.take(query.nbCandidatsParPage).toList
-        val candidatsEvaluesSurSecteur =
-          candidats
-            .filter(jsValue => (jsValue \ "_score").as[Int] > 2)
-            .map(js => (js \ "_source").as[CandidatRechercheRecruteurDocument])
-        val candidatsInteressesParAutreSecteur =
-          candidats
-            .filter(jsValue => (jsValue \ "_score").as[Int] == 2)
-            .map(js => (js \ "_source").as[CandidatRechercheRecruteurDocument])
-
-        for {
-          candidatsEvaluesSurSecteur <- mapping.buildCandidatsRechercheDto(candidatsEvaluesSurSecteur)
-          candidatsInteressesParAutreSecteur <- mapping.buildCandidatsRechercheDto(candidatsInteressesParAutreSecteur)
-        } yield {
-          RechercheCandidatParSecteurQueryResult(
-            candidatsEvaluesSurSecteur = candidatsEvaluesSurSecteur,
-            candidatsInteressesParAutreSecteur = candidatsInteressesParAutreSecteur,
+        mapping.buildCandidatsRechercheDto(candidats).map(candidats =>
+          RechercheCandidatQueryResult(
+            candidats = candidats,
             nbCandidats = candidats.size,
             nbCandidatsTotal = nbCandidatsTotal,
             pages = query.page.map(k => k :: pages.tail).getOrElse(pages),
             pageSuivante = pages.reverse.headOption
           )
-        }
+        )
       }
 
-  private def rechercherCandidatsParMetier(query: RechercheCandidatsQuery,
-                                           codeROME: CodeROME): Future[RechercheCandidatQueryResult] =
-    wsClient
-      .url(s"$baseUrl/$indexName/_search")
-      .withHttpHeaders(jsonContentType)
-      .post(mapping.buildRechercheCandidatsParMetierQuery(query, codeROME))
-      .flatMap { response =>
-        val json = Json.parse(response.body)
-        val hits = (json \ "hits" \ "hits").as[JsArray]
-        val pages = buildKeysetRechercheCandidats(query, hits)
-        val nbCandidatsTotal = (json \ "hits" \ "total").as[Int]
-
-        val candidats = hits.value.take(query.nbCandidatsParPage).toList
-        val candidatsEvaluesSurMetier =
-          candidats
-            .filter(jsValue => (jsValue \ "_score").as[Int] >= 6)
-            .map(js => (js \ "_source").as[CandidatRechercheRecruteurDocument])
-        val candidatsInteressesParMetier =
-          candidats
-            .filter(jsValue => (jsValue \ "_score").as[Int] >= 2 && (jsValue \ "_score").as[Int] < 6)
-            .map(js => (js \ "_source").as[CandidatRechercheRecruteurDocument])
-
-        for {
-          candidatsEvaluesSurMetier <- mapping.buildCandidatsRechercheDto(candidatsEvaluesSurMetier)
-          candidatsInteressesParMetier <- mapping.buildCandidatsRechercheDto(candidatsInteressesParMetier)
-        } yield {
-          RechercheCandidatParMetierQueryResult(
-            candidatsEvaluesSurMetier = candidatsEvaluesSurMetier,
-            candidatsInteressesParMetier = candidatsInteressesParMetier,
-            nbCandidats = candidats.size,
-            nbCandidatsTotal = nbCandidatsTotal,
-            pages = query.page.map(k => k :: pages.tail).getOrElse(pages),
-            pageSuivante = pages.reverse.headOption
-          )
-        }
-      }
-
-
+  // FIXME : refacto
   private def buildKeysetRechercheCandidats(query: RechercheCandidatsQuery,
                                             hits: JsArray): List[KeysetRechercherCandidats] =
     (hits \\ "sort").zipWithIndex
       .filter(v => v._2 == 0 || (v._2 + 1) % query.nbCandidatsParPage == 0)
       .map(v => KeysetRechercherCandidats(
-        score = Some((v._1 \ 0).as[Int]),
-        dateInscription = if (v._2 == 0) (v._1 \ 1).as[Long] + 1L else (v._1 \ 1).as[Long],
-        candidatId = Some((v._1 \ 2).as[CandidatId])
+        score =
+          if (query.codeSecteurActivite.isDefined || query.codeROME.isDefined)
+            Some((v._1 \ 0).as[Int])
+          else
+            None,
+        dateInscription =
+          if (query.codeSecteurActivite.isDefined || query.codeROME.isDefined) {
+            if (v._2 == 0) (v._1 \ 1).as[Long] + 1L else (v._1 \ 1).as[Long]
+          } else {
+            if (v._2 == 0) (v._1 \ 0).as[Long] + 1L else (v._1 \ 0).as[Long]
+          },
+        candidatId =
+          if (query.codeSecteurActivite.isDefined || query.codeROME.isDefined)
+            Some((v._1 \ 2).as[CandidatId])
+          else
+            Some((v._1 \ 1).as[CandidatId])
       )).toList
 
   private def update(candidatId: CandidatId, json: JsObject): Future[Unit] =

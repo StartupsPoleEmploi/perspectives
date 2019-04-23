@@ -1,17 +1,9 @@
 @import conf.WebAppConfig
-@import controllers.recruteur.RechercheCandidatForm
 @import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
-@import fr.poleemploi.perspectives.projections.candidat.RechercheCandidatQueryResult
-@import fr.poleemploi.perspectives.projections.metier.{MetierDTO, SecteurActiviteDTO}
 @import helper._
 @import play.api.libs.json.JsObject
 
-@(rechercheCandidatForm: Form[RechercheCandidatForm],
-        recruteurAuthentifie: RecruteurAuthentifie,
-        rechercheCandidatQueryResult: RechercheCandidatQueryResult,
-        metierChoisi: Option[MetierDTO] = None,
-        secteurActiviteChoisi: Option[SecteurActiviteDTO] = None,
-        secteursActivites: List[SecteurActiviteDTO],
+@(recruteurAuthentifie: RecruteurAuthentifie,
         jsData: JsObject)(implicit request: MessagesRequestHeader, flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
 @layout(recruteurAuthentifie = Some(recruteurAuthentifie)) {
@@ -56,27 +48,108 @@
                                class="critereLocalisation"/>
                     </div>
                     <div class="rechercherCandidats">
-                        <button type="button" class="rechercherCandidats-bouton" v-on:click="rechercherCandidats"></button>
+                        <button type="button" class="rechercherCandidats-bouton" v-on:click="rechercherCandidats(null)"></button>
                     </div>
                 </div>
             }
         </section>
         <section class="compteurResultats">
-            <h1 class="compteurResultats-titre" v-html="titreCompteurResultats"></h1>
+            <h1 class="compteurResultats-titre">
+                <template v-if="resultatRecherche.nbCandidatsTotal == 0">
+                    Nous n'avons pas de candidats à vous proposer avec ces critères
+                </template>
+                <template v-else>
+                    <span class="font-weight-bold">
+                        {{resultatRecherche.nbCandidatsTotal + ' ' + (resultatRecherche.nbCandidatsTotal === 1 ? 'candidat' : 'candidats')}}
+                        <template v-if="metierChoisi"> pour ce métier</template>
+                        <template v-else-if="secteurActiviteChoisi"> pour ce secteur d'activité</template>
+                        <template v-else-if="localisation.label"> à {{localisation.label}}</template>
+                        <template v-else> perspectives</template>
+                    </span>
+                    {{resultatRecherche.nbCandidatsTotal === 1 ? 'est validé' : 'sont validés'}} par la <abbr title="Méthode de Recrutement par Simulation" data-toggle="modal" data-target="#js-modaleVideo">MRS</abbr>
+                </template>
+            </h1>
         </section>
-        <section ref="resultatsRecherche" class="resultatsRecherche">
-            @partials.resultatsRecherche(
-                rechercheCandidatQueryResult = rechercheCandidatQueryResult,
-                secteurActiviteChoisi = secteurActiviteChoisi,
-                metierChoisi = metierChoisi,
-                secteursActivites = secteursActivites
-            )
+        <section class="resultatsRecherche" v-show="sectionsCandidats.length > 0">
+            <template v-for="sectionCandidat in sectionsCandidats">
+                <div class="container" v-if="sectionCandidat.titre && sectionCandidat.candidats.length > 0">
+                    <div class="pt-5 texte-noir font-size-titreSectionCandidat" v-html="sectionCandidat.titre">sectionCandidat.titre</div>
+                </div>
+                <div class="container py-1 font-size-candidat" v-if="sectionCandidat.candidats.length > 0">
+                    <div class="row py-4 texte-gris-50">
+                        <div class="col-2 font-weight-bold">Nom du candidat</div>
+                        <div class="col-4">Métier validé</div>
+                        <div class="col-4">Intéressé par</div>
+                    </div>
+                    <template v-for="candidat in sectionCandidat.candidats">
+                        <div class="row align-items-center cursor-pointer mt-1 py-4 texte-noir bg-blanc"
+                        v-on:click="toggleProfil(candidat.candidatId)">
+                            <div class="col-2 font-weight-bold gtm-recruteur-profils-detail">
+                                {{candidat.prenom}} {{candidat.nom}}
+                            </div>
+                            <div class="col-4 gtm-recruteur-profils-detail">
+                                {{candidat.metiersValides.map(function(m) {return m.label;}).join(', ')}}
+                            </div>
+                            <div class="col-4 gtm-recruteur-profils-detail">
+                                {{interessePar(candidat)}}
+                            </div>
+                            <div class="col-2 text-center gtm-recruteur-profils-detail">
+                                <img v-bind:src="estProfilCourant(candidat.candidatId) ? '/assets/images/commun/fermer-detail.svg' : '/assets/images/commun/ouvrir-detail.svg'"
+                                alt="Détails du profil candidat" height="16" width="16"/>
+                                Détail
+                            </div>
+                        </div>
+                        <transition name="slideDown">
+                            <div class="row py-3 texte-blanc bg-noir" v-show="estProfilCourant(candidat.candidatId)">
+                                <div class="col-4">
+                                    <p class="mb-0">Habiletés validées</p>
+                                    <ul class="detailsProfils">
+                                        <li class="detailsProfils-item" v-for="habilete in candidat.habiletes">{{habilete}}</li>
+                                    </ul>
+                                </div>
+                                <div class="col-4">
+                                    <p class="mb-0" v-show="detailInteressePar(candidat).length > 0">Intéréssé par</p>
+                                    <ul class="detailsProfils">
+                                        <li class="detailsProfils-item" v-for="metiersParSecteur in detailInteressePar(candidat)">{{metiersParSecteur}}</li>
+                                    </ul>
+                                </div>
+                                <div class="col-2">
+                                    <p class="mb-0">Mobilité</p>
+                                    {{mobilite(candidat)}} {{candidat.commune | capitalize}}
+                                </div>
+                                <div class="col-2 text-center">
+                                    <ul class="listeActions list-unstyled">
+                                        <li class="listeActions-item" v-if="candidat.cvId !== undefined">
+                                            <a class="bouton bouton-actionCandidat bouton-actionCandidat--large bouton--noirSurBlanc gtm-recruteur-profils-detail-cv" target="_blank"
+                                            v-bind:href="'/recruteur/cv/telecharger/' + candidat.candidatId + '/' + candidat.nomCV">CV</a>
+                                        </li>
+                                        <li class="listeActions-item">
+                                            <button class="bouton bouton-actionCandidat bouton--bleu bouton-actionCandidat--large gtm-recruteur-profils-detail-telephone"
+                                            v-on:click="afficherNumeroTelephone(candidat.candidatId)"
+                                            v-show="display.numTelephones.indexOf(candidat.candidatId) === -1">
+                                                Téléphone
+                                            </button>
+                                            <button class="bouton bouton-infoCandidat bouton--noirSurBlanc"
+                                            v-on:click="copierNumeroTelephone(candidat.candidatId)"
+                                            v-show="display.numTelephones.indexOf(candidat.candidatId) !== -1">
+                                                {{candidat.numeroTelephone}}
+                                            </button>
+                                            <input v-bind:id="'js-numeroTelephone-' + candidat.candidatId" class="hiddenInput" type="text" v-bind:value="candidat.numeroTelephone" readonly />
+                                            <div v-bind:id="'js-infoBulle-' + candidat.candidatId" class="infoBulle">Copié !</div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </transition>
+                    </template>
+                </div>
+            </template>
         </section>
         <pagination ref="pagination"
                     v-bind:nb-par-page="nbCandidatsParPage"
                     v-on:charger-page-suivante="chargerPageSuivante"
                     v-on:charger-page-precedente="chargerPagePrecedente"
-                    v-bind:pages-initiales="pagesInitiales"></pagination>
+                    v-bind:pages-initiales="resultatRecherche.pages"></pagination>
         <section class="commentaireRecruteur-arrierePlan">
             <div class="commentaireRecruteur" id="commenterListeCandidats">
                 <h2 class="commentaireRecruteur-titre" id="js-titreCommentaireRecruteur">Êtes-vous satisfait(e) de cette liste de candidats ?</h2>
