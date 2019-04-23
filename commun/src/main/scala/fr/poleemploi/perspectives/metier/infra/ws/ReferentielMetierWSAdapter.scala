@@ -36,14 +36,14 @@ class ReferentielMetierWSAdapter(config: ReferentielMetierWSAdapterConfig,
 
   override def metiersParCodesROME(codesROME: Set[CodeROME]): Future[Set[Metier]] =
     cacheApi.getOrElseUpdate(cacheKeyMetiers)(
-      for {
+      (for {
         accessToken <- genererAccessToken
-        metiers <- listerMetiers(accessToken).recoverWith {
-          case t: Throwable =>
-            Logger.error("Erreur lors de la récupération des métiers depuis le référentiel", t)
-            Future.successful(metiers)
-        }
-      } yield metiers
+        metiers <- listerMetiers(accessToken)
+      } yield metiers).recoverWith {
+        case t: Throwable =>
+          Logger.error("Erreur lors de la récupération des métiers depuis le référentiel", t)
+          Future.successful(metiers)
+      }
     ).map(metiers =>
       codesROME.map(c => metiers.getOrElse(c, throw new IllegalArgumentException(s"Aucun métier associé au code : $c")))
     )
