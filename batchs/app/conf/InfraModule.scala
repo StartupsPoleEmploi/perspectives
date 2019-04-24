@@ -17,7 +17,6 @@ import fr.poleemploi.perspectives.candidat.mrs.infra.local.{ImportHabiletesMRSLo
 import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.{ImportMRSPEConnectAdapter, MRSValideesCSVAdapter, MRSValideesSqlAdapter}
 import fr.poleemploi.perspectives.candidat.mrs.infra.sql.ReferentielHabiletesMRSSqlAdapter
 import fr.poleemploi.perspectives.commun.infra.jackson.PerspectivesEventSourcingModule
-import fr.poleemploi.perspectives.commun.infra.peconnect.sql.PEConnectSqlAdapter
 import fr.poleemploi.perspectives.commun.infra.play.cache.InMemoryCacheApi
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
 import fr.poleemploi.perspectives.emailing.infra.local.LocalEmailingService
@@ -113,13 +112,6 @@ class InfraModule extends AbstractModule with ScalaModule {
   def asyncCacheApi: AsyncCacheApi = new InMemoryCacheApi
 
   @Provides
-  def peConnectSqlAdapter(database: Database): PEConnectSqlAdapter =
-    new PEConnectSqlAdapter(
-      driver = PostgresDriver,
-      database = database
-    )
-
-  @Provides
   def mrsValideesCSVAdapter(actorSystem: ActorSystem): MRSValideesCSVAdapter =
     new MRSValideesCSVAdapter(actorSystem = actorSystem)
 
@@ -171,14 +163,12 @@ class InfraModule extends AbstractModule with ScalaModule {
   def importMRSPEConnectAdapter(batchsConfig: BatchsConfig,
                                 actorSystem: ActorSystem,
                                 mrsValideesCSVAdapter: MRSValideesCSVAdapter,
-                                mrsValideesSqlAdapter: MRSValideesSqlAdapter,
-                                peConnectSqlAdapter: PEConnectSqlAdapter): ImportMRSPEConnectAdapter =
+                                mrsValideesSqlAdapter: MRSValideesSqlAdapter): ImportMRSPEConnectAdapter =
     new ImportMRSPEConnectAdapter(
       config = batchsConfig.importMRSPEConnectConfig,
       actorSystem = actorSystem,
       mrsValideesCSVAdapter = mrsValideesCSVAdapter,
-      mrsValideesSqlAdapter = mrsValideesSqlAdapter,
-      peConnectSqlAdapter = peConnectSqlAdapter
+      mrsValideesSqlAdapter = mrsValideesSqlAdapter
     )
 
   @Provides

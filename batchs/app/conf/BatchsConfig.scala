@@ -20,7 +20,6 @@ class BatchsConfig(configuration: Configuration) {
   val useImportHabiletesDHAECsv: Boolean = configuration.getOptional[Boolean]("useImportHabiletesDHAECsv").getOrElse(true)
 
   val version: String = BuildInfo.version
-  val webappURL: String = configuration.get[String]("webappURL")
 
   val partenaireOauthConfig: OauthConfig = OauthConfig(
     clientId = configuration.get[String]("emploiStore.oauth2.clientId"),

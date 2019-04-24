@@ -4,7 +4,7 @@ import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.candidat.cv.domain.CVService
 import fr.poleemploi.perspectives.candidat.localisation.domain.LocalisationService
-import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielHabiletesMRS
+import fr.poleemploi.perspectives.candidat.mrs.domain.{MRSValidee, ReferentielHabiletesMRS}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -160,11 +160,19 @@ object CandidatInscritState extends CandidatState {
   override def ajouterMRSValidee(context: CandidatContext,
                                  command: AjouterMRSValideesCommand,
                                  referentielHabiletesMRS: ReferentielHabiletesMRS): Future[List[Event]] = {
-    // Un candidat peut potentiellement passer la même MRS à une date différente (la repasser) : aux projections de gérer si elles veulent afficher un historique ou simplement savoir les métiers validés
-    val mrsDejaValidees = context.mrsValidees.intersect(command.mrsValidees)
+    val mrsSansDoublons = command.mrsValidees.foldLeft(List[MRSValidee]())((acc, mrsValidee) =>
+      if (acc.exists(m => m.codeROME == mrsValidee.codeROME && m.codeDepartement == mrsValidee.codeDepartement))
+        acc
+      else
+        mrsValidee :: acc
+    )
+    if (mrsSansDoublons.size != command.mrsValidees.size) {
+      return Future.failed(new IllegalArgumentException(s"Impossible d'ajouter des MRS au candidat ${command.id.value} : la commande contient des MRS avec le même métier pour le même département"))
+    }
+    val mrsDejaValidees = context.mrsValidees.filter(m => command.mrsValidees.exists(c => c.codeROME == m.codeROME && c.codeDepartement == m.codeDepartement))
     if (mrsDejaValidees.nonEmpty) {
       return Future.failed(new IllegalArgumentException(
-        s"Le candidat ${command.id.value} a déjà validé les MRS suivantes : ${mrsDejaValidees.foldLeft("")((s, mrs) => s + '\n' + s"${mrs.codeROME.value} le ${mrs.dateEvaluation}")}"
+        s"Le candidat ${command.id.value} a déjà validé les métiers suivants : ${mrsDejaValidees.foldLeft("")((s, mrs) => s + '\n' + s"${mrs.codeROME.value} dans le département ${mrs.codeDepartement.value}")}"
       ))
     }
 

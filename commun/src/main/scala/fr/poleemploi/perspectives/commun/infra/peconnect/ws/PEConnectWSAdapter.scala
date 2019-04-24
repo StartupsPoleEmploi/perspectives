@@ -18,7 +18,7 @@ class PEConnectWSAdapter(wsClient: WSClient,
       .addHttpHeaders(authorizationHeader(accessToken))
       .get()
       .flatMap(filtreStatutReponse(_))
-      .map(_.json.as[List[ResultatRendezVousResponse]].flatMap(mapping.buildMRSValidee))
+      .map(r => mapping.buildMRSValidees(r.json.as[List[ResultatRendezVousResponse]]))
 
   def infosRecruteur(accessToken: AccessToken): Future[PEConnectRecruteurInfos] =
     wsClient

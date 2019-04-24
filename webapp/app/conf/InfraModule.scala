@@ -275,9 +275,7 @@ class InfraModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
-  def referentielMRSPEConnect(wsClient: WSClient,
-                              webAppConfig: WebAppConfig,
-                              mrsValideesSqlAdapter: MRSValideesSqlAdapter,
+  def referentielMRSPEConnect(mrsValideesSqlAdapter: MRSValideesSqlAdapter,
                               peConnectAccessTokenStorage: PEConnectAccessTokenStorage,
                               peConnectWSAdapter: PEConnectWSAdapter,
                               peConnectSqlAdapter: PEConnectSqlAdapter): ReferentielMRSPEConnect =
@@ -285,10 +283,7 @@ class InfraModule extends AbstractModule with ScalaModule {
       mrsValideesSqlAdapter = mrsValideesSqlAdapter,
       peConnectAccessTokenStorage = peConnectAccessTokenStorage,
       peConnectWSAdapter = peConnectWSAdapter,
-      peConnectSqlAdapter = peConnectSqlAdapter,
-      wsClient = wsClient,
-      slackConfig = webAppConfig.slackConfig,
-      environnement = webAppConfig.environnement
+      peConnectSqlAdapter = peConnectSqlAdapter
     )
 
   @Provides

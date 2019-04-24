@@ -2,7 +2,6 @@ package conf
 
 import akka.actor.{ActorRef, ActorSystem}
 import com.google.inject.{AbstractModule, Inject, Provides, Singleton}
-import fr.poleemploi.perspectives.candidat.CandidatCommandHandler
 import fr.poleemploi.perspectives.candidat.dhae.domain.ImportHabiletesDHAE
 import fr.poleemploi.perspectives.candidat.mrs.domain.{ImportHabiletesMRS, ImportMRS}
 import javax.inject.Named
@@ -18,7 +17,7 @@ class Scheduled @Inject()(perspectivesScheduler: BatchsScheduler) {
 class SchedulersModule extends AbstractModule with ScalaModule with AkkaGuiceSupport {
 
   override def configure(): Unit = {
-    bindActor[CandidatsMRSValideesActor](CandidatsMRSValideesActor.name)
+    bindActor[ImportMRSValideesActor](ImportMRSValideesActor.name)
     bindActor[HabiletesMRSActor](HabiletesMRSActor.name)
     bindActor[HabiletesDHAEActor](HabiletesDHAEActor.name)
 
@@ -26,11 +25,9 @@ class SchedulersModule extends AbstractModule with ScalaModule with AkkaGuiceSup
   }
 
   @Provides
-  def mrsValideesActor(importMRS: ImportMRS,
-                       candidatCommandHandler: CandidatCommandHandler): CandidatsMRSValideesActor =
-    new CandidatsMRSValideesActor(
-      importMRS = importMRS,
-      candidatCommandHandler = candidatCommandHandler
+  def importMRSValideesActor(importMRS: ImportMRS): ImportMRSValideesActor =
+    new ImportMRSValideesActor(
+      importMRS = importMRS
     )
 
   @Provides
@@ -48,15 +45,15 @@ class SchedulersModule extends AbstractModule with ScalaModule with AkkaGuiceSup
   @Provides
   @Singleton
   def perspectivesScheduler(actorSystem: ActorSystem,
-                            @Named(CandidatsMRSValideesActor.name)
-                            candidatsMrsValideesActor: ActorRef,
+                            @Named(ImportMRSValideesActor.name)
+                            importMRSValideesActor: ActorRef,
                             @Named(HabiletesMRSActor.name)
                             habiletesMRSActor: ActorRef,
                             @Named(HabiletesDHAEActor.name)
                             habiletesDHAEActor: ActorRef): BatchsScheduler =
     new BatchsScheduler(
       actorSystem = actorSystem,
-      candidatsMrsValideesActor = candidatsMrsValideesActor,
+      importMRSValideesActor = importMRSValideesActor,
       habiletesMRSActor = habiletesMRSActor,
       habiletesDHAEActor = habiletesDHAEActor
     )

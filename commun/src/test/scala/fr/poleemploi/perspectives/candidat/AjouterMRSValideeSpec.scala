@@ -48,15 +48,54 @@ class AjouterMRSValideeSpec extends AsyncWordSpec
         ex.getMessage mustBe s"Le candidat ${candidat.id.value} dans l'état Nouveau ne peut pas gérer la commande ${commande.getClass.getSimpleName}"
       )
     }
-    "renvoyer une erreur lorsque le candidat a déjà passé la MRS" in {
+    "renvoyer une erreur lorsque le candidat a déjà validé le même métier dans un département" in {
       // Given
       val candidat = candidatBuilder.avecInscription().avecMRSValidee(mrsValidee).build
 
       // When & Then
       recoverToExceptionIf[IllegalArgumentException](
-        candidat.ajouterMRSValidee(commande, referentielHabiletesMRS)
+        candidat.ajouterMRSValidee(commande.copy(
+          mrsValidees = List(mrsValidee.copy(dateEvaluation = mrsValidee.dateEvaluation.minusDays(2L)))
+        ), referentielHabiletesMRS)
       ).map(ex =>
-        ex.getMessage must startWith(s"Le candidat ${candidat.id.value} a déjà validé les MRS suivantes")
+        ex.getMessage must startWith(s"Le candidat ${candidat.id.value} a déjà validé les métiers suivants")
+      )
+    }
+    "renvoyer une erreur lorsque la commande contient deux fois la même MRS" in {
+      // Given
+      val candidat = candidatBuilder.avecInscription().build
+
+      // When & Then
+      recoverToExceptionIf[IllegalArgumentException](
+        candidat.ajouterMRSValidee(commande.copy(
+          mrsValidees = List(mrsValidee, mrsValidee)
+        ), referentielHabiletesMRS)
+      ).map(ex =>
+        ex.getMessage mustBe s"Impossible d'ajouter des MRS au candidat ${candidat.id.value} : la commande contient des MRS avec le même métier pour le même département"
+      )
+    }
+    "renvoyer une erreur lorsque la commande contient deux MRS avec le même métier et le même département : on souhaite juste savoir quel métier a été validé, peu importe si la même MRS est repassée" in {
+      // Given
+      val candidat = candidatBuilder.avecInscription().build
+
+      // When & Then
+      recoverToExceptionIf[IllegalArgumentException](
+        candidat.ajouterMRSValidee(commande.copy(
+          mrsValidees = List(
+            MRSValidee(
+              codeROME = CodeROME("H3203"),
+              codeDepartement = CodeDepartement("85"),
+              dateEvaluation = LocalDate.now()
+            ),
+            MRSValidee(
+              codeROME = CodeROME("H3203"),
+              codeDepartement = CodeDepartement("85"),
+              dateEvaluation = LocalDate.now().plusDays(1L)
+            )
+          )
+        ), referentielHabiletesMRS)
+      ).map(ex =>
+        ex.getMessage mustBe s"Impossible d'ajouter des MRS au candidat ${candidat.id.value} : la commande contient des MRS avec le même métier pour le même département"
       )
     }
     "renvoyer une erreur lorsque le service d'habiletes echoue" in {

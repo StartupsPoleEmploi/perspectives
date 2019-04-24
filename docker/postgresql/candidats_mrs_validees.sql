@@ -1,4 +1,3 @@
--- Idealement, devrait etre un systeme externe interrogeable, car renseigné par un extract issu du SI Pole Emploi
 CREATE TABLE candidats_mrs_validees
 (
   id             BIGSERIAL              NOT NULL,

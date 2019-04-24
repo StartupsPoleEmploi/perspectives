@@ -29,7 +29,7 @@ trait ImportFileAdapter[T] {
     val fichiers = stream.asScala.toList
     stream.close()
     for {
-      streamHabiletes <- Future.sequence(
+      stream <- Future.sequence(
         fichiers.map(f =>
           integrerFichier(f).map { s =>
             Files.move(f, config.archiveDirectory.resolve(f.getFileName), StandardCopyOption.REPLACE_EXISTING)
@@ -43,10 +43,8 @@ trait ImportFileAdapter[T] {
               Stream.empty
           })
       ).map(_.foldLeft(Stream.empty[T])((acc, s) => acc ++ s))
-    } yield streamHabiletes
+    } yield stream
   }
 
   def integrerFichier(fichier: Path): Future[Stream[T]]
 }
-
-

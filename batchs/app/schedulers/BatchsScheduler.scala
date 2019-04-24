@@ -6,18 +6,18 @@ import akka.actor.{ActorRef, ActorSystem}
 import com.typesafe.akka.extension.quartz.QuartzSchedulerExtension
 
 class BatchsScheduler(actorSystem: ActorSystem,
-                      candidatsMrsValideesActor: ActorRef,
+                      importMRSValideesActor: ActorRef,
                       habiletesMRSActor: ActorRef,
                       habiletesDHAEActor: ActorRef) {
 
-  import CandidatsMRSValideesActor._
+  import ImportMRSValideesActor._
   import HabiletesDHAEActor._
   import HabiletesMRSActor._
 
   val scheduler: QuartzSchedulerExtension = QuartzSchedulerExtension(actorSystem)
 
   def schedule: Date = {
-    scheduler.schedule("ImportCandidatsMRSValidees", candidatsMrsValideesActor, StartImportMRSValidees)
+    scheduler.schedule("ImportMRSValidees", importMRSValideesActor, StartImportMRSValidees)
     scheduler.schedule("ImportHabiletesMRS", habiletesMRSActor, StartImportHabiletesMRS)
     scheduler.schedule("ImportHabiletesDHAE", habiletesDHAEActor, StartImportHabiletesDHAE)
   }

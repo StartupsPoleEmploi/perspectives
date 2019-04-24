@@ -11,14 +11,21 @@ import play.api.libs.json.{JsPath, Json, Reads, __}
 
 class PEConnectWSMapping {
 
-  def buildMRSValidee(response: ResultatRendezVousResponse): Option[MRSValidee] =
-    for {
-      codeSitePESuiviResultat <- response.codeSitePESuiviResultat
-      _ <- response.listeCodeResultat.filter(_.exists(c => CodeResultatRendezVousResponse.VALIDE == c || CodeResultatRendezVousResponse.VALIDE_EMBAUCHE == c || CodeResultatRendezVousResponse.VALIDE_ENTREE_EN_FORMATION == c))
-    } yield MRSValidee(
-      codeROME = CodeROME(response.codeRome),
-      codeDepartement = CodeDepartement(codeSitePESuiviResultat.take(2)),
-      dateEvaluation = response.dateDebutSession.toLocalDate
+  def buildMRSValidees(response: List[ResultatRendezVousResponse]): List[MRSValidee] =
+    response.flatMap(resultat =>
+      for {
+        codeSitePESuiviResultat <- resultat.codeSitePESuiviResultat
+        _ <- resultat.listeCodeResultat.filter(_.exists(c => CodeResultatRendezVousResponse.VALIDE == c || CodeResultatRendezVousResponse.VALIDE_EMBAUCHE == c || CodeResultatRendezVousResponse.VALIDE_ENTREE_EN_FORMATION == c))
+      } yield MRSValidee(
+        codeROME = CodeROME(resultat.codeRome),
+        codeDepartement = CodeDepartement(codeSitePESuiviResultat.take(2)),
+        dateEvaluation = resultat.dateDebutSession.toLocalDate
+      )
+    ).foldLeft(List[MRSValidee]())((acc, mrsValidee) =>
+      if (acc.exists(m => m.codeROME == mrsValidee.codeROME && m.codeDepartement == mrsValidee.codeDepartement))
+        acc
+      else
+        mrsValidee :: acc
     )
 
   def buildPEConnectCandidatInfos(response: UserInfosResponse): PEConnectCandidatInfos =

@@ -12,9 +12,6 @@ import slick.lifted.{Constraint, PrimaryKey}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-/**
-  * Enregistre les MRS des candidats dans Postgres
-  */
 class MRSValideesSqlAdapter(val driver: PostgresDriver,
                             database: Database) {
 
@@ -59,21 +56,15 @@ class MRSValideesSqlAdapter(val driver: PostgresDriver,
     * Intègre les MRS provenant de l'extract du SI Pôle Emploi
     * Mets à jour les infos de MRS qu'un candidat a déjà validé (contrainte peconnect_id, code_rome, code_departement) car on ne sait pas ce qui a changé dans l'extract ni pour quelle raison, et cela évite d'intégrer des règles issues du SI de Pôle Emploi ici. <br />
     * Par exemple on peut recevoir un enregistrement en VSL puis un autre en VEM, et on ne sait pas dire si c'est une nouvelle MRS ou une mise à jour du statut.
-    *
-    * @return Le stream des MRS effectivement intégrées
     */
-  def ajouter(mrsValidees: Stream[MRSValideePEConnect]): Future[Stream[MRSValideePEConnect]] = {
+  def ajouter(mrsValidees: Stream[MRSValideePEConnect]): Future[Unit] = {
     val bulkInsert: DBIO[Option[Int]] = mrsValideesCandidatsTable.map(
       m => (m.peConnectId, m.codeROME, m.codeDepartement, m.dateEvaluation)
     ) insertOrUpdateAll mrsValidees.map(
       m => (m.peConnectId, m.codeROME, m.codeDepartement, m.dateEvaluation)
     )
 
-    /**
-      * On met à jour si un conflit existe : on retourne donc les mêmes mrs qu'en entrée.
-      * Il peut y avoir des doublons de MRS contenant la même date d'évaluation mais l'aggrégat Candidat fait les vérifications
-      */
-    database.run(bulkInsert).map(_ => mrsValidees)
+    database.run(bulkInsert).map(_ => ())
   }
 
   def mrsValideesParCandidat(peConnectId: PEConnectId): Future[List[MRSValidee]] =
