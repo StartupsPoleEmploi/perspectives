@@ -1,7 +1,7 @@
 package fr.poleemploi.perspectives.metier.infra.local
 
-import fr.poleemploi.perspectives.commun.domain.{CodeDomaineProfessionnel, CodeROME, CodeSecteurActivite}
-import fr.poleemploi.perspectives.metier.domain.{DomaineProfessionnel, Metier, ReferentielMetier, SecteurActivite}
+import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite}
+import fr.poleemploi.perspectives.metier.domain.{Metier, ReferentielMetier, SecteurActivite}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

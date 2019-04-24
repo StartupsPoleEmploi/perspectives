@@ -4,7 +4,7 @@ import fr.poleemploi.cqrs.projection.{Query, QueryResult}
 import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
 import fr.poleemploi.perspectives.commun.domain.{Coordonnees, _}
-import fr.poleemploi.perspectives.projections.metier.MetierDTO
+import fr.poleemploi.perspectives.metier.domain.Metier
 import fr.poleemploi.perspectives.recruteur.TypeRecruteur
 import play.api.libs.json.{Json, Writes}
 
@@ -21,10 +21,10 @@ case class CandidatRechercheRecruteurDto(candidatId: CandidatId,
                                          nom: Nom,
                                          prenom: Prenom,
                                          email: Email,
-                                         metiersValides: List[MetierDTO],
+                                         metiersValides: List[Metier],
                                          habiletes: Set[Habilete],
-                                         metiersValidesRecherches: List[MetierDTO],
-                                         metiersRecherches: List[MetierDTO],
+                                         metiersValidesRecherches: List[Metier],
+                                         metiersRecherches: List[Metier],
                                          numeroTelephone: NumeroTelephone,
                                          rayonRecherche: Option[RayonRecherche],
                                          commune: String,

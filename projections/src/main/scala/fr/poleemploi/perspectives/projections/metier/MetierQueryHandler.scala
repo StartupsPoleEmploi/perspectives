@@ -9,39 +9,11 @@ import scala.concurrent.Future
 class MetierQueryHandler(referentielMetier: ReferentielMetier) extends QueryHandler {
 
   override def configure: PartialFunction[Query[_ <: QueryResult], Future[QueryResult]] = {
-    case SecteursActiviteQuery => referentielMetier.secteursActivitesRecherche.map(l =>
-      SecteursActiviteQueryResult(l.map(s => SecteurActiviteDTO(
-        code = s.code,
-        label = s.label,
-        metiers = s.metiers.map(m => MetierDTO(
-          codeROME = m.codeROME,
-          label = m.label
-        )),
-        domainesProfessionnels = s.domainesProfessionnels.map(d => DomaineProfessionnelDTO(
-          code = d.code,
-          label = d.label
-        ))
-      )))
-    )
-    case q: MetierRechercheParCodeROMEQuery => referentielMetier.metiersRechercheParCodeROME(Set(q.codeROME)).map(l =>
-      MetierRechercheParCodeROMEQueryResult(l.map(m => MetierDTO(
-        codeROME = m.codeROME,
-        label = m.label
-      )).head)
-    )
-    case q: SecteurActiviteParCodeQuery => referentielMetier.secteurActiviteRechercheParCode(q.code).map(s => SecteurActiviteParCodeQueryResult(SecteurActiviteDTO(
-      code = s.code,
-      label = s.label,
-      metiers = s.metiers.map(m => MetierDTO(
-        codeROME = m.codeROME,
-        label = m.label
-      )),
-      domainesProfessionnels = s.domainesProfessionnels.map(d => DomaineProfessionnelDTO(
-        code = d.code,
-        label = d.label
-      ))
-    )))
+    case SecteursActiviteQuery => referentielMetier.secteursActivitesRecherche
+      .map(l => SecteursActiviteQueryResult(l))
+    case q: MetierRechercheParCodeROMEQuery => referentielMetier.metiersRechercheParCodeROME(Set(q.codeROME))
+      .map(l => MetierRechercheParCodeROMEQueryResult(l.head))
+    case q: SecteurActiviteParCodeQuery => referentielMetier.secteurActiviteRechercheParCode(q.code)
+      .map(s => SecteurActiviteParCodeQueryResult(s))
   }
-
-
 }

@@ -6,7 +6,7 @@ import fr.poleemploi.cqrs.projection.{Query, QueryResult}
 import fr.poleemploi.perspectives.candidat.{CandidatId, StatutDemandeurEmploi}
 import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
-import fr.poleemploi.perspectives.projections.metier.MetierDTO
+import fr.poleemploi.perspectives.metier.domain.Metier
 import play.api.libs.json._
 
 case class CandidatsPourConseillerQuery(nbPagesACharger: Int,
@@ -23,9 +23,9 @@ case class CandidatPourConseillerDto(candidatId: CandidatId,
                                      prenom: Prenom,
                                      email: Email,
                                      statutDemandeurEmploi: Option[StatutDemandeurEmploi],
-                                     metiersValides: Set[MetierDTO],
-                                     metiersValidesRecherches: Set[MetierDTO],
-                                     metiersRecherches: Set[MetierDTO],
+                                     metiersValides: Set[Metier],
+                                     metiersValidesRecherches: Set[Metier],
+                                     metiersRecherches: Set[Metier],
                                      contactRecruteur: Option[Boolean],
                                      contactFormation: Option[Boolean],
                                      communeRecherche: Option[String],

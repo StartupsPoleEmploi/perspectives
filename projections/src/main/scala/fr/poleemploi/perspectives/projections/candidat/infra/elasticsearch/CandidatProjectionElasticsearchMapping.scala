@@ -3,9 +3,8 @@ package fr.poleemploi.perspectives.projections.candidat.infra.elasticsearch
 import fr.poleemploi.perspectives.candidat.LocalisationRecherche
 import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
-import fr.poleemploi.perspectives.metier.domain.{Metier, ReferentielMetier}
+import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
 import fr.poleemploi.perspectives.projections.candidat._
-import fr.poleemploi.perspectives.projections.metier.MetierDTO
 import fr.poleemploi.perspectives.recruteur.TypeRecruteur
 import play.api.libs.json._
 
@@ -28,7 +27,7 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
         codePostal = document.codePostal,
         latitude = document.latitude,
         longitude = document.longitude,
-        metiersValides = metiersValides.map(buildMetierDTO),
+        metiersValides = metiersValides,
         metiersValidesRecherches = document.criteresRecherche.metiersValides,
         metiersRecherches = document.criteresRecherche.metiers,
         domainesProfessionnelsRecherches = document.criteresRecherche.domainesProfessionels,
@@ -48,14 +47,8 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
     )
 
   def buildMetiersValidesQueryResult(document: CandidatMetiersValidesDocument): Future[CandidatMetiersValidesQueryResult] =
-    referentielMetier.metiersParCodesROME(document.metiersValides).map(metiersValides =>
-      CandidatMetiersValidesQueryResult(
-        metiersValides = metiersValides.map(m => MetierDTO(
-          codeROME = m.codeROME,
-          label = m.label
-        ))
-      )
-    )
+    referentielMetier.metiersParCodesROME(document.metiersValides)
+      .map(metiersValides => CandidatMetiersValidesQueryResult(metiersValides))
 
   def buildCandidatDepotCVQueryResult(document: CandidatDepotCVDocument): CandidatDepotCVQueryResult =
     CandidatDepotCVQueryResult(
@@ -67,7 +60,7 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
   def buildCandidatPourRechercheOffreQueryResult(document: CandidatPourRechercheOffreDocument): Future[CandidatPourRechercheOffreQueryResult] =
     referentielMetier.metiersParCodesROME(document.metiersValides).map(metiersValides =>
       CandidatPourRechercheOffreQueryResult(
-        metiersValides = metiersValides.map(buildMetierDTO),
+        metiersValides = metiersValides,
         localisationRecherche =
           for {
             codePostal <- document.criteresRecherche.codePostal
@@ -97,10 +90,10 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
         nom = d.nom,
         prenom = d.prenom,
         email = d.email,
-        metiersValides = d.metiersValides.map(c => buildMetierDTO(mapMetiersValides.get(c).head.head)),
+        metiersValides = d.metiersValides.map(c => mapMetiersValides.get(c).head.head),
         habiletes = d.habiletes,
-        metiersValidesRecherches = d.metiersValidesRecherches.map(c => buildMetierDTO(mapMetiersValides.get(c).head.head)),
-        metiersRecherches = d.metiersRecherches.map(c => buildMetierDTO(mapMetiersRecherches.get(c).head.head)),
+        metiersValidesRecherches = d.metiersValidesRecherches.map(c => mapMetiersValides.get(c).head.head),
+        metiersRecherches = d.metiersRecherches.map(c => mapMetiersRecherches.get(c).head.head),
         numeroTelephone = d.numeroTelephone,
         rayonRecherche = d.rayonRecherche.map(buildRayonRecherche),
         commune = d.communeRecherche,
@@ -123,9 +116,9 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
           prenom = d.prenom,
           email = d.email,
           statutDemandeurEmploi = d.statutDemandeurEmploi,
-          metiersValides = d.metiersValides.map(c => buildMetierDTO(mapMetiersValides.get(c).head.head)),
-          metiersValidesRecherches = d.metiersValidesRecherches.map(c => buildMetierDTO(mapMetiersValides.get(c).head.head)),
-          metiersRecherches = d.metiersRecherches.map(c => buildMetierDTO(mapMetiersRecherches.get(c).head.head)),
+          metiersValides = d.metiersValides.map(c => mapMetiersValides.get(c).head.head),
+          metiersValidesRecherches = d.metiersValidesRecherches.map(c => mapMetiersValides.get(c).head.head),
+          metiersRecherches = d.metiersRecherches.map(c => mapMetiersRecherches.get(c).head.head),
           contactRecruteur = d.contactRecruteur,
           contactFormation = d.contactFormation,
           communeRecherche = d.communeRecherche,
@@ -154,6 +147,48 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
           case u@_ => throw new IllegalArgumentException(s"Unite de longueur non gérée ${u.value}")
         })
     )
+
+  def buildSecteursActivitesAvecCandidatQuery(query: SecteursActivitesAvecCandidatsQuery): JsObject =
+    Json.obj(
+      "size" -> 0,
+      "query" -> Json.obj(
+        "bool" -> Json.obj(
+          "filter" -> JsArray(
+            Seq(
+              Some(buildFiltreTypeRecruteur(query.typeRecruteur)),
+              Some(buildFiltreMetiersValides),
+              Some(buildFiltreRechercheMetier),
+              Some(buildFiltreNumeroTelephone),
+              Some(buildFiltreCommuneRecherche)
+            ).flatten
+          )
+        )
+      ),
+      "aggs" -> Json.obj(
+        "metiers_valides_recherches" -> Json.obj(
+          "terms" -> Json.obj(
+            "field" -> "criteres_recherche.metiers_valides",
+            "size" -> 50
+          )
+        ),
+        "metiers_recherches" -> Json.obj(
+          "terms" -> Json.obj(
+            "field" -> "criteres_recherche.metiers",
+            "size" -> 50
+          )
+        )
+      )
+    )
+
+  def buildSecteursActivitesAvecCandidatQueryResult(json: JsValue): Future[SecteursActivitesAvecCandidatsQueryResult] =
+    referentielMetier.secteursActivitesRecherche.map { secteursActivites =>
+      val buckets = (json \\ "buckets").flatMap(_.as[List[BucketDocument]])
+      val filtered = secteursActivites.map(s => s.copy(
+        metiers = s.metiers.filter(m => buckets.exists(b => b.key == m.codeROME.value || b.key.startsWith(m.codeROME.value)))
+      ))
+
+      SecteursActivitesAvecCandidatsQueryResult(filtered)
+    }
 
   def buildRechercheCandidatsParLocalisationQuery(query: RechercheCandidatsQuery): JsObject = {
     val queryJson = Json.obj(
@@ -353,7 +388,7 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
   private def buildFiltresRechercheCandidatQuery(query: RechercheCandidatsQuery): JsArray =
     JsArray(
       Seq(
-        buildFiltreTypeRecruteur(query.typeRecruteur),
+        Some(buildFiltreTypeRecruteur(query.typeRecruteur)),
         Some(buildFiltreMetiersValides),
         Some(buildFiltreRechercheMetier),
         Some(buildFiltreNumeroTelephone),
@@ -362,10 +397,11 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
       ).flatten
     )
 
-  private def buildFiltreTypeRecruteur(typeRecruteur: TypeRecruteur): Option[JsObject] = typeRecruteur match {
+  private def buildFiltreTypeRecruteur(typeRecruteur: TypeRecruteur): JsObject = typeRecruteur match {
     case TypeRecruteur.ORGANISME_FORMATION =>
-      Some(Json.obj("term" -> Json.obj(contact_formation -> true)))
-    case _ => Some(Json.obj("term" -> Json.obj(contact_recruteur -> true)))
+      Json.obj("term" -> Json.obj(contact_formation -> true))
+    case _ =>
+      Json.obj("term" -> Json.obj(contact_recruteur -> true))
   }
 
   private def buildFiltreNumeroTelephone: JsObject =
@@ -394,11 +430,6 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
         "relation" -> "contains"
       )
     ))
-
-  private def buildMetierDTO(metier: Metier) = MetierDTO(
-    codeROME = metier.codeROME,
-    label = metier.label
-  )
 
   private def buildRayonRecherche(document: RayonRechercheDocument): RayonRecherche =
     RayonRecherche(value = document.value, uniteLongueur = document.uniteLongueur)

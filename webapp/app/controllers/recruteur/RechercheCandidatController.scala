@@ -11,7 +11,6 @@ import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite}
 import fr.poleemploi.perspectives.projections.candidat._
 import fr.poleemploi.perspectives.projections.candidat.cv.CVCandidatPourRecruteurQuery
-import fr.poleemploi.perspectives.projections.metier.{MetierQueryHandler, SecteursActiviteQuery}
 import fr.poleemploi.perspectives.projections.recruteur._
 import fr.poleemploi.perspectives.recruteur._
 import fr.poleemploi.perspectives.recruteur.commentaire.domain.ContexteRecherche
@@ -32,7 +31,6 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
                                             candidatQueryHandler: CandidatQueryHandler,
                                             recruteurQueryHandler: RecruteurQueryHandler,
                                             recruteurCommandHandler: RecruteurCommandHandler,
-                                            metierQueryHandler: MetierQueryHandler,
                                             recruteurAuthentifieAction: RecruteurAuthentifieAction) extends AbstractController(cc) {
 
   def index: Action[AnyContent] =
@@ -49,12 +47,12 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
             page = None
           )
           rechercheCandidatQueryResult <- candidatQueryHandler.handle(query)
-          secteursActiviteQueryResult <- metierQueryHandler.handle(SecteursActiviteQuery)
+          secteursActivitesAvecCandidatsQueryResult <- candidatQueryHandler.handle(SecteursActivitesAvecCandidatsQuery(typeRecruteur))
         } yield {
           Ok(views.html.recruteur.rechercheCandidat(
             recruteurAuthentifie = recruteurAuthentifieRequest.recruteurAuthentifie,
             jsData = Json.obj(
-              "secteursActivites" -> secteursActiviteQueryResult.secteursActivites,
+              "secteursActivites" -> secteursActivitesAvecCandidatsQueryResult.secteursActivites,
               "resultatRecherche" -> rechercheCandidatQueryResult,
               "nbCandidatsParPage" -> query.nbCandidatsParPage,
               "csrfToken" -> CSRF.getToken.map(_.value),

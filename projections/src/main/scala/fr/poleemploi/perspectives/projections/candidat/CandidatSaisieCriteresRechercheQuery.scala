@@ -3,14 +3,14 @@ package fr.poleemploi.perspectives.projections.candidat
 import fr.poleemploi.cqrs.projection.{Query, QueryResult}
 import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.commun.domain._
-import fr.poleemploi.perspectives.projections.metier.MetierDTO
+import fr.poleemploi.perspectives.metier.domain.Metier
 
 case class CandidatSaisieCriteresRechercheQuery(candidatId: CandidatId) extends Query[CandidatSaisieCriteresRechercheQueryResult]
 
 case class CandidatSaisieCriteresRechercheQueryResult(candidatId: CandidatId,
                                                       contactRecruteur: Option[Boolean],
                                                       contactFormation: Option[Boolean],
-                                                      metiersValides: Set[MetierDTO],
+                                                      metiersValides: Set[Metier],
                                                       metiersValidesRecherches: Set[CodeROME],
                                                       metiersRecherches: Set[CodeROME],
                                                       domainesProfessionnelsRecherches: Set[CodeDomaineProfessionnel],

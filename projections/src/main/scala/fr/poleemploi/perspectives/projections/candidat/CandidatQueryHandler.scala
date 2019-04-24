@@ -31,6 +31,7 @@ class CandidatQueryHandler(candidatProjection: CandidatProjection,
           case t: Throwable => throw QueryException(t)
         }
     case q: CandidatPourRechercheOffreQuery => candidatProjection.rechercheOffre(q)
+    case q: SecteursActivitesAvecCandidatsQuery => candidatProjection.secteursActivitesAvecCandidats(q)
   }
 
   private def cvCandidatPourRecruteur(query: CVCandidatPourRecruteurQuery): Future[CV] = {

@@ -3,7 +3,6 @@ package fr.poleemploi.perspectives.projections.candidat.infra.elasticsearch
 import java.time.format.DateTimeFormatter
 
 import fr.poleemploi.perspectives.candidat._
-import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.commun.infra.elasticsearch.EsConfig
 import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
 import fr.poleemploi.perspectives.commun.infra.ws.WSAdapter
@@ -224,6 +223,13 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
           )
         )
       }
+
+  def secteursActivitesAvecCandidats(query: SecteursActivitesAvecCandidatsQuery): Future[SecteursActivitesAvecCandidatsQueryResult] =
+    wsClient
+    .url(s"$baseUrl/$indexName/_search")
+    .withHttpHeaders(jsonContentType)
+    .post(mapping.buildSecteursActivitesAvecCandidatQuery(query))
+    .flatMap(r => mapping.buildSecteursActivitesAvecCandidatQueryResult(r.json))
 
   override def rechercherCandidats(query: RechercheCandidatsQuery): Future[RechercheCandidatQueryResult] =
     wsClient
