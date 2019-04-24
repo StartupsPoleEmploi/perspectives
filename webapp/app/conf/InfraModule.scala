@@ -1,7 +1,7 @@
 package conf
 
 import akka.actor.ActorSystem
-import authentification.infra.play.PlayOauthService
+import authentification.infra.play.{PlayOauthService, SessionConseillerAuthentifie}
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.inject._
 import com.google.inject.name.Named
@@ -383,5 +383,12 @@ class InfraModule extends AbstractModule with ScalaModule {
   def recruteurProjectionSqlAdapter(database: Database): RecruteurProjectionSqlAdapter =
     new RecruteurProjectionSqlAdapter(
       database = database
+    )
+
+  @Provides
+  @Singleton
+  def sessionConseillerAuthentifie(webAppConfig: WebAppConfig): SessionConseillerAuthentifie =
+    new SessionConseillerAuthentifie(
+      candidatsConseillers = webAppConfig.candidatsConseillers
     )
 }

@@ -10,7 +10,7 @@ import fr.poleemploi.perspectives.candidat.mrs.domain.{ReferentielHabiletesMRS, 
 import fr.poleemploi.perspectives.candidat.mrs.infra.local.{ReferentielHabiletesMRSLocalAdapter, ReferentielMRSLocalAdapter}
 import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.ReferentielMRSPEConnect
 import fr.poleemploi.perspectives.candidat.mrs.infra.sql.ReferentielHabiletesMRSSqlAdapter
-import fr.poleemploi.perspectives.conseiller.{AutorisationService, ConseillerId}
+import fr.poleemploi.perspectives.conseiller.AutorisationService
 import fr.poleemploi.perspectives.emailing.domain.EmailingService
 import fr.poleemploi.perspectives.emailing.infra.local.LocalEmailingService
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetEmailingService
@@ -32,7 +32,7 @@ class ServicesModule extends AbstractModule {
   @Singleton
   def autorisationService(webAppConfig: WebAppConfig): AutorisationService =
     new AutorisationService(
-      admins = webAppConfig.admins.map(ConseillerId)
+      admins = webAppConfig.conseillersAdmins
     )
 
   @Provides

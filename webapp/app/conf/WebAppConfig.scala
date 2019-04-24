@@ -1,5 +1,6 @@
 package conf
 
+import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.candidat.localisation.infra.algolia.AlgoliaPlacesConfig
 import fr.poleemploi.perspectives.candidat.localisation.infra.ws.LocalisationWSAdapterConfig
 import fr.poleemploi.perspectives.commun.infra.Environnement
@@ -7,6 +8,7 @@ import fr.poleemploi.perspectives.commun.infra.elasticsearch.EsConfig
 import fr.poleemploi.perspectives.commun.infra.oauth.{OauthConfig, OauthScope}
 import fr.poleemploi.perspectives.commun.infra.peconnect.ws.PEConnectWSAdapterConfig
 import fr.poleemploi.perspectives.commun.infra.slack.SlackConfig
+import fr.poleemploi.perspectives.conseiller.ConseillerId
 import fr.poleemploi.perspectives.emailing.infra.ws.MailjetWSAdapterConfig
 import fr.poleemploi.perspectives.infra.BuildInfo
 import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapterConfig
@@ -100,5 +102,13 @@ class WebAppConfig(configuration: Configuration) {
     apiKey = configuration.get[String]("algoliaPlaces.apiKey")
   )
 
-  val admins: List[String] = configuration.getOptional[Seq[String]]("admins").map(_.toList).getOrElse(Nil)
+  val candidatsConseillers: Map[CandidatId, ConseillerId] =
+    configuration.getOptional[Map[String, String]]("conseillers.candidats")
+      .map(_.map(v => (CandidatId(v._1), ConseillerId(v._2))))
+      .getOrElse(Map())
+
+  val conseillersAdmins: List[ConseillerId] =
+    configuration.getOptional[Seq[String]]("conseillers.admins")
+      .map(_.map(ConseillerId).toList)
+      .getOrElse(Nil)
 }
