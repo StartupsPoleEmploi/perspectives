@@ -183,11 +183,11 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
   def buildSecteursActivitesAvecCandidatQueryResult(json: JsValue): Future[SecteursActivitesAvecCandidatsQueryResult] =
     referentielMetier.secteursActivitesRecherche.map { secteursActivites =>
       val buckets = (json \\ "buckets").flatMap(_.as[List[BucketDocument]])
-      val filtered = secteursActivites.map(s => s.copy(
+      val secteursAvecCandidats = secteursActivites.map(s => s.copy(
         metiers = s.metiers.filter(m => buckets.exists(b => b.key == m.codeROME.value || b.key.startsWith(m.codeROME.value)))
-      ))
+      )).filter(s => s.metiers.nonEmpty)
 
-      SecteursActivitesAvecCandidatsQueryResult(filtered)
+      SecteursActivitesAvecCandidatsQueryResult(secteursAvecCandidats)
     }
 
   def buildRechercheCandidatsParLocalisationQuery(query: RechercheCandidatsQuery): JsObject = {
