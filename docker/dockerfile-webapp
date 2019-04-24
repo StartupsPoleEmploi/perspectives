@@ -1,27 +1,15 @@
-FROM ubuntu:18.04
+FROM openjdk:8-jre-slim
 
 ARG DEBIAN_FRONTEND=noninteractive
 
 # Common software : always run apt-get update et apt-get install in the same run statement
 RUN apt-get update && \
-    apt-get -y install software-properties-common && \
     apt-get -y install unzip && \
-    apt-get -y install curl
-
-# Java8
-RUN \
-  echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | debconf-set-selections && \
-  apt-add-repository -y ppa:webupd8team/java && \
-  apt-get update && \
-  apt-get install -y oracle-java8-installer && \
-  rm -rf /var/cache/oracle-jdk8-installer && \
-  rm -rf /var/lib/apt/lists/* # delete all the apt list files since they're big and get stale quickly
+    apt-get -y install curl && \
+    rm -rf /var/lib/apt/lists/* # delete all the apt list files since they're big and get stale quickly
 
 # Make port 9000 available to the world outside this container
 EXPOSE 9000
-
-# Define commonly used JAVA_HOME variable
-ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
 
 WORKDIR /opt/perspectives-webapp
 
