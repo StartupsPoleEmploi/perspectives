@@ -20,7 +20,7 @@ class ServicesModule extends AbstractModule {
 
   @Provides
   @Singleton
-  def importMR(importMRSLocalAdapter: Provider[ImportMRSLocalAdapter],
+  def importMRS(importMRSLocalAdapter: Provider[ImportMRSLocalAdapter],
                importMRSPEConnectAdapter: Provider[ImportMRSPEConnectAdapter],
                batchsConfig: BatchsConfig): ImportMRS =
     if (batchsConfig.usePEConnect)
