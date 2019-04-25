@@ -63,7 +63,7 @@
                         {{resultatRecherche.nbCandidatsTotal + ' ' + (resultatRecherche.nbCandidatsTotal === 1 ? 'candidat' : 'candidats')}}
                         <template v-if="metierChoisi"> pour ce métier</template>
                         <template v-else-if="secteurActiviteChoisi"> pour ce secteur d'activité</template>
-                        <template v-else-if="localisation.label"> à {{localisation.label}}</template>
+                        <template v-else-if="localisationChoisie"> à {{localisationChoisie}}</template>
                         <template v-else> perspectives</template>
                     </span>
                     {{resultatRecherche.nbCandidatsTotal === 1 ? 'est validé' : 'sont validés'}} par la <abbr title="Méthode de Recrutement par Simulation" data-toggle="modal" data-target="#js-modaleVideo">MRS</abbr>

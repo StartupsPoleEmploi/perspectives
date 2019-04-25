@@ -83,6 +83,7 @@ var app = new Vue({
                 latitude: null,
                 longitude: null
             },
+            localisationChoisie: null,
             resultatRecherche:  Object.assign({
                     candidats: [],
                     nbCandidats: 0,
@@ -250,6 +251,7 @@ var app = new Vue({
                 app.resultatRecherche = response;
                 app.secteurActiviteChoisi = app.secteurActivite;
                 app.metierChoisi = app.metier;
+                app.localisationChoisie = app.localisation.label;
                 app.modifierSectionsCandidats(response.candidats);
                 if (!pagination) {
                     app.display.numTelephones = [];
