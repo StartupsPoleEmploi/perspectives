@@ -8,4 +8,7 @@ class ImportMRSLocalAdapter extends ImportMRS {
 
   override def integrerMRSValidees: Future[Unit] =
     Future.successful(())
+
+  override def integrerMRSDHAEValidees: Future[Unit] =
+    Future.successful(())
 }

@@ -2,10 +2,8 @@ package conf
 
 import java.nio.file.Paths
 
-import fr.poleemploi.perspectives.candidat.dhae.infra.csv.ImportHabiletesDHAECsvAdapterConfig
-import fr.poleemploi.perspectives.candidat.mrs.infra.csv.ImportHabiletesMRSCsvAdapterConfig
-import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.ImportMRSPEConnectConfig
 import fr.poleemploi.perspectives.commun.infra.elasticsearch.EsConfig
+import fr.poleemploi.perspectives.commun.infra.file.ImportFileAdapterConfig
 import fr.poleemploi.perspectives.commun.infra.oauth.OauthConfig
 import fr.poleemploi.perspectives.emailing.infra.ws.MailjetWSAdapterConfig
 import fr.poleemploi.perspectives.infra.BuildInfo
@@ -16,8 +14,7 @@ class BatchsConfig(configuration: Configuration) {
 
   val useMailjet: Boolean = configuration.getOptional[Boolean]("useMailjet").getOrElse(true)
   val usePEConnect: Boolean = configuration.getOptional[Boolean]("usePEConnect").getOrElse(true)
-  val useImportHabiletesMRSCsv: Boolean = configuration.getOptional[Boolean]("useImportHabiletesMRSCsv").getOrElse(true)
-  val useImportHabiletesDHAECsv: Boolean = configuration.getOptional[Boolean]("useImportHabiletesDHAECsv").getOrElse(true)
+  val useImportHabiletesMRS: Boolean = configuration.getOptional[Boolean]("useImportHabiletesMRS").getOrElse(true)
 
   val version: String = BuildInfo.version
 
@@ -37,19 +34,19 @@ class BatchsConfig(configuration: Configuration) {
     testeurs = configuration.getOptional[Seq[String]]("mailjet.testeurs").map(_.toList).getOrElse(Nil)
   )
 
-  val importMRSPEConnectConfig: ImportMRSPEConnectConfig = ImportMRSPEConnectConfig(
-    importDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.candidatsMrsValidees.importDirectory")),
-    archiveDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.candidatsMrsValidees.archiveDirectory"))
+  val importMRSPEConnectConfig: ImportFileAdapterConfig = ImportFileAdapterConfig(
+    importDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.MrsValidees.importDirectory")),
+    archiveDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.MrsValidees.archiveDirectory"))
   )
 
-  val importHabiletesMRSCsvAdapterConfig: ImportHabiletesMRSCsvAdapterConfig = ImportHabiletesMRSCsvAdapterConfig(
+  val importMRSDHAEPEConnectConfig: ImportFileAdapterConfig = ImportFileAdapterConfig(
+    importDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.MrsDHAEValidees.importDirectory")),
+    archiveDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.MrsDHAEValidees.archiveDirectory"))
+  )
+
+  val importHabiletesMRSCsvAdapterConfig: ImportFileAdapterConfig = ImportFileAdapterConfig(
     importDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.habiletesMRS.importDirectory")),
     archiveDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.habiletesMRS.archiveDirectory"))
-  )
-
-  val importHabiletesDHAECsvAdapterConfig: ImportHabiletesDHAECsvAdapterConfig = ImportHabiletesDHAECsvAdapterConfig(
-    importDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.habiletesDHAE.importDirectory")),
-    archiveDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.habiletesDHAE.archiveDirectory"))
   )
 
   val referentielMetierWSAdapterConfig: ReferentielMetierWSAdapterConfig = ReferentielMetierWSAdapterConfig(

@@ -2,7 +2,6 @@ package fr.poleemploi.perspectives.candidat.mrs.infra.peconnect
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.regex.Pattern
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
@@ -30,9 +29,6 @@ class MRSValideesCSVAdapter(val actorSystem: ActorSystem) {
     * VEM : Embauché
     */
   val resultatsBeneficiairesValides = List("VSL", "VEF", "VEM")
-
-  val idPEConnectPattern: Pattern = Pattern.compile("^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$")
-  val sitePrescripteurPattern: Pattern = Pattern.compile("[0-9]{5}")
 
   def load(source: Source[ByteString, _]): Future[Stream[MRSValideePEConnect]] = {
     source

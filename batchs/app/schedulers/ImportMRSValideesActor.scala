@@ -30,7 +30,10 @@ class ImportMRSValideesActor(importMRS: ImportMRS) extends Actor with ActorLoggi
   override def receive: Receive = {
     case StartImportMRSValidees =>
       log.info("Intégration des MRS validées pour les candidats")
-      importMRS.integrerMRSValidees.map(_ => ImportMRSValideesDone) pipeTo self
+      (for {
+        _ <- importMRS.integrerMRSValidees
+        _ <- importMRS.integrerMRSDHAEValidees
+      } yield ImportMRSValideesDone) pipeTo self
       context.become(importEnCours)
   }
 

@@ -9,12 +9,9 @@ import fr.poleemploi.eventsourcing.infra.akka.AkkaEventStoreListener
 import fr.poleemploi.eventsourcing.infra.jackson.EventSourcingObjectMapperBuilder
 import fr.poleemploi.eventsourcing.infra.postgresql.{PostgreSQLAppendOnlyStore, PostgreSQLSnapshotStore, PostgresDriver => EventSourcingPostgresDriver}
 import fr.poleemploi.eventsourcing.snapshotstore.SnapshotStore
-import fr.poleemploi.perspectives.candidat.dhae.infra.csv.{HabiletesDHAECsvAdapter, ImportHabiletesDHAECsvAdapter}
-import fr.poleemploi.perspectives.candidat.dhae.infra.local.ImportHabiletesDHAELocalAdapter
-import fr.poleemploi.perspectives.candidat.dhae.infra.sql.ReferentielHabiletesDHAESqlAdapter
 import fr.poleemploi.perspectives.candidat.mrs.infra.csv.{HabiletesMRSCsvAdapter, ImportHabiletesMRSCsvAdapter}
 import fr.poleemploi.perspectives.candidat.mrs.infra.local.{ImportHabiletesMRSLocalAdapter, ImportMRSLocalAdapter}
-import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.{ImportMRSPEConnectAdapter, MRSValideesCSVAdapter, MRSValideesSqlAdapter}
+import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect._
 import fr.poleemploi.perspectives.candidat.mrs.infra.sql.ReferentielHabiletesMRSSqlAdapter
 import fr.poleemploi.perspectives.commun.infra.jackson.PerspectivesEventSourcingModule
 import fr.poleemploi.perspectives.commun.infra.play.cache.InMemoryCacheApi
@@ -112,6 +109,17 @@ class InfraModule extends AbstractModule with ScalaModule {
   def asyncCacheApi: AsyncCacheApi = new InMemoryCacheApi
 
   @Provides
+  def mrsDHAEValideesCSVAdapter(actorSystem: ActorSystem): MRSDHAEValideesCSVAdapter =
+    new MRSDHAEValideesCSVAdapter(actorSystem = actorSystem)
+
+  @Provides
+  def mrsDHAEValideesSqlAdapter(database: Database): MRSDHAEValideesSqlAdapter =
+    new MRSDHAEValideesSqlAdapter(
+      driver = PostgresDriver,
+      database = database
+    )
+
+  @Provides
   def mrsValideesCSVAdapter(actorSystem: ActorSystem): MRSValideesCSVAdapter =
     new MRSValideesCSVAdapter(actorSystem = actorSystem)
 
@@ -160,15 +168,37 @@ class InfraModule extends AbstractModule with ScalaModule {
     new ImportMRSLocalAdapter
 
   @Provides
-  def importMRSPEConnectAdapter(batchsConfig: BatchsConfig,
+  @Singleton
+  def importMRSValideePEConnect(batchsConfig: BatchsConfig,
                                 actorSystem: ActorSystem,
                                 mrsValideesCSVAdapter: MRSValideesCSVAdapter,
-                                mrsValideesSqlAdapter: MRSValideesSqlAdapter): ImportMRSPEConnectAdapter =
-    new ImportMRSPEConnectAdapter(
+                                mrsValideesSqlAdapter: MRSValideesSqlAdapter): ImportMRSValideePEConnect =
+    new ImportMRSValideePEConnect(
       config = batchsConfig.importMRSPEConnectConfig,
       actorSystem = actorSystem,
       mrsValideesCSVAdapter = mrsValideesCSVAdapter,
       mrsValideesSqlAdapter = mrsValideesSqlAdapter
+    )
+
+  @Provides
+  @Singleton
+  def importMRSDHAEValideePEConnect(batchsConfig: BatchsConfig,
+                                    actorSystem: ActorSystem,
+                                    mrsDHAEValideesCSVAdapter: MRSDHAEValideesCSVAdapter,
+                                    mrsDHAEValideesSqlAdapter: MRSDHAEValideesSqlAdapter): ImportMRSDHAEValideePEConnect =
+    new ImportMRSDHAEValideePEConnect(
+      config = batchsConfig.importMRSDHAEPEConnectConfig,
+      actorSystem = actorSystem,
+      mrsDHAEValideesCSVAdapter = mrsDHAEValideesCSVAdapter,
+      mrsDHAEValideesSqlAdapter = mrsDHAEValideesSqlAdapter
+    )
+
+  @Provides
+  def importMRSPEConnectAdapter(importMRSValideePEConnect: ImportMRSValideePEConnect,
+                                importMRSDHAEValideePEConnect: ImportMRSDHAEValideePEConnect): ImportMRSPEConnectAdapter =
+    new ImportMRSPEConnectAdapter(
+      importMRSValideePEConnect = importMRSValideePEConnect,
+      importMRSDHAEValideePEConnect = importMRSDHAEValideePEConnect
     )
 
   @Provides
@@ -220,31 +250,6 @@ class InfraModule extends AbstractModule with ScalaModule {
       config = batchsConfig.importHabiletesMRSCsvAdapterConfig,
       habiletesMRSCsvAdapter = habiletesMRSCsvAdapter,
       referentielHabiletesMRSSqlAdapter = referentielHabiletesMRSSqlAdapter
-    )
-
-  @Provides
-  def importHabiletesDHAELocalAdapter: ImportHabiletesDHAELocalAdapter =
-    new ImportHabiletesDHAELocalAdapter
-
-  @Provides
-  def habiletesDHAECsvAdapter(actorSystem: ActorSystem): HabiletesDHAECsvAdapter =
-    new HabiletesDHAECsvAdapter(actorSystem = actorSystem)
-
-  @Provides
-  def referentielHabiletesDHAESqlAdapter(database: Database): ReferentielHabiletesDHAESqlAdapter =
-    new ReferentielHabiletesDHAESqlAdapter(
-      driver = PostgresDriver,
-      database = database
-    )
-
-  @Provides
-  def importHabiletesDHAELocalAdapter(batchsConfig: BatchsConfig,
-                                      habiletesDHAECsvAdapter: HabiletesDHAECsvAdapter,
-                                      referentielHabiletesDHAESqlAdapter: ReferentielHabiletesDHAESqlAdapter): ImportHabiletesDHAECsvAdapter =
-    new ImportHabiletesDHAECsvAdapter(
-      habiletesDHAECsvAdapter = habiletesDHAECsvAdapter,
-      referentielHabiletesDHAESqlAdapter = referentielHabiletesDHAESqlAdapter,
-      config = batchsConfig.importHabiletesDHAECsvAdapterConfig
     )
 
   @Provides

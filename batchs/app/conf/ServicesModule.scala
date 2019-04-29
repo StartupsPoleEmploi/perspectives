@@ -1,9 +1,6 @@
 package conf
 
 import com.google.inject.{AbstractModule, Provider, Provides, Singleton}
-import fr.poleemploi.perspectives.candidat.dhae.domain.ImportHabiletesDHAE
-import fr.poleemploi.perspectives.candidat.dhae.infra.csv.ImportHabiletesDHAECsvAdapter
-import fr.poleemploi.perspectives.candidat.dhae.infra.local.ImportHabiletesDHAELocalAdapter
 import fr.poleemploi.perspectives.candidat.mrs.domain.{ImportHabiletesMRS, ImportMRS}
 import fr.poleemploi.perspectives.candidat.mrs.infra.csv.ImportHabiletesMRSCsvAdapter
 import fr.poleemploi.perspectives.candidat.mrs.infra.local.{ImportHabiletesMRSLocalAdapter, ImportMRSLocalAdapter}
@@ -21,8 +18,8 @@ class ServicesModule extends AbstractModule {
   @Provides
   @Singleton
   def importMRS(importMRSLocalAdapter: Provider[ImportMRSLocalAdapter],
-               importMRSPEConnectAdapter: Provider[ImportMRSPEConnectAdapter],
-               batchsConfig: BatchsConfig): ImportMRS =
+                importMRSPEConnectAdapter: Provider[ImportMRSPEConnectAdapter],
+                batchsConfig: BatchsConfig): ImportMRS =
     if (batchsConfig.usePEConnect)
       importMRSPEConnectAdapter.get()
     else
@@ -48,18 +45,8 @@ class ServicesModule extends AbstractModule {
   def importHabiletesMRS(importHabiletesMRSCsvAdapter: Provider[ImportHabiletesMRSCsvAdapter],
                          importHabiletesMRSLocalAdapter: Provider[ImportHabiletesMRSLocalAdapter],
                          batchsConfig: BatchsConfig): ImportHabiletesMRS =
-    if (batchsConfig.useImportHabiletesMRSCsv)
+    if (batchsConfig.useImportHabiletesMRS)
       importHabiletesMRSCsvAdapter.get()
     else
       importHabiletesMRSLocalAdapter.get()
-
-  @Provides
-  @Singleton
-  def importHabiletesDHAE(importHabiletesDHAECsvAdapter: Provider[ImportHabiletesDHAECsvAdapter],
-                          importHabiletesDHAELocalAdapter: Provider[ImportHabiletesDHAELocalAdapter],
-                          batchsConfig: BatchsConfig): ImportHabiletesDHAE =
-    if (batchsConfig.useImportHabiletesDHAECsv)
-      importHabiletesDHAECsvAdapter.get()
-    else
-      importHabiletesDHAELocalAdapter.get()
 }

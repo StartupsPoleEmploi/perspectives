@@ -5,14 +5,14 @@ import java.nio.file._
 import akka.stream.scaladsl.FileIO
 import fr.poleemploi.perspectives.candidat.mrs.domain.{HabiletesMRS, ImportHabiletesMRS}
 import fr.poleemploi.perspectives.candidat.mrs.infra.sql.ReferentielHabiletesMRSSqlAdapter
-import fr.poleemploi.perspectives.commun.infra.file.ImportFileAdapter
+import fr.poleemploi.perspectives.commun.infra.file.{ImportFileAdapter, ImportFileAdapterConfig}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class ImportHabiletesMRSCsvAdapter(habiletesMRSCsvAdapter: HabiletesMRSCsvAdapter,
                                    referentielHabiletesMRSSqlAdapter: ReferentielHabiletesMRSSqlAdapter,
-                                   override val config: ImportHabiletesMRSCsvAdapterConfig) extends ImportHabiletesMRS with ImportFileAdapter[HabiletesMRS] {
+                                   override val config: ImportFileAdapterConfig) extends ImportHabiletesMRS with ImportFileAdapter[HabiletesMRS] {
 
   override val pattern: String = "habiletes_mrs.csv"
 
