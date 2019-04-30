@@ -38,7 +38,6 @@
 
     &-item {
       @include make-col(3);
-      margin: 20px 10px;
     }
   }
 
@@ -51,11 +50,9 @@
     background-color: $noir;
     border-radius: 4px;
     height: 45px;
-    width: 90px;
 
     &-bouton {
       height: 45px;
-      width: 100%;
       cursor: pointer;
       border: none;
       background: url('/assets/images/pages/recruteur/rechercheCandidat/rechercher.svg') no-repeat center;

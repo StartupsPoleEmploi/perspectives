@@ -25,7 +25,7 @@
         <section class="criteresRecherche">
             @form(action = controllers.recruteur.routes.RechercheCandidatController.rechercherCandidats(), 'id -> "criteresRechercheForm") {
                 <div class="criteres">
-                    <div class="criteres-item conteneurSelecteur">
+                    <div class="col-md-3 mx-3 my-3 my-md-4 px-0 conteneurSelecteur">
                         <label for="js-secteursActivites-selecteur" class="sr-only">Choisissez un secteur d'activité</label>
                         <select id="js-secteursActivites-selecteur" name="secteurActivite" class="conteneurSelecteur-selecteur"
                                 v-model="secteurActivite" v-on:change="onSecteurActiviteModifie">
@@ -33,7 +33,7 @@
                             <option v-for="secteurActivite in secteursActivites" v-bind:value="secteurActivite.code">{{secteurActivite.label}}</option>
                         </select>
                     </div>
-                    <div class="criteres-item conteneurSelecteur">
+                    <div class="col-md-3 mx-3 my-3 my-md-4 px-0 conteneurSelecteur">
                         <label for="js-metiers-selecteur" class="sr-only">Chosissez un métier</label>
                         <select id="js-metiers-selecteur" name="metier" class="conteneurSelecteur-selecteur"
                                 v-model="metier" v-bind:disabled="secteurActivite === null || secteurActivite === ''">
@@ -42,13 +42,13 @@
                             <option v-for="metier in metiers" v-bind:value="metier.codeROME">{{metier.label}}</option>
                         </select>
                     </div>
-                    <div class="criteres-item">
+                    <div class="col-md-3 mx-3 my-3 my-sm-4 px-0">
                         <label for="js-localisation" class="sr-only">Choisissez un lieu de travail</label>
                         <input id="js-localisation" type="search" v-model="localisation.label" placeholder="Lieu de travail"
                                class="critereLocalisation"/>
                     </div>
-                    <div class="rechercherCandidats">
-                        <button type="button" class="rechercherCandidats-bouton" v-on:click="rechercherCandidats(null)"></button>
+                    <div class="col-4 col-md-1 px-1 rechercherCandidats">
+                        <button type="button" class="rechercherCandidats-bouton bouton--block" v-on:click="rechercherCandidats(null)"></button>
                     </div>
                 </div>
             }
@@ -101,23 +101,23 @@
                         </div>
                         <transition name="slideDown">
                             <div class="row py-3 texte-blanc bg-noir" v-show="estProfilCourant(candidat.candidatId)">
-                                <div class="col-4">
+                                <div class="col-md-4">
                                     <p class="mb-0">Habiletés validées</p>
                                     <ul class="detailsProfils">
                                         <li class="detailsProfils-item" v-for="habilete in candidat.habiletes">{{habilete}}</li>
                                     </ul>
                                 </div>
-                                <div class="col-4">
+                                <div class="col-md-4">
                                     <p class="mb-0" v-show="detailInteressePar(candidat).length > 0">Intéréssé par</p>
                                     <ul class="detailsProfils">
                                         <li class="detailsProfils-item" v-for="metiersParSecteur in detailInteressePar(candidat)">{{metiersParSecteur}}</li>
                                     </ul>
                                 </div>
-                                <div class="col-2">
+                                <div class="col-md-2">
                                     <p class="mb-0">Mobilité</p>
                                     {{mobilite(candidat)}} {{candidat.commune | capitalize}}
                                 </div>
-                                <div class="col-2 text-center">
+                                <div class="col-md-2 text-md-center">
                                     <ul class="listeActions list-unstyled">
                                         <li class="listeActions-item" v-if="candidat.cvId !== undefined">
                                             <a class="bouton bouton-actionCandidat bouton-actionCandidat--large bouton--noirSurBlanc gtm-recruteur-profils-detail-cv" target="_blank"
