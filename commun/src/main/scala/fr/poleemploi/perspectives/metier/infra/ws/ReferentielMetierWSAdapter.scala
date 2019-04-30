@@ -4,7 +4,6 @@ import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite}
 import fr.poleemploi.perspectives.commun.infra.ws.WSAdapter
 import fr.poleemploi.perspectives.metier.domain.{Metier, ReferentielMetier, SecteurActivite}
 import fr.poleemploi.perspectives.metier.infra.elasticsearch.ReferentielMetierElasticsearchAdapter
-import play.api.Logger
 import play.api.cache.AsyncCacheApi
 import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
 import play.api.libs.ws.WSClient
@@ -41,7 +40,7 @@ class ReferentielMetierWSAdapter(config: ReferentielMetierWSAdapterConfig,
         metiers <- listerMetiers(accessToken)
       } yield metiers).recoverWith {
         case t: Throwable =>
-          Logger.error("Erreur lors de la récupération des métiers depuis le référentiel", t)
+          referentielMetierWSLogger.error("Erreur lors de la récupération des métiers depuis le référentiel", t)
           Future.successful(metiers)
       }
     ).map(metiers =>

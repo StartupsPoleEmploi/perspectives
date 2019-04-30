@@ -1,5 +1,7 @@
 name := "perspectives-batchs"
 
+maintainer := "brice.friederich@beta.gouv.fr"
+
 libraryDependencies ++= Seq(
   guice,
   ws,

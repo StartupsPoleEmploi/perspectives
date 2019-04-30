@@ -14,7 +14,7 @@ class RegisterProjections @Inject()(eventStoreListener: EventStoreListener,
 class ProjectionsModule extends AbstractModule with ScalaModule {
 
   override def configure(): Unit = {
-    bind[RegisterProjections].asEagerSingleton()
+    bind(classOf[RegisterProjections]).asEagerSingleton()
   }
 
   @Provides

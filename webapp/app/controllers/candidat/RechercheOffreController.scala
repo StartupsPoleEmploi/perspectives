@@ -10,7 +10,7 @@ import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite, 
 import fr.poleemploi.perspectives.offre.domain.{CriteresRechercheOffre, TypeContrat}
 import fr.poleemploi.perspectives.projections.candidat._
 import javax.inject.{Inject, Singleton}
-import play.api.Logger
+import play.api.Logging
 import play.api.libs.json.Json
 import play.api.mvc._
 import play.filters.csrf.CSRF
@@ -25,7 +25,7 @@ class RechercheOffreController @Inject()(cc: ControllerComponents,
                                          messagesAction: MessagesActionBuilder,
                                          optionalCandidatAuthentifieAction: OptionalCandidatAuthentifieAction,
                                          candidatAuthentifieAction: CandidatAuthentifieAction,
-                                         candidatQueryHandler: CandidatQueryHandler) extends AbstractController(cc) {
+                                         candidatQueryHandler: CandidatQueryHandler) extends AbstractController(cc) with Logging {
 
   def index(motCle: Option[String], codePostal: Option[String], lieuTravail: Option[String], rayonRecherche: Option[Int]): Action[AnyContent] = optionalCandidatAuthentifieAction.async { implicit optCandidatAuthentifieRequest: OptionalCandidatAuthentifieRequest[AnyContent] =>
     def buildLocalisationRechercheFromRequest: Option[LocalisationRecherche] =
@@ -77,7 +77,7 @@ class RechercheOffreController @Inject()(cc: ControllerComponents,
       ))
     }).recover {
       case t: QueryException =>
-        Logger.error("Erreur lors de la recherche d'offres", t)
+        logger.error("Erreur lors de la recherche d'offres", t)
         Redirect(routes.LandingController.landing())
           .flashing(optCandidatAuthentifieRequest.flash.withMessageErreur("Notre service en actuellement en cours de maintenance, veuillez réessayer ultérieurement."))
     }

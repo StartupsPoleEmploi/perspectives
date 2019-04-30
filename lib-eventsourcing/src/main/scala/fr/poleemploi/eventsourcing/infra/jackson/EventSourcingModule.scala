@@ -38,8 +38,8 @@ class StringValueDeserializer[T <: StringValue](clazz: Class[T], deserialize: St
 
   override def deserialize(jsonParser: JsonParser, deserializationContext: DeserializationContext): T = {
     val currentToken = jsonParser.getCurrentToken
-    if (currentToken == JsonToken.VALUE_STRING) deserialize(jsonParser.getText.trim())
-    else throw deserializationContext.mappingException("Expected value String")
+    if (currentToken == JsonToken.VALUE_STRING) deserialize(jsonParser.getText.trim)
+    else throw deserializationContext.weirdStringException(jsonParser.getText.trim, clazz, "Expected value String")
   }
 
 }
@@ -55,7 +55,7 @@ class IntValueDeserializer[T <: IntValue](clazz: Class[T], deserialize: Int => T
   override def deserialize(jsonParser: JsonParser, deserializationContext: DeserializationContext): T = {
     val currentToken = jsonParser.getCurrentToken
     if (currentToken == JsonToken.VALUE_NUMBER_INT) deserialize(jsonParser.getIntValue)
-    else throw deserializationContext.mappingException("Expected value Int")
+    else throw deserializationContext.weirdNumberException(jsonParser.getIntValue, clazz, "Expected value Int")
   }
 
 }

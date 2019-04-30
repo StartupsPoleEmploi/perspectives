@@ -1,5 +1,3 @@
-import java.net.InetSocketAddress
-
 import play.sbt.PlayRunHook
 import sbt._
 
@@ -18,7 +16,7 @@ object NpmRunHook {
         if (!(uiDirectory / "node_modules").exists()) Process("npm install", uiDirectory).!
       }
 
-      override def afterStarted(addr: InetSocketAddress): Unit = {
+      override def afterStarted(): Unit = {
         startProcess = Some(Process("npm start", uiDirectory).run)
       }
 

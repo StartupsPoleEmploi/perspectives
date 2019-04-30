@@ -12,7 +12,7 @@ import fr.poleemploi.perspectives.commun.infra.peconnect.{PEConnectAdapter, Recr
 import fr.poleemploi.perspectives.projections.recruteur.{ProfilRecruteurQuery, RecruteurQueryHandler}
 import fr.poleemploi.perspectives.recruteur.{ConnecterRecruteurCommand, InscrireRecruteurCommand, RecruteurCommandHandler, RecruteurId}
 import javax.inject.{Inject, Singleton}
-import play.api.Logger
+import play.api.Logging
 import play.api.mvc._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -25,7 +25,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
                                     recruteurCommandHandler: RecruteurCommandHandler,
                                     recruteurQueryHandler: RecruteurQueryHandler,
                                     peConnectAuthAdapter: PEConnectAuthAdapter,
-                                    peConnectAdapter: PEConnectAdapter) extends AbstractController(cc) {
+                                    peConnectAdapter: PEConnectAdapter) extends AbstractController(cc) with Logging {
 
   val redirectUri: Call = routes.PEConnectController.connexionCallback()
   val oauthConfig: OauthConfig = webAppConfig.recruteurOauthConfig
@@ -52,7 +52,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
         )
       )).recover {
       case t: Throwable =>
-        Logger.error("Erreur lors de la connexion recruteur via PEConnect", t)
+        logger.error("Erreur lors de la connexion recruteur via PEConnect", t)
         // Nettoyage de session et redirect
         Redirect(routes.LandingController.landing()).withSession(
           SessionOauthTokens.removeOauthTokensRecruteur(request.session)
@@ -95,7 +95,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
         Redirect(routes.ProfilController.modificationProfil()).withSession(session).flashing(flash.withRecruteurInscrit)
     }).recover {
       case t: Throwable =>
-        Logger.error("Erreur lors du callback recruteur via PEConnect", t)
+        logger.error("Erreur lors du callback recruteur via PEConnect", t)
         // Nettoyage de session et redirect
         Redirect(routes.LandingController.landing()).withSession(SessionOauthTokens.removeOauthTokensRecruteur(request.session))
           .flashing(request.flash.withMessageErreur("Notre service en actuellement en cours de maintenance, veuillez réessayer ultérieurement."))
@@ -112,7 +112,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       )
     )).recover {
       case t: Throwable =>
-        Logger.error("Erreur lors de la déconnexion recruteur via PEConnect", t)
+        logger.error("Erreur lors de la déconnexion recruteur via PEConnect", t)
         // Nettoyage de session et redirect
         Redirect(routes.LandingController.landing()).withSession(
           SessionRecruteurAuthentifie.remove(SessionRecruteurPEConnect.remove(request.session))

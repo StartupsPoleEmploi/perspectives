@@ -2,7 +2,7 @@ package fr.poleemploi.eventsourcing
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility
 import com.fasterxml.jackson.annotation.PropertyAccessor
-import com.fasterxml.jackson.databind.util.ISO8601DateFormat
+import com.fasterxml.jackson.databind.util.StdDateFormat
 import com.fasterxml.jackson.databind.{ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
@@ -21,7 +21,7 @@ class EventSpec extends WordSpec with MustMatchers {
     (new ObjectMapper() with ScalaObjectMapper)
       .registerModules(DefaultScalaModule, new JavaTimeModule, TestValueObjectModule)
       .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-      .setDateFormat(new ISO8601DateFormat())
+      .setDateFormat(new StdDateFormat())
       .setVisibility(PropertyAccessor.ALL, Visibility.NONE)
       .setVisibility(PropertyAccessor.FIELD, Visibility.ANY)
 

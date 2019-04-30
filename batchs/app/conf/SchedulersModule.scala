@@ -8,9 +8,8 @@ import net.codingwell.scalaguice.ScalaModule
 import play.api.libs.concurrent.AkkaGuiceSupport
 import schedulers._
 
-class Scheduled @Inject()(perspectivesScheduler: BatchsScheduler) {
-
-  perspectivesScheduler.schedule
+class Scheduled @Inject()(batchsScheduler: BatchsScheduler) {
+  batchsScheduler.schedule
 }
 
 class SchedulersModule extends AbstractModule with ScalaModule with AkkaGuiceSupport {
@@ -19,7 +18,7 @@ class SchedulersModule extends AbstractModule with ScalaModule with AkkaGuiceSup
     bindActor[ImportMRSValideesActor](ImportMRSValideesActor.name)
     bindActor[HabiletesMRSActor](HabiletesMRSActor.name)
 
-    bind[Scheduled].asEagerSingleton()
+    bind(classOf[Scheduled]).asEagerSingleton()
   }
 
   @Provides

@@ -14,7 +14,7 @@ class RegisterProcessManagers @Inject()(eventStoreListener: EventStoreListener,
 class ProcessManagersModule extends AbstractModule with ScalaModule {
 
   override def configure(): Unit = {
-    bind[RegisterProcessManagers].asEagerSingleton()
+    bind(classOf[RegisterProcessManagers]).asEagerSingleton()
   }
 
   @Provides

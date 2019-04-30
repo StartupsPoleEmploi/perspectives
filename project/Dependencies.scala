@@ -3,15 +3,14 @@ import sbt._
 object Dependencies {
 
   // Doivent correspondre aux versions utilisées par Play
-  val jacksonVersion = "2.8.11"
-  val jacksonDatabindVersion = "2.8.11.1"
-  val guiceVersion = "4.1.0"
-  val akkaVersion = "2.5.17"
+  val jacksonVersion = "2.9.8"
+  val guiceVersion = "4.2.2"
+  val akkaVersion = "2.5.22"
 
   // La version de slickPg doit suivre la version de slick
-  val slickVersion = "3.2.3"
+  val slickVersion = "3.3.0"
 
-  val slickPgVersion = "0.16.1"
+  val slickPgVersion = "0.17.2"
 
   val akkaActor = "com.typesafe.akka" %% "akka-actor" % akkaVersion
 
@@ -21,13 +20,13 @@ object Dependencies {
 
   val akkaTestkit = "com.typesafe.akka" %% "akka-testkit" % akkaVersion % Test
 
-  val akkaQuartzScheduler = "com.enragedginger" %% "akka-quartz-scheduler" % "1.6.1-akka-2.5.x"
+  val akkaQuartzScheduler = "com.enragedginger" %% "akka-quartz-scheduler" % "1.8.0-akka-2.5.x"
 
   val jacksonCore = "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion
 
   val jacksonAnnotations = "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonVersion
 
-  val jacksonDatabind = "com.fasterxml.jackson.core" % "jackson-databind" % jacksonDatabindVersion
+  val jacksonDatabind = "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion
 
   /** Pour le DateTimeModule */
   val jacksonDatatypeJSR310 = "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310" % jacksonVersion
@@ -40,7 +39,7 @@ object Dependencies {
 
   val slickHikariCp = "com.typesafe.slick" %% "slick-hikaricp" % slickVersion
 
-  val alpakka = "com.lightbend.akka" %% "akka-stream-alpakka-csv" % "0.18"
+  val alpakka = "com.lightbend.akka" %% "akka-stream-alpakka-csv" % "1.0.0"
 
   val scalatestplus = "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test
 

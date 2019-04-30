@@ -8,7 +8,7 @@ import fr.poleemploi.perspectives.commun.domain.NumeroTelephone
 import fr.poleemploi.perspectives.projections.recruteur.{ProfilRecruteurQuery, RecruteurQueryHandler}
 import fr.poleemploi.perspectives.recruteur._
 import javax.inject.Inject
-import play.api.Logger
+import play.api.Logging
 import play.api.data.Form
 import play.api.mvc._
 
@@ -21,7 +21,7 @@ class ProfilController @Inject()(components: ControllerComponents,
                                  messagesAction: MessagesActionBuilder,
                                  recruteurCommandHandler: RecruteurCommandHandler,
                                  recruteurQueryHandler: RecruteurQueryHandler,
-                                 recruteurAuthentifieAction: RecruteurAuthentifieAction) extends AbstractController(components) {
+                                 recruteurAuthentifieAction: RecruteurAuthentifieAction) extends AbstractController(components) with Logging {
 
   val typesRecruteur: List[TypeRecruteur] = List(
     TypeRecruteur.ENTREPRISE,
@@ -72,7 +72,7 @@ class ProfilController @Inject()(components: ControllerComponents,
               )
             ).recoverWith {
             case t: Throwable =>
-              Logger.error("Erreur lors de l'enregistrement de l'inscription", t)
+              logger.error("Erreur lors de l'enregistrement de l'inscription", t)
               Future(Redirect(routes.LandingController.landing()).flashing(
                 messagesRequest.flash.withMessageErreur("Une erreur s'est produite lors de l'enregistrement, veuillez réessayer ultérieurement")
               ))
