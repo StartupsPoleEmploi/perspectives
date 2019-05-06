@@ -18,7 +18,7 @@ class ReferentielMRSLocalAdapter extends ReferentielMRS {
         dateEvaluation = LocalDate.now()
       ),
       MRSValidee(
-        codeROME = CodeROME("D1106"),
+        codeROME = CodeROME("H2913"),
         codeDepartement = CodeDepartement("85"),
         dateEvaluation = LocalDate.now()
       )
