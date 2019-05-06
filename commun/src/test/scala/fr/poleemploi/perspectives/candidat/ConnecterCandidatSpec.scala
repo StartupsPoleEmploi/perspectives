@@ -49,7 +49,7 @@ class ConnecterCandidatSpec extends AsyncWordSpec
       recoverToExceptionIf[IllegalStateException](
         candidat.connecter(commande, localisationService)
       ).map(ex =>
-        ex.getMessage mustBe s"Le candidat ${candidat.id.value} dans l'état Nouveau ne peut pas gérer la commande ${commande.getClass.getSimpleName}"
+        ex.getMessage mustBe s"Le candidat ${candidat.id.value} avec le statut NOUVEAU ne peut pas gérer la commande ${commande.getClass.getSimpleName}"
       )
     }
     "générer un événement de connexion lorsqu'aucune information de profil n'est modifiée" in {

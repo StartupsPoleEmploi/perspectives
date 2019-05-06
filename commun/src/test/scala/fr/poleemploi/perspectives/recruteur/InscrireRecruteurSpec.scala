@@ -29,7 +29,7 @@ class InscrireRecruteurSpec extends WordSpec with MustMatchers with MockitoSugar
       }
 
       // Then
-      ex.getMessage mustBe s"Le recruteur ${commande.id.value} dans l'état Inscrit ne peut pas gérer la commande ${commande.getClass.getSimpleName}"
+      ex.getMessage mustBe s"Le recruteur ${commande.id.value} avec le statut INSCRIT ne peut pas gérer la commande ${commande.getClass.getSimpleName}"
     }
     "générer un événement lorsque le recruteur n'est pas encore inscrit" in {
       // Given

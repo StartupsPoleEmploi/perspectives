@@ -52,7 +52,7 @@ class PostgreSQLSnapshotStore(val driver: PostgresDriver,
 
   override def save(snapshot: Snapshot): Future[Unit] =
     database.run(
-      snapshotsTable.map(s => (s.streamName, s.streamVersion, s.data)) += (snapshot.streamName, snapshot.streamVersion, JsonString(new String(snapshot.serializedState)))
+      snapshotsTable.map(s => (s.streamName, s.streamVersion, s.streamType, s.data)) += (snapshot.streamName, snapshot.streamVersion, snapshot.streamType, JsonString(new String(snapshot.serializedState)))
     ).map(_ => ())
 
   override def update(snapshot: Snapshot): Future[Unit] =
@@ -63,7 +63,7 @@ class PostgreSQLSnapshotStore(val driver: PostgresDriver,
 
   override def findStreamsToSnapshot(streamType: String, gap: Int): Future[List[String]] =
     database.run(
-      sql"""SELECT MAX(e.stream_version), e.stream_name
+      sql"""SELECT e.stream_name
             FROM events e
             LEFT JOIN snapshots fs ON fs.stream_name = e.stream_name AND fs.stream_type = $streamType
             WHERE (e.stream_version - fs.stream_version) > $gap

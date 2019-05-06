@@ -9,8 +9,6 @@ import scala.concurrent.Future
 
 object RecruteurProfilCompletState extends RecruteurState {
 
-  override def name: String = "ProfilComplet"
-
   override def connecter(context: RecruteurContext, command: ConnecterRecruteurCommand): List[Event] =
     RecruteurInscritState.connecter(context = context, command = command)
 

@@ -3,7 +3,7 @@ package fr.poleemploi.perspectives.candidat
 import java.util.UUID
 
 import fr.poleemploi.eventsourcing.eventstore.{EventStore, EventStream}
-import fr.poleemploi.eventsourcing.{AggregateRepository, Event, SnapshotRepository}
+import fr.poleemploi.eventsourcing.{AggregateRepository, SnapshotRepository}
 
 class CandidatRepository(override val eventStore: EventStore,
                          override val snapshotRepository: SnapshotRepository[Candidat])
@@ -12,11 +12,14 @@ class CandidatRepository(override val eventStore: EventStore,
   override def newId: CandidatId = CandidatId(UUID.randomUUID().toString)
 
   override def createFromStream(candidatId: CandidatId, eventStream: EventStream): Candidat =
-    new Candidat(
+    Candidat(
       id = candidatId,
       version = eventStream.version,
-      events = eventStream.events
+      state = CandidatContext().apply(eventStream.events)
     )
 
-  override def replayEvents(aggregate: Candidat, events: List[Event]): Candidat = null
+  override def replayEvents(candidat: Candidat, eventStream: EventStream): Candidat =
+    candidat.copy(
+      state = candidat.state.apply(eventStream.events)
+    )
 }

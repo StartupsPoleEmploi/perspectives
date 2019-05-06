@@ -9,22 +9,64 @@ import fr.poleemploi.perspectives.commun.domain._
 
 import scala.concurrent.Future
 
-class Candidat(override val id: CandidatId,
-               override val version: Int,
-               events: List[Event]) extends Aggregate {
+case class Candidat(id: CandidatId,
+                    version: Int,
+                    state: CandidatContext) extends Aggregate {
 
   override type Id = CandidatId
 
-  private val state: CandidatState =
-    events.foldLeft[CandidatState](NouveauCandidatState)((state, event) => event match {
-      case _: CandidatInscritEvent => CandidatInscritState
-      case _ => state
-    })
+  def inscrire(command: InscrireCandidatCommand, localisationService: LocalisationService): Future[List[Event]] =
+    behavior.inscrire(context = state, command = command, localisationService = localisationService)
 
-  private val context: CandidatContext =
-    events.foldLeft(CandidatContext())((context, event) => event match {
+  def modifierCandidat(command: ModifierCandidatCommand): List[Event] =
+    behavior.modifierCandidat(context = state, command = command)
+
+  def connecter(command: ConnecterCandidatCommand, localisationService: LocalisationService): Future[List[Event]] =
+    behavior.connecter(context = state, command = command, localisationService = localisationService)
+
+  def ajouterCV(command: AjouterCVCommand, cvService: CVService): Future[List[Event]] =
+    behavior.ajouterCV(context = state, command = command, cvService = cvService)
+
+  def remplacerCV(command: RemplacerCVCommand, cvService: CVService): Future[List[Event]] =
+    behavior.remplacerCV(context = state, command = command, cvService = cvService)
+
+  def ajouterMRSValidee(command: AjouterMRSValideesCommand, referentielHabiletesMRS: ReferentielHabiletesMRS): Future[List[Event]] =
+    behavior.ajouterMRSValidee(context = state, command = command, referentielHabiletesMRS = referentielHabiletesMRS)
+
+  def declarerRepriseEmploiParConseiller(command: DeclarerRepriseEmploiParConseillerCommand): List[Event] =
+    behavior.declarerRepriseEmploiParConseiller(context = state, command = command)
+
+  private def behavior: CandidatState = state.statut match {
+    case StatutCandidat.NOUVEAU => NouveauCandidatState
+    case StatutCandidat.INSCRIT => CandidatInscritState
+    case s@_ => throw new IllegalArgumentException(s"Etat du candidat non valide : $s")
+  }
+}
+
+private[candidat] case class CandidatContext(statut: StatutCandidat = StatutCandidat.NOUVEAU,
+                                             nom: Option[Nom] = None,
+                                             prenom: Option[Prenom] = None,
+                                             email: Option[Email] = None,
+                                             genre: Option[Genre] = None,
+                                             adresse: Option[Adresse] = None,
+                                             coordonnees: Option[Coordonnees] = None,
+                                             statutDemandeurEmploi: Option[StatutDemandeurEmploi] = None,
+                                             contactRecruteur: Option[Boolean] = None,
+                                             contactFormation: Option[Boolean] = None,
+                                             mrsValidees: List[MRSValidee] = Nil,
+                                             codesROMEValidesRecherches: Set[CodeROME] = Set.empty,
+                                             codesROMERecherches: Set[CodeROME] = Set.empty,
+                                             codesDomaineProfessionnelRecherches: Set[CodeDomaineProfessionnel] = Set.empty,
+                                             localisationRecherche: Option[LocalisationRecherche] = None,
+                                             numeroTelephone: Option[NumeroTelephone] = None,
+                                             cvId: Option[CVId] = None,
+                                             rechercheEmploi: Option[Boolean] = None) {
+
+  def apply(events: List[Event]): CandidatContext =
+    events.foldLeft(this)((context, event) => event match {
       case e: CandidatInscritEvent =>
         context.copy(
+          statut = StatutCandidat.INSCRIT,
           nom = Some(e.nom),
           prenom = Some(e.prenom),
           email = Some(e.email),
@@ -76,43 +118,4 @@ class Candidat(override val id: CandidatId,
         context.copy(rechercheEmploi = Some(false))
       case _ => context
     })
-
-  def inscrire(command: InscrireCandidatCommand, localisationService: LocalisationService): Future[List[Event]] =
-    state.inscrire(context = context, command = command, localisationService = localisationService)
-
-  def modifierCandidat(command: ModifierCandidatCommand): List[Event] =
-    state.modifierCandidat(context = context, command = command)
-
-  def connecter(command: ConnecterCandidatCommand, localisationService: LocalisationService): Future[List[Event]] =
-    state.connecter(context = context, command = command, localisationService = localisationService)
-
-  def ajouterCV(command: AjouterCVCommand, cvService: CVService): Future[List[Event]] =
-    state.ajouterCV(context = context, command = command, cvService = cvService)
-
-  def remplacerCV(command: RemplacerCVCommand, cvService: CVService): Future[List[Event]] =
-    state.remplacerCV(context = context, command = command, cvService = cvService)
-
-  def ajouterMRSValidee(command: AjouterMRSValideesCommand, referentielHabiletesMRS: ReferentielHabiletesMRS): Future[List[Event]] =
-    state.ajouterMRSValidee(context = context, command = command, referentielHabiletesMRS = referentielHabiletesMRS)
-
-  def declarerRepriseEmploiParConseiller(command: DeclarerRepriseEmploiParConseillerCommand): List[Event] =
-    state.declarerRepriseEmploiParConseiller(context = context, command = command)
 }
-
-private[candidat] case class CandidatContext(nom: Option[Nom] = None,
-                                             prenom: Option[Prenom] = None,
-                                             email: Option[Email] = None,
-                                             genre: Option[Genre] = None,
-                                             adresse: Option[Adresse] = None,
-                                             coordonnees: Option[Coordonnees] = None,
-                                             statutDemandeurEmploi: Option[StatutDemandeurEmploi] = None,
-                                             contactRecruteur: Option[Boolean] = None,
-                                             contactFormation: Option[Boolean] = None,
-                                             mrsValidees: List[MRSValidee] = Nil,
-                                             codesROMEValidesRecherches: Set[CodeROME] = Set.empty,
-                                             codesROMERecherches: Set[CodeROME] = Set.empty,
-                                             codesDomaineProfessionnelRecherches: Set[CodeDomaineProfessionnel] = Set.empty,
-                                             localisationRecherche: Option[LocalisationRecherche] = None,
-                                             numeroTelephone: Option[NumeroTelephone] = None,
-                                             cvId: Option[CVId] = None,
-                                             rechercheEmploi: Option[Boolean] = None)

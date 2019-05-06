@@ -41,7 +41,7 @@ class InscrireCandidatSpec extends AsyncWordSpec
       recoverToExceptionIf[IllegalStateException](
         candidat.inscrire(commande, localisationService)
       ).map(ex =>
-        ex.getMessage mustBe s"Le candidat ${candidat.id.value} dans l'état Inscrit ne peut pas gérer la commande ${commande.getClass.getSimpleName}"
+        ex.getMessage mustBe s"Le candidat ${candidat.id.value} avec le statut INSCRIT ne peut pas gérer la commande ${commande.getClass.getSimpleName}"
       )
     }
     "ne pas générer d'événement de modification d'adresse lorsque le service de localisation échoue (pas d'intérêt pour la recherche)" in {

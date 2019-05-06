@@ -9,8 +9,6 @@ import scala.concurrent.Future
 
 object NouveauCandidatState extends CandidatState {
 
-  override def name: String = "Nouveau"
-
   override def inscrire(context: CandidatContext,
                         command: InscrireCandidatCommand,
                         localisationService: LocalisationService): Future[List[Event]] = {

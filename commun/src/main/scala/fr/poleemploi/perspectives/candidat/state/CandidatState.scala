@@ -12,8 +12,6 @@ import scala.concurrent.Future
 
 trait CandidatState {
 
-  def name: String
-
   def inscrire(context: CandidatContext, command: InscrireCandidatCommand, localisationService: LocalisationService): Future[List[Event]] =
     Future(default(context, command))
 
@@ -36,5 +34,5 @@ trait CandidatState {
     default(context, command)
 
   private def default(context: CandidatContext, command: Command[Candidat]) =
-    throw new IllegalStateException(s"Le candidat ${command.id.value} dans l'état $name ne peut pas gérer la commande ${command.getClass.getSimpleName}")
+    throw new IllegalStateException(s"Le candidat ${command.id.value} avec le statut ${context.statut.value} ne peut pas gérer la commande ${command.getClass.getSimpleName}")
 }

@@ -11,9 +11,9 @@ trait SnapshotRepository[A <: Aggregate] {
 
   def aggregateType: String
 
-  def gapBetweenSnapshots: Int
+  def gapBetweenSnapshots: Int = 20
 
-  def deserialize(bytes: Array[Byte]): A
+  def deserialize(id: A#Id, version: Int, state: Array[Byte]): A
 
   def serialize(aggregate: A): Array[Byte]
 
@@ -24,7 +24,7 @@ trait SnapshotRepository[A <: Aggregate] {
       streamName = aggregateId.value,
       streamType = aggregateType
     ).map(optSnapshot =>
-      optSnapshot.map(s => deserialize(s.serializedState))
+      optSnapshot.map(s => deserialize(aggregateId, s.streamVersion, s.serializedState))
     )
 
   def findIdsToSnapshot: Future[List[A#Id]] =

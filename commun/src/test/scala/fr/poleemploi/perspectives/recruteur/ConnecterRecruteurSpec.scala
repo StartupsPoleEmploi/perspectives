@@ -28,7 +28,7 @@ class ConnecterRecruteurSpec extends WordSpec
       }
 
       // Then
-      ex.getMessage mustBe s"Le recruteur ${commande.id.value} dans l'état Nouveau ne peut pas gérer la commande ${commande.getClass.getSimpleName}"
+      ex.getMessage mustBe s"Le recruteur ${commande.id.value} avec le statut NOUVEAU ne peut pas gérer la commande ${commande.getClass.getSimpleName}"
     }
     "générer un événement de connexion lorsqu'aucune information de profil n'est modifiée" in {
       // Given

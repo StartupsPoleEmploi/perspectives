@@ -11,8 +11,6 @@ import scala.concurrent.Future
 
 object CandidatInscritState extends CandidatState {
 
-  override def name: String = "Inscrit"
-
   override def modifierCandidat(context: CandidatContext, command: ModifierCandidatCommand): List[Event] = {
     if (command.contactFormation && command.numeroTelephone.isEmpty) {
       throw new IllegalArgumentException("Le numéro de téléphone doit être renseigné lorsque le contactFormation est souhaité")

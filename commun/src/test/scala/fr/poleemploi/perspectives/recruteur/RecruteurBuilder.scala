@@ -44,10 +44,10 @@ class RecruteurBuilder {
   }
 
   def build: Recruteur = {
-    val recruteur = new Recruteur(
+    val recruteur = Recruteur(
       id = recruteurId,
       version = events.size,
-      events = events.toList
+      state = RecruteurContext().apply(events.toList)
     )
     events = ListBuffer()
     recruteur

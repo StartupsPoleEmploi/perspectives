@@ -121,10 +121,10 @@ class CandidatBuilder {
   }
 
   def build: Candidat = {
-    val candidat = new Candidat(
+    val candidat = Candidat(
       id = candidatId,
       version = events.size,
-      events = events.toList
+      state = CandidatContext().apply(events.toList)
     )
     events = ListBuffer()
     candidat

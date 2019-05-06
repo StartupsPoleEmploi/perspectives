@@ -7,23 +7,49 @@ import fr.poleemploi.perspectives.recruteur.state.{NouveauRecruteurState, Recrut
 
 import scala.concurrent.Future
 
-class Recruteur(override val id: RecruteurId,
-                override val version: Int,
-                events: List[Event]) extends Aggregate {
+case class Recruteur(id: RecruteurId,
+                     version: Int,
+                     state: RecruteurContext) extends Aggregate {
 
   override type Id = RecruteurId
 
-  private val state: RecruteurState =
-    events.foldLeft[RecruteurState](NouveauRecruteurState)((state, event) => event match {
-      case _: RecruteurInscritEvent => RecruteurInscritState
-      case _: ProfilModifieEvent => RecruteurProfilCompletState
-      case _ => state
-    })
+  def inscrire(command: InscrireRecruteurCommand): List[Event] =
+    behavior.inscrire(context = state, command = command)
 
-  private val context: RecruteurContext =
-    events.foldLeft(RecruteurContext())((context, event) => event match {
+  def modifierProfil(command: ModifierProfilCommand): List[Event] =
+    behavior.modifierProfil(context = state, command = command)
+
+  def connecter(command: ConnecterRecruteurCommand): List[Event] =
+    behavior.connecter(context = state, command = command)
+
+  def commenterListeCandidats(command: CommenterListeCandidatsCommand,
+                              commentaireService: CommentaireService): Future[List[Event]] =
+    behavior.commenterListeCandidats(context = state, command = command, commentaireService = commentaireService)
+
+  private def behavior: RecruteurState = state.statut match {
+    case StatutRecruteur.NOUVEAU => NouveauRecruteurState
+    case StatutRecruteur.INSCRIT => RecruteurInscritState
+    case StatutRecruteur.PROFIL_COMPLET => RecruteurProfilCompletState
+    case s@_ => throw new IllegalArgumentException(s"Etat du recruteur non valide : $s")
+  }
+}
+
+private[recruteur] case class RecruteurContext(statut: StatutRecruteur = StatutRecruteur.NOUVEAU,
+                                               nom: Option[Nom] = None,
+                                               prenom: Option[Prenom] = None,
+                                               email: Option[Email] = None,
+                                               genre: Option[Genre] = None,
+                                               raisonSociale: Option[String] = None,
+                                               numeroSiret: Option[NumeroSiret] = None,
+                                               typeRecruteur: Option[TypeRecruteur] = None,
+                                               contactParCandidats: Option[Boolean] = None,
+                                               numeroTelephone: Option[NumeroTelephone] = None) {
+
+  def apply(events: List[Event]): RecruteurContext =
+    events.foldLeft(this)((context, event) => event match {
       case e: RecruteurInscritEvent =>
         context.copy(
+          statut = StatutRecruteur.INSCRIT,
           nom = Some(e.nom),
           prenom = Some(e.prenom),
           email = Some(e.email),
@@ -31,6 +57,7 @@ class Recruteur(override val id: RecruteurId,
         )
       case e: ProfilModifieEvent =>
         context.copy(
+          statut = StatutRecruteur.PROFIL_COMPLET,
           raisonSociale = Some(e.raisonSociale),
           numeroSiret = Some(e.numeroSiret),
           typeRecruteur = Some(e.typeRecruteur),
@@ -47,26 +74,4 @@ class Recruteur(override val id: RecruteurId,
       case _ => context
     })
 
-  def inscrire(command: InscrireRecruteurCommand): List[Event] =
-    state.inscrire(context = context, command = command)
-
-  def modifierProfil(command: ModifierProfilCommand): List[Event] =
-    state.modifierProfil(context = context, command = command)
-
-  def connecter(command: ConnecterRecruteurCommand): List[Event] =
-    state.connecter(context = context, command = command)
-
-  def commenterListeCandidats(command: CommenterListeCandidatsCommand,
-                              commentaireService: CommentaireService): Future[List[Event]] =
-    state.commenterListeCandidats(context = context, command = command, commentaireService = commentaireService)
 }
-
-private[recruteur] case class RecruteurContext(nom: Option[Nom] = None,
-                                               prenom: Option[Prenom] = None,
-                                               email: Option[Email] = None,
-                                               genre: Option[Genre] = None,
-                                               raisonSociale: Option[String] = None,
-                                               numeroSiret: Option[NumeroSiret] = None,
-                                               typeRecruteur: Option[TypeRecruteur] = None,
-                                               contactParCandidats: Option[Boolean] = None,
-                                               numeroTelephone: Option[NumeroTelephone] = None)

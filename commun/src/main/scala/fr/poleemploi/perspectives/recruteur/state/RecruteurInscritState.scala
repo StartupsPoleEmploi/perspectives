@@ -4,8 +4,6 @@ import fr.poleemploi.perspectives.recruteur._
 
 object RecruteurInscritState extends RecruteurState {
 
-  override def name: String = "Inscrit"
-
   override def modifierProfil(context: RecruteurContext, command: ModifierProfilCommand): List[Event] =
     if (!context.raisonSociale.contains(command.raisonSociale) ||
       !context.numeroSiret.contains(command.numeroSiret) ||

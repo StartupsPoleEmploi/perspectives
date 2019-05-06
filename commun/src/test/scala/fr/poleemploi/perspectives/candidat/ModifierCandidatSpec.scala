@@ -41,7 +41,7 @@ class ModifierCandidatSpec extends AsyncWordSpec
       )
 
       // Then
-      ex.getMessage mustBe s"Le candidat ${candidat.id.value} dans l'état Nouveau ne peut pas gérer la commande ${commande.getClass.getSimpleName}"
+      ex.getMessage mustBe s"Le candidat ${candidat.id.value} avec le statut NOUVEAU ne peut pas gérer la commande ${commande.getClass.getSimpleName}"
     }
     "renvoyer une erreur lorsque le contactRecruteur est renseigné mais pas le numéro de téléphone" in {
       // Given

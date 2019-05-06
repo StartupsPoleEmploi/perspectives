@@ -15,14 +15,14 @@ trait AggregateRepository[A <: Aggregate] {
 
   def createFromStream(aggregateId: A#Id, eventStream: EventStream): A
 
-  def replayEvents(aggregate: A, events: List[Event]): A
+  def replayEvents(aggregate: A, eventStream: EventStream): A
 
   def getById(aggregateId: A#Id): Future[A] =
     snapshotRepository.findById(aggregateId).flatMap(optAggregate =>
       optAggregate.map(a =>
         eventStore
           .loadEventStreamAfterVersion(aggregateId, a.version)
-          .map(eventStream => replayEvents(a, eventStream.events))
+          .map(eventStream => replayEvents(a, eventStream))
       ).getOrElse(
         eventStore
           .loadEventStream(aggregateId)

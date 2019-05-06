@@ -9,13 +9,15 @@ class RecruteurSnapshotRepository(override val snapshotStore: SnapshotStore,
 
   override def aggregateType: String = "Recruteur"
 
-  override def gapBetweenSnapshots: Int = 20
+  override def deserialize(id: RecruteurId, version: Int, state: Array[Byte]): Recruteur =
+    Recruteur(
+      id = id,
+      version = version,
+      state = objectMapper.readValue(state, classOf[RecruteurContext])
+    )
 
-  override def deserialize(bytes: Array[Byte]): Recruteur =
-    objectMapper.readValue(bytes, classOf[Recruteur])
-
-  override def serialize(aggregate: Recruteur): Array[Byte] =
-    objectMapper.writeValueAsBytes(aggregate)
+  override def serialize(recruteur: Recruteur): Array[Byte] =
+    objectMapper.writeValueAsBytes(recruteur.state)
 
   override def fromStreamName(streamName: String): RecruteurId =
     RecruteurId(streamName)
