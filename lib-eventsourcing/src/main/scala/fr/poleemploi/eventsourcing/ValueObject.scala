@@ -11,3 +11,8 @@ trait StringValueObject extends ValueObject with StringValue
   * Value Object qui contient un Int
   */
 trait IntValueObject extends ValueObject with IntValue
+
+/**
+  * Value Object qui contient un Int
+  */
+trait LongValueObject extends ValueObject with LongValue

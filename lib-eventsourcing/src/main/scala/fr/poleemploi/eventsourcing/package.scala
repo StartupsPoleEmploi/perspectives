@@ -13,4 +13,8 @@ package object eventsourcing {
   trait IntValue {
     def value: Int
   }
+
+  trait LongValue {
+    def value: Long
+  }
 }

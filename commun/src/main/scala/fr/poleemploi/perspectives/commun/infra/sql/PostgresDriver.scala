@@ -2,7 +2,7 @@ package fr.poleemploi.perspectives.commun.infra.sql
 
 import com.github.tminglei.slickpg._
 import com.github.tminglei.slickpg.array.PgArrayExtensions
-import fr.poleemploi.eventsourcing.{AggregateId, IntValueObject, StringValueObject}
+import fr.poleemploi.eventsourcing.{AggregateId, IntValueObject, LongValueObject, StringValueObject}
 import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
 import fr.poleemploi.perspectives.candidat.{CandidatId, StatutDemandeurEmploi}
 import fr.poleemploi.perspectives.commun.domain._
@@ -35,7 +35,7 @@ trait PostgresDriver extends ExPostgresProfile
 
     implicit val peConnectIdColumnType: BaseColumnType[PEConnectId] = mapStringValueObject(PEConnectId)
 
-    implicit val mailjetContactIdColumnType: BaseColumnType[MailjetContactId] = mapIntValueObject(MailjetContactId)
+    implicit val mailjetContactIdColumnType: BaseColumnType[MailjetContactId] = mapLongValueObject(MailjetContactId)
 
     implicit val typeRecruteurColumnType: BaseColumnType[TypeRecruteur] = mapStringValueObject(TypeRecruteur(_))
 
@@ -83,6 +83,12 @@ trait PostgresDriver extends ExPostgresProfile
 
     def mapIntValueObject[T <: IntValueObject](deserialize: Int => T)(implicit tag: ClassTag[T]): BaseColumnType[T] =
       MappedColumnType.base[T, Int](
+        { t => t.value },
+        { s => deserialize(s) }
+      )
+
+    def mapLongValueObject[T <: LongValueObject](deserialize: Long => T)(implicit tag: ClassTag[T]): BaseColumnType[T] =
+      MappedColumnType.base[T, Long](
         { t => t.value },
         { s => deserialize(s) }
       )

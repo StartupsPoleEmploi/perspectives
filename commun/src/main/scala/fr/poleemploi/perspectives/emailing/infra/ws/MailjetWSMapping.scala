@@ -113,7 +113,7 @@ case class ManageContactResponseData(contactId: MailjetContactId,
 object ManageContactResponseData {
 
   implicit val manageContactResponseDataReads: Reads[ManageContactResponseData] = (
-    (JsPath \ "ContactID").read[Int].map(MailjetContactId) and
+    (JsPath \ "ContactID").read[Long].map(MailjetContactId) and
       (JsPath \ "Email").read[String]
     ) (ManageContactResponseData.apply _)
 }
