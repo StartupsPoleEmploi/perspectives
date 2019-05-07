@@ -19,7 +19,8 @@ class PEConnectWSMapping {
       } yield MRSValidee(
         codeROME = CodeROME(resultat.codeRome),
         codeDepartement = CodeDepartement(codeSitePESuiviResultat.take(2)),
-        dateEvaluation = resultat.dateDebutSession.toLocalDate
+        dateEvaluation = resultat.dateDebutSession.toLocalDate,
+        isDHAE = false
       )
     ).foldLeft(List[MRSValidee]())((acc, mrsValidee) =>
       if (acc.exists(m => m.codeROME == mrsValidee.codeROME && m.codeDepartement == mrsValidee.codeDepartement))

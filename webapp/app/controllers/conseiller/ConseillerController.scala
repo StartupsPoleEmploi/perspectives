@@ -83,7 +83,8 @@ class ConseillerController @Inject()(cc: ControllerComponents,
             mrsValidees = List(MRSValidee(
               codeROME = CodeROME(ajouterMRSCandidatForm.codeROME),
               codeDepartement = CodeDepartement(ajouterMRSCandidatForm.codeDepartement),
-              dateEvaluation = ajouterMRSCandidatForm.dateEvaluation
+              dateEvaluation = ajouterMRSCandidatForm.dateEvaluation,
+              isDHAE = ajouterMRSCandidatForm.isDHAE
             ))
           )
           candidatCommandHandler.handle(command)

@@ -18,12 +18,21 @@ case class CandidatsPourConseillerQueryResult(candidats: List[CandidatPourConsei
                                               pages: List[KeysetCandidatsPourConseiller],
                                               pageSuivante: Option[KeysetCandidatsPourConseiller]) extends QueryResult
 
+case class MetierValideDto(metier: Metier,
+                           departement: CodeDepartement,
+                           isDHAE: Boolean)
+
+object MetierValideDto {
+
+  implicit val writes: Writes[MetierValideDto] = Json.writes[MetierValideDto]
+}
+
 case class CandidatPourConseillerDto(candidatId: CandidatId,
                                      nom: Nom,
                                      prenom: Prenom,
                                      email: Email,
                                      statutDemandeurEmploi: Option[StatutDemandeurEmploi],
-                                     metiersValides: Set[Metier],
+                                     metiersValides: Set[MetierValideDto],
                                      metiersValidesRecherches: Set[Metier],
                                      metiersRecherches: Set[Metier],
                                      contactRecruteur: Option[Boolean],

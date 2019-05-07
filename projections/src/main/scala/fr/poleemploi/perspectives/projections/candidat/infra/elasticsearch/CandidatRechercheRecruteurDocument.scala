@@ -11,7 +11,7 @@ case class CandidatRechercheRecruteurDocument(candidatId: CandidatId,
                                               prenom: Prenom,
                                               email: Email,
                                               numeroTelephone: NumeroTelephone,
-                                              metiersValides: List[CodeROME],
+                                              metiersValides: List[MetierValideDocument],
                                               habiletes: Set[Habilete],
                                               metiersValidesRecherches: List[CodeROME],
                                               metiersRecherches: List[CodeROME],
@@ -31,7 +31,7 @@ object CandidatRechercheRecruteurDocument {
       (JsPath \ prenom).read[Prenom] and
       (JsPath \ email).read[Email] and
       (JsPath \ numero_telephone).read[NumeroTelephone] and
-      (JsPath \ metiers_valides).read[List[CodeROME]] and
+      (JsPath \ metiers_valides).read[List[MetierValideDocument]] and
       (JsPath \ habiletes).read[Set[Habilete]] and
       (JsPath \ criteres_recherche \ "metiers_valides").read[List[CodeROME]] and
       (JsPath \ criteres_recherche \ "metiers").read[List[CodeROME]] and

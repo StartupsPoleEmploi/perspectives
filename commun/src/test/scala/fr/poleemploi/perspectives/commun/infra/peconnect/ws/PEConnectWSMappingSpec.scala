@@ -88,6 +88,16 @@ class PEConnectWSMappingSpec extends WordSpec
       // Then
       result.exists(_.dateEvaluation == dateMRS.toLocalDate) mustBe true
     }
+    "retourner une MRSValidee non DHAE" in {
+      // Given
+      when(resultatRendezVousResponse.codeSitePESuiviResultat) thenReturn Some("33201")
+
+      // When
+      val result = mapping.buildMRSValidees(response)
+
+      // Then
+      result.exists(_.isDHAE == false) mustBe true
+    }
     "retourner les MRSValidee lorsque plusieurs résultats sont retournés avec le même CodeROME et des CodeDepartement différents" in {
       // Given
       val resultat1 = mock[ResultatRendezVousResponse]

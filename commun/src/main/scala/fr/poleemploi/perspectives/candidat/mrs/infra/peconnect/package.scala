@@ -4,7 +4,7 @@ import java.util.regex.Pattern
 
 package object peconnect {
 
-  val idPEConnectPattern: Pattern = Pattern.compile("^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$")
+  val idPEConnectPattern: Pattern = Pattern.compile("^\\p{Alnum}{8}-\\p{Alnum}{4}-\\p{Alnum}{4}-\\p{Alnum}{4}-\\p{Alnum}{12}$")
 
-  val sitePrescripteurPattern: Pattern = Pattern.compile("[0-9]{5}")
+  val sitePrescripteurPattern: Pattern = Pattern.compile("\\d{5}")
 }

@@ -22,7 +22,7 @@ class MRSDHAEValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """"a.kn_individu_national"|"a.dc_individu_local"|"a.kc_action_prestation_id"|"a.dd_datedebutprestation"|"a.dc_uniteprescriptrice"|"b.dc_ididentiteexterne"|"c.kd_datemodification"|"c.dc_rome_id"""".stripMargin)
+          """"kn_individu_national"|"dc_individu_local"|"kc_action_prestation_id"|"dd_datedebutprestation"|"dc_uniteprescriptrice"|"dc_ididentiteexterne"|"kd_datemodification"|"dc_rome_id"""".stripMargin)
       )
 
       // When
@@ -35,7 +35,7 @@ class MRSDHAEValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """"a.kn_individu_national"|"a.dc_individu_local"|"a.kc_action_prestation_id"|"a.dd_datedebutprestation"|"a.dc_uniteprescriptrice"|"b.dc_ididentiteexterne"|"c.kd_datemodification"|"c.dc_rome_id"
+          """"kn_individu_national"|"dc_individu_local"|"kc_action_prestation_id"|"dd_datedebutprestation"|"dc_uniteprescriptrice"|"dc_ididentiteexterne"|"kd_datemodification"|"dc_rome_id"
             |1208342958|"01341957989"|P50|2019-02-11 00:00:00|"85012"||2019-03-07 20:52:33|H2102""".stripMargin)
       )
 
@@ -49,7 +49,7 @@ class MRSDHAEValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """"a.kn_individu_national"|"a.dc_individu_local"|"a.kc_action_prestation_id"|"a.dd_datedebutprestation"|"a.dc_uniteprescriptrice"|"b.dc_ididentiteexterne"|"c.kd_datemodification"|"c.dc_rome_id"
+          """"kn_individu_national"|"dc_individu_local"|"kc_action_prestation_id"|"dd_datedebutprestation"|"dc_uniteprescriptrice"|"dc_ididentiteexterne"|"kd_datemodification"|"dc_rome_id"
             |1208342958|"01341957989"|P50|2019-02-11 00:00:00|"85012"|NULL|2019-03-07 20:52:33|H2102""".stripMargin)
       )
 
@@ -63,7 +63,7 @@ class MRSDHAEValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """"a.kn_individu_national"|"a.dc_individu_local"|"a.kc_action_prestation_id"|"a.dd_datedebutprestation"|"a.dc_uniteprescriptrice"|"b.dc_ididentiteexterne"|"c.kd_datemodification"|"c.dc_rome_id"
+          """"kn_individu_national"|"dc_individu_local"|"kc_action_prestation_id"|"dd_datedebutprestation"|"dc_uniteprescriptrice"|"dc_ididentiteexterne"|"kd_datemodification"|"dc_rome_id"
             |1208342958|"01341957989"|P50||"85012"|"28d0b75a-b694-4de3-8849-18bfbfebd729"|2019-03-07 20:52:33|H2102""".stripMargin)
       )
 
@@ -77,7 +77,7 @@ class MRSDHAEValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """"a.kn_individu_national"|"a.dc_individu_local"|"a.kc_action_prestation_id"|"a.dd_datedebutprestation"|"a.dc_uniteprescriptrice"|"b.dc_ididentiteexterne"|"c.kd_datemodification"|"c.dc_rome_id"
+          """"kn_individu_national"|"dc_individu_local"|"kc_action_prestation_id"|"dd_datedebutprestation"|"dc_uniteprescriptrice"|"dc_ididentiteexterne"|"kd_datemodification"|"dc_rome_id"
             |1208342958|"01341957989"|P50|2019-02-11 00:00:00|"85012"|"28d0b75a-b694-4de3-8849-18bfbfebd729"|2019-03-07 20:52:33|""".stripMargin)
       )
 
@@ -91,7 +91,7 @@ class MRSDHAEValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """"a.kn_individu_national"|"a.dc_individu_local"|"a.kc_action_prestation_id"|"a.dd_datedebutprestation"|"a.dc_uniteprescriptrice"|"b.dc_ididentiteexterne"|"c.kd_datemodification"|"c.dc_rome_id"
+          """"kn_individu_national"|"dc_individu_local"|"kc_action_prestation_id"|"dd_datedebutprestation"|"dc_uniteprescriptrice"|"dc_ididentiteexterne"|"kd_datemodification"|"dc_rome_id"
             |1208342958|"01341957989"|P50|2019-02-11 00:00:00||"28d0b75a-b694-4de3-8849-18bfbfebd729"|2019-03-07 20:52:33|H2102""".stripMargin)
       )
 
@@ -105,7 +105,7 @@ class MRSDHAEValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """"a.kn_individu_national"|"a.dc_individu_local"|"a.kc_action_prestation_id"|"a.dd_datedebutprestation"|"a.dc_uniteprescriptrice"|"b.dc_ididentiteexterne"|"c.kd_datemodification"|"c.dc_rome_id"
+          """"kn_individu_national"|"dc_individu_local"|"kc_action_prestation_id"|"dd_datedebutprestation"|"dc_uniteprescriptrice"|"dc_ididentiteexterne"|"kd_datemodification"|"dc_rome_id"
             |1208342958|"01341957989"|P50|2019-02-11 00:00:00|NULL|"28d0b75a-b694-4de3-8849-18bfbfebd729"|2019-03-07 20:52:33|H2102""".stripMargin)
       )
 
@@ -119,7 +119,7 @@ class MRSDHAEValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """"a.kn_individu_national"|"a.dc_individu_local"|"a.kc_action_prestation_id"|"a.dd_datedebutprestation"|"a.dc_uniteprescriptrice"|"b.dc_ididentiteexterne"|"c.kd_datemodification"|"c.dc_rome_id"
+          """"kn_individu_national"|"dc_individu_local"|"kc_action_prestation_id"|"dd_datedebutprestation"|"dc_uniteprescriptrice"|"dc_ididentiteexterne"|"kd_datemodification"|"dc_rome_id"
             |1208342958|"01341957989"|P50|2019-02-11 00:00:00|"85012"|"28d0b75a-b694-4de3-8849-18bfbfebd729"|2019-03-07 20:52:33|H2102""".stripMargin)
       )
 
@@ -133,7 +133,7 @@ class MRSDHAEValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """"a.kn_individu_national"|"a.dc_individu_local"|"a.kc_action_prestation_id"|"a.dd_datedebutprestation"|"a.dc_uniteprescriptrice"|"b.dc_ididentiteexterne"|"c.kd_datemodification"|"c.dc_rome_id"
+          """"kn_individu_national"|"dc_individu_local"|"kc_action_prestation_id"|"dd_datedebutprestation"|"dc_uniteprescriptrice"|"dc_ididentiteexterne"|"kd_datemodification"|"dc_rome_id"
             |1208342958|"01341957989"|P50|2019-02-11 00:00:00|"85012"|"28d0b75a-b694-4de3-8849-18bfbfebd729"|2019-03-07 20:52:33|H2102""".stripMargin)
       )
 
@@ -149,7 +149,7 @@ class MRSDHAEValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """"a.kn_individu_national"|"a.dc_individu_local"|"a.kc_action_prestation_id"|"a.dd_datedebutprestation"|"a.dc_uniteprescriptrice"|"b.dc_ididentiteexterne"|"c.kd_datemodification"|"c.dc_rome_id"
+          """"kn_individu_national"|"dc_individu_local"|"kc_action_prestation_id"|"dd_datedebutprestation"|"dc_uniteprescriptrice"|"dc_ididentiteexterne"|"kd_datemodification"|"dc_rome_id"
             |1208342958|"01341957989"|P50|2019-02-11 00:00:00|"85012"|"28d0b75a-b694-4de3-8849-18bfbfebd729"|2019-03-07 20:52:33|H2102""".stripMargin)
       )
 
@@ -163,7 +163,7 @@ class MRSDHAEValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """"a.kn_individu_national"|"a.dc_individu_local"|"a.kc_action_prestation_id"|"a.dd_datedebutprestation"|"a.dc_uniteprescriptrice"|"b.dc_ididentiteexterne"|"c.kd_datemodification"|"c.dc_rome_id"
+          """"kn_individu_national"|"dc_individu_local"|"kc_action_prestation_id"|"dd_datedebutprestation"|"dc_uniteprescriptrice"|"dc_ididentiteexterne"|"kd_datemodification"|"dc_rome_id"
             |1208342958|"01341957989"|P50|2019-02-11 00:00:00|"85012"|"28d0b75a-b694-4de3-8849-18bfbfebd729"|2019-03-07 20:52:33|H2102""".stripMargin)
       )
 
@@ -177,7 +177,7 @@ class MRSDHAEValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """"a.kn_individu_national"|"a.dc_individu_local"|"a.kc_action_prestation_id"|"a.dd_datedebutprestation"|"a.dc_uniteprescriptrice"|"b.dc_ididentiteexterne"|"c.kd_datemodification"|"c.dc_rome_id"
+          """"kn_individu_national"|"dc_individu_local"|"kc_action_prestation_id"|"dd_datedebutprestation"|"dc_uniteprescriptrice"|"dc_ididentiteexterne"|"kd_datemodification"|"dc_rome_id"
             |1208342958|"01341957989"|P50|2019-02-11 00:00:00|"85012"|"28d0b75a-b694-4de3-8849-18bfbfebd729"|2019-03-07 20:52:33|H2102""".stripMargin)
       )
 
@@ -191,7 +191,7 @@ class MRSDHAEValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """"a.kn_individu_national"|"a.dc_individu_local"|"a.kc_action_prestation_id"|"a.dd_datedebutprestation"|"a.dc_uniteprescriptrice"|"b.dc_ididentiteexterne"|"c.kd_datemodification"|"c.dc_rome_id"
+          """"kn_individu_national"|"dc_individu_local"|"kc_action_prestation_id"|"dd_datedebutprestation"|"dc_uniteprescriptrice"|"dc_ididentiteexterne"|"kd_datemodification"|"dc_rome_id"
             |1208342958|"01341957989"|P50|2019-02-11 00:00:00|"85012"|"28d0b75a-b694-4de3-8849-18bfbfebd729"|2019-03-07 20:52:33|H2102
             |1208342958|"01341957989"|P50|2019-02-11 00:00:00|"85012"|"28d0b75a-b694-4de3-8849-18bfbfebd729"|2019-05-08 20:52:33|H2102""".stripMargin)
       )

@@ -1,14 +1,14 @@
 package fr.poleemploi.perspectives.projections.candidat.infra.elasticsearch
 
 import fr.poleemploi.perspectives.candidat.CandidatId
-import fr.poleemploi.perspectives.commun.domain.{CodeROME, NumeroTelephone}
+import fr.poleemploi.perspectives.commun.domain.NumeroTelephone
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsPath, Reads}
 
 case class CandidatSaisieCriteresRechercheDocument(candidatId: CandidatId,
                                                    contactRecruteur: Option[Boolean],
                                                    contactFormation: Option[Boolean],
-                                                   metiersValides: Set[CodeROME],
+                                                   metiersValides: Set[MetierValideDocument],
                                                    commune: Option[String],
                                                    codePostal: Option[String],
                                                    latitude: Option[Double],
@@ -25,7 +25,7 @@ object CandidatSaisieCriteresRechercheDocument {
     (JsPath \ candidat_id).read[CandidatId] and
       (JsPath \ contact_recruteur).readNullable[Boolean] and
       (JsPath \ contact_formation).readNullable[Boolean] and
-      (JsPath \ metiers_valides).read[Set[CodeROME]] and
+      (JsPath \ metiers_valides).read[Set[MetierValideDocument]] and
       (JsPath \ commune).readNullable[String] and
       (JsPath \ code_postal).readNullable[String] and
       (JsPath \ latitude).readNullable[Double] and

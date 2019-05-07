@@ -182,7 +182,8 @@ object CandidatInscritState extends CandidatState {
             codeROME = m.codeROME,
             departement = m.codeDepartement,
             habiletes = habiletes,
-            dateEvaluation = m.dateEvaluation
+            dateEvaluation = m.dateEvaluation,
+            isDHAE = m.isDHAE
           ))
       )
     )

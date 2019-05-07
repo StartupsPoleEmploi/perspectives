@@ -3,29 +3,40 @@ package fr.poleemploi.perspectives.candidat.mrs.infra.peconnect
 import akka.util.Timeout
 import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.candidat.mrs.domain.{MRSValidee, ReferentielMRS}
-import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectAccessTokenStorage
+import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.ReferentielMRSPEConnect.prioriserMRSDHAEValidees
 import fr.poleemploi.perspectives.commun.infra.peconnect.sql.PEConnectSqlAdapter
-import fr.poleemploi.perspectives.commun.infra.peconnect.ws.PEConnectWSAdapter
+import fr.poleemploi.perspectives.commun.infra.peconnect.ws.{AccessToken, PEConnectWSAdapter}
+import fr.poleemploi.perspectives.commun.infra.peconnect.{CandidatPEConnect, PEConnectAccessTokenStorage}
 import fr.poleemploi.perspectives.commun.infra.ws.WSAdapter
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration._
 
-class ReferentielMRSPEConnect(mrsValideesSqlAdapter: MRSValideesSqlAdapter,
-                              peConnectAccessTokenStorage: PEConnectAccessTokenStorage,
+class ReferentielMRSPEConnect(peConnectAccessTokenStorage: PEConnectAccessTokenStorage,
                               peConnectSqlAdapter: PEConnectSqlAdapter,
-                              peConnectWSAdapter: PEConnectWSAdapter) extends ReferentielMRS with WSAdapter {
+                              peConnectWSAdapter: PEConnectWSAdapter,
+                              mrsDHAEValideesSqlAdapter: MRSDHAEValideesSqlAdapter) extends ReferentielMRS with WSAdapter {
 
   implicit val timeout: Timeout = Timeout(5.seconds)
 
   override def mrsValidees(candidatId: CandidatId): Future[List[MRSValidee]] =
     for {
       candidatPEConnect <- peConnectSqlAdapter.getCandidat(candidatId)
-      optAccessToken <- peConnectAccessTokenStorage.find(candidatPEConnect.peConnectId)
-      accessToken <- optAccessToken
-        .map(a => peConnectAccessTokenStorage.remove(candidatPEConnect.peConnectId).map(_ => a))
-        .getOrElse(Future.failed(new IllegalArgumentException(s"Aucun token stocké pour le candidat ${candidatId.value}")))
-      mrsValidees <- peConnectWSAdapter.mrsValideesCandidat(accessToken)
-    } yield mrsValidees
+      accessToken <- getCandidatAccessToken(candidatPEConnect)
+      (mrsValidees, mrsDHAEValidees) <-
+        peConnectWSAdapter.mrsValideesCandidat(accessToken) zip mrsDHAEValideesSqlAdapter.findByPeConnectId(candidatPEConnect.peConnectId)
+    } yield prioriserMRSDHAEValidees(mrsValidees, mrsDHAEValidees)
+
+  private def getCandidatAccessToken(candidat: CandidatPEConnect): Future[AccessToken] =
+    peConnectAccessTokenStorage.find(candidat.peConnectId).flatMap {
+      case None => Future.failed(new IllegalArgumentException(s"Aucun token stocké pour le candidat ${candidat.candidatId.value}"))
+      case Some(accessToken) => peConnectAccessTokenStorage.remove(candidat.peConnectId).map(_ => accessToken)
+    }
+}
+
+object ReferentielMRSPEConnect {
+
+  def prioriserMRSDHAEValidees(mrsValidees: List[MRSValidee], mrsDHAEValidees: List[MRSValidee]): List[MRSValidee] =
+    mrsValidees.filterNot(e1 => mrsDHAEValidees.exists(e2 => e2.codeROME == e1.codeROME && e2.codeDepartement == e1.codeDepartement)) ++ mrsDHAEValidees
 }

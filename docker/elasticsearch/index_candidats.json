@@ -39,7 +39,17 @@
           "type": "double"
         },
         "metiers_valides": {
-          "type": "keyword"
+          "properties": {
+            "metier": {
+              "type": "keyword"
+            },
+            "departement": {
+              "type": "keyword"
+            },
+            "is_dhae": {
+              "type": "boolean"
+            }
+          }
         },
         "habiletes": {
           "type": "text"

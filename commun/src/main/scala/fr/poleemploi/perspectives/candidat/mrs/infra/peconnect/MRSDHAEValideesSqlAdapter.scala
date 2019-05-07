@@ -2,6 +2,7 @@ package fr.poleemploi.perspectives.candidat.mrs.infra.peconnect
 
 import java.time.LocalDate
 
+import fr.poleemploi.perspectives.candidat.mrs.domain.MRSValidee
 import fr.poleemploi.perspectives.commun.domain.{CodeDepartement, CodeROME}
 import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
@@ -37,7 +38,11 @@ class MRSDHAEValideesSqlAdapter(val driver: PostgresDriver,
     def * = (peConnectId, codeROME, codeDepartement, dateEvaluation) <> (MRSDHAEValideePEConnect.tupled, MRSDHAEValideePEConnect.unapply)
   }
 
-  val mrsDHAEValideesCandidatsTable = TableQuery[MRSDHAEValideeCandidatsTable]
+  private val mrsDHAEValideesCandidatsTable = TableQuery[MRSDHAEValideeCandidatsTable]
+
+  private val findByPeConnectIdQuery = Compiled { peConnectId: Rep[PEConnectId] =>
+    mrsDHAEValideesCandidatsTable.filter(_.peConnectId === peConnectId)
+  }
 
   def ajouter(mrsDHAEValidees: Stream[MRSDHAEValideePEConnect]): Future[Unit] = {
     val bulkInsert: DBIO[Option[Int]] = mrsDHAEValideesCandidatsTable.map(
@@ -48,4 +53,15 @@ class MRSDHAEValideesSqlAdapter(val driver: PostgresDriver,
 
     database.run(bulkInsert).map(_ => ())
   }
+
+  def findByPeConnectId(peConnectId: PEConnectId): Future[List[MRSValidee]] =
+    database.run(findByPeConnectIdQuery(peConnectId).result)
+      .map(_.toList.map(m =>
+        MRSValidee(
+          codeROME = m.codeROME,
+          codeDepartement = m.codeDepartement,
+          dateEvaluation = m.dateEvaluation,
+          isDHAE = true
+        )
+      ))
 }

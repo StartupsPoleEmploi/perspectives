@@ -17,7 +17,7 @@ import fr.poleemploi.perspectives.candidat.cv.infra.sql.CVSqlAdapter
 import fr.poleemploi.perspectives.candidat.localisation.infra.local.LocalisationLocalAdapter
 import fr.poleemploi.perspectives.candidat.localisation.infra.ws.{LocalisationWSAdapter, LocalisationWSMapping}
 import fr.poleemploi.perspectives.candidat.mrs.infra.local.{ReferentielHabiletesMRSLocalAdapter, ReferentielMRSLocalAdapter}
-import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.{MRSValideesSqlAdapter, ReferentielMRSPEConnect}
+import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.{MRSDHAEValideesSqlAdapter, MRSValideesSqlAdapter, ReferentielMRSPEConnect}
 import fr.poleemploi.perspectives.candidat.mrs.infra.sql.ReferentielHabiletesMRSSqlAdapter
 import fr.poleemploi.perspectives.commun.infra.jackson.PerspectivesEventSourcingModule
 import fr.poleemploi.perspectives.commun.infra.oauth.OauthService
@@ -275,15 +275,22 @@ class InfraModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
-  def referentielMRSPEConnect(mrsValideesSqlAdapter: MRSValideesSqlAdapter,
-                              peConnectAccessTokenStorage: PEConnectAccessTokenStorage,
+  def mrsDHAEValideesSqlAdapter(database: Database): MRSDHAEValideesSqlAdapter =
+    new MRSDHAEValideesSqlAdapter(
+      driver = PostgresDriver,
+      database = database
+    )
+
+  @Provides
+  def referentielMRSPEConnect(peConnectAccessTokenStorage: PEConnectAccessTokenStorage,
                               peConnectWSAdapter: PEConnectWSAdapter,
-                              peConnectSqlAdapter: PEConnectSqlAdapter): ReferentielMRSPEConnect =
+                              peConnectSqlAdapter: PEConnectSqlAdapter,
+                              mrsDHAEValideesSqlAdapter: MRSDHAEValideesSqlAdapter): ReferentielMRSPEConnect =
     new ReferentielMRSPEConnect(
-      mrsValideesSqlAdapter = mrsValideesSqlAdapter,
       peConnectAccessTokenStorage = peConnectAccessTokenStorage,
       peConnectWSAdapter = peConnectWSAdapter,
-      peConnectSqlAdapter = peConnectSqlAdapter
+      peConnectSqlAdapter = peConnectSqlAdapter,
+      mrsDHAEValideesSqlAdapter = mrsDHAEValideesSqlAdapter
     )
 
   @Provides

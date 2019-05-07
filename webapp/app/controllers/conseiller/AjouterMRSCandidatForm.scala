@@ -3,12 +3,13 @@ package controllers.conseiller
 import java.time.LocalDate
 
 import play.api.data.Form
-import play.api.data.Forms.{localDate, mapping, nonEmptyText}
+import play.api.data.Forms.{localDate, mapping, nonEmptyText, boolean}
 
 case class AjouterMRSCandidatForm(candidatId: String,
                                   codeROME: String,
                                   dateEvaluation: LocalDate,
-                                  codeDepartement: String)
+                                  codeDepartement: String,
+                                  isDHAE: Boolean)
 
 object AjouterMRSCandidatForm {
 
@@ -17,7 +18,8 @@ object AjouterMRSCandidatForm {
       "candidatId" -> nonEmptyText,
       "codeROME" -> nonEmptyText,
       "dateEvaluation" -> localDate("yyyy-MM-dd"),
-      "codeDepartement" -> nonEmptyText
+      "codeDepartement" -> nonEmptyText,
+      "isDHAE" -> boolean
     )(AjouterMRSCandidatForm.apply)(AjouterMRSCandidatForm.unapply)
   )
 

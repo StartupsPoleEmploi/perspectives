@@ -51,6 +51,18 @@
                 <span class="texte-erreur font-size-sm">{{error}}</span>
             </dd>
         </dl>
+        <dl class="champFormulaire">
+            <dt>
+                <label for="isDHAE">DHAE</label>
+            </dt>
+            <dd class="choix">
+                <input type="checkbox" name="isDHAE" id="isDHAE" v-model="mrsCandidatFormData.isDHAE" />
+            </dd>
+            <dd class="erreurs"
+                v-show="mrsCandidatFormErrors.isDHAE" v-for="error in mrsCandidatFormErrors.isDHAE">
+                <span class="texte-erreur font-size-sm">{{error}}</span>
+            </dd>
+        </dl>
         <p>
             <input type="submit" value="Ajouter">
             <input type="button" value="Annuler" v-on:click="annulerMRSCandidat">
@@ -62,7 +74,7 @@
         <div class="listeResultatsRecherche">
             <div class="listeResultatsRecherche-ligneTitre">
                 <div class="listeResultatsRecherche-colonne listeResultatsRecherche-candidat">Nom du candidat</div>
-                <div class="listeResultatsRecherche-colonne listeResultatsRecherche-metiersValides">Métiers évalués</div>
+                <div class="listeResultatsRecherche-colonne listeResultatsRecherche-metiersValides">Métiers validés</div>
                 <div class="listeResultatsRecherche-colonne listeResultatsRecherche-metiersRecherches">Métiers recherchés</div>
             </div>
             <template v-for="candidat in candidats">
@@ -74,7 +86,10 @@
                 <div class="listeResultatsRecherche-colonne listeResultatsRecherche-metiersValides">
                     <p v-if="candidat.metiersValides.length > 0">Metiers validés</p>
                     <ul class="detailsProfils">
-                        <li class="detailsProfils-item" v-for="metier in candidat.metiersValides">{{metier.codeROME}} : {{metier.label}}</li>
+                        <li class="detailsProfils-item" v-for="metierValide in candidat.metiersValides">
+                            {{metierValide.metier.codeROME}} : {{metierValide.metier.label}}, dans le {{metierValide.departement}}.
+                            <span class="font-weight-bold" v-show="metierValide.isDHAE">DHAE</span>
+                        </li>
                     </ul>
                     <p v-if="candidat.metiersValidesRecherches.length > 0">Metiers validés recherchés</p>
                     <ul class="detailsProfils">

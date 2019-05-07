@@ -58,7 +58,8 @@ case class MRSAjouteeEvent(candidatId: CandidatId,
                            codeROME: CodeROME,
                            departement: CodeDepartement,
                            habiletes: Set[Habilete],
-                           dateEvaluation: LocalDate) extends CandidatEvent
+                           dateEvaluation: LocalDate,
+                           isDHAE: Boolean) extends CandidatEvent
 
 case class RepriseEmploiDeclareeParConseillerEvent(candidatId: CandidatId,
                                                    conseillerId: ConseillerId) extends CandidatEvent
