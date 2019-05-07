@@ -48,4 +48,11 @@ class MRSDHAEValideesSqlAdapter(val driver: PostgresDriver,
 
     database.run(bulkInsert).map(_ => ())
   }
+
+  private val findByPeConnectIdCompiledQuery = Compiled { peConnectId: Rep[PEConnectId] =>
+    mrsDHAEValideesCandidatsTable.filter(_.peConnectId === peConnectId)
+  }
+
+  def findByPeConnectId(peConnectId: PEConnectId): Future[Seq[MRSDHAEValideePEConnect]] =
+    database.run(findByPeConnectIdCompiledQuery(peConnectId).result)
 }

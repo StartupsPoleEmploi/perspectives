@@ -2,7 +2,6 @@ package fr.poleemploi.perspectives.candidat.mrs.infra.peconnect
 
 import java.time.LocalDate
 
-import fr.poleemploi.perspectives.candidat.mrs.domain.MRSValidee
 import fr.poleemploi.perspectives.commun.domain.{CodeDepartement, CodeROME}
 import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
@@ -40,18 +39,6 @@ class MRSValideesSqlAdapter(val driver: PostgresDriver,
 
   val mrsValideesCandidatsTable = TableQuery[MRSValideeCandidatsTable]
 
-  implicit object MRSValideeShape extends CaseClassShape(MRSValideeLifted.tupled, MRSValidee.tupled)
-
-  val mrsValideesParCandidatQuery = Compiled { peConnectId: Rep[PEConnectId] =>
-    mrsValideesCandidatsTable
-      .filter(_.peConnectId === peConnectId)
-      .map(mrs => MRSValideeLifted(
-        codeROME = mrs.codeROME,
-        codeDepartement = mrs.codeDepartement,
-        dateEvaluation = mrs.dateEvaluation
-      ))
-  }
-
   /**
     * Intègre les MRS provenant de l'extract du SI Pôle Emploi
     * Mets à jour les infos de MRS qu'un candidat a déjà validé (contrainte peconnect_id, code_rome, code_departement) car on ne sait pas ce qui a changé dans l'extract ni pour quelle raison, et cela évite d'intégrer des règles issues du SI de Pôle Emploi ici. <br />
@@ -66,7 +53,4 @@ class MRSValideesSqlAdapter(val driver: PostgresDriver,
 
     database.run(bulkInsert).map(_ => ())
   }
-
-  def mrsValideesParCandidat(peConnectId: PEConnectId): Future[List[MRSValidee]] =
-    database.run(mrsValideesParCandidatQuery(peConnectId).result).map(_.toList)
 }

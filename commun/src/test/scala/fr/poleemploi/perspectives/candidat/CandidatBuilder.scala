@@ -52,7 +52,8 @@ class CandidatBuilder {
             Habilete("S'adapter au changement"),
             Habilete("Maintenir son attention dans la durée")
           )
-        else habiletes
+        else habiletes,
+      isDHAE = mrsValidee.isDHAE
     )
     this
   }

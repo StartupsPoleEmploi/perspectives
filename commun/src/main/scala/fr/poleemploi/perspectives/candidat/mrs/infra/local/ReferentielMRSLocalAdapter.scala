@@ -15,12 +15,14 @@ class ReferentielMRSLocalAdapter extends ReferentielMRS {
       MRSValidee(
         codeROME = CodeROME("B1802"),
         codeDepartement = CodeDepartement("85"),
-        dateEvaluation = LocalDate.now()
+        dateEvaluation = LocalDate.now(),
+        isDHAE = false
       ),
       MRSValidee(
         codeROME = CodeROME("H2913"),
         codeDepartement = CodeDepartement("85"),
-        dateEvaluation = LocalDate.now()
+        dateEvaluation = LocalDate.now(),
+        isDHAE = false
       )
     ))
 

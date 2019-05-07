@@ -51,6 +51,18 @@
                 <span class="texte-erreur font-size-sm">{{error}}</span>
             </dd>
         </dl>
+        <dl class="champFormulaire">
+            <dt>
+                <label for="isDHAE">DHAE</label>
+            </dt>
+            <dd class="choix">
+                <input type="checkbox" name="isDHAE" id="isDHAE" v-model="mrsCandidatFormData.isDHAE" />
+            </dd>
+            <dd class="erreurs"
+            v-show="mrsCandidatFormErrors.isDHAE" v-for="error in mrsCandidatFormErrors.isDHAE">
+                <span class="texte-erreur font-size-sm">{{error}}</span>
+            </dd>
+        </dl>
         <p>
             <input type="submit" value="Ajouter">
             <input type="button" value="Annuler" v-on:click="annulerMRSCandidat">

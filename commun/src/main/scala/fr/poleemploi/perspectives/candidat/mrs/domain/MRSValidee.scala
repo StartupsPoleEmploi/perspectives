@@ -6,4 +6,5 @@ import fr.poleemploi.perspectives.commun.domain.{CodeDepartement, CodeROME}
 
 case class MRSValidee(codeROME: CodeROME,
                       codeDepartement: CodeDepartement,
-                      dateEvaluation: LocalDate)
+                      dateEvaluation: LocalDate,
+                      isDHAE: Boolean)

@@ -20,7 +20,8 @@ class AjouterMRSValideeSpec extends AsyncWordSpec
   val mrsValidee = MRSValidee(
     codeROME = CodeROME("H3203"),
     codeDepartement = CodeDepartement("85"),
-    dateEvaluation = LocalDate.now()
+    dateEvaluation = LocalDate.now(),
+    isDHAE = false
   )
 
   val commande: AjouterMRSValideesCommand =
@@ -85,12 +86,14 @@ class AjouterMRSValideeSpec extends AsyncWordSpec
             MRSValidee(
               codeROME = CodeROME("H3203"),
               codeDepartement = CodeDepartement("85"),
-              dateEvaluation = LocalDate.now()
+              dateEvaluation = LocalDate.now(),
+              isDHAE = false
             ),
             MRSValidee(
               codeROME = CodeROME("H3203"),
               codeDepartement = CodeDepartement("85"),
-              dateEvaluation = LocalDate.now().plusDays(1L)
+              dateEvaluation = LocalDate.now().plusDays(1L),
+              isDHAE = false
             )
           )
         ), referentielHabiletesMRS)
@@ -141,11 +144,13 @@ class AjouterMRSValideeSpec extends AsyncWordSpec
         mrsValidees = List(MRSValidee(
           codeROME = CodeROME("1"),
           codeDepartement = CodeDepartement("85"),
-          dateEvaluation = LocalDate.now()
+          dateEvaluation = LocalDate.now(),
+          isDHAE = false
         ), MRSValidee(
           codeROME = CodeROME("2"),
           codeDepartement = CodeDepartement("85"),
-          dateEvaluation = LocalDate.now()
+          dateEvaluation = LocalDate.now(),
+          isDHAE = false
         ))
       )
 
@@ -172,7 +177,34 @@ class AjouterMRSValideeSpec extends AsyncWordSpec
         event.habiletes mustBe habiletes
         event.departement mustBe commande.mrsValidees.head.codeDepartement
         event.dateEvaluation mustBe commande.mrsValidees.head.dateEvaluation
+        event.isDHAE mustBe commande.mrsValidees.head.isDHAE
       })
+    }
+
+    "renvoyer une erreur lorsque la commande contient deux MRS (dont une DHAE) avec le même métier et le même département : on souhaite juste savoir quel métier a été validé, peu importe si la même MRS est repassée" in {
+      val candidat = candidatBuilder.avecInscription().build
+
+      // When & Then
+      recoverToExceptionIf[IllegalArgumentException](
+        candidat.ajouterMRSValidee(commande.copy(
+          mrsValidees = List(
+            MRSValidee(
+              codeROME = CodeROME("H3203"),
+              codeDepartement = CodeDepartement("85"),
+              dateEvaluation = LocalDate.now(),
+              isDHAE = false
+            ),
+            MRSValidee(
+              codeROME = CodeROME("H3203"),
+              codeDepartement = CodeDepartement("85"),
+              dateEvaluation = LocalDate.now().plusDays(1L),
+              isDHAE = true
+            )
+          )
+        ), referentielHabiletesMRS)
+      ).map(ex =>
+        ex.getMessage mustBe s"Impossible d'ajouter des MRS au candidat ${candidat.id.value} : la commande contient des MRS avec le même métier pour le même département"
+      )
     }
   }
 
