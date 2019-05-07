@@ -20,7 +20,7 @@ class HabiletesMRSCsvAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """Département,ROME commande,Appellation ROME commande,HABILETE1,HABILETE2,HABILETE3,HABILETE4,HABILETE5,HABILETE6,HABILETE7""".stripMargin)
+          """codeROME,habilete1,habilete2,habilete3,habilete4,habilete5,habilete6,habilete7""".stripMargin)
       )
 
       // When
@@ -29,26 +29,12 @@ class HabiletesMRSCsvAdapterSpec extends AsyncWordSpec
       // Then
       future map (s => s.isEmpty mustBe true)
     }
-    "ignorer la ligne si elle ne contient pas de département" in {
-      // Given
-      val source = Source.single(
-        ByteString(
-          """Département,ROME commande,Appellation ROME commande,HABILETE1,HABILETE2,HABILETE3,HABILETE4,HABILETE5,HABILETE6,HABILETE7
-            |,A1402,Aide agricole de production légumière ou végétale,Respecter des normes et des consignes,Travailler en équipe,,,,,""".stripMargin)
-      )
-
-      // When
-      val future = habiletesMRSCsvAdapter.load(source)
-
-      // Then
-      future.map(s => s.isEmpty mustBe true)
-    }
     "ignorer la ligne si elle ne contient pas de code ROME" in {
       // Given
       val source = Source.single(
         ByteString(
-          """Département,ROME commande,Appellation ROME commande,HABILETE1,HABILETE2,HABILETE3,HABILETE4,HABILETE5,HABILETE6,HABILETE7
-            |72,,Aide agricole de production légumière ou végétale,Respecter des normes et des consignes,Travailler en équipe,,,,,""".stripMargin)
+          """codeROME,habilete1,habilete2,habilete3,habilete4,habilete5,habilete6,habilete7
+            |,Respecter des normes et des consignes,Travailler en équipe,,,,,""".stripMargin)
       )
 
       // When
@@ -61,8 +47,8 @@ class HabiletesMRSCsvAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """Département,ROME commande,Appellation ROME commande,HABILETE1,HABILETE2,HABILETE3,HABILETE4,HABILETE5,HABILETE6,HABILETE7
-            |72,A1402,Aide agricole de production légumière ou végétale,,,,,,,""".stripMargin)
+          """codeROME,habilete1,habilete2,habilete3,habilete4,habilete5,habilete6,habilete7
+            |A1402,,,,,,,""".stripMargin)
       )
 
       // When
@@ -71,12 +57,28 @@ class HabiletesMRSCsvAdapterSpec extends AsyncWordSpec
       // Then
       future.map(s => s.isEmpty mustBe true)
     }
+    "integrer le code ROME de la ligne en supprimant les espaces de début et de fin" in {
+      // Given
+      val source = Source.single(
+        ByteString(
+          """codeROME,habilete1,habilete2,habilete3,habilete4,habilete5,habilete6,habilete7
+            | A1402 ,Respecter des normes et des consignes,Travailler en équipe,,,,,""".stripMargin)
+      )
+
+      // When
+      val future = habiletesMRSCsvAdapter.load(source)
+
+      // Then
+      future.map(s => {
+        s.toList.head.codeROME mustBe CodeROME("A1402")
+      })
+    }
     "integrer le code ROME de la ligne" in {
       // Given
       val source = Source.single(
         ByteString(
-          """Département,ROME commande,Appellation ROME commande,HABILETE1,HABILETE2,HABILETE3,HABILETE4,HABILETE5,HABILETE6,HABILETE7
-            |72,A1402,Aide agricole de production légumière ou végétale,Respecter des normes et des consignes,Travailler en équipe,,,,,""".stripMargin)
+          """codeROME,habilete1,habilete2,habilete3,habilete4,habilete5,habilete6,habilete7
+            |A1402,Respecter des normes et des consignes,Travailler en équipe,,,,,""".stripMargin)
       )
 
       // When
@@ -91,8 +93,8 @@ class HabiletesMRSCsvAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """Département,ROME commande,Appellation ROME commande,HABILETE1,HABILETE2,HABILETE3,HABILETE4,HABILETE5,HABILETE6,HABILETE7
-            |72,A1402,, Respecter des normes et des consignes , Travailler en équipe ,,,,,""".stripMargin)
+          """codeROME,habilete1,habilete2,habilete3,habilete4,habilete5,habilete6,habilete7
+            |A1402, Respecter des normes et des consignes , Travailler en équipe ,,,,,""".stripMargin)
       )
 
       // When
@@ -110,8 +112,8 @@ class HabiletesMRSCsvAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """Département,ROME commande,Appellation ROME commande,HABILETE1,HABILETE2,HABILETE3,HABILETE4,HABILETE5,HABILETE6,HABILETE7
-            |72,A1402,Aide agricole de production légumière ou végétale,Respecter des normes et des consignes,Travailler en équipe,,,,,""".stripMargin)
+          """codeROME,habilete1,habilete2,habilete3,habilete4,habilete5,habilete6,habilete7
+            |A1402,Respecter des normes et des consignes,Travailler en équipe,,,,,""".stripMargin)
       )
 
       // When
@@ -123,22 +125,6 @@ class HabiletesMRSCsvAdapterSpec extends AsyncWordSpec
           Habilete("Respecter des normes et des consignes"),
           Habilete("Travailler en équipe")
         )
-      })
-    }
-    "integrer le code departement" in {
-      // Given
-      val source = Source.single(
-        ByteString(
-          """Département,ROME commande,Appellation ROME commande,HABILETE1,HABILETE2,HABILETE3,HABILETE4,HABILETE5,HABILETE6,HABILETE7
-            |72,A1402,Aide agricole de production légumière ou végétale,Respecter des normes et des consignes,Travailler en équipe,,,,,""".stripMargin)
-      )
-
-      // When
-      val future = habiletesMRSCsvAdapter.load(source)
-
-      // Then
-      future.map(s => {
-        s.toList.head.codeDepartement mustBe CodeDepartement("72")
       })
     }
   }

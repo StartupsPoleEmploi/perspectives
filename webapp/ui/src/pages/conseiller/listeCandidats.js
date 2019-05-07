@@ -11,8 +11,7 @@ var app = new Vue({
             candidats: jsData.candidats,
             pagesInitiales: jsData.pagesInitiales,
             nbCandidatsParPage: jsData.nbCandidatsParPage,
-            codeROMEsParDepartement: jsData.codeROMEsParDepartement.result,
-            codeROMEs: [],
+            codeROMEs: jsData.codeROMEs.result,
             mrsCandidatFormData: {
                 nomCandidat: null,
                 prenomCandidat: null,
@@ -110,15 +109,6 @@ var app = new Vue({
                 dateEvaluation: null
             };
             this.mrsCandidatFormErrors = {};
-        },
-        onCodeDepartementModifie: function() {
-            var codeROMEs = this.codeROMEsParDepartement.filter(function(e) {return e[0] === app.mrsCandidatFormData.codeDepartement});
-
-            if (codeROMEs.length > 0) {
-                this.codeROMEs = codeROMEs[0][1];
-            } else {
-                this.codeROMEs = [];
-            }
         },
         declarerRepriseEmploi: function(candidat) {
             $.ajax({

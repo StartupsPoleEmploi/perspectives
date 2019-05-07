@@ -16,11 +16,7 @@
                 <label for="codeDepartement">Département (unité MRS)</label>
             </dt>
             <dd class="choix">
-                <select id="codeDepartement" name="codeDepartement"
-                        v-model="mrsCandidatFormData.codeDepartement" v-on:change="onCodeDepartementModifie">
-                    <option value="">Choisissez un département</option>
-                    <option v-for="departement in codeROMEsParDepartement" v-bind:value="departement[0]">{{departement[0]}}</option>
-                </select>
+                <input type="text" name="codeDepartement" id="codeDepartement" maxlength="2" v-model="mrsCandidatFormData.codeDepartement" />
             </dd>
             <dd class="erreurs"
                 v-show="mrsCandidatFormErrors.codeDepartement" v-for="error in mrsCandidatFormErrors.codeDepartement">

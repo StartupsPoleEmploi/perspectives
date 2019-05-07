@@ -176,10 +176,7 @@ object CandidatInscritState extends CandidatState {
 
     Future.sequence(
       command.mrsValidees.map(m =>
-        referentielHabiletesMRS.habiletes(
-          codeROME = m.codeROME,
-          codeDepartement = m.codeDepartement
-        ).map(habiletes =>
+        referentielHabiletesMRS.habiletes(m.codeROME).map(habiletes =>
           MRSAjouteeEvent(
             candidatId = command.id,
             codeROME = m.codeROME,

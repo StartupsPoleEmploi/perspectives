@@ -6,7 +6,7 @@ import akka.stream.alpakka.csv.scaladsl.{CsvParsing, CsvToMap}
 import akka.stream.scaladsl.{Sink, Source}
 import akka.util.ByteString
 import fr.poleemploi.perspectives.candidat.mrs.domain.HabiletesMRS
-import fr.poleemploi.perspectives.commun.domain.{CodeDepartement, CodeROME, Habilete}
+import fr.poleemploi.perspectives.commun.domain.{CodeROME, Habilete}
 
 import scala.concurrent.Future
 
@@ -19,20 +19,18 @@ class HabiletesMRSCsvAdapter(val actorSystem: ActorSystem) {
       .via(CsvParsing.lineScanner(delimiter = ','))
       .via(CsvToMap.toMapAsStrings())
       .filter(m =>
-        m.get("ROME commande").exists(_.nonEmpty) &&
-          m.get("Département").exists(_.nonEmpty) &&
-          m.keys.filter(_.startsWith("HABILETE")).exists(k => m.get(k).exists(_.nonEmpty))
+        m.get("codeROME").exists(_.nonEmpty) &&
+          m.keys.filter(_.startsWith("habilete")).exists(k => m.get(k).exists(_.nonEmpty))
       ).map(data => {
       val habiletes =
-        data.keys.filter(_.startsWith("HABILETE"))
+        data.keys.filter(_.startsWith("habilete"))
           .map(k => data.getOrElse(k, ""))
           .filter(_.nonEmpty)
           .map(v => Habilete(v.trim.replaceAll("\\n", "")))
           .toList
 
       HabiletesMRS(
-        codeROME = CodeROME(data("ROME commande")),
-        codeDepartement = CodeDepartement(data("Département")),
+        codeROME = CodeROME(data("codeROME").trim),
         habiletes = habiletes
       )
     }

@@ -33,7 +33,7 @@ class AjouterMRSValideeSpec extends AsyncWordSpec
 
   before {
     referentielHabiletesMRS = mock[ReferentielHabiletesMRS]
-    when(referentielHabiletesMRS.habiletes(ArgumentMatchers.any[CodeROME](), ArgumentMatchers.any[CodeDepartement]())) thenReturn Future.successful(Set.empty[Habilete])
+    when(referentielHabiletesMRS.habiletes(ArgumentMatchers.any[CodeROME]())) thenReturn Future.successful(Set.empty[Habilete])
   }
 
   "ajouterMRSValidee" should {
@@ -101,7 +101,7 @@ class AjouterMRSValideeSpec extends AsyncWordSpec
     "renvoyer une erreur lorsque le service d'habiletes echoue" in {
       // Given
       val candidat = candidatBuilder.avecInscription().build
-      when(referentielHabiletesMRS.habiletes(mrsValidee.codeROME, mrsValidee.codeDepartement)) thenReturn Future.failed(new RuntimeException("erreur de service"))
+      when(referentielHabiletesMRS.habiletes(mrsValidee.codeROME)) thenReturn Future.failed(new RuntimeException("erreur de service"))
 
       // When & Then
       recoverToExceptionIf[RuntimeException](
@@ -159,7 +159,7 @@ class AjouterMRSValideeSpec extends AsyncWordSpec
       // Given
       val candidat = candidatBuilder.avecInscription().build
       val habiletes = Set(Habilete("Maintenir son attention dans la durée"))
-      when(referentielHabiletesMRS.habiletes(mrsValidee.codeROME, mrsValidee.codeDepartement)) thenReturn Future.successful(habiletes)
+      when(referentielHabiletesMRS.habiletes(mrsValidee.codeROME)) thenReturn Future.successful(habiletes)
 
       // When
       val future = candidat.ajouterMRSValidee(commande, referentielHabiletesMRS)

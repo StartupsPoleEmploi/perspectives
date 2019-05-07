@@ -9,7 +9,7 @@ import fr.poleemploi.perspectives.commun.domain.{CodeDepartement, CodeROME}
 import fr.poleemploi.perspectives.commun.infra.play.http.HttpCommandHandler
 import fr.poleemploi.perspectives.projections.candidat.{CandidatQueryHandler, CandidatsPourConseillerQuery, KeysetCandidatsPourConseiller}
 import fr.poleemploi.perspectives.projections.conseiller.ConseillerQueryHandler
-import fr.poleemploi.perspectives.projections.conseiller.mrs.CodeROMEParDepartementQuery
+import fr.poleemploi.perspectives.projections.conseiller.mrs.CodeROMEsAvecHabiletesQuery
 import fr.poleemploi.perspectives.projections.recruteur.{KeysetRecruteursPourConseiller, RecruteurQueryHandler, RecruteursPourConseillerQuery}
 import fr.poleemploi.perspectives.recruteur.RecruteurId
 import javax.inject.Inject
@@ -36,7 +36,7 @@ class ConseillerController @Inject()(cc: ControllerComponents,
       page = None
     )
     for {
-      codeROMEsParDepartementQueryResult <- conseillerQueryHandler.handle(CodeROMEParDepartementQuery)
+      codeROMEs <- conseillerQueryHandler.handle(CodeROMEsAvecHabiletesQuery)
       candidatsPourConseillerQueryResult <- candidatQueryHandler.handle(query)
     } yield {
       Ok(views.html.conseiller.listeCandidats(
@@ -46,7 +46,7 @@ class ConseillerController @Inject()(cc: ControllerComponents,
           "candidats" -> candidatsPourConseillerQueryResult.candidats,
           "pagesInitiales" -> candidatsPourConseillerQueryResult.pages,
           "csrfToken" -> CSRF.getToken.map(_.value),
-          "codeROMEsParDepartement" -> codeROMEsParDepartementQueryResult
+          "codeROMEs" -> codeROMEs
         )
       ))
     }
