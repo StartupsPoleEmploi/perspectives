@@ -38,9 +38,9 @@ class PEConnectController @Inject()(cc: ControllerComponents,
   }
 
   def connexion: Action[AnyContent] = Action.async { implicit request =>
-    SessionOauthTokens.getOauthTokensCandidat(request.session).toRight("Aucun token n'a été stocké en session").toFuture
+    SessionOauthTokens.getOauthTokensCandidat(request.session)
       .map(oauthTokens =>
-        Redirect(
+        Future(Redirect(
           url = s"${oauthConfig.urlAuthentification}/connexion/oauth2/authorize",
           status = SEE_OTHER,
           queryString = Map(
@@ -53,13 +53,19 @@ class PEConnectController @Inject()(cc: ControllerComponents,
             "nonce" -> Seq(oauthTokens.nonce)
           )
         )).recover {
-      case t: Throwable =>
-        logger.error("Erreur lors de la connexion candidat via PEConnect", t)
-        // Nettoyage de session et redirect
-        Redirect(routes.LandingController.landing())
-          .withSession(SessionOauthTokens.removeOauthTokensCandidat(request.session))
-          .flashing(request.flash.withMessageErreur("Une erreur est survenue lors de l'accès au service de Pôle Emploi, veuillez réessayer ultérieurement"))
-    }
+          case t: Throwable =>
+            logger.error("Erreur lors de la connexion candidat via PEConnect", t)
+            // Nettoyage de session et redirect
+            Redirect(routes.LandingController.landing())
+              .withSession(SessionOauthTokens.removeOauthTokensCandidat(request.session))
+              .flashing(request.flash.withMessageErreur("Une erreur est survenue lors de l'accès au service de Pôle Emploi, veuillez réessayer ultérieurement"))
+        })
+      .getOrElse(
+        Future(
+          Redirect(routes.LandingController.landing())
+            .flashing(request.flash.withMessageErreur("Une erreur est survenue lors de la connexion, veuillez réessayer ultérieurement"))
+        )
+      )
   }
 
   def connexionCallback: Action[AnyContent] = Action.async { implicit request =>

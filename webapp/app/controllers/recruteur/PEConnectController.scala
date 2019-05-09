@@ -37,27 +37,34 @@ class PEConnectController @Inject()(cc: ControllerComponents,
   }
 
   def connexion: Action[AnyContent] = Action.async { implicit request =>
-    SessionOauthTokens.getOauthTokensRecruteur(request.session).toRight("Aucun token n'a été stocké en session").toFuture
-      .map(oauthTokens => Redirect(
-        url = s"${oauthConfig.urlAuthentification}/connexion/oauth2/authorize",
-        status = SEE_OTHER,
-        queryString = Map(
-          "realm" -> Seq(s"/${oauthConfig.realm}"),
-          "response_type" -> Seq("code"),
-          "client_id" -> Seq(oauthConfig.clientId),
-          "scope" -> Seq(OauthConfig.scopes(oauthConfig)),
-          "redirect_uri" -> Seq(redirectUri.absoluteURL()),
-          "state" -> Seq(oauthTokens.state),
-          "nonce" -> Seq(oauthTokens.nonce)
+    SessionOauthTokens.getOauthTokensRecruteur(request.session)
+      .map(oauthTokens =>
+        Future(Redirect(
+          url = s"${oauthConfig.urlAuthentification}/connexion/oauth2/authorize",
+          status = SEE_OTHER,
+          queryString = Map(
+            "realm" -> Seq(s"/${oauthConfig.realm}"),
+            "response_type" -> Seq("code"),
+            "client_id" -> Seq(oauthConfig.clientId),
+            "scope" -> Seq(OauthConfig.scopes(oauthConfig)),
+            "redirect_uri" -> Seq(redirectUri.absoluteURL()),
+            "state" -> Seq(oauthTokens.state),
+            "nonce" -> Seq(oauthTokens.nonce)
+          )
+        )).recover {
+          case t: Throwable =>
+            logger.error("Erreur lors de la connexion recruteur via PEConnect", t)
+            // Nettoyage de session et redirect
+            Redirect(routes.LandingController.landing()).withSession(
+              SessionOauthTokens.removeOauthTokensRecruteur(request.session)
+            )
+        })
+      .getOrElse(
+        Future(
+          Redirect(routes.LandingController.landing())
+            .flashing(request.flash.withMessageErreur("Une erreur est survenue lors de la connexion, veuillez réessayer ultérieurement"))
         )
-      )).recover {
-      case t: Throwable =>
-        logger.error("Erreur lors de la connexion recruteur via PEConnect", t)
-        // Nettoyage de session et redirect
-        Redirect(routes.LandingController.landing()).withSession(
-          SessionOauthTokens.removeOauthTokensRecruteur(request.session)
-        )
-    }
+      )
   }
 
   def connexionCallback: Action[AnyContent] = Action.async { implicit request =>
