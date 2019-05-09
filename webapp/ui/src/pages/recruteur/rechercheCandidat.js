@@ -169,10 +169,10 @@ var app = new Vue({
 
             if (this.metierChoisi) {
                 var metier = candidat.metiersRecherches.filter(function(m) {
-                    return m.codeROME === self.metierChoisi;
+                    return m.codeROME.indexOf(self.metierChoisi) !== -1;
                 });
                 if (candidat.metiersValides.filter(function(m) {
-                    return m.codeROME === self.metierChoisi;
+                    return m.codeROME.indexOf(self.metierChoisi) !== -1;
                 }).length == 0 && metier.length > 0) {
                     return metier[0].label;
                 }
@@ -270,7 +270,7 @@ var app = new Vue({
                 })[0];
                 candidats.forEach(function(c) {
                     if (c.metiersValidesRecherches.filter(function(m) {
-                        return m.codeROME === self.metierChoisi;
+                        return m.codeROME.indexOf(self.metierChoisi) !== -1;
                     }).length !== 0) {
                         candidatsValides.push(c);
                     } else {
