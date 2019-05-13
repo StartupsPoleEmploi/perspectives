@@ -1,120 +1,119 @@
-#rechercheCandidat {
+#detailCandidat {
+  min-height: 90vh;
+  scroll-behavior: smooth;
 
-  margin-top: 2em;
-
-  .font-size-candidat {
-    font-size: 0.9em;
+  .bg-gris-light {
+    background-color: rgba(#EDEDF3, 0.5);
   }
 
-  .font-size-titreSectionCandidat {
-    font-size: 1.375em;
+  .bg-violet-light {
+    background-color: rgba($violet, 0.2);
   }
 
-  .compteurResultats {
-    @include make-container();
-    @include make-container-max-widths();
+  .infoCandidat {
+    background-color: white;
+    @include media-breakpoint-up(sm) {
+      border-radius: 40px;
+    }
+    @include media-breakpoint-down(sm) {
+      border-radius: unset;
+    }
 
-    &-titre {
-      color: #0F415A;
-      font-size: 1.2em;
-      letter-spacing: 0.6px;
-      line-height: 24px;
-      font-weight: 400;
+    &--miseEnAvant {
+      border: 2px solid $violet;
     }
   }
 
-  .criteresRecherche {
-    @include make-container();
-    @include make-container-max-widths();
-    margin-bottom: 3em;
+  .iconeMetierValide {
+    position: absolute;
+    top: 25px;
+    left: 41px;
   }
 
-  .criteres {
-    @include make-row();
-    justify-content: center;
-    align-items: center;
-    border-radius: 4px;
-    background-color: $bleu-ciel;
-
-    &-item {
-      @include make-col(3);
-    }
-  }
-
-  .critereLocalisation {
+  .ongletDetailCandidat {
+    text-decoration: none;
     color: $noir;
-    height: 47px;
-  }
 
-  .rechercherCandidats {
-    background-color: $noir;
-    border-radius: 4px;
-    height: 45px;
+    &:hover {
+      text-decoration: none;
+      color: $noir;
+    }
 
-    &-bouton {
-      height: 45px;
-      cursor: pointer;
-      border: none;
-      background: url('/assets/images/pages/recruteur/rechercheCandidat/rechercher.svg') no-repeat center;
+    &--courant {
+      font-weight: bold;
+      color: $violet;
+      border-bottom: 2px solid $violet;
+
+      &:hover {
+        text-decoration: none;
+        color: $violet;
+      }
     }
   }
 
-  .resultatsRecherche {
-    margin-top: 1em;
-    background-color: rgba(234, 235, 237, 0.5);
-  }
+  .habilete {
+    &:nth-child(even) {
+      background-color: #FBFBFD;
+    }
+    &:nth-child(odd) {
+      background-color: white;
+    }
 
-  .detailsProfils {
-    padding: 10px;
-    position: relative;
+    &-puce {
+      display: inline-block;
+      position: absolute;
+      left: 1rem;
+      height: 20px;
+      width: 20px;
+      border-radius: 50%;
+      background-color: $violet;
 
-    &-item {
-      padding-left: 10px;
+      &:after {
+        top: 5px;
+        left: 7px;
+
+        @include after(5px, 8px, solid white, 0 1px 1px 0, 40deg);
+      }
     }
   }
 
-  .bouton-actionCandidat {
+  .savoirEtre {
     display: inline-block;
-    border-radius: 4px;
-    padding: 1em 1em;
-    font-size: 0.7em;
-    font-weight: 500;
-    text-transform: uppercase;
+    border-radius: 18px;
+    background-color: white;
+    padding: 0.5rem 1rem;
+    margin-bottom: 0.5rem;
+  }
 
-    &--large {
-      width: 100px;
+  .savoirFaire {
+    &:nth-child(even) {
+      background-color: white;
+    }
+    &:nth-child(odd) {
+      background-color: rgba(#EDEDF3, 0.5);
     }
   }
 
-  .bouton-infoCandidat {
-    display: inline-block;
-    border-radius: 4px;
-    padding: 1em 1em;
-    font-weight: 500;
-    font-size: 0.8em;
+  .niveauSavoirFaire {
+    margin-right: 5px;
   }
 
-  .listeActions {
-    &-item {
-      display: block;
-      position: relative;
-      padding: 10px;
-    }
+  .iconeProfil {
+    position: absolute;
+    top: 2px;
+    left: 1rem;
   }
 
   .infoBulle {
     position: absolute;
-    top: -33px;
-    left: 37%;
-    display: none;
-    width: 64px;
-    background-color: $bleu-ciel;
+    top: -44px;
+    left: 39%;
     box-shadow: 4px 2px 4px 0 rgba(0, 0, 0, 0.2);
-    cursor: pointer;
     border-radius: 2px;
+    padding: 0.5rem;
+
+    background-color: $violet;
     color: white;
-    font-size: 0.9em;
-    padding: 0.5em;
 
     &:before {
       content: "";
@@ -123,39 +122,101 @@
       left: 32px;
       height: 10px;
       width: 10px;
-      background: $bleu-ciel;
+      background: $violet;
       box-sizing: border-box;
-      transform: rotate(45deg) translate(-7px);
-      border-bottom: inherit;
-      border-right: inherit;
       box-shadow: inherit;
+      transform: rotate(45deg) translate(-7px);
+    }
+  }
+}
+
+#rechercheCandidats {
+
+  .rechercheCandidatsArrierePlan {
+    background-color: rgba(233, 234, 236, 0.5);
+  }
+
+  .rechercheCandidatsConteneur {
+    min-height: 90vh;
+  }
+
+  .font-size-ml {
+    font-size: 18px;
+  }
+
+  .candidat {
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  .bg-gris-light {
+    background-color: rgba(#798182, 0.1);
+  }
+
+  .localisation {
+    border: none;
+    height: auto;
+  }
+
+  .definitionMRS {
+    border-radius: 8px;
+  }
+
+  .tempsTravail {
+    border-radius: 23px;
+    padding: 0.5rem 1.75rem;
+
+    &--TEMPS_PLEIN {
+      border: 1px solid #2E8533;
+      color: #2E8533;
+    }
+
+    &--TEMPS_PARTIEL {
+      border: 1px solid #843D6A;
+      color: #843D6A;
     }
   }
 
-  .modaleVideo {
-    &-header {
-      display: flex;
-      justify-content: space-between;
-      background-color: $noir;
-      color: white;
+  .itemSavoirEtre {
+    display: inline;
+
+    &:after {
+      content: " - ";
+      margin: 0 0.5rem;
+    }
+    &:last-child:after {
+      content: "";
+    }
+  }
+
+  .modaleDetailCandidat {
+    max-width: 100%;
+    margin: 0;
+
+    &-navigationSticky {
+      @include media-breakpoint-up(lg) {
+        @supports (position: sticky) {
+          position: sticky;
+          top: 0;
+          z-index: 1020;
+        }
+      }
     }
 
-    &-titre {
-      font-size: 1em;
-      text-align: left;
-      padding: 0.5em;
-      margin: 0;
+    &-contenu {
+      border: none;
+      border-radius: unset;
     }
 
     &-fermer {
-      margin: 0.5em;
       cursor: pointer;
+      font-size: 2rem;
+      padding: 0;
+      margin: 0;
     }
 
-    &-body {
-      position: relative;
-      height: 0;
-      padding-bottom: 56.25%;
+    &-navigation {
+      background-color: #EAEBED;
+      border-bottom: 1px solid rgba(216, 216, 216, 0.5);
     }
   }
 }

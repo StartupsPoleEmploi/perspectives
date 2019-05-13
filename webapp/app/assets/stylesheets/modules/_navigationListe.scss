@@ -1,0 +1,140 @@
+.navigationListe {
+  &-item {
+    padding: 1rem;
+    text-align: center;
+    font-size: 0.875rem;
+
+    &--noir {
+      color: $noir;
+    }
+    &--vert {
+      color: $vert-emeraude;
+    }
+    &--violet {
+      color: $violet;
+    }
+  }
+
+  &-page {
+    @include make-col(2);
+    cursor: pointer;
+  }
+
+  &-pageCourante {
+    border-right: 1px solid rgba(216, 216, 216, 0.5);
+    border-left: 1px solid rgba(216, 216, 216, 0.5);
+
+    @include media-breakpoint-up(sm) {
+      @include make-col(2);
+    }
+    @include media-breakpoint-down(sm) {
+      @include make-col(4);
+    }
+  }
+
+  &-fermer {
+    @include make-col(2);
+    cursor: pointer;
+    position: relative;
+
+    @include media-breakpoint-up(sm) {
+      @include make-col-offset(4);
+    }
+    @include media-breakpoint-down(sm) {
+      @include make-col-offset(2);
+    }
+  }
+
+  &-action {
+    padding: 0 0.5rem;
+
+    @include media-breakpoint-down(sm) {
+      display: none;
+    }
+  }
+
+  &-icone {
+    &--noir {
+      &:after {
+        border: solid $noir;
+      }
+    }
+    &--vert {
+      &:after {
+        border: solid $vert-emeraude;
+      }
+    }
+    &--violet {
+      &:after {
+        border: solid $violet;
+      }
+    }
+  }
+
+  &-iconePrecedent {
+    position: relative;
+    @include media-breakpoint-down(sm) {
+      display: block;
+    }
+
+    &:after {
+      content: '';
+      position: absolute;
+      width: 11px;
+      height: 11px;
+      -webkit-transform: rotate(-45deg);
+      -ms-transform: rotate(-45deg);
+      transform: rotate(-45deg);
+      border-width: 3px 0 0 3px;
+
+      @include media-breakpoint-up(sm) {
+        top: 4px;
+        left: -10px;
+      }
+      @include media-breakpoint-down(sm) {
+        top: 5px;
+        left: 10px;
+      }
+    }
+  }
+
+  &-iconeSuivant {
+    position: relative;
+    @include media-breakpoint-down(sm) {
+      display: block;
+    }
+
+    &:after {
+      content: '';
+      position: absolute;
+      width: 11px;
+      height: 11px;
+      -webkit-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+      transform: rotate(45deg);
+      border-width: 3px 3px 0 0;
+
+      @include media-breakpoint-up(sm) {
+        top: 4px;
+        right: -10px;
+      }
+      @include media-breakpoint-down(sm) {
+        top: 5px;
+        right: 10px;
+      }
+    }
+  }
+
+  &-iconeFermer {
+    position: absolute;
+    font-size: 1.5rem;
+
+    @include media-breakpoint-up(sm) {
+      top: 8px;
+    }
+    @include media-breakpoint-down(sm) {
+      top: 10px;
+      left: 23px;
+    }
+  }
+}

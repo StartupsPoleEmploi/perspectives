@@ -149,11 +149,9 @@
         </div>
     </section>
     <pagination ref="pagination"
-                v-bind:nb-par-page="nbCandidatsParPage"
-                v-on:charger-page-suivante="chargerPageSuivante"
-                v-on:charger-page-precedente="chargerPagePrecedente"
-                v-bind:pages-initiales="pagesInitiales"
-                v-show="afficherCandidats"></pagination>
+                v-show="afficherCandidats"
+                v-on:charger-page="chargerPage"
+                v-bind:nb-pages="pages.length"></pagination>
 </div>
 
 @commun.jsData(jsData)

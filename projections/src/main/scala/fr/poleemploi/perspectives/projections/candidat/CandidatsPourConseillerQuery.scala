@@ -5,7 +5,6 @@ import java.time.LocalDateTime
 import fr.poleemploi.cqrs.projection.{Query, QueryResult}
 import fr.poleemploi.perspectives.candidat.{CandidatId, StatutDemandeurEmploi}
 import fr.poleemploi.perspectives.commun.domain._
-import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
 import fr.poleemploi.perspectives.metier.domain.Metier
 import play.api.libs.json._
 
@@ -46,6 +45,8 @@ case class CandidatPourConseillerDto(candidatId: CandidatId,
 
 object CandidatPourConseillerDto {
 
+  import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
+
   implicit val writes: Writes[CandidatPourConseillerDto] = (a: CandidatPourConseillerDto) =>
     Json.writes[CandidatPourConseillerDto].writes(a) ++ Json.obj("rechercheEmploi" -> JsBoolean(a.rechercheEmploi))
 }
@@ -54,6 +55,8 @@ case class KeysetCandidatsPourConseiller(dateInscription: Long,
                                          candidatId: CandidatId)
 
 object KeysetCandidatsPourConseiller {
+
+  import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
 
   implicit val writes: Writes[KeysetCandidatsPourConseiller] = Json.writes[KeysetCandidatsPourConseiller]
 }

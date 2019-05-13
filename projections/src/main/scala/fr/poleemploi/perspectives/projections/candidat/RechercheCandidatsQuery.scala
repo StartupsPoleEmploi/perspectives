@@ -14,7 +14,7 @@ case class RechercheCandidatsQuery(typeRecruteur: TypeRecruteur,
                                    coordonnees: Option[Coordonnees],
                                    nbPagesACharger: Int,
                                    page: Option[KeysetRechercherCandidats]) extends Query[RechercheCandidatQueryResult] {
-  val nbCandidatsParPage: Int = 25
+  val nbCandidatsParPage: Int = 10
 }
 
 case class CandidatRechercheRecruteurDto(candidatId: CandidatId,
@@ -50,8 +50,7 @@ object CandidatRechercheRecruteurDto {
 
   implicit val writes: Writes[CandidatRechercheRecruteurDto] = c =>
     Json.writes[CandidatRechercheRecruteurDto].writes(c) ++ Json.obj(
-      "nomCV" -> c.nomCV,
-      "habiletes" -> c.habiletes
+      "nomCV" -> c.nomCV
     )
 }
 

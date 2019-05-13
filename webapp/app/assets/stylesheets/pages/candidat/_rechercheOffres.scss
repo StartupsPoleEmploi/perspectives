@@ -6,10 +6,6 @@
 
   .rechercheOffresConteneur {
     min-height: 90vh;
-
-    @include make-container();
-    @include make-container-max-widths();
-    padding: 3rem 1rem 0 1rem;
   }
 
   .formulaireRecherche {
@@ -161,11 +157,6 @@
     max-width: 100%;
     margin: 0;
 
-    &-wrapper {
-      @include make-container();
-      @include make-container-max-widths();
-    }
-
     &-contenu {
       border: none;
       border-radius: unset;
@@ -179,132 +170,8 @@
     }
 
     &-navigation {
-      border-bottom: 1px solid rgba(216, 216, 216, 0.5);
-    }
-  }
-
-  .navigationOffres {
-    @include make-row();
-
-    &-item {
       background-color: #EAEBED;
-      padding: 1rem;
-      text-align: center;
-      font-size: 0.875rem;
-
-      &--noir {
-        color: $noir;
-      }
-      &--vert {
-        color: $vert-emeraude;
-      }
-    }
-
-    &-page {
-      @include make-col(2);
-      cursor: pointer;
-    }
-
-    &-pageCourante {
-      border-right: 1px solid rgba(216, 216, 216, 0.5);
-      border-left: 1px solid rgba(216, 216, 216, 0.5);
-
-      @include media-breakpoint-up(sm) {
-        @include make-col(2);
-      }
-      @include media-breakpoint-down(sm) {
-        @include make-col(4);
-      }
-    }
-
-    &-fermer {
-      @include make-col(2);
-      cursor: pointer;
-      position: relative;
-
-      @include media-breakpoint-up(sm) {
-        @include make-col-offset(4);
-      }
-      @include media-breakpoint-down(sm) {
-        @include make-col-offset(2);
-      }
-    }
-
-    &-action {
-      padding: 0 0.5rem;
-
-      @include media-breakpoint-down(sm) {
-        display: none;
-      }
-    }
-
-    &-iconePrecedent {
-      position: relative;
-      @include media-breakpoint-down(sm) {
-        display: block;
-      }
-
-      &:after {
-        content: '';
-        position: absolute;
-        width: 11px;
-        height: 11px;
-        -webkit-transform: rotate(-45deg);
-        -ms-transform: rotate(-45deg);
-        transform: rotate(-45deg);
-        border: solid $noir;
-        border-width: 3px 0 0 3px;
-
-        @include media-breakpoint-up(sm) {
-          top: 4px;
-          left: -10px;
-        }
-        @include media-breakpoint-down(sm) {
-          top: 5px;
-          left: 10px;
-        }
-      }
-    }
-
-    &-iconeSuivant {
-      position: relative;
-      @include media-breakpoint-down(sm) {
-        display: block;
-      }
-
-      &:after {
-        content: '';
-        position: absolute;
-        width: 11px;
-        height: 11px;
-        -webkit-transform: rotate(45deg);
-        -ms-transform: rotate(45deg);
-        transform: rotate(45deg);
-        border: solid $vert-emeraude;
-        border-width: 3px 3px 0 0;
-
-        @include media-breakpoint-up(sm) {
-          top: 4px;
-          right: -10px;
-        }
-        @include media-breakpoint-down(sm) {
-          top: 5px;
-          right: 10px;
-        }
-      }
-    }
-
-    &-iconeFermer {
-      position: absolute;
-      font-size: 1.5rem;
-
-      @include media-breakpoint-up(sm) {
-        top: 8px;
-      }
-      @include media-breakpoint-down(sm) {
-        top: 10px;
-        left: 23px;
-      }
+      border-bottom: 1px solid rgba(216, 216, 216, 0.5);
     }
   }
 
@@ -361,16 +228,6 @@
     }
 
     &-info {
-      color: $noir;
-
-      &--petite {
-        font-size: 0.875rem;
-      }
-
-      &--gras {
-        font-weight: 700;
-      }
-
       &--sansMarge {
         margin-bottom: 0;
       }
@@ -422,14 +279,6 @@
         &:not(:last-child) {
           margin-right: 2rem;
         }
-      }
-    }
-
-    &-icone {
-      margin-right: 0.5rem;
-
-      path {
-        fill: $vert-emeraude;
       }
     }
   }
@@ -543,9 +392,5 @@
     font-size: 0.875rem;
     padding: 1rem;
     border-radius: 8px;
-
-    &-item {
-      margin-bottom: 0.5rem;
-    }
   }
 }

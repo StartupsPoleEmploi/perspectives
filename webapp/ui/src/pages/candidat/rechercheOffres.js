@@ -3,12 +3,15 @@ import $ from "jquery";
 import places from "places.js";
 import 'bootstrap/js/dist/modal';
 import '../../commun/filters.js';
-import '../../composants/pagination.js';
+import Pagination from '../../composants/Pagination.vue';
 import rayonsRecherche from '../../domain/commun/rayonRecherche.js';
 import typesContrats from '../../domain/offre/typesContrats.js';
 
 var app = new Vue({
     el: '#rechercheOffres',
+    components: {
+        'pagination': Pagination
+    },
     data: function () {
         return {
             isCandidatAuthentifie: jsData.candidatAuthentifie,
@@ -17,7 +20,7 @@ var app = new Vue({
             nbOffresParPage: 10,
             offres: jsData.offres,
             nbOffresTotal: jsData.nbOffresTotal,
-            indexPaginationOffre: 0,
+            indexPaginationOffre: 1,
             indexNavigationOffre: 0,
             offreCourante: {
                 contrat: {},
@@ -45,8 +48,6 @@ var app = new Vue({
             algoliaPlacesConfig: jsData.algoliaPlacesConfig,
             display: {
                 contact: false,
-                offreSuivante: this.offreCourante != null,
-                offrePrecedente: this.offreCourante != null,
                 chargement: false,
                 nbResultats: false,
                 modaleDetailOffre: false
@@ -97,8 +98,13 @@ var app = new Vue({
         };
     },
     computed: {
-        pagesInitiales: function () {
-            return this.calculerPages();
+        pages: function () {
+            var nbPages = Math.ceil(this.offres.length / this.nbOffresParPage);
+            var result = [];
+            for (var i = 0; i < nbPages; i++) {
+                result.push(i * this.nbOffresParPage);
+            }
+            return result;
         },
         afficherNbResultats: function() {
             return this.nbOffresTotal > 0 && !this.display.chargement;
@@ -113,29 +119,16 @@ var app = new Vue({
             this.recherche.codePostal = null;
             this.recherche.lieuTravail = null;
         },
-        chargerPageSuivante: function (critere) {
-            this.indexPaginationOffre = critere;
-            app.$refs.pagination.pageSuivanteChargee(0, null); // pas de page suivante
-        },
-        chargerPagePrecedente: function (critere, index) {
-            this.indexPaginationOffre = critere;
-            app.$refs.pagination.pagePrecedenteChargee(index);
-        },
-        calculerPages: function () {
-            var nbPages = Math.ceil(this.offres.length / this.nbOffresParPage);
-            var result = [];
-            for (var i = 0; i < nbPages; i++) {
-                result.push(i * this.nbOffresParPage);
-            }
-            return result;
+        chargerPage: function(index) {
+            this.indexPaginationOffre = index;
+            this.$refs.pagination.pageChargee(index);
         },
         cssTypeContrat: function (offre) {
-            return (offre !== undefined &&
-                offre.contrat !== undefined &&
-                typesContrats[offre.contrat.code] !== undefined) ? 'typeContrat--' + offre.contrat.code : 'typeContrat--default';
+            return (offre && offre.contrat && typesContrats[offre.contrat.code]) ? 'typeContrat--' + offre.contrat.code : 'typeContrat--default';
         },
         doitAfficherOffre: function (index) {
-            return index >= this.indexPaginationOffre && index < (this.indexPaginationOffre + this.nbOffresParPage);
+            var max = this.indexPaginationOffre * this.nbOffresParPage;
+            return index >= (max - this.nbOffresParPage) && index < (max);
         },
         doitAfficherOffreSuivante: function() {
             return this.indexNavigationOffre !== (this.offres.length - 1);
@@ -145,7 +138,7 @@ var app = new Vue({
         },
         afficherOffre: function (offre, index) {
             this.display.contact = false;
-            if (offre.id !== this.offreCourante) {
+            if (offre.id !== this.offreCourante.id) {
                 this.offreCourante = offre;
                 this.indexNavigationOffre = index;
 
@@ -211,10 +204,9 @@ var app = new Vue({
             }).done(function (response) {
                 app.offres = response.offres;
                 app.nbOffresTotal = response.nbOffresTotal;
-                app.$refs.pagination.modifierPagination(app.calculerPages());
-                app.indexPaginationOffre = 0;
+                app.indexPaginationOffre = 1;
+                app.$refs.pagination.pageChargee(1);
                 app.cacherFiltres();
-            }).fail(function () {
             }).always(function () {
                 app.display.chargement = false;
             });

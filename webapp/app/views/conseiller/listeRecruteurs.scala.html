@@ -40,10 +40,8 @@
             </tbody>
         </table>
     <pagination ref="pagination"
-                v-bind:nb-par-page="nbRecruteursParPage"
-                v-on:charger-page-suivante="chargerPageSuivante"
-                v-on:charger-page-precedente="chargerPagePrecedente"
-                v-bind:pages-initiales="pagesInitiales"></pagination>
+                v-on:charger-page="chargerPage"
+                v-bind:nb-pages="pages.length"></pagination>
 </div>
 
 @commun.jsData(jsData)

@@ -7,149 +7,366 @@
         jsData: JsObject)(implicit request: MessagesRequestHeader, flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
 @layout(recruteurAuthentifie = Some(recruteurAuthentifie)) {
-    <div id="rechercheCandidat" v-cloak>
-        <div id="js-modaleVideo" class="modal" tabindex="-1" role="dialog" aria-labelledby="titreModaleVideo">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modaleVideo-header">
-                        <h3 class="modaleVideo-titre" id="titreModaleVideo">La méthode de recrutement par simulation</h3>
-                        <span class="modaleVideo-fermer" data-dismiss="modal">&times;</span>
-                    </div>
-                    <div class="modaleVideo-body">
-                        <iframe id="js-videoMRSYoutube" style="position:absolute;width:100%;height:100%;left:0" width="640" height="360" frameborder="0" allow="autoplay; encrypted-media">
-                        </iframe>
+    <div id="rechercheCandidats" v-cloak>
+        <div id="detailCandidat" class="modal" tabindex="-1" role="dialog" aria-labelledby="titreModaleDetailCandidat"
+             v-on:scroll="onScroll" ref="modaleDetailCandidat">
+            <div class="modal-dialog modaleDetailCandidat" role="document">
+                <div class="modal-content modaleDetailCandidat-contenu">
+                    <nav class="modaleDetailCandidat-navigationSticky">
+                        <div class="modaleDetailCandidat-navigation">
+                            <div class="container">
+                                <div class="row navigationListe">
+                                    <div class="navigationListe-item navigationListe-page" v-show="!doitAfficherCandidatPrecedent()">
+                                    </div>
+                                    <div class="navigationListe-item navigationListe-item--violet navigationListe-page"
+                                         v-show="doitAfficherCandidatPrecedent()" v-on:click="afficherCandidatPrecedent()">
+                                        <span class="navigationListe-iconePrecedent navigationListe-icone--violet"></span>
+                                        <span class="navigationListe-action">Précedent</span>
+                                    </div>
+                                    <div class="navigationListe-item navigationListe-item--noir navigationListe-pageCourante">
+                                        {{indexNavigationCandidat + 1}} / {{resultatRecherche.nbCandidatsTotal}}
+                                    </div>
+                                    <div class="navigationListe-item navigationListe-page"
+                                         v-show="!doitAfficherCandidatSuivant()">
+                                    </div>
+                                    <div class="navigationListe-item navigationListe-item--violet navigationListe-page"
+                                         v-show="doitAfficherCandidatSuivant()" v-on:click="afficherCandidatSuivant()">
+                                        <span class="navigationListe-action">Suivant</span>
+                                        <span class="navigationListe-iconeSuivant navigationListe-icone--violet"></span>
+                                    </div>
+                                    <div class="navigationListe-item navigationListe-item--violet navigationListe-fermer" data-dismiss="modal">
+                                        <span class="navigationListe-action">Fermer</span>
+                                        <span class="navigationListe-iconeFermer">&times;</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-blanc">
+                            <div class="mt-5 text-center" v-if="display.chargement">
+                                <img alt="Chargement" src="/assets/images/commun/chargement.gif" width="48" height="48" />
+                                <p class="texte-violet" v-show="display.chargement">Un peu de patience, nous recherchons les candidats</p>
+                            </div>
+                            <div class="container pt-3 pt-sm-5 pb-3" v-else-if="candidatCourant">
+                                <div class="row align-items-center mb-3">
+                                    <h2 id="titreModaleDetailCandidat" class="col-12 col-sm-6 texte-noir font-weight-bold font-size-lg">{{candidatCourant.prenom}} {{candidatCourant.nom}}</h2>
+                                    <p class="col-12 col-sm-3 texte-noir font-size-sm sm-text-center">
+                                        <img src="@assetsFinder.path("images/pages/recruteur/rechercheCandidats/localisation.svg")" alt="Localisation" height="16" width="16" />
+                                        {{candidatCourant.commune}}
+                                        <template v-if="candidatCourant.codePostal">
+                                            ({{candidatCourant.codePostal.substring(0, 2)}})
+                                        </template>
+                                        <template v-if="candidatCourant.rayonRecherche">
+                                            <span class="ml-3 font-weight-bold">+{{candidatCourant.rayonRecherche.value}} km</span>
+                                        </template>
+                                    </p>
+                                    <p class="col-12 col-sm-3">
+                                        <span class="tempsTravail" v-bind:class="cssTempsTravail(candidatCourant)">{{candidatCourant.tempsTravail | tempsTravail}}</span>
+                                    </p>
+                                </div>
+                                <ul class="row align-items-center list-unstyled mb-0">
+                                    <li class="col-12 col-lg-auto text-center"
+                                        v-for="(onglet, index) in display.ongletsDetailCandidat">
+                                        <a class="py-2 px-5 d-none d-lg-block cursor-pointer text-uppercase font-size-ml ongletDetailCandidat"
+                                           v-bind:class="{'ongletDetailCandidat--courant' : onglet.courant}"
+                                           v-on:click="setOngletCourant(index)">
+                                            {{onglet.label}}
+                                        </a>
+                                    </li>
+                                    <li class="col-12 col-lg-3 ml-lg-auto">
+                                        <button type="button" class="bouton bouton-action bouton--block bouton--theme3"
+                                                v-show="!display.contact"
+                                                v-on:click="display.contact = !display.contact">Je contacte ce candidat</button>
+                                        <button type="button" class="bouton bouton-action bouton--block bouton--theme3Secondaire"
+                                                v-show="display.contact"
+                                                v-on:click="copierNumeroTelephone">{{candidatCourant.numeroTelephone | numeroTelephone}}</button>
+                                        <input type="text" readonly class="hiddenInput" ref="numeroTelephone" v-bind:value="candidatCourant.numeroTelephone" />
+                                        <transition name="fade">
+                                            <p class="font-size-sm texte-noir infoBulle" v-show="display.contact && display.numeroTelephoneCopie">Copié !</p>
+                                        </transition>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </nav>
+                    <div v-if="candidatCourant">
+                        <div ref="potentiel" class="bg-gris-light">
+                            <div class="container py-3 py-sm-5">
+                                <p class="mb-0 texte-noir font-size-ml">
+                                    {{candidatCourant.prenom}} a validé <span class="font-weight-bold">{{candidatCourant.metiersValides.length}} MRS</span>
+                                </p>
+                                <ul class="row list-unstyled">
+                                    <li class="col-12 col-lg-9 mt-3 pt-3 infoCandidat"
+                                         v-for="metierValide in candidatCourant.metiersValides"
+                                         v-bind:class="[display.habiletesParMetier[metierValide.metier.codeROME] ? 'pb-5' : 'pb-3', mrsMiseEnAvant(metierValide.metier.codeROME, candidatCourant.metiersValidesRecherches) ? 'infoCandidat--miseEnAvant' : '']">
+                                        <div class="row justify-content-center align-items-center cursor-pointer"
+                                             v-on:click="display.habiletesParMetier[metierValide.metier.codeROME] = !display.habiletesParMetier[metierValide.metier.codeROME]">
+                                            <div class="col-1 d-none d-md-flex">
+                                                <img width="45" height="45" alt="Secteur d'activité"
+                                                     v-bind:src="'/assets/images/commun/secteursActivite/' + metierValide.metier.codeROME.charAt(0) + '.svg'" />
+                                                <img width="20" height="20" class="iconeMetierValide"
+                                                     alt="Métier validé" src="@assetsFinder.path("images/commun/metier-valide.svg")" />
+                                            </div>
+                                            <p class="col-10 mb-0 texte-noir font-weight-bold">{{metierValide.metier.label}}</p>
+                                            <div class="col-1 texte-noir font-size-lg">
+                                                <span v-if="display.habiletesParMetier[metierValide.metier.codeROME]">&minus;</span>
+                                                <span v-else>+</span>
+                                            </div>
+                                        </div>
+                                        <ul class="row align-items-center list-unstyled"
+                                            v-show="display.habiletesParMetier[metierValide.metier.codeROME]">
+                                            <li class="col-11 offset-md-1 py-3 pl-5 font-size-sm font-weight-bold habilete"
+                                                v-for="habilete in metierValide.habiletes">
+                                                <span class="habilete-puce"></span>
+                                                {{habilete}}
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                                <div class="mt-5" v-if="metiersRecherchesParSecteurs.length > 0">
+                                    <p class="mb-0 texte-noir font-weight-bold font-size-ml">{{candidatCourant.prenom}} recherche aussi :</p>
+                                    <ul class="row list-unstyled">
+                                        <li class="col-12 col-lg-9 mt-3 py-3 infoCandidat"
+                                            v-for="secteurActivite in metiersRecherchesParSecteurs"
+                                            v-bind:class="{'infoCandidat--miseEnAvant' : secteurMisEnAvant()}">
+                                            <p class="mb-0 ml-4 texte-violet text-uppercase font-weight-bold font-size-sm">{{secteurActivite.label}}</p>
+                                            <ul>
+                                                <li class="texte-noir font-size-sm"
+                                                    v-for="metier in secteurActivite.metiers">{{metier.label}}</li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div ref="profil" class="bg-violet-light"
+                             v-if="candidatCourant.savoirEtre.length > 0 || candidatCourant.savoirFaire.length > 0">
+                            <div class="container py-3 py-sm-5">
+                                <p class="texte-noir font-size-md font-weight-bold">Son profil</p>
+                                <template v-if="candidatCourant.savoirEtre.length > 0">
+                                    <p class="texte-noir font-weight-bold">Savoir-être professionnels :</p>
+                                    <ul class="list-unstyled">
+                                        <li class="d-inline pr-2" v-for="savoirEtre in candidatCourant.savoirEtre">
+                                            <span class="savoirEtre texte-noir font-size-sm">{{savoirEtre}}</span>
+                                        </li>
+                                    </ul>
+                                </template>
+                                <template v-if="candidatCourant.savoirFaire.length > 0">
+                                    <p class="texte-noir font-weight-bold">Savoirs et savoir-faire :</p>
+                                    <div class="row">
+                                        <div class="col-12 col-lg-9 px-0 pt-5 infoCandidat"
+                                             v-bind:class="[pagesSavoirFaire.length > 1 ? 'pb-3' : 'pb-5']">
+                                            <ul class="list-unstyled mb-0">
+                                                <li class="savoirFaire"
+                                                    v-for="(savoirFaire, index) in candidatCourant.savoirFaire"
+                                                    v-show="doitAfficherSavoirFaire(index)">
+                                                    <div class="row px-3 align-items-center">
+                                                        <div class="col-auto">
+                                                            <img width="12" height="12" class="niveauSavoirFaire"
+                                                                 v-for="index in 3"
+                                                                 v-bind:src="'/assets/images/commun/' + (savoirFaire.niveau >= index ? 'etoile_pleine.svg' : 'etoile_vide.svg')" />
+                                                        </div>
+                                                        <p class="col mb-0 pl-0 py-3 font-size-sm texte-noir">{{savoirFaire.label}}</p>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                            <div class="text-center" v-show="pagesSavoirFaire.length > 1">
+                                                <button class="bouton font-size-sm p-2 m-2 border-0"
+                                                        v-for="page in pagesSavoirFaire.length"
+                                                        v-on:click="chargerPageSavoirFaire(page)"
+                                                        v-bind:class="[page === indexPaginationSavoirFaireCandidat ? 'pagination-pageCourante': 'pagination-page']">
+                                                    {{page}}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                        <div ref="experiences" class="container py-3 py-sm-5" v-if="candidatCourant.experiencesProfessionnelles.length > 0">
+                            <p class="texte-noir font-size-md font-weight-bold">Ses expériences</p>
+                            <ul class="list-unstyled">
+                                <li class="mt-4 texte-noir font-size-sm" v-for="experience in candidatCourant.experiencesProfessionnelles">
+                                    <p class="mb-1">
+                                        <template v-if="experience.enPoste && !experience.dateFin">Depuis {{experience.dateDebut | dateExperience | capitalize}}</template>
+                                        <template v-else>{{experience.dateDebut | dateExperience | capitalize}} - {{experience.dateFin | dateExperience | capitalize}}</template>
+                                    </p>
+                                    <p class="mb-1 font-weight-bold">
+                                        {{experience.intitule}}
+                                        <template v-if="experience.nomEntreprise">- {{experience.nomEntreprise}}</template>
+                                        <template v-if="experience.lieu">, {{experience.lieu}}</template>
+                                    </p>
+                                    <p class="mb-1" v-show="experience.description">{{experience.description}}</p>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="bg-gris-light" v-show="doitAfficherDernierBloc()">
+                            <div class="container py-3 py-sm-5">
+                                <div class="row">
+                                    <div class="col-12 col-md-6 pl-5" v-if="candidatCourant.formations.length > 0">
+                                        <img class="iconeProfil" src="@assetsFinder.path("images/pages/recruteur/rechercheCandidats/formations.svg")" alt="Formations" height="16" width="16"/>
+                                        <p class="mb-2 texte-noir font-size-sm font-weight-bold">Formations</p>
+                                        <ul class="list-unstyled">
+                                            <li class="mt-2 texte-noir font-size-sm" v-for="formation in candidatCourant.formations">
+                                                <p class="mb-1">{{formation.anneeFin}}</p>
+                                                <p class="mb-1">
+                                                    {{formation.intitule}}<template v-if="formation.lieu">, {{formation.lieu}}</template>
+                                                </p>
+                                                <p class="mb-1">
+                                                    <template v-if="formation.domaine">{{formation.domaine}}</template><template v-if="formation.domaine && formation.niveau">, {{formation.niveau}}</template>
+                                                    <template v-if="!formation.domaine && formation.niveau">{{formation.niveau}}</template>
+                                                </p>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-12 col-md-6 pl-5" v-if="candidatCourant.langues.length > 0">
+                                        <img class="iconeProfil" src="@assetsFinder.path("images/pages/recruteur/rechercheCandidats/langues.svg")" alt="Langues" height="16" width="16" />
+                                        <p class="mb-2 texte-noir font-size-sm font-weight-bold">Langues</p>
+                                        <p class="texte-noir font-size-sm">{{afficherLangues()}}</p>
+                                    </div>
+                                    <div class="col-12 col-md-6 pl-5" v-if="candidatCourant.centresInteret.length > 0">
+                                        <img class="iconeProfil" src="@assetsFinder.path("images/pages/recruteur/rechercheCandidats/loisirs.svg")" alt="Loisirs" height="16" width="16" />
+                                        <p class="mb-2 texte-noir font-size-sm font-weight-bold">Loisirs</p>
+                                        <p class="texte-noir font-size-sm">{{candidatCourant.centresInteret.join(', ')}}</p>
+                                    </div>
+                                    <div class="col-12 col-md-6 pl-5" v-if="candidatCourant.permis.length > 0">
+                                        <img class="iconeProfil" src="@assetsFinder.path("images/pages/recruteur/rechercheCandidats/permis.svg")" alt="Permis" height="16" width="16" />
+                                        <p class="mb-2 font-size-sm font-weight-bold">Permis</p>
+                                        <ul class="list-unstyled">
+                                            <li class="texte-noir font-size-sm" v-for="permis in candidatCourant.permis">{{permis.code + ' - ' + permis.label}}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="container py-3 py-sm-5 text-center text-sm-left"
+                            v-if="candidatCourant.cvId">
+                            <a class="bouton bouton-action bouton--theme3Secondaire gtm-recruteur-profils-detail-cv" target="_blank"
+                                v-bind:href="'/recruteur/cv/telecharger/' + candidatCourant.candidatId + '/' + candidatCourant.nomCV">
+                                <img src="@assetsFinder.path("images/pages/recruteur/rechercheCandidats/telecharger-cv.svg")" alt="Telecharger CV" height="16" width="16" />
+                                Télécharger son CV
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <section class="criteresRecherche">
-            @form(action = controllers.recruteur.routes.RechercheCandidatController.rechercherCandidats(), 'id -> "criteresRechercheForm") {
-                <div class="criteres">
-                    <div class="col-md-3 mx-3 my-3 my-md-4 px-0 conteneurSelecteur">
-                        <label for="js-secteursActivites-selecteur" class="sr-only">Choisissez un secteur d'activité</label>
-                        <select id="js-secteursActivites-selecteur" name="secteurActivite" class="conteneurSelecteur-selecteur"
-                                v-model="secteurActivite" v-on:change="onSecteurActiviteModifie">
-                            <option value="">Tous les secteurs</option>
-                            <option v-for="secteurActivite in secteursActivites" v-bind:value="secteurActivite.code">{{secteurActivite.label}}</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3 mx-3 my-3 my-md-4 px-0 conteneurSelecteur">
-                        <label for="js-metiers-selecteur" class="sr-only">Chosissez un métier</label>
-                        <select id="js-metiers-selecteur" name="metier" class="conteneurSelecteur-selecteur"
-                                v-model="metier" v-bind:disabled="secteurActivite === null || secteurActivite === ''">
-                            <option value="" v-if="secteurActivite === null || secteurActivite === ''">Choisissez un secteur</option>
-                            <option value="" v-else>Tous les métiers du secteur</option>
-                            <option v-for="metier in metiers" v-bind:value="metier.codeROME">{{metier.label}}</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3 mx-3 my-3 my-sm-4 px-0">
-                        <label for="js-localisation" class="sr-only">Choisissez un lieu de travail</label>
-                        <input id="js-localisation" type="search" v-model="localisation.label" placeholder="Lieu de travail"
-                               class="critereLocalisation"/>
-                    </div>
-                    <div class="col-4 col-md-1 px-1 rechercherCandidats">
-                        <button type="button" class="rechercherCandidats-bouton bouton--block" v-on:click="rechercherCandidats(null)"></button>
-                    </div>
-                </div>
-            }
-        </section>
-        <section class="compteurResultats">
-            <h1 class="compteurResultats-titre">
-                <template v-if="resultatRecherche.nbCandidatsTotal == 0">
-                    Nous n'avons pas de candidats à vous proposer avec ces critères
-                </template>
-                <template v-else>
-                    <span class="font-weight-bold">
-                        {{resultatRecherche.nbCandidatsTotal + ' ' + (resultatRecherche.nbCandidatsTotal === 1 ? 'candidat' : 'candidats')}}
-                        <template v-if="metierChoisi"> pour ce métier</template>
-                        <template v-else-if="secteurActiviteChoisi"> pour ce secteur d'activité</template>
-                        <template v-else-if="localisationChoisie"> à {{localisationChoisie}}</template>
-                        <template v-else> perspectives</template>
-                    </span>
-                    {{resultatRecherche.nbCandidatsTotal === 1 ? 'est validé' : 'sont validés'}} par la <abbr title="Méthode de Recrutement par Simulation" data-toggle="modal" data-target="#js-modaleVideo">MRS</abbr>
-                </template>
-            </h1>
-        </section>
-        <section class="resultatsRecherche" v-show="sectionsCandidats.length > 0">
-            <template v-for="sectionCandidat in sectionsCandidats">
-                <div class="container" v-if="sectionCandidat.titre && sectionCandidat.candidats.length > 0">
-                    <div class="pt-5 texte-noir font-size-titreSectionCandidat" v-html="sectionCandidat.titre">sectionCandidat.titre</div>
-                </div>
-                <div class="container py-1 font-size-candidat" v-if="sectionCandidat.candidats.length > 0">
-                    <div class="row py-4 texte-gris-50">
-                        <div class="col-2 font-weight-bold">Nom du candidat</div>
-                        <div class="col-4">Métier validé</div>
-                        <div class="col-4">Intéressé par</div>
-                    </div>
-                    <template v-for="candidat in sectionCandidat.candidats">
-                        <div class="row align-items-center cursor-pointer mt-1 py-4 texte-noir bg-blanc"
-                        v-on:click="toggleProfil(candidat.candidatId)">
-                            <div class="col-2 font-weight-bold gtm-recruteur-profils-detail">
-                                {{candidat.prenom}} {{candidat.nom}}
+
+        <div class="rechercheCandidatsArrierePlan">
+            <div class="container pt-5 rechercheCandidatsConteneur">
+                <div class="row">
+                    <section class="col-12 col-lg-4">
+                        <p class="texte-noir font-weight-bold font-size-md">Affiner votre recherche</p>
+                        <form action="@controllers.recruteur.routes.RechercheCandidatController.rechercherCandidats()" method="POST" id="criteresRechercheForm"
+                              class="row mb-5"
+                              v-on:submit="rechercherCandidatsSansPagination">
+                            @CSRF.formField
+                            <div class="col-12 mb-3">
+                                <label for="js-localisation" class="sr-only">Choisissez un lieu de travail</label>
+                                <input id="js-localisation" type="search" v-model="localisation.label" placeholder="Lieu de travail"
+                                class="localisation texte-noir font-size-sm px-2 py-3"/>
                             </div>
-                            <div class="col-4 gtm-recruteur-profils-detail">
-                                {{candidat.metiersValides.map(function(m) {return m.metier.label;}).join(', ')}}
+                            <div class="col-12 mb-3">
+                                <div class="conteneurSelecteur conteneurSelecteur--violet">
+                                    <label for="secteursActivites" class="sr-only">Choisissez un secteur d'activité</label>
+                                    <select id="secteursActivites" name="secteurActivite" class="conteneurSelecteur-selecteur px-2 py-3 texte-noir font-size-sm"
+                                        v-model="secteurActivite" v-on:change="onSecteurActiviteModifie">
+                                        <option value="">Quel secteur d'activité ?</option>
+                                        <option v-for="secteurActivite in secteursActivites" v-bind:value="secteurActivite.code">{{secteurActivite.label}}</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="col-4 gtm-recruteur-profils-detail">
-                                {{interessePar(candidat)}}
+                            <div class="col-12 mb-3">
+                                <div class="conteneurSelecteur conteneurSelecteur--violet">
+                                    <label for="metiers" class="sr-only">Chosissez un métier</label>
+                                    <select id="metiers" name="metier" class="conteneurSelecteur-selecteur px-2 py-3 texte-noir font-size-sm"
+                                            v-model="metier" v-bind:disabled="secteurActivite === null || secteurActivite === ''">
+                                        <option value="" v-if="secteurActivite === null || secteurActivite === ''">Choisissez un secteur</option>
+                                        <option value="" v-else>Tous les métiers du secteur</option>
+                                        <option v-for="metier in metiers" v-bind:value="metier.codeROME">{{metier.label}}</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="col-2 text-center gtm-recruteur-profils-detail">
-                                <img v-bind:src="estProfilCourant(candidat.candidatId) ? '/assets/images/commun/fermer-detail.svg' : '/assets/images/commun/ouvrir-detail.svg'"
-                                alt="Détails du profil candidat" height="16" width="16"/>
-                                Détail
+                            <div class="col-12">
+                                <button type="submit" class="bouton bouton-action bouton--block bouton--theme3"
+                                        v-bind:disabled="display.chargement">Rechercher</button>
+                            </div>
+                        </form>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="p-3 texte-noir bg-blanc definitionMRS">
+                                    <p class="mb-2">Qu’est ce qu’une <span class="font-weight-bold">MRS</span> Pôle emploi ?</p>
+                                    <p class="font-size-sm">
+                                        La <span class="font-weight-bold">Méthode de Recrutement par Simulation</span> est une méthode éprouvée qui reproduit les conditions de travail et permet de tester les aptitudes des candidats à exercer un nouveau métier.
+                                        Une fois le potentiel du candidat certifié,
+                                        il peut intégrer votre entreprise et vous pourrez développer ses compétences.
+                                    </p>
+                                </div>
                             </div>
                         </div>
-                        <transition name="slideDown">
-                            <div class="row py-3 texte-blanc bg-noir" v-show="estProfilCourant(candidat.candidatId)">
-                                <div class="col-md-4">
-                                    <p class="mb-0">Habiletés validées</p>
-                                    <ul class="detailsProfils">
-                                        <li class="detailsProfils-item" v-for="habilete in candidat.habiletes">{{habilete}}</li>
-                                    </ul>
+                    </section>
+                    <section class="col-12 col-lg-8 mt-5 mt-lg-0">
+                        <div class="text-center" v-if="display.chargement">
+                            <img alt="Chargement" src="/assets/images/commun/chargement.gif" width="48" height="48" />
+                            <p class="texte-violet" v-show="display.chargement">Un peu de patience, nous recherchons les candidats</p>
+                        </div>
+                        <template v-else-if="resultatRecherche.nbCandidatsTotal == 0">
+                            <p class="texte-noir font-weight-bold mb-0">Désolé, nous n'avons pas de candidats à vous proposer pour l'instant :(</p>
+                            <p class="texte-noir">Vous pouvez modifier vos critères ou réessayer plus tard</p>
+                        </template>
+                        <div class="mb-3" v-else v-for="(section, indexSection) in sectionsCandidats">
+                            <p class="mt-2 mb-0 texte-violet font-size-ml font-weight-bold"
+                                v-if="section.titre && section.candidats.length > 0" v-html="section.titre">
+                            </p>
+                            <div class="candidat cursor-pointer mt-3"
+                                 v-for="(candidat, index) in section.candidats"
+                                 v-on:click="afficherCandidat(index + (indexSection > 0 ? sectionsCandidats[indexSection - 1].candidats.length : 0))">
+                                <div class="row align-items-top m-0 px-4 pt-3 bg-blanc texte-noir"
+                                     v-bind:class="[candidat.savoirEtre.length > 0 ? 'pb-2' : 'pb-5']">
+                                    <p class="col-12 col-sm-6 font-weight-bold mb-2">{{candidat.prenom}} {{candidat.nom}}</p>
+                                    <p class="col-12 col-sm-6 font-weight-bold font-size-sm mb-2">
+                                        <img src="@assetsFinder.path("images/pages/recruteur/rechercheCandidats/localisation.svg")" alt="Localisation" height="16" width="16" />
+                                        {{candidat.commune | capitalize}} ({{candidat.codePostal.substring(0, 2)}}) {{candidat.rayonRecherche ? ('+' + candidat.rayonRecherche.value + 'km') : ''}}
+                                    </p>
+                                    <div class="col-12 col-sm-8 mb-2">
+                                        <div class="row">
+                                            <template v-if="indexSection == 0">
+                                                <p class="col-12 mb-2 font-size-sm" v-for="metierValide in candidat.metiersValides">
+                                                    <img width="20" height="20" alt="Métier validé" title="Métier validé" src="@assetsFinder.path("images/commun/metier-valide.svg")" />
+                                                    {{metierValide.metier.label}}
+                                                </p>
+                                            </template>
+                                            <template v-else>
+                                                <p class="col-12 mb-2 font-size-sm" v-for="metier in interessePar(candidat.metiersRecherches)">
+                                                    {{metier.label}}
+                                                </p>
+                                            </template>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-4">
+                                        <div class="row">
+                                            <div class="col-12 mb-3 text-sm-right" v-if="candidat.tempsTravail">
+                                                <span class="font-size-sm font-weight-bold tempsTravail" v-bind:class="cssTempsTravail(tempsTravail)">{{tempsTravail | tempsTravail}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <p class="mb-0" v-show="detailInteressePar(candidat).length > 0">Intéréssé par</p>
-                                    <ul class="detailsProfils">
-                                        <li class="detailsProfils-item" v-for="metiersParSecteur in detailInteressePar(candidat)">{{metiersParSecteur}}</li>
-                                    </ul>
-                                </div>
-                                <div class="col-md-2">
-                                    <p class="mb-0">Mobilité</p>
-                                    {{mobilite(candidat)}} {{candidat.commune | capitalize}}
-                                </div>
-                                <div class="col-md-2 text-md-center">
-                                    <ul class="listeActions list-unstyled">
-                                        <li class="listeActions-item" v-if="candidat.cvId !== undefined">
-                                            <a class="bouton bouton-actionCandidat bouton-actionCandidat--large bouton--noirSurBlanc gtm-recruteur-profils-detail-cv" target="_blank"
-                                            v-bind:href="'/recruteur/cv/telecharger/' + candidat.candidatId + '/' + candidat.nomCV">CV</a>
-                                        </li>
-                                        <li class="listeActions-item">
-                                            <button class="bouton bouton-actionCandidat bouton--bleu bouton-actionCandidat--large gtm-recruteur-profils-detail-telephone"
-                                            v-on:click="afficherNumeroTelephone(candidat.candidatId)"
-                                            v-show="display.numTelephones.indexOf(candidat.candidatId) === -1">
-                                                Téléphone
-                                            </button>
-                                            <button class="bouton bouton-infoCandidat bouton--noirSurBlanc"
-                                            v-on:click="copierNumeroTelephone(candidat.candidatId)"
-                                            v-show="display.numTelephones.indexOf(candidat.candidatId) !== -1">
-                                                {{candidat.numeroTelephone}}
-                                            </button>
-                                            <input v-bind:id="'js-numeroTelephone-' + candidat.candidatId" class="hiddenInput" type="text" v-bind:value="candidat.numeroTelephone" readonly />
-                                            <div v-bind:id="'js-infoBulle-' + candidat.candidatId" class="infoBulle">Copié !</div>
-                                        </li>
+                                <div class="row align-items-center m-0 px-4 py-2 bg-gris-light" v-show="candidat.savoirEtre.length > 0">
+                                    <p class="col-12 mb-0 texte-noir font-weight-bold font-size-sm"
+                                        v-show="candidat.savoirEtre.length > 0">Savoir-être professionnels</p>
+                                    <ul class="col-12 m-0 list-unstyled">
+                                        <li class="texte-noir font-size-sm itemSavoirEtre" v-for="savoirEtre in candidat.savoirEtre.slice(0, 4)">{{savoirEtre}}</li>
                                     </ul>
                                 </div>
                             </div>
-                        </transition>
-                    </template>
+                        </div>
+                        <pagination ref="pagination"
+                                    v-show="!display.chargement"
+                                    v-on:charger-page="chargerPage"
+                                    v-bind:nb-pages="resultatRecherche.pages.length"></pagination>
+                    </section>
                 </div>
-            </template>
-        </section>
-        <pagination ref="pagination"
-                    v-bind:nb-par-page="nbCandidatsParPage"
-                    v-on:charger-page-suivante="chargerPageSuivante"
-                    v-on:charger-page-precedente="chargerPagePrecedente"
-                    v-bind:pages-initiales="resultatRecherche.pages"></pagination>
+            </div>
+        </div>
     </div>
     @commun.jsData(jsData)
     <script src="@assetsFinder.path("javascripts/recruteurRechercheCandidats.js")" type="text/javascript"></script>

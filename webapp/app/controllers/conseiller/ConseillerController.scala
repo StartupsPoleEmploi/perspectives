@@ -42,10 +42,10 @@ class ConseillerController @Inject()(cc: ControllerComponents,
       Ok(views.html.conseiller.listeCandidats(
         conseillerAuthentifie = conseillerRequest.conseillerAuthentifie,
         jsData = Json.obj(
+          "csrfToken" -> CSRF.getToken.map(_.value),
           "nbCandidatsParPage" -> query.nbCandidatsParPage,
           "candidats" -> candidatsPourConseillerQueryResult.candidats,
-          "pagesInitiales" -> candidatsPourConseillerQueryResult.pages,
-          "csrfToken" -> CSRF.getToken.map(_.value),
+          "pages" -> candidatsPourConseillerQueryResult.pages,
           "codeROMEs" -> codeROMEs
         )
       ))
@@ -60,7 +60,7 @@ class ConseillerController @Inject()(cc: ControllerComponents,
           candidatQueryHandler.handle(
             CandidatsPourConseillerQuery(
               nbPagesACharger = 1,
-              page =  Some(KeysetCandidatsPourConseiller(
+              page = Some(KeysetCandidatsPourConseiller(
                 dateInscription = paginationCandidatForm.dateInscription,
                 candidatId = CandidatId(paginationCandidatForm.candidatId)
               ))
@@ -111,10 +111,10 @@ class ConseillerController @Inject()(cc: ControllerComponents,
       Ok(views.html.conseiller.listeRecruteurs(
         conseillerAuthentifie = conseillerRequest.conseillerAuthentifie,
         jsData = Json.obj(
-          "recruteurs" -> result.recruteurs,
+          "csrfToken" -> CSRF.getToken.map(_.value),
           "nbRecruteursParPage" -> query.nbRecruteursParPage,
-          "pagesInitiales" -> result.pages,
-          "csrfToken" -> CSRF.getToken.map(_.value)
+          "recruteurs" -> result.recruteurs,
+          "pages" -> result.pages,
         )
       ))
     )
@@ -128,7 +128,7 @@ class ConseillerController @Inject()(cc: ControllerComponents,
           recruteurQueryHandler.handle(
             RecruteursPourConseillerQuery(
               nbPagesACharger = 1,
-              page =  Some(KeysetRecruteursPourConseiller(
+              page = Some(KeysetRecruteursPourConseiller(
                 dateInscription = paginationRecruteurForm.dateInscription,
                 recruteurId = RecruteurId(paginationRecruteurForm.recruteurId)
               ))

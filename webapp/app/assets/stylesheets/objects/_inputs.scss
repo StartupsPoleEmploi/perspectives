@@ -66,39 +66,36 @@ select::-ms-expand {
   position: relative;
 
   &-selecteur {
+    border: none;
     width: 100%;
-    display: inline-block;
-    height: 47px;
-    padding-left: 25px;
-    color: #274056;
     background-color: white;
-    border-radius: 2px;
-    box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.1);
     -webkit-appearance: none;
     -moz-appearance: none;
+
+    &:disabled {
+      background-color: #F9F9FA;
+    }
   }
 
   &:after {
     content: '';
     position: absolute;
-    right: 15px;
-    top: 15px;
-    width: 12px;
-    height: 12px;
-    border: solid $noir;
+    right: 1rem;
+    top: 35%;
+    width: 10px;
+    height: 10px;
+    border-style: solid;
+    border-color: $vert-emeraude;
     border-width: 0 3px 3px 0;
     -webkit-transform: rotate(45deg);
     -ms-transform: rotate(45deg);
     transform: rotate(45deg);
     pointer-events: none;
   }
-}
 
-.zoneTexte {
-  box-sizing: border-box;
-  border: 1px solid lightgray;
-  box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
-  resize: none;
-  max-width: 95%;
+  &--violet {
+    &:after {
+      border-color: $violet;
+    }
+  }
 }

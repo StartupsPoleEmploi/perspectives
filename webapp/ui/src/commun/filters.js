@@ -3,6 +3,8 @@ import secteursActivites from '../domain/commun/secteurActivite.js';
 import statutsDemandeurEmploi from '../domain/candidat/statutDemandeurEmploi.js';
 import typesRecruteur from '../domain/recruteur/typeRecruteur.js';
 import typesContrats from '../domain/offre/typesContrats.js';
+import tempsTravail from '../domain/candidat/tempsTravail.js';
+import niveauxLangues from '../domain/candidat/niveauxLangues.js';
 
 Vue.filter('capitalize', function (value) {
     if (!value) return '';
@@ -26,17 +28,29 @@ Vue.filter('date', function (value) {
 });
 
 Vue.filter('statutDemandeurEmploi', function (value) {
-    return (value !== undefined && statutsDemandeurEmploi[value] !== undefined) ? statutsDemandeurEmploi[value].label : '';
+    return (value && statutsDemandeurEmploi[value]) ? statutsDemandeurEmploi[value].label : '';
 });
 
 Vue.filter('typeRecruteur', function (value) {
-    return (value !== undefined && typesRecruteur[value] !== undefined) ? typesRecruteur[value] : '';
+    return (value && typesRecruteur[value]) ? typesRecruteur[value] : '';
 });
 
 Vue.filter('typeContrat', function (value) {
-    return (value !== undefined && typesContrats[value] !== undefined) ? typesContrats[value].label : value;
+    return (value && typesContrats[value]) ? typesContrats[value].label : value;
 });
 
 Vue.filter('secteurActivite', function (value) {
-    return (value !== undefined && secteursActivites[value] !== undefined) ? secteursActivites[value].label : '';
+    return (value && secteursActivites[value]) ? secteursActivites[value].label : '';
+});
+
+Vue.filter('tempsTravail', function (value) {
+    return (value && tempsTravail[value]) ? tempsTravail[value].label : '';
+});
+
+Vue.filter('niveauLangue', function (value) {
+    return (value && niveauxLangues[value]) ? niveauxLangues[value].label : '';
+});
+
+Vue.filter('numeroTelephone', function (value) {
+    return value.replace(/(\d{2})/g, '$1 ').trim();
 });

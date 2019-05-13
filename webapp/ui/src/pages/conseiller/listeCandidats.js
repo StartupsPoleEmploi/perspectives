@@ -1,15 +1,18 @@
 import Vue from 'vue';
 import $ from 'jquery';
-import '../../composants/pagination.js';
+import Pagination from '../../composants/Pagination.vue';
 import '../../commun/filters.js';
 
 var app = new Vue({
     el: '#listeCandidats',
+    components: {
+        'pagination': Pagination
+    },
     data: function () {
         return {
             csrfToken: jsData.csrfToken,
             candidats: jsData.candidats,
-            pagesInitiales: jsData.pagesInitiales,
+            pages: jsData.pages,
             nbCandidatsParPage: jsData.nbCandidatsParPage,
             codeROMEs: jsData.codeROMEs.result,
             mrsCandidatFormData: {},
@@ -20,28 +23,27 @@ var app = new Vue({
         }
     },
     methods: {
-        chargerPageSuivante: function (critere) {
-            this.paginerCandidats(critere).done(function (response) {
-                app.candidats = response.candidats;
-                app.$refs.pagination.pageSuivanteChargee(response.candidats.length, response.pageSuivante);
-            });
-        },
-        chargerPagePrecedente: function (critere, index) {
-            this.paginerCandidats(critere).done(function (response) {
-                app.candidats = response.candidats;
-                app.$refs.pagination.pagePrecedenteChargee(index);
-            });
-        },
-        paginerCandidats: function (critere) {
+        chargerPage: function(index) {
+            var filtrePage = this.pages[index - 1];
+
             return $.ajax({
                 type: 'POST',
                 url: '/conseiller/paginerCandidats',
                 data: [
                     {name: "csrfToken", value: this.csrfToken},
-                    {name: "dateInscription", value: critere.dateInscription},
-                    {name: "candidatId", value: critere.candidatId}
+                    {name: "dateInscription", value: filtrePage.dateInscription},
+                    {name: "candidatId", value: filtrePage.candidatId}
                 ],
                 dataType: 'json'
+            }).done(function (response) {
+                app.candidats = response.candidats;
+
+                if (index === app.pages.length) {
+                    if (response.candidats.length === app.nbCandidatsParPage) {
+                        app.pages.push(response.pageSuivante);
+                    }
+                }
+                app.$refs.pagination.pageChargee(index);
             });
         },
         initialiserMRSCandidatFormAvecCandidat: function (candidat) {
