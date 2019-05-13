@@ -1,12 +1,6 @@
 #landingCandidat {
-  @include make-container();
-  @include make-container-max-widths();
 
   .landingCandidat {
-    &-presentation {
-      @include make-row();
-      align-items: center;
-    }
 
     &-rechercheOffres {
       margin: 0 auto;
@@ -21,62 +15,27 @@
       }
     }
 
-    &-sponsors {
-      @include make-row();
-      padding: 1rem;
-
-      @include media-breakpoint-down(md) {
-        display: none;
-      }
-    }
-
-    &-valorisationMRS {
-      @include make-row();
-    }
-
     &-illustrationValorisation {
       background-image: url("/assets/images/pages/candidat/landing/valorisation-mrs.jpg");
       background-repeat: no-repeat;
       background-size: cover;
       height: 600px;
-
-      @include media-breakpoint-up(md) {
-        @include make-col(6);
-      }
-
-      @include media-breakpoint-down(md) {
-        @include make-col(12);
-      }
     }
 
     &-texteValorisation {
       background-color: rgba(121, 129, 130, 0.1);
 
       @include media-breakpoint-up(md) {
-        @include make-col(6);
         padding: 4rem 4rem 0 4rem;
       }
 
       @include media-breakpoint-down(md) {
-        @include make-col(12);
         padding: 2rem;
       }
     }
 
     &-temoignages {
-      @include make-row();
 
-      @include media-breakpoint-up(md) {
-        padding: 3rem 6rem;
-      }
-
-      @include media-breakpoint-down(md) {
-        padding: 2rem;
-      }
-    }
-
-    &-infoLegales {
-      @include make-row();
     }
   }
 
@@ -110,37 +69,6 @@
     }
   }
 
-  .formulaireRecherche {
-    @include make-row();
-
-    &-conteneur {
-      @include make-col-ready();
-      margin-top: 1rem;
-    }
-
-    &-conteneurLocalisation {
-      @include media-breakpoint-up(lg) {
-        @include make-col(7);
-      }
-
-      @include media-breakpoint-down(lg) {
-        @include make-col(12);
-      }
-    }
-
-    &-conteneurRechercher {
-      text-align: center;
-
-      @include media-breakpoint-up(lg) {
-        @include make-col(5);
-      }
-
-      @include media-breakpoint-down(lg) {
-        @include make-col(12);
-      }
-    }
-  }
-
   .listeSponsors {
     margin: 0 auto;
     padding: 0;
@@ -154,19 +82,11 @@
 
   .etapesInscription {
     margin-bottom: 2rem;
-
-    &-item {
-      margin-bottom: 1rem;
-    }
   }
 
   .valorisation {
     font-size: 1.5rem;
     font-weight: lighter;
-
-    &-abbreviation {
-      padding-top: 3rem;
-    }
   }
 
   .temoignagesCandidat {
@@ -175,15 +95,13 @@
     &-titre {
       margin: 0 auto 2rem;
     }
-  }
 
-  .infoLegales {
-    background-color: $noir;
-    padding: 1rem;
+    @include media-breakpoint-up(md) {
+      padding: 3rem 6rem;
+    }
 
-    &-lien {
-      margin: 0 auto;
-      color: white;
+    @include media-breakpoint-down(md) {
+      padding: 2rem;
     }
   }
 }

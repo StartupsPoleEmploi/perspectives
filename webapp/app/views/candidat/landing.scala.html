@@ -5,13 +5,13 @@
 @(jsData: JsObject)(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
 @layout(candidatAuthentifie = None) {
-    <div id="landingCandidat" v-cloak>
-        <section class="landingCandidat-presentation presentation">
+    <div id="landingCandidat" class="container" v-cloak>
+        <section class="row align-items-center presentation">
             <div class="landingCandidat-rechercheOffres rechercheOffres">
                 <h1 class="rechercheOffres-titre titreLanding">Retrouvez un emploi,
                     sans qualification ou experience !</h1>
-                <form class="formulaireRecherche gtm-candidat-landing-form" v-on:submit.prevent="rechercherOffres">
-                    <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurLocalisation">
+                <form class="row gtm-candidat-landing-form" v-on:submit.prevent="rechercherOffres">
+                    <div class="col-12 col-xl-7 mt-3">
                         <div class="rechercheOffres-localisation">
                             <div class="rechercheOffres-conteneurlieuTravail">
                                 <input type="hidden" name="codePostal" v-model="recherche.codePostal" />
@@ -30,13 +30,13 @@
                         </div>
                         <div class="texte-erreur font-size-sm" v-for="error in rechercheOffresFormErrors">{{error.label}}</div>
                     </div>
-                    <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurRechercher">
+                    <div class="col-12 col-xl-5 mt-3 text-center">
                         <button type="submit" class="bouton bouton-action bouton--blancSurVert">Je trouve un emploi</button>
                     </div>
                 </form>
             </div>
         </section>
-        <section class="landingCandidat-sponsors">
+        <section class="row px-3 py-3 d-none d-lg-flex">
             <ul class="listeSponsors">
                 <li class="listeSponsors-item"><img alt="Franaud" src="@assetsFinder.path("images/commun/sponsors/sponsor-franaud.png")" width="124" height="48"/></li>
                 <li class="listeSponsors-item"><img alt="Afpa" src="@assetsFinder.path("images/commun/sponsors/sponsor-afpa.png")" width="115" height="59"/></li>
@@ -47,26 +47,26 @@
                 <li class="listeSponsors-item"><img alt="Synergy" src="@assetsFinder.path("images/commun/sponsors/sponsor-synergy.png")" width="59" height="57"/></li>
             </ul>
         </section>
-        <section class="landingCandidat-valorisationMRS">
-            <div class="landingCandidat-illustrationValorisation"></div>
-            <div class="landingCandidat-texteValorisation">
+        <section class="row">
+            <div class="col-12 col-lg-6 landingCandidat-illustrationValorisation"></div>
+            <div class="col-12 col-lg-6 landingCandidat-texteValorisation">
                 <h2 class="titreLanding">Faites-vous contacter par des recruteurs !</h2>
                 <p class="valorisation">Valorisez votre évaluation Pôle emploi <abbr title="Méthode de Recrutement par Simulation">MRS*</abbr> auprès des employeurs.</p>
                 <ol class="etapesInscription">
-                    <li class="etapesInscription-item">Indiquez les métiers qui vous intéressent</li>
-                    <li class="etapesInscription-item">Ajouter votre CV</li>
-                    <li class="etapesInscription-item">Trouvez un emploi !</li>
+                    <li class="mb-3">Indiquez les métiers qui vous intéressent</li>
+                    <li class="mb-3">Ajouter votre CV</li>
+                    <li class="mb-3">Trouvez un emploi !</li>
                 </ol>
                 <a class="bouton bouton-action bouton--blancSurVert gtm-candidat-landing-connexion" href="@controllers.candidat.routes.InscriptionController.inscription()">Je m'inscris avec mon identifiant Pôle Emploi</a>
-                <p class="valorisation-abbreviation">* MRS : Méthode de recrutement par simulation</p>
+                <p class="pt-5">* MRS : Méthode de recrutement par simulation</p>
             </div>
         </section>
-        <section class="landingCandidat-temoignages temoignagesCandidat">
+        <section class="row temoignagesCandidat">
             <h2 class="temoignagesCandidat-titre titreLanding">Ils ont trouvé un emploi sur Perspectives :</h2>
             <temoignages v-bind:temoignages="temoignages"></temoignages>
         </section>
-        <section class="landingCandidat-infoLegales infoLegales">
-            <a class="infoLegales-lien" href="#">Infos légales</a>
+        <section class="row bg-noir px-3 py-3">
+            <a class="col text-center texte-blanc" href="#">Infos légales</a>
         </section>
     </div>
     @commun.jsData(jsData)
