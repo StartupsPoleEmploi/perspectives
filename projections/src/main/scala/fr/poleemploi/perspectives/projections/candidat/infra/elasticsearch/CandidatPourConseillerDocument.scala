@@ -12,7 +12,7 @@ case class CandidatPourConseillerDocument(candidatId: CandidatId,
                                           prenom: Prenom,
                                           email: Email,
                                           statutDemandeurEmploi: Option[StatutDemandeurEmploi],
-                                          metiersValides: Set[CodeROME],
+                                          metiersValides: Set[MetierValideDocument],
                                           metiersValidesRecherches: Set[CodeROME],
                                           metiersRecherches: Set[CodeROME],
                                           contactRecruteur: Option[Boolean],
@@ -35,7 +35,7 @@ object CandidatPourConseillerDocument {
       (JsPath \ prenom).read[Prenom] and
       (JsPath \ email).read[Email] and
       (JsPath \ statut_demandeur_emploi).readNullable[StatutDemandeurEmploi] and
-      (JsPath \ metiers_valides).read[Set[CodeROME]] and
+      (JsPath \ metiers_valides).read[Set[MetierValideDocument]] and
       (JsPath \ criteres_recherche \ metiers_valides).read[Set[CodeROME]] and
       (JsPath \ criteres_recherche \ "metiers").read[Set[CodeROME]] and
       (JsPath \ contact_recruteur).readNullable[Boolean] and

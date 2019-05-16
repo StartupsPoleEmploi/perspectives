@@ -275,6 +275,13 @@ class InfraModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
+  def mrsDHAEValideesSqlAdapter(database: Database): MRSDHAEValideesSqlAdapter =
+    new MRSDHAEValideesSqlAdapter(
+      driver = PostgresDriver,
+      database = database
+    )
+
+  @Provides
   def referentielMRSPEConnect(peConnectAccessTokenStorage: PEConnectAccessTokenStorage,
                               peConnectWSAdapter: PEConnectWSAdapter,
                               peConnectSqlAdapter: PEConnectSqlAdapter,

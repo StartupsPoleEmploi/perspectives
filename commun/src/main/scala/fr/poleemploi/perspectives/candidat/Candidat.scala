@@ -113,8 +113,8 @@ private[candidat] case class CandidatContext(statut: StatutCandidat = StatutCand
             codeROME = e.codeROME,
             codeDepartement = e.departement,
             dateEvaluation = e.dateEvaluation,
-            isDHAE = false
-          ) :: context.mrsValidees,
+            isDHAE = e.isDHAE
+          ) :: context.mrsValidees
         )
       case _: RepriseEmploiDeclareeParConseillerEvent =>
         context.copy(rechercheEmploi = Some(false))

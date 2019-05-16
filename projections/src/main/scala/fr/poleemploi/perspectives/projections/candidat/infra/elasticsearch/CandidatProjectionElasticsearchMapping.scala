@@ -17,7 +17,7 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
   import CandidatProjectionElasticsearchMapping._
 
   def buildCandidatSaisieCriteresRechercheQueryResult(document: CandidatSaisieCriteresRechercheDocument): Future[CandidatSaisieCriteresRechercheQueryResult] =
-    referentielMetier.metiersParCodesROME(document.metiersValides).map(metiersValides =>
+    referentielMetier.metiersParCodesROME(document.metiersValides.map(_.metier)).map(metiersValides =>
       CandidatSaisieCriteresRechercheQueryResult(
         candidatId = document.candidatId,
         contactRecruteur = document.contactRecruteur,
@@ -46,8 +46,8 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
       longitude = document.longitude
     )
 
-  def buildMetiersValidesQueryResult(document: CandidatMetiersValidesDocument): Future[CandidatMetiersValidesQueryResult] =
-    referentielMetier.metiersParCodesROME(document.metiersValides)
+  def buildMetiersValidesQueryResult(document: MetiersValidesDocument): Future[CandidatMetiersValidesQueryResult] =
+    referentielMetier.metiersParCodesROME(document.metiersValides.map(_.metier))
       .map(metiersValides => CandidatMetiersValidesQueryResult(metiersValides))
 
   def buildCandidatDepotCVQueryResult(document: CandidatDepotCVDocument): CandidatDepotCVQueryResult =
@@ -58,7 +58,7 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
     )
 
   def buildCandidatPourRechercheOffreQueryResult(document: CandidatPourRechercheOffreDocument): Future[CandidatPourRechercheOffreQueryResult] =
-    referentielMetier.metiersParCodesROME(document.metiersValides).map(metiersValides =>
+    referentielMetier.metiersParCodesROME(document.metiersValides.map(_.metier)).map(metiersValides =>
       CandidatPourRechercheOffreQueryResult(
         metiersValides = metiersValides,
         localisationRecherche =
@@ -104,7 +104,7 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
 
   def buildCandidatPourConseillerDto(documents: Seq[CandidatPourConseillerDocument]): Future[List[CandidatPourConseillerDto]] =
     for {
-      metiersValides <- referentielMetier.metiersParCodesROME((documents.flatMap(_.metiersValidesRecherches) ++ documents.flatMap(_.metiersValides)).toSet)
+      metiersValides <- referentielMetier.metiersParCodesROME((documents.flatMap(_.metiersValidesRecherches) ++ documents.flatMap(_.metiersValides.map(_.metier))).toSet)
       metiersRecherches <- referentielMetier.metiersRechercheParCodeROME(documents.flatMap(_.metiersRecherches).toSet)
     } yield {
       val mapMetiersValides = metiersValides.groupBy(_.codeROME)
@@ -116,7 +116,13 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
           prenom = d.prenom,
           email = d.email,
           statutDemandeurEmploi = d.statutDemandeurEmploi,
-          metiersValides = d.metiersValides.map(c => mapMetiersValides.get(c).head.head),
+          metiersValides = d.metiersValides.map(m =>
+            MetierValideDto(
+              metier = mapMetiersValides.get(m.metier).head.head,
+              departement = m.departement,
+              isDHAE = m.isDHAE
+            )
+          ),
           metiersValidesRecherches = d.metiersValidesRecherches.map(c => mapMetiersValides.get(c).head.head),
           metiersRecherches = d.metiersRecherches.map(c => mapMetiersRecherches.get(c).head.head),
           contactRecruteur = d.contactRecruteur,

@@ -25,17 +25,17 @@ class MRSDHAEValideesCSVAdapter(val actorSystem: ActorSystem) {
       .via(CsvParsing.lineScanner(delimiter = '|'))
       .via(CsvToMap.toMapAsStrings())
       .filter(
-        m => m.get("b.dc_ididentiteexterne").exists(s => idPEConnectPattern.matcher(s).matches()) &&
-          m.get("c.dc_rome_id").exists(_.nonEmpty) &&
-          m.get("a.dc_uniteprescriptrice").exists(s => sitePrescripteurPattern.matcher(s).matches()) &&
-          m.get("a.dd_datedebutprestation").exists(_.nonEmpty) &&
-          m.get("a.kc_action_prestation_id").contains("P50")
+        m => m.get("dc_ididentiteexterne").exists(s => idPEConnectPattern.matcher(s).matches()) &&
+          m.get("dc_rome_id").exists(_.nonEmpty) &&
+          m.get("dc_uniteprescriptrice").exists(s => sitePrescripteurPattern.matcher(s).matches()) &&
+          m.get("dd_datedebutprestation").exists(_.nonEmpty) &&
+          m.get("kc_action_prestation_id").contains("P50")
       ).map(data =>
       MRSDHAEValideePEConnect(
-        peConnectId = PEConnectId(data("b.dc_ididentiteexterne")),
-        codeROME = CodeROME(data("c.dc_rome_id")),
-        codeDepartement = CodeDepartement(data("a.dc_uniteprescriptrice").take(2)),
-        dateEvaluation = data.get("a.dd_datedebutprestation").map(s => LocalDate.parse(s.take(10), dateTimeFormatter)).get
+        peConnectId = PEConnectId(data("dc_ididentiteexterne")),
+        codeROME = CodeROME(data("dc_rome_id")),
+        codeDepartement = CodeDepartement(data("dc_uniteprescriptrice").take(2)),
+        dateEvaluation = data.get("dd_datedebutprestation").map(s => LocalDate.parse(s.take(10), dateTimeFormatter)).get
       )
     ).runWith(Sink.collection)
       // Il peut y avoir deux fois la même mrs avec un statut différent : on dédoublonne pour être sûr

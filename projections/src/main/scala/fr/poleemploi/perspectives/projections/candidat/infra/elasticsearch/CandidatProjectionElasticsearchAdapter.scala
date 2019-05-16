@@ -130,9 +130,13 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
         .withQueryStringParameters(refreshParam, ("_source", s"$metiers_valides,$habiletes"))
         .get()
         .flatMap(filtreStatutReponse(_))
-        .map(r => (Json.parse(r.body) \ "_source").as[CandidatMetiersValidesDocument])
+        .map(r => (Json.parse(r.body) \ "_source").as[MetiersValidesDocument])
       _ <- update(event.candidatId, Json.obj(
-        metiers_valides -> (candidat.metiersValides + event.codeROME),
+        metiers_valides -> (candidat.metiersValides + MetierValideDocument(
+          metier = event.codeROME,
+          departement = event.departement,
+          isDHAE = event.isDHAE
+        )),
         habiletes -> (event.habiletes ++ candidat.habiletes)
       ))
     } yield ()
@@ -168,7 +172,7 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
       )
       .get()
       .flatMap(filtreStatutReponse(_))
-      .flatMap(r => mapping.buildMetiersValidesQueryResult((Json.parse(r.body) \ "_source").as[CandidatMetiersValidesDocument]))
+      .flatMap(r => mapping.buildMetiersValidesQueryResult((Json.parse(r.body) \ "_source").as[MetiersValidesDocument]))
 
   override def depotCV(query: CandidatDepotCVQuery): Future[CandidatDepotCVQueryResult] =
     wsClient

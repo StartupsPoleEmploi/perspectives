@@ -12,14 +12,7 @@ var app = new Vue({
             pagesInitiales: jsData.pagesInitiales,
             nbCandidatsParPage: jsData.nbCandidatsParPage,
             codeROMEs: jsData.codeROMEs.result,
-            mrsCandidatFormData: {
-                nomCandidat: null,
-                prenomCandidat: null,
-                candidatId: null,
-                codeROME: null,
-                codeDepartement: null,
-                dateEvaluation: null
-            },
+            mrsCandidatFormData: {},
             mrsCandidatFormErrors: {},
             afficherCandidats: true,
             afficherMRSCandidatForm: false,
@@ -72,7 +65,8 @@ var app = new Vue({
                     {name: "candidatId", value: form.candidatId},
                     {name: "codeROME", value: form.codeROME},
                     {name: "dateEvaluation", value: form.dateEvaluation},
-                    {name: "codeDepartement", value: form.codeDepartement}
+                    {name: "codeDepartement", value: form.codeDepartement},
+                    {name: "isDHAE", value: form.isDHAE},
                 ],
                 dataType: 'json'
             }).done(function (response) {
@@ -83,11 +77,11 @@ var app = new Vue({
                 app.candidats.forEach(function(c, index, array) {
                     if (c.candidatId === form.candidatId) {candidatIndex = index}
                 });
-                if (app.candidats[candidatIndex].metiersValides.find(function(m) {
-                    return m.codeROME === form.codeROME;
-                }) === undefined) {
-                    app.candidats[candidatIndex].metiersValides.push({codeROME: form.codeROME, label: ""});
-                }
+                app.candidats[candidatIndex].metiersValides.push({
+                    metier: {codeROME: form.codeROME, label: "Rafraichir la page pour le label"},
+                    departement: form.codeDepartement,
+                    isDHAE: form.isDHAE
+                });
             }).fail(function (jqXHR) {
                 if (jqXHR.status === 400) {
                     app.mrsCandidatFormErrors = jqXHR.responseJSON;
@@ -106,7 +100,8 @@ var app = new Vue({
                 candidatId: null,
                 codeROME: null,
                 codeDepartement: null,
-                dateEvaluation: null
+                dateEvaluation: null,
+                isDHAE: false
             };
             this.mrsCandidatFormErrors = {};
         },
