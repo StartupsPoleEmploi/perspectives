@@ -48,12 +48,13 @@ class RemplacerCVCandidatSpec extends AsyncWordSpec
       // Given
       val candidat = candidatBuilder.avecInscription().build
 
-      // When & Then
-      recoverToExceptionIf[IllegalArgumentException](
+      // When
+      val ex = intercept[IllegalArgumentException](
         candidat.remplacerCV(commande, cvService)
-      ).map(ex =>
-        ex.getMessage mustBe s"Impossible de remplacer le CV inexistant du candidat ${candidat.id.value}"
       )
+
+      // Then
+      ex.getMessage must endWith(s"Impossible de remplacer le CV inexistant du candidat ${candidat.id.value}")
     }
     "renvoyer une erreur lorsque le service externe qui enregistre le CV echoue" in {
       // Given

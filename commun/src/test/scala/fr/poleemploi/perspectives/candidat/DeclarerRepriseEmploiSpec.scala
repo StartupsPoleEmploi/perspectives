@@ -43,7 +43,7 @@ class DeclarerRepriseEmploiSpec extends WordSpec with MustMatchers with MockitoS
       }
 
       // Then
-      ex.getMessage must startWith(s"Le candidat ${candidat.id.value} n'est pas en recherche d'emploi")
+      ex.getMessage must endWith(s"Le candidat ${candidat.id.value} n'est pas en recherche d'emploi")
     }
     "renvoyer une erreur lorsque le candidat n'est pas en recherche d'emploi (il a modifier ces critères lui même)" in {
       // Given
@@ -60,7 +60,7 @@ class DeclarerRepriseEmploiSpec extends WordSpec with MustMatchers with MockitoS
       }
 
       // Then
-      ex.getMessage must startWith(s"Le candidat ${candidat.id.value} n'est pas en recherche d'emploi")
+      ex.getMessage must endWith(s"Le candidat ${candidat.id.value} n'est pas en recherche d'emploi")
     }
     "générer un événement lorsque la reprise d'emploi est déclarée" in {
       // Given

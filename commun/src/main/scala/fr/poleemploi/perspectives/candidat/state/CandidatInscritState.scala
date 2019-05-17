@@ -12,16 +12,10 @@ import scala.concurrent.Future
 object CandidatInscritState extends CandidatState {
 
   override def modifierCandidat(context: CandidatContext, command: ModifierCandidatCommand): List[Event] = {
-    if (command.contactFormation && command.numeroTelephone.isEmpty) {
-      throw new IllegalArgumentException("Le numéro de téléphone doit être renseigné lorsque le contactFormation est souhaité")
-    }
-    if (command.contactRecruteur && command.numeroTelephone.isEmpty) {
-      throw new IllegalArgumentException("Le numéro de téléphone doit être renseigné lorsque le contactRecruteur est souhaité")
-    }
+    require(!command.contactFormation || (command.contactFormation && command.numeroTelephone.nonEmpty), "Le numéro de téléphone doit être renseigné lorsque le contactFormation est souhaité")
+    require(!command.contactRecruteur || (command.contactRecruteur && command.numeroTelephone.nonEmpty), "Le numéro de téléphone doit être renseigné lorsque le contactRecruteur est souhaité")
     val codesROMEValides = context.mrsValidees.map(_.codeROME)
-    if (command.codesROMEValidesRecherches.exists(c => !codesROMEValides.contains(c))) {
-      throw new IllegalArgumentException("Un codeROME ne fait pas partie des codesROME validés par le candidat")
-    }
+    require(command.codesROMEValidesRecherches.forall(c => codesROMEValides.contains(c)), "Un codeROME ne fait pas partie des codesROME validés par le candidat")
 
     val visibiliteRecruteurModifieeEvent =
       if (!context.contactRecruteur.contains(command.contactRecruteur) ||
@@ -110,15 +104,15 @@ object CandidatInscritState extends CandidatState {
   }
 
   override def ajouterCV(context: CandidatContext, command: AjouterCVCommand, cvService: CVService): Future[List[Event]] = {
-    if (context.cvId.isDefined) {
-      return Future.failed(new IllegalArgumentException(s"Impossible d'ajouter un CV au candidat ${command.id.value}, il existe déjà"))
-    }
+    require(context.cvId.isEmpty, s"Impossible d'ajouter un CV au candidat ${command.id.value}, il existe déjà")
+    require(context.nom.isDefined, "Impossible d'ajouter un CV à un candidat sans nom")
+    require(context.prenom.isDefined, "Impossible d'ajouter un CV à un candidat sans prénom")
 
     val cvId = cvService.nextIdentity
     cvService.save(
       cvId = cvId,
       candidatId = command.id,
-      nomFichier = buildNomCV(context).getOrElse(throw new IllegalArgumentException("Erreur lors de la construction du nom du CV")),
+      nomFichier = buildNomCV(context).get,
       typeMedia = command.typeMedia,
       path = command.path
     ).map(_ => List(
@@ -131,13 +125,13 @@ object CandidatInscritState extends CandidatState {
   }
 
   override def remplacerCV(context: CandidatContext, command: RemplacerCVCommand, cvService: CVService): Future[List[Event]] = {
-    if (context.cvId.isEmpty) {
-      return Future.failed(new IllegalArgumentException(s"Impossible de remplacer le CV inexistant du candidat ${command.id.value}"))
-    }
+    require(context.cvId.isDefined, s"Impossible de remplacer le CV inexistant du candidat ${command.id.value}")
+    require(context.nom.isDefined, "Impossible d'ajouter un CV à un candidat sans nom")
+    require(context.prenom.isDefined, "Impossible d'ajouter un CV à un candidat sans prénom")
 
     cvService.update(
       cvId = command.cvId,
-      nomFichier = buildNomCV(context).getOrElse(throw new IllegalArgumentException("Erreur lors de la construction du nom du CV")),
+      nomFichier = buildNomCV(context).get,
       typeMedia = command.typeMedia,
       path = command.path
     ).map(_ => List(
@@ -190,9 +184,7 @@ object CandidatInscritState extends CandidatState {
   }
 
   override def declarerRepriseEmploiParConseiller(context: CandidatContext, command: DeclarerRepriseEmploiParConseillerCommand): List[Event] = {
-    if (context.rechercheEmploi.contains(false)) {
-      throw new IllegalArgumentException(s"Le candidat ${command.id.value} n'est pas en recherche d'emploi")
-    }
+    require(context.rechercheEmploi.contains(true), s"Le candidat ${command.id.value} n'est pas en recherche d'emploi")
 
     List(RepriseEmploiDeclareeParConseillerEvent(
       candidatId = command.id,

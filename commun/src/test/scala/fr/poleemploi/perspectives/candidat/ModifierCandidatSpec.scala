@@ -56,7 +56,7 @@ class ModifierCandidatSpec extends AsyncWordSpec
       )
 
       // Then
-      ex.getMessage mustBe "Le numéro de téléphone doit être renseigné lorsque le contactRecruteur est souhaité"
+      ex.getMessage must endWith("Le numéro de téléphone doit être renseigné lorsque le contactRecruteur est souhaité")
     }
     "renvoyer une erreur lorsque le contactFormation est renseigné mais pas le numéro de téléphone" in {
       // Given
@@ -71,7 +71,7 @@ class ModifierCandidatSpec extends AsyncWordSpec
       )
 
       // Then
-      ex.getMessage mustBe "Le numéro de téléphone doit être renseigné lorsque le contactFormation est souhaité"
+      ex.getMessage must endWith("Le numéro de téléphone doit être renseigné lorsque le contactFormation est souhaité")
     }
     "renvoyer une erreur lorsqu'un codeROMEValidesRecherche est renseigné alors que le candidat n'a pas validé de codeROME" in {
       // Given
@@ -85,7 +85,7 @@ class ModifierCandidatSpec extends AsyncWordSpec
       )
 
       // Then
-      ex.getMessage mustBe "Un codeROME ne fait pas partie des codesROME validés par le candidat"
+      ex.getMessage must endWith("Un codeROME ne fait pas partie des codesROME validés par le candidat")
     }
     "renvoyer une erreur lorsqu'un codeROMEValidesRecherche ne fait pas partie d'un codeROME validé par le candidat" in {
       // Given
@@ -104,7 +104,7 @@ class ModifierCandidatSpec extends AsyncWordSpec
       )
 
       // Then
-      ex.getMessage mustBe "Un codeROME ne fait pas partie des codesROME validés par le candidat"
+      ex.getMessage must endWith("Un codeROME ne fait pas partie des codesROME validés par le candidat")
     }
     "ne pas générer d'événement lorsque rien ne change" in {
       // Given
