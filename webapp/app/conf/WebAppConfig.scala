@@ -14,6 +14,7 @@ import fr.poleemploi.perspectives.infra.BuildInfo
 import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapterConfig
 import fr.poleemploi.perspectives.offre.infra.ws.ReferentielOffreWSAdapterConfig
 import fr.poleemploi.perspectives.projections.candidat.infra.slack.CandidatNotificationSlackConfig
+import fr.poleemploi.perspectives.projections.recruteur.infra.slack.RecruteurNotificationSlackConfig
 import play.api.Configuration
 
 class WebAppConfig(configuration: Configuration) {
@@ -66,6 +67,11 @@ class WebAppConfig(configuration: Configuration) {
   val slackConfig: SlackConfig = SlackConfig(configuration.get[String]("slack.webhook.url"))
 
   val candidatNotificationSlackConfig: CandidatNotificationSlackConfig = CandidatNotificationSlackConfig(
+    slackConfig = slackConfig,
+    environnement = environnement
+  )
+
+  val recruteurNotificationSlackConfig: RecruteurNotificationSlackConfig = RecruteurNotificationSlackConfig(
     slackConfig = slackConfig,
     environnement = environnement
   )

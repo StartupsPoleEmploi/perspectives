@@ -15,6 +15,8 @@ import fr.poleemploi.perspectives.projections.conseiller.ConseillerQueryHandler
 import fr.poleemploi.perspectives.projections.emailing.{CandidatEmailProjection, RecruteurEmailProjection}
 import fr.poleemploi.perspectives.projections.metier.MetierQueryHandler
 import fr.poleemploi.perspectives.projections.recruteur._
+import fr.poleemploi.perspectives.projections.recruteur.infra.local.RecruteurNotificationLocalAdapter
+import fr.poleemploi.perspectives.projections.recruteur.infra.slack.RecruteurNotificationSlackAdapter
 import fr.poleemploi.perspectives.projections.recruteur.infra.sql.RecruteurProjectionSqlAdapter
 import net.codingwell.scalaguice.ScalaModule
 
@@ -23,9 +25,10 @@ class RegisterProjections @Inject()(eventStoreListener: EventStoreListener,
                                     candidatNotificationProjection: CandidatNotificationProjection,
                                     candidatMailProjection: CandidatEmailProjection,
                                     recruteurProjection: RecruteurProjection,
-                                    recruteurEmailProjection: RecruteurEmailProjection) {
+                                    recruteurEmailProjection: RecruteurEmailProjection,
+                                    recruteurNotificationProjection: RecruteurNotificationProjection) {
   eventStoreListener.subscribe(candidatProjection, candidatMailProjection, candidatNotificationProjection)
-  eventStoreListener.subscribe(recruteurProjection, recruteurEmailProjection)
+  eventStoreListener.subscribe(recruteurProjection, recruteurEmailProjection, recruteurNotificationProjection)
 }
 
 class ProjectionsModule extends AbstractModule with ScalaModule {
@@ -82,6 +85,16 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
     new RecruteurEmailProjection(
       emailingService = emailingService
     )
+
+  @Provides
+  @Singleton
+  def recruteurNotificationProjection(recruteurNotificationSlackAdapter: Provider[RecruteurNotificationSlackAdapter],
+                                      recruteurNotificationLocalAdapter: Provider[RecruteurNotificationLocalAdapter],
+                                      webAppConfig: WebAppConfig): RecruteurNotificationProjection =
+    if (webAppConfig.useSlackNotification)
+      recruteurNotificationSlackAdapter.get()
+    else
+      recruteurNotificationLocalAdapter.get()
 
   @Provides
   @Singleton

@@ -39,6 +39,8 @@ import fr.poleemploi.perspectives.offre.infra.ws.{ReferentielOffreWSAdapter, Ref
 import fr.poleemploi.perspectives.projections.candidat.infra.elasticsearch.{CandidatProjectionElasticsearchAdapter, CandidatProjectionElasticsearchMapping}
 import fr.poleemploi.perspectives.projections.candidat.infra.local.CandidatNotificationLocalAdapter
 import fr.poleemploi.perspectives.projections.candidat.infra.slack.CandidatNotificationSlackAdapter
+import fr.poleemploi.perspectives.projections.recruteur.infra.local.RecruteurNotificationLocalAdapter
+import fr.poleemploi.perspectives.projections.recruteur.infra.slack.RecruteurNotificationSlackAdapter
 import fr.poleemploi.perspectives.projections.recruteur.infra.sql.RecruteurProjectionSqlAdapter
 import fr.poleemploi.perspectives.recruteur.commentaire.infra.local.CommentaireLocalAdapter
 import fr.poleemploi.perspectives.recruteur.commentaire.infra.slack.CommentaireSlackAdapter
@@ -385,6 +387,18 @@ class InfraModule extends AbstractModule with ScalaModule {
       esConfig = webAppConfig.esConfig,
       mapping = mapping
     )
+
+  @Provides
+  def recruteurNotificationSlackAdapter(webAppConfig: WebAppConfig,
+                                        wsClient: WSClient): RecruteurNotificationSlackAdapter =
+    new RecruteurNotificationSlackAdapter(
+      config = webAppConfig.recruteurNotificationSlackConfig,
+      wsClient = wsClient
+    )
+
+  @Provides
+  def recruteurNotificationLocalAdapter: RecruteurNotificationLocalAdapter =
+    new RecruteurNotificationLocalAdapter()
 
   @Provides
   def recruteurProjectionSqlAdapter(database: Database): RecruteurProjectionSqlAdapter =
