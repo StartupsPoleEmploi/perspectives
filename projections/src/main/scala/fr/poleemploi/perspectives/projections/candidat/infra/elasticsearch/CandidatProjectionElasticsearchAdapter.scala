@@ -210,7 +210,7 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
       .withHttpHeaders(jsonContentType)
       .post(mapping.buildCandidatPourConseillerQuery(query))
       .flatMap { response =>
-        val hits = (Json.parse(response.body) \ "hits" \ "hits").as[JsArray]
+        val hits = (response.json \ "hits" \ "hits").as[JsArray]
         val candidats = (hits \\ "_source").take(query.nbCandidatsParPage).map(_.as[CandidatPourConseillerDocument])
         val pages = (hits \\ "sort").zipWithIndex
           .filter(v => v._2 == 0 || (v._2 + 1) % query.nbCandidatsParPage == 0)
@@ -245,7 +245,7 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
           .getOrElse(mapping.buildRechercheCandidatsParLocalisationQuery(query))
       )
       .flatMap { response =>
-        val json = Json.parse(response.body)
+        val json = response.json
         val hits = (json \ "hits" \ "hits").as[JsArray]
         val candidats = (hits \\ "_source").take(query.nbCandidatsParPage).map(_.as[CandidatRechercheRecruteurDocument])
         val pages = buildKeysetRechercheCandidats(query, hits)
