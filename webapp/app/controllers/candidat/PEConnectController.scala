@@ -110,6 +110,10 @@ class PEConnectController @Inject()(cc: ControllerComponents,
         Redirect(routes.SaisieCriteresRechercheController.saisieCriteresRecherche()).withSession(session)
           .flashing(flash.withCandidatInscrit)
     }).recover {
+      case CandidatPEConnectEmailManquantException =>
+        Redirect(routes.LandingController.landing())
+          .withSession(SessionOauthTokens.removeOauthTokensCandidat(request.session))
+          .flashing(request.flash.withMessageErreur("Veuillez rensegner votre adresse email dans votre profil sur https://candidat.pole-emploi.fr et réessayer ensuite"))
       case t: Throwable =>
         logger.error("Erreur lors du callback candidat PEConnect", t)
         // Nettoyage de session et redirect
@@ -153,7 +157,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       nom = peConnectCandidatInfos.nom,
       prenom = peConnectCandidatInfos.prenom,
       genre = peConnectCandidatInfos.genre,
-      email = peConnectCandidatInfos.email,
+      email = peConnectCandidatInfos.email.getOrElse(throw CandidatPEConnectEmailManquantException),
       adresse = adresse,
       statutDemandeurEmploi = statutDemandeurEmploi
     )
@@ -176,7 +180,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       nom = peConnectCandidatInfos.nom,
       prenom = peConnectCandidatInfos.prenom,
       genre = peConnectCandidatInfos.genre,
-      email = peConnectCandidatInfos.email,
+      email = peConnectCandidatInfos.email.getOrElse(throw CandidatPEConnectEmailManquantException),
       adresse = adresse,
       statutDemandeurEmploi = statutDemandeurEmploi
     )
@@ -199,3 +203,5 @@ class PEConnectController @Inject()(cc: ControllerComponents,
           Future.successful(None)
       }
 }
+
+case object CandidatPEConnectEmailManquantException extends Exception

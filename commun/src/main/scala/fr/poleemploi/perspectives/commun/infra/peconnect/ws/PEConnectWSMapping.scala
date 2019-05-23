@@ -34,7 +34,7 @@ class PEConnectWSMapping {
       peConnectId = PEConnectId(response.sub),
       nom = Nom(response.familyName),
       prenom = Prenom(response.givenName),
-      email = Email(response.email.toLowerCase),
+      email = response.email.map(e => Email(e.toLowerCase)),
       genre = buildGender(response.gender)
     )
 
@@ -78,7 +78,7 @@ class PEConnectWSMapping {
 case class PEConnectCandidatInfos(peConnectId: PEConnectId,
                                   nom: Nom,
                                   prenom: Prenom,
-                                  email: Email,
+                                  email: Option[Email],
                                   genre: Genre)
 
 case class PEConnectRecruteurInfos(peConnectId: PEConnectId,
@@ -91,7 +91,7 @@ case class PEConnectRecruteurInfos(peConnectId: PEConnectId,
 private[ws] case class UserInfosResponse(sub: String,
                                          familyName: String,
                                          givenName: String,
-                                         email: String,
+                                         email: Option[String],
                                          gender: String)
 
 object UserInfosResponse {
@@ -100,7 +100,7 @@ object UserInfosResponse {
     (JsPath \ "sub").read[String] and
       (JsPath \ "family_name").read[String] and
       (JsPath \ "given_name").read[String] and
-      (JsPath \ "email").read[String] and
+      (JsPath \ "email").readNullable[String] and
       (JsPath \ "gender").read[String]
     ) (UserInfosResponse.apply _)
 }
