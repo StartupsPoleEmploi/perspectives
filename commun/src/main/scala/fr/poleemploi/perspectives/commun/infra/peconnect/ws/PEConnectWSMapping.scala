@@ -69,8 +69,8 @@ class PEConnectWSMapping {
     case g@_ => throw new IllegalArgumentException(s"Gender non géré : $g")
   }
 
-  private def buildCertifie(habilitation: String): Boolean = habilitation match {
-    case "recruteurcertifie" => true
+  private def buildCertifie(habilitation: Option[String]): Boolean = habilitation match {
+    case Some("recruteurcertifie") => true
     case _ => false
   }
 }
@@ -110,7 +110,7 @@ private[ws] case class UserInfosEntrepriseResponse(sub: String,
                                                    givenName: String,
                                                    email: String,
                                                    gender: String,
-                                                   habilitation: String)
+                                                   habilitation: Option[String])
 
 object UserInfosEntrepriseResponse {
 
@@ -120,7 +120,7 @@ object UserInfosEntrepriseResponse {
       (JsPath \ "given_name").read[String] and
       (JsPath \ "email").read[String] and
       (JsPath \ "gender").read[String] and
-      (JsPath \ "habilitation").read[String]
+      (JsPath \ "habilitation").readNullable[String]
     ) (UserInfosEntrepriseResponse.apply _)
 }
 
