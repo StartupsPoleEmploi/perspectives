@@ -1,84 +1,19 @@
-.conteneurNavigation {
-  @include make-container();
-  @include make-container-max-widths();
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-}
-
 .navigation {
-  @include make-row();
-  align-items: center;
-
-  &-conteneurLogo {
-    padding-left: 1rem;
-
-    @include media-breakpoint-up(md) {
-      @include make-col-auto();
-    }
-  }
-
-  &-logoPerspectives {
-    @include media-breakpoint-down(md) {
-      @include make-col(5);
-    }
-  }
-
-  &-logoPE {
-    @include media-breakpoint-down(md) {
-      @include make-col(3);
-    }
-  }
 
   &-logo {
     width: 100%;
   }
 
-  &-burgerMenu {
-    padding-right: 1rem;
-  }
-
   &-conteneurMenu {
-    padding: 0 1rem;
-
-    @include media-breakpoint-up(md) {
-      @include make-col-auto();
-      margin-left: auto;
-    }
     @include media-breakpoint-down(md) {
-      @include make-col(12);
       display: none;
     }
-  }
-}
-
-.logoPerspectives {
-  &-titre {
-    display: none;
-  }
-
-  &-description {
-    display: none;
   }
 }
 
 .burgerMenu {
-  @include media-breakpoint-up(md) {
-    display: none;
-  }
-  @include media-breakpoint-down(md) {
-    @include make-col-auto();
-    margin-left: auto;
-  }
-
-  &-iconeOuverture {
-    @include media-breakpoint-up(md) {
-      display: none;
-    }
-  }
-
   &-iconeFermeture {
     font-size: 2rem;
-    color: $vert-emeraude;
     display: none;
   }
 }
@@ -131,13 +66,12 @@
   position: relative;
 
   &--deconnecte {
-    @include media-breakpoint-up(md) {
+    @include media-breakpoint-up(lg) {
       border-left: 1px solid $noir;
     }
   }
 
-  @include media-breakpoint-up(md) {
-    @include make-col-auto();
+  @include media-breakpoint-up(lg) {
     cursor: pointer;
     padding-right: 1rem;
     padding-left: 1rem;
@@ -157,7 +91,6 @@
     }
   }
   @include media-breakpoint-down(md) {
-    @include make-col(12);
     margin-top: 1rem;
   }
 
@@ -187,7 +120,7 @@
   z-index: 1;
   @include userSelect(none);
 
-  @include media-breakpoint-up(md) {
+  @include media-breakpoint-up(lg) {
     display: none;
     position: absolute;
     padding: 1rem;

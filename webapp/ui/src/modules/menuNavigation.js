@@ -1,22 +1,23 @@
 import $ from 'jquery';
 
 $(document).ready(function() {
-    var iconeOuverture = $(".burgerMenu-iconeOuverture");
-    var iconeFermeture = $(".burgerMenu-iconeFermeture");
-    var logos = $(".navigation-conteneurLogo");
-    var navigationConteneur = $(".navigation-conteneurMenu");
+    var iconeOuverture = $(".js-navigation-iconeOuverture");
+    var iconeFermeture = $(".js-navigation-iconeFermeture");
+    var logos = $(".js-navigation-conteneurLogo");
+    var menu = $(".js-navigation-conteneurMenu");
 
     iconeOuverture.click(function() {
         $(this).hide();
         logos.hide();
+        console.log("SHOW ICONE FERMETURE");
         iconeFermeture.show();
-        navigationConteneur.show();
+        menu.show();
     });
     iconeFermeture.click(function() {
         $(this).hide();
         logos.show();
         iconeOuverture.show();
-        navigationConteneur.hide();
+        menu.hide();
     });
 
     var menuConnexion = $(".menuConnexion");
