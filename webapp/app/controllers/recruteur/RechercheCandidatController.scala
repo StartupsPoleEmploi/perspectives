@@ -60,7 +60,7 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
             )
           ))
         }).recover {
-          case _: ProfilRecruteurIncompletException =>
+          case ProfilRecruteurIncompletException =>
             Redirect(routes.ProfilController.modificationProfil())
               .flashing(messagesRequest.flash.withMessageErreur("Vous devez renseigner votre profil avant de pouvoir effectuer une recherche"))
         }
@@ -89,7 +89,7 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
           } yield {
             Ok(Json.toJson(rechercheCandidatQueryResult))
           }).recover {
-            case _: ProfilRecruteurIncompletException => BadRequest("Vous devez renseigner votre profil avant de pouvoir effectuer une recherche")
+            case ProfilRecruteurIncompletException => BadRequest("Vous devez renseigner votre profil avant de pouvoir effectuer une recherche")
           }
         }
       )
@@ -100,7 +100,7 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
     request.flash.getTypeRecruteur
       .map(t => Future.successful(t))
       .getOrElse {
-        recruteurQueryHandler.handle(TypeRecruteurQuery(request.recruteurId)).map(_.typeRecruteur.getOrElse(throw ProfilRecruteurIncompletException()))
+        recruteurQueryHandler.handle(TypeRecruteurQuery(request.recruteurId)).map(_.typeRecruteur.getOrElse(throw ProfilRecruteurIncompletException))
       }
 
   def telechargerCV(candidatId: String, nomFichier: String): Action[AnyContent] = recruteurAuthentifieAction.async { implicit recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
@@ -150,4 +150,4 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
   }
 }
 
-case class ProfilRecruteurIncompletException() extends Exception
+case object ProfilRecruteurIncompletException extends Exception
