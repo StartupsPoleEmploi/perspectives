@@ -62,7 +62,7 @@ export default {
             }
         }
     },
-    mounted () {
+    mounted: function() {
         this.id = 'depotCV-' + this._uid
     },
     methods: {
