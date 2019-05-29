@@ -44,7 +44,7 @@ class PEConnectWSAdapter(wsClient: WSClient,
       .flatMap(filtreStatutReponse(_))
       .map(r => mapping.buildAdresse(r.json.as[CoordonneesCandidatReponse]))
 
-  def satutDemandeurEmploiCandidat(accessToken: AccessToken): Future[StatutDemandeurEmploi] =
+  def statutDemandeurEmploiCandidat(accessToken: AccessToken): Future[StatutDemandeurEmploi] =
     wsClient
       .url(s"${config.urlApi}/peconnect-statut/v1/statut")
       .addHttpHeaders(authorizationHeader(accessToken))

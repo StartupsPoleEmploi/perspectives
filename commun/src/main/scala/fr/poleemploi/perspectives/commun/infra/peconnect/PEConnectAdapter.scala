@@ -22,7 +22,7 @@ class PEConnectAdapter(peConnectWSAdapter: PEConnectWSAdapter,
     peConnectWSAdapter.coordonneesCandidat(accessToken)
 
   def statutDemandeurEmploiCandidat(accessToken: AccessToken): Future[StatutDemandeurEmploi] =
-    peConnectWSAdapter.satutDemandeurEmploiCandidat(accessToken)
+    peConnectWSAdapter.statutDemandeurEmploiCandidat(accessToken)
 
   def findRecruteur(peConnectId: PEConnectId): Future[Option[RecruteurPEConnect]] =
     peConnectSqlAdapter.findRecruteur(peConnectId)

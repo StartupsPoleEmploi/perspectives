@@ -8,7 +8,5 @@ import scala.concurrent.Future
 class RecruteurNotificationLocalAdapter extends RecruteurNotificationProjection {
 
   override def onRecruteurInscritEvent(event: RecruteurInscritEvent): Future[Unit] =
-    Future.successful({
-      println(event)
-    })
+    Future.successful(())
 }

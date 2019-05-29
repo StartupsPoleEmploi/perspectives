@@ -1,6 +1,5 @@
 package fr.poleemploi.perspectives.candidat.mrs.infra.peconnect
 
-import akka.util.Timeout
 import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.candidat.mrs.domain.{MRSValidee, ReferentielMRS}
 import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.ReferentielMRSPEConnect.prioriserMRSDHAEValidees
@@ -11,14 +10,11 @@ import fr.poleemploi.perspectives.commun.infra.ws.WSAdapter
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.concurrent.duration._
 
 class ReferentielMRSPEConnect(peConnectAccessTokenStorage: PEConnectAccessTokenStorage,
                               peConnectSqlAdapter: PEConnectSqlAdapter,
                               peConnectWSAdapter: PEConnectWSAdapter,
                               mrsDHAEValideesSqlAdapter: MRSDHAEValideesSqlAdapter) extends ReferentielMRS with WSAdapter {
-
-  implicit val timeout: Timeout = Timeout(5.seconds)
 
   override def mrsValidees(candidatId: CandidatId): Future[List[MRSValidee]] =
     for {

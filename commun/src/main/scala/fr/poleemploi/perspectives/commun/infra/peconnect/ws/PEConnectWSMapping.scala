@@ -96,7 +96,7 @@ private[ws] case class UserInfosResponse(sub: String,
 
 object UserInfosResponse {
 
-  implicit val userInfoResponseReads: Reads[UserInfosResponse] = (
+  implicit val reads: Reads[UserInfosResponse] = (
     (JsPath \ "sub").read[String] and
       (JsPath \ "family_name").read[String] and
       (JsPath \ "given_name").read[String] and
@@ -114,7 +114,7 @@ private[ws] case class UserInfosEntrepriseResponse(sub: String,
 
 object UserInfosEntrepriseResponse {
 
-  implicit val jsonReads: Reads[UserInfosEntrepriseResponse] = (
+  implicit val reads: Reads[UserInfosEntrepriseResponse] = (
     (JsPath \ "sub").read[String] and
       (JsPath \ "family_name").read[String] and
       (JsPath \ "given_name").read[String] and
@@ -136,7 +136,7 @@ private[ws] case class CoordonneesCandidatReponse(adresse1: Option[String],
 
 private[ws] object CoordonneesCandidatReponse {
 
-  implicit val coordoneesCandidatReads: Reads[CoordonneesCandidatReponse] = (
+  implicit val reads: Reads[CoordonneesCandidatReponse] = (
     (JsPath \ "adresse1").readNullable[String] and
       (JsPath \ "adresse2").readNullable[String] and
       (JsPath \ "adresse3").readNullable[String] and
@@ -154,7 +154,7 @@ private[ws] case class StatutCandidatReponse(codeStatutIndividu: String,
 
 private[ws] object StatutCandidatReponse {
 
-  implicit val statutCandidatReponseReads: Reads[StatutCandidatReponse] = (
+  implicit val reads: Reads[StatutCandidatReponse] = (
     (JsPath \ "codeStatutIndividu").read[String] and
       (JsPath \ "libelleStatutIndividu").read[String]
     ) (StatutCandidatReponse.apply _)
