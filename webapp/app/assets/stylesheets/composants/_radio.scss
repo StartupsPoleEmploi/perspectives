@@ -19,7 +19,7 @@
 
     &:checked ~ .radioDeuxChoix-label {
       color: white;
-      background-color: #FA6300;
+      background-color: $orange;
     }
 
     &:not(:checked) ~ .radioDeuxChoix-label {
@@ -51,7 +51,7 @@
 
     &:checked ~ .radioMultiChoix-label {
       color: white;
-      background-color: #FA6300;
+      background-color: $orange;
     }
 
     &:not(:checked) ~ .radioMultiChoix-label {

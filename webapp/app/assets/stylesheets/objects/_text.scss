@@ -5,9 +5,8 @@
 .texte-gris-50 { color: rgba(51, 64, 81, 0.5); }
 .texte-erreur { color: $rouge-erreur; }
 .texte-vert-emeraude { color: $vert-emeraude; }
-.texte-orange { color: #FA6300; }
-
-.text-preline { white-space: pre-line; }
+.texte-orange { color: $orange; }
+.texte-violet {color: $violet; }
 
 .texte-majuscule { text-transform: uppercase; }
 

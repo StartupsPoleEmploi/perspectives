@@ -46,7 +46,7 @@
       top: 0;
       left: 4px;
 
-      @include after(10px, 15px, solid #FA6300, 0 3px 3px 0, 40deg);
+      @include after(10px, 15px, solid $orange, 0 3px 3px 0, 40deg);
     }
 
     &--lg {

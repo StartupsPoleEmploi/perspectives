@@ -71,14 +71,14 @@
   }
 
   .metierSelectionne {
-    color: #FA6300;
+    color: $orange;
     position: relative;
 
     &:after {
       top: -2px;
       left: 0;
 
-      @include after(10px, 15px, solid #FA6300, 0 3px 3px 0, 40deg);
+      @include after(10px, 15px, solid $orange, 0 3px 3px 0, 40deg);
     }
   }
 
