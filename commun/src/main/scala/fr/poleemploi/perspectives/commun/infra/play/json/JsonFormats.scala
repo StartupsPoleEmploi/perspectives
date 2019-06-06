@@ -2,7 +2,7 @@ package fr.poleemploi.perspectives.commun.infra.play.json
 
 import fr.poleemploi.eventsourcing.{AggregateId, IntValueObject, StringValueObject}
 import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
-import fr.poleemploi.perspectives.candidat.{CandidatId, LocalisationRecherche, StatutDemandeurEmploi}
+import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.offre.domain.OffreId
 import fr.poleemploi.perspectives.recruteur.{NumeroSiret, RecruteurId, TypeRecruteur}
@@ -28,6 +28,18 @@ object JsonFormats {
   implicit val formatNumeroTelephone: Format[NumeroTelephone] = formatStringValueObject(NumeroTelephone(_))
   implicit val formatStatutDemandeurEmploi: Format[StatutDemandeurEmploi] = formatStringValueObject(StatutDemandeurEmploi(_))
   implicit val formatTypeMedia: Format[TypeMedia] = formatStringValueObject(TypeMedia(_))
+
+  implicit val formatCentreInteret: Format[CentreInteret] = formatStringValueObject(CentreInteret)
+  implicit val formatNiveauLangue: Format[NiveauLangue] = formatStringValueObject(NiveauLangue(_))
+  implicit val formatLangue: Format[Langue] = Json.format[Langue]
+  implicit val formatPermis: Format[Permis] = Json.format[Permis]
+  implicit val formatSavoirEtre: Format[SavoirEtre] = formatStringValueObject(SavoirEtre)
+  implicit val formatNiveauSavoirFaire: Format[NiveauSavoirFaire] = formatStringValueObject(NiveauSavoirFaire(_))
+  implicit val formatSavoirFaire: Format[SavoirFaire] = Json.format[SavoirFaire]
+  implicit val formatNiveauFormation: Format[NiveauFormation] = formatStringValueObject(NiveauFormation)
+  implicit val formatDomaineFormation: Format[DomaineFormation] = formatStringValueObject(DomaineFormation)
+  implicit val formatFormation: Format[Formation] = Json.format[Formation]
+  implicit val formatExperienceProfessionnelle: Format[ExperienceProfessionnelle] = Json.format[ExperienceProfessionnelle]
 
   implicit val formatCodeROME: Format[CodeROME] = formatStringValueObject(CodeROME)
   implicit val formatCodeSecteurActivite: Format[CodeSecteurActivite] = formatStringValueObject(CodeSecteurActivite)

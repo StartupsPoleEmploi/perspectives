@@ -76,6 +76,62 @@ class CandidatBuilder {
     this
   }
 
+  def avecCentresInteret(centresInteret: List[CentreInteret]): CandidatBuilder = {
+    events += CentresInteretModifiesEvent(
+      candidatId = candidatId,
+      centresInteret = centresInteret
+    )
+    this
+  }
+
+  def avecLangues(langues: List[Langue]): CandidatBuilder = {
+    events += LanguesModifieesEvent(
+      candidatId = candidatId,
+      langues = langues
+    )
+    this
+  }
+
+  def avecPermis(permis: List[Permis]): CandidatBuilder = {
+    events += PermisModifiesEvent(
+      candidatId = candidatId,
+      permis = permis
+    )
+    this
+  }
+
+  def avecSavoirEtre(savoirEtre: List[SavoirEtre]): CandidatBuilder = {
+    events += SavoirEtreModifiesEvent(
+      candidatId = candidatId,
+      savoirEtre = savoirEtre
+    )
+    this
+  }
+
+  def avecSavoirFaire(savoirFaire: List[SavoirFaire]): CandidatBuilder = {
+    events += SavoirFaireModifiesEvent(
+      candidatId = candidatId,
+      savoirFaire = savoirFaire
+    )
+    this
+  }
+
+  def avecFormations(formations: List[Formation]): CandidatBuilder = {
+    events += FormationsModifieesEvent(
+      candidatId = candidatId,
+      formations = formations
+    )
+    this
+  }
+
+  def avecExperiencesProfessionnelles(experiencesProfessionnelles: List[ExperienceProfessionnelle]): CandidatBuilder = {
+    events += ExperiencesProfessionnellesModifieesEvent(
+      candidatId = candidatId,
+      experiencesProfessionnelles = experiencesProfessionnelles
+    )
+    this
+  }
+
   def avecVisibiliteRecruteur(contactRecruteur: Option[Boolean] = None,
                               contactFormation: Option[Boolean] = None): CandidatBuilder = {
     events += VisibiliteRecruteurModifieeEvent(

@@ -8,7 +8,7 @@ import fr.poleemploi.perspectives.authentification.infra.peconnect.PEConnectAuth
 import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.commun.EitherUtils._
 import fr.poleemploi.perspectives.commun.infra.oauth.OauthConfig
-import fr.poleemploi.perspectives.commun.infra.peconnect.ws.{AccessToken, PEConnectCandidatInfos}
+import fr.poleemploi.perspectives.commun.infra.peconnect.ws.PEConnectCandidatInfos
 import fr.poleemploi.perspectives.commun.infra.peconnect.{CandidatPEConnect, PEConnectAccessTokenStorage, PEConnectAdapter}
 import fr.poleemploi.perspectives.projections.candidat.{CandidatQueryHandler, CandidatSaisieCriteresRechercheQuery}
 import javax.inject.{Inject, Singleton}
@@ -24,6 +24,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
                                     candidatCommandHandler: CandidatCommandHandler,
                                     candidatQueryHandler: CandidatQueryHandler,
                                     candidatPEConnectAction: CandidatPEConnectAction,
+                                    candidatAuthentifieAction: CandidatAuthentifieAction,
                                     peConnectAuthAdapter: PEConnectAuthAdapter,
                                     peConnectAdapter: PEConnectAdapter,
                                     peConnectAccessTokenStorage: PEConnectAccessTokenStorage) extends AbstractController(cc) with Logging {
@@ -80,17 +81,12 @@ class PEConnectController @Inject()(cc: ControllerComponents,
         oauthTokens = oauthTokens
       )
       infosCandidat <- peConnectAdapter.infosCandidat(accessTokenResponse.accessToken)
-      _ <- peConnectAccessTokenStorage.add(infosCandidat.peConnectId, accessTokenResponse.accessToken)
-      optAdresse <- findAdresseCandidat(accessTokenResponse.accessToken)
-      optStatutDemandeurEmploi <- findStatutDemandeurEmploi(accessTokenResponse.accessToken)
-      optCandidat <- peConnectAdapter.findCandidat(infosCandidat.peConnectId)
-      optCriteresRecherche <- optCandidat.map(c => candidatQueryHandler.handle(CandidatSaisieCriteresRechercheQuery(c.candidatId)).map(Some(_))).getOrElse(Future.successful(None))
-      candidatId <- optCandidat.map(c => connecter(c, infosCandidat, optAdresse, optStatutDemandeurEmploi))
-        .getOrElse(inscrire(
-          peConnectCandidatInfos = infosCandidat,
-          adresse = optAdresse,
-          statutDemandeurEmploi = optStatutDemandeurEmploi
-        ))
+      optCandidatPEConnect <- peConnectAdapter.findCandidat(infosCandidat.peConnectId)
+      optCriteresRecherche <- optCandidatPEConnect.map(c => candidatQueryHandler.handle(CandidatSaisieCriteresRechercheQuery(c.candidatId)).map(Some(_))).getOrElse(Future.successful(None))
+      candidatId = optCandidatPEConnect.map(_.candidatId).getOrElse(candidatCommandHandler.newId)
+      _ <- peConnectAccessTokenStorage.add(candidatId, accessTokenResponse.accessToken)
+      _ <- optCandidatPEConnect.map(_ => connecter(candidatId, infosCandidat))
+        .getOrElse(inscrire(candidatId, infosCandidat))
     } yield {
       val candidatAuthentifie = CandidatAuthentifie(
         candidatId = candidatId,
@@ -141,25 +137,25 @@ class PEConnectController @Inject()(cc: ControllerComponents,
     }
   }
 
-  def deconnexionCallback: Action[AnyContent] = candidatPEConnectAction.async { implicit request: CandidatPEConnectRequest[AnyContent] =>
-    // Nettoyage de session et redirect
-    Future(Redirect(routes.LandingController.landing()).withSession(
-      SessionCandidatAuthentifie.remove(SessionCandidatPEConnect.remove(request.session))
-    ))
+  def deconnexionCallback: Action[AnyContent] = candidatAuthentifieAction.async { candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
+    candidatPEConnectAction.async { implicit candidatPEConnectRequest: CandidatPEConnectRequest[AnyContent] =>
+      peConnectAccessTokenStorage.remove(candidatAuthentifieRequest.candidatId).map(_ =>
+        // Nettoyage de session et redirect
+        Redirect(routes.LandingController.landing()).withSession(
+          SessionCandidatAuthentifie.remove(SessionCandidatPEConnect.remove(candidatPEConnectRequest.session))
+        )
+      )
+    }(candidatAuthentifieRequest)
   }
 
-  private def inscrire(peConnectCandidatInfos: PEConnectCandidatInfos,
-                       adresse: Option[Adresse],
-                       statutDemandeurEmploi: Option[StatutDemandeurEmploi]): Future[CandidatId] = {
-    val candidatId = candidatCommandHandler.newId
+  private def inscrire(candidatId: CandidatId,
+                       peConnectCandidatInfos: PEConnectCandidatInfos): Future[Unit] = {
     val command = InscrireCandidatCommand(
       id = candidatId,
       nom = peConnectCandidatInfos.nom,
       prenom = peConnectCandidatInfos.prenom,
       genre = peConnectCandidatInfos.genre,
-      email = peConnectCandidatInfos.email.getOrElse(throw CandidatPEConnectEmailManquantException),
-      adresse = adresse,
-      statutDemandeurEmploi = statutDemandeurEmploi
+      email = peConnectCandidatInfos.email.getOrElse(throw CandidatPEConnectEmailManquantException)
     )
     for {
       _ <- peConnectAdapter.saveCandidat(CandidatPEConnect(
@@ -167,41 +163,18 @@ class PEConnectController @Inject()(cc: ControllerComponents,
         peConnectId = peConnectCandidatInfos.peConnectId
       ))
       _ <- candidatCommandHandler.handle(command)
-    } yield candidatId
+    } yield ()
   }
 
-  private def connecter(candidatPEConnect: CandidatPEConnect,
-                        peConnectCandidatInfos: PEConnectCandidatInfos,
-                        adresse: Option[Adresse],
-                        statutDemandeurEmploi: Option[StatutDemandeurEmploi]): Future[CandidatId] = {
-    val candidatId = candidatPEConnect.candidatId
-    val command = ConnecterCandidatCommand(
+  private def connecter(candidatId: CandidatId,
+                        peConnectCandidatInfos: PEConnectCandidatInfos): Future[Unit] =
+    candidatCommandHandler.handle(ConnecterCandidatCommand(
       id = candidatId,
       nom = peConnectCandidatInfos.nom,
       prenom = peConnectCandidatInfos.prenom,
       genre = peConnectCandidatInfos.genre,
-      email = peConnectCandidatInfos.email.getOrElse(throw CandidatPEConnectEmailManquantException),
-      adresse = adresse,
-      statutDemandeurEmploi = statutDemandeurEmploi
-    )
-    candidatCommandHandler.handle(command).map(_ => candidatId)
-  }
-
-  private def findAdresseCandidat(accessToken: AccessToken): Future[Option[Adresse]] =
-    peConnectAdapter.adresseCandidat(accessToken).map(Some(_))
-      .recoverWith {
-        case t: Throwable =>
-          logger.error("Erreur lors de la récupération de l'adresse", t)
-          Future.successful(None)
-      }
-
-  private def findStatutDemandeurEmploi(accessToken: AccessToken): Future[Option[StatutDemandeurEmploi]] =
-    peConnectAdapter.statutDemandeurEmploiCandidat(accessToken).map(Some(_))
-      .recoverWith {
-        case t: Throwable =>
-          logger.error("Erreur lors de la récupération du statut demandeur d'emploi", t)
-          Future.successful(None)
-      }
+      email = peConnectCandidatInfos.email.getOrElse(throw CandidatPEConnectEmailManquantException)
+    ))
 }
 
 case object CandidatPEConnectEmailManquantException extends Exception

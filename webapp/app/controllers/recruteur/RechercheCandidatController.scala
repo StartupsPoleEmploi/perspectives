@@ -49,7 +49,7 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
           rechercheCandidatQueryResult <- candidatQueryHandler.handle(query)
           secteursActivitesAvecCandidatsQueryResult <- candidatQueryHandler.handle(SecteursActivitesAvecCandidatsQuery(typeRecruteur))
         } yield {
-          Ok(views.html.recruteur.rechercheCandidat(
+          Ok(views.html.recruteur.rechercheCandidats(
             recruteurAuthentifie = recruteurAuthentifieRequest.recruteurAuthentifie,
             jsData = Json.obj(
               "secteursActivites" -> secteursActivitesAvecCandidatsQueryResult.secteursActivites,

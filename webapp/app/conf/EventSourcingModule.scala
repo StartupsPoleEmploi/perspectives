@@ -52,9 +52,10 @@ class EventSourcingModule extends AbstractModule {
       override val repository: AggregateRepository[Candidat] = candidatRepository
 
       override def configure: PartialFunction[Command[Candidat], Candidat => Future[List[Event]]] = {
-        case command: InscrireCandidatCommand => c => c.inscrire(command, localisationService)
-        case command: ModifierCandidatCommand => c => Future(c.modifierCandidat(command))
-        case command: ConnecterCandidatCommand => c => c.connecter(command, localisationService)
+        case command: InscrireCandidatCommand => c => Future(c.inscrire(command))
+        case command: ConnecterCandidatCommand => c => Future(c.connecter(command))
+        case command: ModifierProfilCandidatCommand => c => c.modifierProfil(command, localisationService)
+        case command: ModifierCriteresRechercheCommand => c => Future(c.modifierCriteresRecherche(command))
         case command: AjouterCVCommand => c => c.ajouterCV(command, cvService)
         case command: RemplacerCVCommand => c => c.remplacerCV(command, cvService)
         case command: AjouterMRSValideesCommand => c => c.ajouterMRSValidee(command, referentielHabiletesMRS)

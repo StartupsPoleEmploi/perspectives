@@ -1,9 +1,9 @@
 package fr.poleemploi.perspectives.commun.infra.peconnect.ws
 
-import java.time.ZonedDateTime
+import java.time.{LocalDateTime, ZonedDateTime}
 
+import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.candidat.mrs.domain.MRSValidee
-import fr.poleemploi.perspectives.candidat.{Adresse, StatutDemandeurEmploi}
 import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
 import play.api.libs.functional.syntax._
@@ -35,7 +35,7 @@ class PEConnectWSMapping {
       nom = Nom(response.familyName),
       prenom = Prenom(response.givenName),
       email = response.email.map(e => Email(e.toLowerCase)),
-      genre = buildGender(response.gender)
+      genre = buildGenre(response.gender)
     )
 
   def buildPEConnectRecruteurInfos(response: UserInfosEntrepriseResponse): PEConnectRecruteurInfos =
@@ -44,7 +44,7 @@ class PEConnectWSMapping {
       nom = Nom(response.familyName),
       prenom = Prenom(response.givenName),
       email = Email(response.email.toLowerCase),
-      genre = buildGender(response.gender),
+      genre = buildGenre(response.gender),
       certifie = buildCertifie(response.habilitation)
     )
 
@@ -63,7 +63,59 @@ class PEConnectWSMapping {
       libellePays = response.libellePays.toLowerCase.capitalize
     )
 
-  private def buildGender(gender: String): Genre = gender match {
+  def buildSavoirEtreProfessionnels(responses: List[CompetenceResponse]): List[SavoirEtre] =
+    responses
+      .filter(_.typeCompetence == TypeCompetenceResponse.SAVOIR_ETRE)
+      .map(c => SavoirEtre(value = c.libelle))
+
+  def buildSavoirFaire(responses: List[CompetenceResponse]): List[SavoirFaire] =
+    responses
+      .filter(_.typeCompetence == TypeCompetenceResponse.SAVOIR_FAIRE_METIER)
+      .map(c => SavoirFaire(
+        niveau = c.niveau.flatMap(buildNiveauSavoirFaire),
+        label = c.libelle
+      ))
+
+  def buildLanguesCandidat(responses: List[LangueResponse]): List[Langue] =
+    responses.map(l => Langue(
+      label = l.libelle,
+      niveau = l.niveau.map(buildNiveauLangue)
+    ))
+
+  def buildCentreInteretsCandidat(responses: List[CentreInteretResponse]): List[CentreInteret] =
+    responses.map(c => CentreInteret(value = c.intitule))
+
+  def buildPermis(responses: List[PermisResponse]): List[Permis] =
+    responses.flatMap(p => p.code.map(c =>
+      Permis(
+        code = c,
+        label = p.libelle
+      )
+    ))
+
+  def buildFormations(responses: List[FormationResponse]): List[Formation] =
+    responses.flatMap(f => f.anneeFin.map(a =>
+      Formation(
+        anneeFin = a,
+        intitule = f.intitule,
+        lieu = f.lieu,
+        domaine = f.domaine.map(d => DomaineFormation(d.libelle)),
+        niveau = f.niveau.map(n => NiveauFormation(n.libelle))
+      )
+    ))
+
+  def buildExperienceProfessionnelles(responses: List[ExperienceProfessionnelleResponse]): List[ExperienceProfessionnelle] =
+    responses.flatMap(e => e.date.flatMap(_.debut).map(dateDebut => ExperienceProfessionnelle(
+      intitule = e.intitule,
+      dateDebut = dateDebut.toLocalDate,
+      dateFin = e.date.flatMap(_.fin).map(_.toLocalDate),
+      enPoste = e.enPoste,
+      nomEntreprise = e.entreprise,
+      lieu = e.lieu,
+      description = e.description
+    )))
+
+  private def buildGenre(gender: String): Genre = gender match {
     case "male" => Genre.HOMME
     case "female" => Genre.FEMME
     case g@_ => throw new IllegalArgumentException(s"Gender non géré : $g")
@@ -72,6 +124,19 @@ class PEConnectWSMapping {
   private def buildCertifie(habilitation: Option[String]): Boolean = habilitation match {
     case Some("recruteurcertifie") => true
     case _ => false
+  }
+
+  private def buildNiveauLangue(niveauLangueResponse: NiveauLangueResponse): NiveauLangue = niveauLangueResponse.code match {
+    case "1" => NiveauLangue.DEBUTANT
+    case "2" => NiveauLangue.INTERMEDIAIRE
+    case "3" => NiveauLangue.COURANT
+  }
+
+  private def buildNiveauSavoirFaire(niveauCompetenceResponse: NiveauCompetenceResponse): Option[NiveauSavoirFaire] = niveauCompetenceResponse.code match {
+    case "0" => None
+    case "1" => Some(NiveauSavoirFaire.DEBUTANT)
+    case "2" => Some(NiveauSavoirFaire.INTERMEDIAIRE)
+    case "3" => Some(NiveauSavoirFaire.AVANCE)
   }
 }
 
@@ -136,17 +201,7 @@ private[ws] case class CoordonneesCandidatReponse(adresse1: Option[String],
 
 private[ws] object CoordonneesCandidatReponse {
 
-  implicit val reads: Reads[CoordonneesCandidatReponse] = (
-    (JsPath \ "adresse1").readNullable[String] and
-      (JsPath \ "adresse2").readNullable[String] and
-      (JsPath \ "adresse3").readNullable[String] and
-      (JsPath \ "adresse4").read[String] and
-      (JsPath \ "codePostal").read[String] and
-      (JsPath \ "codeINSEE").read[String] and
-      (JsPath \ "libelleCommune").read[String] and
-      (JsPath \ "codePays").read[String] and
-      (JsPath \ "libellePays").read[String]
-    ) (CoordonneesCandidatReponse.apply _)
+  implicit val reads: Reads[CoordonneesCandidatReponse] = Json.reads[CoordonneesCandidatReponse]
 }
 
 private[ws] case class StatutCandidatReponse(codeStatutIndividu: String,
@@ -154,10 +209,7 @@ private[ws] case class StatutCandidatReponse(codeStatutIndividu: String,
 
 private[ws] object StatutCandidatReponse {
 
-  implicit val reads: Reads[StatutCandidatReponse] = (
-    (JsPath \ "codeStatutIndividu").read[String] and
-      (JsPath \ "libelleStatutIndividu").read[String]
-    ) (StatutCandidatReponse.apply _)
+  implicit val reads: Reads[StatutCandidatReponse] = Json.reads[StatutCandidatReponse]
 }
 
 private[ws] case class CodeResultatRendezVousResponse(value: String)
@@ -180,4 +232,123 @@ private[ws] case class ResultatRendezVousResponse(codeRome: String,
 private[ws] object ResultatRendezVousResponse {
 
   implicit val reads: Reads[ResultatRendezVousResponse] = Json.reads[ResultatRendezVousResponse]
+}
+
+private[ws] case class TypeCompetenceResponse(value: String)
+
+object TypeCompetenceResponse {
+
+  val SAVOIR_FAIRE_METIER = TypeCompetenceResponse(value = "S")
+  val SAISIE_LIBRE = TypeCompetenceResponse(value = "L")
+  val SAVOIR_ETRE = TypeCompetenceResponse(value = "Q")
+
+  implicit val reads: Reads[TypeCompetenceResponse] =
+    __.readNullable[String].map(_.map(TypeCompetenceResponse(_)).getOrElse(TypeCompetenceResponse("")))
+}
+
+private[ws] case class NiveauCompetenceResponse(code: String,
+                                                libelle: String)
+
+private[ws] object NiveauCompetenceResponse {
+
+  implicit val reads: Reads[NiveauCompetenceResponse] = Json.reads[NiveauCompetenceResponse]
+}
+
+private[ws] case class CompetenceResponse(libelle: String,
+                                          niveau: Option[NiveauCompetenceResponse],
+                                          typeCompetence: TypeCompetenceResponse)
+
+private[ws] object CompetenceResponse {
+
+  implicit val reads: Reads[CompetenceResponse] = (
+    (JsPath \ "libelle").read[String] and
+      (JsPath \ "niveau").readNullable[NiveauCompetenceResponse] and
+      (JsPath \ "type").read[TypeCompetenceResponse]
+    ) (CompetenceResponse.apply _)
+}
+
+private[ws] case class CentreInteretResponse(complement: String,
+                                             intitule: String)
+
+private[ws] object CentreInteretResponse {
+
+  implicit val reads: Reads[CentreInteretResponse] = Json.reads[CentreInteretResponse]
+}
+
+private[ws] case class NiveauLangueResponse(code: String,
+                                            libelle: String)
+
+private[ws] object NiveauLangueResponse {
+
+  implicit val reads: Reads[NiveauLangueResponse] = Json.reads[NiveauLangueResponse]
+}
+
+private[ws] case class LangueResponse(code: Option[String],
+                                      libelle: String,
+                                      niveau: Option[NiveauLangueResponse])
+
+private[ws] object LangueResponse {
+
+  implicit val reads: Reads[LangueResponse] = Json.reads[LangueResponse]
+}
+
+private[ws] case class PermisResponse(code: Option[String],
+                                      libelle: String)
+
+private[ws] object PermisResponse {
+
+  implicit val reads: Reads[PermisResponse] = Json.reads[PermisResponse]
+}
+
+private[ws] case class DomaineFormationResponse(code: String,
+                                                libelle: String)
+
+private[ws] object DomaineFormationResponse {
+
+  implicit val reads: Reads[DomaineFormationResponse] = Json.reads[DomaineFormationResponse]
+}
+
+private[ws] case class NiveauFormationResponse(code: String,
+                                               libelle: String)
+
+private[ws] object NiveauFormationResponse {
+
+  implicit val reads: Reads[NiveauFormationResponse] = Json.reads[NiveauFormationResponse]
+}
+
+private[ws] case class FormationResponse(anneeFin: Option[Int],
+                                         description: Option[String],
+                                         diplomeObtenu: Boolean,
+                                         etranger: Boolean,
+                                         intitule: String,
+                                         lieu: Option[String],
+                                         niveau: Option[NiveauFormationResponse],
+                                         domaine: Option[DomaineFormationResponse])
+
+private[ws] object FormationResponse {
+
+  implicit val reads: Reads[FormationResponse] = Json.reads[FormationResponse]
+}
+
+private[ws] case class DateExperienceProfessionnelleResponse(debut: Option[LocalDateTime],
+                                                             fin: Option[LocalDateTime])
+
+private[ws] object DateExperienceProfessionnelleResponse {
+
+  implicit val reads: Reads[DateExperienceProfessionnelleResponse] = Json.reads[DateExperienceProfessionnelleResponse]
+}
+
+private[ws] case class ExperienceProfessionnelleResponse(date: Option[DateExperienceProfessionnelleResponse],
+                                                         description: Option[String],
+                                                         duree: Option[Long],
+                                                         enPoste: Boolean,
+                                                         entreprise: Option[String],
+                                                         etranger: Boolean,
+                                                         intitule: String,
+                                                         lieu: Option[String])
+
+private[ws] object ExperienceProfessionnelleResponse {
+
+  implicit val reads: Reads[ExperienceProfessionnelleResponse] = Json.reads[ExperienceProfessionnelleResponse]
+
 }

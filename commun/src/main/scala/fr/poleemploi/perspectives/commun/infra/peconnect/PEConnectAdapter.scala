@@ -1,6 +1,5 @@
 package fr.poleemploi.perspectives.commun.infra.peconnect
 
-import fr.poleemploi.perspectives.candidat.{Adresse, StatutDemandeurEmploi}
 import fr.poleemploi.perspectives.commun.infra.peconnect.sql.PEConnectSqlAdapter
 import fr.poleemploi.perspectives.commun.infra.peconnect.ws.{AccessToken, PEConnectCandidatInfos, PEConnectRecruteurInfos, PEConnectWSAdapter}
 
@@ -17,12 +16,6 @@ class PEConnectAdapter(peConnectWSAdapter: PEConnectWSAdapter,
 
   def infosCandidat(accessToken: AccessToken): Future[PEConnectCandidatInfos] =
     peConnectWSAdapter.infosCandidat(accessToken)
-
-  def adresseCandidat(accessToken: AccessToken): Future[Adresse] =
-    peConnectWSAdapter.coordonneesCandidat(accessToken)
-
-  def statutDemandeurEmploiCandidat(accessToken: AccessToken): Future[StatutDemandeurEmploi] =
-    peConnectWSAdapter.statutDemandeurEmploiCandidat(accessToken)
 
   def findRecruteur(peConnectId: PEConnectId): Future[Option[RecruteurPEConnect]] =
     peConnectSqlAdapter.findRecruteur(peConnectId)

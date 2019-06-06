@@ -43,6 +43,9 @@
             "metier": {
               "type": "keyword"
             },
+            "habiletes": {
+              "type": "text"
+            },
             "departement": {
               "type": "keyword"
             },
@@ -50,9 +53,6 @@
               "type": "boolean"
             }
           }
-        },
-        "habiletes": {
-          "type": "text"
         },
         "contact_recruteur": {
           "type": "boolean"
@@ -65,6 +65,86 @@
         },
         "cv_type_media": {
           "enabled": false
+        },
+        "centres_interet": {
+          "type": "text"
+        },
+        "langues": {
+          "properties": {
+            "niveau": {
+              "type": "keyword"
+            },
+            "label": {
+              "type": "text"
+            }
+          }
+        },
+        "permis": {
+          "properties": {
+            "code": {
+              "type": "keyword"
+            },
+            "label": {
+              "type": "text"
+            }
+          }
+        },
+        "savoir_etre": {
+          "type": "text"
+        },
+        "savoir_faire": {
+          "properties": {
+            "niveau": {
+              "type": "keyword"
+            },
+            "label": {
+              "type": "text"
+            }
+          }
+        },
+        "formations": {
+          "properties": {
+            "annee_fin": {
+              "type": "integer"
+            },
+            "intitule": {
+              "type": "text"
+            },
+            "lieu": {
+              "type": "text"
+            },
+            "domaine": {
+              "type": "text"
+            },
+            "niveau": {
+              "type": "text"
+            }
+          }
+        },
+        "experiences_professionnelles": {
+          "properties": {
+            "date_debut": {
+              "type": "date"
+            },
+            "date_fin": {
+              "type": "date"
+            },
+            "en_poste": {
+              "type": "boolean"
+            },
+            "intitule": {
+              "type": "text"
+            },
+            "nom_entreprise": {
+              "type": "text"
+            },
+            "lieu": {
+              "type": "text"
+            },
+            "description": {
+              "type": "text"
+            }
+          }
         },
         "date_inscription": {
           "type": "date"

@@ -26,6 +26,24 @@ object OauthScope {
     OauthScope("prestationIntermediaire")
   )
 
+  val API_COMPETENCES = List(
+    OauthScope("api_peconnect-competencesv2"),
+    OauthScope("pfccompetences"),
+    OauthScope("pfclangues"),
+    OauthScope("pfccentresinteret")
+  )
+
+  val API_EXPERIENCES_PRO = List(
+    OauthScope("api_peconnect-experiencesv1"),
+    OauthScope("pfcexperiences")
+  )
+
+  val API_FORMATIONS = List(
+    OauthScope("api_peconnect-formationsv1"),
+    OauthScope("pfcformations"),
+    OauthScope("pfcpermis")
+  )
+
   val API_ENTREPRISE = List(
     OauthScope("api_peconnect-entreprisev1"),
     OauthScope("openid"),

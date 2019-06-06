@@ -29,14 +29,7 @@ class InscriptionController @Inject()(cc: ControllerComponents,
       nom = Nom("perspectives"),
       prenom = Prenom("mickael"),
       email = Email("mickael.perspectives@mail.com"),
-      genre = Genre.HOMME,
-      adresse = Some(Adresse(
-        voie = "54 rue René Goscinny",
-        codePostal = "85000",
-        libelleCommune = "La Roche sur Yon",
-        libellePays = "France"
-      )),
-      statutDemandeurEmploi = Some(StatutDemandeurEmploi.DEMANDEUR_EMPLOI)
+      genre = Genre.HOMME
     )
     candidatCommandHandler.handle(command).map { _ =>
       val candidatAuthentifie = CandidatAuthentifie(

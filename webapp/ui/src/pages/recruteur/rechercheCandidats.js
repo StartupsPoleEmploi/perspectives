@@ -172,7 +172,7 @@ var app = new Vue({
                     return m.codeROME.indexOf(self.metierChoisi) !== -1;
                 });
                 if (candidat.metiersValides.filter(function(m) {
-                    return m.codeROME.indexOf(self.metierChoisi) !== -1;
+                    return m.metier.codeROME.indexOf(self.metierChoisi) !== -1;
                 }).length == 0 && metier.length > 0) {
                     return metier[0].label;
                 }

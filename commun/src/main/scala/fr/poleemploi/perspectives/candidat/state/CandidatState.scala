@@ -12,13 +12,16 @@ import scala.concurrent.Future
 
 trait CandidatState {
 
-  def inscrire(context: CandidatContext, command: InscrireCandidatCommand, localisationService: LocalisationService): Future[List[Event]] =
-    Future(default(context, command))
-
-  def modifierCandidat(context: CandidatContext, command: ModifierCandidatCommand): List[Event] =
+  def inscrire(context: CandidatContext, command: InscrireCandidatCommand): List[Event] =
     default(context, command)
 
-  def connecter(context: CandidatContext, command: ConnecterCandidatCommand, localisationService: LocalisationService): Future[List[Event]] =
+  def connecter(context: CandidatContext, command: ConnecterCandidatCommand): List[Event] =
+    default(context, command)
+
+  def modifierCriteresRecherche(context: CandidatContext, command: ModifierCriteresRechercheCommand): List[Event] =
+    default(context, command)
+
+  def modifierProfil(context: CandidatContext, command: ModifierProfilCandidatCommand, localisationService: LocalisationService): Future[List[Event]] =
     Future(default(context, command))
 
   def ajouterCV(context: CandidatContext, command: AjouterCVCommand, cvService: CVService): Future[List[Event]] =

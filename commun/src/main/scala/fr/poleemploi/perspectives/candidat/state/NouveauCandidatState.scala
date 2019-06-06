@@ -2,46 +2,17 @@ package fr.poleemploi.perspectives.candidat.state
 
 import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.perspectives.candidat._
-import fr.poleemploi.perspectives.candidat.localisation.domain.LocalisationService
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 object NouveauCandidatState extends CandidatState {
 
   override def inscrire(context: CandidatContext,
-                        command: InscrireCandidatCommand,
-                        localisationService: LocalisationService): Future[List[Event]] = {
-    val candidatInscritEvent = Future.successful(Some(
-      CandidatInscritEvent(
-        candidatId = command.id,
-        nom = command.nom,
-        prenom = command.prenom,
-        email = command.email,
-        genre = command.genre
-      )
+                        command: InscrireCandidatCommand): List[Event] = {
+    List(CandidatInscritEvent(
+      candidatId = command.id,
+      nom = command.nom,
+      prenom = command.prenom,
+      email = command.email,
+      genre = command.genre
     ))
-    val adresseModifieeEvent =
-      command.adresse.map(adresse =>
-        localisationService.localiser(adresse).map(optCoordonnees =>
-          optCoordonnees.map(coordonnees => AdresseModifieeEvent(
-            candidatId = command.id,
-            adresse = adresse,
-            coordonnees = coordonnees
-          ))
-        ).recover {
-          case _: Throwable => None
-        }
-      ).getOrElse(Future.successful(None))
-
-    val statutDemandeurEmploiModifieEvent = Future.successful(command.statutDemandeurEmploi.map(statutDemandeurEmploi =>
-      StatutDemandeurEmploiModifieEvent(
-        candidatId = command.id,
-        statutDemandeurEmploi = statutDemandeurEmploi
-      )
-    ))
-
-    Future.sequence(List(candidatInscritEvent, adresseModifieeEvent, statutDemandeurEmploiModifieEvent))
-      .map(_.flatten)
   }
 }

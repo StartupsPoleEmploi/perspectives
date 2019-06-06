@@ -36,7 +36,15 @@ class WebAppConfig(configuration: Configuration) {
     clientSecret = configuration.get[String]("emploiStore.oauth2.clientSecret"),
     urlAuthentification = configuration.get[String]("emploiStore.candidat.urlAuthentification"),
     realm = "individu",
-    scopes = List(OauthScope.API_INDIVIDU, OauthScope.API_COORDONNEES, OauthScope.API_STATUT, OauthScope.API_PRESTATIONS).flatten
+    scopes = List(
+      OauthScope.API_INDIVIDU,
+      OauthScope.API_COORDONNEES,
+      OauthScope.API_STATUT,
+      OauthScope.API_PRESTATIONS,
+      OauthScope.API_COMPETENCES,
+      OauthScope.API_FORMATIONS,
+      OauthScope.API_EXPERIENCES_PRO
+    ).flatten
   )
 
   val recruteurOauthConfig: OauthConfig = OauthConfig(

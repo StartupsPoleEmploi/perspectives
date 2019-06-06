@@ -1,6 +1,6 @@
 package fr.poleemploi.perspectives.projections.candidat.infra.elasticsearch
 
-import fr.poleemploi.perspectives.candidat.LocalisationRecherche
+import fr.poleemploi.perspectives.candidat.{ExperienceProfessionnelle, Formation, LocalisationRecherche}
 import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
 import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
@@ -46,8 +46,8 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
       longitude = document.longitude
     )
 
-  def buildMetiersValidesQueryResult(document: MetiersValidesDocument): Future[CandidatMetiersValidesQueryResult] =
-    referentielMetier.metiersParCodesROME(document.metiersValides.map(_.metier))
+  def buildMetiersValidesQueryResult(documents: Set[MetierValideDocument]): Future[CandidatMetiersValidesQueryResult] =
+    referentielMetier.metiersParCodesROME(documents.map(_.metier))
       .map(metiersValides => CandidatMetiersValidesQueryResult(metiersValides))
 
   def buildCandidatDepotCVQueryResult(document: CandidatDepotCVDocument): CandidatDepotCVQueryResult =
@@ -90,15 +90,29 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
         nom = d.nom,
         prenom = d.prenom,
         email = d.email,
-        metiersValides = d.metiersValides.map(m => mapMetiersValides.get(m.metier).head.head),
-        habiletes = d.habiletes,
+        metiersValides = d.metiersValides.map(m =>
+          MetierValideDTO(
+            metier = mapMetiersValides.get(m.metier).head.head,
+            habiletes = m.habiletes,
+            departement = m.departement,
+            isDHAE = m.isDHAE
+          )
+        ),
         metiersValidesRecherches = d.metiersValidesRecherches.map(c => mapMetiersValides.get(c).head.head),
         metiersRecherches = d.metiersRecherches.map(c => mapMetiersRecherches.get(c).head.head),
         numeroTelephone = d.numeroTelephone,
         rayonRecherche = d.rayonRecherche.map(buildRayonRecherche),
         commune = d.communeRecherche,
+        codePostal = d.codePostalRecherche,
         cvId = d.cvId,
-        cvTypeMedia = d.cvTypeMedia
+        cvTypeMedia = d.cvTypeMedia,
+        centresInteret = d.centresInteret,
+        langues = d.langues,
+        permis = d.permis,
+        savoirEtre = d.savoirEtre,
+        savoirFaire = d.savoirFaire,
+        formations = d.formations.map(buildFormation).sortWith((f1, f2) => f1.anneeFin > f2.anneeFin),
+        experiencesProfessionnelles = d.experiencesProfessionnelles.map(buildExperienceProfessionnelle).sortWith((e1, e2) => e1.dateDebut.isAfter(e2.dateDebut))
       )).toList
     }
 
@@ -117,8 +131,9 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
           email = d.email,
           statutDemandeurEmploi = d.statutDemandeurEmploi,
           metiersValides = d.metiersValides.map(m =>
-            MetierValideDto(
+            MetierValideDTO(
               metier = mapMetiersValides.get(m.metier).head.head,
+              habiletes = m.habiletes,
               departement = m.departement,
               isDHAE = m.isDHAE
             )
@@ -437,8 +452,57 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
       )
     ))
 
-  private def buildRayonRecherche(document: RayonRechercheDocument): RayonRecherche =
-    RayonRecherche(value = document.value, uniteLongueur = document.uniteLongueur)
+  def buildRayonRecherche(document: RayonRechercheDocument): RayonRecherche =
+    RayonRecherche(
+      value = document.value,
+      uniteLongueur = document.uniteLongueur
+    )
+
+  def buildRayonRechercheDocument(rayonRecherche: RayonRecherche): RayonRechercheDocument =
+    RayonRechercheDocument(
+      value = rayonRecherche.value,
+      uniteLongueur = rayonRecherche.uniteLongueur
+    )
+
+  def buildFormationDocument(formation: Formation): FormationDocument =
+    FormationDocument(
+      anneeFin = formation.anneeFin,
+      intitule = formation.intitule,
+      lieu = formation.lieu,
+      domaine = formation.domaine,
+      niveau = formation.niveau
+    )
+
+  def buildFormation(document: FormationDocument): Formation =
+    Formation(
+      anneeFin = document.anneeFin,
+      intitule = document.intitule,
+      lieu = document.lieu,
+      domaine = document.domaine,
+      niveau = document.niveau
+    )
+
+  def buildExperienceProfessionnelleDocument(experienceProfessionnelle: ExperienceProfessionnelle): ExperienceProfessionnelleDocument =
+    ExperienceProfessionnelleDocument(
+      dateDebut = experienceProfessionnelle.dateDebut,
+      dateFin = experienceProfessionnelle.dateFin,
+      enPoste = experienceProfessionnelle.enPoste,
+      intitule = experienceProfessionnelle.intitule,
+      nomEntreprise = experienceProfessionnelle.nomEntreprise,
+      lieu = experienceProfessionnelle.lieu,
+      description = experienceProfessionnelle.description
+    )
+
+  def buildExperienceProfessionnelle(docuement: ExperienceProfessionnelleDocument): ExperienceProfessionnelle =
+    ExperienceProfessionnelle(
+      dateDebut = docuement.dateDebut,
+      dateFin = docuement.dateFin,
+      enPoste = docuement.enPoste,
+      intitule = docuement.intitule,
+      nomEntreprise = docuement.nomEntreprise,
+      lieu = docuement.lieu,
+      description = docuement.description
+    )
 }
 
 object CandidatProjectionElasticsearchMapping {
@@ -455,11 +519,17 @@ object CandidatProjectionElasticsearchMapping {
   val latitude = "latitude"
   val longitude = "longitude"
   val metiers_valides = "metiers_valides"
-  val habiletes = "habiletes"
   val contact_recruteur = "contact_recruteur"
   val contact_formation = "contact_formation"
   val cv_id = "cv_id"
   val cv_type_media = "cv_type_media"
+  val centres_interet = "centres_interet"
+  val langues = "langues"
+  val permis = "permis"
+  val savoir_etre = "savoir_etre"
+  val savoir_faire = "savoir_faire"
+  val formations = "formations"
+  val experiences_professionnelles = "experiences_professionnelles"
   val date_inscription = "date_inscription"
   val date_derniere_connexion = "date_derniere_connexion"
 

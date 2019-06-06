@@ -88,7 +88,7 @@
                                 {{candidat.prenom}} {{candidat.nom}}
                             </div>
                             <div class="col-4 gtm-recruteur-profils-detail">
-                                {{candidat.metiersValides.map(function(m) {return m.label;}).join(', ')}}
+                                {{candidat.metiersValides.map(function(m) {return m.metier.label;}).join(', ')}}
                             </div>
                             <div class="col-4 gtm-recruteur-profils-detail">
                                 {{interessePar(candidat)}}
@@ -180,5 +180,5 @@
         </section>
     </div>
     @commun.jsData(jsData)
-    <script src="@assetsFinder.path("javascripts/recruteurRechercheCandidat.js")" type="text/javascript"></script>
+    <script src="@assetsFinder.path("javascripts/recruteurRechercheCandidats.js")" type="text/javascript"></script>
 }

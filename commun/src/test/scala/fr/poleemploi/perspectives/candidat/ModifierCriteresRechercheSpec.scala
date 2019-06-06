@@ -6,19 +6,19 @@ import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{AsyncWordSpec, BeforeAndAfter, MustMatchers}
 
-class ModifierCandidatSpec extends AsyncWordSpec
+class ModifierCriteresRechercheSpec extends AsyncWordSpec
   with MustMatchers with MockitoSugar with BeforeAndAfter {
 
   val candidatBuilder = new CandidatBuilder
 
   var localisationRecherche: LocalisationRecherche = _
-  var commande: ModifierCandidatCommand = _
+  var commande: ModifierCriteresRechercheCommand = _
 
   before {
     localisationRecherche = mock[LocalisationRecherche]
     when(localisationRecherche.rayonRecherche) thenReturn None
 
-    commande = ModifierCandidatCommand(
+    commande = ModifierCriteresRechercheCommand(
       id = candidatBuilder.candidatId,
       contactRecruteur = false,
       contactFormation = false,
@@ -30,14 +30,14 @@ class ModifierCandidatSpec extends AsyncWordSpec
     )
   }
 
-  "modifierCriteres" should {
+  "modifierCriteresRecherche" should {
     "renvoyer une erreur lorsque le candidat n'est pas inscrit" in {
       // Given
       val candidat = candidatBuilder.build
 
       // When
       val ex = intercept[IllegalStateException](
-        candidat.modifierCandidat(commande)
+        candidat.modifierCriteresRecherche(commande)
       )
 
       // Then
@@ -49,7 +49,7 @@ class ModifierCandidatSpec extends AsyncWordSpec
 
       // When
       val ex = intercept[IllegalArgumentException](
-        candidat.modifierCandidat(commande.copy(
+        candidat.modifierCriteresRecherche(commande.copy(
           contactRecruteur = true,
           numeroTelephone = None
         ))
@@ -64,7 +64,7 @@ class ModifierCandidatSpec extends AsyncWordSpec
 
       // When
       val ex = intercept[IllegalArgumentException](
-        candidat.modifierCandidat(commande.copy(
+        candidat.modifierCriteresRecherche(commande.copy(
           contactFormation = true,
           numeroTelephone = None
         ))
@@ -79,7 +79,7 @@ class ModifierCandidatSpec extends AsyncWordSpec
 
       // When
       val ex = intercept[IllegalArgumentException](
-        candidat.modifierCandidat(commande.copy(
+        candidat.modifierCriteresRecherche(commande.copy(
           codesROMEValidesRecherches = Set(CodeROME("A1401"))
         ))
       )
@@ -98,7 +98,7 @@ class ModifierCandidatSpec extends AsyncWordSpec
 
       // When
       val ex = intercept[IllegalArgumentException](
-        candidat.modifierCandidat(commande.copy(
+        candidat.modifierCriteresRecherche(commande.copy(
           codesROMEValidesRecherches = Set(CodeROME("A1401"))
         ))
       )
@@ -108,22 +108,22 @@ class ModifierCandidatSpec extends AsyncWordSpec
     }
     "ne pas générer d'événement lorsque rien ne change" in {
       // Given
-      val candidat = candidatInscritEtModifie(commande).build
+      val candidat = candidatInscritAvecCriteres(commande).build
 
       // When
-      val result = candidat.modifierCandidat(commande)
+      val result = candidat.modifierCriteresRecherche(commande)
 
       // Then
       result.isEmpty mustBe true
     }
     "générer un événement lorsque le candidat est inscrit et que le numéro de téléphone est modifié" in {
       // Given
-      val candidat = candidatInscritEtModifie(commande)
+      val candidat = candidatInscritAvecCriteres(commande)
         .avecNumeroTelephone(numeroTelephone = Some(NumeroTelephone("0134767892")))
         .build
 
       // When
-      val result = candidat.modifierCandidat(commande.copy(
+      val result = candidat.modifierCriteresRecherche(commande.copy(
         numeroTelephone = Some(NumeroTelephone("0234567890"))
       ))
 
@@ -132,14 +132,14 @@ class ModifierCandidatSpec extends AsyncWordSpec
     }
     "générer un événement lorsque contactRecruteur est modifié" in {
       // Given
-      val candidat = candidatInscritEtModifie(commande)
+      val candidat = candidatInscritAvecCriteres(commande)
         .avecVisibiliteRecruteur(
           contactRecruteur = Some(false)
         )
         .build
 
       // When
-      val result = candidat.modifierCandidat(commande.copy(
+      val result = candidat.modifierCriteresRecherche(commande.copy(
         contactRecruteur = true,
         numeroTelephone = Some(NumeroTelephone("0123456789"))
       ))
@@ -149,13 +149,13 @@ class ModifierCandidatSpec extends AsyncWordSpec
     }
     "générer un événement lorsque le numero de téléphone est modifié" in {
       // Given
-      val candidat = candidatInscritEtModifie(commande.copy(
+      val candidat = candidatInscritAvecCriteres(commande.copy(
         numeroTelephone = Some(NumeroTelephone("0123456789"))
       ))
         .build
 
       // When
-      val result = candidat.modifierCandidat(commande.copy(
+      val result = candidat.modifierCriteresRecherche(commande.copy(
         numeroTelephone = Some(NumeroTelephone("0988776655"))
       ))
 
@@ -164,14 +164,14 @@ class ModifierCandidatSpec extends AsyncWordSpec
     }
     "générer un événement lorsque contactFormation est modifié" in {
       // Given
-      val candidat = candidatInscritEtModifie(commande)
+      val candidat = candidatInscritAvecCriteres(commande)
         .avecVisibiliteRecruteur(
           contactFormation = Some(false)
         )
         .build
 
       // When
-      val result = candidat.modifierCandidat(commande.copy(
+      val result = candidat.modifierCriteresRecherche(commande.copy(
         contactFormation = true,
         numeroTelephone = Some(NumeroTelephone("0123456789"))
       ))
@@ -185,10 +185,10 @@ class ModifierCandidatSpec extends AsyncWordSpec
       val nouvelleLocalisation = mock[LocalisationRecherche]
       when(nouvelleLocalisation.commune) thenReturn "La Roche Sur Yon"
       when(nouvelleLocalisation.rayonRecherche) thenReturn None
-      val candidat = candidatInscritEtModifie(commande).build
+      val candidat = candidatInscritAvecCriteres(commande).build
 
       // When
-      val result = candidat.modifierCandidat(commande.copy(
+      val result = candidat.modifierCriteresRecherche(commande.copy(
         localisationRecherche = nouvelleLocalisation
       ))
 
@@ -201,10 +201,10 @@ class ModifierCandidatSpec extends AsyncWordSpec
       val nouvelleLocalisation = mock[LocalisationRecherche]
       when(nouvelleLocalisation.codePostal) thenReturn "85000"
       when(nouvelleLocalisation.rayonRecherche) thenReturn None
-      val candidat = candidatInscritEtModifie(commande).build
+      val candidat = candidatInscritAvecCriteres(commande).build
 
       // When
-      val result = candidat.modifierCandidat(commande.copy(
+      val result = candidat.modifierCriteresRecherche(commande.copy(
         localisationRecherche = nouvelleLocalisation
       ))
 
@@ -217,10 +217,10 @@ class ModifierCandidatSpec extends AsyncWordSpec
       val nouvelleLocalisation = mock[LocalisationRecherche]
       when(nouvelleLocalisation.coordonnees) thenReturn Coordonnees(latitude = 1.6, longitude = 48.2)
       when(nouvelleLocalisation.rayonRecherche) thenReturn None
-      val candidat = candidatInscritEtModifie(commande).build
+      val candidat = candidatInscritAvecCriteres(commande).build
 
       // When
-      val result = candidat.modifierCandidat(commande.copy(
+      val result = candidat.modifierCriteresRecherche(commande.copy(
         localisationRecherche = nouvelleLocalisation
       ))
 
@@ -232,10 +232,10 @@ class ModifierCandidatSpec extends AsyncWordSpec
       when(localisationRecherche.rayonRecherche) thenReturn Some(RayonRecherche.MAX_30)
       val nouvelleLocalisation = mock[LocalisationRecherche]
       when(nouvelleLocalisation.rayonRecherche) thenReturn Some(RayonRecherche.MAX_50)
-      val candidat = candidatInscritEtModifie(commande).build
+      val candidat = candidatInscritAvecCriteres(commande).build
 
       // When
-      val result = candidat.modifierCandidat(commande.copy(
+      val result = candidat.modifierCriteresRecherche(commande.copy(
         localisationRecherche = nouvelleLocalisation
       ))
 
@@ -247,7 +247,7 @@ class ModifierCandidatSpec extends AsyncWordSpec
       val codeROMEValide = CodeROME("H3203")
       val mrsValidee = mock[MRSValidee]
       when(mrsValidee.codeROME) thenReturn codeROMEValide
-      val candidat = candidatInscritEtModifie(commande)
+      val candidat = candidatInscritAvecCriteres(commande)
         .avecMRSValidee(mrsValidee)
         .avecCriteresRecherche(
           codesROMEValidesRecherches = Set.empty
@@ -255,7 +255,7 @@ class ModifierCandidatSpec extends AsyncWordSpec
         .build
 
       // When
-      val result = candidat.modifierCandidat(commande.copy(
+      val result = candidat.modifierCriteresRecherche(commande.copy(
         codesROMEValidesRecherches = Set(codeROMEValide)
       ))
 
@@ -264,14 +264,14 @@ class ModifierCandidatSpec extends AsyncWordSpec
     }
     "générer un événement lorsqu'un métier validé est retiré" in {
       // Given
-      val candidat = candidatInscritEtModifie(commande)
+      val candidat = candidatInscritAvecCriteres(commande)
         .avecCriteresRecherche(
           codesROMEValidesRecherches = Set(CodeROME("H3203"))
         )
         .build
 
       // When
-      val result = candidat.modifierCandidat(commande.copy(
+      val result = candidat.modifierCriteresRecherche(commande.copy(
         codesROMEValidesRecherches = commande.codesROMERecherches - CodeROME("H3203")
       ))
 
@@ -280,14 +280,14 @@ class ModifierCandidatSpec extends AsyncWordSpec
     }
     "générer un événement lorsqu'un métier recherché est ajouté" in {
       // Given
-      val candidat = candidatInscritEtModifie(commande)
+      val candidat = candidatInscritAvecCriteres(commande)
         .avecCriteresRecherche(
           codesROMERecherches = Set.empty
         )
         .build
 
       // When
-      val result = candidat.modifierCandidat(commande.copy(
+      val result = candidat.modifierCriteresRecherche(commande.copy(
         codesROMERecherches = commande.codesROMERecherches + CodeROME("H3203")
       ))
 
@@ -296,14 +296,14 @@ class ModifierCandidatSpec extends AsyncWordSpec
     }
     "générer un événement lorsqu'un métier recherché est retiré" in {
       // Given
-      val candidat = candidatInscritEtModifie(commande)
+      val candidat = candidatInscritAvecCriteres(commande)
         .avecCriteresRecherche(
           codesROMERecherches = Set(CodeROME("H3203"))
         )
         .build
 
       // When
-      val result = candidat.modifierCandidat(commande.copy(
+      val result = candidat.modifierCriteresRecherche(commande.copy(
         codesROMERecherches = commande.codesROMERecherches - CodeROME("H3203")
       ))
 
@@ -317,7 +317,7 @@ class ModifierCandidatSpec extends AsyncWordSpec
         .build
 
       // When
-      val result = candidat.modifierCandidat(commande)
+      val result = candidat.modifierCriteresRecherche(commande)
 
       // Then
       val event = result.filter(_.isInstanceOf[CriteresRechercheModifiesEvent]).head.asInstanceOf[CriteresRechercheModifiesEvent]
@@ -335,7 +335,7 @@ class ModifierCandidatSpec extends AsyncWordSpec
         .build
 
       // When
-      val result = candidat.modifierCandidat(commande.copy(
+      val result = candidat.modifierCriteresRecherche(commande.copy(
         numeroTelephone = Some(NumeroTelephone("0988776655"))
       ))
 
@@ -351,7 +351,7 @@ class ModifierCandidatSpec extends AsyncWordSpec
         .build
 
       // When
-      val result = candidat.modifierCandidat(commande)
+      val result = candidat.modifierCriteresRecherche(commande)
 
       // Then
       val event = result.filter(_.isInstanceOf[VisibiliteRecruteurModifieeEvent]).head.asInstanceOf[VisibiliteRecruteurModifieeEvent]
@@ -361,7 +361,7 @@ class ModifierCandidatSpec extends AsyncWordSpec
     }
   }
 
-  private def candidatInscritEtModifie(commande: ModifierCandidatCommand): CandidatBuilder =
+  private def candidatInscritAvecCriteres(commande: ModifierCriteresRechercheCommand): CandidatBuilder =
     candidatBuilder
       .avecInscription()
       .avecCriteresRecherche(

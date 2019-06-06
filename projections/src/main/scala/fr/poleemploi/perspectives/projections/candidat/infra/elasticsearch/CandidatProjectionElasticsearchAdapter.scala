@@ -44,12 +44,18 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
         date_inscription -> dateTimeFormatter.format(event.date),
         date_derniere_connexion -> dateTimeFormatter.format(event.date),
         metiers_valides -> JsArray.empty,
-        habiletes -> JsArray.empty,
         criteres_recherche -> Json.obj(
           "metiers_valides" -> JsArray.empty,
           "metiers" -> JsArray.empty,
           "domaines_professionnels" -> JsArray.empty
-        )
+        ),
+        centres_interet -> JsArray.empty,
+        langues -> JsArray.empty,
+        permis -> JsArray.empty,
+        savoir_etre -> JsArray.empty,
+        savoir_faire -> JsArray.empty,
+        formations -> JsArray.empty,
+        experiences_professionnelles -> JsArray.empty
       )).map(_ => ())
 
   override def onCandidatConnecteEvent(event: CandidatConnecteEvent): Future[Unit] =
@@ -62,7 +68,7 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
       nom -> event.nom,
       prenom -> event.prenom,
       genre -> event.genre,
-      email -> event.email,
+      email -> event.email
     ))
 
   override def onAdresseModifieeEvent(event: AdresseModifieeEvent): Future[Unit] =
@@ -90,10 +96,7 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
           "domaines_professionnels" -> event.codesDomaineProfessionnelRecherches,
           "code_postal" -> event.localisationRecherche.codePostal,
           "commune" -> event.localisationRecherche.commune,
-          "rayon" -> event.localisationRecherche.rayonRecherche.map(r => RayonRechercheDocument(
-            value = r.value,
-            uniteLongueur = r.uniteLongueur
-          )),
+          "rayon" -> event.localisationRecherche.rayonRecherche.map(mapping.buildRayonRechercheDocument),
           "zone" -> mapping.buildZoneDocument(
             coordonnees = event.localisationRecherche.coordonnees,
             rayonRecherche = event.localisationRecherche.rayonRecherche
@@ -103,41 +106,76 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
 
   override def onNumeroTelephoneModifieEvent(event: NumeroTelephoneModifieEvent): Future[Unit] =
     update(event.candidatId, Json.obj(
-      numero_telephone -> event.numeroTelephone,
+      numero_telephone -> event.numeroTelephone
     ))
 
   override def onStatutDemandeurEmploiModifieEvent(event: StatutDemandeurEmploiModifieEvent): Future[Unit] =
     update(event.candidatId, Json.obj(
-      statut_demandeur_emploi -> event.statutDemandeurEmploi,
+      statut_demandeur_emploi -> event.statutDemandeurEmploi
+    ))
+
+  override def onCentresInteretModifiesEvent(event: CentresInteretModifiesEvent): Future[Unit] =
+    update(event.candidatId, Json.obj(
+      centres_interet -> event.centresInteret
+    ))
+
+  override def onLanguesModifieesEvent(event: LanguesModifieesEvent): Future[Unit] =
+    update(event.candidatId, Json.obj(
+      langues -> event.langues
+    ))
+
+  override def onPermisModifiesEvent(event: PermisModifiesEvent): Future[Unit] =
+    update(event.candidatId, Json.obj(
+      permis -> event.permis
+    ))
+
+  override def onSavoirEtreModifiesEvent(event: SavoirEtreModifiesEvent): Future[Unit] =
+    update(event.candidatId, Json.obj(
+      savoir_etre -> event.savoirEtre
+    ))
+
+  override def onSavoirFaireModifiesEvent(event: SavoirFaireModifiesEvent): Future[Unit] =
+    update(event.candidatId, Json.obj(
+      savoir_faire -> event.savoirFaire
+    ))
+
+  override def onFormationsModifieesEvent(event: FormationsModifieesEvent): Future[Unit] =
+    update(event.candidatId, Json.obj(
+      formations -> event.formations.map(mapping.buildFormationDocument)
+    ))
+
+  override def onExperiencesProfessionnellesModifieesEvent(event: ExperiencesProfessionnellesModifieesEvent): Future[Unit] =
+    update(event.candidatId, Json.obj(
+      experiences_professionnelles -> event.experiencesProfessionnelles.map(mapping.buildExperienceProfessionnelleDocument)
     ))
 
   override def onCVAjouteEvent(event: CVAjouteEvent): Future[Unit] =
     update(event.candidatId, Json.obj(
       cv_id -> event.cvId,
-      cv_type_media -> event.typeMedia,
+      cv_type_media -> event.typeMedia
     ))
 
   override def onCVRemplaceEvent(event: CVRemplaceEvent): Future[Unit] =
     update(event.candidatId, Json.obj(
       cv_id -> event.cvId,
-      cv_type_media -> event.typeMedia,
+      cv_type_media -> event.typeMedia
     ))
 
   override def onMRSAjouteeEvent(event: MRSAjouteeEvent): Future[Unit] =
     for {
-      candidat <- wsClient
+      metiersValides <- wsClient
         .url(s"$baseUrl/$indexName/$docType/${event.candidatId.value}")
-        .withQueryStringParameters(refreshParam, ("_source", s"$metiers_valides,$habiletes"))
+        .withQueryStringParameters(refreshParam, ("_source", s"$metiers_valides"))
         .get()
         .flatMap(filtreStatutReponse(_))
-        .map(r => (Json.parse(r.body) \ "_source").as[MetiersValidesDocument])
+        .map(r => (r.json \ "_source" \ s"$metiers_valides").as[Set[MetierValideDocument]])
       _ <- update(event.candidatId, Json.obj(
-        metiers_valides -> (candidat.metiersValides + MetierValideDocument(
+        metiers_valides -> (metiersValides + MetierValideDocument(
           metier = event.codeROME,
+          habiletes = event.habiletes,
           departement = event.departement,
           isDHAE = event.isDHAE
-        )),
-        habiletes -> (event.habiletes ++ candidat.habiletes)
+        ))
       ))
     } yield ()
 
@@ -152,7 +190,7 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
       .url(s"$baseUrl/$indexName/$docType/${query.candidatId.value}")
       .get()
       .flatMap(filtreStatutReponse(_))
-      .flatMap(r => mapping.buildCandidatSaisieCriteresRechercheQueryResult((Json.parse(r.body) \ "_source").as[CandidatSaisieCriteresRechercheDocument]))
+      .flatMap(r => mapping.buildCandidatSaisieCriteresRechercheQueryResult((r.json \ "_source").as[CandidatSaisieCriteresRechercheDocument]))
 
   override def localisation(query: CandidatLocalisationQuery): Future[CandidatLocalisationQueryResult] =
     wsClient
@@ -162,17 +200,17 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
       )
       .get()
       .flatMap(filtreStatutReponse(_))
-      .map(r => mapping.buildCandidatLocalisationQueryResult((Json.parse(r.body) \ "_source").as[CandidatLocalisationDocument]))
+      .map(r => mapping.buildCandidatLocalisationQueryResult((r.json \ "_source").as[CandidatLocalisationDocument]))
 
   override def metiersValides(query: CandidatMetiersValidesQuery): Future[CandidatMetiersValidesQueryResult] =
     wsClient
       .url(s"$baseUrl/$indexName/$docType/${query.candidatId.value}")
       .withQueryStringParameters(
-        ("_source", s"$metiers_valides,$habiletes")
+        ("_source", s"$metiers_valides")
       )
       .get()
       .flatMap(filtreStatutReponse(_))
-      .flatMap(r => mapping.buildMetiersValidesQueryResult((Json.parse(r.body) \ "_source").as[MetiersValidesDocument]))
+      .flatMap(r => mapping.buildMetiersValidesQueryResult((r.json \ "_source" \ s"$metiers_valides").as[Set[MetierValideDocument]]))
 
   override def depotCV(query: CandidatDepotCVQuery): Future[CandidatDepotCVQueryResult] =
     wsClient
@@ -182,7 +220,7 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
       )
       .get()
       .flatMap(filtreStatutReponse(_))
-      .map(r => mapping.buildCandidatDepotCVQueryResult((Json.parse(r.body) \ "_source").as[CandidatDepotCVDocument]))
+      .map(r => mapping.buildCandidatDepotCVQueryResult((r.json \ "_source").as[CandidatDepotCVDocument]))
 
   override def rechercheOffre(query: CandidatPourRechercheOffreQuery): Future[CandidatPourRechercheOffreQueryResult] =
     wsClient
@@ -192,7 +230,7 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
       )
       .get()
       .flatMap(filtreStatutReponse(_))
-      .flatMap(r => mapping.buildCandidatPourRechercheOffreQueryResult((Json.parse(r.body) \ "_source").as[CandidatPourRechercheOffreDocument]))
+      .flatMap(r => mapping.buildCandidatPourRechercheOffreQueryResult((r.json \ "_source").as[CandidatPourRechercheOffreDocument]))
 
   override def candidatContactRecruteur(candidatId: CandidatId): Future[CandidatContactRecruteurQueryResult] =
     wsClient
@@ -202,7 +240,7 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
       )
       .get()
       .flatMap(filtreStatutReponse(_))
-      .map(r => mapping.buildContactRecruteurQueryResult((Json.parse(r.body) \ "_source").as[CandidatContactRecruteurDocument]))
+      .map(r => mapping.buildContactRecruteurQueryResult((r.json \ "_source").as[CandidatContactRecruteurDocument]))
 
   override def listerPourConseiller(query: CandidatsPourConseillerQuery): Future[CandidatsPourConseillerQueryResult] =
     wsClient
@@ -230,10 +268,10 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
 
   def secteursActivitesAvecCandidats(query: SecteursActivitesAvecCandidatsQuery): Future[SecteursActivitesAvecCandidatsQueryResult] =
     wsClient
-    .url(s"$baseUrl/$indexName/_search")
-    .withHttpHeaders(jsonContentType)
-    .post(mapping.buildSecteursActivitesAvecCandidatQuery(query))
-    .flatMap(r => mapping.buildSecteursActivitesAvecCandidatQueryResult(r.json))
+      .url(s"$baseUrl/$indexName/_search")
+      .withHttpHeaders(jsonContentType)
+      .post(mapping.buildSecteursActivitesAvecCandidatQuery(query))
+      .flatMap(r => mapping.buildSecteursActivitesAvecCandidatQueryResult(r.json))
 
   override def rechercherCandidats(query: RechercheCandidatsQuery): Future[RechercheCandidatQueryResult] =
     wsClient

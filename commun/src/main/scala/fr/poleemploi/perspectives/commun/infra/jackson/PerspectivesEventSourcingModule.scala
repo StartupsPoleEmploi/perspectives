@@ -2,7 +2,7 @@ package fr.poleemploi.perspectives.commun.infra.jackson
 
 import fr.poleemploi.eventsourcing.infra.jackson.EventSourcingModule
 import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
-import fr.poleemploi.perspectives.candidat.{CandidatId, StatutCandidat, StatutDemandeurEmploi}
+import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.conseiller.ConseillerId
 import fr.poleemploi.perspectives.recruteur.{NumeroSiret, RecruteurId, StatutRecruteur, TypeRecruteur}
@@ -31,4 +31,10 @@ object PerspectivesEventSourcingModule extends EventSourcingModule {
   addStringValueObject(classOf[TypeMedia], TypeMedia(_))
   addStringValueObject(classOf[Habilete], Habilete)
   addStringValueObject(classOf[UniteLongueur], UniteLongueur(_))
+  addStringValueObject(classOf[CentreInteret], CentreInteret)
+  addStringValueObject(classOf[NiveauLangue], NiveauLangue(_))
+  addStringValueObject(classOf[SavoirEtre], SavoirEtre)
+  addStringValueObject(classOf[NiveauSavoirFaire], NiveauSavoirFaire(_))
+  addStringValueObject(classOf[NiveauFormation], NiveauFormation)
+  addStringValueObject(classOf[DomaineFormation], DomaineFormation)
 }

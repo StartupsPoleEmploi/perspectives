@@ -95,8 +95,8 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
     )
   }
 
-  private def buildModifierCandidatCommand(candidatId: CandidatId, saisieCriteresRechercheForm: SaisieCriteresRechercheForm): ModifierCandidatCommand =
-    ModifierCandidatCommand(
+  private def buildModifierCandidatCommand(candidatId: CandidatId, saisieCriteresRechercheForm: SaisieCriteresRechercheForm): ModifierCriteresRechercheCommand =
+    ModifierCriteresRechercheCommand(
       id = candidatId,
       codesROMEValidesRecherches = saisieCriteresRechercheForm.metiersValidesRecherches.map(CodeROME),
       codesROMERecherches = saisieCriteresRechercheForm.metiersRecherches.map(CodeROME),

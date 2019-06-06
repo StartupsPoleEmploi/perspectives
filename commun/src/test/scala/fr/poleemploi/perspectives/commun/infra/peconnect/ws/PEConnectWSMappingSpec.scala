@@ -2,6 +2,7 @@ package fr.poleemploi.perspectives.commun.infra.peconnect.ws
 
 import java.time.ZonedDateTime
 
+import fr.poleemploi.perspectives.candidat.Permis
 import fr.poleemploi.perspectives.commun.domain.{CodeDepartement, CodeROME}
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
@@ -137,6 +138,35 @@ class PEConnectWSMappingSpec extends WordSpec
 
       // Then
       result.size mustBe 1
+    }
+  }
+  "buildPermis" should {
+    "ne pas renvoyer de permis s'il n'a pas de code" in {
+      // Given
+      val permisResponse = PermisResponse(
+        code = None,
+        libelle = ""
+      )
+
+      // When
+      val result = mapping.buildPermis(List(permisResponse))
+
+      // Then
+      result.isEmpty mustBe true
+    }
+    "renvoyer la liste des permis" in {
+      // Given
+      val permisResponse = PermisResponse(
+        code = Some("B"),
+        libelle = "Véhicule léger"
+      )
+
+      // When
+      val result = mapping.buildPermis(List(permisResponse))
+
+      // Then
+      result.size mustBe 1
+      result.head mustBe Permis(code = "B", label = "Véhicule léger")
     }
   }
 }

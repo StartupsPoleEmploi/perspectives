@@ -1,7 +1,7 @@
 package fr.poleemploi.perspectives.projections.candidat
 
 import fr.poleemploi.cqrs.projection.{Query, QueryResult}
-import fr.poleemploi.perspectives.candidat.CandidatId
+import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
 import fr.poleemploi.perspectives.commun.domain.{Coordonnees, _}
 import fr.poleemploi.perspectives.metier.domain.Metier
@@ -21,25 +21,37 @@ case class CandidatRechercheRecruteurDto(candidatId: CandidatId,
                                          nom: Nom,
                                          prenom: Prenom,
                                          email: Email,
-                                         metiersValides: List[Metier],
-                                         habiletes: Set[Habilete],
+                                         metiersValides: List[MetierValideDTO],
                                          metiersValidesRecherches: List[Metier],
                                          metiersRecherches: List[Metier],
                                          numeroTelephone: NumeroTelephone,
                                          rayonRecherche: Option[RayonRecherche],
                                          commune: String,
+                                         codePostal: String,
                                          cvId: Option[CVId],
-                                         cvTypeMedia: Option[TypeMedia]) {
+                                         cvTypeMedia: Option[TypeMedia],
+                                         centresInteret: List[CentreInteret],
+                                         langues: List[Langue],
+                                         permis: List[Permis],
+                                         savoirEtre: List[SavoirEtre],
+                                         savoirFaire: List[SavoirFaire],
+                                         formations: List[Formation],
+                                         experiencesProfessionnelles: List[ExperienceProfessionnelle]) {
 
   def nomCV: Option[String] = cvTypeMedia.map(t => s"${prenom.value} ${nom.value}.${TypeMedia.getExtensionFichier(t)}")
+
+  def habiletes: List[Habilete] = metiersValides.flatMap(_.habiletes).distinct
 }
 
 object CandidatRechercheRecruteurDto {
 
   import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
 
-  implicit val writes: Writes[CandidatRechercheRecruteurDto] = (c: CandidatRechercheRecruteurDto) =>
-    Json.writes[CandidatRechercheRecruteurDto].writes(c) ++ Json.obj("nomCV" -> c.nomCV)
+  implicit val writes: Writes[CandidatRechercheRecruteurDto] = c =>
+    Json.writes[CandidatRechercheRecruteurDto].writes(c) ++ Json.obj(
+      "nomCV" -> c.nomCV,
+      "habiletes" -> c.habiletes
+    )
 }
 
 case class KeysetRechercherCandidats(score: Option[Int],

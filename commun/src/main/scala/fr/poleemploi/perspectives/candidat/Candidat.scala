@@ -15,14 +15,17 @@ case class Candidat(id: CandidatId,
 
   override type Id = CandidatId
 
-  def inscrire(command: InscrireCandidatCommand, localisationService: LocalisationService): Future[List[Event]] =
-    behavior.inscrire(context = state, command = command, localisationService = localisationService)
+  def inscrire(command: InscrireCandidatCommand): List[Event] =
+    behavior.inscrire(context = state, command = command)
 
-  def modifierCandidat(command: ModifierCandidatCommand): List[Event] =
-    behavior.modifierCandidat(context = state, command = command)
+  def connecter(command: ConnecterCandidatCommand): List[Event] =
+    behavior.connecter(context = state, command = command)
 
-  def connecter(command: ConnecterCandidatCommand, localisationService: LocalisationService): Future[List[Event]] =
-    behavior.connecter(context = state, command = command, localisationService = localisationService)
+  def modifierProfil(command: ModifierProfilCandidatCommand, localisationService: LocalisationService): Future[List[Event]] =
+    behavior.modifierProfil(context = state, command = command, localisationService = localisationService)
+
+  def modifierCriteresRecherche(command: ModifierCriteresRechercheCommand): List[Event] =
+    behavior.modifierCriteresRecherche(context = state, command = command)
 
   def ajouterCV(command: AjouterCVCommand, cvService: CVService): Future[List[Event]] =
     behavior.ajouterCV(context = state, command = command, cvService = cvService)
@@ -60,6 +63,13 @@ private[candidat] case class CandidatContext(statut: StatutCandidat = StatutCand
                                              localisationRecherche: Option[LocalisationRecherche] = None,
                                              numeroTelephone: Option[NumeroTelephone] = None,
                                              cvId: Option[CVId] = None,
+                                             centresInteret: List[CentreInteret] = Nil,
+                                             langues: List[Langue] = Nil,
+                                             permis: List[Permis] = Nil,
+                                             savoirEtre: List[SavoirEtre] = Nil,
+                                             savoirFaire: List[SavoirFaire] = Nil,
+                                             formations: List[Formation] = Nil,
+                                             experiencesProfessionnelles: List[ExperienceProfessionnelle] = Nil,
                                              rechercheEmploi: Option[Boolean] = None) {
 
   def apply(events: List[Event]): CandidatContext =
@@ -103,6 +113,20 @@ private[candidat] case class CandidatContext(statut: StatutCandidat = StatutCand
         )
       case e: StatutDemandeurEmploiModifieEvent =>
         context.copy(statutDemandeurEmploi = Some(e.statutDemandeurEmploi))
+      case e: CentresInteretModifiesEvent =>
+        context.copy(centresInteret = e.centresInteret)
+      case e: LanguesModifieesEvent =>
+        context.copy(langues = e.langues)
+      case e: PermisModifiesEvent =>
+        context.copy(permis = e.permis)
+      case e: SavoirEtreModifiesEvent =>
+        context.copy(savoirEtre = e.savoirEtre)
+      case e: SavoirFaireModifiesEvent =>
+        context.copy(savoirFaire = e.savoirFaire)
+      case e: FormationsModifieesEvent =>
+        context.copy(formations = e.formations)
+      case e: ExperiencesProfessionnellesModifieesEvent =>
+        context.copy(experiencesProfessionnelles = e.experiencesProfessionnelles)
       case e: CVAjouteEvent =>
         context.copy(cvId = Some(e.cvId))
       case e: CVRemplaceEvent =>
