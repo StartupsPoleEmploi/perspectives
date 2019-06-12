@@ -221,7 +221,7 @@ var app = new Vue({
         afficherNumeroTelephone: function(candidatId) {
             this.display.numTelephones.push(candidatId);
         },
-        copierNumeroTelephone(candidatId) {
+        copierNumeroTelephone: function(candidatId) {
             document.querySelector("#js-numeroTelephone-" + candidatId).select();
             document.execCommand("copy");
 
