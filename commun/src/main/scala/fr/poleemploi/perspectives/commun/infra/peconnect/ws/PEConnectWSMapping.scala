@@ -66,7 +66,7 @@ class PEConnectWSMapping {
   def buildSavoirEtreProfessionnels(responses: List[CompetenceResponse]): List[SavoirEtre] =
     responses
       .filter(_.typeCompetence == TypeCompetenceResponse.SAVOIR_ETRE)
-      .map(c => SavoirEtre(value = c.libelle))
+      .map(c => SavoirEtre(c.libelle))
 
   def buildSavoirFaire(responses: List[CompetenceResponse]): List[SavoirFaire] =
     responses

@@ -33,7 +33,7 @@ object JsonFormats {
   implicit val formatNiveauLangue: Format[NiveauLangue] = formatStringValueObject(NiveauLangue(_))
   implicit val formatLangue: Format[Langue] = Json.format[Langue]
   implicit val formatPermis: Format[Permis] = Json.format[Permis]
-  implicit val formatSavoirEtre: Format[SavoirEtre] = formatStringValueObject(SavoirEtre)
+  implicit val formatSavoirEtre: Format[SavoirEtre] = formatStringValueObject(SavoirEtre(_))
   implicit val formatNiveauSavoirFaire: Format[NiveauSavoirFaire] = formatStringValueObject(NiveauSavoirFaire(_))
   implicit val formatSavoirFaire: Format[SavoirFaire] = Json.format[SavoirFaire]
   implicit val formatNiveauFormation: Format[NiveauFormation] = formatStringValueObject(NiveauFormation)

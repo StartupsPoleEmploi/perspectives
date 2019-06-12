@@ -33,7 +33,7 @@ object PerspectivesEventSourcingModule extends EventSourcingModule {
   addStringValueObject(classOf[UniteLongueur], UniteLongueur(_))
   addStringValueObject(classOf[CentreInteret], CentreInteret)
   addStringValueObject(classOf[NiveauLangue], NiveauLangue(_))
-  addStringValueObject(classOf[SavoirEtre], SavoirEtre)
+  addStringValueObject(classOf[SavoirEtre], SavoirEtre(_))
   addStringValueObject(classOf[NiveauSavoirFaire], NiveauSavoirFaire(_))
   addStringValueObject(classOf[NiveauFormation], NiveauFormation)
   addStringValueObject(classOf[DomaineFormation], DomaineFormation)
