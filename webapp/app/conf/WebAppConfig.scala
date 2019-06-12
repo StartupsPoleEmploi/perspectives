@@ -5,7 +5,7 @@ import fr.poleemploi.perspectives.candidat.localisation.infra.algolia.AlgoliaPla
 import fr.poleemploi.perspectives.candidat.localisation.infra.ws.LocalisationWSAdapterConfig
 import fr.poleemploi.perspectives.commun.infra.Environnement
 import fr.poleemploi.perspectives.commun.infra.elasticsearch.EsConfig
-import fr.poleemploi.perspectives.commun.infra.oauth.{OauthConfig, OauthScope}
+import fr.poleemploi.perspectives.commun.infra.oauth.{EmploiStoreOauthScopeBuilder, OauthConfig}
 import fr.poleemploi.perspectives.commun.infra.peconnect.ws.PEConnectWSAdapterConfig
 import fr.poleemploi.perspectives.commun.infra.slack.SlackConfig
 import fr.poleemploi.perspectives.conseiller.ConseillerId
@@ -31,20 +31,21 @@ class WebAppConfig(configuration: Configuration) {
   val environnement: Environnement = Environnement.from(configuration.get[String]("environnement"))
   val version: String = BuildInfo.version
 
+  val emploiStoreOauthScopeBuilder = new EmploiStoreOauthScopeBuilder(Environnement.PRODUCTION)
   val candidatOauthConfig: OauthConfig = OauthConfig(
     clientId = configuration.get[String]("emploiStore.oauth2.clientId"),
     clientSecret = configuration.get[String]("emploiStore.oauth2.clientSecret"),
     urlAuthentification = configuration.get[String]("emploiStore.candidat.urlAuthentification"),
     realm = "individu",
-    scopes = List(
-      OauthScope.API_INDIVIDU,
-      OauthScope.API_COORDONNEES,
-      OauthScope.API_STATUT,
-      OauthScope.API_PRESTATIONS,
-      OauthScope.API_COMPETENCES,
-      OauthScope.API_FORMATIONS,
-      OauthScope.API_EXPERIENCES_PRO
-    ).flatten
+    scopes = emploiStoreOauthScopeBuilder
+        .avecApiIndividu
+        .avecApiCoordonnees
+        .avecApiStatut
+        .avecApiPrestations
+        .avecApiCompetences
+        .avecApiFormations
+        .avecApiExperiencesProfessionnelles
+        .build
   )
 
   val recruteurOauthConfig: OauthConfig = OauthConfig(
@@ -52,7 +53,7 @@ class WebAppConfig(configuration: Configuration) {
     clientSecret = configuration.get[String]("emploiStore.oauth2.clientSecret"),
     urlAuthentification = configuration.get[String]("emploiStore.entreprise.urlAuthentification"),
     realm = "employeur",
-    scopes = OauthScope.API_ENTREPRISE
+    scopes = emploiStoreOauthScopeBuilder.avecApiEntreprise.build
   )
 
   val partenaireOauthConfig: OauthConfig = OauthConfig(
@@ -60,10 +61,7 @@ class WebAppConfig(configuration: Configuration) {
     clientSecret = configuration.get[String]("emploiStore.oauth2.clientSecret"),
     urlAuthentification = configuration.get[String]("emploiStore.entreprise.urlAuthentification"),
     realm = "partenaire",
-    scopes = OauthScope.API_OFFRE ++
-      (if (Environnement.PRODUCTION == environnement)
-        List(OauthScope.API_OFFRE_QOS_SILVER)
-      else Nil)
+    scopes = emploiStoreOauthScopeBuilder.avecApiOffre.build
   )
 
   val peConnectWSAdapterConfig: PEConnectWSAdapterConfig = PEConnectWSAdapterConfig(
