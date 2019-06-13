@@ -22,7 +22,7 @@
     </head>
     <body>
         @if(webAppConfig.useGoogleTagManager) {@commun.googleTagManagerNoScript()}
-        @commun.navigation(partials.menuCandidat(candidatAuthentifie))
+        @commun.navigation(menuNavigation = partials.menuCandidat(candidatAuthentifie), theme = Some("themeCandidat"))
         @commun.flashMessages()
 
         @content

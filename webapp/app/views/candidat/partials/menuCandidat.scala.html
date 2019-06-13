@@ -5,8 +5,8 @@
 <nav class="menuNavigation">
     @candidatAuthentifie.map { candidatAuthentifie =>
     <div class="menuNavigation-item menuConnexion">
-        <img alt="Candidat connecté" class="menuConnexion-icone" src="@assetsFinder.path("images/modules/menuNavigation/connecte.svg")">
-        <span class="menuConnexion-titre--connecte">@candidatAuthentifie.prenom.value @candidatAuthentifie.nom.value</span>
+        <img alt="Candidat connecté" class="menuConnexion-icone menuConnexion-icone--themeCandidat" src="@assetsFinder.path("images/modules/menuNavigation/connecte.svg")">
+        <span class="texte-vert-emeraude text-capitalize font-size-sm font-weight-bold">@candidatAuthentifie.prenom.value @candidatAuthentifie.nom.value</span>
         <ul class="menuConnexionActions">
             <li class="menuConnexionActions-item">
                 <a class="menuConnexionActions-lien" href="@controllers.candidat.routes.SaisieCriteresRechercheController.saisieCriteresRecherche()">
@@ -29,10 +29,10 @@
         </ul>
     </div>
     }.getOrElse {
-        <a class="menuNavigation-item menuNavigation-lien menuNavigation-lien--actif" href="#">Trouver un emploi</a>
+        <a class="menuNavigation-item menuNavigation-lien menuNavigation-lien--themeCandidat" href="#">Trouver un emploi</a>
         <a class="menuNavigation-item menuNavigation-lien menuNavigation-lien--inactif" href="@controllers.recruteur.routes.LandingController.landing()">Recruter un candidat</a>
         <div class="menuNavigation-item menuConnexion menuConnexion--deconnecte">
-            <span class="menuConnexion-titre--deconnecte">Se connecter</span>
+            <span class="texte-noir">Se connecter</span>
             <ul class="menuConnexionActions">
                 <li class="menuConnexionActions-item">
                     <a class="menuConnexionActions-lien gtm-candidat-connexion" href="@controllers.candidat.routes.InscriptionController.inscription()">

@@ -17,7 +17,7 @@
         @commun.polyfill()
     </head>
     <body>
-        @commun.navigation(partials.menuConseiller(conseillerAuthentifie))
+        @commun.navigation(menuNavigation = partials.menuConseiller(conseillerAuthentifie), theme = Some("themeConseiller"))
         @commun.flashMessages()
 
         @content

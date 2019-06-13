@@ -20,7 +20,7 @@
     </head>
     <body>
         @if(webAppConfig.useGoogleTagManager) {@commun.googleTagManagerNoScript()}
-        @commun.navigation(partials.menuRecruteur(recruteurAuthentifie))
+        @commun.navigation(menuNavigation = partials.menuRecruteur(recruteurAuthentifie), theme = Some("themeRecruteur"))
         @commun.flashMessages()
 
         @content

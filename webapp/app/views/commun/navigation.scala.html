@@ -1,7 +1,7 @@
 @import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
 @import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
 
-@(menuNavigation: Html)(implicit assetsFinder: AssetsFinder)
+@(menuNavigation: Html, theme: Option[String] = None)(implicit assetsFinder: AssetsFinder)
 
 <header class="container py-3">
     <div class="row align-items-center">
@@ -9,14 +9,15 @@
             <h2 class="sr-only">Perspectives</h2>
             <p class="sr-only">Mettre en relation des candidats validés par la méthode de recrutement par simulation, avec des employeurs
                 et des formations à la recherche de leur aptitude</p>
-            <img class="navigation-logo" alt="Perspectives" src="@assetsFinder.path("images/commun/logo-perspective.svg")" width="222" height="50" />
+            <img class="w-100" alt="Perspectives" src="@assetsFinder.path("images/commun/logo-perspective.svg")" width="222" height="50" />
         </div>
         <div class="col-3 col-lg-auto js-navigation-conteneurLogo">
-            <img class="navigation-logo" alt="Pôle emploi" src="@assetsFinder.path("images/commun/logo-pole-emploi.svg")" width="129" height="34" />
+            <img class="w-100" alt="Pôle emploi" src="@assetsFinder.path("images/commun/logo-pole-emploi.svg")" width="129" height="34" />
         </div>
         <div class="col-auto ml-auto d-lg-none text-right">
-            <img alt="Ouvrir menu navigation" class="js-navigation-iconeOuverture" src="@assetsFinder.path("images/modules/menuNavigation/ouvrir-menu.svg")"/>
-            <span class="texte-vert-emeraude burgerMenu-iconeFermeture js-navigation-iconeFermeture">&times;</span>
+            <img alt="Ouvrir menu navigation" class="js-navigation-iconeOuverture @theme.map(t => s"burgerMenu-iconeOuverture--$t")"
+                 src="@assetsFinder.path("images/modules/menuNavigation/ouvrir-menu.svg")"/>
+            <span class="texte-vert-emeraude burgerMenu-iconeFermeture @theme.map(t => s"burgerMenu-iconeFermeture--$t") js-navigation-iconeFermeture">&times;</span>
         </div>
         <div class="col-12 col-lg-auto ml-lg-auto navigation-conteneurMenu js-navigation-conteneurMenu">
             @menuNavigation

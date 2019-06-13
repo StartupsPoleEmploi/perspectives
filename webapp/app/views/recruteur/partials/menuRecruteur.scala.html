@@ -5,8 +5,8 @@
 <nav class="menuNavigation">
     @recruteurAuthentifie.map { recruteurAuthentifie =>
     <div class="menuNavigation-item menuConnexion">
-        <img alt="Recruteur connecté" class="menuConnexion-icone" src="@assetsFinder.path("images/modules/menuNavigation/connecte.svg")">
-        <span class="menuConnexion-titre--connecte">@recruteurAuthentifie.prenom.value @recruteurAuthentifie.nom.value</span>
+        <img alt="Recruteur connecté" class="menuConnexion-icone menuConnexion-icone--themeRecruteur" src="@assetsFinder.path("images/modules/menuNavigation/connecte.svg")">
+        <span class="texte-violet text-capitalize font-size-sm font-weight-bold">@recruteurAuthentifie.prenom.value @recruteurAuthentifie.nom.value</span>
         <ul class="menuConnexionActions">
             <li class="menuConnexionActions-item">
                 <a class="menuConnexionActions-lien" href="@controllers.recruteur.routes.ProfilController.modificationProfil()">
@@ -24,9 +24,9 @@
     </div>
     }.getOrElse {
         <a class="menuNavigation-item menuNavigation-lien menuNavigation-lien--inactif" href="@controllers.candidat.routes.LandingController.landing()">Trouver un emploi</a>
-        <a class="menuNavigation-item menuNavigation-lien menuNavigation-lien--actif" href="#">Recruter un candidat</a>
+        <a class="menuNavigation-item menuNavigation-lien menuNavigation-lien--themeRecruteur" href="#">Recruter un candidat</a>
         <div class="menuNavigation-item menuConnexion menuConnexion--deconnecte">
-            <span class="menuConnexion-titre--deconnecte">Se connecter</span>
+            <span class="texte-noir">Se connecter</span>
             <ul class="menuConnexionActions">
                 <li class="menuConnexionActions-item">
                     <a class="menuConnexionActions-lien gtm-recruteur-connexion" href="@controllers.recruteur.routes.InscriptionController.inscription()">

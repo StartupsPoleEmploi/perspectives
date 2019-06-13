@@ -1,9 +1,5 @@
 .navigation {
 
-  &-logo {
-    width: 100%;
-  }
-
   &-conteneurMenu {
     @include media-breakpoint-down(md) {
       display: none;
@@ -12,9 +8,30 @@
 }
 
 .burgerMenu {
+  &-iconeOuverture {
+    &--themeCandidat {
+      filter: url('/assets/images/modules/menuNavigation/ouvrir-menu.svg#themeCandidat');
+    }
+    &--themeRecruteur {
+      filter: url('/assets/images/modules/menuNavigation/ouvrir-menu.svg#themeRecruteur');
+    }
+    &--themeConseiller {
+      filter: url('/assets/images/modules/menuNavigation/ouvrir-menu.svg#themeConseiller');
+    }
+  }
   &-iconeFermeture {
     font-size: 2rem;
     display: none;
+
+    &--themeCandidat {
+      color: $vert-emeraude;
+    }
+    &--themeRecruteur {
+      color: $violet;
+    }
+    &--themeConseiller {
+      color: $noir;
+    }
   }
 }
 
@@ -43,7 +60,7 @@
       text-decoration: none;
     }
 
-    &--actif {
+    &--themeCandidat {
       color: $vert-emeraude;
       border-bottom: 2px solid $vert-emeraude;
 
@@ -52,11 +69,20 @@
       }
     }
 
-    &--inactif {
-      color: #798182;
+    &--themeRecruteur {
+      color: $violet;
+      border-bottom: 2px solid $violet;
 
       &:hover {
-        color: #798182;
+        color: $violet;
+      }
+    }
+
+    &--inactif {
+      color: $gris;
+
+      &:hover {
+        color: $gris;
       }
     }
   }
@@ -94,23 +120,20 @@
     margin-top: 1rem;
   }
 
-  &-titre {
-    &--connecte {
-      color: $vert-emeraude;
-      font-size: 0.875rem;
-      font-weight: 600;
-      text-transform: capitalize;
-    }
-    &--deconnecte {
-      color: $noir;
-      font-size: 0.75rem;
-    }
-  }
-
   &-icone {
     height: 16px;
     width: 16px;
     margin-right: 1rem;
+
+    &--themeCandidat {
+      filter: url('/assets/images/modules/menuNavigation/connecte.svg#themeCandidat');
+    }
+    &--themeRecruteur {
+      filter: url('/assets/images/modules/menuNavigation/connecte.svg#themeRecruteur');
+    }
+    &--themeConseiller {
+      filter: url('/assets/images/modules/menuNavigation/connecte.svg#themeConseiller');
+    }
   }
 }
 
