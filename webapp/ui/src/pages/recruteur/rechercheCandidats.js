@@ -16,54 +16,6 @@ $(document).ready(function () {
     modaleVideoYoutube.on("hidden.bs.modal", function () {
         videoMRSYoutube.attr("src", "");
     });
-
-    (function() {
-        var commentaireRecruteur = $("#commentaireRecruteur");
-        var formulaire = $("#commentaireListeCandidatsForm");
-        var titre = $("#js-titreCommentaireRecruteur");
-        var label = $("#js-labelCommentaireRecruteur");
-        var actions = $("#js-commentaireActions");
-        var commenterListeCandidats = $("#commenterListeCandidats");
-
-        var initialiserFormulaire = function(labelCommentaire) {
-            titre.text('Vous êtes satisfait(e)s de la liste qui vous est proposé ?');
-            label.html(labelCommentaire);
-            actions.hide();
-            formulaire.show();
-        };
-
-        $("#js-satisfait").click(function() {
-            initialiserFormulaire('<p>Parfait!</p>Si vous le souhaitez, vous pouvez nous envoyer des suggestions :');
-        });
-        $("#js-insatisfait").click(function() {
-            initialiserFormulaire('Oups ! Nous sommes ouverts à vos retours !');
-        });
-        $("#js-envoyerCommentaire").click(function(e) {
-            e.preventDefault();
-            $("#js-commentaireSecteurActivite").val($("#js-secteursActivites-selecteur option:selected").text());
-            $("#js-commentaireMetier").val($("#js-metiers-selecteur option:selected").text());
-            $("#js-commentaireLocalisation").val($("#js-localisation").val());
-            if (commentaireRecruteur.val() !== '') {
-                $.ajax({
-                    type: "POST",
-                    url: "/recruteur/recherche/commenterListeCandidats",
-                    data: formulaire.serializeArray(),
-                    dataType: 'text'
-                }).done(function () {
-                    commenterListeCandidats.append('<p class="alert alert-success">Merci pour votre commentaire</p>');
-                }).fail(function () {
-                    commenterListeCandidats.append('<p class="alert alert-danger">Une erreur est survenue, veuillez réessayer ultérieurement</p>');
-                }).always(function () {
-                    formulaire.hide();
-                    commenterListeCandidats.delay(2000).slideUp(400, function() {
-                        window.location.hash = 'rechercheCandidat';
-                    });
-                });
-            }
-        });
-
-        return {};
-    })();
 });
 
 var app = new Vue({

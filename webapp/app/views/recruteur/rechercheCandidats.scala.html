@@ -150,34 +150,6 @@
                     v-on:charger-page-suivante="chargerPageSuivante"
                     v-on:charger-page-precedente="chargerPagePrecedente"
                     v-bind:pages-initiales="resultatRecherche.pages"></pagination>
-        <section class="commentaireRecruteur-arrierePlan">
-            <div class="commentaireRecruteur" id="commenterListeCandidats">
-                <h2 class="commentaireRecruteur-titre" id="js-titreCommentaireRecruteur">Êtes-vous satisfait(e) de cette liste de candidats ?</h2>
-                <div class="commentaireRecruteur-actions" id="js-commentaireActions">
-                    <a href="#commenterListeCandidats" id="js-satisfait"
-                        class="commentaireRecruteur-action bouton bouton--noir">
-                        Oui
-                    </a>
-                    <a href="#commenterListeCandidats" id="js-insatisfait"
-                        class="commentaireRecruteur-action bouton bouton--noir">
-                        Non
-                    </a>
-                </div>
-                @form(action = controllers.recruteur.routes.RechercheCandidatController.commenterListeCandidats(),
-                    'id -> "commentaireListeCandidatsForm",
-                    'class -> "commentaireRecruteur-formulaire") {
-                    @CSRF.formField
-                    <input type="hidden" name="secteurActiviteRecherche" id="js-commentaireSecteurActivite" value=""/>
-                    <input type="hidden" name="metierRecherche" id="js-commentaireMetier" value=""/>
-                    <input type="hidden" name="localisationRecherche" id="js-commentaireLocalisation" value=""/>
-                    <label id="js-labelCommentaireRecruteur" for="commentaireRecruteur" class="commentaireRecruteur-label"></label>
-                    <textarea id="commentaireRecruteur" name="commentaire" class="zoneTexte" rows="6" cols="50" required maxlength="300"></textarea>
-                    <div class="envoyerCommentaire">
-                        <button id="js-envoyerCommentaire" class="envoyerCommentaire-bouton bouton bouton--fondBleu">Envoyer</button>
-                    </div>
-                }
-            </div>
-        </section>
     </div>
     @commun.jsData(jsData)
     <script src="@assetsFinder.path("javascripts/recruteurRechercheCandidats.js")" type="text/javascript"></script>

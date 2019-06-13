@@ -13,7 +13,6 @@ import fr.poleemploi.perspectives.projections.candidat._
 import fr.poleemploi.perspectives.projections.candidat.cv.CVCandidatPourRecruteurQuery
 import fr.poleemploi.perspectives.projections.recruteur._
 import fr.poleemploi.perspectives.recruteur._
-import fr.poleemploi.perspectives.recruteur.commentaire.domain.ContexteRecherche
 import javax.inject.{Inject, Singleton}
 import play.api.http.HttpEntity
 import play.api.libs.json.Json
@@ -126,27 +125,6 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
       case _: UnauthorizedQueryException =>
         Redirect(routes.LandingController.landing()).flashing(recruteurAuthentifieRequest.flash.withMessageErreur("Vous n'êtes pas autorisé à accéder à cette ressource"))
     }
-  }
-
-  def commenterListeCandidats: Action[AnyContent] = recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
-    messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
-      CommenterListeCandidatsForm.form.bindFromRequest.fold(
-        formWithErrors => Future.successful(BadRequest(formWithErrors.errorsAsJson)),
-        commenterListeCandidatsForm => {
-          recruteurCommandHandler.handle(
-            CommenterListeCandidatsCommand(
-              id = recruteurAuthentifieRequest.recruteurId,
-              contexteRecherche = ContexteRecherche(
-                secteurActivite = commenterListeCandidatsForm.secteurActiviteRecherche,
-                metier = commenterListeCandidatsForm.metierRecherche,
-                localisation = commenterListeCandidatsForm.localisationRecherche
-              ),
-              commentaire = commenterListeCandidatsForm.commentaire
-            )
-          ).map(_ => NoContent)
-        }
-      )
-    }(recruteurAuthentifieRequest)
   }
 }
 

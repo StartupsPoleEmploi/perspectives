@@ -2,10 +2,7 @@ package fr.poleemploi.perspectives.recruteur
 
 import fr.poleemploi.eventsourcing.{Aggregate, Event}
 import fr.poleemploi.perspectives.commun.domain._
-import fr.poleemploi.perspectives.recruteur.commentaire.domain.CommentaireService
 import fr.poleemploi.perspectives.recruteur.state.{NouveauRecruteurState, RecruteurInscritState, RecruteurProfilCompletState, RecruteurState}
-
-import scala.concurrent.Future
 
 case class Recruteur(id: RecruteurId,
                      version: Int,
@@ -21,10 +18,6 @@ case class Recruteur(id: RecruteurId,
 
   def connecter(command: ConnecterRecruteurCommand): List[Event] =
     behavior.connecter(context = state, command = command)
-
-  def commenterListeCandidats(command: CommenterListeCandidatsCommand,
-                              commentaireService: CommentaireService): Future[List[Event]] =
-    behavior.commenterListeCandidats(context = state, command = command, commentaireService = commentaireService)
 
   private def behavior: RecruteurState = state.statut match {
     case StatutRecruteur.NOUVEAU => NouveauRecruteurState

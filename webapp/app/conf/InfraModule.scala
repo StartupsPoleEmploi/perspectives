@@ -42,8 +42,6 @@ import fr.poleemploi.perspectives.projections.candidat.infra.slack.CandidatNotif
 import fr.poleemploi.perspectives.projections.recruteur.infra.local.RecruteurNotificationLocalAdapter
 import fr.poleemploi.perspectives.projections.recruteur.infra.slack.RecruteurNotificationSlackAdapter
 import fr.poleemploi.perspectives.projections.recruteur.infra.sql.RecruteurProjectionSqlAdapter
-import fr.poleemploi.perspectives.recruteur.commentaire.infra.local.CommentaireLocalAdapter
-import fr.poleemploi.perspectives.recruteur.commentaire.infra.slack.CommentaireSlackAdapter
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
 import play.api.cache.AsyncCacheApi
@@ -309,18 +307,6 @@ class InfraModule extends AbstractModule with ScalaModule {
   @Provides
   def referentielHabiletesMRSLocalAdapter: ReferentielHabiletesMRSLocalAdapter =
     new ReferentielHabiletesMRSLocalAdapter()
-
-  @Provides
-  def commentaireLocalAdapter: CommentaireLocalAdapter =
-    new CommentaireLocalAdapter
-
-  @Provides
-  def commentaireSlackAdapter(wsClient: WSClient,
-                              webAppConfig: WebAppConfig): CommentaireSlackAdapter =
-    new CommentaireSlackAdapter(
-      wsClient = wsClient,
-      config = webAppConfig.slackConfig
-    )
 
   @Provides
   def localisationLocalAdapter: LocalisationLocalAdapter =

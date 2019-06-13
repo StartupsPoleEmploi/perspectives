@@ -20,9 +20,6 @@ import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapter
 import fr.poleemploi.perspectives.offre.domain.ReferentielOffre
 import fr.poleemploi.perspectives.offre.infra.local.ReferentielOffreLocalAdapter
 import fr.poleemploi.perspectives.offre.infra.ws.ReferentielOffreWSAdapter
-import fr.poleemploi.perspectives.recruteur.commentaire.domain.CommentaireService
-import fr.poleemploi.perspectives.recruteur.commentaire.infra.local.CommentaireLocalAdapter
-import fr.poleemploi.perspectives.recruteur.commentaire.infra.slack.CommentaireSlackAdapter
 
 class ServicesModule extends AbstractModule {
 
@@ -79,16 +76,6 @@ class ServicesModule extends AbstractModule {
       referentielMetierWSAdapter.get()
     else
       referentielMetierLocalAdapter.get()
-
-  @Provides
-  @Singleton
-  def commentaireService(commentaireSlackAdapter: Provider[CommentaireSlackAdapter],
-                         commentaireServiceLocal: Provider[CommentaireLocalAdapter],
-                         webAppConfig: WebAppConfig): CommentaireService =
-    if (webAppConfig.useSlackNotification)
-      commentaireSlackAdapter.get()
-    else
-      commentaireServiceLocal.get()
 
   @Provides
   @Singleton

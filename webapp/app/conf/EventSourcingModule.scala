@@ -13,7 +13,6 @@ import fr.poleemploi.perspectives.candidat.localisation.domain.LocalisationServi
 import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielHabiletesMRS
 import fr.poleemploi.perspectives.commun.infra.play.http.HttpCommandHandler
 import fr.poleemploi.perspectives.recruteur._
-import fr.poleemploi.perspectives.recruteur.commentaire.domain.CommentaireService
 import javax.inject.Singleton
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -89,8 +88,7 @@ class EventSourcingModule extends AbstractModule {
 
   @Provides
   @Singleton
-  def recruteurCommandHandler(recruteurRepository: RecruteurRepository,
-                              commentaireService: CommentaireService): RecruteurCommandHandler =
+  def recruteurCommandHandler(recruteurRepository: RecruteurRepository): RecruteurCommandHandler =
     new RecruteurCommandHandler {
       override val repository: AggregateRepository[Recruteur] = recruteurRepository
 
@@ -98,7 +96,6 @@ class EventSourcingModule extends AbstractModule {
         case command: InscrireRecruteurCommand => r => Future(r.inscrire(command))
         case command: ConnecterRecruteurCommand => r => Future(r.connecter(command))
         case command: ModifierProfilCommand => r => Future(r.modifierProfil(command))
-        case command: CommenterListeCandidatsCommand => r => r.commenterListeCandidats(command, commentaireService)
       }
     }
 }
