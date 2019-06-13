@@ -9,7 +9,6 @@ $(document).ready(function() {
     iconeOuverture.click(function() {
         $(this).hide();
         logos.hide();
-        console.log("SHOW ICONE FERMETURE");
         iconeFermeture.show();
         menu.show();
     });
