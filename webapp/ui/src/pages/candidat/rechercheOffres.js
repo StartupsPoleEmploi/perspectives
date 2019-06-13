@@ -5,7 +5,7 @@ import 'bootstrap/js/dist/modal';
 import '../../commun/filters.js';
 import '../../composants/pagination.js';
 import rayonsRecherche from '../../domain/commun/rayonRecherche.js';
-import typesContrats from '../../domain/offre/typeContrat.js';
+import typesContrats from '../../domain/offre/typesContrats.js';
 
 var app = new Vue({
     el: '#rechercheOffres',

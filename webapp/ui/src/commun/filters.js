@@ -2,7 +2,7 @@ import Vue from 'vue';
 import secteursActivites from '../domain/commun/secteurActivite.js';
 import statutsDemandeurEmploi from '../domain/candidat/statutDemandeurEmploi.js';
 import typesRecruteur from '../domain/recruteur/typeRecruteur.js';
-import typesContrats from '../domain/offre/typeContrat.js';
+import typesContrats from '../domain/offre/typesContrats.js';
 
 Vue.filter('capitalize', function (value) {
     if (!value) return '';
