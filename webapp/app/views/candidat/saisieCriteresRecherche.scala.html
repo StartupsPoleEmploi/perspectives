@@ -12,8 +12,8 @@
             <div class="modal-dialog modaleSaisie" role="document">
                 <div class="modal-content py-3 px-4">
                     <div class="text-right mb-2">
-                        <span class="texte-noir font-size-sm modaleSaisie-fermer" data-dismiss="modal">Fermer</span>
-                        <span class="texte-noir ml-2 modaleSaisie-fermer" data-dismiss="modal">&times;</span>
+                        <span class="texte-noir font-size-sm cursor-pointer" data-dismiss="modal">Fermer</span>
+                        <span class="texte-noir ml-2 cursor-pointer" data-dismiss="modal">&times;</span>
                     </div>
                     <div class="row">
                         <div class="col-12 col-sm-11">
@@ -21,9 +21,9 @@
                             <p class="texte-noir font-size-sm">En acceptant, vous apparaissez dans la liste de résultat de recherche des recruteurs et augmentez vos chances d'être recruté !</p>
                         </div>
                         <div class="col-12 col-sm-9 px-3 mb-3">
-                            <button class="bouton bouton--block bouton--blancSurVert boutonModale mb-3" type="button"
+                            <button class="bouton bouton--block bouton--blancSurVert boutonSaisie mb-3" type="button"
                                 data-dismiss="modal" v-on:click="accepterContactRecruteur">Ok, j'accepte d'être contacté par les recruteurs</button>
-                            <button class="bouton bouton--block bouton--vertSurBlanc boutonModale" type="button"
+                            <button class="bouton bouton--block bouton--vertSurBlanc boutonSaisie" type="button"
                                 data-dismiss="modal" v-on:click="continuerSansContactRecruteur">Je déciderai plus tard</button>
                         </div>
                     </div>
@@ -34,8 +34,8 @@
             <div class="modal-dialog modaleSaisie" role="document">
                 <div class="modal-content py-3 px-4">
                     <div class="text-right mb-2">
-                        <span class="texte-noir font-size-sm modaleSaisie-fermer" data-dismiss="modal">Fermer</span>
-                        <span class="texte-noir ml-2 modaleSaisie-fermer" data-dismiss="modal">&times;</span>
+                        <span class="texte-noir font-size-sm cursor-pointer" data-dismiss="modal">Fermer</span>
+                        <span class="texte-noir ml-2 cursor-pointer" data-dismiss="modal">&times;</span>
                     </div>
                     <div class="row">
                         <div class="col-12 col-sm-11">
@@ -43,10 +43,10 @@
                             <p class="texte-noir font-size-sm">Les entreprises recherchent des candidats sur certains secteurs. Faites votre sélection pour apparaître dans la liste de résultat de recherche et augmentez vos chances d’être recruter.</p>
                         </div>
                         <div class="col-12 col-sm-9 px-3 mb-3">
-                            <button class="bouton bouton--block bouton--blancSurVert boutonModale mb-3" type="button"
-                            data-dismiss="modal" v-on:click="resaisirMetiers">Ok, je fais ma sélection</button>
-                            <button class="bouton bouton--block bouton--vertSurBlanc boutonModale" type="button"
-                            data-dismiss="modal" v-on:click="accepterAucunMetiers">Je le ferai plus tard</button>
+                            <button class="bouton bouton--block bouton--blancSurVert boutonSaisie mb-3" type="button"
+                                    data-dismiss="modal" v-on:click="resaisirMetiers">Ok, je fais ma sélection</button>
+                            <button class="bouton bouton--block bouton--vertSurBlanc boutonSaisie" type="button"
+                                    data-dismiss="modal" v-on:click="accepterAucunMetiers">Je le ferai plus tard</button>
                         </div>
                     </div>
                 </div>
@@ -54,20 +54,20 @@
         </div>
         <section class="container py-md-5 py-2">
             <div class="row justify-content-center">
-                <h1 class="col-lg-8 col-12 texte-noir font-weight-bold font-size-lg" v-show="display.etape1">
+                <h1 class="col-12 col-lg-8 texte-noir font-weight-bold font-size-lg" v-show="display.etape1">
                     Bonjour @candidatAuthentifie.prenom.value @candidatAuthentifie.nom.value
                 </h1>
                 @form(action = controllers.candidat.routes.SaisieCriteresRechercheController.modifierCriteresRecherche(),
                     'id -> "criteresRechercheForm",
-                    'class -> "col-lg-8 col-12",
+                    'class -> "col-12 col-lg-8",
                     Symbol("v-on:submit.prevent") -> "validerCriteres") {
                     @CSRF.formField
                     <input type="hidden" name="nouveauCandidat" v-bind:value="criteresRechercheFormData.nouveauCandidat" />
                     <fieldset v-show="display.etape1">
                         <legend class="texte-noir font-size-md mb-4">
                             Sur Perspectives, les recruteurs peuvent vous contacter directement.</legend>
-                        <ol class="listeChamps list-unstyled">
-                            <li class="listeChamps-item">
+                        <ol class="list-unstyled">
+                            <li class="champSaisie">
                                 <p class="texte-noir">
                                     Acceptez-vous d'être contacté par des recruteurs ? <span>*</span>
                                 </p>
@@ -85,7 +85,7 @@
                                 </div>
                                 <div v-for="error in criteresRechercheFormErrors.contactRecruteur" class="texte-erreur font-size-sm">{{error}}</div>
                             </li>
-                            <li class="listeChamps-item">
+                            <li class="champSaisie">
                                 <p class="texte-noir">
                                     Acceptez-vous d'être contacté par des organismes de formation ? <span>*</span>
                                 </p>
@@ -103,7 +103,7 @@
                                 </div>
                                 <div v-for="error in criteresRechercheFormErrors.contactFormation" class="texte-erreur font-size-sm">{{error}}</div>
                             </li>
-                            <li class="listeChamps-item row" v-show="criteresRechercheFormData.contactRecruteur === 'true' || criteresRechercheFormData.contactFormation === 'true'">
+                            <li class="champSaisie row" v-show="criteresRechercheFormData.contactRecruteur === 'true' || criteresRechercheFormData.contactFormation === 'true'">
                                 <label class="col-12 texte-noir mb-3" for="numeroTelephone">
                                     A quel numéro peuvent-ils vous joindre ? <span>*</span>
                                 </label>
@@ -121,7 +121,7 @@
                         </ol>
                         <div class="row">
                             <div class="col-md-6 col text-center">
-                                <button class="bouton bouton--blancSurVert boutonFormulaire" type="button"
+                                <button class="bouton bouton--block bouton--blancSurVert boutonSaisie" type="button"
                                         v-on:click="validerEtape1">
                                     Bien, où cherchez-vous?
                                 </button>
@@ -132,7 +132,7 @@
                     <fieldset v-show="display.etape2">
                         <legend class="texte-noir font-size-md mb-4">Ok, commençons à vous chercher un emploi !</legend>
                         <ol class="listeChamps list-unstyled">
-                            <li class="listeChamps-item row">
+                            <li class="champSaisie row">
                                 <label class="col-12 texte-noir mb-3" for="js-communeRecherche">
                                     Dans quelle ville recherchez-vous ? <span>*</span>
                                 </label>
@@ -145,7 +145,7 @@
                                 </div>
                                 <div v-for="error in criteresRechercheFormErrors.localisation" class="col-12 texte-erreur font-size-sm mt-1">{{error}}</div>
                             </li>
-                            <li class="listeChamps-item">
+                            <li class="champSaisie">
                                 <p class="texte-noir">
                                     Et quelle distance êtes-vous prêts à parcourir ? <span>*</span>
                                 </p>
@@ -161,12 +161,12 @@
                             </li>
                         </ol>
                         <div class="row">
-                            <div class="col-1" v-on:click="retourEtape1">
-                                <span class="retour-icone"></span>
-                                <span class="texte-noir font-size-sm retour d-none d-md-block">Retour</span>
+                            <div class="col-1 cursor-pointer" v-on:click="retourEtape1">
+                                <span class="iconeRetour"></span>
+                                <span class="texte-noir font-size-sm d-none d-md-block">Retour</span>
                             </div>
                             <div class="col-md-6 col text-center">
-                                <button class="bouton bouton--blancSurVert boutonFormulaire" type="button" v-on:click="validerEtape2">
+                                <button class="bouton bouton--block bouton--blancSurVert boutonSaisie" type="button" v-on:click="validerEtape2">
                                     Ok, passons à vos préférences
                                 </button>
                                 <p class="texte-noir-50 font-size-sm my-3">On arrive au bout \../</p>
@@ -183,7 +183,7 @@
                             </template>
                         </legend>
                         <ol class="listeChamps list-unstyled">
-                            <li class="listeChamps-item" v-if="metiersValides.length > 0">
+                            <li class="champSaisie" v-if="metiersValides.length > 0">
                                 <p class="texte-noir">Recherchez-vous toujours sur ces métiers ?</p>
                                 <ul class="list-unstyled">
                                     <li class="mb-2" v-for="metierValide in metiersValides">
@@ -195,7 +195,7 @@
                                                 <img width="45" height="45" alt="Secteur d'activité"
                                                     v-bind:src="'/assets/images/commun/secteursActivite/' + metierValide.codeROME.charAt(0) + '.svg'" />
                                                 <img width="25" height="25" class="iconeMetierValide"
-                                                     alt="Métier validé" src="@assetsFinder.path("images/pages/candidat/saisieCriteresRecherche/badge.svg")" />
+                                                     alt="Métier validé" src="@assetsFinder.path("images/commun/metier-valide.svg")" />
                                             </div>
                                             <div class="col-9">
                                                 <p class="font-size-sm mb-0">{{metierValide.label}}</p>
@@ -208,7 +208,7 @@
                                 </ul>
                                 <div v-for="error in criteresRechercheFormErrors.metiersValidesRecherches" class="texte-erreur font-size-sm">{{error}}</div>
                             </li>
-                            <li class="listeChamps-item">
+                            <li class="champSaisie">
                                 <p class="texte-noir" v-if="metiersValides.length > 0">Dans quels autres métiers recherchez-vous un emploi ?</p>
                                 <ul class="list-unstyled">
                                     <li class="secteurActivite pt-3 mb-2"
@@ -225,8 +225,8 @@
                                                 </p>
                                             </div>
                                             <span class="col-1 texte-noir font-size-lg text-center">
-                                                <span v-show="!display.secteursActivites[secteurActivite.code]">+</span>
-                                                <span v-show="display.secteursActivites[secteurActivite.code]">&minus;</span>
+                                                <span v-if="display.secteursActivites[secteurActivite.code]">&minus;</span>
+                                                <span v-else>+</span>
                                             </span>
                                         </div>
                                         <ul class="list-unstyled" v-show="display.secteursActivites[secteurActivite.code]">
@@ -254,12 +254,12 @@
                             </li>
                         </ol>
                         <div class="row">
-                            <div class="col-1" v-on:click="retourEtape2">
-                                <span class="retour-icone"></span>
-                                <span class="texte-noir font-size-sm retour d-none d-md-block">Retour</span>
+                            <div class="col-1 cursor-pointer" v-on:click="retourEtape2">
+                                <span class="iconeRetour"></span>
+                                <span class="texte-noir font-size-sm d-none d-md-block">Retour</span>
                             </div>
                             <div class="col-lg-4 col-md-6 col text-center">
-                                <button class="bouton bouton--blancSurVert boutonFormulaire" type="submit">
+                                <button class="bouton bouton--block bouton--blancSurVert boutonSaisie" type="submit">
                                     Parfait !
                                 </button>
                             </div>

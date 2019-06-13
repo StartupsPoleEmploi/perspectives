@@ -1,23 +1,14 @@
 #saisieCriteresRechercheCandidat {
   min-height: 95vh;
 
-  .boutonFormulaire {
-    font-weight: $font-weight-bold;
-    text-transform: uppercase;
-    @include button-size(1rem, 1rem, $font-size-sm, 1.5, 8px);
-    width: 100%;
-  }
-
-  .boutonModale {
+  .boutonSaisie {
     font-weight: $font-weight-bold;
     text-transform: uppercase;
     @include button-size(1rem, 1rem, $font-size-sm, 1.5, 8px);
   }
 
-  .listeChamps {
-    &-item {
-      padding-bottom: 2rem;
-    }
+  .champSaisie {
+    padding-bottom: 2rem;
   }
 
   .input {
@@ -30,33 +21,23 @@
     }
   }
 
-  .retour {
-    cursor: pointer;
-
-    &-icone {
-      cursor: pointer;
-
-      &:after {
-        @include media-breakpoint-down(md) {
-          top: 15px;
-          right: 0;
-          @include after(20px, 20px, solid $noir, 3px 0 0 3px, -45deg);
-        }
-        @include media-breakpoint-up(md) {
-          top: 7px;
-          left: 0;
-          @include after(9px, 9px, solid $noir, 2px 0 0 2px, -45deg);
-        }
+  .iconeRetour {
+    &:after {
+      @include media-breakpoint-down(md) {
+        top: 15px;
+        right: 0;
+        @include after(20px, 20px, solid $noir, 3px 0 0 3px, -45deg);
+      }
+      @include media-breakpoint-up(md) {
+        top: 7px;
+        left: 0;
+        @include after(9px, 9px, solid $noir, 2px 0 0 2px, -45deg);
       }
     }
   }
 
   .modaleSaisie {
     max-width: 700px;
-
-    &-fermer {
-      cursor: pointer;
-    }
   }
 
   .metierValide {
