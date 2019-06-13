@@ -261,7 +261,7 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
         mapping.buildCandidatPourConseillerDto(candidats).map(dtos =>
           CandidatsPourConseillerQueryResult(
             candidats = dtos,
-            pages = query.page.map(k => k :: pages.tail).getOrElse(pages),
+            pages = query.page.map(k => k :: (if (pages.nonEmpty) pages.tail else Nil)).getOrElse(pages),
             pageSuivante = pages.reverse.headOption
           )
         )
@@ -287,15 +287,15 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
         val json = response.json
         val hits = (json \ "hits" \ "hits").as[JsArray]
         val candidats = (hits \\ "_source").take(query.nbCandidatsParPage).map(_.as[CandidatRechercheRecruteurDocument])
-        val pages = buildKeysetRechercheCandidats(query, hits)
         val nbCandidatsTotal = (json \ "hits" \ "total").as[Int]
+        val pages = buildKeysetRechercheCandidats(query, hits, nbCandidatsTotal)
 
         mapping.buildCandidatsRechercheDto(candidats).map(candidats =>
           RechercheCandidatQueryResult(
             candidats = candidats,
             nbCandidats = candidats.size,
             nbCandidatsTotal = nbCandidatsTotal,
-            pages = query.page.map(k => k :: pages.tail).getOrElse(pages),
+            pages = query.page.map(p => p :: (if (pages.nonEmpty) pages.tail else Nil)).getOrElse(pages),
             pageSuivante = pages.reverse.headOption
           )
         )
@@ -303,9 +303,10 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
 
   // FIXME : refacto
   private def buildKeysetRechercheCandidats(query: RechercheCandidatsQuery,
-                                            hits: JsArray): List[KeysetRechercherCandidats] =
+                                            hits: JsArray,
+                                            nbHitsTotal: Int): List[KeysetRechercherCandidats] =
     (hits \\ "sort").zipWithIndex
-      .filter(v => v._2 == 0 || (v._2 + 1) % query.nbCandidatsParPage == 0)
+      .filter(v => v._2 == 0 || ((v._2 + 1) % query.nbCandidatsParPage == 0 && nbHitsTotal > query.nbCandidatsParPage))
       .map(v => KeysetRechercherCandidats(
         score =
           if (query.codeSecteurActivite.isDefined || query.codeROME.isDefined)
