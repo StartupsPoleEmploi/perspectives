@@ -89,7 +89,7 @@ class PEConnectWSMapping {
     responses.flatMap(p => p.code.map(c =>
       Permis(
         code = c,
-        label = p.libelle
+        label = p.libelle.replaceFirst(s"$c - ", "")
       )
     ))
 
@@ -267,7 +267,7 @@ private[ws] object CompetenceResponse {
     ) (CompetenceResponse.apply _)
 }
 
-private[ws] case class CentreInteretResponse(complement: String,
+private[ws] case class CentreInteretResponse(complement: Option[String],
                                              intitule: String)
 
 private[ws] object CentreInteretResponse {

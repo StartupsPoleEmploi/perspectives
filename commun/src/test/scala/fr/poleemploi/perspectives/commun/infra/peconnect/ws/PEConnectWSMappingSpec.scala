@@ -154,11 +154,11 @@ class PEConnectWSMappingSpec extends WordSpec
       // Then
       result.isEmpty mustBe true
     }
-    "renvoyer la liste des permis" in {
+    "renvoyer la liste des permis sans le code répété dans le label" in {
       // Given
       val permisResponse = PermisResponse(
         code = Some("B"),
-        libelle = "Véhicule léger"
+        libelle = "B - Véhicule léger"
       )
 
       // When
