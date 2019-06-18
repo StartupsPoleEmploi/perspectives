@@ -228,6 +228,22 @@ class ModifierProfilCandidatSpec extends AsyncWordSpec
       // Then
       future map (events => events.count(_.isInstanceOf[CentresInteretModifiesEvent]) mustBe 0)
     }
+    "ne pas générer d'événement contenant les centres d'intérêt s'ils n'ont pas été modifiés et qu'ils ne sont pas dans le même ordre" in {
+      // Given
+      val centresInteret = List(CentreInteret("Pêche"), CentreInteret("Chasse"))
+      val candidat = candidatBuilder
+        .avecInscription()
+        .avecCentresInteret(centresInteret)
+        .build
+
+      // When
+      val future = candidat.modifierProfil(commande.copy(
+        centresInteret = centresInteret.sortBy(_.value)
+      ), localisationService)
+
+      // Then
+      future map (events => events.count(_.isInstanceOf[CentresInteretModifiesEvent]) mustBe 0)
+    }
     "générer un événement contenant les centres d'intérêt si on ajoute un centre d'intérêt" in {
       // Given
       val centresInteret = List(CentreInteret("Pêche"))
@@ -289,6 +305,25 @@ class ModifierProfilCandidatSpec extends AsyncWordSpec
       // When
       val future = candidat.modifierProfil(commande.copy(
         langues = langues
+      ), localisationService)
+
+      // Then
+      future map (events => events.count(_.isInstanceOf[LanguesModifieesEvent]) mustBe 0)
+    }
+    "ne pas générer d'événement contenant les langues si elles n'ont pas été modifiées et qu'elles ne sont pas dans le même ordre" in {
+      // Given
+      val langues = List(
+        Langue(label = "Français", niveau = None),
+        Langue(label = "Allemand", niveau = Some(NiveauLangue.COURANT))
+      )
+      val candidat = candidatBuilder
+        .avecInscription()
+        .avecLangues(langues)
+        .build
+
+      // When
+      val future = candidat.modifierProfil(commande.copy(
+        langues = langues.sortBy(_.label)
       ), localisationService)
 
       // Then
@@ -366,6 +401,25 @@ class ModifierProfilCandidatSpec extends AsyncWordSpec
       val candidat = candidatBuilder
         .avecInscription()
         .avecPermis(listePermis)
+        .build
+
+      // When
+      val future = candidat.modifierProfil(commande.copy(
+        permis = listePermis
+      ), localisationService)
+
+      // Then
+      future map (events => events.count(_.isInstanceOf[PermisModifiesEvent]) mustBe 0)
+    }
+    "ne pas générer d'événement contenant les permis s'ils n'ont pas été modifiés et qu'ils ne sont pas dans le même ordre" in {
+      // Given
+      val listePermis = List(
+        Permis(code = "B1", label = "Quadricycle"),
+        Permis(code = "B", label = "Véhicule léger")
+      )
+      val candidat = candidatBuilder
+        .avecInscription()
+        .avecPermis(listePermis.sortBy(_.code))
         .build
 
       // When
@@ -458,6 +512,22 @@ class ModifierProfilCandidatSpec extends AsyncWordSpec
       // Then
       future map (events => events.count(_.isInstanceOf[SavoirEtreModifiesEvent]) mustBe 0)
     }
+    "ne pas générer d'événement contenant les savoirEtre s'ils n'ont pas été modifiés et qu'ils ne sont pas dans le même ordre" in {
+      // Given
+      val savoirEtre = List(SavoirEtre("Rigueur"), SavoirEtre("Curiosité"))
+      val candidat = candidatBuilder
+        .avecInscription()
+        .avecSavoirEtre(savoirEtre)
+        .build
+
+      // When
+      val future = candidat.modifierProfil(commande.copy(
+        savoirEtre = savoirEtre.sortBy(_.value)
+      ), localisationService)
+
+      // Then
+      future map (events => events.count(_.isInstanceOf[SavoirEtreModifiesEvent]) mustBe 0)
+    }
     "générer un événement contenant les savoirEtre si on ajoute un savoirEtre" in {
       // Given
       val savoirEtre = List(SavoirEtre("Curiosité"))
@@ -535,6 +605,25 @@ class ModifierProfilCandidatSpec extends AsyncWordSpec
       // When
       val future = candidat.modifierProfil(commande.copy(
         savoirFaire = listeSavoirFaire
+      ), localisationService)
+
+      // Then
+      future map (events => events.count(_.isInstanceOf[SavoirFaireModifiesEvent]) mustBe 0)
+    }
+    "ne pas générer d'événement contenant les savoirFaire s'ils n'ont pas été modifiés et qu'ils ne sont pas dans le même ordre" in {
+      // Given
+      val listeSavoirFaire = List(
+        SavoirFaire(label = "Réaliser une opération d'affûtage", niveau = None),
+        SavoirFaire(label = "Encaisser des actes médicaux", niveau = None)
+      )
+      val candidat = candidatBuilder
+        .avecInscription()
+        .avecSavoirFaire(listeSavoirFaire)
+        .build
+
+      // When
+      val future = candidat.modifierProfil(commande.copy(
+        savoirFaire = listeSavoirFaire.sortBy(_.label)
       ), localisationService)
 
       // Then
@@ -622,8 +711,28 @@ class ModifierProfilCandidatSpec extends AsyncWordSpec
       // Then
       future map (events => events.count(_.isInstanceOf[FormationsModifieesEvent]) mustBe 0)
     }
+    "ne pas générer d'événement contenant les formations si elles n'ont pas été modifiées et qu'elles ne sont pas dans le même ordre" in {
+      // Given
+      val formations = List(
+        formation.copy(anneeFin = 2018, intitule = "Boucher"),
+        formation.copy(anneeFin = 2019, intitule = "Agriculteur")
+      )
+      val candidat = candidatBuilder
+        .avecInscription()
+        .avecFormations(formations)
+        .build
+
+      // When
+      val future = candidat.modifierProfil(commande.copy(
+        formations = formations.sortBy(_.intitule)
+      ), localisationService)
+
+      // Then
+      future map (events => events.count(_.isInstanceOf[FormationsModifieesEvent]) mustBe 0)
+    }
     "générer un événement contenant les formations si on ajoute une formation" in {
       // Given
+      val nouvelleFormation = formation.copy(intitule = "Nouvelle formation")
       val formations = List(formation)
       val candidat = candidatBuilder
         .avecInscription()
@@ -632,7 +741,7 @@ class ModifierProfilCandidatSpec extends AsyncWordSpec
 
       // When
       val future = candidat.modifierProfil(commande.copy(
-        formations = mock[Formation] :: formations
+        formations = nouvelleFormation :: formations
       ), localisationService)
 
       // Then
@@ -704,8 +813,31 @@ class ModifierProfilCandidatSpec extends AsyncWordSpec
       // Then
       future map (events => events.count(_.isInstanceOf[ExperiencesProfessionnellesModifieesEvent]) mustBe 0)
     }
-    "générer un événement contenant les formations si on ajoute une expérience" in {
+    "ne pas générer d'événement contenant les expériences si elles n'ont pas été modifiées et qu'elles ne sont pas dans le même ordre" in {
       // Given
+      val experiencesProfessionnelles = List(
+        experienceProfessionnelle.copy(dateDebut = LocalDate.now(), intitule = "Développeur"),
+        experienceProfessionnelle.copy(dateDebut = LocalDate.now().minusYears(1), intitule = "Boucher")
+      )
+      val candidat = candidatBuilder
+        .avecInscription()
+        .avecExperiencesProfessionnelles(experiencesProfessionnelles)
+        .build
+
+      // When
+      val future = candidat.modifierProfil(commande.copy(
+        experiencesProfessionnelles = experiencesProfessionnelles.sortBy(_.intitule)
+      ), localisationService)
+
+      // Then
+      future map (events => events.count(_.isInstanceOf[ExperiencesProfessionnellesModifieesEvent]) mustBe 0)
+    }
+    "générer un événement contenant les expériences si on ajoute une expérience" in {
+      // Given
+      val nouvelleExperience = experienceProfessionnelle.copy(
+        dateDebut = LocalDate.now().minusYears(5),
+        intitule = "Développeur"
+      )
       val experiencesProfessionnelles = List(experienceProfessionnelle)
       val candidat = candidatBuilder
         .avecInscription()
@@ -714,7 +846,7 @@ class ModifierProfilCandidatSpec extends AsyncWordSpec
 
       // When
       val future = candidat.modifierProfil(commande.copy(
-        experiencesProfessionnelles = mock[ExperienceProfessionnelle] :: experiencesProfessionnelles
+        experiencesProfessionnelles = nouvelleExperience :: experiencesProfessionnelles
       ), localisationService)
 
       // Then

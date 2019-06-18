@@ -1,8 +1,8 @@
 package fr.poleemploi.perspectives.commun.infra.peconnect.ws
 
-import java.time.ZonedDateTime
+import java.time.{LocalDate, ZonedDateTime}
 
-import fr.poleemploi.perspectives.candidat.Permis
+import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.commun.domain.{CodeDepartement, CodeROME}
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
@@ -167,6 +167,104 @@ class PEConnectWSMappingSpec extends WordSpec
       // Then
       result.size mustBe 1
       result.head mustBe Permis(code = "B", label = "Véhicule léger")
+    }
+  }
+  "buildLangues" should {
+    "renvoyer une langue sans niveau lorsqu'il vaut 0 (même si ce cas n'est pas précisé dans la doc de l'emploi store)" in {
+      // Given
+      val langueResponse = LangueResponse(
+        code = Some("FR"),
+        libelle = "Français",
+        niveau = Some(NiveauLangueResponse("0", libelle = "Aucun"))
+      )
+
+      // When
+      val result = mapping.buildLanguesCandidat(List(langueResponse))
+
+      // Then
+      result.size mustBe 1
+      result.head mustBe Langue(label = "Français", niveau = None)
+    }
+    "renvoyer une langue" in {
+      // Given
+      val langueResponse = LangueResponse(
+        code = Some("FR"),
+        libelle = "Français",
+        niveau = Some(NiveauLangueResponse("1", libelle = "Avancé"))
+      )
+
+      // When
+      val result = mapping.buildLanguesCandidat(List(langueResponse))
+
+      // Then
+      result.size mustBe 1
+      result.head mustBe Langue(label = "Français", niveau = Some(NiveauLangue.DEBUTANT))
+    }
+  }
+  "buildFormations" should {
+    "ne pas retourner de formation lorsque la réponse de l'API ne comporte pas l'année de fin" in {
+      // Given
+      val formationResponse = FormationResponse(
+        anneeFin = None,
+        description = None,
+        diplomeObtenu = false,
+        etranger = false,
+        intitule = Some("Boucher"),
+        lieu = None,
+        niveau = None,
+        domaine = None
+      )
+
+      // When
+      val result = mapping.buildFormations(List(formationResponse))
+
+      // Then
+      result.size mustBe 0
+    }
+    "ne pas retourner de formation lorsque la réponse de l'API ne comporte pas d'intitulé (même si le champ est marqué obligatoire dans la doc de l'emploi store)" in {
+      // Given
+      val formationResponse = FormationResponse(
+        anneeFin = Some(LocalDate.now().getYear),
+        description = None,
+        diplomeObtenu = false,
+        etranger = false,
+        intitule = None,
+        lieu = None,
+        niveau = None,
+        domaine = None
+      )
+
+      // When
+      val result = mapping.buildFormations(List(formationResponse))
+
+      // Then
+      result.size mustBe 0
+    }
+    "retourner les informations de la formation lorsqu'elle comporte un intitulé et une date de fin" in {
+      // Given
+      val formationResponse = FormationResponse(
+        anneeFin = Some(LocalDate.now().getYear),
+        description = None,
+        diplomeObtenu = false,
+        etranger = false,
+        intitule = Some("Développeur"),
+        lieu = Some("Paris"),
+        niveau = Some(NiveauFormationResponse(code = "", libelle = "Bac+5")),
+        domaine = Some(DomaineFormationResponse(code = "", libelle = "Informatique de gestion"))
+      )
+
+      // When
+      val result = mapping.buildFormations(List(formationResponse))
+
+      // Then
+      result.size mustBe 1
+      result.head mustBe Formation(
+        anneeFin = LocalDate.now().getYear,
+        intitule = "Développeur",
+        lieu = Some("Paris"),
+        domaine = Some(DomaineFormation("Informatique de gestion")),
+        niveau = Some(NiveauFormation("Bac+5"))
+      )
     }
   }
 }

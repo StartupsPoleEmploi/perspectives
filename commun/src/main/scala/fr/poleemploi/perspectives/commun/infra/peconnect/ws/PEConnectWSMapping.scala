@@ -79,7 +79,7 @@ class PEConnectWSMapping {
   def buildLanguesCandidat(responses: List[LangueResponse]): List[Langue] =
     responses.map(l => Langue(
       label = l.libelle,
-      niveau = l.niveau.map(buildNiveauLangue)
+      niveau = l.niveau.flatMap(buildNiveauLangue)
     ))
 
   def buildCentreInteretsCandidat(responses: List[CentreInteretResponse]): List[CentreInteret] =
@@ -94,15 +94,19 @@ class PEConnectWSMapping {
     ))
 
   def buildFormations(responses: List[FormationResponse]): List[Formation] =
-    responses.flatMap(f => f.anneeFin.map(a =>
+    for {
+      f <- responses
+      anneeFin <- f.anneeFin
+      intitule <- f.intitule
+    } yield {
       Formation(
-        anneeFin = a,
-        intitule = f.intitule,
+        anneeFin = anneeFin,
+        intitule = intitule,
         lieu = f.lieu,
         domaine = f.domaine.map(d => DomaineFormation(d.libelle)),
         niveau = f.niveau.map(n => NiveauFormation(n.libelle))
       )
-    ))
+    }
 
   def buildExperienceProfessionnelles(responses: List[ExperienceProfessionnelleResponse]): List[ExperienceProfessionnelle] =
     responses.flatMap(e => e.date.flatMap(_.debut).map(dateDebut => ExperienceProfessionnelle(
@@ -126,17 +130,18 @@ class PEConnectWSMapping {
     case _ => false
   }
 
-  private def buildNiveauLangue(niveauLangueResponse: NiveauLangueResponse): NiveauLangue = niveauLangueResponse.code match {
-    case "1" => NiveauLangue.DEBUTANT
-    case "2" => NiveauLangue.INTERMEDIAIRE
-    case "3" => NiveauLangue.COURANT
+  private def buildNiveauLangue(niveauLangueResponse: NiveauLangueResponse): Option[NiveauLangue] = niveauLangueResponse.code match {
+    case "1" => Some(NiveauLangue.DEBUTANT)
+    case "2" => Some(NiveauLangue.INTERMEDIAIRE)
+    case "3" => Some(NiveauLangue.COURANT)
+    case _ => None
   }
 
   private def buildNiveauSavoirFaire(niveauCompetenceResponse: NiveauCompetenceResponse): Option[NiveauSavoirFaire] = niveauCompetenceResponse.code match {
-    case "0" => None
     case "1" => Some(NiveauSavoirFaire.DEBUTANT)
     case "2" => Some(NiveauSavoirFaire.INTERMEDIAIRE)
     case "3" => Some(NiveauSavoirFaire.AVANCE)
+    case _ => None
   }
 }
 
@@ -320,7 +325,7 @@ private[ws] case class FormationResponse(anneeFin: Option[Int],
                                          description: Option[String],
                                          diplomeObtenu: Boolean,
                                          etranger: Boolean,
-                                         intitule: String,
+                                         intitule: Option[String],
                                          lieu: Option[String],
                                          niveau: Option[NiveauFormationResponse],
                                          domaine: Option[DomaineFormationResponse])
