@@ -31,7 +31,7 @@ class WebAppConfig(configuration: Configuration) {
   val environnement: Environnement = Environnement.from(configuration.get[String]("environnement"))
   val version: String = BuildInfo.version
 
-  val emploiStoreOauthScopeBuilder = new EmploiStoreOauthScopeBuilder(Environnement.PRODUCTION)
+  val emploiStoreOauthScopeBuilder = new EmploiStoreOauthScopeBuilder(environnement)
   val candidatOauthConfig: OauthConfig = OauthConfig(
     clientId = configuration.get[String]("emploiStore.oauth2.clientId"),
     clientSecret = configuration.get[String]("emploiStore.oauth2.clientSecret"),
