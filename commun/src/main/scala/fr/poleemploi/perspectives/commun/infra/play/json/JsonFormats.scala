@@ -29,7 +29,7 @@ object JsonFormats {
   implicit val formatStatutDemandeurEmploi: Format[StatutDemandeurEmploi] = formatStringValueObject(StatutDemandeurEmploi(_))
   implicit val formatTypeMedia: Format[TypeMedia] = formatStringValueObject(TypeMedia(_))
 
-  implicit val formatCentreInteret: Format[CentreInteret] = formatStringValueObject(CentreInteret)
+  implicit val formatCentreInteret: Format[CentreInteret] = formatStringValueObject(CentreInteret(_))
   implicit val formatNiveauLangue: Format[NiveauLangue] = formatStringValueObject(NiveauLangue(_))
   implicit val formatLangue: Format[Langue] = Json.format[Langue]
   implicit val formatPermis: Format[Permis] = Json.format[Permis]

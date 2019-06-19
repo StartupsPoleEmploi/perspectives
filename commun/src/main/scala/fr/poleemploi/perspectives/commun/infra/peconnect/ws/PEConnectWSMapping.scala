@@ -83,7 +83,7 @@ class PEConnectWSMapping {
     ))
 
   def buildCentreInteretsCandidat(responses: List[CentreInteretResponse]): List[CentreInteret] =
-    responses.map(c => CentreInteret(value = c.intitule))
+    responses.map(c => CentreInteret(c.intitule))
 
   def buildPermis(responses: List[PermisResponse]): List[Permis] =
     responses.flatMap(p => p.code.map(c =>
