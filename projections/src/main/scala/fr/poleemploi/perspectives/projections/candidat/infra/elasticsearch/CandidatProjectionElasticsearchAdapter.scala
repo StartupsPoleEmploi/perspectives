@@ -100,7 +100,8 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
           "zone" -> mapping.buildZoneDocument(
             coordonnees = event.localisationRecherche.coordonnees,
             rayonRecherche = event.localisationRecherche.rayonRecherche
-          )
+          ),
+          "temps_travail" -> event.tempsTravailRecherche
         )
       ))
 

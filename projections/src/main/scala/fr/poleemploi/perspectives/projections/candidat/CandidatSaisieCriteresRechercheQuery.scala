@@ -1,7 +1,7 @@
 package fr.poleemploi.perspectives.projections.candidat
 
 import fr.poleemploi.cqrs.projection.{Query, QueryResult}
-import fr.poleemploi.perspectives.candidat.CandidatId
+import fr.poleemploi.perspectives.candidat.{CandidatId, TempsTravail}
 import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.metier.domain.Metier
 
@@ -23,7 +23,8 @@ case class CandidatSaisieCriteresRechercheQueryResult(candidatId: CandidatId,
                                                       communeRecherche: Option[String],
                                                       rayonRecherche: Option[RayonRecherche],
                                                       latitudeRecherche: Option[Double],
-                                                      longitudeRecherche: Option[Double]) extends QueryResult {
+                                                      longitudeRecherche: Option[Double],
+                                                      tempsTravail: Option[TempsTravail]) extends QueryResult {
   def saisieComplete: Boolean =
-    List(contactRecruteur, contactFormation, codePostalRecherche, communeRecherche).forall(_.isDefined)
+    List(contactRecruteur, contactFormation, codePostalRecherche, communeRecherche, tempsTravail).forall(_.isDefined)
 }

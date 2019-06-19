@@ -9,6 +9,7 @@ import play.api.mvc.Flash
 object FlashMessages {
 
   private val keyMessageSucces = "message_succes"
+  private val keyMessageAlerte = "message_alerte"
   private val keyMessageErreur = "message_erreur"
 
   private val keyInscriptionRecruteur = "recruteur_inscrit"
@@ -21,10 +22,13 @@ object FlashMessages {
 
   implicit class FlashMessage[T](f: Flash) {
 
-    def hasMessages: Boolean = f.get(keyMessageSucces).isDefined || f.get(keyMessageErreur).isDefined
+    def hasMessages: Boolean = f.get(keyMessageSucces).isDefined || f.get(keyMessageAlerte).isDefined || f.get(keyMessageErreur).isDefined
 
     def getMessageSucces: Option[String] = f.get(keyMessageSucces)
     def withMessageSucces(message: String): Flash = f + (keyMessageSucces -> message)
+
+    def getMessageAlerte: Option[String] = f.get(keyMessageAlerte)
+    def withMessageAlerte(message: String): Flash = f + (keyMessageAlerte -> message)
 
     def getMessageErreur: Option[String] = f.get(keyMessageErreur)
     def withMessageErreur(message: String): Flash = f + (keyMessageErreur -> message)

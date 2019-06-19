@@ -61,6 +61,7 @@ private[candidat] case class CandidatContext(statut: StatutCandidat = StatutCand
                                              codesROMERecherches: Set[CodeROME] = Set.empty,
                                              codesDomaineProfessionnelRecherches: Set[CodeDomaineProfessionnel] = Set.empty,
                                              localisationRecherche: Option[LocalisationRecherche] = None,
+                                             tempsTravailRecherche: Option[TempsTravail] = None,
                                              numeroTelephone: Option[NumeroTelephone] = None,
                                              cvId: Option[CVId] = None,
                                              centresInteret: List[CentreInteret] = Nil,
@@ -102,7 +103,8 @@ private[candidat] case class CandidatContext(statut: StatutCandidat = StatutCand
           codesROMEValidesRecherches = e.codesROMEValidesRecherches,
           codesROMERecherches = e.codesROMERecherches,
           codesDomaineProfessionnelRecherches = e.codesDomaineProfessionnelRecherches,
-          localisationRecherche = Some(e.localisationRecherche)
+          localisationRecherche = Some(e.localisationRecherche),
+          tempsTravailRecherche = e.tempsTravailRecherche
         )
       case e: NumeroTelephoneModifieEvent =>
         context.copy(numeroTelephone = Some(e.numeroTelephone))

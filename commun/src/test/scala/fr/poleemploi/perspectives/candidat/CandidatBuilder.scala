@@ -145,7 +145,8 @@ class CandidatBuilder {
   def avecCriteresRecherche(codesROMEValidesRecherches: Set[CodeROME] = Set.empty,
                             codesROMERecherches: Set[CodeROME] = Set.empty,
                             codesDomaineProfessionnelRecherches: Set[CodeDomaineProfessionnel] = Set.empty,
-                            localisationRecherche: Option[LocalisationRecherche] = None): CandidatBuilder = {
+                            localisationRecherche: Option[LocalisationRecherche] = None,
+                            tempsTravailRecherche: Option[TempsTravail] = None): CandidatBuilder = {
     events += CriteresRechercheModifiesEvent(
       candidatId = candidatId,
       localisationRecherche = localisationRecherche.getOrElse(LocalisationRecherche(
@@ -156,7 +157,8 @@ class CandidatBuilder {
       )),
       codesROMEValidesRecherches = codesROMEValidesRecherches,
       codesROMERecherches = codesROMERecherches,
-      codesDomaineProfessionnelRecherches = codesDomaineProfessionnelRecherches
+      codesDomaineProfessionnelRecherches = codesDomaineProfessionnelRecherches,
+      tempsTravailRecherche = tempsTravailRecherche
     )
     this
   }

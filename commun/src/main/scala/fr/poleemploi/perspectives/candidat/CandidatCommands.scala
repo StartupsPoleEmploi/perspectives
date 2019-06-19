@@ -38,7 +38,8 @@ case class ModifierCriteresRechercheCommand(id: CandidatId,
                                             localisationRecherche: LocalisationRecherche,
                                             codesROMEValidesRecherches: Set[CodeROME],
                                             codesROMERecherches: Set[CodeROME],
-                                            codesDomaineProfessionnelRecherches: Set[CodeDomaineProfessionnel]) extends Command[Candidat]
+                                            codesDomaineProfessionnelRecherches: Set[CodeDomaineProfessionnel],
+                                            tempsTravailRecherche: TempsTravail) extends Command[Candidat]
 
 case class AjouterCVCommand(id: CandidatId,
                             typeMedia: TypeMedia,

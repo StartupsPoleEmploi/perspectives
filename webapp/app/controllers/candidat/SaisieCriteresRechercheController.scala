@@ -115,6 +115,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
           if (r == 0) None
           else Some(RayonRecherche(r, UniteLongueur.KM))
         )
-      )
+      ),
+      tempsTravailRecherche = TempsTravail(saisieCriteresRechercheForm.tempsTravail)
     )
 }

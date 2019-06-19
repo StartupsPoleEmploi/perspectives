@@ -183,6 +183,9 @@
               "type": "geo_shape",
               "tree": "quadtree",
               "precision": "100m"
+            },
+            "temps_travail": {
+              "type": "keyword"
             }
           }
         }

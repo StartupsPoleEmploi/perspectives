@@ -17,6 +17,7 @@ case class CandidatRechercheRecruteurDocument(candidatId: CandidatId,
                                               communeRecherche: String,
                                               codePostalRecherche: String,
                                               rayonRecherche: Option[RayonRechercheDocument],
+                                              tempsTravailRecherche: Option[TempsTravail],
                                               cvId: Option[CVId],
                                               cvTypeMedia: Option[TypeMedia],
                                               centresInteret: List[CentreInteret],
@@ -44,6 +45,7 @@ object CandidatRechercheRecruteurDocument {
       (JsPath \ criteres_recherche \ "commune").read[String] and
       (JsPath \ criteres_recherche \ "code_postal").read[String] and
       (JsPath \ criteres_recherche \ "rayon").readNullable[RayonRechercheDocument] and
+      (JsPath \ criteres_recherche \ "temps_travail").readNullable[TempsTravail] and
       (JsPath \ cv_id).readNullable[CVId] and
       (JsPath \ cv_type_media).readNullable[TypeMedia] and
       (JsPath \ centres_interet).read[List[CentreInteret]] and

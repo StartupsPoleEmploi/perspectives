@@ -2,17 +2,16 @@
 
 @()(implicit flash: Flash)
 
+@flashMessage(message: Option[String], cssClass: String) = {
+    @if(message.isDefined) {
+        <div class="col-xs-12 col-md-6 offset-md-3 alert @cssClass text-center">@message</div>
+    }
+}
+
 @if(flash.hasMessages) {
     <div class="container">
-    @if(flash.getMessageSucces.isDefined) {
-        <div class="col-xs-12 col-md-6 offset-md-3 alert alert-success text-center">
-        @flash.getMessageSucces
-        </div>
-    }
-    @if(flash.getMessageErreur.isDefined) {
-        <div class="col-xs-12 col-md-6 offset-md-3 alert alert-danger text-center">
-        @flash.getMessageErreur
-        </div>
-    }
+        @flashMessage(flash.getMessageSucces, "alert-success")
+        @flashMessage(flash.getMessageAlerte, "alert-warning")
+        @flashMessage(flash.getMessageErreur, "alert-danger")
     </div>
 }

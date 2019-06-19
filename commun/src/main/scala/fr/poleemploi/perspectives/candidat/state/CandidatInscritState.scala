@@ -161,13 +161,15 @@ object CandidatInscritState extends CandidatState {
       if (!context.codesROMEValidesRecherches.forall(command.codesROMEValidesRecherches.contains) ||
         !context.codesROMERecherches.forall(command.codesROMERecherches.contains) ||
         !context.codesDomaineProfessionnelRecherches.forall(command.codesDomaineProfessionnelRecherches.contains) ||
-        !context.localisationRecherche.contains(command.localisationRecherche)) {
+        !context.localisationRecherche.contains(command.localisationRecherche) ||
+        !context.tempsTravailRecherche.contains(command.tempsTravailRecherche)) {
         Some(CriteresRechercheModifiesEvent(
           candidatId = command.id,
           localisationRecherche = command.localisationRecherche,
           codesROMEValidesRecherches = command.codesROMEValidesRecherches,
           codesROMERecherches = command.codesROMERecherches,
-          codesDomaineProfessionnelRecherches = command.codesDomaineProfessionnelRecherches
+          codesDomaineProfessionnelRecherches = command.codesDomaineProfessionnelRecherches,
+          tempsTravailRecherche = Some(command.tempsTravailRecherche)
         ))
       } else None
 

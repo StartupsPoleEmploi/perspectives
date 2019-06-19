@@ -1,5 +1,6 @@
 package fr.poleemploi.perspectives.projections.candidat.infra.elasticsearch
 
+import fr.poleemploi.perspectives.candidat.TempsTravail
 import fr.poleemploi.perspectives.commun.domain.{CodeDomaineProfessionnel, CodeROME}
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
@@ -10,7 +11,8 @@ case class CandidatCriteresRechercheDocument(metiersValides: Set[CodeROME],
                                              codePostal: Option[String],
                                              commune: Option[String],
                                              rayon: Option[RayonRechercheDocument],
-                                             zone: Option[ZoneDocument])
+                                             zone: Option[ZoneDocument],
+                                             tempsTravail: Option[TempsTravail])
 
 object CandidatCriteresRechercheDocument {
 
@@ -23,6 +25,7 @@ object CandidatCriteresRechercheDocument {
       (JsPath \ "code_postal").formatNullable[String] and
       (JsPath \ "commune").formatNullable[String] and
       (JsPath \ "rayon").formatNullable[RayonRechercheDocument] and
-      (JsPath \ "zone").formatNullable[ZoneDocument]
+      (JsPath \ "zone").formatNullable[ZoneDocument] and
+      (JsPath \ "temps_travail").formatNullable[TempsTravail]
     ) (CandidatCriteresRechercheDocument.apply, unlift(CandidatCriteresRechercheDocument.unapply))
 }

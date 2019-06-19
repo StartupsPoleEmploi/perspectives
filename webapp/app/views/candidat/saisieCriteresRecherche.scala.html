@@ -159,6 +159,20 @@
                                 </span>
                                 <div v-for="error in criteresRechercheFormErrors.rayonRecherche" class="texte-erreur font-size-sm">{{error}}</div>
                             </li>
+                            <li class="champSaisie">
+                                <p class="texte-noir">
+                                    Quelles sont vos disponibilités ? <span>*</span>
+                                </p>
+                                <span class="mr-3 d-block d-sm-inline-block" v-for="tempsTravail in listeTempsTravail">
+                                    <input v-bind:id="'tempsTravail-' + tempsTravail.value" name="tempsTravail"
+                                    v-model="criteresRechercheFormData.tempsTravail"
+                                    type="radio" v-bind:value="tempsTravail.value" class="radioMultiChoix-input" />
+                                    <label class="radioMultiChoix-label texte-noir font-size-sm px-4 py-3" v-bind:for="'tempsTravail-' + tempsTravail.value">
+                                        {{tempsTravail.label}}
+                                    </label>
+                                </span>
+                                <div v-for="error in criteresRechercheFormErrors.tempsTravail" class="texte-erreur font-size-sm">{{error}}</div>
+                            </li>
                         </ol>
                         <div class="row">
                             <div class="col-1 cursor-pointer" v-on:click="retourEtape1">
@@ -230,7 +244,7 @@
                                             </span>
                                         </div>
                                         <ul class="list-unstyled" v-show="display.secteursActivites[secteurActivite.code]">
-                                            <li class="metierRecherche" v-for="(metierRecherche, index) in secteurActivite.metiers">
+                                            <li class="metierRecherche" v-for="metierRecherche in secteurActivite.metiers">
                                                 <input v-bind:id="'metierRecherche-' + metierRecherche.codeROME" name="metiersRecherches[]"
                                                         type="checkbox" class="checkbox-input"
                                                         v-bind:value="metierRecherche.codeROME" v-on:change="ajouterMetierSelectionne(metierRecherche, secteurActivite.code)"

@@ -101,7 +101,8 @@ class PEConnectController @Inject()(cc: ControllerComponents,
           .map(uri => Redirect(uri).withSession(SessionUtilisateurNonAuthentifie.remove(session)).flashing(flash))
           .getOrElse(Redirect(routes.RechercheOffreController.index()).withSession(session).flashing(flash))
       else if (optCriteresRecherche.isDefined)
-        Redirect(routes.SaisieCriteresRechercheController.saisieCriteresRecherche()).withSession(session).flashing(flash)
+        Redirect(routes.SaisieCriteresRechercheController.saisieCriteresRecherche()).withSession(session)
+          .flashing(flash.withMessageAlerte("Veuillez finaliser la saisie de vos critères"))
       else
         Redirect(routes.SaisieCriteresRechercheController.saisieCriteresRecherche()).withSession(session)
           .flashing(flash.withCandidatInscrit)

@@ -19,6 +19,7 @@ var app = new Vue({
                     longitude: null,
                 },
                 rayonRecherche: null,
+                tempsTravail: null,
                 metiersValidesRecherches: [],
                 metiersRecherches: [],
                 domainesProfessionnelsRecherches: []
@@ -29,6 +30,7 @@ var app = new Vue({
                 numeroTelephone: [],
                 localisation: [],
                 rayonRecherche: [],
+                tempsTravail: [],
                 metiersValidesRecherches: [],
                 metiersRecherches: [],
                 domainesProfessionnelsRecherches: []
@@ -38,6 +40,10 @@ var app = new Vue({
                 {value: 10, label: 'Moins de 10km'},
                 {value: 30, label: 'Moins de 30km'},
                 {value: 50, label: 'Moins de 50km'}
+            ],
+            listeTempsTravail: [
+                {value: 'MI_TEMPS', label: 'Mi-temps'},
+                {value: 'PLEIN_TEMPS', label: 'Plein temps'}
             ],
             metiersValides: Object.assign([], jsData.metiersValides),
             secteursActivites: jsData.secteursActivites,
@@ -99,7 +105,7 @@ var app = new Vue({
                 commune: suggestion.name,
                 latitude: suggestion.latlng.lat,
                 longitude: suggestion.latlng.lng
-            }
+            };
         },
         algoliaPlacesClear: function () {
             this.criteresRechercheFormData.localisation = {
@@ -153,10 +159,14 @@ var app = new Vue({
             if (!this.criteresRechercheFormData.rayonRecherche) {
                 this.criteresRechercheFormErrors.rayonRecherche = ["Veuillez saisir une valeur pour ce champ"];
             }
+            if (!this.criteresRechercheFormData.tempsTravail) {
+                this.criteresRechercheFormErrors.tempsTravail = ["Veuillez saisir une valeur pour ce champ"];
+            }
 
             if (this.criteresRechercheFormData.localisation.latitude &&
                 this.criteresRechercheFormData.localisation.longitude &&
-                this.criteresRechercheFormData.rayonRecherche !== null) {
+                this.criteresRechercheFormData.rayonRecherche !== null &&
+                this.criteresRechercheFormData.tempsTravail) {
                 this.display.etape2 = false;
                 this.display.etape3 = true;
             }

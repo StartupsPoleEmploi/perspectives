@@ -25,6 +25,7 @@ case class SaisieCriteresRechercheForm(nouveauCandidat: Boolean,
                                        numeroTelephone: Option[String],
                                        localisation: LocalisationRechercheForm,
                                        rayonRecherche: Option[Int],
+                                       tempsTravail: String,
                                        metiersValidesRecherches: Set[String],
                                        metiersRecherches: Set[String],
                                        domainesProfessionnelsRecherches: Set[String])
@@ -56,6 +57,7 @@ object SaisieCriteresRechercheForm {
         "latitude" -> of[Double]
       )(LocalisationRechercheForm.apply)(LocalisationRechercheForm.unapply),
       "rayonRecherche" -> optional(number.verifying(rayonRechercheConstraint)),
+      "tempsTravail" -> nonEmptyText,
       "metiersValidesRecherches" -> set(text),
       "metiersRecherches" -> set(text),
       "domainesProfessionnelsRecherches" -> set(text)
@@ -75,6 +77,7 @@ object SaisieCriteresRechercheForm {
         longitude = 0
       ),
       rayonRecherche = None,
+      tempsTravail = "",
       metiersValidesRecherches = Set.empty,
       metiersRecherches = Set.empty,
       domainesProfessionnelsRecherches = Set.empty
@@ -94,6 +97,7 @@ object SaisieCriteresRechercheForm {
         longitude = candidat.longitudeRecherche.orElse(candidat.longitude).getOrElse(0)
       ),
       rayonRecherche = candidat.rayonRecherche.map(_.value),
+      tempsTravail = candidat.tempsTravail.map(_.value).getOrElse(""),
       metiersValidesRecherches = candidat.metiersValidesRecherches.map(_.value),
       metiersRecherches = candidat.metiersRecherches.map(_.value),
       domainesProfessionnelsRecherches = candidat.domainesProfessionnelsRecherches.map(_.value)

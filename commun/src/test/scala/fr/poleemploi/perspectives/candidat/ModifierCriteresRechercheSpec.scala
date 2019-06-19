@@ -4,21 +4,26 @@ import fr.poleemploi.perspectives.candidat.mrs.domain.MRSValidee
 import fr.poleemploi.perspectives.commun.domain._
 import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
-import org.scalatest.{AsyncWordSpec, BeforeAndAfter, MustMatchers}
+import org.scalatest.{AsyncWordSpec, MustMatchers}
 
 class ModifierCriteresRechercheSpec extends AsyncWordSpec
-  with MustMatchers with MockitoSugar with BeforeAndAfter {
+  with MustMatchers with MockitoSugar {
 
   val candidatBuilder = new CandidatBuilder
 
-  var localisationRecherche: LocalisationRecherche = _
-  var commande: ModifierCriteresRechercheCommand = _
+  val localisationRecherche: LocalisationRecherche =
+    LocalisationRecherche(
+    commune = "Paris",
+    codePostal = "75011",
+    coordonnees = Coordonnees(
+      latitude = 48.5,
+      longitude = -1.6
+    ),
+    rayonRecherche = None
+  )
 
-  before {
-    localisationRecherche = mock[LocalisationRecherche]
-    when(localisationRecherche.rayonRecherche) thenReturn None
-
-    commande = ModifierCriteresRechercheCommand(
+  val commande: ModifierCriteresRechercheCommand =
+    ModifierCriteresRechercheCommand(
       id = candidatBuilder.candidatId,
       contactRecruteur = false,
       contactFormation = false,
@@ -26,9 +31,9 @@ class ModifierCriteresRechercheSpec extends AsyncWordSpec
       numeroTelephone = None,
       codesROMEValidesRecherches = Set.empty,
       codesROMERecherches = Set.empty,
-      codesDomaineProfessionnelRecherches = Set.empty
+      codesDomaineProfessionnelRecherches = Set.empty,
+      tempsTravailRecherche = TempsTravail.TEMPS_PLEIN
     )
-  }
 
   "modifierCriteresRecherche" should {
     "renvoyer une erreur lorsque le candidat n'est pas inscrit" in {
@@ -181,11 +186,15 @@ class ModifierCriteresRechercheSpec extends AsyncWordSpec
     }
     "générer un événement lorsque la commune est modifiée" in {
       // Given
-      when(localisationRecherche.commune) thenReturn "Challans"
-      val nouvelleLocalisation = mock[LocalisationRecherche]
-      when(nouvelleLocalisation.commune) thenReturn "La Roche Sur Yon"
-      when(nouvelleLocalisation.rayonRecherche) thenReturn None
-      val candidat = candidatInscritAvecCriteres(commande).build
+      val ancienneLocalisation = localisationRecherche.copy(
+        commune = "Challans"
+      )
+      val nouvelleLocalisation = localisationRecherche.copy(
+        commune = "La Roche Sur Yon"
+      )
+      val candidat = candidatInscritAvecCriteres(commande.copy(
+        localisationRecherche = ancienneLocalisation
+      )).build
 
       // When
       val result = candidat.modifierCriteresRecherche(commande.copy(
@@ -197,11 +206,15 @@ class ModifierCriteresRechercheSpec extends AsyncWordSpec
     }
     "générer un événement lorsque le code postal est modifié" in {
       // Given
-      when(localisationRecherche.codePostal) thenReturn "85300"
-      val nouvelleLocalisation = mock[LocalisationRecherche]
-      when(nouvelleLocalisation.codePostal) thenReturn "85000"
-      when(nouvelleLocalisation.rayonRecherche) thenReturn None
-      val candidat = candidatInscritAvecCriteres(commande).build
+      val ancienneLocalisation = localisationRecherche.copy(
+        codePostal = "85300"
+      )
+      val nouvelleLocalisation = localisationRecherche.copy(
+        codePostal = "85000"
+      )
+      val candidat = candidatInscritAvecCriteres(commande.copy(
+        localisationRecherche = ancienneLocalisation
+      )).build
 
       // When
       val result = candidat.modifierCriteresRecherche(commande.copy(
@@ -213,11 +226,15 @@ class ModifierCriteresRechercheSpec extends AsyncWordSpec
     }
     "générer un événement lorsque les coordonnées sont modifiées" in {
       // Given
-      when(localisationRecherche.coordonnees) thenReturn Coordonnees(latitude = 1.4, longitude = 5.2)
-      val nouvelleLocalisation = mock[LocalisationRecherche]
-      when(nouvelleLocalisation.coordonnees) thenReturn Coordonnees(latitude = 1.6, longitude = 48.2)
-      when(nouvelleLocalisation.rayonRecherche) thenReturn None
-      val candidat = candidatInscritAvecCriteres(commande).build
+      val ancienneLocalisation = localisationRecherche.copy(
+        coordonnees = Coordonnees(latitude = 1.4, longitude = 5.2)
+      )
+      val nouvelleLocalisation = localisationRecherche.copy(
+        coordonnees = Coordonnees(latitude = 1.6, longitude = 48.2)
+      )
+      val candidat = candidatInscritAvecCriteres(commande.copy(
+        localisationRecherche = ancienneLocalisation
+      )).build
 
       // When
       val result = candidat.modifierCriteresRecherche(commande.copy(
@@ -229,10 +246,15 @@ class ModifierCriteresRechercheSpec extends AsyncWordSpec
     }
     "générer un événement lorsque le rayonRecherche est modifié" in {
       // Given
-      when(localisationRecherche.rayonRecherche) thenReturn Some(RayonRecherche.MAX_30)
-      val nouvelleLocalisation = mock[LocalisationRecherche]
-      when(nouvelleLocalisation.rayonRecherche) thenReturn Some(RayonRecherche.MAX_50)
-      val candidat = candidatInscritAvecCriteres(commande).build
+      val ancienneLocalisation = localisationRecherche.copy(
+        rayonRecherche = Some(RayonRecherche.MAX_30)
+      )
+      val nouvelleLocalisation = localisationRecherche.copy(
+        rayonRecherche = Some(RayonRecherche.MAX_50)
+      )
+      val candidat = candidatInscritAvecCriteres(commande.copy(
+        localisationRecherche = ancienneLocalisation
+      )).build
 
       // When
       val result = candidat.modifierCriteresRecherche(commande.copy(
@@ -310,6 +332,22 @@ class ModifierCriteresRechercheSpec extends AsyncWordSpec
       // Then
       result.count(_.isInstanceOf[CriteresRechercheModifiesEvent]) mustBe 1
     }
+    "générer un événement lorsque le temps de travail est modifié" in {
+      // Given
+      val candidat = candidatInscritAvecCriteres(commande)
+        .avecCriteresRecherche(
+          tempsTravailRecherche = Some(TempsTravail.TEMPS_PARTIEL)
+        )
+        .build
+
+      // When
+      val result = candidat.modifierCriteresRecherche(commande.copy(
+        tempsTravailRecherche = TempsTravail.TEMPS_PLEIN
+      ))
+
+      // Then
+      result.count(_.isInstanceOf[CriteresRechercheModifiesEvent]) mustBe 1
+    }
     "générer un événement contenant les critères" in {
       // Given
       val candidat = candidatBuilder
@@ -325,6 +363,7 @@ class ModifierCriteresRechercheSpec extends AsyncWordSpec
       event.codesROMEValidesRecherches mustBe commande.codesROMEValidesRecherches
       event.codesROMERecherches mustBe commande.codesROMERecherches
       event.localisationRecherche mustBe commande.localisationRecherche
+      event.tempsTravailRecherche mustBe Some(commande.tempsTravailRecherche)
     }
     "générer un événement contenant le numero de téléphone" in {
       val candidat = candidatBuilder
@@ -367,7 +406,8 @@ class ModifierCriteresRechercheSpec extends AsyncWordSpec
       .avecCriteresRecherche(
         codesROMERecherches = commande.codesROMERecherches,
         codesROMEValidesRecherches = commande.codesROMEValidesRecherches,
-        localisationRecherche = Some(commande.localisationRecherche)
+        localisationRecherche = Some(commande.localisationRecherche),
+        tempsTravailRecherche = Some(commande.tempsTravailRecherche)
       )
       .avecVisibiliteRecruteur(
         contactRecruteur = Some(commande.contactRecruteur),
