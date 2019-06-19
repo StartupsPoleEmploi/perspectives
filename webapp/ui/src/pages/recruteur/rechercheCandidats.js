@@ -62,7 +62,12 @@ var app = new Vue({
             style: true,
             useDeviceLocation: false,
             language: 'fr',
-            countries: ['fr']
+            countries: ['fr'],
+            templates: {
+                value: function(suggestion) {
+                    return suggestion.name;
+                }
+            }
         });
         placesAutocomplete.on('change', function(e) {
             self.localisation = {
