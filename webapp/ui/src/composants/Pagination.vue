@@ -7,7 +7,7 @@
             {{index}}
         </a>
         <a href="#" class="bouton pagination-item pagination-page" title="Page suivante"
-           v-if="indexPageCourante !== nbPages"
+           v-if="nbPages > 0 && indexPageCourante !== nbPages"
            v-on:click="chargerPage(indexPageCourante + 1)">
            >
         </a>
