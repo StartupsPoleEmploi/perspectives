@@ -135,6 +135,21 @@ class ModifierProfilCandidatSpec extends AsyncWordSpec
       // Then
       future map (events => events.count(_.isInstanceOf[AdresseModifieeEvent]) mustBe 0)
     }
+    "ne pas générer d'événement de modification d'adresse si elle est supprimée (on ne supprime pas d'information)" in {
+      // Given
+      val candidat = candidatBuilder
+        .avecInscription()
+        .avecAdresse(adresse)
+        .build
+
+      // When
+      val future = candidat.modifierProfil(commande.copy(
+        adresse = None
+      ), localisationService)
+
+      // Then
+      future map (events => events.count(_.isInstanceOf[AdresseModifieeEvent]) mustBe 0)
+    }
     "générer un événement lorsque l'adresse a été modifiée" in {
       // Given
       val nouvelleAdresse = adresse.copy(voie = "33 boulevard soultz")
@@ -193,7 +208,22 @@ class ModifierProfilCandidatSpec extends AsyncWordSpec
       // Then
       future map (events => events.count(_.isInstanceOf[StatutDemandeurEmploiModifieEvent]) mustBe 0)
     }
-    "générer un événement contenant le statut de demandeur d'emploi s'il a été modifiée" in {
+    "ne pas générer d'événement contenant le statut de demandeur d'emploi lorsqu'il est supprimé (on ne supprime pas d'information)" in {
+      // Given
+      val candidat = candidatBuilder
+        .avecInscription()
+        .avecStatutDemandeurEmploi(StatutDemandeurEmploi.DEMANDEUR_EMPLOI)
+        .build
+
+      // When
+      val future = candidat.modifierProfil(commande.copy(
+        statutDemandeurEmploi = None
+      ), localisationService)
+
+      // Then
+      future map (events => events.count(_.isInstanceOf[StatutDemandeurEmploiModifieEvent]) mustBe 0)
+    }
+    "générer un événement contenant le statut de demandeur d'emploi s'il a été modifié" in {
       // Given
       val candidat = candidatBuilder
         .avecInscription()
@@ -211,6 +241,20 @@ class ModifierProfilCandidatSpec extends AsyncWordSpec
         event.candidatId mustBe commande.id
         event.statutDemandeurEmploi mustBe StatutDemandeurEmploi.NON_DEMANDEUR_EMPLOI
       })
+    }
+    "ne pas générer d'événement contenant les centres d'intérêt s'ils ne sont pas renseignés" in {
+      // Given
+      val candidat = candidatBuilder
+        .avecInscription()
+        .build
+
+      // When
+      val future = candidat.modifierProfil(commande.copy(
+        centresInteret = Nil
+      ), localisationService)
+
+      // Then
+      future map (events => events.count(_.isInstanceOf[CentresInteretModifiesEvent]) mustBe 0)
     }
     "ne pas générer d'événement contenant les centres d'intérêt s'ils n'ont pas été modifiés" in {
       // Given
@@ -293,6 +337,20 @@ class ModifierProfilCandidatSpec extends AsyncWordSpec
         event.candidatId mustBe commande.id
         event.centresInteret mustBe centresInteret
       })
+    }
+    "ne pas générer d'événement contenant les langues si elles ne sont pas renseignées" in {
+      // Given
+      val candidat = candidatBuilder
+        .avecInscription()
+        .build
+
+      // When
+      val future = candidat.modifierProfil(commande.copy(
+        langues = Nil
+      ), localisationService)
+
+      // Then
+      future map (events => events.count(_.isInstanceOf[LanguesModifieesEvent]) mustBe 0)
     }
     "ne pas générer d'événement contenant les langues si elles n'ont pas été modifiées" in {
       // Given
@@ -395,6 +453,20 @@ class ModifierProfilCandidatSpec extends AsyncWordSpec
         event.langues mustBe langues
       })
     }
+    "ne pas générer d'événement contenant les permis s'ils ne sont pas renseignés" in {
+      // Given
+      val candidat = candidatBuilder
+        .avecInscription()
+        .build
+
+      // When
+      val future = candidat.modifierProfil(commande.copy(
+        permis = Nil
+      ), localisationService)
+
+      // Then
+      future map (events => events.count(_.isInstanceOf[PermisModifiesEvent]) mustBe 0)
+    }
     "ne pas générer d'événement contenant les permis s'ils n'ont pas été modifiés" in {
       // Given
       val listePermis = List(permis)
@@ -496,6 +568,20 @@ class ModifierProfilCandidatSpec extends AsyncWordSpec
         event.permis mustBe listePermis
       })
     }
+    "ne pas générer d'événement contenant les savoirEtre s'ils ne sont pas renseignés" in {
+      // Given
+      val candidat = candidatBuilder
+        .avecInscription()
+        .build
+
+      // When
+      val future = candidat.modifierProfil(commande.copy(
+        savoirEtre = Nil
+      ), localisationService)
+
+      // Then
+      future map (events => events.count(_.isInstanceOf[SavoirEtreModifiesEvent]) mustBe 0)
+    }
     "ne pas générer d'événement contenant les savoirEtre s'ils n'ont pas été modifiés" in {
       // Given
       val savoirEtre = List(SavoirEtre("Curiosité"))
@@ -593,6 +679,20 @@ class ModifierProfilCandidatSpec extends AsyncWordSpec
         event.candidatId mustBe commande.id
         event.savoirEtre mustBe savoirEtre
       })
+    }
+    "ne pas générer d'événement contenant les savoirFaire s'ils ne sont pas renseignés" in {
+      // Given
+      val candidat = candidatBuilder
+        .avecInscription()
+        .build
+
+      // When
+      val future = candidat.modifierProfil(commande.copy(
+        savoirFaire = Nil
+      ), localisationService)
+
+      // Then
+      future map (events => events.count(_.isInstanceOf[SavoirFaireModifiesEvent]) mustBe 0)
     }
     "ne pas générer d'événement contenant les savoirFaire s'ils n'ont pas été modifiés" in {
       // Given
@@ -694,6 +794,20 @@ class ModifierProfilCandidatSpec extends AsyncWordSpec
         event.candidatId mustBe commande.id
         event.savoirFaire mustBe listeSavoirFaire
       })
+    }
+    "ne pas générer d'événement contenant les formations si elles ne sont pas renseignées" in {
+      // Given
+      val candidat = candidatBuilder
+        .avecInscription()
+        .build
+
+      // When
+      val future = candidat.modifierProfil(commande.copy(
+        formations = Nil
+      ), localisationService)
+
+      // Then
+      future map (events => events.count(_.isInstanceOf[FormationsModifieesEvent]) mustBe 0)
     }
     "ne pas générer d'événement contenant les formations si elles n'ont pas été modifiées" in {
       // Given
@@ -797,6 +911,20 @@ class ModifierProfilCandidatSpec extends AsyncWordSpec
         event.formations mustBe formations
       })
     }
+    "ne pas générer d'événement contenant les expériences si elles ne sont pas renseignées" in {
+      // Given
+      val candidat = candidatBuilder
+        .avecInscription()
+        .build
+
+      // When
+      val future = candidat.modifierProfil(commande.copy(
+        experiencesProfessionnelles = Nil
+      ), localisationService)
+
+      // Then
+      future map (events => events.count(_.isInstanceOf[ExperiencesProfessionnellesModifieesEvent]) mustBe 0)
+    }
     "ne pas générer d'événement contenant les expériences si elles n'ont pas été modifiées" in {
       // Given
       val experiencesProfessionnelles = List(experienceProfessionnelle)
@@ -852,7 +980,7 @@ class ModifierProfilCandidatSpec extends AsyncWordSpec
       // Then
       future map (events => events.count(_.isInstanceOf[ExperiencesProfessionnellesModifieesEvent]) mustBe 1)
     }
-    "générer un événement contenant les formations si on modifie une expérience" in {
+    "générer un événement contenant les expériences si on modifie une expérience" in {
       // Given
       val experiencesProfessionnelles = List(experienceProfessionnelle.copy(dateFin = None))
       val candidat = candidatBuilder
@@ -868,7 +996,7 @@ class ModifierProfilCandidatSpec extends AsyncWordSpec
       // Then
       future map (events => events.count(_.isInstanceOf[ExperiencesProfessionnellesModifieesEvent]) mustBe 1)
     }
-    "générer un événement contenant les formations si on supprime une expérience" in {
+    "générer un événement contenant les expériences si on supprime une expérience" in {
       // Given
       val candidat = candidatBuilder
         .avecInscription()
@@ -877,7 +1005,7 @@ class ModifierProfilCandidatSpec extends AsyncWordSpec
 
       // When
       val future = candidat.modifierProfil(commande.copy(
-        formations = Nil
+        experiencesProfessionnelles = Nil
       ), localisationService)
 
       // Then
