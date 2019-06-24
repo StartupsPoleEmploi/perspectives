@@ -1,6 +1,6 @@
 package fr.poleemploi.perspectives.commun.infra.peconnect.ws
 
-import java.time.{LocalDate, ZonedDateTime}
+import java.time.{LocalDate, LocalDateTime, ZonedDateTime}
 
 import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.commun.domain.{CodeDepartement, CodeROME}
@@ -264,6 +264,81 @@ class PEConnectWSMappingSpec extends WordSpec
         lieu = Some("Paris"),
         domaine = Some(DomaineFormation("Informatique de gestion")),
         niveau = Some(NiveauFormation("Bac+5"))
+      )
+    }
+  }
+  "buildExperienceProfessionnelles" should {
+    "ne pas retourner d'expérience lorsque la réponse de l'API ne comporte pas la date de début" in {
+      // Given
+      val experienceProfessionnelleResponse = ExperienceProfessionnelleResponse(
+        date = None,
+        description = None,
+        enPoste = false,
+        etranger = false,
+        intitule = Some("Assistante Maternelle Agréée à domicile"),
+        lieu = None,
+        duree = None,
+        entreprise = None
+      )
+
+      // When
+      val result = mapping.buildExperienceProfessionnelles(List(experienceProfessionnelleResponse))
+
+      // Then
+      result.size mustBe 0
+    }
+    "ne pas retourner d'expérience lorsque la réponse de l'API ne comporte pas d'intitulé (même si le champ est marqué obligatoire dans la doc de l'emploi store)" in {
+      // Given
+      val experienceProfessionnelleResponse = ExperienceProfessionnelleResponse(
+        date = Some(DateExperienceProfessionnelleResponse(
+          debut = Some(LocalDateTime.now().minusYears(5L)),
+          fin = None
+        )),
+        description = None,
+        enPoste = false,
+        etranger = false,
+        intitule = None,
+        lieu = None,
+        duree = None,
+        entreprise = None
+      )
+
+      // When
+      val result = mapping.buildExperienceProfessionnelles(List(experienceProfessionnelleResponse))
+
+      // Then
+      result.size mustBe 0
+    }
+    "retourner les informations de l'expérience lorsqu'elle comporte un intitulé et une date de début" in {
+      // Given
+      val dateDebut = LocalDateTime.now().minusYears(5L)
+      val experienceProfessionnelleResponse = ExperienceProfessionnelleResponse(
+        date = Some(DateExperienceProfessionnelleResponse(
+          debut = Some(dateDebut),
+          fin = None
+        )),
+        description = None,
+        enPoste = false,
+        etranger = false,
+        intitule = Some("Assistante Maternelle Agréée à domicile"),
+        lieu = None,
+        duree = None,
+        entreprise = None
+      )
+
+      // When
+      val result = mapping.buildExperienceProfessionnelles(List(experienceProfessionnelleResponse))
+
+      // Then
+      result.size mustBe 1
+      result.head mustBe ExperienceProfessionnelle(
+        dateDebut = dateDebut.toLocalDate,
+        dateFin = None,
+        enPoste = false,
+        intitule = "Assistante Maternelle Agréée à domicile",
+        nomEntreprise = None,
+        lieu = None,
+        description = None
       )
     }
   }

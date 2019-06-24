@@ -109,15 +109,21 @@ class PEConnectWSMapping {
     }
 
   def buildExperienceProfessionnelles(responses: List[ExperienceProfessionnelleResponse]): List[ExperienceProfessionnelle] =
-    responses.flatMap(e => e.date.flatMap(_.debut).map(dateDebut => ExperienceProfessionnelle(
-      intitule = e.intitule,
-      dateDebut = dateDebut.toLocalDate,
-      dateFin = e.date.flatMap(_.fin).map(_.toLocalDate),
-      enPoste = e.enPoste,
-      nomEntreprise = e.entreprise,
-      lieu = e.lieu,
-      description = e.description
-    )))
+    for {
+      e <- responses
+      intitule <- e.intitule
+      dateDebut <- e.date.flatMap(_.debut)
+    } yield {
+      ExperienceProfessionnelle(
+        intitule = intitule,
+        dateDebut = dateDebut.toLocalDate,
+        dateFin = e.date.flatMap(_.fin).map(_.toLocalDate),
+        enPoste = e.enPoste,
+        nomEntreprise = e.entreprise,
+        lieu = e.lieu,
+        description = e.description
+      )
+    }
 
   private def buildGenre(gender: String): Genre = gender match {
     case "male" => Genre.HOMME
@@ -349,7 +355,7 @@ private[ws] case class ExperienceProfessionnelleResponse(date: Option[DateExperi
                                                          enPoste: Boolean,
                                                          entreprise: Option[String],
                                                          etranger: Boolean,
-                                                         intitule: String,
+                                                         intitule: Option[String],
                                                          lieu: Option[String])
 
 private[ws] object ExperienceProfessionnelleResponse {
