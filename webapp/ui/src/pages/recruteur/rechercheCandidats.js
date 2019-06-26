@@ -456,7 +456,7 @@ var app = new Vue({
             var max = this.indexPaginationSavoirFaireCandidat * this.nbSavoirFaireParPage;
             return index >= (max - this.nbSavoirFaireParPage) && index < (max);
         },
-        chargerPageSavoirFaire(index) {
+        chargerPageSavoirFaire: function(index) {
             this.indexPaginationSavoirFaireCandidat = index;
         }
     }
