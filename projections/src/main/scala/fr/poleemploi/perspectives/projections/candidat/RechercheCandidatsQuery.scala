@@ -40,8 +40,6 @@ case class CandidatRechercheRecruteurDto(candidatId: CandidatId,
                                          experiencesProfessionnelles: List[ExperienceProfessionnelle]) {
 
   def nomCV: Option[String] = cvTypeMedia.map(t => s"${prenom.value} ${nom.value}.${TypeMedia.getExtensionFichier(t)}")
-
-  def habiletes: List[Habilete] = metiersValides.flatMap(_.habiletes).distinct
 }
 
 object CandidatRechercheRecruteurDto {
