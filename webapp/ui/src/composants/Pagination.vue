@@ -1,5 +1,5 @@
 <template>
-    <div class="pagination text-center">
+    <div class="pagination text-center" v-if="nbPages > 1">
         <a href="#" class="bouton pagination-item"
            v-for="index in nbPages"
            v-on:click="chargerPage(index)"
@@ -7,7 +7,7 @@
             {{index}}
         </a>
         <a href="#" class="bouton pagination-item pagination-page" title="Page suivante"
-           v-if="nbPages > 0 && indexPageCourante !== nbPages"
+           v-if="indexPageCourante !== nbPages"
            v-on:click="chargerPage(indexPageCourante + 1)">
            >
         </a>
