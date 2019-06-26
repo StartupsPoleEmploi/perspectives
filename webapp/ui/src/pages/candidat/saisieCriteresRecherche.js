@@ -42,8 +42,8 @@ var app = new Vue({
                 {value: 50, label: 'Moins de 50km'}
             ],
             listeTempsTravail: [
-                {value: 'MI_TEMPS', label: 'Mi-temps'},
-                {value: 'PLEIN_TEMPS', label: 'Plein temps'}
+                {value: 'TEMPS_PLEIN', label: 'Plein temps'},
+                {value: 'TEMPS_PARTIEL', label: 'Temps partiel'}
             ],
             metiersValides: Object.assign([], jsData.metiersValides),
             secteursActivites: jsData.secteursActivites,

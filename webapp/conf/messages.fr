@@ -7,5 +7,6 @@ constraint.numeroSiret=Le numéro de SIRET n''est pas valide
 constraint.numeroTelephone=Le numéro de téléphone n''est pas valide
 constraint.typeRecruteur=Le type de recruteur n''est pas valide
 constraint.rayonRecherche=Le rayon de recherche n''est pas valide
+constraint.tempsTravail=Le temps de travail n''est pas valide
 
 format.zonedatetime=ZonedDateTime

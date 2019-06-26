@@ -113,9 +113,9 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
         ),
         rayonRecherche = saisieCriteresRechercheForm.rayonRecherche.flatMap(r =>
           if (r == 0) None
-          else Some(RayonRecherche(r, UniteLongueur.KM))
+          else RayonRecherche.from(r)
         )
       ),
-      tempsTravailRecherche = TempsTravail(saisieCriteresRechercheForm.tempsTravail)
+      tempsTravailRecherche = TempsTravail.from(saisieCriteresRechercheForm.tempsTravail).get
     )
 }

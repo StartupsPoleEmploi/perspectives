@@ -1,6 +1,7 @@
 package controllers.candidat
 
 import controllers.FormHelpers
+import fr.poleemploi.perspectives.candidat.TempsTravail
 import fr.poleemploi.perspectives.commun.domain.RayonRecherche
 import fr.poleemploi.perspectives.projections.candidat.CandidatSaisieCriteresRechercheQueryResult
 import play.api.data.Form
@@ -44,6 +45,12 @@ object SaisieCriteresRechercheForm {
         .getOrElse(Invalid(Seq(ValidationError("constraint.rayonRecherche"))))
   )
 
+  val tempsTravailConstraint: Constraint[String] = Constraint("constraint.tempsTravail")(
+    text => TempsTravail.from(text)
+      .map(_ => Valid)
+      .getOrElse(Invalid(Seq(ValidationError("constraint.tempsTravail"))))
+  )
+
   val form = Form(
     mapping(
       "nouveauCandidat" -> boolean,
@@ -57,7 +64,7 @@ object SaisieCriteresRechercheForm {
         "latitude" -> of[Double]
       )(LocalisationRechercheForm.apply)(LocalisationRechercheForm.unapply),
       "rayonRecherche" -> optional(number.verifying(rayonRechercheConstraint)),
-      "tempsTravail" -> nonEmptyText,
+      "tempsTravail" -> nonEmptyText.verifying(tempsTravailConstraint),
       "metiersValidesRecherches" -> set(text),
       "metiersRecherches" -> set(text),
       "domainesProfessionnelsRecherches" -> set(text)
