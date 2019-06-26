@@ -60,7 +60,7 @@
                                         </template>
                                     </p>
                                     <p class="col-12 col-sm-3">
-                                        <span class="tempsTravail" v-bind:class="cssTempsTravail(candidatCourant)">{{candidatCourant.tempsTravail | tempsTravail}}</span>
+                                        <span class="font-size-sm font-weight-bold tempsTravail" v-bind:class="cssTempsTravail(candidatCourant.tempsTravailRecherche)">{{candidatCourant.tempsTravailRecherche | tempsTravail}}</span>
                                     </p>
                                 </div>
                                 <ul class="row align-items-center list-unstyled mb-0">
@@ -344,8 +344,8 @@
                                     </div>
                                     <div class="col-12 col-sm-4">
                                         <div class="row">
-                                            <div class="col-12 mb-3 text-sm-right" v-if="candidat.tempsTravail">
-                                                <span class="font-size-sm font-weight-bold tempsTravail" v-bind:class="cssTempsTravail(tempsTravail)">{{tempsTravail | tempsTravail}}</span>
+                                            <div class="col-12 mb-3 text-sm-right" v-if="candidat.tempsTravailRecherche">
+                                                <span class="font-size-sm font-weight-bold tempsTravail" v-bind:class="cssTempsTravail(candidat.tempsTravailRecherche)">{{candidat.tempsTravailRecherche | tempsTravail}}</span>
                                             </div>
                                         </div>
                                     </div>
