@@ -169,7 +169,7 @@ object CandidatInscritState extends CandidatState {
           codesROMEValidesRecherches = command.codesROMEValidesRecherches,
           codesROMERecherches = command.codesROMERecherches,
           codesDomaineProfessionnelRecherches = command.codesDomaineProfessionnelRecherches,
-          tempsTravailRecherche = Some(command.tempsTravailRecherche)
+          tempsTravailRecherche = command.tempsTravailRecherche
         ))
       } else None
 

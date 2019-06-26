@@ -363,7 +363,7 @@ class ModifierCriteresRechercheSpec extends AsyncWordSpec
       event.codesROMEValidesRecherches mustBe commande.codesROMEValidesRecherches
       event.codesROMERecherches mustBe commande.codesROMERecherches
       event.localisationRecherche mustBe commande.localisationRecherche
-      event.tempsTravailRecherche mustBe Some(commande.tempsTravailRecherche)
+      event.tempsTravailRecherche mustBe commande.tempsTravailRecherche
     }
     "générer un événement contenant le numero de téléphone" in {
       val candidat = candidatBuilder

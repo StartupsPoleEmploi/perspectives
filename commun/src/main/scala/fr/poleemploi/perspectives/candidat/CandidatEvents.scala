@@ -58,13 +58,12 @@ case class VisibiliteRecruteurModifieeEvent(candidatId: CandidatId,
                                             contactRecruteur: Boolean,
                                             contactFormation: Boolean) extends CandidatEvent
 
-// FIXME : temps de travail obligatoire après migration des anciens candidats
 case class CriteresRechercheModifiesEvent(candidatId: CandidatId,
                                           localisationRecherche: LocalisationRecherche,
                                           codesROMEValidesRecherches: Set[CodeROME],
                                           codesROMERecherches: Set[CodeROME],
                                           codesDomaineProfessionnelRecherches: Set[CodeDomaineProfessionnel],
-                                          tempsTravailRecherche: Option[TempsTravail]) extends CandidatEvent
+                                          tempsTravailRecherche: TempsTravail) extends CandidatEvent
 
 case class NumeroTelephoneModifieEvent(candidatId: CandidatId,
                                        numeroTelephone: NumeroTelephone) extends CandidatEvent

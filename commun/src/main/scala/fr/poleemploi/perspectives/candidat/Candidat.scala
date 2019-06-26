@@ -104,7 +104,7 @@ private[candidat] case class CandidatContext(statut: StatutCandidat = StatutCand
           codesROMERecherches = e.codesROMERecherches,
           codesDomaineProfessionnelRecherches = e.codesDomaineProfessionnelRecherches,
           localisationRecherche = Some(e.localisationRecherche),
-          tempsTravailRecherche = e.tempsTravailRecherche
+          tempsTravailRecherche = Some(e.tempsTravailRecherche)
         )
       case e: NumeroTelephoneModifieEvent =>
         context.copy(numeroTelephone = Some(e.numeroTelephone))

@@ -158,7 +158,7 @@ class CandidatBuilder {
       codesROMEValidesRecherches = codesROMEValidesRecherches,
       codesROMERecherches = codesROMERecherches,
       codesDomaineProfessionnelRecherches = codesDomaineProfessionnelRecherches,
-      tempsTravailRecherche = tempsTravailRecherche
+      tempsTravailRecherche = tempsTravailRecherche.getOrElse(TempsTravail.TEMPS_PLEIN)
     )
     this
   }
