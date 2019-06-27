@@ -52,93 +52,71 @@ object CandidatInscritState extends CandidatState {
     ).getOrElse(Future.successful(None))
 
     val statutDemandeurEmploiModifieEvent = Future(
-      command.statutDemandeurEmploi.flatMap(statutDemandeurEmploi =>
-        if (!context.statutDemandeurEmploi.contains(statutDemandeurEmploi))
-          Some(StatutDemandeurEmploiModifieEvent(
-            candidatId = command.id,
-            statutDemandeurEmploi = statutDemandeurEmploi
-          ))
-        else None
-      )
+      command.statutDemandeurEmploi.filter(s => !context.statutDemandeurEmploi.contains(s))
+        .map(s => StatutDemandeurEmploiModifieEvent(
+          candidatId = command.id,
+          statutDemandeurEmploi = s
+        ))
     )
 
     val centreInteretsModifiesEvent = Future(
-      command.centresInteret.flatMap(c =>
-        if (context.centresInteret.sortBy(_.value) != c.sortBy(_.value))
-          Some(CentresInteretModifiesEvent(
-            candidatId = command.id,
-            centresInteret = c
-          ))
-        else None
-      )
+      command.centresInteret.filter(c => context.centresInteret.sortBy(_.value) != c.sortBy(_.value))
+        .map(c => CentresInteretModifiesEvent(
+          candidatId = command.id,
+          centresInteret = c
+        ))
     )
 
     val languesModifieesEvent = Future(
-      command.langues.flatMap(l =>
-        if (context.langues.sortBy(_.label) != l.sortBy(_.label))
-          Some(LanguesModifieesEvent(
-            candidatId = command.id,
-            langues = l
-          ))
-        else None
-      )
+      command.langues.filter(l => context.langues.sortBy(_.label) != l.sortBy(_.label))
+        .map(l => LanguesModifieesEvent(
+          candidatId = command.id,
+          langues = l
+        ))
     )
 
     val permisModifiesEvent = Future(
-      command.permis.flatMap(p =>
-        if (context.permis.sortBy(_.code) != p.sortBy(_.code))
-          Some(PermisModifiesEvent(
-            candidatId = command.id,
-            permis = p
-          ))
-        else None
-      )
+      command.permis.filter(p => context.permis.sortBy(_.code) != p.sortBy(_.code))
+        .map(p => PermisModifiesEvent(
+          candidatId = command.id,
+          permis = p
+        ))
     )
 
     val savoirEtreModifiesEvent = Future(
-      command.savoirEtre.flatMap(s =>
-        if (context.savoirEtre.sortBy(_.value) != s.sortBy(_.value))
-          Some(SavoirEtreModifiesEvent(
-            candidatId = command.id,
-            savoirEtre = s
-          ))
-        else None
-      )
+      command.savoirEtre.filter(s => context.savoirEtre.sortBy(_.value) != s.sortBy(_.value))
+        .map(s => SavoirEtreModifiesEvent(
+          candidatId = command.id,
+          savoirEtre = s
+        ))
     )
 
     val savoirFaireModifiesEvent = Future(
-      command.savoirFaire.flatMap(s =>
-        if (context.savoirFaire.sortBy(_.label) != s.sortBy(_.label))
-          Some(SavoirFaireModifiesEvent(
-            candidatId = command.id,
-            savoirFaire = s
-          ))
-        else None
-      )
+      command.savoirFaire.filter(s => context.savoirFaire.sortBy(_.label) != s.sortBy(_.label))
+        .map(s => SavoirFaireModifiesEvent(
+          candidatId = command.id,
+          savoirFaire = s
+        ))
     )
 
     val formationsModifieesEvent = Future(
-      command.formations.flatMap(f =>
-        if (context.formations.sortWith((f1, f2) => f1.anneeFin > f2.anneeFin && f1.intitule < f2.intitule)
+      command.formations.filter(f =>
+        context.formations.sortWith((f1, f2) => f1.anneeFin > f2.anneeFin && f1.intitule < f2.intitule)
           != f.sortWith((f1, f2) => f1.anneeFin > f2.anneeFin && f1.intitule < f2.intitule))
-          Some(FormationsModifieesEvent(
-            candidatId = command.id,
-            formations = f
-          ))
-        else None
-      )
+        .map(f => FormationsModifieesEvent(
+          candidatId = command.id,
+          formations = f
+        ))
     )
 
     val experiencesModifieesEvent = Future(
-      command.experiencesProfessionnelles.flatMap(e =>
-        if (context.experiencesProfessionnelles.sortWith((e1, e2) => e1.dateDebut.isBefore(e2.dateDebut) && e1.intitule < e2.intitule)
+      command.experiencesProfessionnelles.filter(e =>
+        context.experiencesProfessionnelles.sortWith((e1, e2) => e1.dateDebut.isBefore(e2.dateDebut) && e1.intitule < e2.intitule)
           != e.sortWith((e1, e2) => e1.dateDebut.isBefore(e2.dateDebut) && e1.intitule < e2.intitule))
-          Some(ExperiencesProfessionnellesModifieesEvent(
-            candidatId = command.id,
-            experiencesProfessionnelles = e
-          ))
-        else None
-      )
+        .map(e => ExperiencesProfessionnellesModifieesEvent(
+          candidatId = command.id,
+          experiencesProfessionnelles = e
+        ))
     )
 
     Future.sequence(List(adresseModifieeEvent, statutDemandeurEmploiModifieEvent, centreInteretsModifiesEvent, languesModifieesEvent, permisModifiesEvent, savoirEtreModifiesEvent, savoirFaireModifiesEvent, formationsModifieesEvent, experiencesModifieesEvent))
