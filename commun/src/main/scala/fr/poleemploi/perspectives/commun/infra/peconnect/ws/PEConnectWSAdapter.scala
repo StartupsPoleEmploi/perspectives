@@ -105,7 +105,7 @@ class PEConnectWSAdapter(wsClient: WSClient,
         .flatMap(filtreStatutReponse(_))
     ).map(r => mapping.buildPermis(r.json.as[List[PermisResponse]]))
 
-  def experiencesProfessionnelles(accessToken: AccessToken): Future[List[ExperienceProfessionnelle]] =
+  def experiencesProfessionnellesCandidat(accessToken: AccessToken): Future[List[ExperienceProfessionnelle]] =
     handleRateLimit()(
       wsClient
         .url(s"${config.urlApi}/peconnect-experiences/v1/experiences")

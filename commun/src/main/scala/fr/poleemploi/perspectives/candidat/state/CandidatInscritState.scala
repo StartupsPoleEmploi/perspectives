@@ -51,81 +51,94 @@ object CandidatInscritState extends CandidatState {
       } else Future.successful(None)
     ).getOrElse(Future.successful(None))
 
-    val statutDemandeurEmploiModifieEvent =
-      Future(command.statutDemandeurEmploi.flatMap(statutDemandeurEmploi =>
+    val statutDemandeurEmploiModifieEvent = Future(
+      command.statutDemandeurEmploi.flatMap(statutDemandeurEmploi =>
         if (!context.statutDemandeurEmploi.contains(statutDemandeurEmploi))
           Some(StatutDemandeurEmploiModifieEvent(
             candidatId = command.id,
             statutDemandeurEmploi = statutDemandeurEmploi
           ))
         else None
-      ))
+      )
+    )
 
-    val centreInteretsModifiesEvent =
-      Future(
-        if (context.centresInteret.sortBy(_.value) != command.centresInteret.sortBy(_.value))
+    val centreInteretsModifiesEvent = Future(
+      command.centresInteret.flatMap(c =>
+        if (context.centresInteret.sortBy(_.value) != c.sortBy(_.value))
           Some(CentresInteretModifiesEvent(
             candidatId = command.id,
-            centresInteret = command.centresInteret
+            centresInteret = c
           ))
         else None
       )
+    )
 
-    val languesModifieesEvent =
-      Future(
-        if (context.langues.sortBy(_.label) != command.langues.sortBy(_.label))
+    val languesModifieesEvent = Future(
+      command.langues.flatMap(l =>
+        if (context.langues.sortBy(_.label) != l.sortBy(_.label))
           Some(LanguesModifieesEvent(
             candidatId = command.id,
-            langues = command.langues
+            langues = l
           ))
         else None
       )
+    )
 
     val permisModifiesEvent = Future(
-      if (context.permis.sortBy(_.code) != command.permis.sortBy(_.code))
-        Some(PermisModifiesEvent(
-          candidatId = command.id,
-          permis = command.permis
-        ))
-      else None
+      command.permis.flatMap(p =>
+        if (context.permis.sortBy(_.code) != p.sortBy(_.code))
+          Some(PermisModifiesEvent(
+            candidatId = command.id,
+            permis = p
+          ))
+        else None
+      )
     )
 
     val savoirEtreModifiesEvent = Future(
-      if (context.savoirEtre.sortBy(_.value) != command.savoirEtre.sortBy(_.value))
-        Some(SavoirEtreModifiesEvent(
-          candidatId = command.id,
-          savoirEtre = command.savoirEtre
-        ))
-      else None
+      command.savoirEtre.flatMap(s =>
+        if (context.savoirEtre.sortBy(_.value) != s.sortBy(_.value))
+          Some(SavoirEtreModifiesEvent(
+            candidatId = command.id,
+            savoirEtre = s
+          ))
+        else None
+      )
     )
 
     val savoirFaireModifiesEvent = Future(
-      if (context.savoirFaire.sortBy(_.label) != command.savoirFaire.sortBy(_.label))
-        Some(SavoirFaireModifiesEvent(
-          candidatId = command.id,
-          savoirFaire = command.savoirFaire
-        ))
-      else None
+      command.savoirFaire.flatMap(s =>
+        if (context.savoirFaire.sortBy(_.label) != s.sortBy(_.label))
+          Some(SavoirFaireModifiesEvent(
+            candidatId = command.id,
+            savoirFaire = s
+          ))
+        else None
+      )
     )
 
     val formationsModifieesEvent = Future(
-      if (context.formations.sortWith((f1, f2) => f1.anneeFin > f2.anneeFin && f1.intitule < f2.intitule)
-        != command.formations.sortWith((f1, f2) => f1.anneeFin > f2.anneeFin && f1.intitule < f2.intitule))
-        Some(FormationsModifieesEvent(
-          candidatId = command.id,
-          formations = command.formations
-        ))
-      else None
+      command.formations.flatMap(f =>
+        if (context.formations.sortWith((f1, f2) => f1.anneeFin > f2.anneeFin && f1.intitule < f2.intitule)
+          != f.sortWith((f1, f2) => f1.anneeFin > f2.anneeFin && f1.intitule < f2.intitule))
+          Some(FormationsModifieesEvent(
+            candidatId = command.id,
+            formations = f
+          ))
+        else None
+      )
     )
 
     val experiencesModifieesEvent = Future(
-      if (context.experiencesProfessionnelles.sortWith((e1, e2) => e1.dateDebut.isBefore(e2.dateDebut) && e1.intitule < e2.intitule)
-        != command.experiencesProfessionnelles.sortWith((e1, e2) => e1.dateDebut.isBefore(e2.dateDebut) && e1.intitule < e2.intitule))
-        Some(ExperiencesProfessionnellesModifieesEvent(
-          candidatId = command.id,
-          experiencesProfessionnelles = command.experiencesProfessionnelles
-        ))
-      else None
+      command.experiencesProfessionnelles.flatMap(e =>
+        if (context.experiencesProfessionnelles.sortWith((e1, e2) => e1.dateDebut.isBefore(e2.dateDebut) && e1.intitule < e2.intitule)
+          != e.sortWith((e1, e2) => e1.dateDebut.isBefore(e2.dateDebut) && e1.intitule < e2.intitule))
+          Some(ExperiencesProfessionnellesModifieesEvent(
+            candidatId = command.id,
+            experiencesProfessionnelles = e
+          ))
+        else None
+      )
     )
 
     Future.sequence(List(adresseModifieeEvent, statutDemandeurEmploiModifieEvent, centreInteretsModifiesEvent, languesModifieesEvent, permisModifiesEvent, savoirEtreModifiesEvent, savoirFaireModifiesEvent, formationsModifieesEvent, experiencesModifieesEvent))
@@ -152,7 +165,7 @@ object CandidatInscritState extends CandidatState {
       if (!context.numeroTelephone.contains(n)) {
         Some(NumeroTelephoneModifieEvent(
           candidatId = command.id,
-          numeroTelephone = command.numeroTelephone.get
+          numeroTelephone = n
         ))
       } else None
     )

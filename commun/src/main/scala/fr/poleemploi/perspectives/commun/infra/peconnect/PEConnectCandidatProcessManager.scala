@@ -25,49 +25,30 @@ class PEConnectCandidatProcessManager(peConnectAccessTokenStorage: PEConnectAcce
     case e: CandidatConnecteEvent => modifierProfilCandidat(e.candidatId)
   }
 
+  /**
+    * Pour dinstinguer le cas d'échec du service et le cas d'une information supprimée, on renvoit None au lieu de Nil en cas d'échec
+    */
+  implicit class PEConnectCandidatServiceRecovery[T](result: Future[T]) {
+
+    def getOrRecoverWithNone(candidatId: CandidatId): Future[Option[T]] =
+      result.map(Some(_)) recover {
+        case t: Throwable =>
+          peConnectLogger.error(s"Erreur lors de la récupération des infos du candidat ${candidatId.value}", t)
+          None
+      }
+  }
+
   def modifierProfilCandidat(candidatId: CandidatId): Future[Unit] =
     for {
       accessToken <- peConnectAccessTokenStorage.find(candidatId).map(_.getOrElse(throw new IllegalArgumentException(s"Pas de token pour le candidat ${candidatId.value}")))
-      adresse <- peConnectWSAdapter.coordonneesCandidat(accessToken).map(Some(_)).recoverWith {
-        case t: Throwable =>
-          peConnectLogger.error(s"Erreur lors de la récupération des coordonnées du candidat ${candidatId.value}", t)
-          Future.successful(None)
-      }
-      statutDemandeurEmploi <- peConnectWSAdapter.statutDemandeurEmploiCandidat(accessToken).map(Some(_)).recoverWith {
-        case t: Throwable =>
-          peConnectLogger.error(s"Erreur lors de la récupération du statut de demandeur d'emploi du candidat ${candidatId.value}", t)
-          Future.successful(None)
-      }
-      centresInteret <- peConnectWSAdapter.centresInteretCandidat(accessToken).recoverWith {
-        case t: Throwable =>
-          peConnectLogger.error(s"Erreur lors de la récupération des centres d'intérêt du candidat ${candidatId.value}", t)
-          Future.successful(Nil)
-      }
-      langues <- peConnectWSAdapter.languesCandidat(accessToken).recoverWith {
-        case t: Throwable =>
-          peConnectLogger.error(s"Erreur lors de la récupération des langues du candidat ${candidatId.value}", t)
-          Future.successful(Nil)
-      }
-      permis <- peConnectWSAdapter.permisCandidat(accessToken).recoverWith {
-        case t: Throwable =>
-          peConnectLogger.error(s"Erreur lors de la récupération des permis du candidat ${candidatId.value}", t)
-          Future.successful(Nil)
-      }
-      (savoirEtre, savoirFaire) <- peConnectWSAdapter.competencesCandidat(accessToken).recoverWith {
-        case t: Throwable =>
-          peConnectLogger.error(s"Erreur lors de la récupération des compétences du candidat ${candidatId.value}", t)
-          Future.successful((Nil, Nil))
-      }
-      formations <- peConnectWSAdapter.formationsCandidat(accessToken).recoverWith {
-        case t: Throwable =>
-          peConnectLogger.error(s"Erreur lors de la récupération des formations du candidat ${candidatId.value}", t)
-          Future.successful(Nil)
-      }
-      experiencesProfessionnelles <- peConnectWSAdapter.experiencesProfessionnelles(accessToken).recoverWith {
-        case t: Throwable =>
-          peConnectLogger.error(s"Erreur lors de la récupération des expériences professionnelles du candidat ${candidatId.value}", t)
-          Future.successful(Nil)
-      }
+      adresse <- peConnectWSAdapter.coordonneesCandidat(accessToken).getOrRecoverWithNone(candidatId)
+      statutDemandeurEmploi <- peConnectWSAdapter.statutDemandeurEmploiCandidat(accessToken).getOrRecoverWithNone(candidatId)
+      centresInteret <- peConnectWSAdapter.centresInteretCandidat(accessToken).getOrRecoverWithNone(candidatId)
+      langues <- peConnectWSAdapter.languesCandidat(accessToken).getOrRecoverWithNone(candidatId)
+      permis <- peConnectWSAdapter.permisCandidat(accessToken).getOrRecoverWithNone(candidatId)
+      competences <- peConnectWSAdapter.competencesCandidat(accessToken).getOrRecoverWithNone(candidatId)
+      formations <- peConnectWSAdapter.formationsCandidat(accessToken).getOrRecoverWithNone(candidatId)
+      experiencesProfessionnelles <- peConnectWSAdapter.experiencesProfessionnellesCandidat(accessToken).getOrRecoverWithNone(candidatId)
       _ <- candidatCommandHandler.handle(
         ModifierProfilCandidatCommand(
           id = candidatId,
@@ -76,8 +57,8 @@ class PEConnectCandidatProcessManager(peConnectAccessTokenStorage: PEConnectAcce
           centresInteret = centresInteret,
           langues = langues,
           permis = permis,
-          savoirEtre = savoirEtre,
-          savoirFaire = savoirFaire,
+          savoirEtre = competences.map(_._1),
+          savoirFaire = competences.map(_._2),
           formations = formations,
           experiencesProfessionnelles = experiencesProfessionnelles
         )
