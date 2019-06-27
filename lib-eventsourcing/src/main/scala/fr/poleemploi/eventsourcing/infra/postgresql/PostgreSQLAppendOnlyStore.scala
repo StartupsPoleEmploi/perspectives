@@ -55,10 +55,15 @@ class PostgreSQLAppendOnlyStore(val driver: PostgresDriver,
       .sortBy(_.streamVersion.asc)
   }
 
+  val lastStreamVersionQuery = Compiled { streamName: Rep[String] =>
+    eventsTable
+      .filter(e => e.streamName === streamName)
+      .map(_.streamVersion).max
+  }
+
   override def append(streamName: String,
                       expectedStreamVersion: Int,
                       datas: List[AppendOnlyData]): Future[Unit] = {
-    // TODO : selectionner la derniere version du stream dans la meme transaction que l'insert
     val actions = datas.map(
       d => eventsTable.map(e => (e.streamName, e.streamVersion, e.eventType, e.data))
         += (streamName, d.streamVersion, d.eventType, serializeEvent(d.event))
@@ -67,13 +72,14 @@ class PostgreSQLAppendOnlyStore(val driver: PostgresDriver,
     database.run(DBIO.sequence(actions))
       .map(_ => ())
       .recoverWith {
-        // TODO : uniqueConstraint n'est pas forcément une AppendOnlyStoreConcurrencyException
         case e: SQLException if e.getSQLState == uniqueConstraintViolationCode =>
-          Future.failed(throw AppendOnlyStoreConcurrencyException(
-            expectedStreamVersion = expectedStreamVersion,
-            actualStreamVersion = getLastStreamVersion(streamName),
-            streamName = streamName
-          ))
+          getLastStreamVersion(streamName).flatMap(lastStreamVersion =>
+            Future.failed(AppendOnlyStoreConcurrencyException(
+              expectedStreamVersion = expectedStreamVersion,
+              actualStreamVersion = lastStreamVersion,
+              streamName = streamName
+            ))
+          )
       }
   }
 
@@ -110,7 +116,7 @@ class PostgreSQLAppendOnlyStore(val driver: PostgresDriver,
       )
     }
 
-  private def getLastStreamVersion(streamName: String): Int = 0
+  private def getLastStreamVersion(streamName: String): Future[Int] = database.run(lastStreamVersionQuery(streamName).result).map(_.getOrElse(0))
 
   private def serializeEvent(event: Event): JsonString = JsonString(Event.toJson(event)(objectMapper))
 

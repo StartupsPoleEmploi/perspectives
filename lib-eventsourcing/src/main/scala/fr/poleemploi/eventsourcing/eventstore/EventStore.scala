@@ -79,10 +79,11 @@ class EventStore(eventStoreListener: EventStoreListener,
   // TODO
   private def tryResolveConflicts(id: AggregateId,
                                   expectedStreamVersion: Int,
-                                  actualStreamVersion: Int, events: List[Event]): Future[Unit] = {
+                                  actualStreamVersion: Int,
+                                  events: List[Event]): Future[Unit] = {
     Future.successful(
       if (eventSourcingLogger.isErrorEnabled) {
-        eventSourcingLogger.warn(s"Conflit sur l'aggregat $id. expectedStreamVersion : $expectedStreamVersion, actualStreamVersion : $actualStreamVersion")
+        eventSourcingLogger.warn(s"Conflit sur l'aggregat ${id.value}. expectedStreamVersion : $expectedStreamVersion, actualStreamVersion : $actualStreamVersion. Events non insérés : $events")
       }
     )
   }
