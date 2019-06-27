@@ -7,8 +7,8 @@
 @layout(candidatAuthentifie = None) {
     <div id="landingCandidat" class="container" v-cloak>
         <section class="row align-items-center presentation">
-            <div class="landingCandidat-rechercheOffres rechercheOffres">
-                <h1 class="rechercheOffres-titre titreLanding">Retrouvez un emploi,
+            <div class="landingCandidat-rechercheOffres rechercheOffres bg-blanc">
+                <h1 class="rechercheOffres-titre titreLanding texte-noir font-weight-bold">Retrouvez un emploi,
                     sans qualification ou experience !</h1>
                 <form class="row gtm-candidat-landing-form" v-on:submit.prevent="rechercherOffres">
                     <div class="col-12 col-xl-7 mt-3">
@@ -36,8 +36,8 @@
                 </form>
             </div>
         </section>
-        <section class="row px-3 py-3 d-none d-lg-flex">
-            <ul class="listeSponsors">
+        <section class="row px-3 py-3 d-none d-lg-flex justify-content-center">
+            <ul class="list-unstyled mb-0">
                 <li class="listeSponsors-item"><img alt="Franaud" src="@assetsFinder.path("images/commun/sponsors/sponsor-franaud.png")" width="124" height="48"/></li>
                 <li class="listeSponsors-item"><img alt="Afpa" src="@assetsFinder.path("images/commun/sponsors/sponsor-afpa.png")" width="115" height="59"/></li>
                 <li class="listeSponsors-item"><img alt="Manpower" src="@assetsFinder.path("images/commun/sponsors/sponsor-manpower.png")" width="82" height="70"/></li>
@@ -51,7 +51,7 @@
             <div class="d-none d-lg-flex col-lg-6 landingCandidat-illustrationValorisation"></div>
             <div class="col-12 col-lg-6 landingCandidat-texteValorisation">
                 <h2 class="titreLanding">Faites-vous contacter par des recruteurs !</h2>
-                <p class="valorisation">Valorisez votre évaluation Pôle emploi <abbr title="Méthode de Recrutement par Simulation">MRS*</abbr> auprès des employeurs.</p>
+                <p class="texte-noir font-size-md">Valorisez votre évaluation Pôle emploi <abbr title="Méthode de Recrutement par Simulation">MRS*</abbr> auprès des employeurs.</p>
                 <ol class="etapesInscription">
                     <li class="mb-3">Indiquez les métiers qui vous intéressent</li>
                     <li class="mb-3">Ajouter votre CV</li>

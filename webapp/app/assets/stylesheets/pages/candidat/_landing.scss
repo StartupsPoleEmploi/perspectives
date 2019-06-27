@@ -33,21 +33,15 @@
         padding: 2rem;
       }
     }
-
-    &-temoignages {
-
-    }
   }
 
   .titreLanding {
-    color: $noir;
     @include media-breakpoint-up(md) {
       font-size: 2rem;
     }
     @include media-breakpoint-down(md) {
       font-size: 1.75rem;
     }
-    font-weight: 800;
     line-height: 2.5rem;
   }
 
@@ -59,7 +53,6 @@
   }
 
   .rechercheOffres {
-    background-color: white;
     border-radius: 8px;
 
     &-titre {
@@ -70,10 +63,6 @@
   }
 
   .listeSponsors {
-    margin: 0 auto;
-    padding: 0;
-    list-style-type: none;
-
     &-item {
       display: inline-block;
       padding: 0 1rem;
@@ -82,11 +71,6 @@
 
   .etapesInscription {
     margin-bottom: 2rem;
-  }
-
-  .valorisation {
-    font-size: 1.5rem;
-    font-weight: lighter;
   }
 
   .temoignagesCandidat {
