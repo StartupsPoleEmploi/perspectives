@@ -1,5 +1,6 @@
 package fr.poleemploi.perspectives.emailing.infra.ws
 
+import fr.poleemploi.perspectives.candidat.Adresse
 import fr.poleemploi.perspectives.commun.domain.{Email, Genre}
 import fr.poleemploi.perspectives.emailing.domain._
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetContactId
@@ -22,7 +23,7 @@ class MailjetWSMapping(testeurs: List[Email]) {
         Json.obj("Name" -> "nom", "Value" -> candidatInscrit.nom.value),
         Json.obj("Name" -> "prénom", "Value" -> candidatInscrit.prenom.value), // le nom de l'attribut doit comporter l'accent
         Json.obj("Name" -> "genre", "Value" -> buildGenre(candidatInscrit.genre)),
-        Json.obj("Name" -> "cv", "Value" -> candidatInscrit.cv)
+        Json.obj("Name" -> "cv", "Value" -> false)
       )
     )
 
@@ -51,9 +52,14 @@ class MailjetWSMapping(testeurs: List[Email]) {
       )
     )
 
-  def buildRequestMiseAJourCVCandidat(email: Email, possedeCV: Boolean): UpdateContactDataRequest =
+  def buildRequestMiseAJourCVCandidat(possedeCV: Boolean): UpdateContactDataRequest =
     UpdateContactDataRequest(
       properties = List(Json.obj("Name" -> "cv", "Value" -> possedeCV))
+    )
+
+  def buildRequestMiseAJourAdresseCandidat(adresse: Adresse): UpdateContactDataRequest =
+    UpdateContactDataRequest(
+      properties = List(Json.obj("Name" -> "departement", "Value" -> adresse.codePostal.take(2).toInt))
     )
 
   private def buildGenre(genre: Genre): String = genre match {

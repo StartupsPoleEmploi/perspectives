@@ -1,5 +1,6 @@
 package fr.poleemploi.perspectives.emailing.infra.local
 
+import fr.poleemploi.perspectives.candidat.{Adresse, CandidatId}
 import fr.poleemploi.perspectives.emailing.domain._
 
 import scala.concurrent.Future
@@ -9,7 +10,10 @@ class LocalEmailingService extends EmailingService {
   override def ajouterCandidatInscrit(candidatInscrit: CandidatInscrit): Future[Unit] =
     Future.successful(())
 
-  override def mettreAJourCVCandidat(miseAJourCVCandidat: MiseAJourCVCandidat): Future[Unit] =
+  override def mettreAJourCVCandidat(candidatId: CandidatId, possedeCV: Boolean): Future[Unit] =
+    Future.successful(())
+
+  override def mettreAJourAdresseCandidat(candidatId: CandidatId, adresse: Adresse): Future[Unit] =
     Future.successful(())
 
   override def ajouterRecruteurInscrit(recruteurInscrit: RecruteurInscrit): Future[Unit] =

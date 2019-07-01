@@ -3,6 +3,7 @@ package fr.poleemploi.perspectives.emailing.infra.ws
 import java.nio.charset.StandardCharsets
 import java.util.Base64
 
+import fr.poleemploi.perspectives.candidat.Adresse
 import fr.poleemploi.perspectives.commun.domain.Email
 import fr.poleemploi.perspectives.commun.infra.ws.WSAdapter
 import fr.poleemploi.perspectives.emailing.domain._
@@ -35,7 +36,13 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
   def mettreAJourCV(email: Email, possedeCV: Boolean): Future[Unit] =
     updateContactData(
       email = email,
-      request = mailjetWSMapping.buildRequestMiseAJourCVCandidat(email, possedeCV)
+      request = mailjetWSMapping.buildRequestMiseAJourCVCandidat(possedeCV)
+    ).map(_ => ())
+
+  def mettreAJourAdresse(email: Email, adresse: Adresse): Future[Unit] =
+    updateContactData(
+      email = email,
+      request = mailjetWSMapping.buildRequestMiseAJourAdresseCandidat(adresse)
     ).map(_ => ())
 
   def ajouterRecruteurInscrit(recruteurInscrit: RecruteurInscrit): Future[MailjetContactId] =
