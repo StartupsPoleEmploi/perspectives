@@ -20,29 +20,35 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
   val authorization: String = Base64.getEncoder
     .encodeToString(s"${config.apiKeyPublic}:${config.apiKeyPrivate}".getBytes(StandardCharsets.UTF_8))
 
-  val sender: String = config.senderAdress
-
-  val idListeCandidatsInscrits: Int = 9908
-  val idListeRecruteursInscrits: Int = 9909
-  val idListeTesteurs: Int = 20603
-
   def ajouterCandidatInscrit(candidatInscrit: CandidatInscrit): Future[MailjetContactId] =
-    manageContact(
-      idListeContact = idListeCandidatsInscrits,
-      request = mailjetWSMapping.buildRequestCandidatInscrit(candidatInscrit)
-    ).map(_.contactId)
+    for {
+      mailjetContactId <- updateContactData(
+        email = candidatInscrit.email,
+        request = mailjetWSMapping.buildContactRequestInscriptionCandidat(candidatInscrit)
+      )
+      _ <- manageContactLists(
+        mailjetContactId = mailjetContactId,
+        request = mailjetWSMapping.buildContactListsRequestInscriptionCandidat(candidatInscrit)
+      )
+    } yield mailjetContactId
 
-  def mettreAJourCandidat(email: Email, possedeCV: Boolean): Future[Unit] =
-    manageContact(
-      idListeContact = idListeCandidatsInscrits,
-      request = mailjetWSMapping.buildRequestMiseAJourCV(email, possedeCV)
+  def mettreAJourCV(email: Email, possedeCV: Boolean): Future[Unit] =
+    updateContactData(
+      email = email,
+      request = mailjetWSMapping.buildRequestMiseAJourCVCandidat(email, possedeCV)
     ).map(_ => ())
 
   def ajouterRecruteurInscrit(recruteurInscrit: RecruteurInscrit): Future[MailjetContactId] =
-    manageContact(
-      idListeContact = idListeRecruteursInscrits,
-      request = mailjetWSMapping.buildRequestRecruteurInscrit(recruteurInscrit)
-    ).map(_.contactId)
+    for {
+      mailjetContactId <- updateContactData(
+        email = recruteurInscrit.email,
+        request = mailjetWSMapping.buildContactRequestInscriptionRecruteur(recruteurInscrit)
+      )
+      _ <- manageContactLists(
+        mailjetContactId = mailjetContactId,
+        request = mailjetWSMapping.buildContactListsRequestInscriptionRecruteur(recruteurInscrit)
+      )
+    } yield mailjetContactId
 
   private def sendTemplate(mailjetTemplateEmail: MailjetTemplateEmail): Future[Unit] =
     wsClient
@@ -54,18 +60,25 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
       .flatMap(filtreStatutReponse(_))
       .map(_ => ())
 
-  private def manageContact(idListeContact: Int, request: ManageContactRequest): Future[ManageContactResponse] =
+  private def updateContactData(email: Email,
+                                request: UpdateContactDataRequest): Future[MailjetContactId] =
     wsClient
-      .url(s"${config.urlApi}/v3/REST/contactslist/${filtrerListeTesteurs(idListeContact, request.email)}/managecontact")
+      .url(s"${config.urlApi}/v3/REST/contactdata/${email.value}")
+      .addHttpHeaders(jsonHttpHeader, authorizationHeader)
+      .put(Json.toJson(request))
+      .flatMap(filtreStatutReponse(_))
+      .map(_.json.as[UpdateContactDataResponse].contactId)
+
+  private def manageContactLists(mailjetContactId: MailjetContactId,
+                                 request: ManageContactListsRequest): Future[Unit] =
+    wsClient
+      .url(s"${config.urlApi}/v3/REST/contact/${mailjetContactId.value}/managecontactslists")
       .addHttpHeaders(jsonHttpHeader, authorizationHeader)
       .post(Json.toJson(request))
       .flatMap(filtreStatutReponse(_))
-      .map(_.json.as[ManageContactResponse])
+      .map(_ => ())
 
   private def jsonHttpHeader: (String, String) = ("Content-Type", "application/json")
 
   private def authorizationHeader: (String, String) = ("Authorization", s"Basic $authorization")
-
-  private def filtrerListeTesteurs(idListe: Int, email: String): Int =
-    if (config.testeurs.contains(email)) idListeTesteurs else idListe
 }

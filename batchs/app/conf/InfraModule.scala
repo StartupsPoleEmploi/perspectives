@@ -148,8 +148,8 @@ class InfraModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
-  def mailjetWSMapping: MailjetWSMapping =
-    new MailjetWSMapping()
+  def mailjetWSMapping(batchsConfig: BatchsConfig): MailjetWSMapping =
+    new MailjetWSMapping(batchsConfig.mailjetTesteurs)
 
   @Provides
   def mailjetEmailingService(mailjetSqlAdapter: MailjetSqlAdapter,

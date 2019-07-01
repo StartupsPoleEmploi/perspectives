@@ -3,6 +3,7 @@ package conf
 import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.candidat.localisation.infra.algolia.AlgoliaPlacesConfig
 import fr.poleemploi.perspectives.candidat.localisation.infra.ws.LocalisationWSAdapterConfig
+import fr.poleemploi.perspectives.commun.domain.Email
 import fr.poleemploi.perspectives.commun.infra.Environnement
 import fr.poleemploi.perspectives.commun.infra.elasticsearch.EsConfig
 import fr.poleemploi.perspectives.commun.infra.oauth.{EmploiStoreOauthScopeBuilder, OauthConfig}
@@ -84,11 +85,12 @@ class WebAppConfig(configuration: Configuration) {
 
   val mailjetWSAdapterConfig: MailjetWSAdapterConfig = MailjetWSAdapterConfig(
     urlApi = configuration.get[String]("mailjet.urlApi"),
-    senderAdress = configuration.get[String]("mailjet.sender"),
+    senderAdress = Email(configuration.get[String]("mailjet.sender")),
     apiKeyPublic = configuration.get[String]("mailjet.apiKey.public"),
-    apiKeyPrivate = configuration.get[String]("mailjet.apiKey.private"),
-    testeurs = configuration.getOptional[Seq[String]]("mailjet.testeurs").map(_.toList).getOrElse(Nil)
+    apiKeyPrivate = configuration.get[String]("mailjet.apiKey.private")
   )
+  val mailjetTesteurs: List[Email] =
+    configuration.getOptional[Seq[String]]("mailjet.testeurs").map(_.map(Email).toList).getOrElse(Nil)
 
   val localisationWSAdapterConfig: LocalisationWSAdapterConfig = LocalisationWSAdapterConfig(
     urlApi = configuration.get[String]("emploiStore.localisation.urlApi")
