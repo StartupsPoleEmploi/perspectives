@@ -60,7 +60,7 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
   private def sendTemplate(mailjetTemplateEmail: MailjetTemplateEmail): Future[Unit] =
     wsClient
       .url(s"${config.urlApi}/v3.1/send")
-      .addHttpHeaders(jsonHttpHeader, authorizationHeader)
+      .addHttpHeaders(jsonContentType, authorizationHeader)
       .post(Json.obj(
         "Messages" -> Json.toJson(mailjetTemplateEmail.messages)
       ))
@@ -71,7 +71,7 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
                                 request: UpdateContactDataRequest): Future[MailjetContactId] =
     wsClient
       .url(s"${config.urlApi}/v3/REST/contactdata/${email.value}")
-      .addHttpHeaders(jsonHttpHeader, authorizationHeader)
+      .addHttpHeaders(jsonContentType, authorizationHeader)
       .put(Json.toJson(request))
       .flatMap(filtreStatutReponse(_))
       .map(_.json.as[UpdateContactDataResponse].contactId)
@@ -80,12 +80,10 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
                                  request: ManageContactListsRequest): Future[Unit] =
     wsClient
       .url(s"${config.urlApi}/v3/REST/contact/${mailjetContactId.value}/managecontactslists")
-      .addHttpHeaders(jsonHttpHeader, authorizationHeader)
+      .addHttpHeaders(jsonContentType, authorizationHeader)
       .post(Json.toJson(request))
       .flatMap(filtreStatutReponse(_))
       .map(_ => ())
-
-  private def jsonHttpHeader: (String, String) = ("Content-Type", "application/json")
 
   private def authorizationHeader: (String, String) = ("Authorization", s"Basic $authorization")
 }
