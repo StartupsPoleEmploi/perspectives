@@ -10,7 +10,8 @@ import scala.concurrent.Future
   * Handle concurrency exception and publish events.
   */
 class EventStore(eventStoreListener: EventStoreListener,
-                 appendOnlyStore: AppendOnlyStore) {
+                 appendOnlyStore: AppendOnlyStore,
+                 conflictResolutionStrategy: ConflictResolutionStrategy = EventTypeConflictResolutionStrategy) {
 
   /**
     * Load the EventStream corresponding to an aggregate
@@ -27,7 +28,7 @@ class EventStore(eventStoreListener: EventStoreListener,
     * Load the EventStream corresponding to an aggregate after a specific version
     *
     * @param aggregateId id of the aggregate
-    * @param version Version of the aggregate
+    * @param version     Version of the aggregate
     * @return
     */
   def loadEventStreamAfterVersion(aggregateId: AggregateId, version: Int): Future[EventStream] =
@@ -76,17 +77,27 @@ class EventStore(eventStoreListener: EventStoreListener,
     }
   }
 
-  // TODO
   private def tryResolveConflicts(id: AggregateId,
                                   expectedStreamVersion: Int,
                                   actualStreamVersion: Int,
-                                  events: List[Event]): Future[Unit] = {
-    Future.successful(
-      if (eventSourcingLogger.isErrorEnabled) {
-        eventSourcingLogger.warn(s"Conflit sur l'aggregat ${id.value}. expectedStreamVersion : $expectedStreamVersion, actualStreamVersion : $actualStreamVersion. Events non insérés : $events")
+                                  events: List[Event]): Future[Unit] =
+    loadEventStreamAfterVersion(id, expectedStreamVersion).flatMap { actualEventStream =>
+      val conflits = (for {
+        e1 <- actualEventStream.events
+        e2 <- events
+      } yield (e1, e2, conflictResolutionStrategy.conflictsWith(e1, e2)))
+        .filter(_._3)
+        .map(e => (e._1, e._2))
+
+      if (conflits.nonEmpty)
+        Future.failed(EventStoreConcurrencyException(s"Conflit non résolu sur l'aggregat ${id.value}. expectedStreamVersion : $expectedStreamVersion, actualStreamVersion : $actualStreamVersion. Events en conflit : $conflits. Events non insérés : $events"))
+      else {
+        if (eventSourcingLogger.isInfoEnabled) {
+          eventSourcingLogger.info(s"Conflits résolus sur l'agrégat ${id.value}. expectedStreamVersion : $expectedStreamVersion, actualStreamVersion : $actualStreamVersion")
+        }
+        append(id, actualEventStream.version, events)
       }
-    )
-  }
+    }
 
   private def buildEventStream(appendedEvents: List[AppendedEvent], version: Int): EventStream =
     appendedEvents.foldRight(EventStream(version, Nil))((ae, es) =>
@@ -100,6 +111,6 @@ class EventStore(eventStoreListener: EventStoreListener,
 case class EventStream(version: Int, events: List[Event])
 
 /**
-  * Is supposed to be thrown by the client code, when it fails to resolve concurrency problem
+  * Thrown when it fails to resolve concurrency problem
   */
 case class EventStoreConcurrencyException(message: String) extends Exception(message)

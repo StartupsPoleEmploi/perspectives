@@ -1,5 +1,7 @@
 package fr.poleemploi.eventsourcing.eventstore
 
+import java.util.UUID
+
 import fr.poleemploi.eventsourcing.{AggregateId, Event}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers._
@@ -22,7 +24,7 @@ class EventStoreSpec extends AsyncWordSpec with MustMatchers
     eventStoreListener = mock[EventStoreListener]
     appendOnlyStore = mock[AppendOnlyStore]
     aggregateId = mock[AggregateId]
-    when(aggregateId.value) thenReturn "4"
+    when(aggregateId.value) thenReturn UUID.randomUUID().toString
 
     eventStore = new EventStore(
       eventStoreListener = eventStoreListener,
@@ -135,6 +137,68 @@ class EventStoreSpec extends AsyncWordSpec with MustMatchers
         aggregateId = aggregateId,
         expectedVersion = 0,
         events = List(mock[Event])
+      )
+
+      // Then
+      future map (_ => Succeeded)
+    }
+    "renvoyer une erreur lorsqu'un conflit existe et qu'il n'est pas résolu" in {
+      // Given
+      eventStore = new EventStore(
+        eventStoreListener = eventStoreListener,
+        appendOnlyStore = appendOnlyStore,
+        conflictResolutionStrategy = NoConflictResolutionStrategy
+      )
+      val existingEvents = mockAppendedEvents(aggregateId.value, 2)
+      val newEvents = List(mock[Event], mock[Event])
+      when(appendOnlyStore.append(ArgumentMatchers.eq(aggregateId.value), ArgumentMatchers.eq(0), ArgumentMatchers.any[List[AppendOnlyData]])) thenReturn Future.failed(
+        AppendOnlyStoreConcurrencyException(
+          expectedStreamVersion = 0,
+          actualStreamVersion = 1,
+          streamName = ""
+        )
+      )
+      when(appendOnlyStore.readRecords(aggregateId.value, version = Some(0))) thenReturn Future.successful(existingEvents)
+
+      // When & Then
+      recoverToSucceededIf[EventStoreConcurrencyException] {
+        eventStore.append(
+          aggregateId = aggregateId,
+          expectedVersion = 0,
+          events = newEvents
+        )
+      }
+    }
+    "ne pas renvoyer d'erreur si un conflit existe mais qu'il est résolu" in {
+      // Given
+      var conflictResolutionStrategy = mock[ConflictResolutionStrategy]
+      when(conflictResolutionStrategy.conflictsWith(ArgumentMatchers.any[Event], ArgumentMatchers.any[Event])) thenReturn false
+      eventStore = new EventStore(
+        eventStoreListener = eventStoreListener,
+        appendOnlyStore = appendOnlyStore,
+        conflictResolutionStrategy = conflictResolutionStrategy
+      )
+
+      val existingEvents = mockAppendedEvents(aggregateId.value, 2)
+      val newEvents = List(mock[Event], mock[Event])
+      when(appendOnlyStore.readRecords(aggregateId.value, version = Some(0))) thenReturn Future.successful(existingEvents)
+
+      // Premier appel pour déclencher la résolution de conflit
+      when(appendOnlyStore.append(ArgumentMatchers.eq(aggregateId.value), ArgumentMatchers.eq(0), ArgumentMatchers.any[List[AppendOnlyData]])) thenReturn Future.failed(
+        AppendOnlyStoreConcurrencyException(
+          expectedStreamVersion = 0,
+          actualStreamVersion = 2,
+          streamName = ""
+        )
+      )
+      // Deuxième appel pour l'insertion suite à la résolution des conflits
+      when(appendOnlyStore.append(ArgumentMatchers.eq(aggregateId.value), ArgumentMatchers.eq(2), ArgumentMatchers.any[List[AppendOnlyData]])) thenReturn Future.successful(())
+
+      // When
+      val future = eventStore.append(
+        aggregateId = aggregateId,
+        expectedVersion = 0,
+        events = newEvents
       )
 
       // Then
