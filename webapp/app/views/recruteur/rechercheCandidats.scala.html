@@ -18,10 +18,10 @@
                                 <div class="row navigationListe">
                                     <div class="navigationListe-item navigationListe-page" v-show="!doitAfficherCandidatPrecedent()">
                                     </div>
-                                    <div class="navigationListe-item navigationListe-item--violet navigationListe-page"
+                                    <div class="navigationListe-item navigationListe-item--violet navigationListe-page gtm-recruteur-profils-detail-candidat"
                                          v-show="doitAfficherCandidatPrecedent()" v-on:click="afficherCandidatPrecedent()">
-                                        <span class="navigationListe-iconePrecedent navigationListe-icone--violet"></span>
-                                        <span class="navigationListe-action">Précedent</span>
+                                        <span class="navigationListe-iconePrecedent navigationListe-icone--violet gtm-recruteur-profils-detail-candidat"></span>
+                                        <span class="navigationListe-action gtm-recruteur-profils-detail-candidat">Précedent</span>
                                     </div>
                                     <div class="navigationListe-item navigationListe-item--noir navigationListe-pageCourante">
                                         {{indexNavigationCandidat + 1}} / {{resultatRecherche.nbCandidatsTotal}}
@@ -29,10 +29,10 @@
                                     <div class="navigationListe-item navigationListe-page"
                                          v-show="!doitAfficherCandidatSuivant()">
                                     </div>
-                                    <div class="navigationListe-item navigationListe-item--violet navigationListe-page"
+                                    <div class="navigationListe-item navigationListe-item--violet navigationListe-page gtm-recruteur-profils-detail-candidat"
                                          v-show="doitAfficherCandidatSuivant()" v-on:click="afficherCandidatSuivant()">
-                                        <span class="navigationListe-action">Suivant</span>
-                                        <span class="navigationListe-iconeSuivant navigationListe-icone--violet"></span>
+                                        <span class="navigationListe-action gtm-recruteur-profils-detail-candidat">Suivant</span>
+                                        <span class="navigationListe-iconeSuivant navigationListe-icone--violet gtm-recruteur-profils-detail-candidat"></span>
                                     </div>
                                     <div class="navigationListe-item navigationListe-item--violet navigationListe-fermer" data-dismiss="modal">
                                         <span class="navigationListe-action">Fermer</span>
@@ -73,7 +73,7 @@
                                         </a>
                                     </li>
                                     <li class="col-12 col-lg-3 ml-lg-auto">
-                                        <button type="button" class="bouton bouton-action bouton--block bouton--theme3"
+                                        <button type="button" class="bouton bouton-action bouton--block bouton--theme3 gtm-recruteur-profils-detail-telephone"
                                                 v-show="!display.contact"
                                                 v-on:click="display.contact = !display.contact">Je contacte ce candidat</button>
                                         <button type="button" class="bouton bouton-action bouton--block bouton--theme3Secondaire"
@@ -317,44 +317,44 @@
                             <p class="mt-2 mb-0 texte-violet font-size-ml font-weight-bold"
                                 v-if="section.titre && section.candidats.length > 0" v-html="section.titre">
                             </p>
-                            <div class="candidat cursor-pointer mt-3"
+                            <div class="candidat cursor-pointer mt-3 gtm-recruteur-profils-detail-candidat"
                                  v-for="(candidat, index) in section.candidats"
                                  v-on:click="afficherCandidat(index + (indexSection > 0 ? sectionsCandidats[indexSection - 1].candidats.length : 0))">
-                                <div class="row align-items-top m-0 px-4 pt-3 bg-blanc texte-noir"
+                                <div class="row align-items-top m-0 px-4 pt-3 bg-blanc texte-noir gtm-recruteur-profils-detail-candidat"
                                      v-bind:class="[candidat.savoirEtre.length > 0 ? 'pb-2' : 'pb-5']">
-                                    <p class="col-12 col-sm-6 font-weight-bold mb-2">{{candidat.prenom}} {{candidat.nom}}</p>
-                                    <p class="col-12 col-sm-6 font-weight-bold font-size-sm mb-2">
+                                    <p class="col-12 col-sm-6 font-weight-bold mb-2 gtm-recruteur-profils-detail-candidat">{{candidat.prenom}} {{candidat.nom}}</p>
+                                    <p class="col-12 col-sm-6 font-weight-bold font-size-sm mb-2 gtm-recruteur-profils-detail-candidat">
                                         <img src="@assetsFinder.path("images/pages/recruteur/rechercheCandidats/localisation.svg")" alt="Localisation" height="16" width="16" />
                                         {{candidat.commune | capitalize}} ({{candidat.codePostal.substring(0, 2)}}) {{candidat.rayonRecherche ? ('+' + candidat.rayonRecherche.value + 'km') : ''}}
                                     </p>
-                                    <div class="col-12 col-sm-8 mb-2">
-                                        <div class="row">
+                                    <div class="col-12 col-sm-8 mb-2 gtm-recruteur-profils-detail-candidat">
+                                        <div class="row gtm-recruteur-profils-detail-candidat">
                                             <template v-if="indexSection == 0">
-                                                <p class="col-12 mb-2 font-size-sm" v-for="metierValide in candidat.metiersValides">
+                                                <p class="col-12 mb-2 font-size-sm gtm-recruteur-profils-detail-candidat" v-for="metierValide in candidat.metiersValides">
                                                     <img width="20" height="20" alt="Métier validé" title="Métier validé" src="@assetsFinder.path("images/commun/metier-valide.svg")" />
                                                     {{metierValide.metier.label}}
                                                 </p>
                                             </template>
                                             <template v-else>
-                                                <p class="col-12 mb-2 font-size-sm" v-for="metier in interessePar(candidat.metiersRecherches)">
+                                                <p class="col-12 mb-2 font-size-sm gtm-recruteur-profils-detail-candidat" v-for="metier in interessePar(candidat.metiersRecherches)">
                                                     {{metier.label}}
                                                 </p>
                                             </template>
                                         </div>
                                     </div>
-                                    <div class="col-12 col-sm-4">
-                                        <div class="row">
-                                            <div class="col-12 mb-3 text-sm-right" v-if="candidat.tempsTravailRecherche">
-                                                <span class="font-size-sm font-weight-bold tempsTravail" v-bind:class="cssTempsTravail(candidat.tempsTravailRecherche)">{{candidat.tempsTravailRecherche | tempsTravail}}</span>
+                                    <div class="col-12 col-sm-4 gtm-recruteur-profils-detail-candidat">
+                                        <div class="row gtm-recruteur-profils-detail-candidat">
+                                            <div class="col-12 mb-3 text-sm-right gtm-recruteur-profils-detail-candidat" v-if="candidat.tempsTravailRecherche">
+                                                <span class="font-size-sm font-weight-bold tempsTravail gtm-recruteur-profils-detail-candidat" v-bind:class="cssTempsTravail(candidat.tempsTravailRecherche)">{{candidat.tempsTravailRecherche | tempsTravail}}</span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row align-items-center m-0 px-4 py-2 bg-gris-light" v-show="candidat.savoirEtre.length > 0">
-                                    <p class="col-12 mb-0 texte-noir font-weight-bold font-size-sm"
+                                <div class="row align-items-center m-0 px-4 py-2 bg-gris-light gtm-recruteur-profils-detail-candidat" v-show="candidat.savoirEtre.length > 0">
+                                    <p class="col-12 mb-0 texte-noir font-weight-bold font-size-sm gtm-recruteur-profils-detail-candidat"
                                         v-show="candidat.savoirEtre.length > 0">Savoir-être professionnels</p>
-                                    <ul class="col-12 m-0 list-unstyled">
-                                        <li class="texte-noir font-size-sm itemSavoirEtre" v-for="savoirEtre in candidat.savoirEtre.slice(0, 4)">{{savoirEtre}}</li>
+                                    <ul class="col-12 m-0 list-unstyled gtm-recruteur-profils-detail-candidat">
+                                        <li class="texte-noir font-size-sm itemSavoirEtre gtm-recruteur-profils-detail-candidat" v-for="savoirEtre in candidat.savoirEtre.slice(0, 4)">{{savoirEtre}}</li>
                                     </ul>
                                 </div>
                             </div>
