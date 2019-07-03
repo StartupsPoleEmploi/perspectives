@@ -1,5 +1,7 @@
 package fr.poleemploi.perspectives.emailing.infra.ws
 
+import java.time.ZoneId
+
 import fr.poleemploi.perspectives.candidat.Adresse
 import fr.poleemploi.perspectives.commun.domain.{Email, Genre}
 import fr.poleemploi.perspectives.emailing.domain._
@@ -60,6 +62,15 @@ class MailjetWSMapping(testeurs: List[Email]) {
   def buildRequestMiseAJourAdresseCandidat(adresse: Adresse): UpdateContactDataRequest =
     UpdateContactDataRequest(
       properties = List(Json.obj("Name" -> "departement", "Value" -> adresse.codePostal.take(2).toInt))
+    )
+
+  def buildRequestMiseAJourMRSValideeCandidat(mrsValideeCandidat: MRSValideeCandidat): UpdateContactDataRequest =
+    UpdateContactDataRequest(
+      properties = List(
+        Json.obj("Name" -> "mrs_code_rome", "Value" -> mrsValideeCandidat.metier.codeROME.value),
+        Json.obj("Name" -> "mrs_metier", "Value" -> mrsValideeCandidat.metier.label),
+        Json.obj("Name" -> "mrs_date", "Value" -> mrsValideeCandidat.dateEvaluation.atStartOfDay().atZone(ZoneId.systemDefault()).toEpochSecond())
+      )
     )
 
   private def buildGenre(genre: Genre): String = genre match {

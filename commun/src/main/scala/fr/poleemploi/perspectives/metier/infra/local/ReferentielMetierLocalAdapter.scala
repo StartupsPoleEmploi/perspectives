@@ -35,6 +35,9 @@ class ReferentielMetierLocalAdapter extends ReferentielMetier {
     )
   )
 
+  override def metierParCodeROME(codeROME: CodeROME): Future[Metier] =
+    Future.successful(Metier(codeROME = codeROME, label = s"Label métier ${codeROME.value}"))
+
   override def metiersParCodesROME(codesROME: Set[CodeROME]): Future[Set[Metier]] =
     Future.successful(codesROME.map(c => Metier(codeROME = c, label = s"Label métier ${c.value}")))
 

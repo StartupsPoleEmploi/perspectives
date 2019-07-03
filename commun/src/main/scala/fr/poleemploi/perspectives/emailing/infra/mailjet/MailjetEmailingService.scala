@@ -21,16 +21,22 @@ class MailjetEmailingService(mailjetSqlAdapter: MailjetSqlAdapter,
       ))
     } yield ()
 
-  override def mettreAJourCVCandidat(candidatId: CandidatId, possedeCV: Boolean): Future[Unit] =
-    for {
-      candidatMailjet <- mailjetSqlAdapter.getCandidat(candidatId)
-      _ <- mailjetWSAdapter.mettreAJourCV(candidatMailjet.email, possedeCV)
-    } yield ()
-
   override def mettreAJourAdresseCandidat(candidatId: CandidatId, adresse: Adresse): Future[Unit] =
     for {
       candidatMailjet <- mailjetSqlAdapter.getCandidat(candidatId)
-      _ <- mailjetWSAdapter.mettreAJourAdresse(candidatMailjet.email, adresse)
+      _ <- mailjetWSAdapter.mettreAJourAdresseCandidat(candidatMailjet.email, adresse)
+    } yield ()
+
+  override def mettreAJourDerniereMRSValideeCandidat(candidatId: CandidatId, mrsValideeCandidat: MRSValideeCandidat): Future[Unit] =
+    for {
+      candidatMailjet <- mailjetSqlAdapter.getCandidat(candidatId)
+      _ <- mailjetWSAdapter.mettreAJourDerniereMRSValideeCandidat(candidatMailjet.email, mrsValideeCandidat)
+    } yield ()
+
+  override def mettreAJourCVCandidat(candidatId: CandidatId, possedeCV: Boolean): Future[Unit] =
+    for {
+      candidatMailjet <- mailjetSqlAdapter.getCandidat(candidatId)
+      _ <- mailjetWSAdapter.mettreAJourCVCandidat(candidatMailjet.email, possedeCV)
     } yield ()
 
   override def ajouterRecruteurInscrit(recruteurInscrit: RecruteurInscrit): Future[Unit] = {

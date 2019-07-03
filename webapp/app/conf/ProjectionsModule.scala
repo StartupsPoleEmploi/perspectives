@@ -67,9 +67,11 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
-  def candidatEmailProjection(emailingService: EmailingService): CandidatEmailProjection =
+  def candidatEmailProjection(emailingService: EmailingService,
+                              referentielMetier: ReferentielMetier): CandidatEmailProjection =
     new CandidatEmailProjection(
-      emailingService = emailingService
+      emailingService = emailingService,
+      referentielMetier = referentielMetier
     )
 
   @Provides

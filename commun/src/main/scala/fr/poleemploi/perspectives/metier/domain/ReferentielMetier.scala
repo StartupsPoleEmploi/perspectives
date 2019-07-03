@@ -7,6 +7,8 @@ import scala.concurrent.Future
 // FIXME : split apres avoir déterminer le boundedContext pour la recherche
 trait ReferentielMetier {
 
+  def metierParCodeROME(codeROME: CodeROME): Future[Metier]
+
   def metiersParCodesROME(codesROME: Set[CodeROME]): Future[Set[Metier]]
 
   def secteursActivitesRecherche: Future[List[SecteurActivite]]

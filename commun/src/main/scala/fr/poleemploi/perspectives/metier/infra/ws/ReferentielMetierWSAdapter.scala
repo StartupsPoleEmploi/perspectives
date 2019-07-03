@@ -33,18 +33,12 @@ class ReferentielMetierWSAdapter(config: ReferentielMetierWSAdapterConfig,
       case e: JsError => throw new RuntimeException(s"Impossible de charger les métiers du referentiel : $e")
     }
 
+  override def metierParCodeROME(codeROME: CodeROME): Future[Metier] =
+    findMetiers.map(metiers => metiers.getOrElse(codeROME, throw new IllegalArgumentException(s"Aucun métier associé au code : ${codeROME.value}")))
+
   override def metiersParCodesROME(codesROME: Set[CodeROME]): Future[Set[Metier]] =
-    cacheApi.getOrElseUpdate(cacheKeyMetiers)(
-      (for {
-        accessToken <- genererAccessToken
-        metiers <- listerMetiers(accessToken)
-      } yield metiers).recoverWith {
-        case t: Throwable =>
-          referentielMetierWSLogger.error("Erreur lors de la récupération des métiers depuis le référentiel", t)
-          Future.successful(metiers)
-      }
-    ).map(metiers =>
-      codesROME.map(c => metiers.getOrElse(c, throw new IllegalArgumentException(s"Aucun métier associé au code : $c")))
+    findMetiers.map(metiers =>
+      codesROME.map(c => metiers.getOrElse(c, throw new IllegalArgumentException(s"Aucun métier associé au code : ${c.value}")))
     )
 
   override def secteursActivitesRecherche: Future[List[SecteurActivite]] =
@@ -55,6 +49,18 @@ class ReferentielMetierWSAdapter(config: ReferentielMetierWSAdapterConfig,
 
   override def secteurActiviteRechercheParCode(codeSecteurActivite: CodeSecteurActivite): Future[SecteurActivite] =
     secteursActivitesRecherche.map(_.find(s => codeSecteurActivite == s.code).getOrElse(throw new IllegalArgumentException(s"Aucun secteur d'activité associé au code ${codeSecteurActivite.value}")))
+
+  private def findMetiers: Future[Map[CodeROME, Metier]] =
+    cacheApi.getOrElseUpdate(cacheKeyMetiers)(
+      (for {
+        accessToken <- genererAccessToken
+        metiers <- listerMetiers(accessToken)
+      } yield metiers).recoverWith {
+        case t: Throwable =>
+          referentielMetierWSLogger.error("Erreur lors de la récupération des métiers depuis le référentiel", t)
+          Future.successful(metiers)
+      }
+    )
 
   private def genererAccessToken: Future[AccessTokenResponse] =
     wsClient

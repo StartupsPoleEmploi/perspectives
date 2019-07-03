@@ -12,5 +12,7 @@ trait EmailingService {
 
   def mettreAJourAdresseCandidat(candidatId: CandidatId, adresse: Adresse): Future[Unit]
 
+  def mettreAJourDerniereMRSValideeCandidat(candidatId: CandidatId, mrsValideeCandidat: MRSValideeCandidat): Future[Unit]
+
   def ajouterRecruteurInscrit(recruteurInscrit: RecruteurInscrit): Future[Unit]
 }

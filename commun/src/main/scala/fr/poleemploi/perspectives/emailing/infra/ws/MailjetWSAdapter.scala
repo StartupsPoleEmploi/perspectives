@@ -33,16 +33,22 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
       )
     } yield mailjetContactId
 
-  def mettreAJourCV(email: Email, possedeCV: Boolean): Future[Unit] =
+  def mettreAJourCVCandidat(email: Email, possedeCV: Boolean): Future[Unit] =
     updateContactData(
       email = email,
       request = mailjetWSMapping.buildRequestMiseAJourCVCandidat(possedeCV)
     ).map(_ => ())
 
-  def mettreAJourAdresse(email: Email, adresse: Adresse): Future[Unit] =
+  def mettreAJourAdresseCandidat(email: Email, adresse: Adresse): Future[Unit] =
     updateContactData(
       email = email,
       request = mailjetWSMapping.buildRequestMiseAJourAdresseCandidat(adresse)
+    ).map(_ => ())
+
+  def mettreAJourDerniereMRSValideeCandidat(email: Email, mrsValideeCandidat: MRSValideeCandidat): Future[Unit] =
+    updateContactData(
+      email = email,
+      request = mailjetWSMapping.buildRequestMiseAJourMRSValideeCandidat(mrsValideeCandidat)
     ).map(_ => ())
 
   def ajouterRecruteurInscrit(recruteurInscrit: RecruteurInscrit): Future[MailjetContactId] =
