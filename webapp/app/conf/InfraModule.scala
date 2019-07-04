@@ -17,7 +17,7 @@ import fr.poleemploi.perspectives.candidat.cv.infra.sql.CVSqlAdapter
 import fr.poleemploi.perspectives.candidat.localisation.infra.local.LocalisationLocalAdapter
 import fr.poleemploi.perspectives.candidat.localisation.infra.ws.{LocalisationWSAdapter, LocalisationWSMapping}
 import fr.poleemploi.perspectives.candidat.mrs.infra.local.{ReferentielHabiletesMRSLocalAdapter, ReferentielMRSLocalAdapter}
-import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.{MRSDHAEValideesSqlAdapter, MRSValideesSqlAdapter, ReferentielMRSPEConnect}
+import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.{MRSDHAEValideesSqlAdapter, ReferentielMRSPEConnect}
 import fr.poleemploi.perspectives.candidat.mrs.infra.sql.ReferentielHabiletesMRSSqlAdapter
 import fr.poleemploi.perspectives.commun.infra.jackson.PerspectivesEventSourcingModule
 import fr.poleemploi.perspectives.commun.infra.oauth.OauthService
@@ -198,13 +198,6 @@ class InfraModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
-  def mrsValideesSqlAdapter(database: Database): MRSValideesSqlAdapter =
-    new MRSValideesSqlAdapter(
-      driver = PostgresDriver,
-      database = database
-    )
-
-  @Provides
   def mailjetSqlAdapter(database: Database): MailjetSqlAdapter =
     new MailjetSqlAdapter(
       driver = PostgresDriver,
@@ -218,7 +211,7 @@ class InfraModule extends AbstractModule with ScalaModule {
     new MailjetWSAdapter(
       wsClient = wsClient,
       config = webAppConfig.mailjetWSAdapterConfig,
-      mailjetWSMapping = mailjetWSMapping
+      mapping = mailjetWSMapping
     )
 
   @Provides

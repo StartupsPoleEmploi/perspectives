@@ -10,14 +10,15 @@ import fr.poleemploi.eventsourcing.infra.jackson.EventSourcingObjectMapperBuilde
 import fr.poleemploi.eventsourcing.infra.postgresql.{PostgreSQLAppendOnlyStore, PostgreSQLSnapshotStore, PostgresDriver => EventSourcingPostgresDriver}
 import fr.poleemploi.eventsourcing.snapshotstore.SnapshotStore
 import fr.poleemploi.perspectives.candidat.mrs.infra.csv.{HabiletesMRSCsvAdapter, ImportHabiletesMRSCsvAdapter}
-import fr.poleemploi.perspectives.candidat.mrs.infra.local.{ImportHabiletesMRSLocalAdapter, ImportMRSLocalAdapter}
+import fr.poleemploi.perspectives.candidat.mrs.infra.local.{ImportHabiletesMRSLocalAdapter, ImportMRSDHAELocalAdapter}
 import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect._
 import fr.poleemploi.perspectives.candidat.mrs.infra.sql.ReferentielHabiletesMRSSqlAdapter
 import fr.poleemploi.perspectives.commun.infra.jackson.PerspectivesEventSourcingModule
 import fr.poleemploi.perspectives.commun.infra.play.cache.InMemoryCacheApi
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
-import fr.poleemploi.perspectives.emailing.infra.local.LocalEmailingService
-import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetEmailingService
+import fr.poleemploi.perspectives.emailing.infra.csv.MRSValideesProspectCandidatCSVAdapter
+import fr.poleemploi.perspectives.emailing.infra.local.{LocalEmailingService, LocalImportProspectService}
+import fr.poleemploi.perspectives.emailing.infra.mailjet.{MailjetEmailingService, MailjetImportProspectService}
 import fr.poleemploi.perspectives.emailing.infra.sql.MailjetSqlAdapter
 import fr.poleemploi.perspectives.emailing.infra.ws.{MailjetWSAdapter, MailjetWSMapping}
 import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
@@ -36,8 +37,7 @@ import scala.concurrent.Future
 
 class InfraModule extends AbstractModule with ScalaModule {
 
-  override def configure(): Unit = {
-  }
+  override def configure(): Unit = {}
 
   @Provides
   @Singleton
@@ -120,15 +120,8 @@ class InfraModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
-  def mrsValideesCSVAdapter(actorSystem: ActorSystem): MRSValideesCSVAdapter =
-    new MRSValideesCSVAdapter(actorSystem = actorSystem)
-
-  @Provides
-  def mrsValideesSqlAdapter(database: Database): MRSValideesSqlAdapter =
-    new MRSValideesSqlAdapter(
-      driver = PostgresDriver,
-      database = database
-    )
+  def mrsValideesProspectCandidatCSVAdapter(actorSystem: ActorSystem): MRSValideesProspectCandidatCSVAdapter =
+    new MRSValideesProspectCandidatCSVAdapter(actorSystem = actorSystem)
 
   @Provides
   def mailjetSqlAdapter(database: Database): MailjetSqlAdapter =
@@ -138,18 +131,18 @@ class InfraModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
+  def mailjetWSMapping(batchsConfig: BatchsConfig): MailjetWSMapping =
+    new MailjetWSMapping(batchsConfig.mailjetTesteurs)
+
+  @Provides
   def mailjetWSAdapter(wsClient: WSClient,
                        batchsConfig: BatchsConfig,
                        mailjetWSMapping: MailjetWSMapping): MailjetWSAdapter =
     new MailjetWSAdapter(
       wsClient = wsClient,
       config = batchsConfig.mailjetWSAdapterConfig,
-      mailjetWSMapping = mailjetWSMapping
+      mapping = mailjetWSMapping
     )
-
-  @Provides
-  def mailjetWSMapping(batchsConfig: BatchsConfig): MailjetWSMapping =
-    new MailjetWSMapping(batchsConfig.mailjetTesteurs)
 
   @Provides
   def mailjetEmailingService(mailjetSqlAdapter: MailjetSqlAdapter,
@@ -164,29 +157,16 @@ class InfraModule extends AbstractModule with ScalaModule {
     new LocalEmailingService
 
   @Provides
-  def importMRSLocalAdapter: ImportMRSLocalAdapter =
-    new ImportMRSLocalAdapter
+  def importMRSDHAELocalAdapter: ImportMRSDHAELocalAdapter =
+    new ImportMRSDHAELocalAdapter
 
   @Provides
   @Singleton
-  def importMRSValideePEConnect(batchsConfig: BatchsConfig,
-                                actorSystem: ActorSystem,
-                                mrsValideesCSVAdapter: MRSValideesCSVAdapter,
-                                mrsValideesSqlAdapter: MRSValideesSqlAdapter): ImportMRSValideePEConnect =
-    new ImportMRSValideePEConnect(
-      config = batchsConfig.importMRSPEConnectConfig,
-      actorSystem = actorSystem,
-      mrsValideesCSVAdapter = mrsValideesCSVAdapter,
-      mrsValideesSqlAdapter = mrsValideesSqlAdapter
-    )
-
-  @Provides
-  @Singleton
-  def importMRSDHAEValideePEConnect(batchsConfig: BatchsConfig,
+  def importMRSDHAEPEConnectAdapter(batchsConfig: BatchsConfig,
                                     actorSystem: ActorSystem,
                                     mrsDHAEValideesCSVAdapter: MRSDHAEValideesCSVAdapter,
-                                    mrsDHAEValideesSqlAdapter: MRSDHAEValideesSqlAdapter): ImportMRSDHAEValideePEConnect =
-    new ImportMRSDHAEValideePEConnect(
+                                    mrsDHAEValideesSqlAdapter: MRSDHAEValideesSqlAdapter): ImportMRSDHAEPEConnectAdapter =
+    new ImportMRSDHAEPEConnectAdapter(
       config = batchsConfig.importMRSDHAEPEConnectConfig,
       actorSystem = actorSystem,
       mrsDHAEValideesCSVAdapter = mrsDHAEValideesCSVAdapter,
@@ -194,12 +174,21 @@ class InfraModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
-  def importMRSPEConnectAdapter(importMRSValideePEConnect: ImportMRSValideePEConnect,
-                                importMRSDHAEValideePEConnect: ImportMRSDHAEValideePEConnect): ImportMRSPEConnectAdapter =
-    new ImportMRSPEConnectAdapter(
-      importMRSValideePEConnect = importMRSValideePEConnect,
-      importMRSDHAEValideePEConnect = importMRSDHAEValideePEConnect
+  @Singleton
+  def importProspectServiceMailjet(batchsConfig: BatchsConfig,
+                                   actorSystem: ActorSystem,
+                                   mrsValideesProspectCandidatCSVAdapter: MRSValideesProspectCandidatCSVAdapter,
+                                   mailjetWSAdapter: MailjetWSAdapter): MailjetImportProspectService =
+    new MailjetImportProspectService(
+      config = batchsConfig.importProspectsCandidatCSVAdapterConfig,
+      actorSystem = actorSystem,
+      mrsValideesProspectCandidatCSVAdapter = mrsValideesProspectCandidatCSVAdapter,
+      mailjetWSAdapter = mailjetWSAdapter
     )
+
+  @Provides
+  def localImportProspectService: LocalImportProspectService =
+    new LocalImportProspectService
 
   @Provides
   def referentielMetierElasticsearchAdapter(wsClient: WSClient,

@@ -34,12 +34,7 @@ class BatchsConfig(configuration: Configuration) {
     apiKeyPrivate = configuration.get[String]("mailjet.apiKey.private")
   )
   val mailjetTesteurs: List[Email] =
-    configuration.getOptional[Seq[String]]("mailjet.testeurs").map(_.map(Email).toList).getOrElse(Nil)
-
-  val importMRSPEConnectConfig: ImportFileAdapterConfig = ImportFileAdapterConfig(
-    importDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.MrsValidees.importDirectory")),
-    archiveDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.MrsValidees.archiveDirectory"))
-  )
+    configuration.getOptional[Seq[String]]("mailjet.testeurs").map(_.map(Email(_)).toList).getOrElse(Nil)
 
   val importMRSDHAEPEConnectConfig: ImportFileAdapterConfig = ImportFileAdapterConfig(
     importDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.MrsDHAEValidees.importDirectory")),
@@ -47,8 +42,13 @@ class BatchsConfig(configuration: Configuration) {
   )
 
   val importHabiletesMRSCsvAdapterConfig: ImportFileAdapterConfig = ImportFileAdapterConfig(
-    importDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.habiletesMRS.importDirectory")),
-    archiveDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.habiletesMRS.archiveDirectory"))
+    importDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.HabiletesMRS.importDirectory")),
+    archiveDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.HabiletesMRS.archiveDirectory"))
+  )
+
+  val importProspectsCandidatCSVAdapterConfig: ImportFileAdapterConfig = ImportFileAdapterConfig(
+    importDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.ProspectsCandidats.importDirectory")),
+    archiveDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.ProspectsCandidats.archiveDirectory"))
   )
 
   val referentielMetierWSAdapterConfig: ReferentielMetierWSAdapterConfig = ReferentielMetierWSAdapterConfig(
@@ -61,3 +61,4 @@ class BatchsConfig(configuration: Configuration) {
     port = configuration.get[Int]("elasticsearch.port")
   )
 }
+

@@ -7,23 +7,23 @@ import fr.poleemploi.perspectives.candidat.mrs.domain.ImportHabiletesMRS
 
 import scala.concurrent.ExecutionContextExecutor
 
-object HabiletesMRSActor {
+object ImportHabiletesMRSActor {
 
-  final val name = "HabiletesMRSActor"
+  final val name = "ImportHabiletesMRSActor"
 
   case object StartImportHabiletesMRS
 
   case object ImportHabiletesMRSDone
 
   def props(importHabiletesMRS: ImportHabiletesMRS): Props =
-    Props(new HabiletesMRSActor(
+    Props(new ImportHabiletesMRSActor(
       importHabiletesMRS = importHabiletesMRS
     ))
 }
 
-class HabiletesMRSActor(importHabiletesMRS: ImportHabiletesMRS) extends Actor with ActorLogging {
+class ImportHabiletesMRSActor(importHabiletesMRS: ImportHabiletesMRS) extends Actor with ActorLogging {
 
-  import HabiletesMRSActor._
+  import ImportHabiletesMRSActor._
 
   implicit val executionContext: ExecutionContextExecutor = context.dispatcher
 
@@ -38,6 +38,7 @@ class HabiletesMRSActor(importHabiletesMRS: ImportHabiletesMRS) extends Actor wi
     case StartImportHabiletesMRS =>
       log.warning("Import des Habiletés MRS déjà en cours")
     case ImportHabiletesMRSDone =>
+      log.info("Intégration des Habiletés MRS terminéé")
       context.unbecome()
     case Failure(t) =>
       log.error(t, "Erreur lors de l'import des Habiletés MRS")

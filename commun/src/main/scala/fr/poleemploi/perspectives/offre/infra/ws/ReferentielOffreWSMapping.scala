@@ -162,7 +162,7 @@ case class OffreResponse(id: String,
   val urlOrigine: String = origineOffre.urlOrigine
   val nomContact: Option[String] = contact.flatMap(_.nom)
   val telephoneContact: Option[NumeroTelephone] = contact.flatMap(_.telephone).map(NumeroTelephone(_))
-  val emailContact: Option[Email] = contact.flatMap(_.courriel).map(Email)
+  val emailContact: Option[Email] = contact.flatMap(_.courriel).map(Email(_))
   val coordonneesContact1: Option[String] = contact.flatMap(_.coordonnees1)
   val coordonneesContact2: Option[String] = contact.flatMap(_.coordonnees2)
   val coordonneesContact3: Option[String] = contact.flatMap(_.coordonnees3)

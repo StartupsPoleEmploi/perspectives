@@ -24,19 +24,19 @@ class MailjetEmailingService(mailjetSqlAdapter: MailjetSqlAdapter,
   override def mettreAJourAdresseCandidat(candidatId: CandidatId, adresse: Adresse): Future[Unit] =
     for {
       candidatMailjet <- mailjetSqlAdapter.getCandidat(candidatId)
-      _ <- mailjetWSAdapter.mettreAJourAdresseCandidat(candidatMailjet.email, adresse)
+      _ <- mailjetWSAdapter.mettreAJourAdresseCandidat(candidatMailjet.mailjetContactId, adresse)
     } yield ()
 
   override def mettreAJourDerniereMRSValideeCandidat(candidatId: CandidatId, mrsValideeCandidat: MRSValideeCandidat): Future[Unit] =
     for {
       candidatMailjet <- mailjetSqlAdapter.getCandidat(candidatId)
-      _ <- mailjetWSAdapter.mettreAJourDerniereMRSValideeCandidat(candidatMailjet.email, mrsValideeCandidat)
+      _ <- mailjetWSAdapter.mettreAJourDerniereMRSValideeCandidat(candidatMailjet.mailjetContactId, mrsValideeCandidat)
     } yield ()
 
   override def mettreAJourCVCandidat(candidatId: CandidatId, possedeCV: Boolean): Future[Unit] =
     for {
       candidatMailjet <- mailjetSqlAdapter.getCandidat(candidatId)
-      _ <- mailjetWSAdapter.mettreAJourCVCandidat(candidatMailjet.email, possedeCV)
+      _ <- mailjetWSAdapter.mettreAJourCVCandidat(candidatMailjet.mailjetContactId, possedeCV)
     } yield ()
 
   override def ajouterRecruteurInscrit(recruteurInscrit: RecruteurInscrit): Future[Unit] = {

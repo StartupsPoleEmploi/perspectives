@@ -90,7 +90,7 @@ class WebAppConfig(configuration: Configuration) {
     apiKeyPrivate = configuration.get[String]("mailjet.apiKey.private")
   )
   val mailjetTesteurs: List[Email] =
-    configuration.getOptional[Seq[String]]("mailjet.testeurs").map(_.map(Email).toList).getOrElse(Nil)
+    configuration.getOptional[Seq[String]]("mailjet.testeurs").map(_.map(Email(_)).toList).getOrElse(Nil)
 
   val localisationWSAdapterConfig: LocalisationWSAdapterConfig = LocalisationWSAdapterConfig(
     urlApi = configuration.get[String]("emploiStore.localisation.urlApi")

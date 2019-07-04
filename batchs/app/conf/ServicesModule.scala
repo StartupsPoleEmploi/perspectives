@@ -1,13 +1,13 @@
 package conf
 
 import com.google.inject.{AbstractModule, Provider, Provides, Singleton}
-import fr.poleemploi.perspectives.candidat.mrs.domain.{ImportHabiletesMRS, ImportMRS}
+import fr.poleemploi.perspectives.candidat.mrs.domain.{ImportHabiletesMRS, ImportMRSDHAE}
 import fr.poleemploi.perspectives.candidat.mrs.infra.csv.ImportHabiletesMRSCsvAdapter
-import fr.poleemploi.perspectives.candidat.mrs.infra.local.{ImportHabiletesMRSLocalAdapter, ImportMRSLocalAdapter}
-import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.ImportMRSPEConnectAdapter
-import fr.poleemploi.perspectives.emailing.domain.EmailingService
-import fr.poleemploi.perspectives.emailing.infra.local.LocalEmailingService
-import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetEmailingService
+import fr.poleemploi.perspectives.candidat.mrs.infra.local.{ImportHabiletesMRSLocalAdapter, ImportMRSDHAELocalAdapter}
+import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.ImportMRSDHAEPEConnectAdapter
+import fr.poleemploi.perspectives.emailing.domain.{EmailingService, ImportProspectService}
+import fr.poleemploi.perspectives.emailing.infra.local.{LocalEmailingService, LocalImportProspectService}
+import fr.poleemploi.perspectives.emailing.infra.mailjet.{MailjetEmailingService, MailjetImportProspectService}
 import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
 import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapter
 
@@ -17,13 +17,13 @@ class ServicesModule extends AbstractModule {
 
   @Provides
   @Singleton
-  def importMRS(importMRSLocalAdapter: Provider[ImportMRSLocalAdapter],
-                importMRSPEConnectAdapter: Provider[ImportMRSPEConnectAdapter],
-                batchsConfig: BatchsConfig): ImportMRS =
+  def importMRSDHAE(importMRSDHAELocalAdapter: Provider[ImportMRSDHAELocalAdapter],
+                    importMRSDHAEPEConnectAdapter: Provider[ImportMRSDHAEPEConnectAdapter],
+                    batchsConfig: BatchsConfig): ImportMRSDHAE =
     if (batchsConfig.usePEConnect)
-      importMRSPEConnectAdapter.get()
+      importMRSDHAEPEConnectAdapter.get()
     else
-      importMRSLocalAdapter.get()
+      importMRSDHAELocalAdapter.get()
 
   @Provides
   @Singleton
@@ -37,11 +37,6 @@ class ServicesModule extends AbstractModule {
 
   @Provides
   @Singleton
-  def referentielMetier(referentielMetierWSAdapter: Provider[ReferentielMetierWSAdapter]): ReferentielMetier =
-    referentielMetierWSAdapter.get()
-
-  @Provides
-  @Singleton
   def importHabiletesMRS(importHabiletesMRSCsvAdapter: Provider[ImportHabiletesMRSCsvAdapter],
                          importHabiletesMRSLocalAdapter: Provider[ImportHabiletesMRSLocalAdapter],
                          batchsConfig: BatchsConfig): ImportHabiletesMRS =
@@ -49,4 +44,19 @@ class ServicesModule extends AbstractModule {
       importHabiletesMRSCsvAdapter.get()
     else
       importHabiletesMRSLocalAdapter.get()
+
+  @Provides
+  @Singleton
+  def importProspectService(mailjetImportProspectService: Provider[MailjetImportProspectService],
+                            localImportProspectService: Provider[LocalImportProspectService],
+                            batchsConfig: BatchsConfig): ImportProspectService =
+    if (batchsConfig.useMailjet)
+      mailjetImportProspectService.get()
+    else
+      localImportProspectService.get()
+
+  @Provides
+  @Singleton
+  def referentielMetier(referentielMetierWSAdapter: Provider[ReferentielMetierWSAdapter]): ReferentielMetier =
+    referentielMetierWSAdapter.get()
 }

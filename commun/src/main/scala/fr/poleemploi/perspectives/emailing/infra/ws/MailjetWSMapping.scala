@@ -1,6 +1,6 @@
 package fr.poleemploi.perspectives.emailing.infra.ws
 
-import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 import fr.poleemploi.perspectives.candidat.Adresse
 import fr.poleemploi.perspectives.commun.domain.{Email, Genre}
@@ -11,6 +11,10 @@ import play.api.libs.json._
 
 class MailjetWSMapping(testeurs: List[Email]) {
 
+  import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetContactProperties._
+
+  val formatter: DateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+
   val idListeCandidatsInscrits: Int = 9908
   val idListeCandidatsProspects: Int = 10066519
 
@@ -19,58 +23,86 @@ class MailjetWSMapping(testeurs: List[Email]) {
 
   val idListeTesteurs: Int = 20603
 
-  def buildContactRequestInscriptionCandidat(candidatInscrit: CandidatInscrit): UpdateContactDataRequest =
-    UpdateContactDataRequest(
-      properties = List(
-        Json.obj("Name" -> "nom", "Value" -> candidatInscrit.nom.value),
-        Json.obj("Name" -> "prénom", "Value" -> candidatInscrit.prenom.value), // le nom de l'attribut doit comporter l'accent
-        Json.obj("Name" -> "genre", "Value" -> buildGenre(candidatInscrit.genre)),
-        Json.obj("Name" -> "cv", "Value" -> false)
+  def buildRequestInscriptionCandidat(candidatInscrit: CandidatInscrit): InscriptionRequest = InscriptionRequest(
+    idListe = filtrerListeTesteurs(idListeCandidatsInscrits, candidatInscrit.email),
+    request = buildContactRequestInscriptionCandidat(candidatInscrit)
+  )
+
+  def buildContactRequestInscriptionCandidat(candidatInscrit: CandidatInscrit): ManageContactRequest =
+    ManageContactRequest(
+      email = candidatInscrit.email.value,
+      name = Some(s"${candidatInscrit.nom.value} ${candidatInscrit.prenom.value}"),
+      action = "addnoforce",
+      properties = Json.obj(
+        nom -> candidatInscrit.nom.value,
+        prenom -> candidatInscrit.prenom.value,
+        genre -> buildGenre(candidatInscrit.genre),
+        cv -> false
       )
     )
 
-  def buildContactListsRequestInscriptionCandidat(candidatInscrit: CandidatInscrit): ManageContactListsRequest =
-    ManageContactListsRequest(
-      contactsList = List(
-        ContactList(listID = s"$idListeCandidatsProspects", action = "remove"),
-        ContactList(listID = s"${filtrerListeTesteurs(idListeCandidatsInscrits, candidatInscrit.email)}", action = "addnoforce")
+  def buildContactListsRequestInscriptionCandidat: ManageContactListsRequest =
+    ManageContactListsRequest(List(
+      ContactList(listID = s"$idListeCandidatsProspects", action = "remove")
+    ))
+
+  def buildRequestInscriptionRecruteur(recruteurInscrit: RecruteurInscrit): InscriptionRequest = InscriptionRequest(
+    idListe = filtrerListeTesteurs(idListeRecruteursInscrits, recruteurInscrit.email),
+    request = buildContactRequestInscriptionRecruteur(recruteurInscrit)
+  )
+
+  def buildContactRequestInscriptionRecruteur(recruteurInscrit: RecruteurInscrit): ManageContactRequest =
+    ManageContactRequest(
+      email = recruteurInscrit.email.value,
+      name = Some(s"${recruteurInscrit.nom.value} ${recruteurInscrit.prenom.value}"),
+      action = "addnoforce",
+      properties = Json.obj(
+        nom -> recruteurInscrit.nom.value,
+        prenom -> recruteurInscrit.prenom.value,
+        genre -> buildGenre(recruteurInscrit.genre)
       )
     )
 
-  def buildContactRequestInscriptionRecruteur(recruteurInscrit: RecruteurInscrit): UpdateContactDataRequest =
-    UpdateContactDataRequest(
-      properties = List(
-        Json.obj("Name" -> "nom", "Value" -> recruteurInscrit.nom.value),
-        Json.obj("Name" -> "prénom", "Value" -> recruteurInscrit.prenom.value), // le nom de l'attribut doit comporter l'accent
-        Json.obj("Name" -> "genre", "Value" -> buildGenre(recruteurInscrit.genre))
-      )
-    )
-
-  def buildContactListsRequestInscriptionRecruteur(recruteurInscrit: RecruteurInscrit): ManageContactListsRequest =
-    ManageContactListsRequest(
-      contactsList = List(
-        ContactList(listID = s"$idListeRecruteursProspects", action = "remove"),
-        ContactList(listID = s"${filtrerListeTesteurs(idListeRecruteursInscrits, recruteurInscrit.email)}", action = "addnoforce")
-      )
-    )
+  def buildContactListsRequestInscriptionRecruteur: ManageContactListsRequest =
+    ManageContactListsRequest(List(
+      ContactList(listID = s"$idListeRecruteursProspects", action = "remove")
+    ))
 
   def buildRequestMiseAJourCVCandidat(possedeCV: Boolean): UpdateContactDataRequest =
-    UpdateContactDataRequest(
-      properties = List(Json.obj("Name" -> "cv", "Value" -> possedeCV))
-    )
+    UpdateContactDataRequest(List(
+      ContactDataProperty(cv, String.valueOf(possedeCV))
+    ))
 
   def buildRequestMiseAJourAdresseCandidat(adresse: Adresse): UpdateContactDataRequest =
-    UpdateContactDataRequest(
-      properties = List(Json.obj("Name" -> "departement", "Value" -> adresse.codePostal.take(2).toInt))
-    )
+    UpdateContactDataRequest(List(
+      ContactDataProperty(departement, adresse.codePostal.take(2))
+    ))
 
   def buildRequestMiseAJourMRSValideeCandidat(mrsValideeCandidat: MRSValideeCandidat): UpdateContactDataRequest =
-    UpdateContactDataRequest(
-      properties = List(
-        Json.obj("Name" -> "mrs_code_rome", "Value" -> mrsValideeCandidat.metier.codeROME.value),
-        Json.obj("Name" -> "mrs_metier", "Value" -> mrsValideeCandidat.metier.label),
-        Json.obj("Name" -> "mrs_date", "Value" -> mrsValideeCandidat.dateEvaluation.atStartOfDay().atZone(ZoneId.systemDefault()).toEpochSecond())
-      )
+    UpdateContactDataRequest(List(
+      ContactDataProperty(mrs_code_rome, mrsValideeCandidat.metier.codeROME.value),
+      ContactDataProperty(mrs_metier, mrsValideeCandidat.metier.label),
+      ContactDataProperty(mrs_date, mrsValideeCandidat.dateEvaluation.atStartOfDay().format(formatter))
+    ))
+
+  def buildRequestImportProspectsCandidats(prospectsCandidats: Stream[MRSValideeProspectCandidat]): ManageManyContactsRequest =
+    ManageManyContactsRequest(
+      contacts = prospectsCandidats.map(p => Contact(
+        email = p.email.value,
+        properties = Json.obj(
+          nom -> p.nom.value,
+          prenom -> p.prenom.value,
+          genre -> buildGenre(p.genre),
+          departement -> p.codeDepartement.value,
+          mrs_metier -> p.metier.label,
+          mrs_code_rome -> p.metier.codeROME.value,
+          mrs_date -> s"${p.dateEvaluation.atStartOfDay().format(formatter)}"
+        )
+      )).toList,
+      contactsLists = List(ContactList(
+        listID = s"$idListeCandidatsProspects",
+        action = "addnoforce"
+      ))
     )
 
   private def buildGenre(genre: Genre): String = genre match {
@@ -83,48 +115,8 @@ class MailjetWSMapping(testeurs: List[Email]) {
     if (testeurs.contains(email)) idListeTesteurs else idListe
 }
 
-case class MailjetRecipient(email: String,
-                            name: String)
-
-object MailjetRecipient {
-
-  implicit val writes: Writes[MailjetRecipient] = (
-    (JsPath \ "Email").write[String] and
-      (JsPath \ "Name").write[String]
-    ) (unlift(MailjetRecipient.unapply))
-}
-
-case class MailjetSender(email: String,
-                         name: String)
-
-object MailjetSender {
-
-  implicit val writes: Writes[MailjetSender] = (
-    (JsPath \ "Email").write[String] and
-      (JsPath \ "Name").write[String]
-    ) (unlift(MailjetSender.unapply))
-}
-
-case class MailjetTemplateMessage(from: MailjetSender,
-                                  to: List[MailjetRecipient],
-                                  subject: String,
-                                  templateID: Int,
-                                  templateLanguage: Boolean,
-                                  variables: Map[String, String])
-
-object MailjetTemplateMessage {
-
-  implicit val writes: Writes[MailjetTemplateMessage] = (
-    (JsPath \ "From").write[MailjetSender] and
-      (JsPath \ "To").write[List[MailjetRecipient]] and
-      (JsPath \ "Subject").write[String] and
-      (JsPath \ "TemplateID").write[Int] and
-      (JsPath \ "TemplateLanguage").write[Boolean] and
-      (JsPath \ "Variables").write[Map[String, String]]
-    ) (unlift(MailjetTemplateMessage.unapply))
-}
-
-case class MailjetTemplateEmail(messages: List[MailjetTemplateMessage])
+case class InscriptionRequest(idListe: Int,
+                              request: ManageContactRequest)
 
 case class ContactList(listID: String,
                        action: String)
@@ -145,12 +137,47 @@ object ManageContactListsRequest {
     (__ \ "ContactsLists").write[List[ContactList]].contramap(_.contactsList)
 }
 
-case class UpdateContactDataRequest(properties: List[JsValue])
+case class Contact(email: String,
+                   name: Option[String] = None,
+                   properties: JsObject)
+
+object Contact {
+
+  implicit val writes: Writes[Contact] = (
+    (JsPath \ "Email").write[String] and
+      (JsPath \ "Name").writeNullable[String] and
+      (JsPath \ "Properties").write[JsObject]
+    ) (unlift(Contact.unapply))
+}
+
+case class ManageManyContactsRequest(contacts: List[Contact],
+                                     contactsLists: List[ContactList])
+
+object ManageManyContactsRequest {
+
+  implicit val writes: Writes[ManageManyContactsRequest] = (
+    (JsPath \ "Contacts").write[List[Contact]] and
+      (JsPath \ "ContactsLists").write[List[ContactList]]
+    ) (unlift(ManageManyContactsRequest.unapply))
+}
+
+case class ContactDataProperty(name: String,
+                               value: String)
+
+object ContactDataProperty {
+
+  implicit val writes: Writes[ContactDataProperty] = (
+    (JsPath \ "Name").write[String] and
+      (JsPath \ "Value").write[String]
+    ) (unlift(ContactDataProperty.unapply))
+}
+
+case class UpdateContactDataRequest(properties: List[ContactDataProperty])
 
 object UpdateContactDataRequest {
 
   implicit val writes: Writes[UpdateContactDataRequest] =
-    (__ \ "Data").write[List[JsValue]].contramap(_.properties)
+    (__ \ "Data").write[List[ContactDataProperty]].contramap(_.properties)
 }
 
 case class UpdateContactDataResponse(count: Int,
@@ -162,4 +189,30 @@ object UpdateContactDataResponse {
     (JsPath \ "Count").read[Int] and
       (JsPath \ "Data" \\ "ContactID").read[Long].map(MailjetContactId)
     ) (UpdateContactDataResponse.apply _)
+}
+
+case class ManageContactRequest(email: String,
+                                name: Option[String] = None,
+                                action: String,
+                                properties: JsObject)
+
+object ManageContactRequest {
+
+  implicit val manageContactRequestWrites: Writes[ManageContactRequest] = (
+    (JsPath \ "Email").write[String] and
+      (JsPath \ "Name").write[Option[String]] and
+      (JsPath \ "Action").write[String] and
+      (JsPath \ "Properties").write[JsObject]
+    ) (unlift(ManageContactRequest.unapply))
+}
+
+case class ManageContactResponse(count: Int,
+                                 mailjetContactId: MailjetContactId)
+
+object ManageContactResponse {
+
+  implicit val manageContactReponseReads: Reads[ManageContactResponse] = (
+    (JsPath \ "Count").read[Int] and
+      (JsPath \ "Data" \\ "ContactID").read[Long].map(MailjetContactId)
+    ) (ManageContactResponse.apply _)
 }

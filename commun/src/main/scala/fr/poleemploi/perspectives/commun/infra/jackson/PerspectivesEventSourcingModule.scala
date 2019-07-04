@@ -20,7 +20,7 @@ object PerspectivesEventSourcingModule extends EventSourcingModule {
   addStringValueObject(classOf[Genre], Genre(_))
   addStringValueObject(classOf[Nom], Nom(_))
   addStringValueObject(classOf[Prenom], Prenom(_))
-  addStringValueObject(classOf[Email], Email)
+  addStringValueObject(classOf[Email], Email(_))
   addStringValueObject(classOf[CodeROME], CodeROME)
   addStringValueObject(classOf[CodeSecteurActivite], CodeSecteurActivite)
   addStringValueObject(classOf[CodeDomaineProfessionnel], CodeDomaineProfessionnel)

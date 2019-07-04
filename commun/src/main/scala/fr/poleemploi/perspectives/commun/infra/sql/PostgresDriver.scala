@@ -45,7 +45,7 @@ trait PostgresDriver extends ExPostgresProfile
 
     implicit val prenomColumnType: BaseColumnType[Prenom] = mapStringValueObject(Prenom(_))
 
-    implicit val emailColumnType: BaseColumnType[Email] = mapStringValueObject(Email)
+    implicit val emailColumnType: BaseColumnType[Email] = mapStringValueObject(Email(_))
 
     implicit val numeroSiretColumnType: BaseColumnType[NumeroSiret] = mapStringValueObject(NumeroSiret(_))
 
