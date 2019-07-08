@@ -21,7 +21,7 @@ class MailjetWSMapping(testeurs: List[Email]) {
   val idListeRecruteursInscrits: Int = 9909
   val idListeRecruteursProspects: Int = 10145914
 
-  val idListeTesteurs: Int = 20603
+  val idListeTesteurs: Int = 10145941
 
   def buildRequestInscriptionCandidat(candidatInscrit: CandidatInscrit): InscriptionRequest = InscriptionRequest(
     idListe = filtrerListeTesteurs(idListeCandidatsInscrits, candidatInscrit.email),
