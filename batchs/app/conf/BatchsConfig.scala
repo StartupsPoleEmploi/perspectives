@@ -3,12 +3,9 @@ package conf
 import java.nio.file.Paths
 
 import fr.poleemploi.perspectives.commun.domain.Email
-import fr.poleemploi.perspectives.commun.infra.elasticsearch.EsConfig
 import fr.poleemploi.perspectives.commun.infra.file.ImportFileAdapterConfig
-import fr.poleemploi.perspectives.commun.infra.oauth.OauthConfig
 import fr.poleemploi.perspectives.emailing.infra.ws.MailjetWSAdapterConfig
 import fr.poleemploi.perspectives.infra.BuildInfo
-import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapterConfig
 import play.api.Configuration
 
 class BatchsConfig(configuration: Configuration) {
@@ -18,14 +15,6 @@ class BatchsConfig(configuration: Configuration) {
   val useImportHabiletesMRS: Boolean = configuration.getOptional[Boolean]("useImportHabiletesMRS").getOrElse(true)
 
   val version: String = BuildInfo.version
-
-  val partenaireOauthConfig: OauthConfig = OauthConfig(
-    clientId = configuration.get[String]("emploiStore.oauth2.clientId"),
-    clientSecret = configuration.get[String]("emploiStore.oauth2.clientSecret"),
-    urlAuthentification = configuration.get[String]("emploiStore.entreprise.urlAuthentification"),
-    realm = "partenaire",
-    scopes = Nil
-  )
   
   val mailjetWSAdapterConfig: MailjetWSAdapterConfig = MailjetWSAdapterConfig(
     urlApi = configuration.get[String]("mailjet.urlApi"),
@@ -49,16 +38,6 @@ class BatchsConfig(configuration: Configuration) {
   val importProspectsCandidatCSVAdapterConfig: ImportFileAdapterConfig = ImportFileAdapterConfig(
     importDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.ProspectsCandidats.importDirectory")),
     archiveDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.ProspectsCandidats.archiveDirectory"))
-  )
-
-  val referentielMetierWSAdapterConfig: ReferentielMetierWSAdapterConfig = ReferentielMetierWSAdapterConfig(
-    urlApi = configuration.get[String]("emploiStore.urlApi"),
-    oauthConfig = partenaireOauthConfig
-  )
-
-  val esConfig: EsConfig = EsConfig(
-    host = configuration.get[String]("elasticsearch.host"),
-    port = configuration.get[Int]("elasticsearch.port")
   )
 }
 

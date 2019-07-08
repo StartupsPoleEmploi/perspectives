@@ -14,7 +14,6 @@ class BatchsApplicationLoader extends GuiceApplicationLoader() {
         new InfraModule(),
         new EventSourcingModule(),
         new SchedulersModule(),
-        new ProjectionsModule(),
         new ServicesModule()
       )
 }

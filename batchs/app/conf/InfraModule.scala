@@ -17,14 +17,9 @@ import fr.poleemploi.perspectives.commun.infra.jackson.PerspectivesEventSourcing
 import fr.poleemploi.perspectives.commun.infra.play.cache.InMemoryCacheApi
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
 import fr.poleemploi.perspectives.emailing.infra.csv.MRSValideesProspectCandidatCSVAdapter
-import fr.poleemploi.perspectives.emailing.infra.local.{LocalEmailingService, LocalImportProspectService}
-import fr.poleemploi.perspectives.emailing.infra.mailjet.{MailjetEmailingService, MailjetImportProspectService}
-import fr.poleemploi.perspectives.emailing.infra.sql.MailjetSqlAdapter
+import fr.poleemploi.perspectives.emailing.infra.local.LocalImportProspectService
+import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetImportProspectService
 import fr.poleemploi.perspectives.emailing.infra.ws.{MailjetWSAdapter, MailjetWSMapping}
-import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
-import fr.poleemploi.perspectives.metier.infra.elasticsearch.ReferentielMetierElasticsearchAdapter
-import fr.poleemploi.perspectives.metier.infra.ws.{ReferentielMetierWSAdapter, ReferentielMetierWSMapping}
-import fr.poleemploi.perspectives.projections.candidat.infra.elasticsearch.{CandidatProjectionElasticsearchAdapter, CandidatProjectionElasticsearchMapping}
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
 import play.api.cache.AsyncCacheApi
@@ -124,13 +119,6 @@ class InfraModule extends AbstractModule with ScalaModule {
     new MRSValideesProspectCandidatCSVAdapter(actorSystem = actorSystem)
 
   @Provides
-  def mailjetSqlAdapter(database: Database): MailjetSqlAdapter =
-    new MailjetSqlAdapter(
-      driver = PostgresDriver,
-      database = database
-    )
-
-  @Provides
   def mailjetWSMapping(batchsConfig: BatchsConfig): MailjetWSMapping =
     new MailjetWSMapping(batchsConfig.mailjetTesteurs)
 
@@ -143,18 +131,6 @@ class InfraModule extends AbstractModule with ScalaModule {
       config = batchsConfig.mailjetWSAdapterConfig,
       mapping = mailjetWSMapping
     )
-
-  @Provides
-  def mailjetEmailingService(mailjetSqlAdapter: MailjetSqlAdapter,
-                             mailjetWSAdapter: MailjetWSAdapter): MailjetEmailingService =
-    new MailjetEmailingService(
-      mailjetSqlAdapter = mailjetSqlAdapter,
-      mailjetWSAdapter = mailjetWSAdapter
-    )
-
-  @Provides
-  def localEmailingService: LocalEmailingService =
-    new LocalEmailingService
 
   @Provides
   def importMRSDHAELocalAdapter: ImportMRSDHAELocalAdapter =
@@ -191,32 +167,6 @@ class InfraModule extends AbstractModule with ScalaModule {
     new LocalImportProspectService
 
   @Provides
-  def referentielMetierElasticsearchAdapter(wsClient: WSClient,
-                                            batchsConfig: BatchsConfig): ReferentielMetierElasticsearchAdapter =
-    new ReferentielMetierElasticsearchAdapter(
-      esConfig = batchsConfig.esConfig,
-      wsClient = wsClient
-    )
-
-  @Provides
-  def referentielMetierWSMapping: ReferentielMetierWSMapping =
-    new ReferentielMetierWSMapping()
-
-  @Provides
-  def referentielMetierWSAdapter(wsClient: WSClient,
-                                 mapping: ReferentielMetierWSMapping,
-                                 batchsConfig: BatchsConfig,
-                                 cacheApi: AsyncCacheApi,
-                                 referentielMetierElasticsearchAdapter: ReferentielMetierElasticsearchAdapter): ReferentielMetierWSAdapter =
-    new ReferentielMetierWSAdapter(
-      config = batchsConfig.referentielMetierWSAdapterConfig,
-      mapping = mapping,
-      wsClient = wsClient,
-      cacheApi = cacheApi,
-      elasticsearchAdapter = referentielMetierElasticsearchAdapter
-    )
-
-  @Provides
   def referentielHabiletesMRSSqlAdapter(database: Database): ReferentielHabiletesMRSSqlAdapter =
     new ReferentielHabiletesMRSSqlAdapter(
       driver = PostgresDriver,
@@ -239,21 +189,5 @@ class InfraModule extends AbstractModule with ScalaModule {
       config = batchsConfig.importHabiletesMRSCsvAdapterConfig,
       habiletesMRSCsvAdapter = habiletesMRSCsvAdapter,
       referentielHabiletesMRSSqlAdapter = referentielHabiletesMRSSqlAdapter
-    )
-
-  @Provides
-  def candidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetier): CandidatProjectionElasticsearchMapping =
-    new CandidatProjectionElasticsearchMapping(
-      referentielMetier = referentielMetier
-    )
-
-  @Provides
-  def candidatProjectionElasticsearchAdapter(batchsConfig: BatchsConfig,
-                                             wsClient: WSClient,
-                                             mapping: CandidatProjectionElasticsearchMapping): CandidatProjectionElasticsearchAdapter =
-    new CandidatProjectionElasticsearchAdapter(
-      wsClient = wsClient,
-      esConfig = batchsConfig.esConfig,
-      mapping = mapping
     )
 }
