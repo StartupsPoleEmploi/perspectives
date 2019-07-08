@@ -22,6 +22,8 @@ object Dependencies {
 
   val akkaQuartzScheduler = "com.enragedginger" %% "akka-quartz-scheduler" % "1.8.0-akka-2.5.x"
 
+  val commonCompress = "org.apache.commons" % "commons-compress" % "1.18"
+
   val jacksonCore = "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion
 
   val jacksonAnnotations = "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonVersion
