@@ -3,10 +3,6 @@
   border: 1px dashed $vert-emeraude;
   @include userSelect(none);
 
-  &-input {
-    @include hiddenInput();
-  }
-
   &-bouton {
     font-weight: $font-weight-bold;
     text-transform: uppercase;

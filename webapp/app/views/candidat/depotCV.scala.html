@@ -11,20 +11,24 @@
         <section class="container py-md-5 py-2">
             <div class="row justify-content-center">
                 <div class="col-lg-8 col-12">
-                    <h1 class="texte-noir font-weight-bold font-size-lg mb-0"
-                        v-if="nouveauCandidat">Parfait! Vous êtes inscrit.</h1>
+                    <h1 class="texte-noir font-weight-bold font-size-lg mb-0">
+                        <template v-if="nouveauCandidat">Parfait! Vous êtes inscrit.</template>
+                        <template v-else-if="nomFichier">Votre CV est visible par les recruteurs</template>
+                        <template v-else>Augmentez vos chances d'être contacté en déposant votre CV !</template>
+                    </h1>
                     <p class="texte-noir font-size-md mb-4">
-                        <template v-if="!avecCV">Augmentez vos chances d'être contacté en déposant votre CV !</template>
-                        <template v-else>Maintenez votre CV à jour pour les recruteurs !</template>
+                        <template v-if="nouveauCandidat">Augmentez vos chances d'être contacté en déposant votre CV !</template>
+                        <template v-else-if="nomFichier">Vous pouvez le modifier quand vous le souhaitez !</template>
                     </p>
                     <depot-cv action="@controllers.candidat.routes.CVController.modifierCV()" class="px-3"
                             v-bind:csrf-token="csrfToken"
                             v-bind:extensions-valides="extensionsValides"
                             v-bind:types-medias-valides="typesMediasValides"
                             v-bind:taille-max-in-bytes="tailleMaxInBytes"
-                            v-bind:taille-max-label="tailleMaxLabel">
+                            v-bind:taille-max-label="tailleMaxLabel"
+                            v-bind:nom-fichier="nomFichier">
                     </depot-cv>
-                    <a class="bouton bouton--vertSurBlanc boutonFormulaire mt-4" href="@controllers.candidat.routes.RechercheOffreController.index()">Plus tard! Je veux voir les offres</a>
+                    <a class="bouton bouton--vertSurBlanc boutonFormulaire mt-4" href="@controllers.candidat.routes.RechercheOffreController.index()">Je veux voir les offres</a>
                 </div>
             </div>
         </section>

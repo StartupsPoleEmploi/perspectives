@@ -4,12 +4,12 @@ import akka.stream.scaladsl.Source
 import akka.util.ByteString
 import authentification.infra.play.{CandidatAuthentifieAction, CandidatAuthentifieRequest}
 import conf.WebAppConfig
-import controllers.FlashMessages._
 import controllers.AssetsFinder
+import controllers.FlashMessages._
+import fr.poleemploi.perspectives.candidat.cv.domain.TypeMedia
 import fr.poleemploi.perspectives.candidat.{AjouterCVCommand, CandidatCommandHandler, RemplacerCVCommand}
-import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
 import fr.poleemploi.perspectives.projections.candidat._
-import fr.poleemploi.perspectives.projections.candidat.cv.CVCandidatQuery
+import fr.poleemploi.perspectives.projections.candidat.cv.{DetailsCVCandidatQuery, TelechargerCVCandidatQuery}
 import javax.inject.Inject
 import play.api.http.HttpEntity
 import play.api.libs.Files
@@ -30,12 +30,12 @@ class CVController @Inject()(components: ControllerComponents,
 
   def index: Action[AnyContent] = candidatAuthentifieAction.async { candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
-      candidatQueryHandler.handle(CandidatDepotCVQuery(candidatAuthentifieRequest.candidatId))
-        .map(candidatDepotCVQueryResult => Ok(views.html.candidat.depotCV(
+      candidatQueryHandler.handle(DetailsCVCandidatQuery(candidatAuthentifieRequest.candidatId))
+        .map(cv => Ok(views.html.candidat.depotCV(
           candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie,
           jsData = Json.obj(
             "nouveauCandidat" -> messagesRequest.flash.candidatInscrit,
-            "avecCV" -> candidatDepotCVQueryResult.cvId.isDefined,
+            "nomFichier" -> cv.nomFichier,
             "typesMediasValides" -> TypeMedia.typesMediasCV,
             "extensionsValides" -> TypeMedia.extensionsCV,
             "tailleMaxInBytes" -> CVForm.maxLengthInBytes,
@@ -51,21 +51,22 @@ class CVController @Inject()(components: ControllerComponents,
       CVForm.bindFromMultipart(candidatAuthentifieRequest.body).fold(
         erreur => Future.successful(BadRequest(erreur)),
         cvForm =>
-          candidatQueryHandler.handle(CandidatDepotCVQuery(candidatAuthentifieRequest.candidatId))
-            .flatMap(candidat =>
-              candidat.cvId
-                .map(cvId => candidatCommandHandler.handle(buildRemplacerCvCommand(candidat, cvId, cvForm)))
-                .getOrElse(candidatCommandHandler.handle(buildAjouterCvCommand(candidat, cvForm)))
-            ).map(_ => NoContent)
+          candidatQueryHandler.handle(DetailsCVCandidatQuery(candidatAuthentifieRequest.candidatId)).flatMap(
+            _.cvId.map(cvId => candidatCommandHandler.handle(
+              RemplacerCVCommand(id = candidatAuthentifieRequest.candidatId, cvId = cvId, typeMedia = cvForm.typeMedia, path = cvForm.path)
+            )).getOrElse(candidatCommandHandler.handle(
+              AjouterCVCommand(id = candidatAuthentifieRequest.candidatId, typeMedia = cvForm.typeMedia, path = cvForm.path)
+            )).map(_ => NoContent)
+          )
       )
     }
 
   def telecharger(nomFichier: String): Action[AnyContent] = candidatAuthentifieAction.async { candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
-      candidatQueryHandler.handle(CVCandidatQuery(candidatAuthentifieRequest.candidatId))
-        .map(cvCandidat => {
+      candidatQueryHandler.handle(TelechargerCVCandidatQuery(candidatAuthentifieRequest.candidatId))
+        .map(cv => {
           val source: Source[ByteString, _] = Source.fromIterator[ByteString](
-            () => Iterator.fill(1)(ByteString(cvCandidat.cv.data))
+            () => Iterator.fill(1)(ByteString(cv.data))
           )
 
           Result(
@@ -74,29 +75,10 @@ class CVController @Inject()(components: ControllerComponents,
             )),
             body = HttpEntity.Streamed(
               data = source,
-              contentLength = Some(cvCandidat.cv.data.length.toLong),
-              contentType = Some(cvCandidat.cv.typeMedia.value))
+              contentLength = Some(cv.data.length.toLong),
+              contentType = Some(cv.typeMedia.value))
           )
         })
     }(candidatAuthentifieRequest)
   }
-
-  private def buildAjouterCvCommand(candidat: CandidatDepotCVQueryResult,
-                                    cvForm: CVForm): AjouterCVCommand =
-    AjouterCVCommand(
-      id = candidat.candidatId,
-      typeMedia = cvForm.typeMedia,
-      path = cvForm.path
-    )
-
-  private def buildRemplacerCvCommand(candidat: CandidatDepotCVQueryResult,
-                                      cvId: CVId,
-                                      cvForm: CVForm): RemplacerCVCommand =
-    RemplacerCVCommand(
-      id = candidat.candidatId,
-      cvId = cvId,
-      typeMedia = cvForm.typeMedia,
-      path = cvForm.path
-    )
-
 }

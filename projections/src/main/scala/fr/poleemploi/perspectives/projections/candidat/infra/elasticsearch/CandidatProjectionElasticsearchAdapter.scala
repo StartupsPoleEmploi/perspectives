@@ -213,16 +213,6 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
       .flatMap(filtreStatutReponse(_))
       .flatMap(r => mapping.buildMetiersValidesQueryResult((r.json \ "_source" \ s"$metiers_valides").as[Set[MetierValideDocument]]))
 
-  override def depotCV(query: CandidatDepotCVQuery): Future[CandidatDepotCVQueryResult] =
-    wsClient
-      .url(s"$baseUrl/$indexName/$docType/${query.candidatId.value}")
-      .withQueryStringParameters(
-        ("_source", s"$candidat_id,$cv_id,$cv_type_media")
-      )
-      .get()
-      .flatMap(filtreStatutReponse(_))
-      .map(r => mapping.buildCandidatDepotCVQueryResult((r.json \ "_source").as[CandidatDepotCVDocument]))
-
   override def rechercheOffre(query: CandidatPourRechercheOffreQuery): Future[CandidatPourRechercheOffreQueryResult] =
     wsClient
       .url(s"$baseUrl/$indexName/$docType/${query.candidatId.value}")

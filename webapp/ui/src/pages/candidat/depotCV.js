@@ -9,7 +9,7 @@ var app = new Vue({
     data: function () {
         return {
             nouveauCandidat: jsData.nouveauCandidat,
-            avecCV: jsData.avecCV,
+            nomFichier: jsData.nomFichier,
             typesMediasValides: jsData.typesMediasValides,
             extensionsValides: jsData.extensionsValides,
             tailleMaxInBytes: jsData.tailleMaxInBytes,

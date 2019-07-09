@@ -3,7 +3,7 @@ package fr.poleemploi.perspectives.projections.candidat
 import fr.poleemploi.cqrs.projection._
 import fr.poleemploi.perspectives.candidat.cv.domain.{CV, CVService}
 import fr.poleemploi.perspectives.offre.domain.ReferentielOffre
-import fr.poleemploi.perspectives.projections.candidat.cv.{CVCandidatPourRecruteurQuery, CVCandidatPourRecruteurQueryResult, CVCandidatQuery, CVCandidatQueryResult}
+import fr.poleemploi.perspectives.projections.candidat.cv._
 import fr.poleemploi.perspectives.projections.recruteur.{RecruteurProjection, TypeRecruteurQuery}
 import fr.poleemploi.perspectives.recruteur.TypeRecruteur
 
@@ -16,11 +16,17 @@ class CandidatQueryHandler(candidatProjection: CandidatProjection,
                            referentielOffre: ReferentielOffre) extends QueryHandler {
 
   override def configure: PartialFunction[Query[_ <: QueryResult], Future[QueryResult]] = {
-    case q: CVCandidatQuery => cvService.getCVByCandidat(q.candidatId).map(CVCandidatQueryResult)
+    case q: TelechargerCVCandidatQuery => cvService.getCVByCandidat(q.candidatId).map(cv => TelechargerCVCandidatQueryResult(
+      data = cv.data,
+      typeMedia = cv.typeMedia
+    ))
+    case q: DetailsCVCandidatQuery => cvService.findDetailsCVByCandidat(q.candidatId).map(cv => DetailsCVCandidatQueryResult(
+      cvId = cv.map(_.id),
+      nomFichier = cv.map(_.nomFichier)
+    ))
     case q: CVCandidatPourRecruteurQuery => cvCandidatPourRecruteur(q).map(CVCandidatPourRecruteurQueryResult)
     case q: CandidatSaisieCriteresRechercheQuery => candidatProjection.saisieCriteresRecherche(q)
     case q: CandidatLocalisationQuery => candidatProjection.localisation(q)
-    case q: CandidatDepotCVQuery => candidatProjection.depotCV(q)
     case q: CandidatsPourConseillerQuery => candidatProjection.listerPourConseiller(q)
     case q: RechercheCandidatsQuery => candidatProjection.rechercherCandidats(q)
     case q: CandidatMetiersValidesQuery => candidatProjection.metiersValides(q)

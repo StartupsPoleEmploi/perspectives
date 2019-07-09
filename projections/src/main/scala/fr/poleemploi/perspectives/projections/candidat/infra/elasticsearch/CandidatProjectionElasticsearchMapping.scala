@@ -51,13 +51,6 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
     referentielMetier.metiersParCodesROME(documents.map(_.metier))
       .map(metiersValides => CandidatMetiersValidesQueryResult(metiersValides))
 
-  def buildCandidatDepotCVQueryResult(document: CandidatDepotCVDocument): CandidatDepotCVQueryResult =
-    CandidatDepotCVQueryResult(
-      candidatId = document.candidatId,
-      cvId = document.cvId,
-      cvTypeMedia = document.cvTypeMedia
-    )
-
   def buildCandidatPourRechercheOffreQueryResult(document: CandidatPourRechercheOffreDocument): Future[CandidatPourRechercheOffreQueryResult] =
     referentielMetier.metiersParCodesROME(document.metiersValides.map(_.metier)).map(metiersValides =>
       CandidatPourRechercheOffreQueryResult(
