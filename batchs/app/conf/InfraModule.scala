@@ -16,7 +16,7 @@ import fr.poleemploi.perspectives.candidat.mrs.infra.sql.ReferentielHabiletesMRS
 import fr.poleemploi.perspectives.commun.infra.jackson.PerspectivesEventSourcingModule
 import fr.poleemploi.perspectives.commun.infra.play.cache.InMemoryCacheApi
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
-import fr.poleemploi.perspectives.emailing.infra.csv.MRSValideesProspectCandidatCSVAdapter
+import fr.poleemploi.perspectives.emailing.infra.csv.MRSValideeProspectCandidatCSVAdapter
 import fr.poleemploi.perspectives.emailing.infra.local.LocalImportProspectService
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetImportProspectService
 import fr.poleemploi.perspectives.emailing.infra.ws.{MailjetWSAdapter, MailjetWSMapping}
@@ -115,8 +115,8 @@ class InfraModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
-  def mrsValideesProspectCandidatCSVAdapter(actorSystem: ActorSystem): MRSValideesProspectCandidatCSVAdapter =
-    new MRSValideesProspectCandidatCSVAdapter(actorSystem = actorSystem)
+  def mrsValideeProspectCandidatCSVAdapter(actorSystem: ActorSystem): MRSValideeProspectCandidatCSVAdapter =
+    new MRSValideeProspectCandidatCSVAdapter(actorSystem = actorSystem)
 
   @Provides
   def mailjetWSMapping(batchsConfig: BatchsConfig): MailjetWSMapping =
@@ -153,12 +153,12 @@ class InfraModule extends AbstractModule with ScalaModule {
   @Singleton
   def importProspectServiceMailjet(batchsConfig: BatchsConfig,
                                    actorSystem: ActorSystem,
-                                   mrsValideesProspectCandidatCSVAdapter: MRSValideesProspectCandidatCSVAdapter,
+                                   mrsValideeProspectCandidatCSVAdapter: MRSValideeProspectCandidatCSVAdapter,
                                    mailjetWSAdapter: MailjetWSAdapter): MailjetImportProspectService =
     new MailjetImportProspectService(
       config = batchsConfig.importProspectsCandidatCSVAdapterConfig,
       actorSystem = actorSystem,
-      mrsValideesProspectCandidatCSVAdapter = mrsValideesProspectCandidatCSVAdapter,
+      mrsValideeProspectCandidatCSVAdapter = mrsValideeProspectCandidatCSVAdapter,
       mailjetWSAdapter = mailjetWSAdapter
     )
 

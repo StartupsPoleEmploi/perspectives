@@ -7,7 +7,7 @@ import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.StreamConverters
 import fr.poleemploi.perspectives.commun.infra.file.{ImportFileAdapter, ImportFileAdapterConfig}
 import fr.poleemploi.perspectives.emailing.domain.{ImportProspectService, MRSValideeProspectCandidat}
-import fr.poleemploi.perspectives.emailing.infra.csv.MRSValideesProspectCandidatCSVAdapter
+import fr.poleemploi.perspectives.emailing.infra.csv.MRSValideeProspectCandidatCSVAdapter
 import fr.poleemploi.perspectives.emailing.infra.ws.MailjetWSAdapter
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream
 
@@ -16,7 +16,7 @@ import scala.concurrent.Future
 
 class MailjetImportProspectService(override val config: ImportFileAdapterConfig,
                                    actorSystem: ActorSystem,
-                                   mrsValideesProspectCandidatCSVAdapter: MRSValideesProspectCandidatCSVAdapter,
+                                   mrsValideeProspectCandidatCSVAdapter: MRSValideeProspectCandidatCSVAdapter,
                                    mailjetWSAdapter: MailjetWSAdapter) extends ImportFileAdapter[MRSValideeProspectCandidat]
   with ImportProspectService {
 
@@ -26,7 +26,7 @@ class MailjetImportProspectService(override val config: ImportFileAdapterConfig,
 
   override def integrerFichier(fichier: Path): Future[Stream[MRSValideeProspectCandidat]] =
     for {
-      mrsValidees <- mrsValideesProspectCandidatCSVAdapter.load(
+      mrsValidees <- mrsValideeProspectCandidatCSVAdapter.load(
         StreamConverters.fromInputStream(() => new BZip2CompressorInputStream(Files.newInputStream(fichier)))
       )
       _ <- mailjetWSAdapter.importerProspectsCandidats(mrsValidees)
