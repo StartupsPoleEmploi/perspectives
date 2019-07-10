@@ -55,26 +55,32 @@ class PEConnectWSMapping {
       case code@_ => throw new IllegalArgumentException(s"CodeStatutIndividu non géré : $code")
     }
 
-  def buildAdresse(response: CoordonneesCandidatReponse): Adresse =
-    Adresse(
-      voie = response.adresse4.toLowerCase,
-      codePostal = response.codePostal,
-      libelleCommune = response.libelleCommune.toLowerCase.capitalize,
-      libellePays = response.libellePays.toLowerCase.capitalize
-    )
+  def buildAdresse(response: CoordonneesCandidatReponse): Option[Adresse] =
+    for {
+      voie <- response.adresse4
+      codePostal <- response.codePostal
+      libelleCommune <- response.libelleCommune
+      libellePays <- response.libellePays
+    } yield
+      Adresse(
+        voie = voie.toLowerCase,
+        codePostal = codePostal,
+        libelleCommune = libelleCommune.toLowerCase.capitalize,
+        libellePays = libellePays.toLowerCase.capitalize
+      )
 
   def buildSavoirEtreProfessionnels(responses: List[CompetenceResponse]): List[SavoirEtre] =
     responses
       .filter(_.typeCompetence == TypeCompetenceResponse.SAVOIR_ETRE)
-      .map(c => SavoirEtre(c.libelle))
+      .flatMap(c => c.libelle.map(SavoirEtre(_)))
 
   def buildSavoirFaire(responses: List[CompetenceResponse]): List[SavoirFaire] =
     responses
       .filter(_.typeCompetence == TypeCompetenceResponse.SAVOIR_FAIRE_METIER)
-      .map(c => SavoirFaire(
-        niveau = c.niveau.flatMap(buildNiveauSavoirFaire),
-        label = c.libelle
-      ))
+      .flatMap(c => c.libelle.map(l => SavoirFaire(
+        label = l,
+        niveau = c.niveau.flatMap(buildNiveauSavoirFaire)
+      )))
 
   def buildLanguesCandidat(responses: List[LangueResponse]): List[Langue] =
     responses.map(l => Langue(
@@ -203,12 +209,12 @@ object UserInfosEntrepriseResponse {
 private[ws] case class CoordonneesCandidatReponse(adresse1: Option[String],
                                                   adresse2: Option[String],
                                                   adresse3: Option[String],
-                                                  adresse4: String,
-                                                  codePostal: String,
-                                                  codeINSEE: String,
-                                                  libelleCommune: String,
-                                                  codePays: String,
-                                                  libellePays: String)
+                                                  adresse4: Option[String],
+                                                  codePostal: Option[String],
+                                                  codeINSEE: Option[String],
+                                                  libelleCommune: Option[String],
+                                                  codePays: Option[String],
+                                                  libellePays: Option[String])
 
 private[ws] object CoordonneesCandidatReponse {
 
@@ -265,14 +271,14 @@ private[ws] object NiveauCompetenceResponse {
   implicit val reads: Reads[NiveauCompetenceResponse] = Json.reads[NiveauCompetenceResponse]
 }
 
-private[ws] case class CompetenceResponse(libelle: String,
+private[ws] case class CompetenceResponse(libelle: Option[String],
                                           niveau: Option[NiveauCompetenceResponse],
                                           typeCompetence: TypeCompetenceResponse)
 
 private[ws] object CompetenceResponse {
 
   implicit val reads: Reads[CompetenceResponse] = (
-    (JsPath \ "libelle").read[String] and
+    (JsPath \ "libelle").readNullable[String] and
       (JsPath \ "niveau").readNullable[NiveauCompetenceResponse] and
       (JsPath \ "type").read[TypeCompetenceResponse]
     ) (CompetenceResponse.apply _)

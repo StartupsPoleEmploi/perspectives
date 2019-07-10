@@ -52,7 +52,7 @@ class PEConnectCandidatProcessManager(peConnectAccessTokenStorage: PEConnectAcce
       _ <- candidatCommandHandler.handle(
         ModifierProfilCandidatCommand(
           id = candidatId,
-          adresse = adresse,
+          adresse = adresse.flatten,
           statutDemandeurEmploi = statutDemandeurEmploi,
           centresInteret = centresInteret,
           langues = langues,

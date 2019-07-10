@@ -39,7 +39,7 @@ class PEConnectWSAdapter(wsClient: WSClient,
         .flatMap(filtreStatutReponse(_))
     ).map(r => mapping.buildPEConnectCandidatInfos(r.json.as[UserInfosResponse]))
 
-  def coordonneesCandidat(accessToken: AccessToken): Future[Adresse] =
+  def coordonneesCandidat(accessToken: AccessToken): Future[Option[Adresse]] =
     handleRateLimit()(
       wsClient
         .url(s"${config.urlApi}/peconnect-coordonnees/v1/coordonnees")

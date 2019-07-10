@@ -1,6 +1,6 @@
 package fr.poleemploi.perspectives.commun.infra.peconnect.ws
 
-import java.time.{LocalDate, LocalDateTime, ZonedDateTime}
+import java.time.{LocalDateTime, ZonedDateTime}
 
 import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.commun.domain.{CodeDepartement, CodeROME}
@@ -13,67 +13,148 @@ class PEConnectWSMappingSpec extends WordSpec
 
   val mapping = new PEConnectWSMapping
 
-  var resultatRendezVousResponse: ResultatRendezVousResponse = _
-  var response: List[ResultatRendezVousResponse] = _
+  "buildAdresse" should {
+    "ne pas retourner d'adresse lorsque la réponse ne comporte pas le champ adresse4" in {
+      // Given
+      val response = mockCoordonneesCandidatResponseValide
+      when(response.adresse4) thenReturn None
 
-  before {
-    resultatRendezVousResponse = mock[ResultatRendezVousResponse]
-    when(resultatRendezVousResponse.codeRome) thenReturn "K2204"
-    when(resultatRendezVousResponse.codeSitePESuiviResultat) thenReturn Some("33201")
-    when(resultatRendezVousResponse.listeCodeResultat) thenReturn Some(List(CodeResultatRendezVousResponse.VALIDE))
-    when(resultatRendezVousResponse.dateDebutSession) thenReturn ZonedDateTime.now()
+      // When
+      val result = mapping.buildAdresse(response)
 
-    response = List(resultatRendezVousResponse)
+      // Then
+      result.isEmpty mustBe true
+    }
+    "ne pas retourner d'adresse lorsque la réponse  ne comporte pas le champ codePostal" in {
+      // Given
+      val response = mockCoordonneesCandidatResponseValide
+      when(response.codePostal) thenReturn None
+
+      // When
+      val result = mapping.buildAdresse(response)
+
+      // Then
+      result.isEmpty mustBe true
+    }
+    "ne pas retourner d'adresse lorsque la réponse ne comporte pas le champ libelleCommune" in {
+      // Given
+      val response = mockCoordonneesCandidatResponseValide
+      when(response.libelleCommune) thenReturn None
+
+      // When
+      val result = mapping.buildAdresse(response)
+
+      // Then
+      result.isEmpty mustBe true
+    }
+    "ne pas retourner d'adresse lorsque la réponse ne comporte pas le champ libellePays" in {
+      // Given
+      val response = mockCoordonneesCandidatResponseValide
+      when(response.libellePays) thenReturn None
+
+      // When
+      val result = mapping.buildAdresse(response)
+
+      // Then
+      result.isEmpty mustBe true
+    }
+    "retourner la voie de l'adresse" in {
+      // Given
+      val response = mockCoordonneesCandidatResponseValide
+      when(response.adresse4) thenReturn Some("rue des oursons")
+
+      // When
+      val result = mapping.buildAdresse(response)
+
+      // Then
+      result.exists(_.voie == "rue des oursons") mustBe true
+    }
+    "retourner le code postal de l'adresse" in {
+      // Given
+      val response = mockCoordonneesCandidatResponseValide
+      when(response.codePostal) thenReturn Some("75011")
+
+      // When
+      val result = mapping.buildAdresse(response)
+
+      // Then
+      result.exists(_.codePostal == "75011") mustBe true
+    }
+    "retourner la commune de l'adresse" in {
+      // Given
+      val response = mockCoordonneesCandidatResponseValide
+      when(response.libelleCommune) thenReturn Some("Paris")
+
+      // When
+      val result = mapping.buildAdresse(response)
+
+      // Then
+      result.exists(_.libelleCommune == "Paris") mustBe true
+    }
+    "retourner le pays de l'adresse" in {
+      // Given
+      val response = mockCoordonneesCandidatResponseValide
+      when(response.libellePays) thenReturn Some("France")
+
+      // When
+      val result = mapping.buildAdresse(response)
+
+      // Then
+      result.exists(_.libellePays == "France") mustBe true
+    }
   }
-
   "buildMRSValidees" should {
     "ne pas retourner de MRS lorsque la reponse ne contient aucun codeResultat" in {
       // Given
-      when(resultatRendezVousResponse.listeCodeResultat) thenReturn None
+      val response = mockResultatRendezVousResponseValide
+      when(response.listeCodeResultat) thenReturn None
 
       // When
-      val result = mapping.buildMRSValidees(response)
+      val result = mapping.buildMRSValidees(List(response))
 
       // Then
       result.isEmpty mustBe true
     }
     "ne pas retourner de MRS lorsque la reponse ne contient aucun codeSitePESuiviResultat" in {
       // Given
-      when(resultatRendezVousResponse.codeSitePESuiviResultat) thenReturn None
+      val response = mockResultatRendezVousResponseValide
+      when(response.codeSitePESuiviResultat) thenReturn None
 
       // When
-      val result = mapping.buildMRSValidees(response)
+      val result = mapping.buildMRSValidees(List(response))
 
       // Then
       result.isEmpty mustBe true
     }
     "ne pas retourner de MRS lorsque la reponse contient pas un codeResultat representant une MRS non validée" in {
       // Given
-      val codeResultat = CodeResultatRendezVousResponse("NON_VALIDE")
-      when(resultatRendezVousResponse.listeCodeResultat) thenReturn Some(List(codeResultat))
+      val response = mockResultatRendezVousResponseValide
+      when(response.listeCodeResultat) thenReturn Some(List(CodeResultatRendezVousResponse("NON_VALIDEE")))
 
       // When
-      val result = mapping.buildMRSValidees(response)
+      val result = mapping.buildMRSValidees(List(response))
 
       // Then
       result.isEmpty mustBe true
     }
     "retourner une MRSValidee avec le CodeROME" in {
       // Given
-      when(resultatRendezVousResponse.codeRome) thenReturn "A1401"
+      val response = mockResultatRendezVousResponseValide
+      when(response.codeRome) thenReturn "A1401"
 
       // When
-      val result = mapping.buildMRSValidees(response)
+      val result = mapping.buildMRSValidees(List(response))
 
       // Then
       result.exists(_.codeROME == CodeROME("A1401")) mustBe true
     }
     "retourner une MRSValidee avec le CodeDepartement" in {
       // Given
-      when(resultatRendezVousResponse.codeSitePESuiviResultat) thenReturn Some("33201")
+      val response = mockResultatRendezVousResponseValide
+      when(response.codeSitePESuiviResultat) thenReturn Some("33201")
 
       // When
-      val result = mapping.buildMRSValidees(response)
+      val result = mapping.buildMRSValidees(List(response))
 
       // Then
       result.exists(_.codeDepartement == CodeDepartement("33")) mustBe true
@@ -81,60 +162,51 @@ class PEConnectWSMappingSpec extends WordSpec
     "retourner une MRSValidee avec la date d'évaluation" in {
       // Given
       val dateMRS = ZonedDateTime.now()
-      when(resultatRendezVousResponse.dateDebutSession) thenReturn dateMRS
+      val response = mockResultatRendezVousResponseValide
+      when(response.dateDebutSession) thenReturn dateMRS
 
       // When
-      val result = mapping.buildMRSValidees(response)
+      val result = mapping.buildMRSValidees(List(response))
 
       // Then
       result.exists(_.dateEvaluation == dateMRS.toLocalDate) mustBe true
     }
     "retourner une MRSValidee non DHAE" in {
       // Given
-      when(resultatRendezVousResponse.codeSitePESuiviResultat) thenReturn Some("33201")
+      val response = mockResultatRendezVousResponseValide
 
       // When
-      val result = mapping.buildMRSValidees(response)
+      val result = mapping.buildMRSValidees(List(response))
 
       // Then
       result.exists(_.isDHAE == false) mustBe true
     }
     "retourner les MRSValidee lorsque plusieurs résultats sont retournés avec le même CodeROME et des CodeDepartement différents" in {
       // Given
-      val resultat1 = mock[ResultatRendezVousResponse]
-      when(resultat1.codeRome) thenReturn "K2204"
-      when(resultat1.codeSitePESuiviResultat) thenReturn Some("33201")
-      when(resultat1.listeCodeResultat) thenReturn Some(List(CodeResultatRendezVousResponse.VALIDE))
-      when(resultat1.dateDebutSession) thenReturn ZonedDateTime.now().minusYears(1L)
-      val resultat2 = mock[ResultatRendezVousResponse]
-      when(resultat2.codeRome) thenReturn "K2204"
-      when(resultat2.codeSitePESuiviResultat) thenReturn Some("72201")
-      when(resultat2.listeCodeResultat) thenReturn Some(List(CodeResultatRendezVousResponse.VALIDE_EMBAUCHE))
-      when(resultat2.dateDebutSession) thenReturn ZonedDateTime.now()
-      val response = List(resultat1, resultat2)
+      val response1 = mockResultatRendezVousResponseValide
+      when(response1.codeRome) thenReturn "K2204"
+      when(response1.codeSitePESuiviResultat) thenReturn Some("33201")
+      val response2 = mockResultatRendezVousResponseValide
+      when(response2.codeRome) thenReturn "K2204"
+      when(response2.codeSitePESuiviResultat) thenReturn Some("72201")
 
       // When
-      val result = mapping.buildMRSValidees(response)
+      val result = mapping.buildMRSValidees(List(response1, response2))
 
       // Then
       result.size mustBe 2
     }
     "retourner une seule MRSValidee lorsque plusieurs résultats sont retournés avec le même CodeROME et même CodeDepartement (la saisie a été faite plusieurs fois côté SI PoleEmploi avec un statut différent mais un seul enregistrement nous intéresse : la date importe peu)" in {
       // Given
-      val resultat1 = mock[ResultatRendezVousResponse]
-      when(resultat1.codeRome) thenReturn "K2204"
-      when(resultat1.codeSitePESuiviResultat) thenReturn Some("33201")
-      when(resultat1.listeCodeResultat) thenReturn Some(List(CodeResultatRendezVousResponse.VALIDE))
-      when(resultat1.dateDebutSession) thenReturn ZonedDateTime.now().minusDays(2L)
-      val resultat2 = mock[ResultatRendezVousResponse]
-      when(resultat2.codeRome) thenReturn "K2204"
-      when(resultat2.codeSitePESuiviResultat) thenReturn Some("33201")
-      when(resultat2.listeCodeResultat) thenReturn Some(List(CodeResultatRendezVousResponse.VALIDE_EMBAUCHE))
-      when(resultat2.dateDebutSession) thenReturn ZonedDateTime.now()
-      val response = List(resultat1, resultat2)
+      val response1 = mockResultatRendezVousResponseValide
+      when(response1.codeRome) thenReturn "K2204"
+      when(response1.codeSitePESuiviResultat) thenReturn Some("33201")
+      val response2 = mockResultatRendezVousResponseValide
+      when(response2.codeRome) thenReturn "K2204"
+      when(response2.codeSitePESuiviResultat) thenReturn Some("33201")
 
       // When
-      val result = mapping.buildMRSValidees(response)
+      val result = mapping.buildMRSValidees(List(response1, response2))
 
       // Then
       result.size mustBe 1
@@ -143,203 +215,411 @@ class PEConnectWSMappingSpec extends WordSpec
   "buildPermis" should {
     "ne pas renvoyer de permis s'il n'a pas de code" in {
       // Given
-      val permisResponse = PermisResponse(
-        code = None,
-        libelle = ""
-      )
+      val response = mockPermisResponseValide
+      when(response.code) thenReturn None
 
       // When
-      val result = mapping.buildPermis(List(permisResponse))
+      val result = mapping.buildPermis(List(response))
 
       // Then
       result.isEmpty mustBe true
     }
-    "renvoyer la liste des permis sans le code répété dans le label" in {
+    "renvoyer le code du permis" in {
       // Given
-      val permisResponse = PermisResponse(
-        code = Some("B"),
-        libelle = "B - Véhicule léger"
-      )
+      val response = mockPermisResponseValide
+      when(response.code) thenReturn Some("B")
 
       // When
-      val result = mapping.buildPermis(List(permisResponse))
+      val result = mapping.buildPermis(List(response))
 
       // Then
-      result.size mustBe 1
-      result.head mustBe Permis(code = "B", label = "Véhicule léger")
+      result.exists(_.code == "B") mustBe true
+    }
+    "renvoyer le label du sans le code répété dans le label" in {
+      // Given
+      val response = mockPermisResponseValide
+      when(response.libelle) thenReturn "B - Véhicule léger"
+
+      // When
+      val result = mapping.buildPermis(List(response))
+
+      // Then
+      result.exists(_.label == "Véhicule léger") mustBe true
     }
   }
   "buildLangues" should {
     "renvoyer une langue sans niveau lorsqu'il vaut 0 (même si ce cas n'est pas précisé dans la doc de l'emploi store)" in {
       // Given
-      val langueResponse = LangueResponse(
-        code = Some("FR"),
-        libelle = "Français",
-        niveau = Some(NiveauLangueResponse("0", libelle = "Aucun"))
-      )
+      val response = mockLangueResponseValide
+      when(response.niveau) thenReturn Some(NiveauLangueResponse("0", libelle = "Aucun"))
 
       // When
-      val result = mapping.buildLanguesCandidat(List(langueResponse))
+      val result = mapping.buildLanguesCandidat(List(response))
 
       // Then
-      result.size mustBe 1
-      result.head mustBe Langue(label = "Français", niveau = None)
+      result.isEmpty mustBe false
     }
-    "renvoyer une langue" in {
+    "renvoyer le libellé de la langue" in {
       // Given
-      val langueResponse = LangueResponse(
-        code = Some("FR"),
-        libelle = "Français",
-        niveau = Some(NiveauLangueResponse("1", libelle = "Avancé"))
-      )
+      val response = mockLangueResponseValide
+      when(response.libelle) thenReturn "Français"
 
       // When
-      val result = mapping.buildLanguesCandidat(List(langueResponse))
+      val result = mapping.buildLanguesCandidat(List(response))
 
       // Then
-      result.size mustBe 1
-      result.head mustBe Langue(label = "Français", niveau = Some(NiveauLangue.DEBUTANT))
+      result.exists(_.label == "Français") mustBe true
+    }
+    "renvoyer le niveau de la langue" in {
+      // Given
+      val response = mockLangueResponseValide
+      when(response.niveau) thenReturn Some(NiveauLangueResponse("1", libelle = "Débutant"))
+
+      // When
+      val result = mapping.buildLanguesCandidat(List(response))
+
+      // Then
+      result.exists(_.niveau.contains(NiveauLangue.DEBUTANT)) mustBe true
     }
   }
   "buildFormations" should {
-    "ne pas retourner de formation lorsque la réponse de l'API ne comporte pas l'année de fin" in {
+    "ne pas retourner de formation lorsque la réponse ne comporte pas l'année de fin" in {
       // Given
-      val formationResponse = FormationResponse(
-        anneeFin = None,
-        description = None,
-        diplomeObtenu = false,
-        etranger = false,
-        intitule = Some("Boucher"),
-        lieu = None,
-        niveau = None,
-        domaine = None
-      )
+      val response = mockFormationReponseValide
+      when(response.anneeFin) thenReturn None
 
       // When
-      val result = mapping.buildFormations(List(formationResponse))
+      val result = mapping.buildFormations(List(response))
 
       // Then
-      result.size mustBe 0
+      result.isEmpty mustBe true
     }
-    "ne pas retourner de formation lorsque la réponse de l'API ne comporte pas d'intitulé (même si le champ est marqué obligatoire dans la doc de l'emploi store)" in {
+    "ne pas retourner de formation lorsque la réponse ne comporte pas d'intitulé (même si le champ est marqué obligatoire dans la doc de l'emploi store)" in {
       // Given
-      val formationResponse = FormationResponse(
-        anneeFin = Some(LocalDate.now().getYear),
-        description = None,
-        diplomeObtenu = false,
-        etranger = false,
-        intitule = None,
-        lieu = None,
-        niveau = None,
-        domaine = None
-      )
+      val response = mockFormationReponseValide
+      when(response.intitule) thenReturn None
 
       // When
-      val result = mapping.buildFormations(List(formationResponse))
+      val result = mapping.buildFormations(List(response))
 
       // Then
-      result.size mustBe 0
+      result.isEmpty mustBe true
     }
-    "retourner les informations de la formation lorsqu'elle comporte un intitulé et une date de fin" in {
+    "retourner l'année de fin de la formation" in {
       // Given
-      val formationResponse = FormationResponse(
-        anneeFin = Some(LocalDate.now().getYear),
-        description = None,
-        diplomeObtenu = false,
-        etranger = false,
-        intitule = Some("Développeur"),
-        lieu = Some("Paris"),
-        niveau = Some(NiveauFormationResponse(code = "", libelle = "Bac+5")),
-        domaine = Some(DomaineFormationResponse(code = "", libelle = "Informatique de gestion"))
-      )
+      val response = mockFormationReponseValide
+      when(response.anneeFin) thenReturn Some(2019)
 
       // When
-      val result = mapping.buildFormations(List(formationResponse))
+      val result = mapping.buildFormations(List(response))
 
       // Then
-      result.size mustBe 1
-      result.head mustBe Formation(
-        anneeFin = LocalDate.now().getYear,
-        intitule = "Développeur",
-        lieu = Some("Paris"),
-        domaine = Some(DomaineFormation("Informatique de gestion")),
-        niveau = Some(NiveauFormation("Bac+5"))
-      )
+      result.exists(_.anneeFin == 2019) mustBe true
+    }
+    "retourner l'intitulé de la formation" in {
+      // Given
+      val response = mockFormationReponseValide
+      when(response.intitule) thenReturn Some("Magicien")
+
+      // When
+      val result = mapping.buildFormations(List(response))
+
+      // Then
+      result.exists(_.intitule == "Magicien") mustBe true
+    }
+    "retourner le lieu de la formation" in {
+      // Given
+      val response = mockFormationReponseValide
+      when(response.lieu) thenReturn Some("Paris")
+
+      // When
+      val result = mapping.buildFormations(List(response))
+
+      // Then
+      result.exists(_.lieu.contains("Paris")) mustBe true
+    }
+    "retourner le domaine de la formation" in {
+      // Given
+      val response = mockFormationReponseValide
+      when(response.domaine) thenReturn Some(DomaineFormationResponse(code = "", libelle = "Informatique de gestion"))
+
+      // When
+      val result = mapping.buildFormations(List(response))
+
+      // Then
+      result.exists(_.domaine.contains(DomaineFormation("Informatique de gestion"))) mustBe true
+    }
+    "retourner le niveau de la formation" in {
+      // Given
+      val response = mockFormationReponseValide
+      when(response.niveau) thenReturn Some(NiveauFormationResponse(code = "", libelle = "Bac+5"))
+
+      // When
+      val result = mapping.buildFormations(List(response))
+
+      // Then
+      result.exists(_.niveau.contains(NiveauFormation("Bac+5"))) mustBe true
     }
   }
   "buildExperienceProfessionnelles" should {
-    "ne pas retourner d'expérience lorsque la réponse de l'API ne comporte pas la date de début" in {
+    "ne pas retourner d'expérience lorsque la réponse ne comporte pas de date" in {
       // Given
-      val experienceProfessionnelleResponse = ExperienceProfessionnelleResponse(
-        date = None,
-        description = None,
-        enPoste = false,
-        etranger = false,
-        intitule = Some("Assistante Maternelle Agréée à domicile"),
-        lieu = None,
-        duree = None,
-        entreprise = None
-      )
+      val response = mockExperienceProfessionnelleResponseValide
+      when(response.date) thenReturn None
 
       // When
-      val result = mapping.buildExperienceProfessionnelles(List(experienceProfessionnelleResponse))
+      val result = mapping.buildExperienceProfessionnelles(List(response))
 
       // Then
-      result.size mustBe 0
+      result.isEmpty mustBe true
     }
-    "ne pas retourner d'expérience lorsque la réponse de l'API ne comporte pas d'intitulé (même si le champ est marqué obligatoire dans la doc de l'emploi store)" in {
+    "ne pas retourner d'expérience lorsque la réponse ne comporte pas la date de début" in {
       // Given
-      val experienceProfessionnelleResponse = ExperienceProfessionnelleResponse(
-        date = Some(DateExperienceProfessionnelleResponse(
-          debut = Some(LocalDateTime.now().minusYears(5L)),
-          fin = None
-        )),
-        description = None,
-        enPoste = false,
-        etranger = false,
-        intitule = None,
-        lieu = None,
-        duree = None,
-        entreprise = None
-      )
+      val response = mockExperienceProfessionnelleResponseValide
+      when(response.date) thenReturn Some(DateExperienceProfessionnelleResponse(
+        debut = None, fin = None
+      ))
 
       // When
-      val result = mapping.buildExperienceProfessionnelles(List(experienceProfessionnelleResponse))
+      val result = mapping.buildExperienceProfessionnelles(List(response))
 
       // Then
-      result.size mustBe 0
+      result.isEmpty mustBe true
     }
-    "retourner les informations de l'expérience lorsqu'elle comporte un intitulé et une date de début" in {
+    "ne pas retourner d'expérience lorsque la réponse ne comporte pas d'intitulé (même si le champ est marqué obligatoire dans la doc de l'emploi store)" in {
       // Given
-      val dateDebut = LocalDateTime.now().minusYears(5L)
-      val experienceProfessionnelleResponse = ExperienceProfessionnelleResponse(
-        date = Some(DateExperienceProfessionnelleResponse(
-          debut = Some(dateDebut),
-          fin = None
-        )),
-        description = None,
-        enPoste = false,
-        etranger = false,
-        intitule = Some("Assistante Maternelle Agréée à domicile"),
-        lieu = None,
-        duree = None,
-        entreprise = None
-      )
+      val response = mockExperienceProfessionnelleResponseValide
+      when(response.intitule) thenReturn None
 
       // When
-      val result = mapping.buildExperienceProfessionnelles(List(experienceProfessionnelleResponse))
+      val result = mapping.buildExperienceProfessionnelles(List(response))
 
       // Then
-      result.size mustBe 1
-      result.head mustBe ExperienceProfessionnelle(
-        dateDebut = dateDebut.toLocalDate,
-        dateFin = None,
-        enPoste = false,
-        intitule = "Assistante Maternelle Agréée à domicile",
-        nomEntreprise = None,
-        lieu = None,
-        description = None
-      )
+      result.isEmpty mustBe true
     }
+    "retourner l'intitule de l'experience" in {
+      // Given
+      val response = mockExperienceProfessionnelleResponseValide
+      when(response.intitule) thenReturn Some("Magicien")
+
+      // When
+      val result = mapping.buildExperienceProfessionnelles(List(response))
+
+      // Then
+      result.exists(_.intitule == "Magicien") mustBe true
+    }
+    "retourner la date de début de l'experience" in {
+      // Given
+      val dateDebut = LocalDateTime.now().minusYears(1L)
+      val response = mockExperienceProfessionnelleResponseValide
+      when(response.date) thenReturn Some(DateExperienceProfessionnelleResponse(
+        debut = Some(dateDebut), fin = None
+      ))
+
+      // When
+      val result = mapping.buildExperienceProfessionnelles(List(response))
+
+      // Then
+      result.exists(_.dateDebut == dateDebut.toLocalDate) mustBe true
+    }
+    "retourner la date de fin de l'experience" in {
+      // Given
+      val dateFin = LocalDateTime.now()
+      val response = mockExperienceProfessionnelleResponseValide
+      when(response.date) thenReturn Some(DateExperienceProfessionnelleResponse(
+        debut = Some(LocalDateTime.now().minusYears(1L)),
+        fin = Some(dateFin)
+      ))
+
+      // When
+      val result = mapping.buildExperienceProfessionnelles(List(response))
+
+      // Then
+      result.exists(_.dateFin.contains(dateFin.toLocalDate)) mustBe true
+    }
+    "retourner le champ enPoste de l'experience" in {
+      // Given
+      val response = mockExperienceProfessionnelleResponseValide
+      when(response.enPoste) thenReturn true
+
+      // When
+      val result = mapping.buildExperienceProfessionnelles(List(response))
+
+      // Then
+      result.exists(_.enPoste) mustBe true
+    }
+    "retourner le nom de l'entreprise de l'experience" in {
+      // Given
+      val response = mockExperienceProfessionnelleResponseValide
+      when(response.entreprise) thenReturn Some("PlacotBat")
+
+      // When
+      val result = mapping.buildExperienceProfessionnelles(List(response))
+
+      // Then
+      result.exists(_.nomEntreprise.contains("PlacotBat")) mustBe true
+    }
+    "retourner le lieu de l'experience" in {
+      // Given
+      val response = mockExperienceProfessionnelleResponseValide
+      when(response.lieu) thenReturn Some("Paris")
+
+      // When
+      val result = mapping.buildExperienceProfessionnelles(List(response))
+
+      // Then
+      result.exists(_.lieu.contains("Paris")) mustBe true
+    }
+    "retourner la description de l'experience" in {
+      // Given
+      val response = mockExperienceProfessionnelleResponseValide
+      when(response.description) thenReturn Some("description")
+
+      // When
+      val result = mapping.buildExperienceProfessionnelles(List(response))
+
+      // Then
+      result.exists(_.description.contains("description")) mustBe true
+    }
+  }
+  "buildSavoirEtreProfessionnels" should {
+    "ne pas retourner de savoirEtre lorsque la réponse ne comporte pas de libelle (même si le champ est marqué obligatoire dans la doc de l'emploi store)" in {
+      // Given
+      val response = mockSavoirEtreResponseValide
+      when(response.libelle) thenReturn None
+
+      // When
+      val result = mapping.buildSavoirEtreProfessionnels(List(response))
+
+      // Then
+      result.isEmpty mustBe true
+    }
+    "retourner le savoirEtre" in {
+      // Given
+      val response = mockSavoirEtreResponseValide
+      when(response.libelle) thenReturn Some("Rigoureux")
+
+      // When
+      val result = mapping.buildSavoirEtreProfessionnels(List(response))
+
+      // Then
+      result.contains(SavoirEtre("Rigoureux")) mustBe true
+    }
+  }
+  "buildSavoirFaire" should {
+    "ne pas retourner de savoirEtre lorsque la réponse ne comporte pas de libelle (même si le champ est marqué obligatoire dans la doc de l'emploi store)" in {
+      // Given
+      val response = mockSavoirFaireResponseValide
+      when(response.libelle) thenReturn None
+
+      // When
+      val result = mapping.buildSavoirFaire(List(response))
+
+      // Then
+      result.isEmpty mustBe true
+    }
+    "retourner le label du savoirFaire" in {
+      // Given
+      val response = mockSavoirFaireResponseValide
+      when(response.libelle) thenReturn Some("Découper du jambon")
+
+      // When
+      val result = mapping.buildSavoirFaire(List(response))
+
+      // Then
+      result.exists(_.label == "Découper du jambon") mustBe true
+    }
+    "retourner le niveau du savoirFaire" in {
+      // Given
+      val response = mockSavoirFaireResponseValide
+      when(response.niveau) thenReturn Some(NiveauCompetenceResponse(code = "1", libelle = ""))
+
+      // When
+      val result = mapping.buildSavoirFaire(List(response))
+
+      // Then
+      result.exists(_.niveau.contains(NiveauSavoirFaire.DEBUTANT)) mustBe true
+    }
+  }
+
+  private def mockResultatRendezVousResponseValide: ResultatRendezVousResponse = {
+    val response = mock[ResultatRendezVousResponse]
+    when(response.codeRome) thenReturn "K2204"
+    when(response.codeSitePESuiviResultat) thenReturn Some("33201")
+    when(response.listeCodeResultat) thenReturn Some(List(CodeResultatRendezVousResponse.VALIDE))
+    when(response.dateDebutSession) thenReturn ZonedDateTime.now()
+    response
+  }
+
+  private def mockCoordonneesCandidatResponseValide: CoordonneesCandidatReponse = {
+    val response = mock[CoordonneesCandidatReponse]
+    when(response.adresse1) thenReturn None
+    when(response.adresse2) thenReturn None
+    when(response.adresse2) thenReturn None
+    when(response.adresse4) thenReturn Some("rue des pivoines")
+    when(response.codePostal) thenReturn Some("75011")
+    when(response.codeINSEE) thenReturn Some("75000")
+    when(response.libelleCommune) thenReturn Some("Paris")
+    when(response.codePays) thenReturn None
+    when(response.libellePays) thenReturn Some("France")
+    response
+  }
+
+  private def mockPermisResponseValide: PermisResponse = {
+    val response = mock[PermisResponse]
+    when(response.code) thenReturn Some("B")
+    when(response.libelle) thenReturn "B - Véhicule léger"
+    response
+  }
+
+  private def mockLangueResponseValide: LangueResponse = {
+    val response = mock[LangueResponse]
+    when(response.code) thenReturn Some("FR")
+    when(response.libelle) thenReturn "Français"
+    when(response.niveau) thenReturn Some(NiveauLangueResponse("1", libelle = "Débutant"))
+    response
+  }
+
+
+  private def mockFormationReponseValide: FormationResponse = {
+    val response = mock[FormationResponse]
+    when(response.anneeFin) thenReturn Some(2019)
+    when(response.description) thenReturn None
+    when(response.diplomeObtenu) thenReturn false
+    when(response.etranger) thenReturn false
+    when(response.intitule) thenReturn Some("Boucher")
+    when(response.niveau) thenReturn None
+    when(response.domaine) thenReturn None
+    when(response.lieu) thenReturn None
+    response
+  }
+
+  private def mockExperienceProfessionnelleResponseValide: ExperienceProfessionnelleResponse = {
+    val response = mock[ExperienceProfessionnelleResponse]
+    when(response.intitule) thenReturn Some("Assistante Maternelle Agréée à domicile")
+    when(response.date) thenReturn Some(DateExperienceProfessionnelleResponse(
+      debut = Some(LocalDateTime.now()),
+      fin = None
+    ))
+    when(response.enPoste) thenReturn false
+    when(response.entreprise) thenReturn None
+    when(response.lieu) thenReturn None
+    when(response.description) thenReturn None
+    response
+  }
+
+  private def mockSavoirEtreResponseValide: CompetenceResponse = {
+    val response = mock[CompetenceResponse]
+    when(response.libelle) thenReturn Some("Rigoureux")
+    when(response.typeCompetence) thenReturn TypeCompetenceResponse.SAVOIR_ETRE
+    response
+  }
+
+  private def mockSavoirFaireResponseValide: CompetenceResponse = {
+    val response = mock[CompetenceResponse]
+    when(response.libelle) thenReturn Some("Réaliser une opération d'affûtage")
+    when(response.typeCompetence) thenReturn TypeCompetenceResponse.SAVOIR_FAIRE_METIER
+    when(response.niveau) thenReturn None
+    response
   }
 }
