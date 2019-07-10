@@ -30,7 +30,7 @@ class ImportProspectsCandidatsActor(importProspectService: ImportProspectService
   override def receive: Receive = {
     case StartImportProspectsCandidats =>
       log.info("Intégration des prospects candidats")
-      importProspectService.importerProspectsCandidat.map(_ => ImportProspectsCandidatsDone) pipeTo self
+      importProspectService.importerProspectsCandidats.map(_ => ImportProspectsCandidatsDone) pipeTo self
       context.become(importEnCours)
   }
 

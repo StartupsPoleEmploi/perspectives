@@ -13,7 +13,7 @@ import scala.concurrent.Future
 class ImportFileAdapterSpec extends AsyncWordSpec
   with MustMatchers with MockitoSugar with BeforeAndAfter with ScalaFutures {
 
-  var importFileAdapter: ImportFileAdapter[_] = _
+  var importFileAdapter: ImportFileTest = _
   var config: ImportFileAdapterConfig = _
 
   before {
@@ -21,18 +21,18 @@ class ImportFileAdapterSpec extends AsyncWordSpec
     when(config.importDirectory) thenReturn Paths.get(getClass.getClassLoader.getResource("./import_file").toURI)
     when(config.archiveDirectory) thenReturn Paths.get(getClass.getClassLoader.getResource("./import_file/archives").toURI)
 
-    importFileAdapter = ImportFileTest(config)
+    importFileAdapter = new ImportFileTest(config)
   }
 
   "integrerFichiers" should {
     "renvoyer une erreur si le répertoire d'import n'existe pas" in {
       // Given
       when(config.importDirectory) thenReturn Paths.get("/home/unknown")
-      importFileAdapter = ImportFileTest(config)
+      importFileAdapter = new ImportFileTest(config)
 
       // When & Then
       recoverToSucceededIf[IllegalArgumentException] {
-        importFileAdapter.integrerFichiers
+        importFileAdapter.integrer
       } map { _ =>
         Succeeded
       }
@@ -40,11 +40,11 @@ class ImportFileAdapterSpec extends AsyncWordSpec
     "renvoyer une erreur si le répertoire d'archive n'existe pas" in {
       // Given
       when(config.archiveDirectory) thenReturn Paths.get("/home/unknown")
-      importFileAdapter = ImportFileTest(config)
+      importFileAdapter = new ImportFileTest(config)
 
       // When & Then
       recoverToSucceededIf[IllegalArgumentException] {
-        importFileAdapter.integrerFichiers
+        importFileAdapter.integrer
       } map { _ =>
         Succeeded
       }
@@ -53,7 +53,7 @@ class ImportFileAdapterSpec extends AsyncWordSpec
       // Given
 
       // When
-      val future = importFileAdapter.integrerFichiers
+      val future = importFileAdapter.integrer
 
       // Then
       future.map(_ => Succeeded)
@@ -61,9 +61,11 @@ class ImportFileAdapterSpec extends AsyncWordSpec
   }
 }
 
-case class ImportFileTest(override val config: ImportFileAdapterConfig) extends ImportFileAdapter[Any] {
+class ImportFileTest(override val config: ImportFileAdapterConfig) extends ImportFileAdapter[Any] {
   override def pattern: String = "*"
 
   override def integrerFichier(fichier: Path): Future[Stream[Any]] =
     Future.successful(Stream.empty)
+
+  def integrer: Future[Stream[Any]] = integrerFichiers
 }

@@ -4,5 +4,5 @@ import scala.concurrent.Future
 
 trait ImportProspectService {
 
-  def importerProspectsCandidat: Future[Stream[MRSValideeProspectCandidat]]
+  def importerProspectsCandidats: Future[Stream[MRSValideeProspectCandidat]]
 }

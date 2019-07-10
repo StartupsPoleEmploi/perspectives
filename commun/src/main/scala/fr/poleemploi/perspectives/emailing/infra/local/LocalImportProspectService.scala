@@ -6,6 +6,6 @@ import scala.concurrent.Future
 
 class LocalImportProspectService extends ImportProspectService {
 
-  override def importerProspectsCandidat: Future[Stream[MRSValideeProspectCandidat]] =
+  override def importerProspectsCandidats: Future[Stream[MRSValideeProspectCandidat]] =
     Future.successful(Stream.empty)
 }

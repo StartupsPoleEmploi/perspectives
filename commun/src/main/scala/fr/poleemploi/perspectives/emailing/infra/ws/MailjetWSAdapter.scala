@@ -47,7 +47,10 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
     ).map(_ => ())
 
   def importerProspectsCandidats(prospects: Stream[MRSValideeProspectCandidat]): Future[Unit] =
-    manageManyContacts(mapping.buildRequestImportProspectsCandidats(prospects))
+    if (prospects.nonEmpty)
+      manageManyContacts(mapping.buildRequestImportProspectsCandidats(prospects))
+    else
+      Future.successful(())
 
   def ajouterRecruteurInscrit(recruteurInscrit: RecruteurInscrit): Future[MailjetContactId] = {
     val inscriptionRequest = mapping.buildRequestInscriptionRecruteur(recruteurInscrit)

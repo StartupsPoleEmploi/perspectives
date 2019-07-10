@@ -15,7 +15,7 @@ class BatchsConfig(configuration: Configuration) {
   val useImportHabiletesMRS: Boolean = configuration.getOptional[Boolean]("useImportHabiletesMRS").getOrElse(true)
 
   val version: String = BuildInfo.version
-  
+
   val mailjetWSAdapterConfig: MailjetWSAdapterConfig = MailjetWSAdapterConfig(
     urlApi = configuration.get[String]("mailjet.urlApi"),
     senderAdress = Email(configuration.get[String]("mailjet.sender")),
@@ -35,7 +35,7 @@ class BatchsConfig(configuration: Configuration) {
     archiveDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.HabiletesMRS.archiveDirectory"))
   )
 
-  val importProspectsCandidatCSVAdapterConfig: ImportFileAdapterConfig = ImportFileAdapterConfig(
+  val importMRSValideeProspectCandidatCSVAdapterConfig: ImportFileAdapterConfig = ImportFileAdapterConfig(
     importDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.ProspectsCandidats.importDirectory")),
     archiveDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.ProspectsCandidats.archiveDirectory"))
   )

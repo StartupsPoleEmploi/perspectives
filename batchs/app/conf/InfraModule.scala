@@ -16,9 +16,10 @@ import fr.poleemploi.perspectives.candidat.mrs.infra.sql.ReferentielHabiletesMRS
 import fr.poleemploi.perspectives.commun.infra.jackson.PerspectivesEventSourcingModule
 import fr.poleemploi.perspectives.commun.infra.play.cache.InMemoryCacheApi
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
-import fr.poleemploi.perspectives.emailing.infra.csv.MRSValideeProspectCandidatCSVAdapter
+import fr.poleemploi.perspectives.emailing.infra.csv.{ImportMRSValideeProspectCandidatCSVAdapter, MRSValideeProspectCandidatCSVAdapter}
 import fr.poleemploi.perspectives.emailing.infra.local.LocalImportProspectService
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetImportProspectService
+import fr.poleemploi.perspectives.emailing.infra.sql.MailjetSqlAdapter
 import fr.poleemploi.perspectives.emailing.infra.ws.{MailjetWSAdapter, MailjetWSMapping}
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
@@ -119,6 +120,16 @@ class InfraModule extends AbstractModule with ScalaModule {
     new MRSValideeProspectCandidatCSVAdapter(actorSystem = actorSystem)
 
   @Provides
+  def importMRSValideeProspectCandidatCSVAdapter(batchsConfig: BatchsConfig,
+                                                 actorSystem: ActorSystem,
+                                                 mrsValideeProspectCandidatCSVAdapter: MRSValideeProspectCandidatCSVAdapter): ImportMRSValideeProspectCandidatCSVAdapter =
+    new ImportMRSValideeProspectCandidatCSVAdapter(
+      config = batchsConfig.importMRSValideeProspectCandidatCSVAdapterConfig,
+      actorSystem = actorSystem,
+      mrsValideeProspectCandidatCSVAdapter = mrsValideeProspectCandidatCSVAdapter
+    )
+
+  @Provides
   def mailjetWSMapping(batchsConfig: BatchsConfig): MailjetWSMapping =
     new MailjetWSMapping(batchsConfig.mailjetTesteurs)
 
@@ -150,15 +161,23 @@ class InfraModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
+  def mailjetSqlAdapter(database: Database): MailjetSqlAdapter =
+    new MailjetSqlAdapter(
+      driver = PostgresDriver,
+      database = database
+    )
+
+  @Provides
   @Singleton
-  def importProspectServiceMailjet(batchsConfig: BatchsConfig,
+  def importProspectServiceMailjet(importMRSValideeProspectCandidatCSVAdapter: ImportMRSValideeProspectCandidatCSVAdapter,
                                    actorSystem: ActorSystem,
                                    mrsValideeProspectCandidatCSVAdapter: MRSValideeProspectCandidatCSVAdapter,
+                                   mailjetSqlAdapter: MailjetSqlAdapter,
                                    mailjetWSAdapter: MailjetWSAdapter): MailjetImportProspectService =
     new MailjetImportProspectService(
-      config = batchsConfig.importProspectsCandidatCSVAdapterConfig,
       actorSystem = actorSystem,
-      mrsValideeProspectCandidatCSVAdapter = mrsValideeProspectCandidatCSVAdapter,
+      importFileAdapter = importMRSValideeProspectCandidatCSVAdapter,
+      mailjetSQLAdapter = mailjetSqlAdapter,
       mailjetWSAdapter = mailjetWSAdapter
     )
 

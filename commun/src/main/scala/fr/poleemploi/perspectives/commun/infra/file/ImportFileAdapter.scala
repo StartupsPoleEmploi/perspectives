@@ -12,13 +12,15 @@ trait ImportFileAdapter[T] {
 
   def pattern: String
 
+  def integrerFichier(fichier: Path): Future[Stream[T]]
+
   /**
     * Intègre les fichiers présent dans un répertoire. <br />
     * Best-effort : si une erreur survient lors de l'intégration d'un fichier, on continue pour les autres fichiers présent dans le répertoire
     *
     * @return
     */
-  final def integrerFichiers: Future[Stream[T]] = {
+  protected final def integrerFichiers: Future[Stream[T]] = {
     if (config.importDirectory == null || !config.importDirectory.toFile.exists()) {
       return Future.failed(new IllegalArgumentException(s"Le répertoire d'import ${config.importDirectory} n'existe pas"))
     }
@@ -45,6 +47,4 @@ trait ImportFileAdapter[T] {
       ).map(_.foldLeft(Stream.empty[T])((acc, s) => acc ++ s))
     } yield stream
   }
-
-  def integrerFichier(fichier: Path): Future[Stream[T]]
 }

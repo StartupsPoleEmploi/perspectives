@@ -1,11 +1,14 @@
 package fr.poleemploi.perspectives.emailing.infra.sql
 
+import akka.NotUsed
+import akka.stream.scaladsl.Source
 import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.commun.domain.Email
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
 import fr.poleemploi.perspectives.emailing.infra.mailjet.{CandidatMailjet, MailjetContactId, RecruteurMailjet}
 import fr.poleemploi.perspectives.recruteur.RecruteurId
 import slick.jdbc.JdbcBackend.Database
+import slick.jdbc.{ResultSetConcurrency, ResultSetType}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -59,6 +62,20 @@ class MailjetSqlAdapter(val driver: PostgresDriver,
       .run(candidatsMailjetTable.map(c => (c.candidatId, c.mailjetContactId, c.email))
         += (candidat.candidatId, candidat.mailjetContactId, candidat.email))
       .map(_ => ())
+
+  def streamCandidats: Source[CandidatMailjet, NotUsed] = Source.fromPublisher {
+    database.stream(
+      candidatsMailjetTable
+        .sortBy(_.id)
+        .result
+        .transactionally
+        .withStatementParameters(
+          rsType = ResultSetType.ForwardOnly,
+          rsConcurrency = ResultSetConcurrency.ReadOnly,
+          fetchSize = 1000
+        )
+    )
+  }
 
   def getRecruteur(recruteurId: RecruteurId): Future[RecruteurMailjet] =
     database.run(getRecruteurQuery(recruteurId).result.head)
