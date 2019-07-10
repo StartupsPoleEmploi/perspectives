@@ -82,15 +82,15 @@ class EventStore(eventStoreListener: EventStoreListener,
                                   actualStreamVersion: Int,
                                   events: List[Event]): Future[Unit] =
     loadEventStreamAfterVersion(id, expectedStreamVersion).flatMap { actualEventStream =>
-      val conflits = (for {
+      val conflicts = (for {
         e1 <- actualEventStream.events
         e2 <- events
       } yield (e1, e2, conflictResolutionStrategy.conflictsWith(e1, e2)))
         .filter(_._3)
         .map(e => (e._1, e._2))
 
-      if (conflits.nonEmpty)
-        Future.failed(EventStoreConcurrencyException(s"Conflit non résolu sur l'aggregat ${id.value}. expectedStreamVersion : $expectedStreamVersion, actualStreamVersion : $actualStreamVersion. Events en conflit : $conflits. Events non insérés : $events"))
+      if (conflicts.nonEmpty)
+        Future.failed(EventStoreConcurrencyException(s"Conflit non résolu sur l'aggregat ${id.value}. expectedStreamVersion : $expectedStreamVersion, actualStreamVersion : $actualStreamVersion. Events en conflit : $conflicts. Events non insérés : $events"))
       else {
         if (eventSourcingLogger.isInfoEnabled) {
           eventSourcingLogger.info(s"Conflits résolus sur l'agrégat ${id.value}. expectedStreamVersion : $expectedStreamVersion, actualStreamVersion : $actualStreamVersion")
