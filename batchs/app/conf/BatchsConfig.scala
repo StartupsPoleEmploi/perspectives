@@ -26,18 +26,18 @@ class BatchsConfig(configuration: Configuration) {
     configuration.getOptional[Seq[String]]("mailjet.testeurs").map(_.map(Email(_)).toList).getOrElse(Nil)
 
   val importMRSDHAEPEConnectConfig: ImportFileAdapterConfig = ImportFileAdapterConfig(
-    importDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.MrsDHAEValidees.importDirectory")),
-    archiveDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.MrsDHAEValidees.archiveDirectory"))
+    importDirectory = Paths.get(configuration.get[String]("exportPoleEmploi.directory")),
+    archiveDirectory = Paths.get(configuration.get[String]("exportPoleEmploi.archiveDirectory"))
   )
 
   val importHabiletesMRSCsvAdapterConfig: ImportFileAdapterConfig = ImportFileAdapterConfig(
-    importDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.HabiletesMRS.importDirectory")),
-    archiveDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.HabiletesMRS.archiveDirectory"))
+    importDirectory = Paths.get(configuration.get[String]("exportPoleEmploi.directory")),
+    archiveDirectory = Paths.get(configuration.get[String]("exportPoleEmploi.archiveDirectory"))
   )
 
   val importMRSValideeProspectCandidatCSVAdapterConfig: ImportFileAdapterConfig = ImportFileAdapterConfig(
-    importDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.ProspectsCandidats.importDirectory")),
-    archiveDirectory = Paths.get(configuration.get[String]("extractPoleEmploi.ProspectsCandidats.archiveDirectory"))
+    importDirectory = Paths.get(configuration.get[String]("exportPoleEmploi.directory")),
+    archiveDirectory = Paths.get(configuration.get[String]("exportPoleEmploi.archiveDirectory"))
   )
 }
 

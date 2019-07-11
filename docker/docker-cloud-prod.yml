@@ -91,7 +91,9 @@ services:
     env_file:
       - prod.env
     volumes:
-      - export_poleemploi:/var/perspectives/export_poleemploi
+      - type: bind
+          source: /mnt/datalakepe/depuis_datalake
+          target: /var/perspectives/export_poleemploi
     deploy:
       replicas: 1
     logging:
