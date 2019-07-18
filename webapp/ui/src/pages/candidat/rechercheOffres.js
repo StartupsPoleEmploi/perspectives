@@ -33,7 +33,7 @@ var app = new Vue({
                 langues: []
             },
             recherche: {
-                motCle: jsData.recherche.motCle,
+                motCle: null,
                 lieuTravail: jsData.recherche.lieuTravail,
                 codePostal: jsData.recherche.codePostal,
                 rayonRecherche: jsData.recherche.rayonRecherche,

@@ -3,7 +3,6 @@ package controllers.candidat
 import authentification.infra.play.{CandidatAuthentifieAction, OptionalCandidatAuthentifieAction, OptionalCandidatAuthentifieRequest}
 import conf.WebAppConfig
 import controllers.AssetsFinder
-import controllers.FlashMessages.FlashMessage
 import fr.poleemploi.perspectives.candidat.LocalisationRecherche
 import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite, RayonRecherche}
 import fr.poleemploi.perspectives.offre.domain.{CriteresRechercheOffre, TypeContrat}
@@ -26,7 +25,7 @@ class RechercheOffreController @Inject()(cc: ControllerComponents,
                                          candidatAuthentifieAction: CandidatAuthentifieAction,
                                          candidatQueryHandler: CandidatQueryHandler) extends AbstractController(cc) with Logging {
 
-  def index(motCle: Option[String], codePostal: Option[String], lieuTravail: Option[String], rayonRecherche: Option[Int]): Action[AnyContent] = optionalCandidatAuthentifieAction.async { implicit optCandidatAuthentifieRequest: OptionalCandidatAuthentifieRequest[AnyContent] =>
+  def index(codePostal: Option[String], lieuTravail: Option[String], rayonRecherche: Option[Int]): Action[AnyContent] = optionalCandidatAuthentifieAction.async { implicit optCandidatAuthentifieRequest: OptionalCandidatAuthentifieRequest[AnyContent] =>
     def buildLocalisationRechercheFromRequest: Option[LocalisationRecherche] =
       for {
         commune <- lieuTravail
@@ -42,9 +41,7 @@ class RechercheOffreController @Inject()(cc: ControllerComponents,
       candidat <- optCandidatAuthentifieRequest.candidatAuthentifie.map(c =>
         candidatQueryHandler.handle(CandidatPourRechercheOffreQuery(c.candidatId)).map(Some(_))
       ).getOrElse(Future.successful(None))
-      localisationRecherche = optCandidatAuthentifieRequest.flash.candidatLocalisationRechercheModifiee
-        .orElse(buildLocalisationRechercheFromRequest)
-        .orElse(candidat.flatMap(_.localisationRecherche))
+      localisationRecherche = buildLocalisationRechercheFromRequest.orElse(candidat.flatMap(_.localisationRecherche))
     } yield {
       Ok(views.html.candidat.rechercheOffres(
         candidatAuthentifie = optCandidatAuthentifieRequest.candidatAuthentifie,
@@ -54,7 +51,6 @@ class RechercheOffreController @Inject()(cc: ControllerComponents,
           "metiersValides" -> candidat.map(_.metiersValides),
           "csrfToken" -> CSRF.getToken.map(_.value),
           "recherche" -> Json.obj(
-            "motCle" -> motCle,
             "lieuTravail" -> localisationRecherche.map(_.commune),
             "codePostal" -> localisationRecherche.map(_.codePostal),
             "rayonRecherche" -> localisationRecherche

@@ -76,8 +76,11 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
               Redirect(routes.CVController.index())
                 .flashing(messagesRequest.flash.withCandidatInscrit)
             else
-              Redirect(routes.RechercheOffreController.index())
-                .flashing(messagesRequest.flash.withCandidatLocalisationRecherche(modifierCriteresCommand.localisationRecherche))
+              Redirect(routes.RechercheOffreController.index(
+                codePostal = Some(modifierCriteresCommand.localisationRecherche.codePostal),
+                lieuTravail = Some(modifierCriteresCommand.localisationRecherche.commune),
+                rayonRecherche = modifierCriteresCommand.localisationRecherche.rayonRecherche.map(_.value)
+              ))
           )
         })
     }(candidatAuthentifieRequest)

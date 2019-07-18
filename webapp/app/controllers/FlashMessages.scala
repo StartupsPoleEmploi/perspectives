@@ -1,9 +1,6 @@
 package controllers
 
-import fr.poleemploi.perspectives.candidat.LocalisationRecherche
-import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
 import fr.poleemploi.perspectives.recruteur.TypeRecruteur
-import play.api.libs.json.Json
 import play.api.mvc.Flash
 
 object FlashMessages {
@@ -47,11 +44,5 @@ object FlashMessages {
 
     def candidatConnecte: Boolean = f.get(keyConnexionCandidat).contains("true")
     def withCandidatConnecte: Flash = f + (keyConnexionCandidat -> "true")
-
-    def candidatLocalisationRechercheModifiee: Option[LocalisationRecherche] =
-      f.get(keyLocalisationRechercheCandidat).flatMap(s => Json.parse(s).asOpt[LocalisationRecherche])
-
-    def withCandidatLocalisationRecherche(localisationRecherche: LocalisationRecherche): Flash =
-      f + (keyLocalisationRechercheCandidat -> Json.stringify(Json.toJson(localisationRecherche)))
   }
 }
