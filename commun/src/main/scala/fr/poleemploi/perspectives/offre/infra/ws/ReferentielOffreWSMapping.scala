@@ -216,13 +216,10 @@ object OffreResponse {
   )
 }
 
-case class RechercheOffreRequest(params: List[(String, String)])
-
 class ReferentielOffreWSMapping {
 
   def buildRechercherOffresRequest(criteresRechercheOffre: CriteresRechercheOffre,
-                                   codeINSEE: Option[String]): RechercheOffreRequest =
-    RechercheOffreRequest(List(
+                                   codeINSEE: Option[String]): List[(String, String)] = List(
       criteresRechercheOffre.motCle.map(m => "motsCles" -> m),
       codeINSEE.map(c => "commune" -> c),
       codeINSEE.flatMap(_ => criteresRechercheOffre.rayonRecherche.map(r => "distance" -> s"${r.value}")),
@@ -234,8 +231,9 @@ class ReferentielOffreWSMapping {
         case Nil => None
         case l@_ => Some("codeROME" -> l.map(_.value).mkString(","))
       },
-      Some("experience" -> buildExperience(criteresRechercheOffre.experience))
-    ).flatten)
+      Some("experience" -> buildExperience(criteresRechercheOffre.experience)),
+      Some("sort" -> "0")
+    ).flatten
 
   def buildOffre(criteresRechercheOffre: CriteresRechercheOffre,
                  offreResponse: OffreResponse): Option[Offre] = {

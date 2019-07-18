@@ -26,9 +26,9 @@ class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
     * Ne gère que 3 CodeROME pour l'instant (découpage des requêtes à refaire pour en gérer plus)
     */
   def rechercherOffres(criteres: CriteresRechercheOffre): Future[RechercheOffreResult] = {
-    def callWS(accessToken: AccessToken, request: RechercheOffreRequest): Future[RechercheOffreResult] =
+    def callWS(accessToken: AccessToken, params: List[(String, String)]): Future[RechercheOffreResult] =
       wsClient.url(s"${config.urlApi}/offresdemploi/v2/offres/search")
-        .addQueryStringParameters(request.params: _ *)
+        .addQueryStringParameters(params: _ *)
         .addHttpHeaders(authorizationBearer(accessToken), jsonContentType)
         .get()
         .flatMap(r => filtreStatutReponse(response = r, statutNonGere = s => s != 200 && s != 206))
@@ -57,13 +57,11 @@ class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
         .getOrElse(Future.successful(None))
       rechercheOffreResult <- callWS(
         accessToken = accessTokenResponse.accessToken,
-        request = mapping.buildRechercherOffresRequest(criteres, codeInsee)
+        params = mapping.buildRechercherOffresRequest(criteres, codeInsee)
       )
     } yield {
       RechercheOffreResult(
-        offres = rechercheOffreResult.offres
-          .distinct
-          .sortWith((o1, o2) => o1.dateActualisation.isAfter(o2.dateActualisation)),
+        offres = rechercheOffreResult.offres,
         nbOffresTotal =
           if (rechercheOffreResult.nbOffresTotal <= offset)
           rechercheOffreResult.offres.size

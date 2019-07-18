@@ -45,7 +45,17 @@ class ReferentielOffreWSMappingSpec extends WordSpec
       val request = mapping.buildRechercherOffresRequest(criteresRechercheOffre = criteresRechercheOffre, codeINSEE = None)
 
       // Then
-      request.params.exists(p => p._1 == "experience" && p._2 == "1") mustBe true
+      request.contains(("experience", "1")) mustBe true
+    }
+    "doit toujours valoriser le parametre de tri (0 = Tri par pertinence décroissante, distance croissante, date de création décroissante)" in {
+      // Given
+      when(criteresRechercheOffre.experience) thenReturn Experience.DEBUTANT
+
+      // When
+      val request = mapping.buildRechercherOffresRequest(criteresRechercheOffre = criteresRechercheOffre, codeINSEE = None)
+
+      // Then
+      request.contains(("sort", "0")) mustBe true
     }
     "doit valoriser le parametre motCle lorsqu'il est renseigne" in {
       // Given
@@ -55,7 +65,7 @@ class ReferentielOffreWSMappingSpec extends WordSpec
       val request = mapping.buildRechercherOffresRequest(criteresRechercheOffre = criteresRechercheOffre, codeINSEE = None)
 
       // Then
-      request.params.exists(p => p._1 == "motsCles" && p._2 == "Soudeur") mustBe true
+      request.contains(("motsCles", "Soudeur")) mustBe true
     }
     "doit valoriser le parametre commune lorsque le codeINSEE est renseigné" in {
       // Given
@@ -64,7 +74,7 @@ class ReferentielOffreWSMappingSpec extends WordSpec
       val request = mapping.buildRechercherOffresRequest(criteresRechercheOffre = criteresRechercheOffre, codeINSEE = Some(codeINSEE))
 
       // Then
-      request.params.exists(p => p._1 == "commune" && p._2 == codeINSEE) mustBe true
+      request.contains(("commune", codeINSEE)) mustBe true
     }
     "doit valoriser le parametre rayonRecherche lorsqu'il est renseigné avec le codeINSEE" in {
       // Given
@@ -74,7 +84,7 @@ class ReferentielOffreWSMappingSpec extends WordSpec
       val request = mapping.buildRechercherOffresRequest(criteresRechercheOffre = criteresRechercheOffre, codeINSEE = Some(codeINSEE))
 
       // Then
-      request.params.exists(p => p._1 == "distance" && p._2 == "10") mustBe true
+      request.contains(("distance", "10")) mustBe true
     }
     "ne doit pas valoriser le parametre rayonRecherche lorsque le codeINSEE n'est pas renseigné" in {
       // Given
@@ -84,7 +94,7 @@ class ReferentielOffreWSMappingSpec extends WordSpec
       val request = mapping.buildRechercherOffresRequest(criteresRechercheOffre = criteresRechercheOffre, codeINSEE = None)
 
       // Then
-      request.params.exists(p => p._1 == "distance") mustBe false
+      request.exists(p => p._1 == "distance") mustBe false
     }
     "doit valoriser le parametre typeContrat lorsqu'il est renseigné" in {
       // Given
@@ -98,7 +108,7 @@ class ReferentielOffreWSMappingSpec extends WordSpec
       val request = mapping.buildRechercherOffresRequest(criteresRechercheOffre = criteresRechercheOffre, codeINSEE = None)
 
       // Then
-      request.params.exists(p => p._1 == "typeContrat" && p._2 == "CDD,CDI") mustBe true
+      request.contains(("typeContrat", "CDD,CDI")) mustBe true
     }
     "ne pas valoriser le parametre codeROME lorsqu'il n'est pas renseigne" in {
       // Given
@@ -108,7 +118,7 @@ class ReferentielOffreWSMappingSpec extends WordSpec
       val request = mapping.buildRechercherOffresRequest(criteresRechercheOffre = criteresRechercheOffre, codeINSEE = None)
 
       // Then
-      request.params.exists(p => p._1 == "codeROME") mustBe false
+      request.exists(p => p._1 == "codeROME") mustBe false
     }
     "doit valoriser le parametre codeROME lorsqu'il est renseigne" in {
       // Given
@@ -118,7 +128,7 @@ class ReferentielOffreWSMappingSpec extends WordSpec
       val request = mapping.buildRechercherOffresRequest(criteresRechercheOffre = criteresRechercheOffre, codeINSEE = None)
 
       // Then
-      request.params.exists(p => p._1 == "codeROME" && p._2 == "A1401,K2204") mustBe true
+      request.contains(("codeROME", "A1401,K2204")) mustBe true
     }
   }
   "buildOffre" should {
