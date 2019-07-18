@@ -11,10 +11,8 @@ import scala.util.Random
 
 class ReferentielOffreLocalAdapter extends ReferentielOffre {
 
-  val nbResultats = 40
-
   override def rechercherOffres(criteres: CriteresRechercheOffre): Future[RechercheOffreResult] =
-    Future.successful(List.tabulate(Random.nextInt(nbResultats))(n =>
+    Future.successful(List.tabulate(Random.nextInt(40))(n =>
       if (n % 4 == 0)
         Offre(
           id = OffreId(s"083LRLN$n"),
@@ -240,6 +238,6 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
         )
     )).map(offres => RechercheOffreResult(
       offres = offres,
-      nbOffresTotal = offres.size
+      pageSuivante = None
     ))
 }

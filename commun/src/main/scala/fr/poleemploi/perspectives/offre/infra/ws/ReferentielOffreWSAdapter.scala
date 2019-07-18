@@ -3,9 +3,8 @@ package fr.poleemploi.perspectives.offre.infra.ws
 import fr.poleemploi.perspectives.commun.infra.oauth.OauthConfig
 import fr.poleemploi.perspectives.commun.infra.ws.{AccessToken, WSAdapter, WebServiceException}
 import fr.poleemploi.perspectives.metier.infra.ws.AccessTokenResponse
-import fr.poleemploi.perspectives.offre.domain.{CriteresRechercheOffre, RechercheOffreResult, ReferentielOffre}
+import fr.poleemploi.perspectives.offre.domain._
 import play.api.cache.AsyncCacheApi
-import play.api.libs.json.JsArray
 import play.api.libs.ws.WSClient
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -17,13 +16,11 @@ class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
                                 mapping: ReferentielOffreWSMapping) extends ReferentielOffre with WSAdapter {
 
   private val cacheKeyCommunes = "referentielOffre.communes"
-
-  // Nombre d'offres maximum renvoyé pour un appel à l'API
-  private val offset = 150
+  private val cacheKeyAccessToken = "referentielOffre.accessToken"
 
   /**
     * L'API est limitée en nombre d'appels par seconde, il faut donc gérer le statut 429. <br />
-    * Ne gère que 3 CodeROME pour l'instant (découpage des requêtes à refaire pour en gérer plus)
+    * Il faut aussi gérer le statut 206 (Partial Content) pour prendre en compte le fait qu'on ne récupère pas tous les résultats en une fois.
     */
   def rechercherOffres(criteres: CriteresRechercheOffre): Future[RechercheOffreResult] = {
     def callWS(accessToken: AccessToken, params: List[(String, String)]): Future[RechercheOffreResult] =
@@ -33,43 +30,52 @@ class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
         .get()
         .flatMap(r => filtreStatutReponse(response = r, statutNonGere = s => s != 200 && s != 206))
         .map(r =>
-          // On a pas le nombre de résultat total dans un seul champ : il correspond à la totalité des nbResultats contenus dans un filtre : on prend le premier qu'on trouve
+          // FIXME : Si 206 mais qu'on a pas assez d'offres après avoir filtrer pour remplir au moins une page, alors on rappelle l'API et on recalcule
           RechercheOffreResult(
-            nbOffresTotal = ((r.json \ "filtresPossibles").as[JsArray].head \\ "nbResultats").map(_.as[Int]).sum,
-            offres = (r.json \ "resultats").as[JsArray].value
-              .map(_.as[OffreResponse])
-              .flatMap(offreResponse => mapping.buildOffre(criteres, offreResponse)).toList
+            offres = mapping.filterOffresResponses(
+              criteresRechercheOffre = criteres,
+              offres = (r.json \ "resultats").as[List[OffreResponse]]).map(mapping.buildOffre),
+            pageSuivante =
+              if (r.status == 206)
+                mapping.buildPageOffres(r.header("Content-Range"), r.header("Accept-Range"))
+              else
+                None
           )
-        )
-        .recoverWith {
-          case e: WebServiceException if e.statut == 429 =>
-            referentielOffreWSLogger.error(e.getMessage)
-            Future.successful(RechercheOffreResult(
-              offres = Nil,
-              nbOffresTotal = 0
-            ))
-        }
+        ).recoverWith {
+        case e: WebServiceException if e.statut == 429 =>
+          referentielOffreWSLogger.error(e.getMessage)
+          Future.successful(RechercheOffreResult(
+            offres = Nil,
+            pageSuivante = None
+          ))
+      }
 
     for {
-      accessTokenResponse <- genererAccessToken
+      accessToken <- getAccessToken
       codeInsee <- criteres.codePostal
-        .map(c => codeInsee(accessTokenResponse.accessToken, c).map(Some(_)))
+        .map(c => codeInsee(accessToken, c).map(Some(_)))
         .getOrElse(Future.successful(None))
-      rechercheOffreResult <- callWS(
-        accessToken = accessTokenResponse.accessToken,
+      rechercheOffresResult <- callWS(
+        accessToken = accessToken,
         params = mapping.buildRechercherOffresRequest(criteres, codeInsee)
       )
-    } yield {
-      RechercheOffreResult(
-        offres = rechercheOffreResult.offres,
-        nbOffresTotal =
-          if (rechercheOffreResult.nbOffresTotal <= offset)
-          rechercheOffreResult.offres.size
-        else
-            rechercheOffreResult.nbOffresTotal
-      )
-    }
+    } yield rechercheOffresResult
   }
+
+  private def getAccessToken: Future[AccessToken] =
+    for {
+      cachedAccessToken <- cacheApi.get[AccessToken](cacheKeyAccessToken)
+      accessToken <- cachedAccessToken.map(Future.successful).getOrElse {
+        genererAccessToken.map(accessTokenResponse => {
+          /*cacheApi.set(
+            key = cacheKeyAccessToken,
+            value = accessTokenResponse.accessToken,
+            expiration = accessTokenResponse.expiresIn - 10.seconds
+          )*/
+          accessTokenResponse.accessToken
+        })
+      }
+    } yield accessToken
 
   private def genererAccessToken: Future[AccessTokenResponse] =
     wsClient

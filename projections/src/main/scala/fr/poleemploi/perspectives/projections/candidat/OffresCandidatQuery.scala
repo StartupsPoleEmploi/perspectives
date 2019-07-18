@@ -7,7 +7,7 @@ import play.api.libs.json.{Json, Writes}
 case class OffresCandidatQuery(criteresRechercheOffre: CriteresRechercheOffre) extends Query[OffresCandidatQueryResult]
 
 case class OffresCandidatQueryResult(offres: List[Offre],
-                                     nbOffresTotal: Int) extends QueryResult
+                                     pageSuivante: Option[PageOffres]) extends QueryResult
 
 object OffresCandidatQueryResult {
 

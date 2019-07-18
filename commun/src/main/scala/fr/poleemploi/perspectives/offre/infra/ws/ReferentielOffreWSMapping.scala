@@ -1,6 +1,7 @@
 package fr.poleemploi.perspectives.offre.infra.ws
 
 import java.time.LocalDateTime
+import java.util.regex.Pattern
 
 import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.offre.domain._
@@ -218,115 +219,152 @@ object OffreResponse {
 
 class ReferentielOffreWSMapping {
 
+  // Maximums des index pour la recherche d'offres
+  private val maxRangeStart = 1000
+  private val maxRangeEnd = 1149
+
+  // On a pas le nombre de résultats dans un champ mais dans un header du type "offres debut-fin/total"
+  private val contentRangePattern: Pattern = Pattern.compile(".*(\\d+)-(\\d+)/(\\d+)")
+
+  /**
+    * l'API ne permet de passer que peu de filtres pour l'instant (que 3 codeROME par appels, deux secteurActivite par appel, etc.) : on fait donc plusieurs filtres à postériori
+    */
   def buildRechercherOffresRequest(criteresRechercheOffre: CriteresRechercheOffre,
                                    codeINSEE: Option[String]): List[(String, String)] = List(
       criteresRechercheOffre.motCle.map(m => "motsCles" -> m),
       codeINSEE.map(c => "commune" -> c),
-      codeINSEE.flatMap(_ => criteresRechercheOffre.rayonRecherche.map(r => "distance" -> s"${r.value}")),
+      codeINSEE.flatMap(_ => criteresRechercheOffre.rayonRecherche.map(r => "distance" ->
+        (r match {
+          case r@_ if UniteLongueur.KM == r.uniteLongueur => s"${r.value}"
+          case _ => throw new IllegalArgumentException(s"Rayon de recherche non géré : $r")
+        })
+      )),
       criteresRechercheOffre.typesContrats match {
         case Nil => None
         case l@_ => Some("typeContrat" -> l.map(_.value).mkString(","))
       },
       criteresRechercheOffre.codesROME match {
         case Nil => None
-        case l@_ => Some("codeROME" -> l.map(_.value).mkString(","))
+        case l@_ if l.size <= 3 => Some("codeROME" -> l.map(_.value).mkString(","))
+        case _ => None
       },
-      Some("experience" -> buildExperience(criteresRechercheOffre.experience)),
-      Some("sort" -> "0")
+      Some("experience" -> (criteresRechercheOffre.experience match {
+        case Experience.DEBUTANT => "1" // Moins d'un an d'experience
+        case e@_ => throw new IllegalArgumentException(s"Expérience non gérée : ${e.value}")
+      })),
+      Some("sort" -> "0"),
+      Some("origineOffre" -> "1"),
+      criteresRechercheOffre.page.map(p => ("range", s"${p.debut}-${p.fin}"))
     ).flatten
 
-  def buildOffre(criteresRechercheOffre: CriteresRechercheOffre,
-                 offreResponse: OffreResponse): Option[Offre] = {
-    val experienceCorrespondante = criteresRechercheOffre.experience match {
-      case Experience.DEBUTANT => !offreResponse.experienceExige.contains(ExperienceExigeResponse.EXIGE)
-      case _ => true
-    }
-    val secteurActiviteCorrespondant = criteresRechercheOffre.secteursActivites match {
-      case Nil => true
-      case xs => xs.exists(s => offreResponse.romeCode.exists(r => r.startsWith(s.value)))
-    }
-    val sansFormationExigee = !offreResponse.formations.exists(f => ExigenceResponse.EXIGE == f.exigence)
+  /**
+    * l'API ne permet de passer que peu de filtres pour l'instant (que 3 codeROME par appels, deux secteurActivite par appel, etc.) : on fait donc plusieurs filtres à postériori. <br />
+    * <ul>
+      * <li>Si l'experience est DEBUTANT cela signifie moins d'un an d'expérience côté API, on doit donc quand même vérifier qu'il n'y ait pas d'expérience exigée</li>
+      * <li>Si l'experience est DEBUTANT, malgré le filtre sur l'expérience l'offre peut aussi contenir des formations exigées</li>
+      * <li>l'API ne permet pas de passer beaucoup de codeROME, on filtre donc à postériori sur les secteurs, domaines ou codeROME</li>
+    * </ul>
+    */
+  def filterOffresResponses(criteresRechercheOffre: CriteresRechercheOffre,
+                            offres: List[OffreResponse]): List[OffreResponse] =
+    offres.filter(o =>
+      (Experience.DEBUTANT != criteresRechercheOffre.experience || (!o.experienceExige.contains(ExperienceExigeResponse.EXIGE) && !o.formations.exists(f => ExigenceResponse.EXIGE == f.exigence))) &&
+        o.romeCode.exists(r =>
+          (criteresRechercheOffre.codesROME.isEmpty || criteresRechercheOffre.codesROME.exists(c => r.startsWith(c.value))) &&
+            (criteresRechercheOffre.secteursActivites.isEmpty || criteresRechercheOffre.secteursActivites.exists(c => r.startsWith(c.value))) &&
+            (criteresRechercheOffre.codesDomaineProfessionnels.isEmpty || criteresRechercheOffre.codesDomaineProfessionnels.exists(c => r.startsWith(c.value)))
+        )
+    )
 
-    if (experienceCorrespondante && secteurActiviteCorrespondant && sansFormationExigee)
-      Some(Offre(
-        id = OffreId(offreResponse.id),
-        urlOrigine = offreResponse.urlOrigine,
-        intitule = offreResponse.intitule,
-        codeROME = offreResponse.romeCode.map(CodeROME),
-        contrat = Contrat(
-          code = offreResponse.typeContrat,
-          label = offreResponse.typeContratLibelle,
-          nature = offreResponse.natureContrat
-        ),
-        description = offreResponse.description,
-        lieuTravail = LieuTravail(libelle = offreResponse.libelleLieuTravail, codePostal = offreResponse.codePostalLieuTravail),
-        libelleDureeTravail = offreResponse.dureeTravailLibelle,
-        complementExercice = offreResponse.complementExercice,
-        conditionExercice = offreResponse.conditionExercice,
-        libelleDeplacement = offreResponse.deplacementLibelle,
-        experience = ExperienceExige(
-          label =
-            if (offreResponse.experienceExige.contains(ExperienceExigeResponse.SOUHAITE))
-              offreResponse.experienceLibelle.map(l => s"Expérience souhaitée : $l")
-            else
-              offreResponse.experienceLibelle,
-          commentaire = offreResponse.experienceCommentaire,
-          exige =
-            if (offreResponse.experienceExige.contains(ExperienceExigeResponse.EXIGE))
-              Some(true)
-            else
-              Some(false)
-        ),
-        competences = offreResponse.competences.map(c => Competence(
-          label = c.libelle,
-          exige = ExigenceResponse.EXIGE == c.exigence
-        )),
-        qualitesProfessionnelles = offreResponse.qualitesProfessionnelles.map(q => QualiteProfessionnelle(
-          label = q.libelle,
-          description = q.description
-        )),
-        salaire = Salaire(
-          libelle = offreResponse.libelleSalaire,
-          commentaire = offreResponse.commentaireSalaire,
-          complement1 = offreResponse.complement1Salaire,
-          complement2 = offreResponse.complement2Salaire
-        ),
-        permis = offreResponse.permis.map(p => Permis(
-          label = p.libelle,
-          exige = ExigenceResponse.EXIGE == p.exigence
-        )),
-        langues = offreResponse.langues.map(l => Langue(
-          label = l.libelle,
-          exige = ExigenceResponse.EXIGE == l.exigence
-        )),
-        formations = offreResponse.formations.map(f => Formation(
-          domaine = f.domaineLibelle,
-          niveau = f.niveauLibelle,
-          exige = ExigenceResponse.EXIGE == f.exigence
-        )),
-        entreprise = Entreprise(
-          nom = offreResponse.nomEntreprise,
-          description = offreResponse.descriptionEntreprise,
-          urlLogo = offreResponse.logoEntreprise.map(l => s"https://entreprise.pole-emploi.fr/static/img/logos/$l.png"),
-          urlSite = offreResponse.urlEntreprise,
-          effectif = offreResponse.trancheEffectifEtab,
-          secteurActivite = offreResponse.secteurActiviteLibelle
-        ),
-        contact = Contact(
-          nom = offreResponse.nomContact,
-          coordonnees1 = offreResponse.coordonneesContact1,
-          coordonnees2 = offreResponse.coordonneesContact2,
-          coordonnees3 = offreResponse.coordonneesContact3,
-          telephone = offreResponse.telephoneContact,
-          email = offreResponse.emailContact,
-          urlPostuler = offreResponse.urlPostuler
-        ),
-        dateActualisation = offreResponse.dateActualisation
-      )) else None
-  }
+  def buildPageOffres(contentRange: Option[String], acceptRange: Option[String]): Option[PageOffres] =
+  for {
+      nbOffresParPage <- acceptRange.map(_.toInt)
+      matcher = contentRangePattern.matcher(contentRange.getOrElse(""))
+      contentRange <- contentRange if matcher.matches()
+      debut = matcher.group(1).toInt + nbOffresParPage
+      fin = matcher.group(2).toInt + nbOffresParPage
+      nbOffresTotal = matcher.group(3).toInt
+      page <- Some(PageOffres(debut = debut, fin = fin)) if debut < maxRangeStart && fin < maxRangeEnd && fin < (nbOffresTotal - 1)
+    } yield page
 
-  def buildExperience(experience: Experience): String = experience match {
-    case Experience.DEBUTANT => "1" // Moins d'un an d'experience
-    case e@_ => throw new IllegalArgumentException(s"Expérience non gérée : $e")
-  }
+
+  def buildOffre(offreResponse: OffreResponse): Offre =
+    Offre(
+      id = OffreId(offreResponse.id),
+      urlOrigine = offreResponse.urlOrigine,
+      intitule = offreResponse.intitule,
+      codeROME = offreResponse.romeCode.map(CodeROME),
+      contrat = Contrat(
+        code = offreResponse.typeContrat,
+        label = offreResponse.typeContratLibelle,
+        nature = offreResponse.natureContrat
+      ),
+      description = offreResponse.description,
+      lieuTravail = LieuTravail(libelle = offreResponse.libelleLieuTravail, codePostal = offreResponse.codePostalLieuTravail),
+      libelleDureeTravail = offreResponse.dureeTravailLibelle,
+      complementExercice = offreResponse.complementExercice,
+      conditionExercice = offreResponse.conditionExercice,
+      libelleDeplacement = offreResponse.deplacementLibelle,
+      experience = ExperienceExige(
+        label =
+          if (offreResponse.experienceExige.contains(ExperienceExigeResponse.SOUHAITE))
+            offreResponse.experienceLibelle.map(l => s"Expérience souhaitée : $l")
+          else
+            offreResponse.experienceLibelle,
+        commentaire = offreResponse.experienceCommentaire,
+        exige =
+          if (offreResponse.experienceExige.contains(ExperienceExigeResponse.EXIGE))
+            Some(true)
+          else
+            Some(false)
+      ),
+      competences = offreResponse.competences.map(c => Competence(
+        label = c.libelle,
+        exige = ExigenceResponse.EXIGE == c.exigence
+      )),
+      qualitesProfessionnelles = offreResponse.qualitesProfessionnelles.map(q => QualiteProfessionnelle(
+        label = q.libelle,
+        description = q.description
+      )),
+      salaire = Salaire(
+        libelle = offreResponse.libelleSalaire,
+        commentaire = offreResponse.commentaireSalaire,
+        complement1 = offreResponse.complement1Salaire,
+        complement2 = offreResponse.complement2Salaire
+      ),
+      permis = offreResponse.permis.map(p => Permis(
+        label = p.libelle,
+        exige = ExigenceResponse.EXIGE == p.exigence
+      )),
+      langues = offreResponse.langues.map(l => Langue(
+        label = l.libelle,
+        exige = ExigenceResponse.EXIGE == l.exigence
+      )),
+      formations = offreResponse.formations.map(f => Formation(
+        domaine = f.domaineLibelle,
+        niveau = f.niveauLibelle,
+        exige = ExigenceResponse.EXIGE == f.exigence
+      )),
+      entreprise = Entreprise(
+        nom = offreResponse.nomEntreprise,
+        description = offreResponse.descriptionEntreprise,
+        urlLogo = offreResponse.logoEntreprise.map(l =>
+          if (l.startsWith("http")) l
+          else s"https://entreprise.pole-emploi.fr/static/img/logos/$l.png"
+        ),
+        urlSite = offreResponse.urlEntreprise,
+        effectif = offreResponse.trancheEffectifEtab,
+        secteurActivite = offreResponse.secteurActiviteLibelle
+      ),
+      contact = Contact(
+        nom = offreResponse.nomContact,
+        coordonnees1 = offreResponse.coordonneesContact1,
+        coordonnees2 = offreResponse.coordonneesContact2,
+        coordonnees3 = offreResponse.coordonneesContact3,
+        telephone = offreResponse.telephoneContact,
+        email = offreResponse.emailContact,
+        urlPostuler = offreResponse.urlPostuler
+      ),
+      dateActualisation = offreResponse.dateActualisation
+    )
 }
