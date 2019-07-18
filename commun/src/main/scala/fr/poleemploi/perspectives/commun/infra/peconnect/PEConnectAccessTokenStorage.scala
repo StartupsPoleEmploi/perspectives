@@ -1,20 +1,20 @@
 package fr.poleemploi.perspectives.commun.infra.peconnect
 
+import fr.poleemploi.perspectives.authentification.infra.peconnect.ws.AccessTokenResponse
 import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.commun.infra.ws.AccessToken
 import play.api.cache.AsyncCacheApi
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.concurrent.duration._
 
 class PEConnectAccessTokenStorage(asyncCacheApi: AsyncCacheApi) {
 
-  def add(candidatId: CandidatId, accessToken: AccessToken): Future[Unit] =
+  def add(candidatId: CandidatId, accessTokenResponse: AccessTokenResponse): Future[Unit] =
     asyncCacheApi.set(
       key = candidatId.value,
-      value = accessToken,
-      expiration = 5.minutes
+      value = accessTokenResponse.accessToken,
+      expiration = accessTokenResponse.expiresIn
     ).map(_ => ())
 
   def find(candidatId: CandidatId): Future[Option[AccessToken]] =

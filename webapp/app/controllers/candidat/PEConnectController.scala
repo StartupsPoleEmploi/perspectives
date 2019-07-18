@@ -84,7 +84,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       optCandidatPEConnect <- peConnectAdapter.findCandidat(infosCandidat.peConnectId)
       optCriteresRecherche <- optCandidatPEConnect.map(c => candidatQueryHandler.handle(CandidatSaisieCriteresRechercheQuery(c.candidatId)).map(Some(_))).getOrElse(Future.successful(None))
       candidatId = optCandidatPEConnect.map(_.candidatId).getOrElse(candidatCommandHandler.newId)
-      _ <- peConnectAccessTokenStorage.add(candidatId, accessTokenResponse.accessToken)
+      _ <- peConnectAccessTokenStorage.add(candidatId, accessTokenResponse)
       _ <- optCandidatPEConnect.map(_ => connecter(candidatId, infosCandidat))
         .getOrElse(inscrire(candidatId, infosCandidat))
     } yield {
