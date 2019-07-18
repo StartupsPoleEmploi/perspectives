@@ -49,7 +49,6 @@ var app = new Vue({
             display: {
                 contact: false,
                 chargement: false,
-                nbResultats: false,
                 modaleDetailOffre: false
             }
         }
@@ -180,14 +179,12 @@ var app = new Vue({
             if ($(".formulaireRecherche-jsResponsive").is(":visible")) {
                 $(".formulaireRecherche-conteneurFiltres").show();
                 $(".formulaireRecherche-retourListeResultats").show();
-                $(".rechercheOffres-nbResultats").hide();
             }
         },
         cacherFiltres: function () {
             if ($(".formulaireRecherche-jsResponsive").is(":visible")) {
                 $(".formulaireRecherche-conteneurFiltres").hide();
                 $(".formulaireRecherche-retourListeResultats").hide();
-                $(".rechercheOffres-nbResultats").show();
             }
         },
         rechercherOffres: function() {
