@@ -336,18 +336,6 @@
                                         </label>
                                     </li>
                                 </ul>
-                                <p class="formulaireRecherche-titre" v-if="secteursActivites.length > 0">Filtrer par secteurs d'activité :</p>
-                                <ul class="list-unstyled">
-                                    <li v-for="secteurActivite in secteursActivites" v-bind:key="secteurActivite.value" class="mb-3">
-                                        <input v-bind:id="'secteurActivite-' + secteurActivite.value" type="checkbox"
-                                        name="secteursActivites[]" class="checkbox-input"
-                                        v-bind:value="secteurActivite.value" v-model="recherche.secteursActivites" />
-                                        <label class="checkbox-label d-flex" v-bind:for="'secteurActivite-' + secteurActivite.value">
-                                            <span class="checkbox-checkmark checkbox-checkmark--md mr-2"></span>
-                                            <span class="col font-size-sm">{{secteurActivite.label}}</span>
-                                        </label>
-                                    </li>
-                                </ul>
                             </div>
                             <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurRechercher">
                                 <button type="submit" class="bouton bouton-action bouton--block bouton--blancSurVert"
@@ -361,6 +349,9 @@
                             <img alt="Chargement" src="/assets/images/commun/chargement.gif" width="48" height="48" />
                             <p class="texte-vert-emeraude" v-show="display.chargement">Un peu de patience, nous recherchons les offres</p>
                         </div>
+                        <template v-else-if="display.erreurRecherche">
+                            <p class="font-weight-bold">Désolé, nous avons rencontré un problème lors de la recherche. Veuillez réessayer ultérieurement, merci !</p>
+                        </template>
                         <template v-else-if="offres.length === 0">
                             <p class="font-weight-bold">Désolé, nous n'avons pas d'offres à vous proposer pour l'instant :(</p>
                             <p>Vous pouvez modifier vos critères ou réessayer plus tard</p>

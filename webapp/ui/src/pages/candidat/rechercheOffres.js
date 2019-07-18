@@ -38,17 +38,16 @@ var app = new Vue({
                 codePostal: jsData.recherche.codePostal,
                 rayonRecherche: jsData.recherche.rayonRecherche,
                 typesContrats: [],
-                secteursActivites: [],
                 metiersValides: []
             },
             rayonsRecherche: rayonsRecherche,
             typesContrats: typesContrats,
-            secteursActivites: [],
             metiersValides: Object.assign([], jsData.metiersValides),
             algoliaPlacesConfig: jsData.algoliaPlacesConfig,
             display: {
                 contact: false,
                 chargement: false,
+                erreurRecherche: false,
                 modaleDetailOffre: false
             }
         }
@@ -91,7 +90,7 @@ var app = new Vue({
             if (self.display.modaleDetailOffre && window.location.href.endsWith('#')) {
                 modaleDetail.modal('hide');
             }
-            if (!self.display.modaleDetailOffre &&  window.location.href.endsWith('#detailOffre')) {
+            if (!self.display.modaleDetailOffre && window.location.href.endsWith('#detailOffre')) {
                 modaleDetail.modal('show');
             }
         };
@@ -200,6 +199,9 @@ var app = new Vue({
                 self.indexPaginationOffre = 1;
                 self.$refs.pagination.pageChargee(1);
                 self.cacherFiltres();
+                self.display.erreurRecherche = false;
+            }).fail(function () {
+                self.display.erreurRecherche = true;
             }).always(function () {
                 self.display.chargement = false;
             });
