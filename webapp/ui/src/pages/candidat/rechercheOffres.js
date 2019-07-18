@@ -139,15 +139,10 @@ var app = new Vue({
         },
         afficherOffre: function (offre, index) {
             this.display.contact = false;
-            if (offre.id !== this.offreCourante.id) {
-                this.offreCourante = offre;
-                this.indexNavigationOffre = index;
+            this.offreCourante = offre;
+            this.indexNavigationOffre = index;
 
-                $('#detailOffre').modal('show');
-            } else {
-                this.offreCourante = null;
-                this.indexNavigationOffre = null;
-            }
+            $('#detailOffre').modal('show');
         },
         afficherOffreSuivante: function() {
             this.display.contact = false;
