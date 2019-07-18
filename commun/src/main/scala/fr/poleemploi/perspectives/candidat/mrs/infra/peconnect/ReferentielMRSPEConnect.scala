@@ -5,8 +5,8 @@ import fr.poleemploi.perspectives.candidat.mrs.domain.{MRSValidee, ReferentielMR
 import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.ReferentielMRSPEConnect.prioriserMRSDHAEValidees
 import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectAccessTokenStorage
 import fr.poleemploi.perspectives.commun.infra.peconnect.sql.PEConnectSqlAdapter
-import fr.poleemploi.perspectives.commun.infra.peconnect.ws.{AccessToken, PEConnectWSAdapter}
-import fr.poleemploi.perspectives.commun.infra.ws.WSAdapter
+import fr.poleemploi.perspectives.commun.infra.peconnect.ws.PEConnectWSAdapter
+import fr.poleemploi.perspectives.commun.infra.ws.{AccessToken, WSAdapter}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

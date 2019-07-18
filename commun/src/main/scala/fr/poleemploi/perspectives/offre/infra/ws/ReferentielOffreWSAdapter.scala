@@ -1,7 +1,7 @@
 package fr.poleemploi.perspectives.offre.infra.ws
 
 import fr.poleemploi.perspectives.commun.infra.oauth.OauthConfig
-import fr.poleemploi.perspectives.commun.infra.ws.{WSAdapter, WebServiceException}
+import fr.poleemploi.perspectives.commun.infra.ws.{AccessToken, WSAdapter, WebServiceException}
 import fr.poleemploi.perspectives.metier.infra.ws.AccessTokenResponse
 import fr.poleemploi.perspectives.offre.domain.{CriteresRechercheOffre, RechercheOffreResult, ReferentielOffre}
 import play.api.cache.AsyncCacheApi
@@ -26,14 +26,10 @@ class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
     * Ne gère que 3 CodeROME pour l'instant (découpage des requêtes à refaire pour en gérer plus)
     */
   def rechercherOffres(criteres: CriteresRechercheOffre): Future[RechercheOffreResult] = {
-    def callWS(accessTokenResponse: AccessTokenResponse, request: RechercheOffreRequest): Future[RechercheOffreResult] =
+    def callWS(accessToken: AccessToken, request: RechercheOffreRequest): Future[RechercheOffreResult] =
       wsClient.url(s"${config.urlApi}/offresdemploi/v2/offres/search")
         .addQueryStringParameters(request.params: _ *)
-        .addHttpHeaders(
-          ("Authorization", s"Bearer ${accessTokenResponse.accessToken}"),
-          jsonContentType,
-          ("Accept", "application/json")
-        )
+        .addHttpHeaders(authorizationBearer(accessToken), jsonContentType)
         .get()
         .flatMap(r => filtreStatutReponse(response = r, statutNonGere = s => s != 200 && s != 206))
         .map(r =>
@@ -57,10 +53,10 @@ class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
     for {
       accessTokenResponse <- genererAccessToken
       codeInsee <- criteres.codePostal
-        .map(c => codeInsee(accessTokenResponse, c).map(Some(_)))
+        .map(c => codeInsee(accessTokenResponse.accessToken, c).map(Some(_)))
         .getOrElse(Future.successful(None))
       rechercheOffreResult <- callWS(
-        accessTokenResponse = accessTokenResponse,
+        accessToken = accessTokenResponse.accessToken,
         request = mapping.buildRechercherOffresRequest(criteres, codeInsee)
       )
     } yield {
@@ -89,9 +85,9 @@ class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
       .flatMap(filtreStatutReponse(_))
       .map(_.json.as[AccessTokenResponse])
 
-  private def codeInsee(accessTokenResponse: AccessTokenResponse, codePostal: String): Future[String] =
+  private def codeInsee(accessToken: AccessToken, codePostal: String): Future[String] =
     cacheApi
-      .getOrElseUpdate(cacheKeyCommunes)(listerCommunes(accessTokenResponse))
+      .getOrElseUpdate(cacheKeyCommunes)(listerCommunes(accessToken))
       .map(_.getOrElse(codePostal match {
         case "75000" => "75001"
         case "69000" => "69001"
@@ -99,14 +95,11 @@ class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
         case c@_ => c
       }, throw new IllegalArgumentException(s"Aucun codeINSEE associé au codePostal : $codePostal")))
 
-  private def listerCommunes(accessTokenResponse: AccessTokenResponse): Future[Map[String, String]] =
+  private def listerCommunes(accessToken: AccessToken): Future[Map[String, String]] =
     for {
       communes <- wsClient
         .url(s"${config.urlApi}/offresdemploi/v2/referentiel/communes")
-        .addHttpHeaders(
-          ("Authorization", s"Bearer ${accessTokenResponse.accessToken}"),
-          jsonContentType
-        )
+        .addHttpHeaders(authorizationBearer(accessToken), jsonContentType)
         .get()
         .flatMap(filtreStatutReponse(_))
         .map(r => r.json.as[List[CommuneResponse]].map(c => c.codePostal -> c.code).toMap)

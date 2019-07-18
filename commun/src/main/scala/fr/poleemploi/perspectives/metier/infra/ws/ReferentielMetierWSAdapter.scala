@@ -1,7 +1,7 @@
 package fr.poleemploi.perspectives.metier.infra.ws
 
 import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite}
-import fr.poleemploi.perspectives.commun.infra.ws.WSAdapter
+import fr.poleemploi.perspectives.commun.infra.ws.{AccessToken, WSAdapter}
 import fr.poleemploi.perspectives.metier.domain.{Metier, ReferentielMetier, SecteurActivite}
 import fr.poleemploi.perspectives.metier.infra.elasticsearch.ReferentielMetierElasticsearchAdapter
 import play.api.cache.AsyncCacheApi
@@ -53,8 +53,8 @@ class ReferentielMetierWSAdapter(config: ReferentielMetierWSAdapterConfig,
   private def findMetiers: Future[Map[CodeROME, Metier]] =
     cacheApi.getOrElseUpdate(cacheKeyMetiers)(
       (for {
-        accessToken <- genererAccessToken
-        metiers <- listerMetiers(accessToken)
+        accessTokenResponse <- genererAccessToken
+        metiers <- listerMetiers(accessTokenResponse.accessToken)
       } yield metiers).recoverWith {
         case t: Throwable =>
           referentielMetierWSLogger.error("Erreur lors de la récupération des métiers depuis le référentiel", t)
@@ -74,13 +74,13 @@ class ReferentielMetierWSAdapter(config: ReferentielMetierWSAdapterConfig,
       .flatMap(filtreStatutReponse(_))
       .map(_.json.as[AccessTokenResponse])
 
-  private def listerMetiers(accessTokenResponse: AccessTokenResponse): Future[Map[CodeROME, Metier]] = {
+  private def listerMetiers(accessToken: AccessToken): Future[Map[CodeROME, Metier]] = {
     def callWS(offset: Option[Int] = None): Future[ListeMetiersResponse] =
       wsClient
         .url(s"${config.urlApi}/infotravail/v1/datastore_search" +
           offset.map(o => s"?offset=$o&resource_id=$metiersResourceId")
             .getOrElse(s"?resource_id=$metiersResourceId"))
-        .addHttpHeaders(("Authorization", s"Bearer ${accessTokenResponse.accessToken}"))
+        .addHttpHeaders(authorizationBearer(accessToken))
         .get()
         .flatMap(filtreStatutReponse(_))
         .map(_.json.as[ListeMetiersResponse])

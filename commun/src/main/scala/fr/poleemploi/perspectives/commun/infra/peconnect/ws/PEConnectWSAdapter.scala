@@ -2,7 +2,7 @@ package fr.poleemploi.perspectives.commun.infra.peconnect.ws
 
 import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.candidat.mrs.domain.MRSValidee
-import fr.poleemploi.perspectives.commun.infra.ws.{WSAdapter, WebServiceException}
+import fr.poleemploi.perspectives.commun.infra.ws.{AccessToken, WSAdapter, WebServiceException}
 import play.api.libs.ws.{WSClient, WSResponse}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -16,7 +16,7 @@ class PEConnectWSAdapter(wsClient: WSClient,
     handleRateLimit()(
       wsClient
         .url(s"${config.urlApi}/prestationssuivies/v1/resultat/rendez-vous?listeCodeTypePrestation=ESP&listeCodeTypePrestation=ESPR")
-        .addHttpHeaders(authorizationHeader(accessToken))
+        .addHttpHeaders(authorizationBearer(accessToken))
         .get()
         .flatMap(filtreStatutReponse(_))
     ).map(r => mapping.buildMRSValidees(r.json.as[List[ResultatRendezVousResponse]]))
@@ -25,7 +25,7 @@ class PEConnectWSAdapter(wsClient: WSClient,
     handleRateLimit()(
       wsClient
         .url(s"${config.urlApi}/peconnect-entreprise/v1/userinfo")
-        .addHttpHeaders(authorizationHeader(accessToken))
+        .addHttpHeaders(authorizationBearer(accessToken))
         .get()
         .flatMap(filtreStatutReponse(_))
     ).map(r => mapping.buildPEConnectRecruteurInfos(r.json.as[UserInfosEntrepriseResponse]))
@@ -34,7 +34,7 @@ class PEConnectWSAdapter(wsClient: WSClient,
     handleRateLimit()(
       wsClient
         .url(s"${config.urlApi}/peconnect-individu/v1/userinfo")
-        .addHttpHeaders(authorizationHeader(accessToken))
+        .addHttpHeaders(authorizationBearer(accessToken))
         .get()
         .flatMap(filtreStatutReponse(_))
     ).map(r => mapping.buildPEConnectCandidatInfos(r.json.as[UserInfosResponse]))
@@ -43,7 +43,7 @@ class PEConnectWSAdapter(wsClient: WSClient,
     handleRateLimit()(
       wsClient
         .url(s"${config.urlApi}/peconnect-coordonnees/v1/coordonnees")
-        .addHttpHeaders(authorizationHeader(accessToken))
+        .addHttpHeaders(authorizationBearer(accessToken))
         .get()
         .flatMap(filtreStatutReponse(_))
     ).map(r => mapping.buildAdresse(r.json.as[CoordonneesCandidatReponse]))
@@ -52,7 +52,7 @@ class PEConnectWSAdapter(wsClient: WSClient,
     handleRateLimit()(
       wsClient
         .url(s"${config.urlApi}/peconnect-statut/v1/statut")
-        .addHttpHeaders(authorizationHeader(accessToken))
+        .addHttpHeaders(authorizationBearer(accessToken))
         .get()
         .flatMap(filtreStatutReponse(_))
     ).map(r => mapping.buildStatutDemandeurEmploi(r.json.as[StatutCandidatReponse]))
@@ -61,7 +61,7 @@ class PEConnectWSAdapter(wsClient: WSClient,
     handleRateLimit()(
       wsClient
         .url(s"${config.urlApi}/peconnect-competences/v2/competences")
-        .addHttpHeaders(authorizationHeader(accessToken))
+        .addHttpHeaders(authorizationBearer(accessToken))
         .get()
         .flatMap(filtreStatutReponse(_))
     ).map(r => {
@@ -73,7 +73,7 @@ class PEConnectWSAdapter(wsClient: WSClient,
     handleRateLimit()(
       wsClient
         .url(s"${config.urlApi}/peconnect-competences/v2/langues")
-        .addHttpHeaders(authorizationHeader(accessToken))
+        .addHttpHeaders(authorizationBearer(accessToken))
         .get()
         .flatMap(filtreStatutReponse(_))
     ).map(r => mapping.buildLanguesCandidat(r.json.as[List[LangueResponse]]))
@@ -82,7 +82,7 @@ class PEConnectWSAdapter(wsClient: WSClient,
     handleRateLimit()(
       wsClient
         .url(s"${config.urlApi}/peconnect-competences/v2/interets")
-        .addHttpHeaders(authorizationHeader(accessToken))
+        .addHttpHeaders(authorizationBearer(accessToken))
         .get()
         .flatMap(filtreStatutReponse(_))
     ).map(r => mapping.buildCentreInteretsCandidat(r.json.as[List[CentreInteretResponse]]))
@@ -91,7 +91,7 @@ class PEConnectWSAdapter(wsClient: WSClient,
     handleRateLimit()(
       wsClient
         .url(s"${config.urlApi}/peconnect-formations/v1/formations")
-        .addHttpHeaders(authorizationHeader(accessToken))
+        .addHttpHeaders(authorizationBearer(accessToken))
         .get()
         .flatMap(filtreStatutReponse(_))
     ).map(r => mapping.buildFormations(r.json.as[List[FormationResponse]]))
@@ -100,7 +100,7 @@ class PEConnectWSAdapter(wsClient: WSClient,
     handleRateLimit()(
       wsClient
         .url(s"${config.urlApi}/peconnect-formations/v1/permis")
-        .addHttpHeaders(authorizationHeader(accessToken))
+        .addHttpHeaders(authorizationBearer(accessToken))
         .get()
         .flatMap(filtreStatutReponse(_))
     ).map(r => mapping.buildPermis(r.json.as[List[PermisResponse]]))
@@ -109,12 +109,10 @@ class PEConnectWSAdapter(wsClient: WSClient,
     handleRateLimit()(
       wsClient
         .url(s"${config.urlApi}/peconnect-experiences/v1/experiences")
-        .addHttpHeaders(authorizationHeader(accessToken))
+        .addHttpHeaders(authorizationBearer(accessToken))
         .get()
         .flatMap(filtreStatutReponse(_))
     ).map(r => mapping.buildExperienceProfessionnelles(r.json.as[List[ExperienceProfessionnelleResponse]]))
-
-  private def authorizationHeader(accessToken: AccessToken): (String, String) = ("Authorization", s"Bearer ${accessToken.value}")
 
   /**
     * Effectue un nombre de réessai si un service échoue en raison d'un statut 429 (Too many requests). <br />

@@ -1,7 +1,8 @@
 package fr.poleemploi.perspectives.commun.infra.peconnect
 
 import fr.poleemploi.perspectives.commun.infra.peconnect.sql.PEConnectSqlAdapter
-import fr.poleemploi.perspectives.commun.infra.peconnect.ws.{AccessToken, PEConnectCandidatInfos, PEConnectRecruteurInfos, PEConnectWSAdapter}
+import fr.poleemploi.perspectives.commun.infra.peconnect.ws.{PEConnectCandidatInfos, PEConnectRecruteurInfos, PEConnectWSAdapter}
+import fr.poleemploi.perspectives.commun.infra.ws.AccessToken
 
 import scala.concurrent.Future
 

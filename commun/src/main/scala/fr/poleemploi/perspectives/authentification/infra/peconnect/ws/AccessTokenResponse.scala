@@ -1,7 +1,7 @@
 package fr.poleemploi.perspectives.authentification.infra.peconnect.ws
 
 import fr.poleemploi.perspectives.authentification.infra.peconnect.jwt.JWTToken
-import fr.poleemploi.perspectives.commun.infra.peconnect.ws.AccessToken
+import fr.poleemploi.perspectives.commun.infra.ws.AccessToken
 import play.api.libs.json.{JsPath, Reads}
 import play.api.libs.functional.syntax._
 

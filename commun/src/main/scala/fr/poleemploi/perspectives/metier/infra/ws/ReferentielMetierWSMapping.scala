@@ -1,6 +1,7 @@
 package fr.poleemploi.perspectives.metier.infra.ws
 
 import fr.poleemploi.perspectives.commun.domain.CodeROME
+import fr.poleemploi.perspectives.commun.infra.ws.AccessToken
 import fr.poleemploi.perspectives.metier.domain.Metier
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsPath, Reads}
@@ -14,7 +15,7 @@ class ReferentielMetierWSMapping {
     )
 }
 
-case class AccessTokenResponse(accessToken: String,
+case class AccessTokenResponse(accessToken: AccessToken,
                                tokenType: String,
                                scope: String,
                                expiresIn: Int)
@@ -22,7 +23,7 @@ case class AccessTokenResponse(accessToken: String,
 object AccessTokenResponse {
 
   implicit val accessTokenResponseReads: Reads[AccessTokenResponse] = (
-    (JsPath \ "access_token").read[String] and
+    (JsPath \ "access_token").read[String].map(AccessToken) and
       (JsPath \ "token_type").read[String] and
       (JsPath \ "scope").read[String] and
       (JsPath \ "expires_in").read[Int]

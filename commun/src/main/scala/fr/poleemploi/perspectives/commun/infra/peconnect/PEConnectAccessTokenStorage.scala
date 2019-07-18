@@ -1,7 +1,7 @@
 package fr.poleemploi.perspectives.commun.infra.peconnect
 
 import fr.poleemploi.perspectives.candidat.CandidatId
-import fr.poleemploi.perspectives.commun.infra.peconnect.ws.AccessToken
+import fr.poleemploi.perspectives.commun.infra.ws.AccessToken
 import play.api.cache.AsyncCacheApi
 
 import scala.concurrent.ExecutionContext.Implicits.global
