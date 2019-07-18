@@ -22,7 +22,7 @@ case class AccessTokenResponse(accessToken: AccessToken,
 
 object AccessTokenResponse {
 
-  implicit val accessTokenResponseReads: Reads[AccessTokenResponse] = (
+  implicit val reads: Reads[AccessTokenResponse] = (
     (JsPath \ "access_token").read[String].map(AccessToken) and
       (JsPath \ "token_type").read[String] and
       (JsPath \ "scope").read[String] and
@@ -35,7 +35,7 @@ case class LinksResponse(start: String,
 
 object LinksResponse {
 
-  implicit val linksResponseReads: Reads[LinksResponse] = (
+  implicit val reads: Reads[LinksResponse] = (
     (JsPath \ "start").read[String] and
       (JsPath \ "next").readNullable[String]
     ) (LinksResponse.apply _)
@@ -51,7 +51,7 @@ case class ListeMetiersResponse(records: List[RomeCardResponse],
   */
 object ListeMetiersResponse {
 
-  implicit val listeMetiersResponseReads: Reads[ListeMetiersResponse] = (
+  implicit val reads: Reads[ListeMetiersResponse] = (
     (JsPath \ "result" \ "records").read[List[RomeCardResponse]] and
       (JsPath \ "result" \ "_links").read[LinksResponse] and
       (JsPath \ "result" \ "total").read[Int]
@@ -63,7 +63,7 @@ case class RomeCardResponse(romeProfessionCardName: String,
 
 object RomeCardResponse {
 
-  implicit val romeCardResponseReads: Reads[RomeCardResponse] = (
+  implicit val reads: Reads[RomeCardResponse] = (
     (JsPath \ "ROME_PROFESSION_CARD_NAME").read[String].map(_.replaceAll("''", "'")) and
       (JsPath \ "ROME_PROFESSION_CARD_CODE").read[String]
     ) (RomeCardResponse.apply _)

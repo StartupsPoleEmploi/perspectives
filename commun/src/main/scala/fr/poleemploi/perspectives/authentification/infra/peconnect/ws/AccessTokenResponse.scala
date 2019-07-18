@@ -11,7 +11,7 @@ case class AccessTokenResponse(accessToken: AccessToken,
 
 object AccessTokenResponse {
 
-  implicit val accessTokenResponseReads: Reads[AccessTokenResponse] = (
+  implicit val reads: Reads[AccessTokenResponse] = (
     (JsPath \ "access_token").read[String].map(AccessToken) and
       (JsPath \ "id_token").read[String].map(JWTToken) and
       (JsPath \ "nonce").read[String]
