@@ -218,8 +218,6 @@ object OffreResponse {
 
 case class RechercheOffreRequest(params: List[(String, String)])
 
-case class RechercheOffreResponse(resultats: List[OffreResponse])
-
 class ReferentielOffreWSMapping {
 
   def buildRechercherOffresRequest(criteresRechercheOffre: CriteresRechercheOffre,
