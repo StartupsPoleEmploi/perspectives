@@ -18,8 +18,8 @@ var app = new Vue({
             cv: jsData.cv,
             csrfToken: jsData.csrfToken,
             nbOffresParPage: 10,
-            offres: jsData.offres,
-            nbOffresTotal: jsData.nbOffresTotal,
+            offres: [],
+            nbOffresTotal: 0,
             indexPaginationOffre: 1,
             indexNavigationOffre: 0,
             offreCourante: {
@@ -95,6 +95,8 @@ var app = new Vue({
                 modaleDetail.modal('show');
             }
         };
+
+        this.rechercherOffres();
     },
     computed: {
         pages: function () {
@@ -188,24 +190,23 @@ var app = new Vue({
             }
         },
         rechercherOffres: function() {
-            var formData = $("#js-rechercheOffresForm").serializeArray();
-            formData.push({name: "csrfToken", value: this.csrfToken});
+            var self = this;
             $.ajax({
                 type: "POST",
                 url: "/candidat/offres",
-                data: formData,
+                data: $("#js-rechercheOffresForm").serializeArray(),
                 dataType: "json",
                 beforeSend: function(xhr) {
-                    app.display.chargement = true;
+                    self.display.chargement = true;
                 }
             }).done(function (response) {
-                app.offres = response.offres;
-                app.nbOffresTotal = response.nbOffresTotal;
-                app.indexPaginationOffre = 1;
-                app.$refs.pagination.pageChargee(1);
-                app.cacherFiltres();
+                self.offres = response.offres;
+                self.nbOffresTotal = response.nbOffresTotal;
+                self.indexPaginationOffre = 1;
+                self.$refs.pagination.pageChargee(1);
+                self.cacherFiltres();
             }).always(function () {
-                app.display.chargement = false;
+                self.display.chargement = false;
             });
         }
     }

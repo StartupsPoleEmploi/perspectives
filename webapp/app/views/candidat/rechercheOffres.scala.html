@@ -284,6 +284,7 @@
                         <span class="formulaireRecherche-jsResponsive"></span>
                         <p class="formulaireRecherche-retourListeResultats" v-on:click="cacherFiltres">Retour à la liste</p>
                         <form id="js-rechercheOffresForm" class="formulaireRecherche gtm-candidat-offres-form" v-on:submit.prevent="rechercherOffres">
+                            <input type="hidden" name="csrfToken" v-bind:value="csrfToken" />
                             <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurAffichageFiltres"
                             v-on:click="afficherFiltres">
                                 <div class="rechercheOffres-localisation">

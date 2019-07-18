@@ -4,7 +4,6 @@ import authentification.infra.play.{CandidatAuthentifieAction, OptionalCandidatA
 import conf.WebAppConfig
 import controllers.AssetsFinder
 import controllers.FlashMessages.FlashMessage
-import fr.poleemploi.cqrs.projection.QueryException
 import fr.poleemploi.perspectives.candidat.LocalisationRecherche
 import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite, RayonRecherche}
 import fr.poleemploi.perspectives.offre.domain.{CriteresRechercheOffre, TypeContrat}
@@ -39,30 +38,20 @@ class RechercheOffreController @Inject()(cc: ControllerComponents,
         rayonRecherche = rayonRecherche.flatMap(RayonRecherche.from)
       )
 
-    (for {
-      candidatQueryResult <- optCandidatAuthentifieRequest.candidatAuthentifie.map(c =>
+    for {
+      candidat <- optCandidatAuthentifieRequest.candidatAuthentifie.map(c =>
         candidatQueryHandler.handle(CandidatPourRechercheOffreQuery(c.candidatId)).map(Some(_))
       ).getOrElse(Future.successful(None))
       localisationRecherche = optCandidatAuthentifieRequest.flash.candidatLocalisationRechercheModifiee
         .orElse(buildLocalisationRechercheFromRequest)
-        .orElse(candidatQueryResult.flatMap(_.localisationRecherche))
-      offresCandidatQueryResult <- candidatQueryHandler.handle(OffresCandidatQuery(CriteresRechercheOffre(
-        motCle = motCle,
-        codePostal = localisationRecherche.map(_.codePostal),
-        rayonRecherche = localisationRecherche.flatMap(_.rayonRecherche),
-        typesContrats = Nil,
-        secteursActivites = Nil,
-        codesROME = Nil
-      )))
+        .orElse(candidat.flatMap(_.localisationRecherche))
     } yield {
       Ok(views.html.candidat.rechercheOffres(
         candidatAuthentifie = optCandidatAuthentifieRequest.candidatAuthentifie,
         jsData = Json.obj(
           "candidatAuthentifie" -> optCandidatAuthentifieRequest.isCandidatAuthentifie,
-          "cv" -> candidatQueryResult.exists(_.cv),
-          "metiersValides" -> candidatQueryResult.map(_.metiersValides),
-          "offres" -> offresCandidatQueryResult.offres,
-          "nbOffresTotal" -> offresCandidatQueryResult.nbOffresTotal,
+          "cv" -> candidat.exists(_.cv),
+          "metiersValides" -> candidat.map(_.metiersValides),
           "csrfToken" -> CSRF.getToken.map(_.value),
           "recherche" -> Json.obj(
             "motCle" -> motCle,
@@ -75,11 +64,6 @@ class RechercheOffreController @Inject()(cc: ControllerComponents,
           "algoliaPlacesConfig" -> webAppConfig.algoliaPlacesConfig
         )
       ))
-    }).recover {
-      case t: QueryException =>
-        logger.error("Erreur lors de la recherche d'offres", t)
-        Redirect(routes.LandingController.landing())
-          .flashing(optCandidatAuthentifieRequest.flash.withMessageErreur("Notre service en actuellement en cours de maintenance, veuillez réessayer ultérieurement."))
     }
   }
 
@@ -99,12 +83,7 @@ class RechercheOffreController @Inject()(cc: ControllerComponents,
         formWithErrors => Future.successful(BadRequest(formWithErrors.errorsAsJson)),
         rechercheOffresForm =>
           candidatQueryHandler.handle(OffresCandidatQuery(buildCriteresRechercheOffre(rechercheOffresForm)))
-            .map(offresCandidatQueryResult =>
-              Ok(Json.obj(
-                "offres" -> offresCandidatQueryResult.offres,
-                "nbOffresTotal" -> offresCandidatQueryResult.nbOffresTotal
-              ))
-            )
+            .map(result => Ok(Json.toJson(result)))
       )
     }(request)
   }

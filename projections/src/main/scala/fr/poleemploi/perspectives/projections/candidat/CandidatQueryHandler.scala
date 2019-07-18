@@ -30,12 +30,8 @@ class CandidatQueryHandler(candidatProjection: CandidatProjection,
     case q: CandidatsPourConseillerQuery => candidatProjection.listerPourConseiller(q)
     case q: RechercheCandidatsQuery => candidatProjection.rechercherCandidats(q)
     case q: CandidatMetiersValidesQuery => candidatProjection.metiersValides(q)
-    case q: OffresCandidatQuery =>
-      referentielOffre
-        .rechercherOffres(q.criteresRechercheOffre).map(r => OffresCandidatQueryResult(offres = r.offres, nbOffresTotal = r.nbOffresTotal))
-        .recover {
-          case t: Throwable => throw QueryException(t)
-        }
+    case q: OffresCandidatQuery => referentielOffre.rechercherOffres(q.criteresRechercheOffre)
+      .map(r => OffresCandidatQueryResult(offres = r.offres, nbOffresTotal = r.nbOffresTotal))
     case q: CandidatPourRechercheOffreQuery => candidatProjection.rechercheOffre(q)
     case q: SecteursActivitesAvecCandidatsQuery => candidatProjection.secteursActivitesAvecCandidats(q)
   }
