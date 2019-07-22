@@ -75,12 +75,12 @@
                                     <span>
                                         <input id="contactRecruteur-true" name="contactRecruteur"
                                                type="radio" value="true" class="radioDeuxChoix-input" v-model="criteresRechercheFormData.contactRecruteur" />
-                                        <label class="radioDeuxChoix-label radioDeuxChoix-choix1 font-size-sm texte-majuscule" for="contactRecruteur-true">Oui</label>
+                                        <label class="radioDeuxChoix-label radioDeuxChoix-choix1 font-size-sm text-uppercase" for="contactRecruteur-true">Oui</label>
                                     </span>
                                     <span>
                                         <input id="contactRecruteur-false" name="contactRecruteur"
                                                type="radio" value="false" class="radioDeuxChoix-input" v-model="criteresRechercheFormData.contactRecruteur" />
-                                        <label class="radioDeuxChoix-label radioDeuxChoix-choix2 font-size-sm texte-majuscule" for="contactRecruteur-false">Non</label>
+                                        <label class="radioDeuxChoix-label radioDeuxChoix-choix2 font-size-sm text-uppercase" for="contactRecruteur-false">Non</label>
                                     </span>
                                 </div>
                                 <div v-for="error in criteresRechercheFormErrors.contactRecruteur" class="texte-erreur font-size-sm">{{error}}</div>
@@ -93,12 +93,12 @@
                                     <span>
                                         <input id="contactFormation-true" name="contactFormation"
                                                type="radio" value="true" class="radioDeuxChoix-input" v-model="criteresRechercheFormData.contactFormation" />
-                                        <label class="radioDeuxChoix-label radioDeuxChoix-choix1 font-size-sm texte-majuscule" for="contactFormation-true">Oui</label>
+                                        <label class="radioDeuxChoix-label radioDeuxChoix-choix1 font-size-sm text-uppercase" for="contactFormation-true">Oui</label>
                                     </span>
                                     <span>
                                         <input id="contactFormation-false" name="contactFormation"
                                                type="radio" value="false" class="radioDeuxChoix-input" v-model="criteresRechercheFormData.contactFormation" />
-                                        <label class="radioDeuxChoix-label radioDeuxChoix-choix2 font-size-sm texte-majuscule" for="contactFormation-false">Non</label>
+                                        <label class="radioDeuxChoix-label radioDeuxChoix-choix2 font-size-sm text-uppercase" for="contactFormation-false">Non</label>
                                     </span>
                                 </div>
                                 <div v-for="error in criteresRechercheFormErrors.contactFormation" class="texte-erreur font-size-sm">{{error}}</div>
@@ -233,7 +233,7 @@
                                                 <img v-bind:alt="secteurActivite.label" v-bind:src="'/assets/images/commun/secteursActivite/' + secteurActivite.code + '.svg'" width="45" height="45" />
                                             </div>
                                             <div class="col-9">
-                                                <p class="texte-majuscule texte-noir mb-0">{{secteurActivite.label}}</p>
+                                                <p class="text-uppercase texte-noir mb-0">{{secteurActivite.label}}</p>
                                                 <p class="mb-0" v-show="!display.secteursActivites[secteurActivite.code]">
                                                     <span v-for="metier in display.metiersSelectionnesParSecteur[secteurActivite.code]" class="metierSelectionne font-size-sm px-3">{{metier.label}}</span>
                                                 </p>
