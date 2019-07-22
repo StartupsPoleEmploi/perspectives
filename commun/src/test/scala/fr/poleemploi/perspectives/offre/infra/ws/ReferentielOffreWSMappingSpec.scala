@@ -454,7 +454,7 @@ class ReferentielOffreWSMappingSpec extends WordSpec
           mapping.buildPageOffres(contentRange, acceptRange)
         )
       }
-      "retourner une page suivante" in {
+      "retourner une page suivante lorsqu'on reçoit le premier intervalle d'offres" in {
         // Given
         val contentRange = Some("offres 0-149/5459")
         val acceptRange = Some("150")
@@ -464,6 +464,17 @@ class ReferentielOffreWSMappingSpec extends WordSpec
 
         // Then
         result.contains(PageOffres(150, 299)) mustBe true
+      }
+      "retourner une page suivante lorsqu'on reçoit un intervalle" in {
+        // Given
+        val contentRange = Some("offres 300-449/3011")
+        val acceptRange = Some("150")
+
+        // When
+        val result = mapping.buildPageOffres(contentRange, acceptRange)
+
+        // Then
+        result.contains(PageOffres(450, 599)) mustBe true
       }
     }
     "buildOffre" should {

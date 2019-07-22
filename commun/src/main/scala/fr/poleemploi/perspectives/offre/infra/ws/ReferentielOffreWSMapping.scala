@@ -224,7 +224,7 @@ class ReferentielOffreWSMapping {
   private val maxRangeEnd = 1149
 
   // On a pas le nombre de résultats dans un champ mais dans un header du type "offres debut-fin/total"
-  private val contentRangePattern: Pattern = Pattern.compile(".*(\\d+)-(\\d+)/(\\d+)")
+  private val contentRangePattern: Pattern = Pattern.compile(".*\\s(\\d+)-(\\d+)/(\\d+)")
 
   /**
     * l'API ne permet de passer que peu de filtres pour l'instant (que 3 codeROME par appels, deux secteurActivite par appel, etc.) : on fait donc plusieurs filtres à postériori
