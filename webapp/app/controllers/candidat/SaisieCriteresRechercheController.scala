@@ -57,7 +57,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
           for {
             secteursActivitesQueryResult <- metierQueryHandler.handle(SecteursActiviteQuery)
             candidatSaisieCriteresQueryResult <- candidatQueryHandler.handle(CandidatSaisieCriteresRechercheQuery(candidatAuthentifieRequest.candidatId))
-          } yield {
+          } yield
             BadRequest(views.html.candidat.saisieCriteresRecherche(
               candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie,
               jsData = Json.obj(
@@ -66,8 +66,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
                 "criteresRechercheFormErrors" -> formWithErrors.errorsAsJson,
                 "algoliaPlacesConfig" -> webAppConfig.algoliaPlacesConfig
               )
-            ))
-          },
+            )),
         saisieCriteresRechercheForm => {
           val modifierCriteresCommand = buildModifierCandidatCommand(candidatAuthentifieRequest.candidatId, saisieCriteresRechercheForm)
 

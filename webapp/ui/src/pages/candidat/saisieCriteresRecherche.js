@@ -1,7 +1,8 @@
-import Vue from "vue";
+import Vue from 'vue';
 import $ from 'jquery';
 import 'bootstrap/js/dist/modal';
 import places from 'places.js';
+import ROME from '../../domain/metier/ROME';
 
 var app = new Vue({
     el: '#saisieCriteresRechercheCandidat',
@@ -45,8 +46,9 @@ var app = new Vue({
                 {value: 'TEMPS_PLEIN', label: 'Plein temps'},
                 {value: 'TEMPS_PARTIEL', label: 'Temps partiel'}
             ],
-            metiersValides: Object.assign([], jsData.metiersValides),
+            metiersValides: ROME.metiersParSecteur(Object.assign([], jsData.metiersValides)),
             secteursActivites: jsData.secteursActivites,
+            secteursActivitesParCode: {},
             display: {
                 etape1: true,
                 etape2: false,
@@ -57,21 +59,22 @@ var app = new Vue({
             algoliaPlacesConfig: jsData.algoliaPlacesConfig
         }
     },
-    beforeMount: function() {
+    created: function() {
         var secteursActivites = {};
+        var secteursActivitesParCode = {};
         var metiersSelectionnesParSecteur = {};
-        jsData.secteursActivites.forEach(function(secteur) {
+        this.secteursActivites.forEach(function(secteur) {
             secteursActivites[secteur.code] = false;
+            secteursActivitesParCode[secteur.code] = secteur;
             metiersSelectionnesParSecteur[secteur.code] = [];
         });
-        jsData.criteresRechercheFormData.metiersRecherches.forEach(function(codeROME) {
-            var metier = jsData.secteursActivites.find(function(s) {
-                return s.code === codeROME.charAt(0);
-            }).metiers.find(function(m) {
+        this.criteresRechercheFormData.metiersRecherches.forEach(function(codeROME) {
+            var metier = secteursActivitesParCode[ROME.codeSecteurActivite(codeROME)].metiers.find(function(m) {
                 return m.codeROME === codeROME;
             });
-            metiersSelectionnesParSecteur[codeROME.charAt(0)].push(metier);
+            metiersSelectionnesParSecteur[ROME.codeSecteurActivite(codeROME)].push(metier);
         });
+        this.secteursActivitesParCode = secteursActivitesParCode;
         this.display.secteursActivites = secteursActivites;
         this.display.metiersSelectionnesParSecteur = metiersSelectionnesParSecteur;
     },
@@ -148,8 +151,16 @@ var app = new Vue({
                 }
 
                 if (this.criteresRechercheFormData.nouveauCandidat) {
-                    this.recupererLocalisation();
-                    this.recupererMetiersValides();
+                    this.findLocalisation().done(function (response) {
+                        app.criteresRechercheFormData.localisation = response.localisation;
+                    });
+                    this.findMetiersValides().done(function(response) {
+                        // On coche tous les métiers validés pour un nouveau candidat
+                        app.criteresRechercheFormData.metiersValidesRecherches = response.metiersValides.map(function(m) {
+                            return m.codeROME;
+                        });
+                        app.metiersValides = ROME.metiersParSecteur(response.metiersValides);
+                    });
                 }
             }
         },
@@ -204,23 +215,22 @@ var app = new Vue({
         resaisirMetiers: function() {
             $('#js-modaleMetiers').modal('hide');
         },
-        recupererLocalisation: function() {
-            $.ajax({
+        findLocalisation: function() {
+            return $.ajax({
                 type: "GET",
                 url: "/candidat/localisation",
                 dataType: "json"
-            }).done(function (response) {
-                app.criteresRechercheFormData.localisation = response.localisation;
             });
         },
-        recupererMetiersValides: function() {
-            $.ajax({
+        findMetiersValides: function() {
+            return $.ajax({
                 type: "GET",
                 url: "/candidat/metiers-valides",
                 dataType: "json"
-            }).done(function (response) {
-                app.metiersValides = response.metiersValides;
             });
+        },
+        hasMetiersValides: function() {
+            return Object.keys(this.metiersValides).length > 0;
         },
         ajouterMetierSelectionne: function(metier, codeSecteur) {
             var checked = this.criteresRechercheFormData.metiersRecherches.indexOf(metier.codeROME) !== -1;

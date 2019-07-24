@@ -39,7 +39,7 @@
                     </div>
                     <div class="row">
                         <div class="col-12 col-sm-11">
-                            <h3 id="titreModaleMetiers" class="texte-noir font-size-md">Êtes-vous sur de ne pas vouloir de métiers ?</h3>
+                            <h3 id="titreModaleMetiers" class="texte-noir font-size-md">Êtes-vous sur de ne pas vouloir sélectionner de métiers ?</h3>
                             <p class="texte-noir font-size-sm">Les entreprises recherchent des candidats sur certains secteurs. Faites votre sélection pour apparaître dans la liste de résultat de recherche et augmentez vos chances d’être recruter.</p>
                         </div>
                         <div class="col-12 col-sm-9 px-3 mb-3">
@@ -189,51 +189,62 @@
                     </fieldset>
                     <fieldset v-show="display.etape3">
                         <legend class="texte-noir font-size-md mb-4">
-                            <template v-if="metiersValides.length > 0">
+                            <template v-if="hasMetiersValides()">
                                 Votre profil Pôle Emploi indique que vous avez passé une <abbr title="Méthode de Recrutement par Simulation">MRS</abbr>
                             </template>
                             <template v-else>
                                 Dans quels autres secteurs recherchez-vous un emploi ?
                             </template>
                         </legend>
+                        <p class="texte-noir" v-if="hasMetiersValides()">Recherchez-vous toujours sur <span class="font-weight-bold">les métiers que vous avez validé par une MRS</span> ?</p>
                         <ol class="listeChamps list-unstyled">
-                            <li class="champSaisie" v-if="metiersValides.length > 0">
-                                <p class="texte-noir">Recherchez-vous toujours sur ces métiers ?</p>
+                            <li class="champSaisie" v-if="hasMetiersValides()">
                                 <ul class="list-unstyled">
-                                    <li class="mb-2" v-for="metierValide in metiersValides">
-                                        <input v-bind:id="'metierValide-' + metierValide.codeROME" name="metiersValidesRecherches[]"
-                                                type="checkbox" v-bind:value="metierValide.codeROME" class="checkbox-input"
-                                                v-model="criteresRechercheFormData.metiersValidesRecherches" />
-                                        <label class="checkbox-label checkbox-label--with-hover metierValide row align-items-center no-gutters py-3 mb-0" v-bind:for="'metierValide-' + metierValide.codeROME">
+                                    <li class="secteurActivite pt-3 pb-4 mb-2" v-for="(metiers, secteurActivite) in metiersValides">
+                                        <div class="row align-items-center no-gutters">
                                             <div class="col-1 mx-3 d-none d-md-flex justify-content-center">
                                                 <img width="45" height="45" alt="Secteur d'activité"
-                                                    v-bind:src="'/assets/images/commun/secteursActivite/' + metierValide.codeROME.charAt(0) + '.svg'" />
-                                                <img width="25" height="25" class="iconeMetierValide"
-                                                     alt="Métier validé" src="@assetsFinder.path("images/commun/metier-valide.svg")" />
+                                                     v-bind:src="'/assets/images/commun/secteursActivite/' + secteurActivite + '.svg'" />
+                                                <img width="22" height="22" alt="Métier validé"
+                                                     class="iconeMetierValide" src="@assetsFinder.path("images/commun/metier-valide.svg")" />
                                             </div>
-                                            <div class="col-9">
-                                                <p class="font-size-sm mb-0">{{metierValide.label}}</p>
+                                            <div class="col pl-3 pl-md-0">
+                                                <p class="mb-0 text-uppercase texte-noir">{{secteursActivitesParCode[secteurActivite].label}}</p>
                                             </div>
-                                            <div class="col-1 text-center">
-                                                <span class="checkbox-checkmark checkbox-checkmark--lg"></span>
-                                            </div>
-                                        </label>
+                                        </div>
+                                        <ul class="list-unstyled">
+                                            <li class="metierRecherche" v-for="metierValide in metiers">
+                                                <input v-bind:id="'metierValide-' + metierValide.codeROME" name="metiersValidesRecherches[]"
+                                                        type="checkbox" class="checkbox-input"
+                                                        v-bind:value="metierValide.codeROME" v-model="criteresRechercheFormData.metiersValidesRecherches" />
+                                                <label class="checkbox-label checkbox-label--with-hover row no-gutters py-2 mb-0"
+                                                       v-bind:for="'metierValide-' + metierValide.codeROME">
+                                                    <div class="col-1 mx-3 d-none d-md-flex"></div>
+                                                    <div class="col-auto mr-3 ml-3 ml-md-0">
+                                                        <span class="checkbox-checkmark"></span>
+                                                    </div>
+                                                    <div class="col">
+                                                        <p class="mb-0 font-size-sm">Oui je recherche toujours sur le métier de : <span class="font-weight-bold">{{metierValide.label}}</span></p>
+                                                    </div>
+                                                </label>
+                                            </li>
+                                        </ul>
                                     </li>
                                 </ul>
                                 <div v-for="error in criteresRechercheFormErrors.metiersValidesRecherches" class="texte-erreur font-size-sm">{{error}}</div>
                             </li>
                             <li class="champSaisie">
-                                <p class="texte-noir" v-if="metiersValides.length > 0">Dans quels autres métiers recherchez-vous un emploi ?</p>
+                                <p class="texte-noir" v-if="hasMetiersValides()">Dans quels autres métiers recherchez-vous un emploi ?</p>
                                 <ul class="list-unstyled">
-                                    <li class="secteurActivite pt-3 mb-2"
+                                    <li class="secteurActivite pt-3 mb-2 cursor-pointer"
                                         v-for="secteurActivite in secteursActivites"
                                         v-bind:class="[display.secteursActivites[secteurActivite.code] ? 'pb-5' : 'pb-3']">
                                         <div class="row align-items-center no-gutters" v-on:click="deplierSecteur(secteurActivite.code)">
                                             <div class="col-1 mx-3 d-none d-md-flex justify-content-center">
                                                 <img v-bind:alt="secteurActivite.label" v-bind:src="'/assets/images/commun/secteursActivite/' + secteurActivite.code + '.svg'" width="45" height="45" />
                                             </div>
-                                            <div class="col-9">
-                                                <p class="text-uppercase texte-noir mb-0">{{secteurActivite.label}}</p>
+                                            <div class="col-10 col-md-9 pl-3 pl-md-0">
+                                                <p class="mb-0 text-uppercase texte-noir">{{secteurActivite.label}}</p>
                                                 <p class="mb-0" v-show="!display.secteursActivites[secteurActivite.code]">
                                                     <span v-for="metier in display.metiersSelectionnesParSecteur[secteurActivite.code]" class="metierSelectionne font-size-sm px-3">{{metier.label}}</span>
                                                 </p>
@@ -249,14 +260,14 @@
                                                         type="checkbox" class="checkbox-input"
                                                         v-bind:value="metierRecherche.codeROME" v-on:change="ajouterMetierSelectionne(metierRecherche, secteurActivite.code)"
                                                         v-model="criteresRechercheFormData.metiersRecherches" />
-                                                <label class="checkbox-label checkbox-label--with-hover row align-items-center no-gutters py-2 mb-0"
+                                                <label class="checkbox-label checkbox-label--with-hover row no-gutters py-2 mb-0"
                                                         v-bind:for="'metierRecherche-' + metierRecherche.codeROME">
                                                     <div class="col-1 mx-3 d-none d-md-flex"></div>
-                                                    <div class="col-9">
-                                                        <p class="font-size-sm mb-0">{{metierRecherche.label}}</p>
-                                                    </div>
-                                                    <div class="col-1 text-center">
+                                                    <div class="col-auto mr-3 ml-3 ml-md-0">
                                                         <span class="checkbox-checkmark"></span>
+                                                    </div>
+                                                    <div class="col">
+                                                        <p class="font-size-sm mb-0">{{metierRecherche.label}}</p>
                                                     </div>
                                                 </label>
                                             </li>
