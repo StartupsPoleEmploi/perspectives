@@ -102,7 +102,7 @@
                                              v-on:click="display.habiletesParMetier[metierValide.metier.codeROME] = !display.habiletesParMetier[metierValide.metier.codeROME]">
                                             <div class="col-1 d-none d-md-flex">
                                                 <img width="45" height="45" alt="Secteur d'activité"
-                                                     v-bind:src="'/assets/images/commun/secteursActivite/' + metierValide.metier.codeROME.charAt(0) + '.svg'" />
+                                                     v-bind:src="'/assets/images/commun/secteursActivite/' + codeSecteurActivite(metierValide.metier.codeROME) + '.svg'" />
                                                 <img width="20" height="20" class="iconeMetierValide"
                                                      alt="Métier validé" src="@assetsFinder.path("images/commun/metier-valide.svg")" />
                                             </div>

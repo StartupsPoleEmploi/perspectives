@@ -4,8 +4,9 @@ import places from 'places.js';
 import 'bootstrap/js/dist/modal';
 import Pagination from '../../composants/Pagination.vue';
 import '../../commun/filters.js';
-import listeTempsTravail from "../../domain/candidat/tempsTravail";
-import niveauxLangues from "../../domain/candidat/niveauxLangues";
+import listeTempsTravail from '../../domain/candidat/tempsTravail';
+import niveauxLangues from '../../domain/candidat/niveauxLangues';
+import ROME from '../../domain/metier/ROME';
 
 Vue.filter('dateExperience', function (value) {
     return new Date(value).toLocaleString('fr-FR', {month: 'long', year: "numeric"});
@@ -151,7 +152,7 @@ var app = new Vue({
                 var labelSecteurActivite = self.secteurActiviteParCode(self.secteurActiviteChoisi).label;
                 self.resultatRecherche.candidats.forEach(function(c) {
                     if (c.metiersValidesRecherches.filter(function(m) {
-                        return m.codeROME.charAt(0) === self.secteurActiviteChoisi;
+                        return self.secteurActiviteChoisi === ROME.codeSecteurActivite(m.codeROME);
                     }).length !== 0) {
                         candidatsValides.push(c);
                     } else {
@@ -189,13 +190,13 @@ var app = new Vue({
                 });
             } else if (this.secteurActiviteChoisi) {
                 metiersFiltres = app.candidatCourant.metiersRecherches.filter(function(metier) {
-                    return app.secteurActiviteChoisi === metier.codeROME.charAt(0);
+                    return app.secteurActiviteChoisi === ROME.codeSecteurActivite(metier.codeROME);
                 });
             } else {
                 metiersFiltres = app.candidatCourant.metiersRecherches;
             }
 
-            var metiersParSecteur = app.metiersParSecteur(metiersFiltres);
+            var metiersParSecteur = ROME.metiersParSecteur(metiersFiltres);
             var result = [];
             for (var codeSecteur in metiersParSecteur) {
                 result.push({
@@ -221,13 +222,8 @@ var app = new Vue({
                 return s.code === codeSecteur;
             });
         },
-        metiersParSecteur: function(metiers) {
-            return metiers.reduce(function (acc, metier) {
-                var key = metier.codeROME.charAt(0);
-                acc[key] = acc[key] || [];
-                acc[key].push(metier);
-                return acc;
-            }, {});
+        codeSecteurActivite: function(codeROME) {
+            return ROME.codeSecteurActivite(codeROME);
         },
         titreSansCandidatsValides: function() {
           return 'Nous n\'avons pour l\'instant aucun candidat validé MRS ' + this.imageValideMRS() + ', mais d\'autres candidats recherchent ';
@@ -253,8 +249,8 @@ var app = new Vue({
                     return metierValide.indexOf(metier.codeROME) !== -1;
                 }) !== -1;
             } else if (this.secteurActiviteChoisi) {
-                return metierValide.charAt(0) === this.secteurActiviteChoisi && metiersValidesRecherches.findIndex(function(metier) {
-                    return metier.codeROME.charAt(0) === app.secteurActiviteChoisi;
+                return ROME.codeSecteurActivite(metierValide) === this.secteurActiviteChoisi && metiersValidesRecherches.findIndex(function(metier) {
+                    return ROME.codeSecteurActivite(metier.codeROME) === app.secteurActiviteChoisi;
                 }) !== -1;
             }
             return false;
@@ -269,7 +265,7 @@ var app = new Vue({
                 });
             } else if (this.secteurActiviteChoisi) {
                 return metiers.filter(function(metier) {
-                    return app.secteurActiviteChoisi === metier.codeROME.charAt(0);
+                    return app.secteurActiviteChoisi === ROME.codeSecteurActivite(metier.codeROME);
                 });
             } else {
                 return [];
