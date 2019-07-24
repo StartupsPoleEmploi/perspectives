@@ -19,7 +19,7 @@ class MailjetWSMapping(testeurs: List[Email]) {
   val idListeCandidatsProspects: Int = 10066519
 
   val idListeRecruteursInscrits: Int = 9909
-  val idListeRecruteursProspects: Int = 10145914
+  val idListeRecruteursProspects: Int = 10145943
 
   val idListeTesteurs: Int = 10145941
 
