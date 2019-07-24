@@ -13,13 +13,19 @@ class ReferentielMRSLocalAdapter extends ReferentielMRS {
   override def mrsValidees(candidatId: CandidatId): Future[List[MRSValidee]] =
     Future.successful(List(
       MRSValidee(
-        codeROME = CodeROME("B1802"),
+        codeROME = CodeROME("A1401"),
         codeDepartement = CodeDepartement("85"),
         dateEvaluation = LocalDate.now(),
         isDHAE = false
       ),
       MRSValidee(
-        codeROME = CodeROME("H2913"),
+        codeROME = CodeROME("D1106"),
+        codeDepartement = CodeDepartement("85"),
+        dateEvaluation = LocalDate.now(),
+        isDHAE = false
+      ),
+      MRSValidee(
+        codeROME = CodeROME("D1105"),
         codeDepartement = CodeDepartement("85"),
         dateEvaluation = LocalDate.now(),
         isDHAE = false
