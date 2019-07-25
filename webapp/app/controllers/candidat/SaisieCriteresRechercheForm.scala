@@ -36,13 +36,9 @@ object SaisieCriteresRechercheForm {
   implicit val writes: Writes[SaisieCriteresRechercheForm] = Json.writes[SaisieCriteresRechercheForm]
 
   val rayonRechercheConstraint: Constraint[Int] = Constraint("constraint.rayonRecherche")(
-    n =>
-      if (n == 0)
-        Valid
-      else
-        RayonRecherche.from(n)
-        .map(_ => Valid)
-        .getOrElse(Invalid(Seq(ValidationError("constraint.rayonRecherche"))))
+    n => RayonRecherche.from(n)
+      .map(_ => Valid)
+      .getOrElse(Invalid(Seq(ValidationError("constraint.rayonRecherche"))))
   )
 
   val tempsTravailConstraint: Constraint[String] = Constraint("constraint.tempsTravail")(

@@ -37,7 +37,7 @@ var app = new Vue({
                 domainesProfessionnelsRecherches: []
             }, jsData.criteresRechercheFormErrors),
             rayonsRecherche: [
-                {value: 0, label: 'Dans ma ville'},
+                {value: null, label: 'Dans ma ville'},
                 {value: 10, label: 'Moins de 10km'},
                 {value: 30, label: 'Moins de 30km'},
                 {value: 50, label: 'Moins de 50km'}
@@ -172,16 +172,12 @@ var app = new Vue({
                 !this.criteresRechercheFormData.localisation.longitude) {
                 this.criteresRechercheFormErrors.localisation = ["Veuillez saisir une valeur pour ce champ"];
             }
-            if (!this.criteresRechercheFormData.rayonRecherche) {
-                this.criteresRechercheFormErrors.rayonRecherche = ["Veuillez saisir une valeur pour ce champ"];
-            }
             if (!this.criteresRechercheFormData.tempsTravail) {
                 this.criteresRechercheFormErrors.tempsTravail = ["Veuillez saisir une valeur pour ce champ"];
             }
 
             if (this.criteresRechercheFormData.localisation.latitude &&
                 this.criteresRechercheFormData.localisation.longitude &&
-                this.criteresRechercheFormData.rayonRecherche !== null &&
                 this.criteresRechercheFormData.tempsTravail) {
                 this.display.etape2 = false;
                 this.display.etape3 = true;

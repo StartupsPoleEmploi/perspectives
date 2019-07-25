@@ -113,10 +113,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
           latitude = saisieCriteresRechercheForm.localisation.latitude,
           longitude = saisieCriteresRechercheForm.localisation.longitude
         ),
-        rayonRecherche = saisieCriteresRechercheForm.rayonRecherche.flatMap(r =>
-          if (r == 0) None
-          else RayonRecherche.from(r)
-        )
+        rayonRecherche = saisieCriteresRechercheForm.rayonRecherche.flatMap(RayonRecherche.from)
       ),
       tempsTravailRecherche = TempsTravail.from(saisieCriteresRechercheForm.tempsTravail).get
     )

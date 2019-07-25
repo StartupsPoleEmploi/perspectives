@@ -55,6 +55,11 @@ var app = new Vue({
             }
         }
     },
+    created: function() {
+        if (!this.rechercheFormData.localisation.rayonRecherche) {
+            this.rechercheFormData.localisation.rayonRecherche = 0;
+        }
+    },
     mounted: function () {
         var self = this;
         var placesAutocomplete = places({
