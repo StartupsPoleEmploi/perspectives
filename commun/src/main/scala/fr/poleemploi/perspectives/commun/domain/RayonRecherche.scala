@@ -21,5 +21,3 @@ object RayonRecherche {
 
   def from(value: Int): Option[RayonRecherche] = values.get(value)
 }
-
-

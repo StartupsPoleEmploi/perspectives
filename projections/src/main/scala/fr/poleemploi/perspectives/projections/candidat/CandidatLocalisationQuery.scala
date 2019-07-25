@@ -12,5 +12,6 @@ case class CandidatLocalisationQueryResult(commune: Option[String],
                                            longitude: Option[Double]) extends QueryResult
 
 object CandidatLocalisationQueryResult {
+
   implicit val writes: Writes[CandidatLocalisationQueryResult] = Json.writes[CandidatLocalisationQueryResult]
 }
