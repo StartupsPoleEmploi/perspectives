@@ -4,7 +4,7 @@ import places from "places.js";
 import 'bootstrap/js/dist/modal';
 import '../../commun/filters.js';
 import Pagination from '../../composants/Pagination.vue';
-import rayonsRecherche from '../../domain/commun/rayonRecherche.js';
+import rayonsRechercheOffre from "../../domain/offre/rayonRecherche";
 import typesContrats from '../../domain/offre/typesContrats.js';
 
 var app = new Vue({
@@ -37,13 +37,13 @@ var app = new Vue({
                 localisation: {
                     codePostal: null,
                     lieuTravail: null,
-                    rayonRecherche: null
+                    rayonRecherche: 0
                 },
                 typesContrats: [],
                 metiers: []
             }, jsData.rechercheFormData),
             rechercheFormErrors: {},
-            rayonsRecherche: rayonsRecherche,
+            rayonsRecherche: rayonsRechercheOffre,
             typesContrats: typesContrats,
             metiersValides: Object.assign([], jsData.metiersValides),
             algoliaPlacesConfig: jsData.algoliaPlacesConfig,

@@ -14,17 +14,16 @@
                     <div class="col-12 col-xl-7 mt-3">
                         <div class="rechercheOffres-localisation">
                             <div class="rechercheOffres-conteneurlieuTravail">
-                                <input type="hidden" name="codePostal" v-model="recherche.codePostal" />
+                                <input type="hidden" name="codePostal" v-model="rechercheOffresFormData.codePostal" />
                                 <label for="js-lieuTravail" class="sr-only">Choisissez un lieu de travail</label>
                                 <input id="js-lieuTravail" type="text" name="lieuTravail" placeholder="Dans quelle ville ?" class="rechercheOffres-lieuTravail"
-                                       v-model="recherche.lieuTravail"/>
+                                       v-model="rechercheOffresFormData.lieuTravail"/>
                             </div>
                             <div class="rechercheOffres-conteneurRayonRecherche">
                                 <label for="js-rayonRecherche" class="sr-only">Renseignez un rayon de recherche</label>
                                 <select id="js-rayonRecherche" name="rayonRecherche"
-                                        v-model="recherche.rayonRecherche" class="rechercheOffres-rayonRecherche">
-                                    <option value="0">Lieu exact</option>
-                                    <option v-for="rayonRecherche in rayonsRecherche" v-bind:key="rayonRecherche.value" v-bind:value="rayonRecherche.value">{{rayonRecherche.label}}</option>
+                                        v-model="rechercheOffresFormData.rayonRecherche" class="rechercheOffres-rayonRecherche">
+                                    <option v-for="rayonRecherche in rayonsRechercheOffres" v-bind:key="rayonRecherche.value" v-bind:value="rayonRecherche.value">{{rayonRecherche.label}}</option>
                                 </select>
                             </div>
                         </div>

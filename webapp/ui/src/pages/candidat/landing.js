@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import places from 'places.js';
 import '../../composants/temoignages.js';
-import rayonsRecherche from "../../domain/commun/rayonRecherche";
+import rayonsRechercheOffres from "../../domain/offre/rayonRecherche";
 
 var app = new Vue({
     el: '#landingCandidat',
@@ -21,13 +21,13 @@ var app = new Vue({
                     texte: "Je viens de décrocher un poste aux Sables d'Olonne en tant qu'aide à domicile. Je vous remercie pour votre investissement !"
                 }
             ],
-            recherche: {
+            rechercheOffresFormData: {
                 lieuTravail: null,
                 codePostal: null,
                 rayonRecherche: 0,
             },
             rechercheOffresFormErrors: [],
-            rayonsRecherche: rayonsRecherche,
+            rayonsRechercheOffres: rayonsRechercheOffres,
             algoliaPlacesConfig: jsData.algoliaPlacesConfig
         }
     },
@@ -58,12 +58,12 @@ var app = new Vue({
     },
     methods: {
         algoliaPlacesChange: function(suggestion) {
-            this.recherche.codePostal = suggestion.postcode;
-            this.recherche.lieuTravail = suggestion.name;
+            this.rechercheOffresFormData.codePostal = suggestion.postcode;
+            this.rechercheOffresFormData.lieuTravail = suggestion.name;
         },
         algoliaPlacesClear: function() {
-            this.recherche.codePostal = null;
-            this.recherche.lieuTravail = null;
+            this.rechercheOffresFormData.codePostal = null;
+            this.rechercheOffresFormData.lieuTravail = null;
         },
         hasError: function(champ) {
             return this.rechercheOffresFormErrors.findIndex(function(element) {
@@ -72,18 +72,15 @@ var app = new Vue({
         },
         rechercherOffres: function() {
             this.rechercheOffresFormErrors = [];
-            if (this.recherche.codePostal === null || this.recherche.codePostal === '') {
+            if (this.rechercheOffresFormData.codePostal === null || this.rechercheOffresFormData.codePostal === '') {
                 this.rechercheOffresFormErrors.push({champ: 'codePostal', label: 'Dites-nous où vous recherchez un emploi'});
-            }
-            if (this.recherche.rayonRecherche === null || this.recherche.rayonRecherche === '') {
-                this.rechercheOffresFormErrors.push({champ: 'rayonRecherche', label: 'Renseignez un rayon de recherche'});
             }
 
             if (this.rechercheOffresFormErrors.length === 0) {
                 var params = [];
-                params.push('codePostal=' + this.recherche.codePostal);
-                params.push('lieuTravail=' + this.recherche.lieuTravail);
-                params.push('rayonRecherche=' + this.recherche.rayonRecherche);
+                params.push('codePostal=' + this.rechercheOffresFormData.codePostal);
+                params.push('lieuTravail=' + this.rechercheOffresFormData.lieuTravail);
+                params.push('rayonRecherche=' + this.rechercheOffresFormData.rayonRecherche);
                 var uri = encodeURI(params.reduce(function(acc, param, index) {
                     return acc + (index === 0 ? '?' : '&') + param;
                 }, '/candidat/offres'));

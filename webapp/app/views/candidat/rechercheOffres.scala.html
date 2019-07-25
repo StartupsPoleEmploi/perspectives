@@ -301,7 +301,6 @@
                                         <label for="js-rayonRecherche" class="sr-only">Renseignez un rayon de recherche</label>
                                         <select id="js-rayonRecherche" name="localisation.rayonRecherche"
                                                 v-model="rechercheFormData.localisation.rayonRecherche" class="rechercheOffres-rayonRecherche">
-                                            <option value="0">Lieu exact</option>
                                             <option v-for="rayonRecherche in rayonsRecherche" v-bind:key="rayonRecherche.value" v-bind:value="rayonRecherche.value">{{rayonRecherche.label}}</option>
                                         </select>
                                     </div>
