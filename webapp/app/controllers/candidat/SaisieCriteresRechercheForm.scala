@@ -98,12 +98,12 @@ object SaisieCriteresRechercheForm {
       contactFormation = FormHelpers.optBooleanToString(candidat.contactFormation),
       numeroTelephone = candidat.numeroTelephone.map(_.value),
       localisation = LocalisationRechercheForm(
-        codePostal = candidat.codePostalRecherche.orElse(candidat.codePostal).getOrElse(""),
-        commune = candidat.communeRecherche.orElse(candidat.commune).getOrElse(""),
-        latitude = candidat.latitudeRecherche.orElse(candidat.latitude).getOrElse(0),
-        longitude = candidat.longitudeRecherche.orElse(candidat.longitude).getOrElse(0)
+        codePostal = candidat.localisationRecherche.map(_.codePostal).getOrElse(""),
+        commune = candidat.localisationRecherche.map(_.commune).getOrElse(""),
+        latitude = candidat.localisationRecherche.map(_.coordonnees.latitude).getOrElse(0),
+        longitude = candidat.localisationRecherche.map(_.coordonnees.longitude).getOrElse(0)
       ),
-      rayonRecherche = candidat.rayonRecherche.map(_.value),
+      rayonRecherche = candidat.localisationRecherche.flatMap(_.rayonRecherche.map(_.value)), // FIXME : unité longueur
       tempsTravail = candidat.tempsTravail.map(_.value).getOrElse(""),
       metiersValidesRecherches = candidat.metiersValidesRecherches.map(_.value),
       metiersRecherches = candidat.metiersRecherches.map(_.value),

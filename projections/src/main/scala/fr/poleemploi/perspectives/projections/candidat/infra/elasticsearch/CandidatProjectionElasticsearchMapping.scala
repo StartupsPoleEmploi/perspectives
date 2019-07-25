@@ -31,11 +31,7 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
         metiersValidesRecherches = document.criteresRecherche.metiersValides,
         metiersRecherches = document.criteresRecherche.metiers,
         domainesProfessionnelsRecherches = document.criteresRecherche.domainesProfessionels,
-        codePostalRecherche = document.criteresRecherche.codePostal,
-        communeRecherche = document.criteresRecherche.commune,
-        latitudeRecherche = document.criteresRecherche.zone.map(_.latitude),
-        longitudeRecherche = document.criteresRecherche.zone.map(_.longitude),
-        rayonRecherche = document.criteresRecherche.rayon.map(buildRayonRecherche),
+        localisationRecherche = buildLocalisationRecherche(document.criteresRecherche),
         tempsTravail = document.criteresRecherche.tempsTravail
       ))
 
@@ -55,19 +51,7 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
     referentielMetier.metiersParCodesROME(document.metiersValides.map(_.metier)).map(metiersValides =>
       CandidatPourRechercheOffreQueryResult(
         metiersValides = metiersValides,
-        localisationRecherche =
-          for {
-            codePostal <- document.criteresRecherche.codePostal
-            commune <- document.criteresRecherche.commune
-          } yield LocalisationRecherche(
-            commune = commune,
-            codePostal = codePostal,
-            coordonnees = document.criteresRecherche.zone.map(z => Coordonnees(
-              latitude = z.latitude,
-              longitude = z.longitude
-            )).get,
-            rayonRecherche = document.criteresRecherche.rayon.map(buildRayonRecherche)
-          ),
+        localisationRecherche = buildLocalisationRecherche(document.criteresRecherche),
         cv = document.cvId.isDefined
       )
     )
@@ -112,7 +96,7 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
             case (None, Some(_)) => false
             case (Some(n1), Some(n2)) => n1.value > n2.value || (n1.value == n2.value && s1.label < s2.label)
           }
-      ),
+        ),
         formations = d.formations.map(buildFormation).sortWith((f1, f2) => f1.anneeFin > f2.anneeFin),
         experiencesProfessionnelles = d.experiencesProfessionnelles.map(buildExperienceProfessionnelle).sortWith((e1, e2) => e1.dateDebut.isAfter(e2.dateDebut))
       )).toList
@@ -159,6 +143,21 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
       contactFormation = document.contactFormation
     )
 
+  def buildLocalisationRecherche(document: CandidatCriteresRechercheDocument): Option[LocalisationRecherche] =
+    for {
+      codePostal <- document.codePostal
+      commune <- document.commune
+      zone <- document.zone
+    } yield LocalisationRecherche(
+      commune = commune,
+      codePostal = codePostal,
+      coordonnees = Coordonnees(
+        latitude = zone.latitude,
+        longitude = zone.longitude
+      ),
+      rayonRecherche = document.rayon.map(buildRayonRecherche)
+    )
+
   def buildZoneDocument(coordonnees: Coordonnees, rayonRecherche: Option[RayonRecherche]): ZoneDocument =
     ZoneDocument(
       typeMobilite = rayonRecherche.map(_ => "circle").getOrElse("point"),
@@ -167,7 +166,7 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
       radius = rayonRecherche
         .map(r => r.uniteLongueur match {
           case UniteLongueur.KM => s"${r.value * 1.2}km"
-          case u@_ => throw new IllegalArgumentException(s"Unite de longueur non gérée ${u.value}")
+          case u@_ => throw new IllegalArgumentException(s"Unite de longueur non gérée : ${u.value}")
         })
     )
 

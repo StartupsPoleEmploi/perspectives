@@ -2,7 +2,6 @@ package fr.poleemploi.perspectives.projections.candidat.infra.elasticsearch
 
 import fr.poleemploi.perspectives.commun.domain.{Coordonnees, RayonRecherche, UniteLongueur}
 import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
-import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, MustMatchers, WordSpec}
 
@@ -10,6 +9,9 @@ class CandidatProjectionElasticsearchMappingSpec extends WordSpec
   with MustMatchers with MockitoSugar with BeforeAndAfter {
 
   var referentielMetier: ReferentielMetier = _
+
+  val rayonRecherche: RayonRecherche = RayonRecherche.MAX_10
+  val coordonnees = Coordonnees(latitude = 1.77878, longitude = 48.475645)
 
   var mapping: CandidatProjectionElasticsearchMapping = _
 
@@ -20,11 +22,9 @@ class CandidatProjectionElasticsearchMappingSpec extends WordSpec
   }
 
   "buildZoneDocument" should {
-    "renvoyer une erreur lorsque la zone de recherche comme un cercle possède une unité de longueur non gérée" in {
+    "renvoyer une erreur lorsque le rayon de recherche comporte une unité de longueur non gérée" in {
       // Given
-      var coordonnees = mock[Coordonnees]
-      var rayonRecherche = mock[RayonRecherche]
-      when(rayonRecherche.uniteLongueur) thenReturn UniteLongueur("CM")
+      val rayonRecherche = RayonRecherche(0, UniteLongueur("CM"))
 
       // When
       val ex = intercept[IllegalArgumentException](
@@ -35,40 +35,33 @@ class CandidatProjectionElasticsearchMappingSpec extends WordSpec
       )
 
       // Then
-      ex.getMessage mustBe "Unite de longueur non gérée CM"
+      ex.getMessage mustBe "Unite de longueur non gérée : CM"
     }
     "construire la zone de recherche avec la latitude" in {
-      // Given
-      var coordonnees = mock[Coordonnees]
-      when(coordonnees.latitude) thenReturn 1.77878
-
       // When
       val result = mapping.buildZoneDocument(
-        coordonnees = coordonnees,
+        coordonnees = coordonnees.copy(
+          latitude = 1.2323
+        ),
         rayonRecherche = None
       )
 
       // Then
-      result.latitude mustBe 1.77878
+      result.latitude mustBe 1.2323
     }
     "construire la zone de recherche avec la longitude" in {
-      // Given
-      var coordonnees = mock[Coordonnees]
-      when(coordonnees.longitude) thenReturn 48.475645
-
       // When
       val result = mapping.buildZoneDocument(
-        coordonnees = coordonnees,
+        coordonnees = coordonnees.copy(
+          longitude = 48.4343
+        ),
         rayonRecherche = None
       )
 
       // Then
-      result.longitude mustBe 48.475645
+      result.longitude mustBe 48.4343
     }
     "construire la zone de recherche comme un point lorsqu'il n'y a pas de rayon de recherche" in {
-      // Given
-      var coordonnees = mock[Coordonnees]
-
       // When
       val result = mapping.buildZoneDocument(
         coordonnees = coordonnees,
@@ -80,11 +73,6 @@ class CandidatProjectionElasticsearchMappingSpec extends WordSpec
       result.radius mustBe None
     }
     "construire la zone de recherche comme un cercle lorsqu'il y a un rayon de recherche" in {
-      // Given
-      var coordonnees = mock[Coordonnees]
-      var rayonRecherche = mock[RayonRecherche]
-      when(rayonRecherche.uniteLongueur) thenReturn UniteLongueur.KM
-
       // When
       val result = mapping.buildZoneDocument(
         coordonnees = coordonnees,
@@ -93,12 +81,11 @@ class CandidatProjectionElasticsearchMappingSpec extends WordSpec
 
       // Then
       result.typeMobilite mustBe "circle"
+      result.radius.isDefined mustBe true
     }
-    "construire la zone de recherche comme un cercle avec l'unité de longueur lorsqu'il y a un rayon de recherche" in {
+    "construire la zone de recherche avec un rayon lorsqu'il y a un rayon de recherche" in {
       // Given
-      var coordonnees = mock[Coordonnees]
-      var rayonRecherche = mock[RayonRecherche]
-      when(rayonRecherche.uniteLongueur) thenReturn UniteLongueur.KM
+      val rayonRecherche = RayonRecherche.MAX_10
 
       // When
       val result = mapping.buildZoneDocument(
@@ -109,12 +96,9 @@ class CandidatProjectionElasticsearchMappingSpec extends WordSpec
       // Then
       result.radius.exists(_.endsWith("km"))
     }
-    "ajouter une marge lorsque la zone de recherche est un cercle, pour ne pas louper les candidats à quelques kilomètres près" in {
+    "ajouter une marge lorsqu'il y a un rayon de recherche, pour ne pas louper les candidats à quelques kilomètres près" in {
       // Given
-      var coordonnees = mock[Coordonnees]
-      var rayonRecherche = mock[RayonRecherche]
-      when(rayonRecherche.value) thenReturn 10
-      when(rayonRecherche.uniteLongueur) thenReturn UniteLongueur.KM
+      val rayonRecherche = RayonRecherche.MAX_10
 
       // When
       val result = mapping.buildZoneDocument(
