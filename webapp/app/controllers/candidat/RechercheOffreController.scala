@@ -3,9 +3,9 @@ package controllers.candidat
 import authentification.infra.play.{CandidatAuthentifieAction, OptionalCandidatAuthentifieAction, OptionalCandidatAuthentifieRequest}
 import conf.WebAppConfig
 import controllers.AssetsFinder
-import fr.poleemploi.perspectives.commun.domain.{CodeROME, RayonRecherche}
+import fr.poleemploi.perspectives.commun.domain.{CodeROME, UniteLongueur}
 import fr.poleemploi.perspectives.metier.domain.SecteurActivite
-import fr.poleemploi.perspectives.offre.domain.{CriteresRechercheOffre, PageOffres, TypeContrat}
+import fr.poleemploi.perspectives.offre.domain.{CriteresRechercheOffre, PageOffres, RayonRecherche, TypeContrat}
 import fr.poleemploi.perspectives.projections.candidat._
 import fr.poleemploi.perspectives.projections.metier.{MetierQueryHandler, SecteursActiviteQuery}
 import javax.inject.{Inject, Singleton}
@@ -77,7 +77,7 @@ class RechercheOffreController @Inject()(cc: ControllerComponents,
         CriteresRechercheOffre(
           motCle = rechercheOffresForm.motCle,
           codePostal = rechercheOffresForm.localisation.map(_.codePostal),
-          rayonRecherche = rechercheOffresForm.localisation.flatMap(_.rayonRecherche.flatMap(RayonRecherche.from)),
+          rayonRecherche = rechercheOffresForm.localisation.flatMap(_.rayonRecherche.map(RayonRecherche(_, uniteLongueur = UniteLongueur.KM))),
           typesContrats = rechercheOffresForm.typesContrats.flatMap(TypeContrat.from),
           secteursActivites = Nil, // FIXME : à renseigner
           codesROME =

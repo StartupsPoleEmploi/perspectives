@@ -1,7 +1,7 @@
 package fr.poleemploi.perspectives.offre.infra.ws
 
-import fr.poleemploi.perspectives.commun.domain._
-import fr.poleemploi.perspectives.offre.domain.{CriteresRechercheOffre, Experience, PageOffres, TypeContrat}
+import fr.poleemploi.perspectives.commun.domain.{CodeDomaineProfessionnel, CodeROME, CodeSecteurActivite, UniteLongueur}
+import fr.poleemploi.perspectives.offre.domain._
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, MustMatchers, WordSpec}
