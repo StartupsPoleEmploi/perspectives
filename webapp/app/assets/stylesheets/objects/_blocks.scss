@@ -78,35 +78,6 @@
   }
 }
 
-.sousQuestion {
-  @include make-row();
-  margin: 0 0 1.5rem 1.5rem;
-
-  &-texte {
-    @include make-col-ready();
-    color: $noir;
-    font-size: 1em;
-    font-weight: 700;
-  }
-
-  &-requise {
-    color: $rouge-erreur;
-  }
-
-  &-aide {
-    @include make-col-ready();
-
-    opacity: 0.6;
-    color: #304052;
-    font-size: 0.8em;
-    font-weight: 900;
-    line-height: 18px;
-    margin-top: 5px;
-    margin-bottom: 0;
-    text-transform: uppercase;
-  }
-}
-
 .choix {
   margin-left: 2.5rem;
 
