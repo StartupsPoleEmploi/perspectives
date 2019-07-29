@@ -124,7 +124,7 @@ class InfraModule extends AbstractModule with ScalaModule {
                                                  actorSystem: ActorSystem,
                                                  mrsValideeProspectCandidatCSVAdapter: MRSValideeProspectCandidatCSVAdapter): ImportMRSValideeProspectCandidatCSVAdapter =
     new ImportMRSValideeProspectCandidatCSVAdapter(
-      config = batchsConfig.importMRSValideeProspectCandidatCSVAdapterConfig,
+      config = batchsConfig.importPoleEmploiFileConfig,
       actorSystem = actorSystem,
       mrsValideeProspectCandidatCSVAdapter = mrsValideeProspectCandidatCSVAdapter
     )
@@ -154,7 +154,7 @@ class InfraModule extends AbstractModule with ScalaModule {
                                     mrsDHAEValideesCSVAdapter: MRSDHAEValideesCSVAdapter,
                                     mrsDHAEValideesSqlAdapter: MRSDHAEValideesSqlAdapter): ImportMRSDHAEPEConnectAdapter =
     new ImportMRSDHAEPEConnectAdapter(
-      config = batchsConfig.importMRSDHAEPEConnectConfig,
+      config = batchsConfig.importPoleEmploiFileConfig,
       actorSystem = actorSystem,
       mrsDHAEValideesCSVAdapter = mrsDHAEValideesCSVAdapter,
       mrsDHAEValideesSqlAdapter = mrsDHAEValideesSqlAdapter
@@ -205,7 +205,7 @@ class InfraModule extends AbstractModule with ScalaModule {
                                    referentielHabiletesMRSSqlAdapter: ReferentielHabiletesMRSSqlAdapter,
                                    habiletesMRSCsvAdapter: HabiletesMRSCsvAdapter): ImportHabiletesMRSCsvAdapter =
     new ImportHabiletesMRSCsvAdapter(
-      config = batchsConfig.importHabiletesMRSCsvAdapterConfig,
+      config = batchsConfig.importPoleEmploiFileConfig,
       habiletesMRSCsvAdapter = habiletesMRSCsvAdapter,
       referentielHabiletesMRSSqlAdapter = referentielHabiletesMRSSqlAdapter
     )

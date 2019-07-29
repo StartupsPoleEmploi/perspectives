@@ -17,7 +17,7 @@ class ImportMRSValideeProspectCandidatCSVAdapter(override val config: ImportFile
 
   implicit val materializer: ActorMaterializer = ActorMaterializer()(actorSystem)
 
-  override def pattern: String = "perspectives_de_mrs_valides_delta_*.bz2"
+  override val pattern: String = "perspectives_de_mrs_valides_delta_*.bz2"
 
   override def integrerFichier(fichier: Path): Future[Stream[MRSValideeProspectCandidat]] =
     mrsValideeProspectCandidatCSVAdapter.load(

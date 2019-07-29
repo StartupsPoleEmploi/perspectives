@@ -25,17 +25,7 @@ class BatchsConfig(configuration: Configuration) {
   val mailjetTesteurs: List[Email] =
     configuration.getOptional[Seq[String]]("mailjet.testeurs").map(_.map(Email(_)).toList).getOrElse(Nil)
 
-  val importMRSDHAEPEConnectConfig: ImportFileAdapterConfig = ImportFileAdapterConfig(
-    importDirectory = Paths.get(configuration.get[String]("exportPoleEmploi.directory")),
-    archiveDirectory = Paths.get(configuration.get[String]("exportPoleEmploi.archiveDirectory"))
-  )
-
-  val importHabiletesMRSCsvAdapterConfig: ImportFileAdapterConfig = ImportFileAdapterConfig(
-    importDirectory = Paths.get(configuration.get[String]("exportPoleEmploi.directory")),
-    archiveDirectory = Paths.get(configuration.get[String]("exportPoleEmploi.archiveDirectory"))
-  )
-
-  val importMRSValideeProspectCandidatCSVAdapterConfig: ImportFileAdapterConfig = ImportFileAdapterConfig(
+  val importPoleEmploiFileConfig: ImportFileAdapterConfig = ImportFileAdapterConfig(
     importDirectory = Paths.get(configuration.get[String]("exportPoleEmploi.directory")),
     archiveDirectory = Paths.get(configuration.get[String]("exportPoleEmploi.archiveDirectory"))
   )
