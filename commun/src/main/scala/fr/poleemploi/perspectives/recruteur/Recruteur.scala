@@ -32,6 +32,7 @@ private[recruteur] case class RecruteurContext(statut: StatutRecruteur = StatutR
                                                prenom: Option[Prenom] = None,
                                                email: Option[Email] = None,
                                                genre: Option[Genre] = None,
+                                               adresse: Option[Adresse] = None,
                                                raisonSociale: Option[String] = None,
                                                numeroSiret: Option[NumeroSiret] = None,
                                                typeRecruteur: Option[TypeRecruteur] = None,
@@ -56,6 +57,10 @@ private[recruteur] case class RecruteurContext(statut: StatutRecruteur = StatutR
           typeRecruteur = Some(e.typeRecruteur),
           contactParCandidats = Some(e.contactParCandidats),
           numeroTelephone = Some(e.numeroTelephone)
+        )
+      case e: AdresseRecruteurModifieeEvent =>
+        context.copy(
+          adresse = Some(e.adresse)
         )
       case e: ProfilGerantModifieEvent =>
         context.copy(

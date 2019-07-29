@@ -17,6 +17,7 @@ class RecruteurProjection(adapter: RecruteurProjectionSqlAdapter) extends Projec
     case e: RecruteurInscritEvent => adapter.onRecruteurInscritEvent(e)
     case e: RecruteurConnecteEvent => adapter.onRecruteurConnecteEvent(e)
     case e: ProfilModifieEvent => adapter.onProfilModifieEvent(e)
+    case e: AdresseRecruteurModifieeEvent => adapter.onAdresseModifieeEvent(e)
     case e: ProfilGerantModifieEvent => adapter.onProfilGerantModifieEvent(e)
   }
 

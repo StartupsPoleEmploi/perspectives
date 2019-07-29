@@ -14,7 +14,8 @@ case class ModifierProfilCommand(id: RecruteurId,
                                  numeroSiret: NumeroSiret,
                                  typeRecruteur: TypeRecruteur,
                                  numeroTelephone: NumeroTelephone,
-                                 contactParCandidats: Boolean) extends Command[Recruteur]
+                                 contactParCandidats: Boolean,
+                                 adresse: Adresse) extends Command[Recruteur]
 
 case class ConnecterRecruteurCommand(id: RecruteurId,
                                      nom: Nom,

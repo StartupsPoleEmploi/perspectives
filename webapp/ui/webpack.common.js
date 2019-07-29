@@ -4,6 +4,7 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin');
 module.exports = {
     entry: {
         recruteurLanding: './src/pages/recruteur/landing.js',
+        recruteurProfil: './src/pages/recruteur/profil.js',
         recruteurRechercheCandidats: './src/pages/recruteur/rechercheCandidats.js',
         conseillerListeCandidats: './src/pages/conseiller/listeCandidats.js',
         conseillerListeRecruteurs: './src/pages/conseiller/listeRecruteurs.js',

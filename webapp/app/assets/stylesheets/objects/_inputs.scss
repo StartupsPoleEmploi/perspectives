@@ -2,62 +2,6 @@
   @include hiddenInput();
 }
 
-.boutonRadio { // FIXME : supprimer et modifier profil.scala.html
-  margin: 0 30px 0 0;
-  position: relative;
-  display: inline-block;
-  padding-left: 30px;
-  padding-right: 20px;
-  padding-top: 5px;
-  height: 36px;
-  cursor: pointer;
-  border: 1px solid $noir;
-  border-radius: 4px;
-  @include userSelect(none);
-  text-align: center;
-
-  &-cercle {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    height: 12px;
-    width: 12px;
-    border-radius: 50%;
-    background-color: white;
-  }
-
-  &-input {
-    @include hiddenInput();
-
-    &:checked ~ .boutonRadio {
-      color: white;
-      background-color: #364252;
-
-      .boutonRadio-cercle {
-        background-color: $bleu-ciel;
-      }
-    }
-
-    &:not(:checked) ~ .boutonRadio {
-      color: $noir;
-      background-color: white;
-
-      .boutonRadio-cercle {
-        border: 1px solid $noir;
-      }
-    }
-  }
-}
-
-.inputText {
-  min-width: 40%;
-  padding: 10px;
-  border: none;
-  border-bottom: 1px solid $noir;
-  box-sizing: border-box;
-  caret-color: #1157F0;
-}
-
 select::-ms-expand {
   display: none;
 }

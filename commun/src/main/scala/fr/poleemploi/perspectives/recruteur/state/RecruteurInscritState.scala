@@ -4,13 +4,14 @@ import fr.poleemploi.perspectives.recruteur._
 
 object RecruteurInscritState extends RecruteurState {
 
-  override def modifierProfil(context: RecruteurContext, command: ModifierProfilCommand): List[Event] =
-    if (!context.raisonSociale.contains(command.raisonSociale) ||
+  override def modifierProfil(context: RecruteurContext, command: ModifierProfilCommand): List[Event] = {
+    val profilModifieEvent =
+      if (!context.raisonSociale.contains(command.raisonSociale) ||
       !context.numeroSiret.contains(command.numeroSiret) ||
       !context.typeRecruteur.contains(command.typeRecruteur) ||
       !context.contactParCandidats.contains(command.contactParCandidats) ||
       !context.numeroTelephone.contains(command.numeroTelephone)) {
-      List(ProfilModifieEvent(
+      Some(ProfilModifieEvent(
         recruteurId = command.id,
         raisonSociale = command.raisonSociale,
         numeroSiret = command.numeroSiret,
@@ -18,22 +19,36 @@ object RecruteurInscritState extends RecruteurState {
         contactParCandidats = command.contactParCandidats,
         numeroTelephone = command.numeroTelephone
       ))
-    } else Nil
+    } else None
+
+    val adresseModifieeEvent =
+      if (!context.adresse.contains(command.adresse)) {
+        Some(AdresseRecruteurModifieeEvent(
+          recruteurId = command.id,
+          adresse = command.adresse
+        ))
+      } else None
+
+    List(profilModifieEvent, adresseModifieeEvent).flatten
+  }
 
   override def connecter(context: RecruteurContext, command: ConnecterRecruteurCommand): List[Event] = {
-    val recruteurConnecteEvent = RecruteurConnecteEvent(command.id)
+    val recruteurConnecteEvent = Some(RecruteurConnecteEvent(command.id))
 
-    if (!context.nom.contains(command.nom) ||
+    val profilGerantModifieEvent =
+      if (!context.nom.contains(command.nom) ||
       !context.prenom.contains(command.prenom) ||
       !context.email.contains(command.email) ||
       !context.genre.contains(command.genre)) {
-      List(recruteurConnecteEvent, ProfilGerantModifieEvent(
+      Some(ProfilGerantModifieEvent(
         recruteurId = command.id,
         nom = command.nom,
         prenom = command.prenom,
         email = command.email,
         genre = command.genre
       ))
-    } else List(recruteurConnecteEvent)
+    } else None
+
+    List(recruteurConnecteEvent, profilGerantModifieEvent).flatten
   }
 }

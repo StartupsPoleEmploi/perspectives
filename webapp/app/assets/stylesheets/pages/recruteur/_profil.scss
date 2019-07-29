@@ -1,20 +1,22 @@
-#inscriptionRecruteur {
+#profilRecruteur {
 
-  .informations {
-    @include make-container();
-    @include make-container-max-widths();
+  .boutonSaisie {
+    font-weight: $font-weight-bold;
+    text-transform: uppercase;
+    @include button-size(1rem, 1rem, $font-size-sm, 1.5, 8px);
   }
 
-  .informationProfil {
-    margin-bottom: 3.5rem;
+  .champSaisie {
+    padding-bottom: 2rem;
+  }
 
-    @include media-breakpoint-up(md) {
-      @include make-col-offset(1);
+  .input {
+    border: none;
+    width: 100%;
+
+    &--erreur {
+      color: $rouge-erreur;
+      border: 1px solid $rouge-erreur;
     }
-  }
-
-  .validerInscription {
-    text-align: center;
-    margin: 4rem 0;
   }
 }

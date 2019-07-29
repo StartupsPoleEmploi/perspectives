@@ -33,6 +33,12 @@ class RecruteurProjectionSqlAdapter(database: Database) {
 
     def raisonSociale = column[Option[String]]("raison_sociale")
 
+    def codePostal = column[Option[String]]("code_postal")
+
+    def commune = column[Option[String]]("commune")
+
+    def pays = column[Option[String]]("pays")
+
     def numeroSiret = column[Option[NumeroSiret]]("numero_siret")
 
     def numeroTelephone = column[Option[NumeroTelephone]]("numero_telephone")
@@ -43,10 +49,8 @@ class RecruteurProjectionSqlAdapter(database: Database) {
 
     def dateDerniereConnexion = column[ZonedDateTime]("date_derniere_connexion")
 
-    def * = (recruteurId, nom, prenom, email, genre, typeRecruteur, raisonSociale, numeroSiret, numeroTelephone, contactParCandidats, dateInscription, dateDerniereConnexion) <> (RecruteurRecord.tupled, RecruteurRecord.unapply)
+    def * = (recruteurId, nom, prenom, email, genre, typeRecruteur, raisonSociale, codePostal, commune, pays, numeroSiret, numeroTelephone, contactParCandidats, dateInscription, dateDerniereConnexion) <> (RecruteurRecord.tupled, RecruteurRecord.unapply)
   }
-
-  implicit object ProfilRecruteurShape extends CaseClassShape(ProfilRecruteurLifted.tupled, ProfilRecruteurQueryResult.tupled)
 
   implicit object RecruteurPourConseillerShape extends CaseClassShape(RecruteurPourConseillerLifted.tupled, RecruteurPourConseillerDto.tupled)
 
@@ -59,7 +63,6 @@ class RecruteurProjectionSqlAdapter(database: Database) {
   val profilRecruteurQuery = Compiled { recruteurId: Rep[RecruteurId] =>
     recruteurTable
       .filter(r => r.recruteurId === recruteurId)
-      .map(r => ProfilRecruteurLifted(r.recruteurId, r.typeRecruteur, r.raisonSociale, r.numeroSiret, r.numeroTelephone, r.contactParCandidats))
   }
   val listerParDateInscriptionQuery = Compiled { (nbRecruteursParPage: ConstColumn[Long], avantDateInscription: Rep[ZonedDateTime]) =>
     recruteurTable
@@ -72,6 +75,11 @@ class RecruteurProjectionSqlAdapter(database: Database) {
     for {
       r <- recruteurTable if r.recruteurId === recruteurId
     } yield (r.typeRecruteur, r.raisonSociale, r.numeroSiret, r.numeroTelephone, r.contactParCandidats)
+  }
+  val modifierAdresseQuery = Compiled { recruteurId: Rep[RecruteurId] =>
+    for {
+      r <- recruteurTable if r.recruteurId === recruteurId
+    } yield (r.codePostal, r.commune, r.pays)
   }
   val modifierProfilGerantQuery = Compiled { recruteurId: Rep[RecruteurId] =>
     for {
@@ -88,7 +96,21 @@ class RecruteurProjectionSqlAdapter(database: Database) {
     database.run(typeRecruteurQuery(query.recruteurId).result.head).map(TypeRecruteurQueryResult)
 
   def profilRecruteur(query: ProfilRecruteurQuery): Future[ProfilRecruteurQueryResult] =
-    database.run(profilRecruteurQuery(query.recruteurId).result.head)
+    database.run(profilRecruteurQuery(query.recruteurId).result.head).map(r =>
+      ProfilRecruteurQueryResult(
+        recruteurId = r.recruteurId,
+        typeRecruteur = r.typeRecruteur,
+        raisonSociale = r.raisonSociale,
+        adresse = for {
+          codePostal <- r.codePostal
+          commune <- r.commune
+          pays <- r.pays
+        } yield Adresse(codePostal = codePostal, libelleCommune = commune, libellePays = pays),
+        numeroSiret = r.numeroSiret,
+        numeroTelephone = r.numeroTelephone,
+        contactParCandidats = r.contactParCandidats
+      )
+    )
 
   def listerPourConseiller(query: RecruteursPourConseillerQuery): Future[RecruteursPourConseillerQueryResult] =
     database.run(listerParDateInscriptionQuery(query.nbRecruteursParPage * query.nbPagesACharger, query.page.map(_.dateInscription).getOrElse(ZonedDateTime.now())).result)
@@ -126,6 +148,13 @@ class RecruteurProjectionSqlAdapter(database: Database) {
       Some(event.numeroSiret),
       Some(event.numeroTelephone),
       Some(event.contactParCandidats)
+    ))).map(_ => ())
+
+  def onAdresseModifieeEvent(event: AdresseRecruteurModifieeEvent): Future[Unit] =
+    database.run(modifierAdresseQuery(event.recruteurId).update((
+      Some(event.adresse.codePostal),
+      Some(event.adresse.libelleCommune),
+      Some(event.adresse.libellePays)
     ))).map(_ => ())
 
   def onProfilGerantModifieEvent(event: ProfilGerantModifieEvent): Future[Unit] =

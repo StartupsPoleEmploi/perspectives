@@ -97,7 +97,8 @@ class PEConnectController @Inject()(cc: ControllerComponents,
           .getOrElse(Redirect(routes.RechercheCandidatController.rechercherCandidats()).withSession(session).flashing(flash))
       }
       else if (optProfilRecruteur.isDefined)
-        Redirect(routes.ProfilController.modificationProfil()).withSession(session).flashing(flash)
+        Redirect(routes.ProfilController.modificationProfil()).withSession(session)
+          .flashing(flash.withMessageAlerte("Veuillez finaliser la saisie de votre profil"))
       else
         Redirect(routes.ProfilController.modificationProfil()).withSession(session).flashing(flash.withRecruteurInscrit)
     }).recover {

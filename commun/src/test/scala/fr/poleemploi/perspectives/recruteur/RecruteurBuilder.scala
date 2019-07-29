@@ -43,6 +43,18 @@ class RecruteurBuilder {
     this
   }
 
+  def avecAdresse(adresse: Option[Adresse] = None): RecruteurBuilder = {
+    events += AdresseRecruteurModifieeEvent(
+      recruteurId = recruteurId,
+      adresse = adresse.getOrElse(Adresse(
+        codePostal = "75020",
+        libelleCommune = "Paris",
+        libellePays = "France"
+      ))
+    )
+    this
+  }
+
   def build: Recruteur = {
     val recruteur = Recruteur(
       id = recruteurId,

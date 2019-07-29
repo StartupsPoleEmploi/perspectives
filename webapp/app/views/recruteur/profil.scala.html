@@ -1,153 +1,125 @@
 @import conf.WebAppConfig
-@import controllers.recruteur.ProfilForm
 @import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
-@import fr.poleemploi.perspectives.recruteur.TypeRecruteur
 @import helper._
+@import play.api.libs.json.JsObject
 
-@(profilForm: Form[ProfilForm],
-        typesRecruteur: List[TypeRecruteur],
-        recruteurAuthentifie: RecruteurAuthentifie)(implicit request: MessagesRequestHeader, flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
-
-@hasErrors(field:String) = @{
-    profilForm(field).hasErrors
-}
+@(recruteurAuthentifie: RecruteurAuthentifie,
+        jsData: JsObject)(implicit request: MessagesRequestHeader, flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
 @layout(recruteurAuthentifie = Some(recruteurAuthentifie)) {
-<div id="inscriptionRecruteur">
-    <section class="introductionFormulaire">
-        <header class="introductionFormulaireTitres">
-            <h1 class="row texte-noir font-weight-normal font-size-lg mb-3">Bonjour @recruteurAuthentifie.prenom.value</h1>
-            @if(profilForm("nouveauRecruteur").value.exists(_.toBoolean)) {
-                <p class="introductionFormulaireTitres-description">Bienvenue sur Perspectives.
-                    Finalisez votre inscription en renseignant votre profil
-                    puis accédez à la liste des candidats disponible</p>
-            } else {
-                <p class="introductionFormulaireTitres-description">Vous êtes déjà inscrit, vous pouvez, si vous le souhaitez, modifier votre profil.</p>
+<div id="profilRecruteur" class="bg-violet-light" v-cloak>
+    <section class="container py-md-5 py-2">
+        <div class="row justify-content-center">
+            <h1 class="col-12 col-lg-8 texte-noir font-weight-bold font-size-lg">
+                Bonjour @recruteurAuthentifie.prenom.value @recruteurAuthentifie.nom.value
+            </h1>
+            @form(action = controllers.recruteur.routes.ProfilController.modifierProfil(),
+                'id -> "profilForm",
+                'class -> "col-12 col-lg-8",
+                Symbol("v-on:submit.prevent") -> "validerProfil") {
+                @CSRF.formField
+                <input type="hidden" name="nouveauRecruteur" v-bind:value="profilFormData.nouveauRecruteur" />
+                <fieldset>
+                    <legend class="texte-noir font-size-md mb-4" v-if="!profilFormData.nouveauRecruteur">
+                        Vous êtes déjà inscrit, vous pouvez, si vous le souhaitez, modifier votre profil.</legend>
+                    <ol class="list-unstyled">
+                        <li class="champSaisie">
+                            <p class="texte-noir">Vous êtes ? *</p>
+                            <span class="mr-3 d-block d-sm-inline-block" v-for="typeRecruteur in typesRecruteur">
+                                <input v-bind:id="'typeRecruteur-' + typeRecruteur.value" name="typeRecruteur"
+                                        v-model="profilFormData.typeRecruteur"
+                                        type="radio" v-bind:value="typeRecruteur.value" class="radioMultiChoix-input" />
+                                <label class="radioMultiChoix-label texte-noir font-size-sm px-4 py-3" v-bind:for="'typeRecruteur-' + typeRecruteur.value">
+                                    {{typeRecruteur.label}}
+                                </label>
+                            </span>
+                            <div v-for="error in profilFormErrors.typeRecruteur" class="texte-erreur font-size-sm">{{error}}</div>
+                        </li>
+                        <li class="champSaisie row">
+                            <label class="col-12 texte-noir mb-3" for="raisonSociale">
+                                Quel est le nom de votre entreprise ? *
+                            </label>
+                            <div class="col-12 col-lg-6">
+                                <input id="raisonSociale"
+                                        name="raisonSociale"
+                                        type="text" class="texte-noir font-size-sm px-3 py-3 input"
+                                        v-model="profilFormData.raisonSociale"
+                                        v-bind:class="{ 'input--erreur': profilFormErrors.raisonSociale.length > 0 }" />
+                            </div>
+                            <div v-for="error in profilFormErrors.raisonSociale" class="col-12 texte-erreur font-size-sm mt-1">{{error}}</div>
+                        </li>
+                        <li class="champSaisie row">
+                            <label class="col-12 texte-noir mb-3" for="numeroSiret">
+                                Quel est le numéro SIRET ? *
+                            </label>
+                            <div class="col-12 col-lg-6">
+                                <input id="numeroSiret"
+                                        name="numeroSiret"
+                                        type="text" class="texte-noir font-size-sm px-3 py-3 input"
+                                        maxlength="14"
+                                        v-model="profilFormData.numeroSiret"
+                                        v-bind:class="{ 'input--erreur': profilFormErrors.numeroSiret.length > 0 }" />
+                            </div>
+                            <div v-for="error in profilFormErrors.numeroSiret" class="col-12 texte-erreur font-size-sm mt-1">{{error}}</div>
+                        </li>
+                        <li class="champSaisie row">
+                            <label class="col-12 texte-noir mb-3" for="js-adresse">
+                                Dans quelle ville se situe l'entreprise ? *
+                            </label>
+                            <div class="col-12 col-lg-6">
+                                <input type="hidden" name="adresse.codePostal" v-model="profilFormData.adresse.codePostal" />
+                                <input type="hidden" name="adresse.pays" v-model="profilFormData.adresse.pays" />
+                                <input id="js-adresse"
+                                        name="adresse.commune"
+                                        type="search" class="texte-noir font-size-sm input"
+                                        v-model="profilFormData.adresse.commune" />
+                            </div>
+                            <div v-for="error in profilFormErrors.adresse" class="col-12 texte-erreur font-size-sm mt-1">{{error}}</div>
+                        </li>
+                        <li class="champSaisie row">
+                            <label class="col-12 texte-noir mb-3" for="numeroTelephone">
+                                Quel est votre numéro de téléphone ? *
+                            </label>
+                            <div class="col-12 col-lg-6">
+                                <input id="numeroTelephone"
+                                        name="numeroTelephone"
+                                        type="text" class="texte-noir font-size-sm px-3 py-3 input"
+                                        maxlength="10"
+                                        placeholder="06 XX XX XX XX"
+                                        v-model="profilFormData.numeroTelephone"
+                                        v-bind:class="{ 'input--erreur': profilFormErrors.numeroTelephone.length > 0 }" />
+                            </div>
+                            <div v-for="error in profilFormErrors.numeroTelephone" class="col-12 texte-erreur font-size-sm mt-1">{{error}}</div>
+                        </li>
+                        <li class="champSaisie">
+                            <p>Acceptez-vous d'être contacté directement par les candidats ? *</p>
+                            <div class="d-flex">
+                                <span>
+                                    <input id="contactParCandidats-true" name="contactParCandidats"
+                                           type="radio" value="true" class="radioDeuxChoix-input" v-model="profilFormData.contactParCandidats" />
+                                    <label class="radioDeuxChoix-label radioDeuxChoix-choix1 font-size-sm text-uppercase" for="contactParCandidats-true">Oui</label>
+                                </span>
+                                <span>
+                                    <input id="contactParCandidats-false" name="contactParCandidats"
+                                           type="radio" value="false" class="radioDeuxChoix-input" v-model="profilFormData.contactParCandidats" />
+                                    <label class="radioDeuxChoix-label radioDeuxChoix-choix2 font-size-sm text-uppercase" for="contactParCandidats-false">Non</label>
+                                </span>
+                            </div>
+                            <div v-for="error in profilFormErrors.contactParCandidats" class="col-12 texte-erreur font-size-sm mt-1">{{error}}</div>
+                        </li>
+                    </ol>
+                    <div class="row">
+                        <div class="col-lg-6 col text-center">
+                            <button class="bouton bouton--block bouton--theme3 boutonSaisie" type="submit">
+                                Je valide mes informations
+                            </button>
+                        </div>
+                    </div>
+                </fieldset>
             }
-        </header>
-        <div class="separation">
-            <span class="separation-ligne"></span>
         </div>
     </section>
-    <section class="informations">
-        @form(action = controllers.recruteur.routes.ProfilController.modifierProfil(), 'id -> "modificationProfilForm") {
-        @CSRF.formField
-        <input type="hidden" name="nouveauRecruteur" value="@profilForm("nouveauRecruteur").value" />
-        <dl class="informationProfil">
-            <dt class="question">
-                <span class="question-puce @if(hasErrors("typeRecruteur")){question-puce--erreur}">1</span>
-                <div class="question-texte">
-                    Vous êtes?
-                    <span class="question-requise">*</span>
-                </div>
-            </dt>
-            <dd class="choix">
-                @components.boutonRadio(
-                    form = profilForm,
-                    name = "typeRecruteur",
-                    cssClass = Some("choix-item"),
-                    values = typesRecruteur.map(t => (t.value, t match {
-                        case TypeRecruteur.ENTREPRISE => "Une entreprise"
-                        case TypeRecruteur.AGENCE_INTERIM => "Une agence d'interim"
-                        case TypeRecruteur.ORGANISME_FORMATION => "Un organisme de formation"
-                        case t@_ => ""
-                    }))
-                )
-            </dd>
-            @if(hasErrors("typeRecruteur")) {
-            <dd class="erreurs">
-                <span class="texte-erreur font-size-sm">@profilForm("typeRecruteur").errors.map(_.format).mkString(", ")</span>
-            </dd>
-            }
-            </dl>
-            <dl class="informationProfil">
-                <dt class="question">
-                    <span class="question-puce @if(hasErrors("raisonSociale")){question-puce--erreur}">2</span>
-                    <div class="question-texte">
-                        Quel est le nom de votre entreprise ?
-                        <span class="question-requise">*</span>
-                    </div>
-                </dt>
-                <dd class="choix">
-                    <input id="raisonSociale"
-                           name="raisonSociale"
-                           type="text" class="inputText"
-                           placeholder="Saisissez le nom de votre entreprise ici"
-                           value="@profilForm("raisonSociale").value"/>
-                </dd>
-                @if(hasErrors("raisonSociale")) {
-                <dd class="erreurs">
-                    <span class="texte-erreur font-size-sm">@profilForm("raisonSociale").errors.map(_.format).mkString(", ")</span>
-                </dd>
-                }
-            </dl>
-            <dl class="informationProfil">
-                <dt class="question">
-                    <span class="question-puce @if(hasErrors("numeroSiret")){question-puce--erreur}">3</span>
-                    <div class="question-texte">
-                        Quel est votre numéro SIRET ?
-                        <span class="question-requise">*</span>
-                    </div>
-                </dt>
-                <dd class="choix">
-                    <input id="numeroSiret"
-                           name="numeroSiret"
-                           type="text" class="inputText"
-                           maxlength="14"
-                           placeholder="Saisissez votre numéro SIRET ici"
-                           value="@profilForm("numeroSiret").value"/>
-                </dd>
-                @if(hasErrors("numeroSiret")) {
-                <dd class="erreurs">
-                    <span class="texte-erreur font-size-sm">@profilForm("numeroSiret").errors.map(_.format).mkString(", ")</span>
-                </dd>
-                }
-            </dl>
-            <dl class="informationProfil">
-                <dt class="question">
-                    <span class="question-puce @if(hasErrors("numeroTelephone")){question-puce--erreur}">4</span>
-                    <div class="question-texte">
-                        Quel est votre numéro de téléphone ?
-                        <span class="question-requise">*</span>
-                    </div>
-                </dt>
-                <dd class="choix">
-                    <input id="numeroTelephone"
-                           name="numeroTelephone"
-                           type="text" class="inputText"
-                           maxlength="11"
-                           placeholder="Saisissez votre numéro de téléphone ici"
-                           value="@profilForm("numeroTelephone").value"/>
-                </dd>
-                @if(hasErrors("numeroTelephone")) {
-                <dd class="erreurs">
-                    <span class="texte-erreur font-size-sm">@profilForm("numeroTelephone").errors.map(_.format).mkString(", ")</span>
-                </dd>
-                }
-            </dl>
-            <dl class="informationProfil">
-                <dt class="question">
-                    <span class="question-puce @if(hasErrors("contactParCandidats")){question-puce--erreur}">5</span>
-                    <div class="question-texte">
-                        Acceptez-vous d'être contacté directement par les candidats ?
-                        <span class="question-requise">*</span>
-                    </div>
-                </dt>
-                <dd class="choix">
-                @components.boutonRadio(form = profilForm, name = "contactParCandidats", values = List("true" -> "Oui", "false" -> "Non"))
-                </dd>
-                @if(hasErrors("contactParCandidats")) {
-                    <dd class="erreurs">
-                        <span class="texte-erreur font-size-sm">@profilForm("contactParCandidats").errors.map(_.format).mkString(", ")</span>
-                    </dd>
-                }
-            </dl>
-            <div class="validerInscription">
-                <button id="js-boutonInscription" class="bouton bouton-actionPrincipale bouton--fondBleu" type="submit">
-                    Valider mes informations
-                </button>
-            </div>
-        }
-    </section>
 </div>
+@commun.jsData(jsData)
+<script src="@assetsFinder.path("javascripts/recruteurProfil.js")" type="text/javascript"></script>
 }
