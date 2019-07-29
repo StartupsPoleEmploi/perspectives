@@ -47,6 +47,17 @@ object SaisieCriteresRechercheForm {
       .getOrElse(Invalid(Seq(ValidationError("constraint.tempsTravail"))))
   )
 
+  def numeroTelephonePourContactConstraint: Constraint[SaisieCriteresRechercheForm] =
+    Constraint(
+      fields =>
+        if ((fields.contactRecruteur == "true" || fields.contactFormation == "true") &&
+          fields.numeroTelephone.isEmpty) {
+          Invalid(ValidationError("constraint.criteres.numeroTelephoneContact"))
+        } else {
+          Valid
+        }
+    )
+
   val form = Form(
     mapping(
       "nouveauCandidat" -> boolean,
@@ -64,7 +75,7 @@ object SaisieCriteresRechercheForm {
       "metiersValidesRecherches" -> set(text),
       "metiersRecherches" -> set(text),
       "domainesProfessionnelsRecherches" -> set(text)
-    )(SaisieCriteresRechercheForm.apply)(SaisieCriteresRechercheForm.unapply) verifying numeroTelephonePourContact
+    )(SaisieCriteresRechercheForm.apply)(SaisieCriteresRechercheForm.unapply) verifying numeroTelephonePourContactConstraint
   )
 
   def nouveauCandidat: Form[SaisieCriteresRechercheForm] = SaisieCriteresRechercheForm.form.fill(
@@ -106,15 +117,4 @@ object SaisieCriteresRechercheForm {
       domainesProfessionnelsRecherches = candidat.domainesProfessionnelsRecherches.map(_.value)
     )
   )
-
-  def numeroTelephonePourContact: Constraint[SaisieCriteresRechercheForm] =
-    Constraint {
-      fields =>
-        if ((fields.contactRecruteur == "true" || fields.contactFormation == "true") &&
-          fields.numeroTelephone.isEmpty) {
-          Invalid(ValidationError("constraint.criteres.numeroTelephoneContact"))
-        } else {
-          Valid
-        }
-    }
 }
