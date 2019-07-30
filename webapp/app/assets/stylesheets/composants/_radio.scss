@@ -23,12 +23,12 @@
     }
 
     &:not(:checked) ~ .radioDeuxChoix-label {
-      color: $black;
+      color: $noir;
       background-color: white;
     }
 
     &:not(:checked) ~ .radioDeuxChoix-choix1 {
-      border-right: 0.5px solid $black;
+      border-right: 0.5px solid $noir;
     }
 
     &:hover ~ .radioDeuxChoix-label {
@@ -55,7 +55,7 @@
     }
 
     &:not(:checked) ~ .radioMultiChoix-label {
-      color: $black;
+      color: $noir;
       background-color: white;
     }
 
