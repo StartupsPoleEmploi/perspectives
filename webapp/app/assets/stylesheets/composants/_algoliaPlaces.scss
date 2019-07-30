@@ -6,6 +6,15 @@
   display: none;
 }
 
+@each $theme, $color in (themeRecruteur: $violet, themeCandidat: $vert-emeraude) {
+  .algolia-#{$theme} ~ .ap-icon-pin path {
+    fill: #{$color};
+  }
+  .algolia-#{$theme} ~ .ap-nostyle-icon-pin path {
+    fill: #{$color};
+  }
+}
+
 .ap-nostyle {
   &-input {
     padding: 0.85rem 1rem 0.85rem 2.5rem;
@@ -31,10 +40,6 @@
       position: absolute;
       top: 10px;
       left: 5px;
-
-      & path {
-        fill: $vert-emeraude;
-      }
     }
   }
 

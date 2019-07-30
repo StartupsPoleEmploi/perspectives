@@ -140,7 +140,7 @@
                                     <input type="hidden" name="localisation.codePostal" v-model="criteresRechercheFormData.localisation.codePostal" />
                                     <input type="hidden" name="localisation.latitude" v-model="criteresRechercheFormData.localisation.latitude" />
                                     <input type="hidden" name="localisation.longitude" v-model="criteresRechercheFormData.localisation.longitude" />
-                                    <input id="js-communeRecherche" type="text" name="localisation.commune" class="texte-noir font-size-sm input"
+                                    <input id="js-communeRecherche" type="text" name="localisation.commune" class="texte-noir font-size-sm input algolia-themeCandidat"
                                            v-model="criteresRechercheFormData.localisation.commune"/>
                                 </div>
                                 <div v-for="error in criteresRechercheFormErrors.localisation" class="col-12 texte-erreur font-size-sm mt-1">{{error}}</div>
