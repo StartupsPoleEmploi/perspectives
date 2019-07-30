@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="86px" height="86px" viewBox="0 0 86 86" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 55 (78076) - https://sketchapp.com -->
+    <title>472C35C2-229F-4104-9544-A6A26B2B2EAA</title>
+    <desc>Created with sketchtool.</desc>
+    <defs>
+        <path d="M43,86 C19.2517558,86 0,66.7482442 0,43 C0,19.2517558 19.2517558,0 43,0 C66.7482442,0 86,19.2517558 86,43 C86,66.7482442 66.7482442,86 43,86 Z M43,81.2222222 C64.1095504,81.2222222 81.2222222,64.1095504 81.2222222,43 C81.2222222,21.8904496 64.1095504,4.77777778 43,4.77777778 C21.8904496,4.77777778 4.77777778,21.8904496 4.77777778,43 C4.77777778,64.1095504 21.8904496,81.2222222 43,81.2222222 Z M31.060513,23.6677142 C31.060513,20.3510139 35.7962541,17.4733409 39.3981274,20.3510139 C43.0000006,23.2286868 60.827596,37.7709526 62.7932601,39.4646439 C64.7589242,41.1583351 65.3716509,44.6468494 62.7932601,47.0440211 C60.2148693,49.4411927 44.527036,62.4581252 40.1610856,65.5581312 C35.7951351,68.6581371 31.060513,66.1061755 31.060513,62.4581252 C31.060513,58.810075 31.060513,26.9844146 31.060513,23.6677142 Z" id="path-1"></path>
+    </defs>
+    <g id="UI-Recruteur" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="R_Landing-V1" transform="translate(-984.000000, -1782.000000)">
+            <g id="MRS-?" transform="translate(139.000000, 1515.000000)">
+                <g id="Icon/Play" transform="translate(845.000000, 267.000000)">
+                    <mask id="mask-2" fill="white">
+                        <use xlink:href="#path-1"></use>
+                    </mask>
+                    <use id="Combined-Shape" fill="#D8D8D8" xlink:href="#path-1"></use>
+                    <g id="Button/Shape" mask="url(#mask-2)" fill="#FFFFFF" fill-rule="nonzero">
+                        <rect id="Rectangle-2" x="0" y="0" width="86" height="86"></rect>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -4,77 +4,111 @@
 @()(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
 @layout(recruteurAuthentifie = None) {
-    <div id="landingRecruteur" v-cloak>
-        <section class="introArrierePlan">
-            <div class="container py-5">
-                <header class="row pb-5">
-                    <p class="col-12 introVersion texte-noir text-uppercase font-weight-bold mb-2">
-                        Recruteur
-                        <span class="introVersion-deco"></span>
-                    </p>
-                    <h1 class="col col-lg-8 titreLanding texte-noir text-center text-lg-left">Notre mission, faciliter la rencontre entre une entreprise et un candidat.</h1>
-                </header>
-                <div class="row">
-                    <aside class="col-12 col-lg-6">
-                        <ul class="listeAvantages">
-                            <li class="listeAvantages-item">
-                                En vous proposant des profils validés par la <a href="#definitionMRS" class="definition-lien" title="Comment les candidats sont-ils validés ?">Méthode de recrutement par simulation (MRS Pôle Emploi)</a>
-                            </li>
-                            <li class="listeAvantages-item">Contactez des <b>candidats disponibles</b></li>
-                            <li class="listeAvantages-item">Vous n'avez <b>pas d'offre à déposer</b></li>
-                        </ul>
-                        <div class="text-center">
-                            <a class="bouton bouton-actionPrincipale bouton--degradeBleu" href="@controllers.recruteur.routes.InscriptionController.inscription()">
-                                Je m'inscris
-                                <small class="bouton-small">en moins de 30 secondes</small>
-                            </a>
-                            <p class="introActions-sponsor">Crée par Pôle Emploi<p>
-                        </div>
-                    </aside>
-                    <aside class="col-lg-6 d-none d-lg-block">
-                        <img src="@assetsFinder.path("images/pages/recruteur/landing/intro-landing.svg")"
-                        alt="Perspectives : recrutez des candidats"/>
-                    </aside>
+    <div id="landingRecruteur" class="container" v-cloak>
+        <div id="js-modaleVideo" class="modal" tabindex="-1">
+            <div class="modal-dialog modaleVideo" role="document">
+                <div class="modal-content">
+                    <div class="text-right m-2">
+                        <span class="texte-noir font-size-sm cursor-pointer" data-dismiss="modal">Fermer</span>
+                        <span class="texte-noir ml-2 cursor-pointer" data-dismiss="modal">&times;</span>
+                    </div>
+                    <div class="modaleVideo-body">
+                        <iframe id="js-videoMRSYoutube" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" style="width: 100%;height: 100%;">
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section class="row align-items-center justify-content-center presentation">
+            <div class="col-11 col-md-9 p-3 p-md-4 bg-blanc border-radius-sm">
+                <div class="row justify-content-center">
+                    <h1 class="col-12 text-center texte-noir text-preline font-weight-bold font-size-lg">Vous avez des difficultés à recruter
+                        sur des métiers en tension ?</h1>
+                    <p class="col-12 text-center texte-noir font-size-md">Formez des candidats avec un potentiel validé* sur un nouveau métier.</p>
+                    <a class="col-9 col-lg-5 mb-2 bouton bouton-action bouton--theme3 w-100" href="@controllers.recruteur.routes.InscriptionController.inscription()">C'est parti, je m'inscris !</a>
+                    <p class="col-12 mb-0 text-center">* Méthode de Recrutement par Simulation</p>
                 </div>
             </div>
         </section>
-        <section class="sponsors">
-            <h2 class="sponsors-titre titreLanding texte-noir">Ils recrutent avec Perspectives</h2>
-            <ul class="listeSponsors">
-                <li class="listeSponsors-item"><img alt="Franaud" src="@assetsFinder.path("images/commun/sponsors/sponsor-franaud.png")" width="155" height="60"/></li>
-                <li class="listeSponsors-item"><img alt="Afpa" src="@assetsFinder.path("images/commun/sponsors/sponsor-afpa.png")" width="145" height="75"/></li>
-                <li class="listeSponsors-item"><img alt="Manpower" src="@assetsFinder.path("images/commun/sponsors/sponsor-manpower.png")" width="87" height="75"/></li>
-                <li class="listeSponsors-item"><img alt="Supplay" src="@assetsFinder.path("images/commun/sponsors/sponsor-supplay.png")" width="151" height="50"/></li>
-                <li class="listeSponsors-item"><img alt="Synergy" src="@assetsFinder.path("images/commun/sponsors/sponsor-synergy.png")" width="76" height="75"/></li>
+        <section class="row py-5 d-none d-lg-flex justify-content-center">
+            <h2 class="col-12 mb-3 text-center texte-noir font-weight-bold font-size-md">Ils recrutent sur Perspectives</h2>
+            <ul class="list-unstyled mb-0">
+                <li class="d-inline-block px-4"><img alt="Franaud" src="@assetsFinder.path("images/commun/sponsors/sponsor-franaud.png")" width="112" height="43"/></li>
+                <li class="d-inline-block px-4"><img alt="Afpa" src="@assetsFinder.path("images/commun/sponsors/sponsor-afpa.png")" width="104" height="54"/></li>
+                <li class="d-inline-block px-4"><img alt="Manpower" src="@assetsFinder.path("images/commun/sponsors/sponsor-manpower.png")" width="74" height="64"/></li>
+                <li class="d-inline-block px-4"><img alt="Shiva" src="@assetsFinder.path("images/commun/sponsors/sponsor-shiva.png")" width="126" height="51"/></li>
+                <li class="d-inline-block px-4"><img alt="Supplay" src="@assetsFinder.path("images/commun/sponsors/sponsor-supplay.png")" width="107" height="35"/></li>
+                <li class="d-inline-block px-4"><img alt="Mr. Bricolage" src="@assetsFinder.path("images/commun/sponsors/sponsor-mrbricolage.png")" width="150" height="29"/></li>
+                <li class="d-inline-block px-4"><img alt="Synergy" src="@assetsFinder.path("images/commun/sponsors/sponsor-synergy.png")" width="53" height="52"/></li>
             </ul>
         </section>
-        <section id="definitionMRS" class="definitionArrierePlan">
-            <div class="container py-5">
-                <header class="pb-5">
-                    <h2 class="titreLanding texte-noir text-center">La Méthode de Recrutement par Simulation : Comment les candidats sont-ils validés ?</h2>
-                    <p class="definition-texte">La Méthode de Recrutement par Simulation reproduit les conditions de travail et permet de tester les aptitudes des candidats à exercer un nouveau métier</p>
-                </header>
-                <div class="videoPresentation">
-                    <iframe src="https://www.youtube.com/embed/VpQOnDxUQek?ecver=2" style="position:absolute;width:100%;height:100%;left:0" width="640" height="360" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>
-                    </iframe>
-                </div>
-                <div class="text-center">
-                    <a class="bouton bouton-actionPrincipale bouton--degradeBleu" href="@controllers.recruteur.routes.InscriptionController.inscription()">
-                        Je m'inscris
-                        <small class="bouton-small">en moins de 30 secondes</small>
-                    </a>
+        <section class="row align-items-center bg-gris">
+            <div class="col-6 d-none d-lg-flex valorisation"></div>
+            <div class="col col-lg-6 py-5 py-lg-3">
+                <div class="row justify-content-center no-gutters">
+                    <div class="col col-md-9">
+                        <h2 class="mb-3 texte-noir font-weight-bold font-size-lg">Notre mission, faciliter la rencontre entre une entreprise et un candidat !</h2>
+                        <p class="mb-4 texte-noir font-size-md">Nous valorisons son potentiel pour vous permettre de le développer.</p>
+                        <ul class="pl-3 mb-4">
+                            <li class="texte-noir">Nous vous proposons des profils dont le potentiel est certifié par la Méthode de Recrutement par Simulation (MRS Pôle Emploi)</li>
+                            <li class="texte-noir">Vous n'avez pas d'offre à déposer !</li>
+                            <li class="texte-noir">Vous pouvez contacter les candidats disponibles !</li>
+                        </ul>
+                        <a class="bouton bouton-action bouton--theme3 w-100" href="@controllers.recruteur.routes.InscriptionController.inscription()">Je m'inscris avec mon compte Pôle Emploi</a>
+                    </div>
                 </div>
             </div>
         </section>
-        <section class="container py-5">
-            <h2 class="titreLanding texte-noir text-center pb-5">Témoignages</h2>
-            <temoignages v-bind:temoignages="temoignages" theme="themeRecruteur"></temoignages>
-            <div class="text-center">
-                <a class="bouton bouton-actionPrincipale bouton--degradeBleu" href="@controllers.recruteur.routes.InscriptionController.inscription()">
-                    Je m'inscris
-                    <small class="bouton-small">en moins de 30 secondes</small>
-                </a>
+        <section class="row align-items-center">
+            <div class="col-12 col-lg-6 py-5 py-lg-3">
+                <div class="row justify-content-center">
+                    <div class="col col-md-9">
+                        <h2 class="mb-4 texte-noir text-preline font-weight-bold font-size-lg">La Méthode de Recrutement par Simulation : Comment les candidats sont-ils
+                            validés ?</h2>
+                        <p class="mb-4 texte-noir">La Méthode de Recrutement par Simulation reproduit les conditions de travail et permet de tester les aptitudes des candidats à exercer un nouveau métier</p>
+                        <a class="bouton bouton-action bouton--theme3 w-100" href="@controllers.recruteur.routes.InscriptionController.inscription()">Je m'inscris avec mon compte Pôle Emploi</a>
+                    </div>
+                </div>
             </div>
+            <div class="col-12 col-lg-6 cursor-pointer videoMRS"
+                 data-toggle="modal" data-target="#js-modaleVideo" v-bind:data-urlVideo="urlVideoMRS">
+                <img alt="Lire vidéo" class="iconeLectureVideo" width="86" height="86" src="@assetsFinder.path("images/commun/lire-video.svg")"/>
+            </div>
+        </section>
+        <section class="row py-5 justify-content-center bg-violet-light">
+            <h2 class="col-12 texte-noir text-center font-weight-bold font-size-md">Ils ont recruté un candidat sur Perspectives</h2>
+            <temoignages class="col col-lg-9" theme="themeRecruteur"
+                         v-bind:temoignages="temoignages" ></temoignages>
+        </section>
+        <section class="row py-5">
+            <h2 class="col-12 mb-4 text-center texte-noir font-weight-bold font-size-md">On parle de Perspectives</h2>
+            <article class="col-12 col-md-6 mb-3">
+                <div class="row align-items-center">
+                    <div class="col-6 d-none d-lg-flex cursor-pointer article1"
+                         data-toggle="modal" data-target="#js-modaleVideo" v-bind:data-urlVideo="urlVideoEmission">
+                        <img alt="Lire vidéo" class="iconeLectureVideo" width="56" height="56" src="@assetsFinder.path("images/commun/lire-video.svg")"/>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <h3 class="texte-noir font-size-md">Dans l'émission <span class="font-weight-bold">9h50 EMPLOI sur France 3</span></h3>
+                        <p class="texte-noir">Le 13/12/2018</p>
+                        <p class="texte-noir font-size-sm">Mickaël RIZZI nous présente Perspectives, un service dédié aux recruteurs et aux candidats.</p>
+                        <button class="bouton bouton-action bouton--theme3Secondaire"
+                                data-toggle="modal" data-target="#js-modaleVideo" v-bind:data-urlVideo="urlVideoEmission">Voir la vidéo</button>
+                    </div>
+                </div>
+            </article>
+            <article class="col-12 col-md-6">
+                <div class="row align-items-center">
+                    <a class="col-6 d-none d-lg-flex article2" href="@assetsFinder.path("images/pages/recruteur/landing/INFFO FORMATION juin 2019.pdf")" target="_blank"></a>
+                    <div class="col-12 col-lg-6">
+                        <h3 class="texte-noir font-size-md">Dans la presse <span class="font-weight-bold">Info Formation</span></h3>
+                        <p class="texte-noir">Le 15/06/2019</p>
+                        <p class="texte-noir font-size-sm">Mickaël RIZZI fait partie des deux gagnants sélectionnés en mars 2018 à l'issue de la finale du challenge interne Pôle Emploi "Y'a t'il un intrapreneur parmis nous ?"</p>
+                        <a class="bouton bouton-action bouton--theme3Secondaire" href="@assetsFinder.path("images/pages/recruteur/landing/INFFO FORMATION juin 2019.pdf")" target="_blank">Lire l'article</a>
+                    </div>
+                </div>
+            </article>
         </section>
     </div>
     <script src="@assetsFinder.path("javascripts/recruteurLanding.js")" type="text/javascript"></script>

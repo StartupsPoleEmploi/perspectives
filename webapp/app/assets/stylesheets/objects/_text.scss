@@ -14,7 +14,11 @@
 .bg-blanc-50 { background-color: rgba(white, 0.5); }
 .bg-violet-light { background-color: rgba($violet, 0.1); }
 
+.bg-gris {background-color: rgba(121, 129, 130, 0.1);}
+
 .font-size-xs { font-size: $font-size-xs; }
 .font-size-sm { font-size: $font-size-sm; }
 .font-size-md { font-size: $font-size-md; }
 .font-size-lg { font-size: $font-size-lg; }
+
+.text-preline   { white-space: pre-line !important; }

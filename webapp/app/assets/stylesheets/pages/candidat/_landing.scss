@@ -1,91 +1,10 @@
 #landingCandidat {
 
-  .landingCandidat {
-
-    &-rechercheOffres {
-      margin: 0 auto;
-      @include media-breakpoint-up(md) {
-        @include make-col(7);
-        padding: 2rem;
-      }
-
-      @include media-breakpoint-down(md) {
-        @include make-col(11);
-        padding: 1rem;
-      }
-    }
-
-    &-illustrationValorisation {
-      background-image: url("/assets/images/pages/candidat/landing/valorisation-mrs.jpg");
-      background-repeat: no-repeat;
-      background-size: cover;
-      height: 600px;
-    }
-
-    &-texteValorisation {
-      background-color: rgba(121, 129, 130, 0.1);
-
-      @include media-breakpoint-up(md) {
-        padding: 4rem 4rem 0 4rem;
-      }
-
-      @include media-breakpoint-down(md) {
-        padding: 2rem;
-      }
-    }
-  }
-
-  .titreLanding {
-    @include media-breakpoint-up(md) {
-      font-size: 2rem;
-    }
-    @include media-breakpoint-down(md) {
-      font-size: 1.75rem;
-    }
-    line-height: 2.5rem;
-  }
-
   .presentation {
-    background-image: url("/assets/images/pages/candidat/landing/presentation.jpg");
-    background-repeat: no-repeat;
-    background-size: cover;
-    height: 500px;
+    @include background-image("/assets/images/pages/candidat/landing/presentation.jpg", 500px, 'cover');
   }
 
-  .rechercheOffres {
-    border-radius: 8px;
-
-    &-titre {
-      text-align: center;
-      white-space: pre-line;
-      margin: 0;
-    }
-  }
-
-  .listeSponsors {
-    &-item {
-      display: inline-block;
-      padding: 0 1rem;
-    }
-  }
-
-  .etapesInscription {
-    margin-bottom: 2rem;
-  }
-
-  .temoignagesCandidat {
-    background-color: rgba(13, 122, 147, 0.1);
-
-    &-titre {
-      margin: 0 auto 2rem;
-    }
-
-    @include media-breakpoint-up(md) {
-      padding: 3rem 6rem;
-    }
-
-    @include media-breakpoint-down(md) {
-      padding: 2rem;
-    }
+  .valorisation {
+    @include background-image("/assets/images/pages/candidat/landing/valorisation-mrs.jpg", 600px, 'cover');
   }
 }

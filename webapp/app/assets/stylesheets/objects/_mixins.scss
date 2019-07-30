@@ -30,3 +30,10 @@
   position: absolute;
   left: -1000px;
 }
+
+@mixin background-image($url, $height, $background-size) {
+  background-image: url($url);
+  background-repeat: no-repeat;
+  background-size: $background-size;
+  height: $height;
+}
