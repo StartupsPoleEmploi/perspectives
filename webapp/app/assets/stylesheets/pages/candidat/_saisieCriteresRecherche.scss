@@ -1,24 +1,8 @@
 #saisieCriteresRechercheCandidat {
   min-height: 95vh;
 
-  .boutonSaisie {
-    font-weight: $font-weight-bold;
-    text-transform: uppercase;
-    @include button-size(1rem, 1rem, $font-size-sm, 1.5, 8px);
-  }
-
   .champSaisie {
     padding-bottom: 2rem;
-  }
-
-  .input {
-    border: none;
-    width: 100%;
-
-    &--erreur {
-      color: $rouge-erreur;
-      border: 1px solid $rouge-erreur;
-    }
   }
 
   .iconeRetour {

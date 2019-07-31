@@ -75,7 +75,7 @@
                                         </div>
                                         <div class="postuler-cta">
                                             <button type="button" class="bouton bouton-action bouton--block bouton--blancSurVert gtm-candidat-detail-postuler" v-show="!display.contact && !doitAfficherLienOrigineOffre(offreCourante.contact)" v-on:click="display.contact = true">Je contacte le recruteur</button>
-                                            <a target="_blank" class="bouton bouton-action bouton--block bouton--blancSurVert gtm-candidat-detail-postuler"
+                                            <a target="_blank" class="bouton bouton-action bouton--blancSurVert w-100 gtm-candidat-detail-postuler"
                                                 v-show="doitAfficherLienOrigineOffre(offreCourante.contact)" v-bind:href="offreCourante.urlOrigine">
                                                 Voir l'offre sur Pôle Emploi
                                             </a>
@@ -224,8 +224,8 @@
                                             <p class="texte-noir detailOffre-info--sansMarge">Veuillez adresser votre CV et une lettre de motivation en précisant le numéro de l'offre : <span class="font-weight-bold">n°{{offreCourante.id}}</span></p>
                                         </div>
                                         <div class="postuler-cta">
-                                            <button type="button" class="bouton bouton-action bouton--block bouton--blancSurVert gtm-candidat-detail-postuler" v-show="!display.contact && !doitAfficherLienOrigineOffre(offreCourante.contact)" v-on:click="display.contact = true">Je contacte le recruteur</button>
-                                            <a target="_blank" class="bouton bouton-action bouton--block bouton--blancSurVert gtm-candidat-detail-postuler"
+                                            <button type="button" class="bouton bouton-action bouton--blancSurVert w-100 gtm-candidat-detail-postuler" v-show="!display.contact && !doitAfficherLienOrigineOffre(offreCourante.contact)" v-on:click="display.contact = true">Je contacte le recruteur</button>
+                                            <a target="_blank" class="bouton bouton-action bouton--blancSurVert w-100 gtm-candidat-detail-postuler"
                                                 v-show="doitAfficherLienOrigineOffre(offreCourante.contact)" v-bind:href="offreCourante.urlOrigine">
                                                 Voir l'offre sur Pôle Emploi
                                             </a>
@@ -342,7 +342,7 @@
                                 </ul>
                             </div>
                             <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurRechercher">
-                                <button type="submit" class="bouton bouton-action bouton--block bouton--blancSurVert"
+                                <button type="submit" class="bouton bouton-action bouton--blancSurVert w-100"
                                         v-bind:disabled="display.chargement">Rechercher</button>
                             </div>
                         </form>

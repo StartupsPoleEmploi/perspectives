@@ -2,6 +2,16 @@
   @include hiddenInput();
 }
 
+.input {
+  border: none;
+  width: 100%;
+
+  &--erreur {
+    color: $rouge-erreur;
+    border: 1px solid $rouge-erreur;
+  }
+}
+
 select::-ms-expand {
   display: none;
 }
