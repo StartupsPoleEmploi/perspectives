@@ -6,6 +6,7 @@ import fr.poleemploi.perspectives.candidat.Adresse
 import fr.poleemploi.perspectives.commun.domain.{Email, Genre}
 import fr.poleemploi.perspectives.emailing.domain._
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetContactId
+import fr.poleemploi.perspectives.recruteur.TypeRecruteur
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
@@ -50,6 +51,11 @@ class MailjetWSMapping(testeurs: List[Email]) {
     idListe = filtrerListeTesteurs(idListeRecruteursInscrits, recruteurInscrit.email),
     request = buildContactRequestInscriptionRecruteur(recruteurInscrit)
   )
+
+  def buildRequestMiseAJourTypeRecruteur(typeRecruteur: TypeRecruteur): UpdateContactDataRequest =
+    UpdateContactDataRequest(List(
+      ContactDataProperty(type_recruteur, buildTypeRecruteur(typeRecruteur))
+    ))
 
   def buildContactRequestInscriptionRecruteur(recruteurInscrit: RecruteurInscrit): ManageContactRequest =
     ManageContactRequest(
@@ -113,6 +119,13 @@ class MailjetWSMapping(testeurs: List[Email]) {
 
   private def filtrerListeTesteurs(idListe: Int, email: Email): Int =
     if (testeurs.contains(email)) idListeTesteurs else idListe
+
+  private def buildTypeRecruteur(typeRecruteur: TypeRecruteur): String = typeRecruteur match {
+    case TypeRecruteur.ENTREPRISE => "Entreprise"
+    case TypeRecruteur.AGENCE_INTERIM => "Agence d'intérim"
+    case TypeRecruteur.ORGANISME_FORMATION => "Organisme de formation"
+    case t@_ => throw new IllegalArgumentException(s"TypeRecruteur non géré : ${t.value}")
+  }
 }
 
 case class InscriptionRequest(idListe: Int,

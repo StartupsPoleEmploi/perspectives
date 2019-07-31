@@ -7,6 +7,7 @@ import fr.poleemploi.perspectives.candidat.Adresse
 import fr.poleemploi.perspectives.commun.infra.ws.WSAdapter
 import fr.poleemploi.perspectives.emailing.domain._
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetContactId
+import fr.poleemploi.perspectives.recruteur.TypeRecruteur
 import play.api.libs.json._
 import play.api.libs.ws.WSClient
 
@@ -59,6 +60,12 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
       _ <- manageContactLists(mailjetContactId, mapping.buildContactListsRequestInscriptionRecruteur)
     } yield mailjetContactId
   }
+
+  def mettreAJourTypeRecruteur(mailjetContactId: MailjetContactId, typeRecruteur: TypeRecruteur): Future[Unit] =
+    updateContactData(
+      mailjetContactId = mailjetContactId,
+      request = mapping.buildRequestMiseAJourTypeRecruteur(typeRecruteur)
+    ).map(_ => ())
 
   private def updateContactData(mailjetContactId: MailjetContactId,
                                 request: UpdateContactDataRequest): Future[MailjetContactId] =

@@ -4,6 +4,7 @@ import fr.poleemploi.perspectives.candidat.{Adresse, CandidatId}
 import fr.poleemploi.perspectives.emailing.domain._
 import fr.poleemploi.perspectives.emailing.infra.sql.MailjetSqlAdapter
 import fr.poleemploi.perspectives.emailing.infra.ws._
+import fr.poleemploi.perspectives.recruteur.{RecruteurId, TypeRecruteur}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -39,7 +40,7 @@ class MailjetEmailingService(mailjetSqlAdapter: MailjetSqlAdapter,
       _ <- mailjetWSAdapter.mettreAJourCVCandidat(candidatMailjet.mailjetContactId, possedeCV)
     } yield ()
 
-  override def ajouterRecruteurInscrit(recruteurInscrit: RecruteurInscrit): Future[Unit] = {
+  override def ajouterRecruteurInscrit(recruteurInscrit: RecruteurInscrit): Future[Unit] =
     for {
       mailjetContactId <- mailjetWSAdapter.ajouterRecruteurInscrit(recruteurInscrit)
       _ <- mailjetSqlAdapter.ajouterRecruteur(
@@ -50,5 +51,13 @@ class MailjetEmailingService(mailjetSqlAdapter: MailjetSqlAdapter,
         )
       )
     } yield ()
-  }
+
+  override def mettreAJourTypeRecruteur(recruteurId: RecruteurId, typeRecruteur: TypeRecruteur): Future[Unit] =
+    for {
+      recruteurMailjet <- mailjetSqlAdapter.getRecruteur(recruteurId)
+      _ <- mailjetWSAdapter.mettreAJourTypeRecruteur(
+        mailjetContactId = recruteurMailjet.mailjetContactId,
+        typeRecruteur = typeRecruteur
+      )
+    } yield ()
 }
