@@ -28,9 +28,8 @@ GET           /recruteur/cv/telecharger/:candidatId/:nomFichier        controlle
 
 GET           /conseiller/candidats                                    controllers.conseiller.ConseillerController.listeCandidats
 POST          /conseiller/paginerCandidats                             controllers.conseiller.ConseillerController.paginerCandidats
-POST          /conseiller/ajouterMRSCandidat                           controllers.conseiller.ConseillerController.ajouterMRSCandidat
+POST          /conseiller/ajouterMRSDHAECandidat                       controllers.conseiller.ConseillerController.ajouterMRSDHAECandidat
 GET           /conseiller/recruteurs                                   controllers.conseiller.ConseillerController.listeRecruteurs
 POST          /conseiller/paginerRecruteurs                            controllers.conseiller.ConseillerController.paginerRecruteurs
-GET           /conseiller/declarerRepriseEmploi/:candidatId            controllers.conseiller.ConseillerController.declarerRepriseEmploi(candidatId)
 
 GET           /assets/*file                                            controllers.Assets.versioned(file: String)

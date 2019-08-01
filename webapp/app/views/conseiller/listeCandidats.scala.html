@@ -6,87 +6,66 @@
         jsData: JsObject)(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
 @layout(conseillerAuthentifie = conseillerAuthentifie) {
-<div id="listeCandidats" v-cloak>
-    <form id="ajouterMRSCandidatForm" class="ajouterMRSCandidatForm" v-on:submit.prevent="ajouterMRSCandidat" v-show="afficherMRSCandidatForm"
-          action="@controllers.conseiller.routes.ConseillerController.ajouterMRSCandidat()" method="post">
-        <header class="ajouterMRSCandidatForm-titre">Ajouter une MRS pour {{mrsCandidatFormData.prenomCandidat | capitalize}} {{mrsCandidatFormData.nomCandidat | capitalize}}</header>
-        <input type="hidden" name="candidatId" v-model="mrsCandidatFormData.candidatId" />
-        <dl class="champFormulaire">
-            <dt>
-                <label for="codeDepartement">Département (unité MRS)</label>
-            </dt>
-            <dd class="choix">
-                <input type="text" name="codeDepartement" id="codeDepartement" maxlength="2" v-model="mrsCandidatFormData.codeDepartement" />
-            </dd>
-            <dd class="erreurs"
-                v-show="mrsCandidatFormErrors.codeDepartement" v-for="error in mrsCandidatFormErrors.codeDepartement">
-                <span class="texte-erreur font-size-sm">{{error}}</span>
-            </dd>
-        </dl>
-        <dl class="champFormulaire">
-            <dt>
-                <label for="codeROME">Code ROME</label>
-            </dt>
-            <dd class="choix">
-                <select id="codeROME" name="codeROME"
-                        v-model="mrsCandidatFormData.codeROME">
-                    <option value="">Choisissez un code ROME</option>
-                    <option v-for="codeROME in codeROMEs" v-bind:value="codeROME">{{codeROME}}</option>
-                </select>
-            </dd>
-            <dd class="erreurs"
-                v-show="mrsCandidatFormErrors.codeROME" v-for="error in mrsCandidatFormErrors.codeROME">
-                <span class="texte-erreur font-size-sm">{{error}}</span>
-            </dd>
-        </dl>
-        <dl class="champFormulaire">
-            <dt>
-                <label for="dateEvaluation">Date d'évaluation</label>
-            </dt>
-            <dd class="choix">
-                <input type="date" name="dateEvaluation" id="dateEvaluation" v-model="mrsCandidatFormData.dateEvaluation" />
-            </dd>
-            <dd class="erreurs"
-                v-show="mrsCandidatFormErrors.dateEvaluation" v-for="error in mrsCandidatFormErrors.dateEvaluation">
-                <span class="texte-erreur font-size-sm">{{error}}</span>
-            </dd>
-        </dl>
-        <dl class="champFormulaire">
-            <dt>
-                <label for="isDHAE">DHAE</label>
-            </dt>
-            <dd class="choix">
-                <input type="checkbox" name="isDHAE" id="isDHAE" v-model="mrsCandidatFormData.isDHAE" />
-            </dd>
-            <dd class="erreurs"
-                v-show="mrsCandidatFormErrors.isDHAE" v-for="error in mrsCandidatFormErrors.isDHAE">
-                <span class="texte-erreur font-size-sm">{{error}}</span>
-            </dd>
-        </dl>
-        <p>
-            <input type="submit" value="Ajouter">
-            <input type="button" value="Annuler" v-on:click="annulerMRSCandidat">
-            <span class="erreur" v-show="mrsCandidatFormErrors.globalError">{{mrsCandidatFormErrors.globalError}}</span>
-        </p>
-    </form>
+<div id="listeCandidats" class="bg-gris" v-cloak>
+    <section class="container" v-show="display.mrsDHAEForm">
+        <div class="row">
+            <header class="col-12 text-center font-size-md">Ajouter une MRS DHAE pour {{candidatCourant.prenom}} {{candidatCourant.nom}}</header>
+            <form id="mrsDHAEForm" class="col-12" action="@controllers.conseiller.routes.ConseillerController.ajouterMRSDHAECandidat()" method="post"
+                v-on:submit.prevent="ajouterMRSCandidat">
+                <input type="hidden" name="csrfToken" v-bind:value="csrfToken" />
+                <input type="hidden" name="candidatId" v-model="mrsDHAEFormData.candidatId" />
+                <ol class="list-unstyled">
+                    <li class="row pb-4">
+                        <label class="col-12 texte-noir mb-3" for="codeDepartement">Département (unité MRS)</label>
+                        <div class="col-4">
+                            <input id="codeDepartement" type="text" name="codeDepartement" maxlength="2"
+                                   class="texte-noir font-size-sm px-3 py-3 input"
+                                   v-model="mrsDHAEFormData.codeDepartement" />
+                        </div>
+                        <div v-for="error in mrsDHAEFormErrors.codeDepartement" class="col-12 texte-erreur font-size-sm mt-1">{{error}}</div>
+                    </li>
+                    <li class="row pb-4">
+                        <label class="col-12 texte-noir mb-3" for="codeROME">Code ROME</label>
+                        <div class="col-4">
+                            <select id="codeROME" name="codeROME"
+                                    v-model="mrsDHAEFormData.codeROME">
+                                <option value="">Choisissez un code ROME</option>
+                                <option v-for="codeROME in codeROMEs" v-bind:value="codeROME">{{codeROME}}</option>
+                            </select>
+                        </div>
+                        <div v-for="error in mrsDHAEFormErrors.codeROME" class="col-12 texte-erreur font-size-sm mt-1">{{error}}</div>
+                    </li>
+                    <li class="row pb-4">
+                        <label class="col-12 texte-noir mb-3" for="dateEvaluation">Date d'évaluation</label>
+                        <div class="col-4">
+                            <input type="date" name="dateEvaluation" id="dateEvaluation"
+                                   v-model="mrsDHAEFormData.dateEvaluation" />
+                        </div>
+                        <div v-for="error in mrsDHAEFormErrors.dateEvaluation" class="col-12 texte-erreur font-size-sm mt-1">{{error}}</div>
+                    </li>
+                </ol>
+                <button class="bouton bouton-action bouton--blancSurVert" type="submit">Ajouter</button>
+                <button class="bouton bouton-action bouton--blancSurVert" type="button" v-on:click="annulerMRSDHAE">Annuler</button>
+                <span class="texte-erreur" v-show="mrsDHAEFormErrors.globalError">{{mrsDHAEFormErrors.globalError}}</span>
+            </form>
+        </div>
+    </section>
 
-    <section class="resultatsRecherche" v-show="afficherCandidats">
-        <div class="listeResultatsRecherche">
-            <div class="listeResultatsRecherche-ligneTitre">
-                <div class="listeResultatsRecherche-colonne listeResultatsRecherche-candidat">Nom du candidat</div>
-                <div class="listeResultatsRecherche-colonne listeResultatsRecherche-metiersValides">Métiers validés</div>
-                <div class="listeResultatsRecherche-colonne listeResultatsRecherche-metiersRecherches">Métiers recherchés</div>
-            </div>
-            <template v-for="candidat in candidats">
-            <div class="listeResultatsRecherche-ligne"
-                 v-on:click="toggleProfilCandidatCourant(candidat)">
-                <div class="listeResultatsRecherche-colonne listeResultatsRecherche-candidat">
-                    {{candidat.prenom}} {{candidat.nom}}
-                </div>
-                <div class="listeResultatsRecherche-colonne listeResultatsRecherche-metiersValides">
+    <section class="container" v-show="display.candidats">
+        <div class="row p-3">
+            <div class="col-2">Nom du candidat</div>
+            <div class="col-4">Métiers validés</div>
+            <div class="col-4">Métiers recherchés</div>
+        </div>
+        <template v-for="candidat in candidats">
+            <div class="row align-items-center p-3 bg-blanc cursor-pointer"
+                 v-on:click="toggleCandidatCourant(candidat)"
+                 v-bind:class="{'mb-3' : !estCandidatCourant(candidat)}">
+                <div class="col-2">{{candidat.prenom}} {{candidat.nom}}</div>
+                <div class="col-4">
                     <p v-if="candidat.metiersValides.length > 0">Metiers validés</p>
-                    <ul class="detailsProfils">
-                        <li class="detailsProfils-item" v-for="metierValide in candidat.metiersValides">
+                    <ul>
+                        <li v-for="metierValide in candidat.metiersValides">
                             {{metierValide.metier.codeROME}} : {{metierValide.metier.label}}, dans le {{metierValide.departement}}.
                             <span class="font-weight-bold" v-show="metierValide.isDHAE">DHAE</span>
                         </li>
@@ -96,60 +75,51 @@
                         <li class="detailsProfils-item" v-for="metier in candidat.metiersValidesRecherches">{{metier.codeROME}} : {{metier.label}}</li>
                     </ul>
                 </div>
-                <div class="listeResultatsRecherche-colonne listeResultatsRecherche-metiersRecherches">
+                <div class="col-4">
                     <ul class="detailsProfils">
                         <li class="detailsProfils-item" v-for="metier in candidat.metiersRecherches">{{metier.codeROME}} : {{metier.label}}</li>
                     </ul>
                 </div>
-                <div class="listeResultatsRecherche-colonne listeResultatsRecherche-actions">
+                <div class="col-2">
                     <img src="@assetsFinder.path("images/commun/ouvrir-detail.svg")"
                          alt="Plus de détails" height="16" width="16" class="voirProfil--ferme"
-                         v-show="!estProfilCandidatCourant(candidat)" />
+                         v-show="!estCandidatCourant(candidat)" />
                     <img src="@assetsFinder.path("images/commun/fermer-detail.svg")"
                          alt="Moins de détails" height="16" width="16" class="voirProfil--ouvert"
-                         v-show="estProfilCandidatCourant(candidat)" />
+                         v-show="estCandidatCourant(candidat)" />
                     Détail
                 </div>
             </div>
-            <div class="profilCandidat"
-                 v-show="estProfilCandidatCourant(candidat)">
-                <div class="profilCandidat-colonne profilCandidat-date">
+            <div class="row p-3 mb-3 bg-noir texte-blanc" v-show="estCandidatCourant(candidat)">
+                <div class="col-5">
                     <div>Email : {{candidat.email}}</div>
                     <div>Telephone : {{candidat.numeroTelephone}}</div>
                     <div>Demandeur d'emploi : {{candidat.statutDemandeurEmploi | statutDemandeurEmploi}}</div>
                     <div>Inscription : {{candidat.dateInscription | date}}</div>
                     <div>Derniere connexion : {{candidat.dateDerniereConnexion | date}}</div>
                 </div>
-                <div class="profilCandidat-colonne profilCandidat-contact">
+                <div class="col-4">
                     <div v-if="candidat.communeRecherche">Commune : {{candidat.communeRecherche}}</div>
                     <div v-if="candidat.codePostalRecherche">Code postal : {{candidat.codePostalRecherche}}</div>
                     <div v-if="candidat.rayonRecherche">Rayon de recherche : {{candidat.rayonRecherche.value}}km</div>
                     <div v-if="candidat.contactRecruteur">Contact recruteur : {{candidat.contactRecruteur | boolean}}</div>
                     <div v-if="candidat.contactFormation">Contact formation : {{candidat.contactFormation | boolean}}</div>
                 </div>
-                <div class="profilCandidat-colonne profilCandidat-actions">
-                    <ul class="listeActions list-unstyled">
-                        <li class="listeActions-item">
-                            <span class="bouton bouton--blancSurVert bouton-actionCandidat"
-                                  v-on:click="initialiserMRSCandidatFormAvecCandidat(candidat)">
-                                Ajouter une MRS
-                            </span>
-                        </li>
-                        <li class="listeActions-item" v-if="candidat.rechercheEmploi">
-                            <span class="bouton bouton--blancSurVert bouton-actionCandidat"
-                                  v-on:click="declarerRepriseEmploi(candidat)">
-                                Déclarer reprise d'emploi
-                            </span>
+                <div class="col-3">
+                    <ul class="list-unstyled">
+                        <li>
+                            <button class="bouton bouton-action bouton--blancSurVert"
+                                  v-on:click="initialiserMRSDHAEForm(candidat)">
+                                Ajouter une MRS DHAE
+                            </button>
                         </li>
                     </ul>
                 </div>
             </div>
-            <div class="listeResultatsRecherche-separation"></div>
-            </template>
-        </div>
+        </template>
     </section>
     <pagination ref="pagination"
-                v-show="afficherCandidats"
+                v-show="display.candidats"
                 v-on:charger-page="chargerPage"
                 v-bind:nb-pages="pages.length"></pagination>
 </div>

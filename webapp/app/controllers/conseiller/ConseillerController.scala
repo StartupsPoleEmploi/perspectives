@@ -73,33 +73,24 @@ class ConseillerController @Inject()(cc: ControllerComponents,
     }(conseillerRequest)
   }
 
-  def ajouterMRSCandidat: Action[AnyContent] = conseillerAdminAuthentifieAction.async { conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
+  def ajouterMRSDHAECandidat: Action[AnyContent] = conseillerAdminAuthentifieAction.async { conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
-      AjouterMRSCandidatForm.form.bindFromRequest.fold(
+      AjouterMRSDHAECandidatForm.form.bindFromRequest.fold(
         formWithErrors => Future.successful(BadRequest(formWithErrors.errorsAsJson)),
-        ajouterMRSCandidatForm => {
+        form => {
           val command = AjouterMRSValideesCommand(
-            id = CandidatId(ajouterMRSCandidatForm.candidatId),
+            id = CandidatId(form.candidatId),
             mrsValidees = List(MRSValidee(
-              codeROME = CodeROME(ajouterMRSCandidatForm.codeROME),
-              codeDepartement = CodeDepartement(ajouterMRSCandidatForm.codeDepartement),
-              dateEvaluation = ajouterMRSCandidatForm.dateEvaluation,
-              isDHAE = ajouterMRSCandidatForm.isDHAE
+              codeROME = CodeROME(form.codeROME),
+              codeDepartement = CodeDepartement(form.codeDepartement),
+              dateEvaluation = form.dateEvaluation,
+              isDHAE = true
             ))
           )
           candidatCommandHandler.handle(command)
         }
       )
     }(conseillerRequest)
-  }
-
-  def declarerRepriseEmploi(candidatId: String): Action[AnyContent] = conseillerAdminAuthentifieAction.async { implicit conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
-    candidatCommandHandler.handle(
-      DeclarerRepriseEmploiParConseillerCommand(
-        id = CandidatId(candidatId),
-        conseillerId = conseillerRequest.conseillerId
-      )
-    )
   }
 
   def listeRecruteurs: Action[AnyContent] = conseillerAdminAuthentifieAction.async { implicit conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>

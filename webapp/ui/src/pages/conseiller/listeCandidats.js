@@ -15,15 +15,26 @@ var app = new Vue({
             pages: jsData.pages,
             nbCandidatsParPage: jsData.nbCandidatsParPage,
             codeROMEs: jsData.codeROMEs.result,
-            mrsCandidatFormData: {},
-            mrsCandidatFormErrors: {},
-            afficherCandidats: true,
-            afficherMRSCandidatForm: false,
-            profilCandidatCourant: null
+            mrsDHAEFormData: {
+                candidatId: null,
+                codeDepartement: null,
+                codeROME: null,
+                dateEvaluation: null
+            },
+            mrsDHAEFormErrors: {
+                codeDepartement: [],
+                codeROME: [],
+                dateEvaluation: []
+            },
+            candidatCourant: {},
+            display: {
+                candidats: true,
+                mrsDHAEForm: false
+            }
         }
     },
     methods: {
-        chargerPage: function(index) {
+        chargerPage: function (index) {
             var filtrePage = this.pages[index - 1];
 
             return $.ajax({
@@ -46,86 +57,69 @@ var app = new Vue({
                 app.$refs.pagination.pageChargee(index);
             });
         },
-        initialiserMRSCandidatFormAvecCandidat: function (candidat) {
-            this.initialiserMRSCandidatForm();
-            var form = this.mrsCandidatFormData;
-            form.candidatId = candidat.candidatId;
-            form.nomCandidat = candidat.nom;
-            form.prenomCandidat = candidat.prenom;
+        initialiserMRSDHAEForm: function (candidat) {
+            this.reinitialiserMRSDHAEForm();
+            this.mrsDHAEFormData.candidatId = candidat.candidatId;
 
-            this.afficherMRSCandidatForm = true;
-            this.afficherCandidats = false;
+            this.display.candidats = false;
+            this.display.mrsDHAEForm = true;
+        },
+        annulerMRSDHAE: function () {
+            this.display.candidats = true;
+            this.display.mrsDHAEForm = false;
+
+            this.reinitialiserMRSDHAEForm();
+        },
+        reinitialiserMRSDHAEForm: function () {
+            this.mrsDHAEFormData = {
+                candidatId: null,
+                codeDepartement: null,
+                codeROME: null,
+                dateEvaluation: null
+            };
+            this.mrsDHAEFormErrors = {
+                codeDepartement: [],
+                codeROME: [],
+                dateEvaluation: []
+            };
         },
         ajouterMRSCandidat: function (e) {
-            var form = this.mrsCandidatFormData;
-
             $.ajax({
                 type: 'POST',
-                url: '/conseiller/ajouterMRSCandidat',
-                data: [
-                    {name: "csrfToken", value: this.csrfToken},
-                    {name: "candidatId", value: form.candidatId},
-                    {name: "codeROME", value: form.codeROME},
-                    {name: "dateEvaluation", value: form.dateEvaluation},
-                    {name: "codeDepartement", value: form.codeDepartement},
-                    {name: "isDHAE", value: form.isDHAE},
-                ],
+                url: '/conseiller/ajouterMRSDHAECandidat',
+                data: $('#mrsDHAEForm').serializeArray(),
                 dataType: 'json'
-            }).done(function (response) {
-                app.afficherMRSCandidatForm = false;
-                app.afficherCandidats = true;
-
-                var candidatIndex = null;
-                app.candidats.forEach(function(c, index, array) {
-                    if (c.candidatId === form.candidatId) {candidatIndex = index}
+            }).done(function () {
+                var candidatIndex = app.candidats.findIndex(function(c) {
+                    return c.candidatId === app.mrsDHAEFormData.candidatId;
                 });
                 app.candidats[candidatIndex].metiersValides.push({
-                    metier: {codeROME: form.codeROME, label: "Rafraichir la page pour le label"},
-                    departement: form.codeDepartement,
-                    isDHAE: form.isDHAE
+                    metier: {codeROME: app.mrsDHAEFormData.codeROME, label: "Rafraichir la page pour le label"},
+                    departement: app.mrsDHAEFormData.codeDepartement,
+                    isDHAE: true
                 });
+
+                app.display.candidats = true;
+                app.display.mrsDHAEForm = false;
+                app.reinitialiserMRSDHAEForm();
             }).fail(function (jqXHR) {
                 if (jqXHR.status === 400) {
-                    app.mrsCandidatFormErrors = jqXHR.responseJSON;
+                    app.mrsDHAEFormErrors = jqXHR.responseJSON;
                 }
             });
         },
-        annulerMRSCandidat: function() {
-            this.afficherMRSCandidatForm = false;
-            this.afficherCandidats = true;
-            this.initialiserMRSCandidatForm();
+        estCandidatCourant: function (candidat) {
+            return candidat.candidatId === this.candidatCourant.id;
         },
-        initialiserMRSCandidatForm: function() {
-            this.mrsCandidatFormData = {
-                nomCandidat: null,
-                prenomCandidat: null,
-                candidatId: null,
-                codeROME: null,
-                codeDepartement: null,
-                dateEvaluation: null,
-                isDHAE: false
-            };
-            this.mrsCandidatFormErrors = {};
-        },
-        declarerRepriseEmploi: function(candidat) {
-            $.ajax({
-                type: 'GET',
-                url: '/conseiller/declarerRepriseEmploi/' + candidat.candidatId,
-                dataType: 'text'
-            }).done(function () {
-                app.candidats.find(function(c) {
-                    return c.candidatId === candidat.candidatId;
-                }).rechercheEmploi = false;
-            });
-        },
-        estProfilCandidatCourant: function(candidat) {
-            return candidat.candidatId === this.profilCandidatCourant;
-        },
-        toggleProfilCandidatCourant: function(candidat) {
-            if (candidat.candidatId !== this.profilCandidatCourant) {
-                this.profilCandidatCourant = candidat.candidatId;
+        toggleCandidatCourant: function (candidat) {
+            if (candidat.candidatId !== this.candidatCourant.id) {
+                this.candidatCourant = {
+                    id: candidat.candidatId,
+                    prenom: candidat.prenom,
+                    nom: candidat.nom
+                };
             } else {
-                this.profilCandidatCourant = null;
+                this.candidatCourant = {};
             }
         }
     }
