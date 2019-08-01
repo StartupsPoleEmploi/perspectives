@@ -43,7 +43,7 @@
             if (this.temoignages.length > 0) {
                 setInterval(function () {
                     self.carouselTemoignage();
-                }, 3000);
+                }, 5000);
             }
         },
         methods: {

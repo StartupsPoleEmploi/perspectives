@@ -27,7 +27,8 @@
                         sur des métiers en tension ?</h1>
                     <p class="col-12 text-center texte-noir font-size-md">Formez des candidats avec un potentiel validé* sur un nouveau métier.</p>
                     <a class="col-9 col-lg-5 mb-2 bouton bouton-action bouton--theme3 w-100" href="@controllers.recruteur.routes.InscriptionController.inscription()">C'est parti, je m'inscris !</a>
-                    <p class="col-12 mb-0 text-center">* Méthode de Recrutement par Simulation</p>
+                    <p class="col-12 mb-0 text-center cursor-pointer"
+                       data-toggle="modal" data-target="#js-modaleVideo" v-bind:data-urlVideo="urlVideoMRS">* Méthode de Recrutement par Simulation</p>
                 </div>
             </div>
         </section>
@@ -79,7 +80,7 @@
         <section class="row py-5 justify-content-center bg-violet-light">
             <h2 class="col-12 texte-noir text-center font-weight-bold font-size-md">Ils ont recruté un candidat sur Perspectives</h2>
             <temoignages class="col col-lg-9" theme="themeRecruteur"
-                         v-bind:temoignages="temoignages" ></temoignages>
+                         v-bind:temoignages="temoignages"></temoignages>
         </section>
         <section class="row py-5">
             <h2 class="col-12 mb-4 text-center texte-noir font-weight-bold font-size-md">On parle de Perspectives</h2>
