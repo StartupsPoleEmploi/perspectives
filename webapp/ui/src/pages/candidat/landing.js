@@ -1,10 +1,13 @@
 import Vue from 'vue';
 import places from 'places.js';
-import '../../composants/temoignages.js';
+import Temoignages from '../../composants/Temoignages.vue';
 import rayonsRechercheOffres from "../../domain/offre/rayonRecherche";
 
-var app = new Vue({
+new Vue({
     el: '#landingCandidat',
+    components: {
+        'temoignages': Temoignages
+    },
     data: function () {
         return {
             temoignages: [

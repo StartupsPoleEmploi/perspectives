@@ -60,9 +60,11 @@
                 <p class="pt-5">* MRS : Méthode de recrutement par simulation</p>
             </div>
         </section>
-        <section class="row temoignagesCandidat">
-            <h2 class="temoignagesCandidat-titre titreLanding">Ils ont trouvé un emploi sur Perspectives :</h2>
-            <temoignages v-bind:temoignages="temoignages"></temoignages>
+        <section class="row py-5 justify-content-center bg-vert-emeraude-light">
+            <h2 class="col-12 mb-3 text-center texte-noir font-size-lg font-weight-bold">Ils ont trouvé un emploi sur Perspectives :</h2>
+            <temoignages class="col col-lg-9"
+                         theme="themeCandidat"
+                         v-bind:temoignages="temoignages"></temoignages>
         </section>
         <section class="row bg-noir px-3 py-3">
             <a class="col text-center texte-blanc" href="#">Infos légales</a>

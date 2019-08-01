@@ -1,8 +1,11 @@
 import Vue from 'vue';
-import '../../composants/temoignages.js';
+import Temoignages from '../../composants/Temoignages.vue';
 
 new Vue({
     el: '#landingRecruteur',
+    components: {
+        'temoignages': Temoignages
+    },
     data: function () {
         return {
             temoignages: [

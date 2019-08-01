@@ -1,29 +1,38 @@
 .temoignage {
   position: relative;
-  font-size: 1.5rem;
-  font-style: italic;
-  text-align: left;
-  padding: 0 3rem;
 
-  &-image {
+  &-citation {
     position: absolute;
-  }
-  &-debutCitation {
-    left: 0;
-    top: 0;
-  }
-  &-finCitation {
-    right: 0;
-    bottom: 0;
+
+    &--themeCandidat {
+      filter: url('/assets/images/composants/temoignages/debut_citation.svg#themeCandidat');
+    }
+    &--themeRecruteur {
+      filter: url('/assets/images/composants/temoignages/debut_citation.svg#themeRecruteur');
+    }
+
+    &-debut {
+      left: 0;
+      top: 0;
+    }
+    &-fin {
+      right: 0;
+      bottom: 0;
+    }
   }
 }
 
 .paginationTemoignages {
   text-align: center;
-  padding: 2rem;
+  padding-top: 2rem;
 
   &-pageCourante {
-    background-color: $vert-emeraude;
+    &--themeCandidat {
+      background-color: $vert-emeraude;
+    }
+    &--themeRecruteur {
+      background-color: $violet;
+    }
   }
 
   &-page {

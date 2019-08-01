@@ -1,19 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Generator: Adobe Illustrator 23.0.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.1" id="Calque_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 31 29" style="enable-background:new 0 0 31 29;" xml:space="preserve">
-<style type="text/css">
-	.st0{opacity:0.3;}
-	.st1{enable-background:new    ;}
-	.st2{fill:#0D7A93;}
-</style>
-<title>» copy 2</title>
-<desc>Created with Sketch.</desc>
-<g id="New---Carole" class="st0">
-	<g id="D_Perspective_Home" transform="translate(-1079.000000, -1527.000000)">
+<svg version="1.1" id="Calque_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
+     y="0px"
+     viewBox="0 0 31 29" style="enable-background:new 0 0 31 29;" xml:space="preserve">
+    <title>Fin citation</title>
+	<defs>
+        <filter id="themeRecruteur">
+          <feColorMatrix color-interpolation-filters="sRGB"
+						 values="0.36 0 0 0 0
+                          0 0.31 0 0 0
+                          0 0 0.60 0 0
+                          0 0 0 1 0 "/>
+        </filter>
+		<filter id="themeCandidat">
+            <feColorMatrix color-interpolation-filters="sRGB"
+						   values="0.05 0 0 0 0
+                      0 0.48 0 0 0
+                      0 0 0.58 0 0
+                      0 0 0 1 0 "/>
+        </filter>
+    </defs>
+    <g id="New---Carole">
+	<g id="D_Perspective_Home" transform="translate(-1079.000000, -1527.000000)" fill="#FFFFFF">
 		<g id="Témoignages" transform="translate(0.000000, 1320.000000)">
-			<g class="st1">
-				<path class="st2" d="M1095.5,221.7l-11.5,12.5l-2.7-2.2l8.8-11.2l-4.9-11.1l3.5-1.6l6.8,12.6V221.7z M1107.8,223.1l-12.3,11.6
+			<g>
+				<path d="M1095.5,221.7l-11.5,12.5l-2.7-2.2l8.8-11.2l-4.9-11.1l3.5-1.6l6.8,12.6V221.7z M1107.8,223.1l-12.3,11.6
 					l-2.4-2.6l9.3-10.1l-5.4-12.2l3.5-1.6l7.3,14V223.1z"/>
 			</g>
 		</g>
