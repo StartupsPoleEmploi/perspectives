@@ -65,11 +65,6 @@ var app = new Vue({
             this.rechercheOffresFormData.codePostal = null;
             this.rechercheOffresFormData.lieuTravail = null;
         },
-        hasError: function(champ) {
-            return this.rechercheOffresFormErrors.findIndex(function(element) {
-                return element.champ === champ;
-            }) !== -1;
-        },
         rechercherOffres: function() {
             this.rechercheOffresFormErrors = [];
             if (this.rechercheOffresFormData.codePostal === null || this.rechercheOffresFormData.codePostal === '') {
