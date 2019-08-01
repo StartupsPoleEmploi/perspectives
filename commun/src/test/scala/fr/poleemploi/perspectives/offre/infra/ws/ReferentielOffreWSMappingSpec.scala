@@ -126,11 +126,7 @@ class ReferentielOffreWSMappingSpec extends WordSpec
     }
     "doit valoriser le parametre typeContrat lorsqu'il est renseigné" in {
       // Given
-      val typeContrat1 = mock[TypeContrat]
-      when(typeContrat1.value) thenReturn "CDD"
-      val typeContrat2 = mock[TypeContrat]
-      when(typeContrat2.value) thenReturn "CDI"
-      when(criteresRechercheOffre.typesContrats) thenReturn List(typeContrat1, typeContrat2)
+      when(criteresRechercheOffre.typesContrats) thenReturn List(TypeContrat("CDD"), TypeContrat("CDI"))
 
       // When
       val request = mapping.buildRechercherOffresRequest(criteresRechercheOffre = criteresRechercheOffre, codeINSEE = None)
