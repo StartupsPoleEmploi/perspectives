@@ -1,5 +1,5 @@
 <template>
-    <input v-bind:id="id" type="search"
+    <input v-bind:id="id" type="text"
            v-bind:value="value"
            v-on:input="$emit('input', $event.target.value)"/>
 </template>
