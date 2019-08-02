@@ -1,8 +1,8 @@
 import Vue from 'vue';
 import $ from 'jquery';
-import places from 'places.js';
 import 'bootstrap/js/dist/modal';
 import Pagination from '../../composants/Pagination.vue';
+import Places from '../../composants/Places.vue';
 import '../../commun/filters.js';
 import listeTempsTravail from '../../domain/candidat/tempsTravail';
 import niveauxLangues from '../../domain/candidat/niveauxLangues';
@@ -15,7 +15,8 @@ Vue.filter('dateExperience', function (value) {
 var app = new Vue({
     el: '#rechercheCandidats',
     components: {
-        'pagination': Pagination
+        'pagination': Pagination,
+        'places': Places
     },
     data: function () {
         return {
@@ -43,6 +44,11 @@ var app = new Vue({
                 nbCandidatsTotal: 0,
                 pages: []
             }, jsData.resultatRecherche),
+            placesOptions: {
+                appId: jsData.algoliaPlacesConfig.appId,
+                apiKey: jsData.algoliaPlacesConfig.apiKey,
+                style: true
+            },
             display: {
                 modaleDetailCandidat: false,
                 chargement: false,
@@ -55,37 +61,6 @@ var app = new Vue({
     },
     mounted: function () {
         var self = this;
-        var placesAutocomplete = places({
-            appId: jsData.algoliaPlacesConfig.appId,
-            apiKey: jsData.algoliaPlacesConfig.apiKey,
-            container: document.querySelector('#js-localisation'),
-            type: 'city',
-            aroundLatLngViaIP: false,
-            style: true,
-            useDeviceLocation: false,
-            language: 'fr',
-            countries: ['fr'],
-            templates: {
-                value: function(suggestion) {
-                    return suggestion.name;
-                }
-            }
-        });
-        placesAutocomplete.on('change', function (e) {
-            self.localisation = {
-                label: e.suggestion.name,
-                latitude: e.suggestion.latlng.lat,
-                longitude: e.suggestion.latlng.lng
-            };
-        });
-        placesAutocomplete.on('clear', function (e) {
-            self.localisation = {
-                label: '',
-                latitude: null,
-                longitude: null
-            };
-        });
-
         window.location = '#';
         var modaleDetail = $('#detailCandidat');
         modaleDetail.on('show.bs.modal', function () {
@@ -217,6 +192,20 @@ var app = new Vue({
         }
     },
     methods: {
+        placesChange: function (suggestion) {
+            this.localisation = {
+                label: suggestion.name,
+                latitude: suggestion.latlng.lat,
+                longitude: suggestion.latlng.lng
+            };
+        },
+        placesClear: function () {
+            this.localisation = {
+                label: '',
+                latitude: null,
+                longitude: null
+            };
+        },
         secteurActiviteParCode: function(codeSecteur) {
             return this.secteursActivites.find(function(s) {
                 return s.code === codeSecteur;

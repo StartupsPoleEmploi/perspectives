@@ -1,11 +1,14 @@
 import Vue from 'vue';
 import $ from 'jquery';
 import 'bootstrap/js/dist/modal';
-import places from 'places.js';
+import Places from '../../composants/Places.vue';
 import ROME from '../../domain/metier/ROME';
 
 var app = new Vue({
     el: '#saisieCriteresRechercheCandidat',
+    components: {
+        'places': Places
+    },
     data: function () {
         return {
             criteresRechercheFormData: Object.assign({
@@ -56,7 +59,10 @@ var app = new Vue({
                 secteursActivites: {},
                 metiersSelectionnesParSecteur: {}
             },
-            algoliaPlacesConfig: jsData.algoliaPlacesConfig
+            placesOptions: {
+                appId: jsData.algoliaPlacesConfig.appId,
+                apiKey: jsData.algoliaPlacesConfig.apiKey
+            }
         }
     },
     created: function() {
@@ -79,35 +85,11 @@ var app = new Vue({
         this.display.metiersSelectionnesParSecteur = metiersSelectionnesParSecteur;
     },
     mounted: function () {
-        var self = this;
-        var placesAutocomplete = places({
-            appId: self.algoliaPlacesConfig.appId,
-            apiKey: self.algoliaPlacesConfig.apiKey,
-            container: document.querySelector('#js-communeRecherche'),
-            type: 'city',
-            aroundLatLngViaIP: false,
-            style: false,
-            useDeviceLocation: false,
-            language: 'fr',
-            countries: ['fr'],
-            templates: {
-                value: function(suggestion) {
-                    return suggestion.name;
-                }
-            }
-        });
-        placesAutocomplete.on('change', function (e) {
-            self.algoliaPlacesChange(e.suggestion);
-        });
-        placesAutocomplete.on('clear', function () {
-            self.algoliaPlacesClear();
-        });
-
         $('#js-modaleContactRecruteur').modal({show: false});
         $('#js-modaleMetiers').modal({show: false});
     },
     methods: {
-        algoliaPlacesChange: function (suggestion) {
+        placesChange: function (suggestion) {
             this.criteresRechercheFormData.localisation = {
                 codePostal: suggestion.postcode,
                 commune: suggestion.name,
@@ -115,7 +97,7 @@ var app = new Vue({
                 longitude: suggestion.latlng.lng
             };
         },
-        algoliaPlacesClear: function () {
+        placesClear: function () {
             this.criteresRechercheFormData.localisation = {
                 codePostal: null,
                 commune: null,

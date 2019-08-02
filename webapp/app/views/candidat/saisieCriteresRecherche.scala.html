@@ -133,15 +133,16 @@
                         <legend class="texte-noir font-size-md mb-4">Ok, commençons à vous chercher un emploi !</legend>
                         <ol class="listeChamps list-unstyled">
                             <li class="champSaisie row">
-                                <label class="col-12 texte-noir mb-3" for="js-communeRecherche">
+                                <label class="col-12 texte-noir mb-3" for="communeRecherche">
                                     Dans quelle ville recherchez-vous ? <span>*</span>
                                 </label>
                                 <div class="col-12 col-lg-5">
                                     <input type="hidden" name="localisation.codePostal" v-model="criteresRechercheFormData.localisation.codePostal" />
                                     <input type="hidden" name="localisation.latitude" v-model="criteresRechercheFormData.localisation.latitude" />
                                     <input type="hidden" name="localisation.longitude" v-model="criteresRechercheFormData.localisation.longitude" />
-                                    <input id="js-communeRecherche" type="text" name="localisation.commune" class="texte-noir font-size-sm input algolia-themeCandidat"
-                                           v-model="criteresRechercheFormData.localisation.commune"/>
+                                    <places id="communeRecherche" name="localisation.commune" class="texte-noir font-size-sm input algolia-themeCandidat"
+                                            v-model="criteresRechercheFormData.localisation.commune" v-bind:options="placesOptions"
+                                            v-on:change="placesChange" v-on:clear="placesClear"></places>
                                 </div>
                                 <div v-for="error in criteresRechercheFormErrors.localisation" class="col-12 texte-erreur font-size-sm mt-1">{{error}}</div>
                             </li>

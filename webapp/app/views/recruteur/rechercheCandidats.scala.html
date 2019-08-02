@@ -261,9 +261,10 @@
                               v-on:submit="rechercherCandidatsSansPagination">
                             @CSRF.formField
                             <div class="col-12 mb-3">
-                                <label for="js-localisation" class="sr-only">Choisissez un lieu de travail</label>
-                                <input id="js-localisation" type="search" v-model="localisation.label" placeholder="Lieu de travail"
-                                class="localisation texte-noir font-size-sm px-2 py-3 algolia-themeRecruteur"/>
+                                <label for="localisation" class="sr-only">Choisissez un lieu de travail</label>
+                                <places id="localisation" placeholder="Lieu de travail" class="input h-auto texte-noir font-size-sm px-2 py-3 algolia-themeRecruteur"
+                                        v-model="localisation.label" v-bind:options="placesOptions"
+                                        v-on:change="placesChange" v-on:clear="placesClear"></places>
                             </div>
                             <div class="col-12 mb-3">
                                 <div class="conteneurSelecteur conteneurSelecteur--violet">

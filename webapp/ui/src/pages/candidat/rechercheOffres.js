@@ -1,16 +1,17 @@
-import Vue from "vue";
-import $ from "jquery";
-import places from "places.js";
+import Vue from 'vue';
+import $ from 'jquery';
 import 'bootstrap/js/dist/modal';
 import '../../commun/filters.js';
 import Pagination from '../../composants/Pagination.vue';
+import Places from '../../composants/Places.vue';
 import rayonsRechercheOffre from "../../domain/offre/rayonRecherche";
 import typesContrats from '../../domain/offre/typesContrats.js';
 
 var app = new Vue({
     el: '#rechercheOffres',
     components: {
-        'pagination': Pagination
+        'pagination': Pagination,
+        'places': Places
     },
     data: function () {
         return {
@@ -46,7 +47,10 @@ var app = new Vue({
             rayonsRecherche: rayonsRechercheOffre,
             typesContrats: typesContrats,
             metiersValides: Object.assign([], jsData.metiersValides),
-            algoliaPlacesConfig: jsData.algoliaPlacesConfig,
+            placesOptions : {
+                appId: jsData.algoliaPlacesConfig.appId,
+                apiKey: jsData.algoliaPlacesConfig.apiKey
+            },
             display: {
                 contact: false,
                 chargement: false,
@@ -62,29 +66,6 @@ var app = new Vue({
     },
     mounted: function () {
         var self = this;
-        var placesAutocomplete = places({
-            appId: self.algoliaPlacesConfig.appId,
-            apiKey: self.algoliaPlacesConfig.apiKey,
-            container: document.querySelector('#js-lieuTravail'),
-            type: 'city',
-            aroundLatLngViaIP: false,
-            style: false,
-            useDeviceLocation: false,
-            language: 'fr',
-            countries: ['fr'],
-            templates: {
-                value: function (suggestion) {
-                    return suggestion.name;
-                }
-            }
-        });
-        placesAutocomplete.on('change', function (e) {
-            self.algoliaPlacesChange(e.suggestion);
-        });
-        placesAutocomplete.on('clear', function () {
-            self.algoliaPlacesClear();
-        });
-
         window.location = '#';
         var modaleDetail = $('#detailOffre');
         modaleDetail.on('show.bs.modal', function () {
@@ -116,14 +97,14 @@ var app = new Vue({
         }
     },
     methods: {
-        algoliaPlacesChange: function (suggestion) {
+        placesChange: function (suggestion) {
             this.rechercheFormData.localisation.codePostal = suggestion.postcode;
             this.rechercheFormData.localisation.lieuTravail = suggestion.name;
 
             var localisation = this.rechercheFormData.localisation;
             history.pushState({}, '', window.location.pathname + '?codePostal=' + localisation.codePostal + '&lieuTravail=' + localisation.lieuTravail + '&rayonRecherche=' + localisation.rayonRecherche + '#');
         },
-        algoliaPlacesClear: function () {
+        placesClear: function () {
             this.rechercheFormData.localisation.codePostal = null;
             this.rechercheFormData.localisation.lieuTravail = null;
         },

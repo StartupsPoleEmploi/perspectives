@@ -1,8 +1,11 @@
 import Vue from 'vue';
-import places from 'places.js';
+import Places from '../../composants/Places.vue';
 
-var app = new Vue({
+new Vue({
     el: '#profilRecruteur',
+    components: {
+        'places': Places
+    },
     data: function () {
         return {
             profilFormData: Object.assign({
@@ -31,7 +34,10 @@ var app = new Vue({
                 {value: 'AGENCE_INTERIM', label: 'Une agence d\'interim'},
                 {value: 'ORGANISME_FORMATION', label: 'Un organisme de formation'}
             ],
-            algoliaPlacesConfig: jsData.algoliaPlacesConfig
+            placesOptions: {
+                appId: jsData.algoliaPlacesConfig.appId,
+                apiKey: jsData.algoliaPlacesConfig.apiKey
+            }
         }
     },
     created: function() {
@@ -46,40 +52,15 @@ var app = new Vue({
             this.profilFormData.adresse.pays = jsData.profilFormData['adresse.pays'];
         }
     },
-    mounted: function () {
-        var self = this;
-        var placesAutocomplete = places({
-            appId: self.algoliaPlacesConfig.appId,
-            apiKey: self.algoliaPlacesConfig.apiKey,
-            container: document.querySelector('#js-adresse'),
-            type: 'city',
-            aroundLatLngViaIP: false,
-            style: false,
-            useDeviceLocation: false,
-            language: 'fr',
-            countries: ['fr'],
-            templates: {
-                value: function(suggestion) {
-                    return suggestion.name;
-                }
-            }
-        });
-        placesAutocomplete.on('change', function (e) {
-            self.algoliaPlacesChange(e.suggestion);
-        });
-        placesAutocomplete.on('clear', function () {
-            self.algoliaPlacesClear();
-        });
-    },
     methods: {
-        algoliaPlacesChange: function (suggestion) {
+        placesChange: function (suggestion) {
             this.profilFormData.adresse = {
                 codePostal: suggestion.postcode,
                 commune: suggestion.name,
                 pays: suggestion.country
             };
         },
-        algoliaPlacesClear: function () {
+        placesClear: function () {
             this.profilFormData.adresse = {
                 codePostal: null,
                 commune: null,

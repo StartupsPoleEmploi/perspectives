@@ -15,9 +15,10 @@
                         <div class="rechercheOffres-localisation">
                             <div class="rechercheOffres-conteneurlieuTravail">
                                 <input type="hidden" name="codePostal" v-model="rechercheOffresFormData.codePostal" />
-                                <label for="js-lieuTravail" class="sr-only">Choisissez un lieu de travail</label>
-                                <input id="js-lieuTravail" type="text" name="lieuTravail" placeholder="Dans quelle ville ?" class="rechercheOffres-lieuTravail algolia-themeCandidat"
-                                       v-model="rechercheOffresFormData.lieuTravail"/>
+                                <label for="lieuTravail" class="sr-only">Choisissez un lieu de travail</label>
+                                <places id="lieuTravail" name="lieuTravail" placeholder="Dans quelle ville ?" class="rechercheOffres-lieuTravail algolia-themeCandidat"
+                                        v-model="rechercheOffresFormData.lieuTravail" v-bind:options="placesOptions"
+                                        v-on:change="placesChange" v-on:clear="placesClear"></places>
                             </div>
                             <div class="rechercheOffres-conteneurRayonRecherche">
                                 <label for="js-rayonRecherche" class="sr-only">Renseignez un rayon de recherche</label>

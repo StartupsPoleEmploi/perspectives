@@ -294,8 +294,10 @@
                                 <div class="rechercheOffres-localisation">
                                     <div class="rechercheOffres-conteneurlieuTravail">
                                         <input type="hidden" name="localisation.codePostal" v-model="rechercheFormData.localisation.codePostal" />
-                                        <label for="js-lieuTravail" class="sr-only">Choisissez un lieu de travail</label>
-                                        <input id="js-lieuTravail" type="text" v-model="rechercheFormData.localisation.lieuTravail" name="localisation.lieuTravail" placeholder="Dans quelle ville ?" class="rechercheOffres-lieuTravail algolia-themeCandidat"/>
+                                        <label for="lieuTravail" class="sr-only">Choisissez un lieu de travail</label>
+                                        <places id="lieuTravail" name="localisation.lieuTravail" placeholder="Dans quelle ville ?" class="rechercheOffres-lieuTravail algolia-themeCandidat"
+                                                v-model="rechercheFormData.localisation.lieuTravail" v-bind:options="placesOptions"
+                                                v-on:change="placesChange" v-on:clear="placesClear"></places>
                                     </div>
                                     <div class="rechercheOffres-conteneurRayonRecherche">
                                         <label for="js-rayonRecherche" class="sr-only">Renseignez un rayon de recherche</label>

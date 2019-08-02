@@ -1,12 +1,13 @@
 import Vue from 'vue';
-import places from 'places.js';
 import Temoignages from '../../composants/Temoignages.vue';
+import Places from '../../composants/Places.vue';
 import rayonsRechercheOffres from "../../domain/offre/rayonRecherche";
 
 new Vue({
     el: '#landingCandidat',
     components: {
-        'temoignages': Temoignages
+        'temoignages': Temoignages,
+        'places': Places
     },
     data: function () {
         return {
@@ -31,40 +32,18 @@ new Vue({
             },
             rechercheOffresFormErrors: [],
             rayonsRechercheOffres: rayonsRechercheOffres,
-            algoliaPlacesConfig: jsData.algoliaPlacesConfig
+            placesOptions: {
+                appId: jsData.algoliaPlacesConfig.appId,
+                apiKey: jsData.algoliaPlacesConfig.apiKey
+            }
         }
     },
-    mounted: function () {
-        var self = this;
-        var placesAutocomplete = places({
-            appId: self.algoliaPlacesConfig.appId,
-            apiKey: self.algoliaPlacesConfig.apiKey,
-            container: document.querySelector('#js-lieuTravail'),
-            type: 'city',
-            aroundLatLngViaIP: false,
-            style: false,
-            useDeviceLocation: false,
-            language: 'fr',
-            countries: ['fr'],
-            templates: {
-                value: function(suggestion) {
-                    return suggestion.name;
-                }
-            }
-        });
-        placesAutocomplete.on('change', function(e) {
-            self.algoliaPlacesChange(e.suggestion);
-        });
-        placesAutocomplete.on('clear', function() {
-            self.algoliaPlacesClear();
-        });
-    },
     methods: {
-        algoliaPlacesChange: function(suggestion) {
+        placesChange: function(suggestion) {
             this.rechercheOffresFormData.codePostal = suggestion.postcode;
             this.rechercheOffresFormData.lieuTravail = suggestion.name;
         },
-        algoliaPlacesClear: function() {
+        placesClear: function() {
             this.rechercheOffresFormData.codePostal = null;
             this.rechercheOffresFormData.lieuTravail = null;
         },

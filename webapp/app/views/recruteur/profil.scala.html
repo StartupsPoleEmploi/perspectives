@@ -63,16 +63,15 @@
                             <div v-for="error in profilFormErrors.numeroSiret" class="col-12 texte-erreur font-size-sm mt-1">{{error}}</div>
                         </li>
                         <li class="champSaisie row">
-                            <label class="col-12 texte-noir mb-3" for="js-adresse">
+                            <label class="col-12 texte-noir mb-3" for="commune">
                                 Dans quelle ville se situe l'entreprise ? *
                             </label>
                             <div class="col-12 col-lg-6">
                                 <input type="hidden" name="adresse.codePostal" v-model="profilFormData.adresse.codePostal" />
                                 <input type="hidden" name="adresse.pays" v-model="profilFormData.adresse.pays" />
-                                <input id="js-adresse"
-                                        name="adresse.commune"
-                                        type="search" class="texte-noir font-size-sm input algolia-themeRecruteur"
-                                        v-model="profilFormData.adresse.commune" />
+                                <places id="commune" name="adresse.commune" class="texte-noir font-size-sm input algolia-themeRecruteur"
+                                        v-model="profilFormData.adresse.commune" v-bind:options="placesOptions"
+                                        v-on:change="placesChange" v-on:clear="placesClear"></places>
                             </div>
                             <div v-for="error in profilFormErrors.adresse" class="col-12 texte-erreur font-size-sm mt-1">{{error}}</div>
                         </li>
