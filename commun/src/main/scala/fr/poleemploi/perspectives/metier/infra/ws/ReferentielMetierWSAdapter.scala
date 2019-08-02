@@ -1,7 +1,7 @@
 package fr.poleemploi.perspectives.metier.infra.ws
 
 import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite}
-import fr.poleemploi.perspectives.commun.infra.ws.{AccessToken, WSAdapter}
+import fr.poleemploi.perspectives.commun.infra.ws.{AccessToken, AccessTokenResponse, WSAdapter}
 import fr.poleemploi.perspectives.metier.domain.{Metier, ReferentielMetier, SecteurActivite}
 import fr.poleemploi.perspectives.metier.infra.elasticsearch.ReferentielMetierElasticsearchAdapter
 import play.api.cache.AsyncCacheApi

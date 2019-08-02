@@ -1,8 +1,7 @@
 package fr.poleemploi.perspectives.offre.infra.ws
 
 import fr.poleemploi.perspectives.commun.infra.oauth.OauthConfig
-import fr.poleemploi.perspectives.commun.infra.ws.{AccessToken, WSAdapter, WebServiceException}
-import fr.poleemploi.perspectives.metier.infra.ws.AccessTokenResponse
+import fr.poleemploi.perspectives.commun.infra.ws.{AccessToken, AccessTokenResponse, WSAdapter, WebServiceException}
 import fr.poleemploi.perspectives.offre.domain._
 import play.api.cache.AsyncCacheApi
 import play.api.libs.ws.WSClient
