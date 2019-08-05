@@ -22,7 +22,7 @@ class MRSDHAEValideesCSVAdapter(val actorSystem: ActorSystem) {
 
   def load(source: Source[ByteString, _]): Future[Stream[MRSDHAEValideePEConnect]] = {
     source
-      .via(CsvParsing.lineScanner(delimiter = '|'))
+      .via(CsvParsing.lineScanner(delimiter = ';'))
       .via(CsvToMap.toMapAsStrings())
       .filter(
         m => m.get("dc_ididentiteexterne").exists(s => idPEConnectPattern.matcher(s).matches()) &&
