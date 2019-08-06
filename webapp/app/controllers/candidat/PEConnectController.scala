@@ -74,11 +74,12 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       authorizationCode <- request.getQueryString("code").toRight("Aucun code d'autorisation n'a été retourné").toFuture
       stateCallback <- request.getQueryString("state").toRight("Aucun state n'a été retourné").toFuture
       oauthTokens <- SessionOauthTokens.getOauthTokensCandidat(request.session).toRight("Aucun token n'a été stocké en session").toFuture
-      _ <- Either.cond(peConnectAuthAdapter.verifyState(oauthTokens, stateCallback), (), "La comparaison du state a échoué").toFuture
-      accessTokenResponse <- peConnectAuthAdapter.getAccessTokenCandidat(
+      accessTokenResponse <- peConnectAuthAdapter.accessToken(
         authorizationCode = authorizationCode,
         redirectUri = redirectUri.absoluteURL(),
-        oauthTokens = oauthTokens
+        state = stateCallback,
+        oauthTokens = oauthTokens,
+        oauthConfig = oauthConfig
       )
       infosCandidat <- peConnectAdapter.infosCandidat(accessTokenResponse.accessToken)
       optCandidatPEConnect <- peConnectAdapter.findCandidat(infosCandidat.peConnectId)

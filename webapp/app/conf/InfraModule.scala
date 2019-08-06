@@ -133,20 +133,14 @@ class InfraModule extends AbstractModule with ScalaModule {
     new PlayOauthService(tokenProvider = tokenProvider)
 
   @Provides
-  def peConnectAuthWSAdapter(webAppConfig: WebAppConfig,
-                             wsClient: WSClient): PEConnectAuthWSAdapter =
+  def peConnectAuthWSAdapter(wsClient: WSClient): PEConnectAuthWSAdapter =
     new PEConnectAuthWSAdapter(
-      wsClient = wsClient,
-      recruteurOauthConfig = webAppConfig.recruteurOauthConfig,
-      candidatOauthConfig = webAppConfig.candidatOauthConfig
+      wsClient = wsClient
     )
 
   @Provides
-  def peConnectJWTAdapter(webAppConfig: WebAppConfig): PEConnectJWTAdapter =
-    new PEConnectJWTAdapter(
-      recruteurOauthConfig = webAppConfig.recruteurOauthConfig,
-      candidatOauthConfig = webAppConfig.candidatOauthConfig
-    )
+  def peConnectJWTAdapter: PEConnectJWTAdapter =
+    new PEConnectJWTAdapter()
 
   @Provides
   def peConnectSqlAdapter(database: Database): PEConnectSqlAdapter =
