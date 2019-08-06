@@ -2,7 +2,7 @@ package controllers.candidat
 
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
-import authentification.infra.play.{CandidatAuthentifieAction, CandidatAuthentifieRequest}
+import authentification.infra.play.{CandidatAConnecterSiNonAuthentifieAction, CandidatAuthentifieAction, CandidatAuthentifieRequest}
 import conf.WebAppConfig
 import controllers.AssetsFinder
 import controllers.FlashMessages._
@@ -26,9 +26,10 @@ class CVController @Inject()(components: ControllerComponents,
                              messagesAction: MessagesActionBuilder,
                              candidatCommandHandler: CandidatCommandHandler,
                              candidatQueryHandler: CandidatQueryHandler,
-                             candidatAuthentifieAction: CandidatAuthentifieAction) extends AbstractController(components) {
+                             candidatAuthentifieAction: CandidatAuthentifieAction,
+                             candidatAConnecterSiNonAuthentifieAction: CandidatAConnecterSiNonAuthentifieAction) extends AbstractController(components) {
 
-  def index: Action[AnyContent] = candidatAuthentifieAction.async { candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
+  def index: Action[AnyContent] = candidatAConnecterSiNonAuthentifieAction.async { candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
       candidatQueryHandler.handle(DetailsCVCandidatQuery(candidatAuthentifieRequest.candidatId))
         .map(cv => Ok(views.html.candidat.depotCV(

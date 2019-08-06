@@ -10,11 +10,9 @@ object FlashMessages {
   private val keyMessageErreur = "message_erreur"
 
   private val keyInscriptionRecruteur = "recruteur_inscrit"
-  private val keyConnexionRecruteur = "recruteur_connecte"
   private val keyTypeRecruteur = "type_recruteur"
 
   private val keyInscriptionCandidat = "candidat_inscrit"
-  private val keyConnexionCandidat = "candidat_connecte"
   private val keyNouveauCandidat = "nouveau_candidat"
   private val keyLocalisationRechercheCandidat = "candidat_localisation_recherche_modifiee"
 
@@ -34,17 +32,11 @@ object FlashMessages {
     def recruteurInscrit: Boolean = f.get(keyInscriptionRecruteur).contains("true")
     def withRecruteurInscrit: Flash = f + (keyInscriptionRecruteur -> "true")
 
-    def recruteurConnecte: Boolean = f.get(keyConnexionRecruteur).contains("true")
-    def withRecruteurConnecte: Flash = f + (keyConnexionRecruteur -> "true")
-
     def getTypeRecruteur: Option[TypeRecruteur] = f.get(keyTypeRecruteur).map(TypeRecruteur(_))
     def withTypeRecruteur(typeRecruteur: TypeRecruteur): Flash = f + (keyTypeRecruteur -> typeRecruteur.value)
 
     def candidatInscrit: Boolean = f.get(keyInscriptionCandidat).contains("true")
     def withCandidatInscrit: Flash = f + (keyInscriptionCandidat -> "true")
-
-    def candidatConnecte: Boolean = f.get(keyConnexionCandidat).contains("true")
-    def withCandidatConnecte: Flash = f + (keyConnexionCandidat -> "true")
 
     def nouveauCandidat: Boolean = f.get(keyInscriptionCandidat).contains("true")
     def withNouveauCandidat: Flash = f + (keyInscriptionCandidat -> "true")

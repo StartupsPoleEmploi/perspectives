@@ -1,6 +1,6 @@
 package controllers.candidat
 
-import authentification.infra.play.{CandidatAuthentifieAction, CandidatAuthentifieRequest}
+import authentification.infra.play.{CandidatAConnecterSiNonAuthentifieAction, CandidatAuthentifieAction, CandidatAuthentifieRequest}
 import conf.WebAppConfig
 import controllers.FlashMessages._
 import controllers.{AssetsFinder, FormHelpers}
@@ -23,9 +23,10 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
                                                   candidatCommandHandler: HttpCommandHandler[Candidat],
                                                   candidatQueryHandler: CandidatQueryHandler,
                                                   metierQueryHandler: MetierQueryHandler,
-                                                  candidatAuthentifieAction: CandidatAuthentifieAction) extends AbstractController(components) {
+                                                  candidatAuthentifieAction: CandidatAuthentifieAction,
+                                                  candidatAConnecterSiNonAuthentifieAction: CandidatAConnecterSiNonAuthentifieAction) extends AbstractController(components) {
 
-  def saisieCriteresRecherche: Action[AnyContent] = candidatAuthentifieAction.async { candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
+  def saisieCriteresRecherche: Action[AnyContent] = candidatAConnecterSiNonAuthentifieAction.async { candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
       for {
         secteursActivitesQueryResult <- metierQueryHandler.handle(SecteursActiviteQuery)

@@ -1,5 +1,6 @@
 package controllers.candidat
 
+import authentification.infra.peconnect.{CandidatAuthentifiePEConnectAction, CandidatAuthentifiePEConnectRequest, SessionCandidatPEConnect, SessionOauthTokens}
 import authentification.infra.play._
 import conf.WebAppConfig
 import controllers.FlashMessages._
@@ -21,10 +22,11 @@ import scala.concurrent.Future
 @Singleton
 class PEConnectController @Inject()(cc: ControllerComponents,
                                     webAppConfig: WebAppConfig,
+                                    candidatNonAuthentifieAction: CandidatNonAuthentifieAction,
+                                    candidatAuthentifieAction: CandidatAuthentifieAction,
+                                    candidatAuthentifiePEConnectAction: CandidatAuthentifiePEConnectAction,
                                     candidatCommandHandler: CandidatCommandHandler,
                                     candidatQueryHandler: CandidatQueryHandler,
-                                    candidatPEConnectAction: CandidatPEConnectAction,
-                                    candidatAuthentifieAction: CandidatAuthentifieAction,
                                     peConnectAuthAdapter: PEConnectAuthAdapter,
                                     peConnectAdapter: PEConnectAdapter,
                                     peConnectAccessTokenStorage: PEConnectAccessTokenStorage) extends AbstractController(cc) with Logging {
@@ -32,10 +34,10 @@ class PEConnectController @Inject()(cc: ControllerComponents,
   val redirectUri: Call = routes.PEConnectController.connexionCallback()
   val oauthConfig: OauthConfig = webAppConfig.candidatOauthConfig
 
-  def inscription: Action[AnyContent] = Action { request =>
-    Redirect(routes.PEConnectController.connexion()).withSession(
+  def inscription: Action[AnyContent] = candidatNonAuthentifieAction.async { request =>
+    Future(Redirect(routes.PEConnectController.connexion()).withSession(
       SessionOauthTokens.setOauthTokensCandidat(peConnectAuthAdapter.generateTokens, request.session)
-    )
+    ))
   }
 
   def connexion: Action[AnyContent] = Action.async { implicit request =>
@@ -69,7 +71,7 @@ class PEConnectController @Inject()(cc: ControllerComponents,
       )
   }
 
-  def connexionCallback: Action[AnyContent] = Action.async { implicit request =>
+  def connexionCallback: Action[AnyContent] = candidatNonAuthentifieAction.async { implicit request =>
     (for {
       authorizationCode <- request.getQueryString("code").toRight("Aucun code d'autorisation n'a été retourné").toFuture
       stateCallback <- request.getQueryString("state").toRight("Aucun state n'a été retourné").toFuture
@@ -95,18 +97,17 @@ class PEConnectController @Inject()(cc: ControllerComponents,
         prenom = infosCandidat.prenom
       )
       val session = SessionCandidatPEConnect.setJWTToken(accessTokenResponse.idToken, SessionCandidatAuthentifie.set(candidatAuthentifie, SessionOauthTokens.removeOauthTokensCandidat(request.session)))
-      val flash = request.flash.withCandidatConnecte
 
       if (optCriteresRecherche.exists(_.saisieComplete))
         SessionUtilisateurNonAuthentifie.getUriConnexion(request.session)
-          .map(uri => Redirect(uri).withSession(SessionUtilisateurNonAuthentifie.remove(session)).flashing(flash))
-          .getOrElse(Redirect(routes.RechercheOffreController.index()).withSession(session).flashing(flash))
+          .map(uri => Redirect(uri).withSession(SessionUtilisateurNonAuthentifie.remove(session)))
+          .getOrElse(Redirect(routes.RechercheOffreController.index()).withSession(session))
       else if (optCriteresRecherche.isDefined)
         Redirect(routes.SaisieCriteresRechercheController.saisieCriteresRecherche()).withSession(session)
-          .flashing(flash.withMessageAlerte("Veuillez finaliser la saisie de vos critères"))
+          .flashing(request.flash.withMessageAlerte("Veuillez finaliser la saisie de vos critères"))
       else
         Redirect(routes.SaisieCriteresRechercheController.saisieCriteresRecherche()).withSession(session)
-          .flashing(flash.withCandidatInscrit)
+          .flashing(request.flash.withCandidatInscrit)
     }).recover {
       case CandidatPEConnectEmailManquantException =>
         Redirect(routes.LandingController.landing())
@@ -121,30 +122,32 @@ class PEConnectController @Inject()(cc: ControllerComponents,
     }
   }
 
-  def deconnexion: Action[AnyContent] = candidatPEConnectAction.async { implicit request: CandidatPEConnectRequest[AnyContent] =>
-    Future(Redirect(
-      url = s"${oauthConfig.urlAuthentification}/compte/deconnexion",
-      status = SEE_OTHER,
-      queryString = Map(
-        "id_token_hint" -> Seq(request.idTokenPEConnect.value),
-        "redirect_uri" -> Seq(routes.PEConnectController.deconnexionCallback().absoluteURL())
-      )
-    )).recover {
-      case t: Throwable =>
-        logger.error("Erreur lors de la déconnexion candidat PEConnect", t)
-        // Nettoyage de session et redirect
-        Redirect(routes.LandingController.landing()).withSession(
-          SessionCandidatAuthentifie.remove(SessionCandidatPEConnect.remove(request.session))
+  def deconnexion: Action[AnyContent] = candidatAuthentifieAction.async { candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
+    candidatAuthentifiePEConnectAction.async { implicit candidatAuthentifiePEConnectRequest: CandidatAuthentifiePEConnectRequest[AnyContent] =>
+      Future(Redirect(
+        url = s"${oauthConfig.urlAuthentification}/compte/deconnexion",
+        status = SEE_OTHER,
+        queryString = Map(
+          "id_token_hint" -> Seq(candidatAuthentifiePEConnectRequest.idTokenPEConnect.value),
+          "redirect_uri" -> Seq(routes.PEConnectController.deconnexionCallback().absoluteURL())
         )
-    }
+      )).recover {
+        case t: Throwable =>
+          logger.error("Erreur lors de la déconnexion candidat PEConnect", t)
+          // Nettoyage de session et redirect
+          Redirect(routes.LandingController.landing()).withSession(
+            SessionCandidatAuthentifie.remove(SessionCandidatPEConnect.remove(candidatAuthentifiePEConnectRequest.session))
+          )
+      }
+    }(candidatAuthentifieRequest)
   }
 
   def deconnexionCallback: Action[AnyContent] = candidatAuthentifieAction.async { candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
-    candidatPEConnectAction.async { implicit candidatPEConnectRequest: CandidatPEConnectRequest[AnyContent] =>
+    candidatAuthentifiePEConnectAction.async { implicit candidatAuthentifiePEConnectRequest: CandidatAuthentifiePEConnectRequest[AnyContent] =>
       peConnectAccessTokenStorage.remove(candidatAuthentifieRequest.candidatId).map(_ =>
         // Nettoyage de session et redirect
         Redirect(routes.LandingController.landing()).withSession(
-          SessionCandidatAuthentifie.remove(SessionCandidatPEConnect.remove(candidatPEConnectRequest.session))
+          SessionCandidatAuthentifie.remove(SessionCandidatPEConnect.remove(candidatAuthentifiePEConnectRequest.session))
         )
       )
     }(candidatAuthentifieRequest)

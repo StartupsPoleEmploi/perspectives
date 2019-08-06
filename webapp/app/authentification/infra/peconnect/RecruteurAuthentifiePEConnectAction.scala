@@ -1,4 +1,4 @@
-package authentification.infra.play
+package authentification.infra.peconnect
 
 import fr.poleemploi.perspectives.authentification.infra.peconnect.jwt.JWTToken
 import javax.inject.Inject
@@ -22,17 +22,16 @@ object SessionRecruteurPEConnect {
     session - idTokenAttribute
 }
 
-case class RecruteurPEConnectRequest[A](idTokenPEConnect: JWTToken,
-                                        request: Request[A]) extends WrappedRequest[A](request)
+case class RecruteurAuthentifiePEConnectRequest[A](idTokenPEConnect: JWTToken,
+                                                   request: Request[A]) extends WrappedRequest[A](request)
 
-class RecruteurPEConnectAction @Inject()(override val parser: BodyParsers.Default)
-                                        (implicit val executionContext: ExecutionContext)
-  extends ActionBuilder[RecruteurPEConnectRequest, AnyContent] with Results {
+class RecruteurAuthentifiePEConnectAction @Inject()(override val parser: BodyParsers.Default)
+                                                   (implicit val executionContext: ExecutionContext)
+  extends ActionBuilder[RecruteurAuthentifiePEConnectRequest, AnyContent] with Results {
 
-  override def invokeBlock[A](request: Request[A], block: RecruteurPEConnectRequest[A] => Future[Result]): Future[Result] = {
+  override def invokeBlock[A](request: Request[A], block: RecruteurAuthentifiePEConnectRequest[A] => Future[Result]): Future[Result] =
     SessionRecruteurPEConnect
       .getJWTToken(request.session)
-      .map(idTokenPEConnect => block(RecruteurPEConnectRequest(idTokenPEConnect, request)))
+      .map(idTokenPEConnect => block(RecruteurAuthentifiePEConnectRequest(idTokenPEConnect, request)))
       .getOrElse(Future.successful(Unauthorized))
-  }
 }

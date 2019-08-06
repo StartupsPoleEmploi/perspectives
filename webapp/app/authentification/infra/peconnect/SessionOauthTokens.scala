@@ -1,4 +1,4 @@
-package authentification.infra.play
+package authentification.infra.peconnect
 
 import fr.poleemploi.perspectives.commun.infra.oauth.OauthTokens
 import play.api.mvc.Session

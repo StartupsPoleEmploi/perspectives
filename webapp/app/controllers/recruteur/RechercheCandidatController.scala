@@ -2,7 +2,7 @@ package controllers.recruteur
 
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
-import authentification.infra.play.{RecruteurAuthentifieAction, RecruteurAuthentifieRequest}
+import authentification.infra.play.{RecruteurAConnecterSiNonAuthentifieAction, RecruteurAuthentifieAction, RecruteurAuthentifieRequest}
 import conf.WebAppConfig
 import controllers.AssetsFinder
 import controllers.FlashMessages._
@@ -30,10 +30,10 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
                                             candidatQueryHandler: CandidatQueryHandler,
                                             recruteurQueryHandler: RecruteurQueryHandler,
                                             recruteurCommandHandler: RecruteurCommandHandler,
-                                            recruteurAuthentifieAction: RecruteurAuthentifieAction) extends AbstractController(cc) {
+                                            recruteurAuthentifieAction: RecruteurAuthentifieAction,
+                                            recruteurAConnecterSiNonAuthentifieAction: RecruteurAConnecterSiNonAuthentifieAction) extends AbstractController(cc) {
 
-  def index: Action[AnyContent] =
-    recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
+  def index: Action[AnyContent] = recruteurAConnecterSiNonAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
       messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
         (for {
           typeRecruteur <- getTypeRecruteur(recruteurAuthentifieRequest)

@@ -1,6 +1,6 @@
 package controllers.recruteur
 
-import authentification.infra.play.{RecruteurAuthentifieAction, RecruteurAuthentifieRequest}
+import authentification.infra.play.{RecruteurAConnecterSiNonAuthentifieAction, RecruteurAuthentifieAction, RecruteurAuthentifieRequest}
 import conf.WebAppConfig
 import controllers.FlashMessages._
 import controllers.{AssetsFinder, FormHelpers}
@@ -22,9 +22,10 @@ class ProfilController @Inject()(components: ControllerComponents,
                                  messagesAction: MessagesActionBuilder,
                                  recruteurCommandHandler: RecruteurCommandHandler,
                                  recruteurQueryHandler: RecruteurQueryHandler,
-                                 recruteurAuthentifieAction: RecruteurAuthentifieAction) extends AbstractController(components) with Logging {
+                                 recruteurAuthentifieAction: RecruteurAuthentifieAction,
+                                 recruteurAConnecterSiNonAuthentifieAction: RecruteurAConnecterSiNonAuthentifieAction) extends AbstractController(components) with Logging {
 
-  def modificationProfil(): Action[AnyContent] = recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
+  def modificationProfil: Action[AnyContent] = recruteurAConnecterSiNonAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
       for {
         profilRecruteurQueryResult <-
@@ -46,7 +47,7 @@ class ProfilController @Inject()(components: ControllerComponents,
     }(recruteurAuthentifieRequest)
   }
 
-  def modifierProfil(): Action[AnyContent] = recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
+  def modifierProfil: Action[AnyContent] = recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
       ProfilForm.form.bindFromRequest.fold(
         formWithErrors =>
