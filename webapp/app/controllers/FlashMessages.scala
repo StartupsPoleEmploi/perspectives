@@ -15,6 +15,7 @@ object FlashMessages {
 
   private val keyInscriptionCandidat = "candidat_inscrit"
   private val keyConnexionCandidat = "candidat_connecte"
+  private val keyNouveauCandidat = "nouveau_candidat"
   private val keyLocalisationRechercheCandidat = "candidat_localisation_recherche_modifiee"
 
   implicit class FlashMessage[T](f: Flash) {
@@ -44,5 +45,8 @@ object FlashMessages {
 
     def candidatConnecte: Boolean = f.get(keyConnexionCandidat).contains("true")
     def withCandidatConnecte: Flash = f + (keyConnexionCandidat -> "true")
+
+    def nouveauCandidat: Boolean = f.get(keyInscriptionCandidat).contains("true")
+    def withNouveauCandidat: Flash = f + (keyInscriptionCandidat -> "true")
   }
 }

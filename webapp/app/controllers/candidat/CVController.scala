@@ -34,7 +34,7 @@ class CVController @Inject()(components: ControllerComponents,
         .map(cv => Ok(views.html.candidat.depotCV(
           candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie,
           jsData = Json.obj(
-            "nouveauCandidat" -> messagesRequest.flash.candidatInscrit,
+            "nouveauCandidat" -> messagesRequest.flash.nouveauCandidat,
             "nomFichier" -> cv.nomFichier,
             "typesMediasValides" -> TypeMedia.typesMediasCV,
             "extensionsValides" -> TypeMedia.extensionsCV,
