@@ -1,6 +1,6 @@
 package controllers.candidat
 
-import authentification.infra.play.SessionCandidatAuthentifie
+import authentification._
 import conf.WebAppConfig
 import controllers.FlashMessages._
 import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie

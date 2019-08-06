@@ -1,4 +1,4 @@
-package authentification.infra.play
+package authentification
 
 import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
 import fr.poleemploi.perspectives.commun.domain.{Nom, Prenom}

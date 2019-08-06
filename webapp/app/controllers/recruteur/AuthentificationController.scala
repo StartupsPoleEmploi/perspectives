@@ -1,6 +1,6 @@
 package controllers.recruteur
 
-import authentification.infra.play.{RecruteurAuthentifieAction, RecruteurAuthentifieRequest, SessionRecruteurAuthentifie}
+import authentification._
 import conf.WebAppConfig
 import javax.inject.Inject
 import play.api.mvc._

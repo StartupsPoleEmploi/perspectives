@@ -1,13 +1,12 @@
 package controllers.recruteur
 
-import authentification.infra.play.{RecruteurAConnecterSiNonAuthentifieAction, RecruteurAuthentifieAction, RecruteurAuthentifieRequest}
+import authentification._
 import conf.WebAppConfig
 import controllers.FlashMessages._
 import controllers.{AssetsFinder, FormHelpers}
-import fr.poleemploi.perspectives.recruteur.Adresse
 import fr.poleemploi.perspectives.commun.domain.NumeroTelephone
 import fr.poleemploi.perspectives.projections.recruteur.{ProfilRecruteurQuery, RecruteurQueryHandler}
-import fr.poleemploi.perspectives.recruteur._
+import fr.poleemploi.perspectives.recruteur.{Adresse, _}
 import javax.inject.Inject
 import play.api.Logging
 import play.api.libs.json.Json

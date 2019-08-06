@@ -1,6 +1,6 @@
 package controllers.recruteur
 
-import authentification.infra.play.{OptionalCandidatAuthentifieAction, OptionalCandidatAuthentifieRequest, OptionalRecruteurAuthentifieAction, OptionalRecruteurAuthentifieRequest}
+import authentification._
 import conf.WebAppConfig
 import controllers.AssetsFinder
 import javax.inject.{Inject, Singleton}

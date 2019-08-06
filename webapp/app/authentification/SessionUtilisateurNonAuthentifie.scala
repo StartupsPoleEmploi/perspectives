@@ -1,4 +1,4 @@
-package authentification.infra.play
+package authentification
 
 import play.api.mvc.Session
 

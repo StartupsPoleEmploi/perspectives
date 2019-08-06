@@ -1,6 +1,6 @@
 package controllers.candidat
 
-import authentification.infra.play.{CandidatAuthentifieAction, CandidatAuthentifieRequest, SessionCandidatAuthentifie}
+import authentification._
 import conf.WebAppConfig
 import javax.inject.{Inject, Singleton}
 import play.api.mvc._

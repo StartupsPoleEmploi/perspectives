@@ -1,6 +1,6 @@
 package controllers.candidat
 
-import authentification.infra.play.{CandidatAuthentifieAction, OptionalCandidatAuthentifieAction, OptionalCandidatAuthentifieRequest}
+import authentification._
 import conf.WebAppConfig
 import controllers.AssetsFinder
 import fr.poleemploi.perspectives.commun.domain.{CodeROME, UniteLongueur}

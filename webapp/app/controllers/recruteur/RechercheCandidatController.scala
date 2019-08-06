@@ -2,7 +2,7 @@ package controllers.recruteur
 
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
-import authentification.infra.play.{RecruteurAConnecterSiNonAuthentifieAction, RecruteurAuthentifieAction, RecruteurAuthentifieRequest}
+import authentification._
 import conf.WebAppConfig
 import controllers.AssetsFinder
 import controllers.FlashMessages._

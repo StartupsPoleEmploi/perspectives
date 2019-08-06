@@ -1,6 +1,6 @@
 package controllers.conseiller
 
-import authentification.infra.play.{ConseillerAdminAuthentifieAction, ConseillerAuthentifieRequest}
+import authentification._
 import conf.WebAppConfig
 import controllers.AssetsFinder
 import fr.poleemploi.perspectives.candidat._

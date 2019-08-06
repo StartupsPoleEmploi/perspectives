@@ -1,7 +1,8 @@
 package conf
 
 import akka.actor.ActorSystem
-import authentification.infra.play.{PlayOauthService, SessionConseillerAuthentifie}
+import authentification.SessionConseillerAuthentifie
+import authentification.infra.play.PlayOauthService
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.inject._
 import com.google.inject.name.Named

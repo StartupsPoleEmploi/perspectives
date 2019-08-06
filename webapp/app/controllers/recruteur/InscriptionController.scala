@@ -1,6 +1,6 @@
 package controllers.recruteur
 
-import authentification.infra.play.{RecruteurAuthentifieAction, SessionRecruteurAuthentifie}
+import authentification._
 import conf.WebAppConfig
 import controllers.FlashMessages._
 import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie

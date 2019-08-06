@@ -1,4 +1,4 @@
-package authentification.infra.play
+package authentification
 
 import controllers.FlashMessages._
 import controllers.recruteur.routes

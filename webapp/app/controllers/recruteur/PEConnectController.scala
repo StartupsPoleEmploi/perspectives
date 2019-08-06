@@ -1,7 +1,7 @@
 package controllers.recruteur
 
+import authentification._
 import authentification.infra.peconnect.{RecruteurAuthentifiePEConnectAction, RecruteurAuthentifiePEConnectRequest, SessionOauthTokens, SessionRecruteurPEConnect}
-import authentification.infra.play._
 import conf.WebAppConfig
 import controllers.FlashMessages._
 import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie

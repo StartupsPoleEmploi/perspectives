@@ -1,6 +1,6 @@
 package controllers.candidat
 
-import authentification.infra.play.{CandidatAConnecterSiNonAuthentifieAction, CandidatAuthentifieAction, CandidatAuthentifieRequest}
+import authentification._
 import conf.WebAppConfig
 import controllers.FlashMessages._
 import controllers.{AssetsFinder, FormHelpers}

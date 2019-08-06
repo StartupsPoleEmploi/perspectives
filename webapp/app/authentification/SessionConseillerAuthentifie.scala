@@ -1,4 +1,4 @@
-package authentification.infra.play
+package authentification
 
 import fr.poleemploi.perspectives.authentification.domain.ConseillerAuthentifie
 import fr.poleemploi.perspectives.candidat.CandidatId

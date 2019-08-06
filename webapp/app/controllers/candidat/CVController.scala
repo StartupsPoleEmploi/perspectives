@@ -2,7 +2,7 @@ package controllers.candidat
 
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
-import authentification.infra.play.{CandidatAConnecterSiNonAuthentifieAction, CandidatAuthentifieAction, CandidatAuthentifieRequest}
+import authentification._
 import conf.WebAppConfig
 import controllers.AssetsFinder
 import controllers.FlashMessages._
