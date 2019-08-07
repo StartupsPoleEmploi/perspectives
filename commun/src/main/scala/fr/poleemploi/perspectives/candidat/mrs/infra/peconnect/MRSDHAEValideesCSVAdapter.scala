@@ -38,7 +38,7 @@ class MRSDHAEValideesCSVAdapter(val actorSystem: ActorSystem) {
         dateEvaluation = data.get("dd_datedebutprestation").map(s => LocalDate.parse(s.take(10), dateTimeFormatter)).get
       )
     ).runWith(Sink.collection)
-      // Il peut y avoir deux fois la même mrs avec un statut différent : on dédoublonne pour être sûr
+      // Il peut y avoir deux fois la même mrs à des dates différentes: on dédoublonne pour être sûr
       .map(s =>
       s.groupBy(m => (m.peConnectId, m.codeROME)).map(_._2.head).toStream
     )
