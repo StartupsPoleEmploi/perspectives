@@ -149,9 +149,9 @@ object CandidatInscritState extends CandidatState {
     )
 
     val criteresRechercheModifiesEvent =
-      if (!context.codesROMEValidesRecherches.forall(command.codesROMEValidesRecherches.contains) ||
-        !context.codesROMERecherches.forall(command.codesROMERecherches.contains) ||
-        !context.codesDomaineProfessionnelRecherches.forall(command.codesDomaineProfessionnelRecherches.contains) ||
+      if (context.codesROMEValidesRecherches != command.codesROMEValidesRecherches ||
+        context.codesROMERecherches != command.codesROMERecherches ||
+        context.codesDomaineProfessionnelRecherches != command.codesDomaineProfessionnelRecherches ||
         !context.localisationRecherche.contains(command.localisationRecherche) ||
         !context.tempsTravailRecherche.contains(command.tempsTravailRecherche)) {
         Some(CriteresRechercheModifiesEvent(

@@ -13,14 +13,14 @@ class ModifierCriteresRechercheSpec extends AsyncWordSpec
 
   val localisationRecherche: LocalisationRecherche =
     LocalisationRecherche(
-    commune = "Paris",
-    codePostal = "75011",
-    coordonnees = Coordonnees(
-      latitude = 48.5,
-      longitude = -1.6
-    ),
-    rayonRecherche = None
-  )
+      commune = "Paris",
+      codePostal = "75011",
+      coordonnees = Coordonnees(
+        latitude = 48.5,
+        longitude = -1.6
+      ),
+      rayonRecherche = None
+    )
 
   val commande: ModifierCriteresRechercheCommand =
     ModifierCriteresRechercheCommand(
@@ -269,11 +269,10 @@ class ModifierCriteresRechercheSpec extends AsyncWordSpec
       val codeROMEValide = CodeROME("H3203")
       val mrsValidee = mock[MRSValidee]
       when(mrsValidee.codeROME) thenReturn codeROMEValide
-      val candidat = candidatInscritAvecCriteres(commande)
+      val candidat = candidatInscritAvecCriteres(commande.copy(
+        codesROMEValidesRecherches = Set.empty
+      ))
         .avecMRSValidee(mrsValidee)
-        .avecCriteresRecherche(
-          codesROMEValidesRecherches = Set.empty
-        )
         .build
 
       // When
@@ -286,15 +285,14 @@ class ModifierCriteresRechercheSpec extends AsyncWordSpec
     }
     "générer un événement lorsqu'un métier validé est retiré" in {
       // Given
-      val candidat = candidatInscritAvecCriteres(commande)
-        .avecCriteresRecherche(
-          codesROMEValidesRecherches = Set(CodeROME("H3203"))
-        )
+      val candidat = candidatInscritAvecCriteres(commande.copy(
+        codesROMEValidesRecherches = Set(CodeROME("H3203"))
+      ))
         .build
 
       // When
       val result = candidat.modifierCriteresRecherche(commande.copy(
-        codesROMEValidesRecherches = commande.codesROMERecherches - CodeROME("H3203")
+        codesROMEValidesRecherches = Set.empty
       ))
 
       // Then
@@ -302,15 +300,14 @@ class ModifierCriteresRechercheSpec extends AsyncWordSpec
     }
     "générer un événement lorsqu'un métier recherché est ajouté" in {
       // Given
-      val candidat = candidatInscritAvecCriteres(commande)
-        .avecCriteresRecherche(
-          codesROMERecherches = Set.empty
-        )
+      val candidat = candidatInscritAvecCriteres(commande.copy(
+        codesROMERecherches = Set.empty
+      ))
         .build
 
       // When
       val result = candidat.modifierCriteresRecherche(commande.copy(
-        codesROMERecherches = commande.codesROMERecherches + CodeROME("H3203")
+        codesROMERecherches = Set(CodeROME("H3203"))
       ))
 
       // Then
