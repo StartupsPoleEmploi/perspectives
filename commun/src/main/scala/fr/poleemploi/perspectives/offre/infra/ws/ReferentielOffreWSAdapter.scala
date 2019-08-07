@@ -8,6 +8,7 @@ import play.api.libs.ws.WSClient
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.concurrent.duration._
 
 class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
                                 wsClient: WSClient,
@@ -62,19 +63,17 @@ class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
   }
 
   private def getAccessToken: Future[AccessToken] =
-    for {
-      cachedAccessToken <- cacheApi.get[AccessToken](cacheKeyAccessToken)
-      accessToken <- cachedAccessToken.map(Future.successful).getOrElse {
-        genererAccessToken.map(accessTokenResponse => {
-          /*cacheApi.set(
+    cacheApi.get[AccessToken](cacheKeyAccessToken)
+      .flatMap(_.map(Future.successful).getOrElse(
+        genererAccessToken.map { accessTokenResponse =>
+          cacheApi.set(
             key = cacheKeyAccessToken,
             value = accessTokenResponse.accessToken,
             expiration = accessTokenResponse.expiresIn - 10.seconds
-          )*/
+          )
           accessTokenResponse.accessToken
-        })
-      }
-    } yield accessToken
+        }
+      ))
 
   private def genererAccessToken: Future[AccessTokenResponse] =
     wsClient

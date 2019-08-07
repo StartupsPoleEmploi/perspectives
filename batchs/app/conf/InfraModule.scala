@@ -14,7 +14,6 @@ import fr.poleemploi.perspectives.candidat.mrs.infra.local.{ImportHabiletesMRSLo
 import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect._
 import fr.poleemploi.perspectives.candidat.mrs.infra.sql.ReferentielHabiletesMRSSqlAdapter
 import fr.poleemploi.perspectives.commun.infra.jackson.PerspectivesEventSourcingModule
-import fr.poleemploi.perspectives.commun.infra.play.cache.InMemoryCacheApi
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
 import fr.poleemploi.perspectives.emailing.infra.csv.{ImportMRSValideeProspectCandidatCSVAdapter, MRSValideeProspectCandidatCSVAdapter}
 import fr.poleemploi.perspectives.emailing.infra.local.LocalImportProspectService
@@ -23,7 +22,6 @@ import fr.poleemploi.perspectives.emailing.infra.sql.MailjetSqlAdapter
 import fr.poleemploi.perspectives.emailing.infra.ws.{MailjetWSAdapter, MailjetWSMapping}
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
-import play.api.cache.AsyncCacheApi
 import play.api.inject.ApplicationLifecycle
 import play.api.libs.ws.WSClient
 import slick.jdbc.JdbcBackend.Database
@@ -100,9 +98,6 @@ class InfraModule extends AbstractModule with ScalaModule {
 
     database
   }
-
-  @Provides
-  def asyncCacheApi: AsyncCacheApi = new InMemoryCacheApi
 
   @Provides
   def mrsDHAEValideesCSVAdapter(actorSystem: ActorSystem): MRSDHAEValideesCSVAdapter =

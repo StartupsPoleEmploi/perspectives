@@ -25,7 +25,6 @@ import fr.poleemploi.perspectives.commun.infra.oauth.OauthService
 import fr.poleemploi.perspectives.commun.infra.peconnect.sql.PEConnectSqlAdapter
 import fr.poleemploi.perspectives.commun.infra.peconnect.ws.{PEConnectWSAdapter, PEConnectWSMapping}
 import fr.poleemploi.perspectives.commun.infra.peconnect.{PEConnectAccessTokenStorage, PEConnectAdapter}
-import fr.poleemploi.perspectives.commun.infra.play.cache.InMemoryCacheApi
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
 import fr.poleemploi.perspectives.emailing.infra.local.LocalEmailingService
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetEmailingService
@@ -124,10 +123,6 @@ class InfraModule extends AbstractModule with ScalaModule {
 
     database
   }
-
-  @Provides
-  @Singleton
-  def asyncCacheApi: AsyncCacheApi = new InMemoryCacheApi
 
   @Provides
   def oauthService(tokenProvider: TokenProvider): OauthService =
