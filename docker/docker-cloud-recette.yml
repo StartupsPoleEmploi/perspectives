@@ -75,8 +75,6 @@ services:
       options:
         tag: "perspectives_webapp.{{.ID}}"
         fluentd-async-connect: "true"
-    ports:
-      - "9000:9000"
     networks:
       - net
 
@@ -95,8 +93,6 @@ services:
       options:
         tag: "perspectives_batchs.{{.ID}}"
         fluentd-async-connect: "true"
-    ports:
-      - "9001:9000"
     networks:
       - net
 
