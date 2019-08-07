@@ -17,8 +17,7 @@ import play.api.libs.json.Json
 import play.api.mvc._
 import play.filters.csrf.CSRF
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class ConseillerController @Inject()(cc: ControllerComponents,
                                      implicit val assets: AssetsFinder,
@@ -28,7 +27,7 @@ class ConseillerController @Inject()(cc: ControllerComponents,
                                      candidatQueryHandler: CandidatQueryHandler,
                                      conseillerQueryHandler: ConseillerQueryHandler,
                                      candidatCommandHandler: HttpCommandHandler[Candidat],
-                                     recruteurQueryHandler: RecruteurQueryHandler) extends AbstractController(cc) {
+                                     recruteurQueryHandler: RecruteurQueryHandler)(implicit exec: ExecutionContext) extends AbstractController(cc) {
 
   def listeCandidats: Action[AnyContent] = conseillerAdminAuthentifieAction.async { implicit conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
     val query = CandidatsPourConseillerQuery(

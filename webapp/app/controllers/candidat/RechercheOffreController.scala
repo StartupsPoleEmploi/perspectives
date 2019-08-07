@@ -14,8 +14,7 @@ import play.api.libs.json.Json
 import play.api.mvc._
 import play.filters.csrf.CSRF
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class RechercheOffreController @Inject()(cc: ControllerComponents,
@@ -25,7 +24,7 @@ class RechercheOffreController @Inject()(cc: ControllerComponents,
                                          optionalCandidatAuthentifieAction: OptionalCandidatAuthentifieAction,
                                          candidatAuthentifieAction: CandidatAuthentifieAction,
                                          candidatQueryHandler: CandidatQueryHandler,
-                                         metierQueryHandler: MetierQueryHandler) extends AbstractController(cc) with Logging {
+                                         metierQueryHandler: MetierQueryHandler)(implicit exec: ExecutionContext) extends AbstractController(cc) with Logging {
 
   def index(codePostal: Option[String], lieuTravail: Option[String], rayonRecherche: Option[Int]): Action[AnyContent] = optionalCandidatAuthentifieAction.async { implicit optCandidatAuthentifieRequest: OptionalCandidatAuthentifieRequest[AnyContent] =>
     def buildLocalisationOffresFromRequest: Option[LocalisationOffresForm] =

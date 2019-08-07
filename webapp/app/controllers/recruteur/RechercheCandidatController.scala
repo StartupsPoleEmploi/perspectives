@@ -19,8 +19,7 @@ import play.api.libs.json.Json
 import play.api.mvc.{Action, _}
 import play.filters.csrf.CSRF
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class RechercheCandidatController @Inject()(cc: ControllerComponents,
@@ -31,7 +30,7 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
                                             recruteurQueryHandler: RecruteurQueryHandler,
                                             recruteurCommandHandler: RecruteurCommandHandler,
                                             recruteurAuthentifieAction: RecruteurAuthentifieAction,
-                                            recruteurAConnecterSiNonAuthentifieAction: RecruteurAConnecterSiNonAuthentifieAction) extends AbstractController(cc) {
+                                            recruteurAConnecterSiNonAuthentifieAction: RecruteurAConnecterSiNonAuthentifieAction)(implicit exec: ExecutionContext) extends AbstractController(cc) {
 
   def index: Action[AnyContent] = recruteurAConnecterSiNonAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
       messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>

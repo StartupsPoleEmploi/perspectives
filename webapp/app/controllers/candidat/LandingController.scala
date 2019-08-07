@@ -7,30 +7,27 @@ import javax.inject._
 import play.api.libs.json.Json
 import play.api.mvc._
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class LandingController @Inject()(cc: ControllerComponents,
                                   implicit val assets: AssetsFinder,
                                   implicit val webAppConfig: WebAppConfig,
                                   optionalCandidatAuthentifieAction: OptionalCandidatAuthentifieAction,
-                                  optionalRecruteurAuthentifieAction: OptionalRecruteurAuthentifieAction) extends AbstractController(cc) {
+                                  optionalRecruteurAuthentifieAction: OptionalRecruteurAuthentifieAction)(implicit exec: ExecutionContext) extends AbstractController(cc) {
 
-  def landing(): Action[AnyContent] = optionalRecruteurAuthentifieAction.async { optionalRecruteurAuthentifieRequest: OptionalRecruteurAuthentifieRequest[AnyContent] =>
-    optionalCandidatAuthentifieAction.async { implicit optionalCandidatAuthentifieRequest: OptionalCandidatAuthentifieRequest[AnyContent] =>
+  def landing: Action[AnyContent] = optionalRecruteurAuthentifieAction.async { optionalRecruteurAuthentifieRequest: OptionalRecruteurAuthentifieRequest[AnyContent] =>
+    optionalCandidatAuthentifieAction { implicit optionalCandidatAuthentifieRequest: OptionalCandidatAuthentifieRequest[AnyContent] =>
       if (optionalCandidatAuthentifieRequest.isCandidatAuthentifie)
-        Future(Redirect(controllers.candidat.routes.RechercheOffreController.index()))
+        Redirect(controllers.candidat.routes.RechercheOffreController.index())
       else if (optionalRecruteurAuthentifieRequest.isRecruteurAuthentifie)
-        Future(Redirect(controllers.recruteur.routes.RechercheCandidatController.index()))
+        Redirect(controllers.recruteur.routes.RechercheCandidatController.index())
       else
-        Future(
           Ok(views.html.candidat.landing(
             jsData = Json.obj(
               "algoliaPlacesConfig" -> webAppConfig.algoliaPlacesConfig
             )
           ))
-        )
     }(optionalRecruteurAuthentifieRequest)
   }
 }

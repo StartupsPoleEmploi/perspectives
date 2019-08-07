@@ -9,21 +9,22 @@ import fr.poleemploi.perspectives.recruteur.{InscrireRecruteurCommand, Recruteur
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class InscriptionController @Inject()(cc: ControllerComponents,
                                       implicit val webappConfig: WebAppConfig,
                                       recruteurCommandHandler: RecruteurCommandHandler,
                                       recruteurAuthentifieAction: RecruteurAuthentifieAction,
-                                      peConnectController: PEConnectController) extends AbstractController(cc) {
+                                      peConnectController: PEConnectController)(implicit exec: ExecutionContext) extends AbstractController(cc) {
 
-  def inscription(): Action[AnyContent] =
-    if (webappConfig.usePEConnect) {
-      peConnectController.inscription()
-    } else inscriptionSimple()
+  def inscription: Action[AnyContent] =
+    if (webappConfig.usePEConnect)
+      peConnectController.inscription
+    else
+      inscriptionSimple
 
-  private def inscriptionSimple(): Action[AnyContent] = Action.async { implicit request =>
+  private def inscriptionSimple: Action[AnyContent] = Action.async { implicit request =>
     val recruteurId = recruteurCommandHandler.newId
     val command = InscrireRecruteurCommand(
       id = recruteurId,

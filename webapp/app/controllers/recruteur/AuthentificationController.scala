@@ -5,20 +5,19 @@ import conf.WebAppConfig
 import javax.inject.Inject
 import play.api.mvc._
 
-import scala.concurrent.Future
+import scala.concurrent.ExecutionContext
 
 class AuthentificationController @Inject()(cc: ControllerComponents,
                                            webappConfig: WebAppConfig,
                                            peConnectController: PEConnectController,
-                                           recruteurAuthentifieAction: RecruteurAuthentifieAction) extends AbstractController(cc) {
+                                           recruteurAuthentifieAction: RecruteurAuthentifieAction)(implicit exec: ExecutionContext) extends AbstractController(cc) {
 
-  def deconnexion(): Action[AnyContent] =
-    if (webappConfig.usePEConnect) {
-      peConnectController.deconnexion()
-    } else recruteurAuthentifieAction.async { implicit request: RecruteurAuthentifieRequest[AnyContent] =>
-      Future.successful(Redirect(routes.LandingController.landing()).withSession(
-        SessionRecruteurAuthentifie.remove(request.session)
-      ))
-    }
-
+  def deconnexion: Action[AnyContent] =
+    if (webappConfig.usePEConnect)
+      peConnectController.deconnexion
+    else
+      recruteurAuthentifieAction { implicit request: RecruteurAuthentifieRequest[AnyContent] =>
+        Redirect(routes.LandingController.landing())
+          .withSession(SessionRecruteurAuthentifie.remove(request.session))
+      }
 }

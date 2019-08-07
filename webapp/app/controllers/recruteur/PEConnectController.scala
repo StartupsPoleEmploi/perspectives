@@ -16,8 +16,7 @@ import javax.inject.{Inject, Singleton}
 import play.api.Logging
 import play.api.mvc._
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class PEConnectController @Inject()(cc: ControllerComponents,
@@ -28,21 +27,21 @@ class PEConnectController @Inject()(cc: ControllerComponents,
                                     recruteurCommandHandler: RecruteurCommandHandler,
                                     recruteurQueryHandler: RecruteurQueryHandler,
                                     peConnectAuthAdapter: PEConnectAuthAdapter,
-                                    peConnectAdapter: PEConnectAdapter) extends AbstractController(cc) with Logging {
+                                    peConnectAdapter: PEConnectAdapter)(implicit exec: ExecutionContext) extends AbstractController(cc) with Logging {
 
   val redirectUri: Call = routes.PEConnectController.connexionCallback()
   val oauthConfig: OauthConfig = webAppConfig.recruteurOauthConfig
 
-  def inscription: Action[AnyContent] = recruteurNonAuthentifieAction.async { implicit request =>
-    Future(Redirect(routes.PEConnectController.connexion()).withSession(
+  def inscription: Action[AnyContent] = recruteurNonAuthentifieAction { implicit request =>
+    Redirect(routes.PEConnectController.connexion()).withSession(
       SessionOauthTokens.setOauthTokensRecruteur(peConnectAuthAdapter.generateTokens, request.session)
-    ))
+    )
   }
 
-  def connexion: Action[AnyContent] = recruteurNonAuthentifieAction.async { implicit request =>
+  def connexion: Action[AnyContent] = recruteurNonAuthentifieAction { implicit request =>
     SessionOauthTokens.getOauthTokensRecruteur(request.session)
       .map(oauthTokens =>
-        Future(Redirect(
+        Redirect(
           url = s"${oauthConfig.urlAuthentification}/connexion/oauth2/authorize",
           status = SEE_OTHER,
           queryString = Map(
@@ -54,19 +53,10 @@ class PEConnectController @Inject()(cc: ControllerComponents,
             "state" -> Seq(oauthTokens.state),
             "nonce" -> Seq(oauthTokens.nonce)
           )
-        )).recover {
-          case t: Throwable =>
-            logger.error("Erreur lors de la connexion recruteur PEConnect", t)
-            // Nettoyage de session et redirect
-            Redirect(routes.LandingController.landing()).withSession(
-              SessionOauthTokens.removeOauthTokensRecruteur(request.session)
-            )
-        })
+        ))
       .getOrElse(
-        Future(
-          Redirect(routes.LandingController.landing())
-            .flashing(request.flash.withMessageErreur("Une erreur est survenue lors de la connexion, veuillez réessayer ultérieurement"))
-        )
+        Redirect(routes.LandingController.landing())
+          .flashing(request.flash.withMessageErreur("Une erreur est survenue lors de la connexion, veuillez réessayer ultérieurement"))
       )
   }
 
@@ -114,31 +104,24 @@ class PEConnectController @Inject()(cc: ControllerComponents,
   }
 
   def deconnexion: Action[AnyContent] = recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
-    recruteurAuthentifiePEConnectAction.async { implicit recruteurAuthentifiePEConnectRequest: RecruteurAuthentifiePEConnectRequest[AnyContent] =>
-      Future(Redirect(
+    recruteurAuthentifiePEConnectAction { implicit recruteurAuthentifiePEConnectRequest: RecruteurAuthentifiePEConnectRequest[AnyContent] =>
+      Redirect(
         url = s"${oauthConfig.urlAuthentification}/compte/deconnexion",
         status = SEE_OTHER,
         queryString = Map(
           "id_token_hint" -> Seq(recruteurAuthentifiePEConnectRequest.idTokenPEConnect.value),
           "redirect_uri" -> Seq(routes.PEConnectController.deconnexionCallback().absoluteURL())
         )
-      )).recover {
-        case t: Throwable =>
-          logger.error("Erreur lors de la déconnexion recruteur PEConnect", t)
-          // Nettoyage de session et redirect
-          Redirect(routes.LandingController.landing()).withSession(
-            SessionRecruteurAuthentifie.remove(SessionRecruteurPEConnect.remove(recruteurAuthentifiePEConnectRequest.session))
-          )
-      }
+      )
     }(recruteurAuthentifieRequest)
   }
 
   def deconnexionCallback: Action[AnyContent] = recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
-    recruteurAuthentifiePEConnectAction.async { implicit recruteurAuthentifiePEConnectRequest: RecruteurAuthentifiePEConnectRequest[AnyContent] =>
+    recruteurAuthentifiePEConnectAction { implicit recruteurAuthentifiePEConnectRequest: RecruteurAuthentifiePEConnectRequest[AnyContent] =>
       // Nettoyage de session et redirect
-      Future(Redirect(routes.LandingController.landing()).withSession(
+      Redirect(routes.LandingController.landing()).withSession(
         SessionRecruteurAuthentifie.remove(SessionRecruteurPEConnect.remove(recruteurAuthentifiePEConnectRequest.session))
-      ))
+      )
     }(recruteurAuthentifieRequest)
   }
 

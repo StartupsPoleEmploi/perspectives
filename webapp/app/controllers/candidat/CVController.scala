@@ -17,8 +17,7 @@ import play.api.libs.json.Json
 import play.api.mvc._
 import play.filters.csrf.CSRF
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class CVController @Inject()(components: ControllerComponents,
                              implicit val assets: AssetsFinder,
@@ -27,7 +26,7 @@ class CVController @Inject()(components: ControllerComponents,
                              candidatCommandHandler: CandidatCommandHandler,
                              candidatQueryHandler: CandidatQueryHandler,
                              candidatAuthentifieAction: CandidatAuthentifieAction,
-                             candidatAConnecterSiNonAuthentifieAction: CandidatAConnecterSiNonAuthentifieAction) extends AbstractController(components) {
+                             candidatAConnecterSiNonAuthentifieAction: CandidatAConnecterSiNonAuthentifieAction)(implicit exec: ExecutionContext) extends AbstractController(components) {
 
   def index: Action[AnyContent] = candidatAConnecterSiNonAuthentifieAction.async { candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>

@@ -12,8 +12,7 @@ import play.api.Logging
 import play.api.libs.json.Json
 import play.api.mvc._
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class ProfilController @Inject()(components: ControllerComponents,
                                  implicit val assets: AssetsFinder,
@@ -22,7 +21,7 @@ class ProfilController @Inject()(components: ControllerComponents,
                                  recruteurCommandHandler: RecruteurCommandHandler,
                                  recruteurQueryHandler: RecruteurQueryHandler,
                                  recruteurAuthentifieAction: RecruteurAuthentifieAction,
-                                 recruteurAConnecterSiNonAuthentifieAction: RecruteurAConnecterSiNonAuthentifieAction) extends AbstractController(components) with Logging {
+                                 recruteurAConnecterSiNonAuthentifieAction: RecruteurAConnecterSiNonAuthentifieAction)(implicit exec: ExecutionContext) extends AbstractController(components) with Logging {
 
   def modificationProfil: Action[AnyContent] = recruteurAConnecterSiNonAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>

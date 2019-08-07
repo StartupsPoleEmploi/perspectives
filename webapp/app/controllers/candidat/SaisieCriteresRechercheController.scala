@@ -13,8 +13,7 @@ import javax.inject.Inject
 import play.api.libs.json.Json
 import play.api.mvc.{Action, _}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class SaisieCriteresRechercheController @Inject()(components: ControllerComponents,
                                                   implicit val assets: AssetsFinder,
@@ -24,7 +23,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
                                                   candidatQueryHandler: CandidatQueryHandler,
                                                   metierQueryHandler: MetierQueryHandler,
                                                   candidatAuthentifieAction: CandidatAuthentifieAction,
-                                                  candidatAConnecterSiNonAuthentifieAction: CandidatAConnecterSiNonAuthentifieAction) extends AbstractController(components) {
+                                                  candidatAConnecterSiNonAuthentifieAction: CandidatAConnecterSiNonAuthentifieAction)(implicit exec: ExecutionContext) extends AbstractController(components) {
 
   def saisieCriteresRecherche: Action[AnyContent] = candidatAConnecterSiNonAuthentifieAction.async { candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
