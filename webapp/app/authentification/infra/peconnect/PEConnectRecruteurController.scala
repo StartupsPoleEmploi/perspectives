@@ -39,9 +39,10 @@ class PEConnectRecruteurController @Inject()(cc: ControllerComponents,
       .map(oauthTokens =>
         authentificationPEConnect.connexion(oauthTokens)
       ).getOrElse(
-        Redirect(authentification.infra.peconnect.routes.PEConnectRecruteurController.connexion())
-          .withSession(SessionOauthTokensRecruteur.setOauthTokensRecruteur(peConnectAuthAdapter.generateTokens, request.session))
-      )
+      Redirect(authentification.infra.peconnect.routes.PEConnectRecruteurController.connexion())
+        .withSession(SessionOauthTokensRecruteur.setOauthTokensRecruteur(peConnectAuthAdapter.generateTokens, request.session))
+        .withHeaders(("X-Robots-Tag", "none"))
+    )
   }
 
   def connexionCallback: Action[AnyContent] = recruteurNonAuthentifieAction.async { implicit request =>
