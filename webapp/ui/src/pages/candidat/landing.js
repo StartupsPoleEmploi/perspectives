@@ -49,7 +49,7 @@ new Vue({
         },
         rechercherOffres: function() {
             this.rechercheOffresFormErrors = [];
-            if (this.rechercheOffresFormData.codePostal === null || this.rechercheOffresFormData.codePostal === '') {
+            if (!this.rechercheOffresFormData.codePostal || this.rechercheOffresFormData.codePostal === '') {
                 this.rechercheOffresFormErrors.push({champ: 'codePostal', label: 'Dites-nous où vous recherchez un emploi'});
             }
 
