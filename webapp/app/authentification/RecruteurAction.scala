@@ -38,7 +38,7 @@ class RecruteurAConnecterSiNonAuthentifieAction @Inject()(override val parser: B
         block(RecruteurAuthentifieRequest(recruteur, request))
           .map(r => r.withSession(SessionUtilisateurNonAuthentifie.remove(r.session(request))))
       ).getOrElse(
-      Future(Redirect(routes.InscriptionController.inscription())
+      Future(Redirect(routes.AuthentificationController.connexion())
         .withSession(SessionUtilisateurNonAuthentifie.setUriConnexion(request.uri, request.session))
       )
     )

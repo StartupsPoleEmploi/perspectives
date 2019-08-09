@@ -1,29 +1,24 @@
-package controllers.candidat
+package authentification.infra.local
 
-import authentification._
-import conf.WebAppConfig
+import authentification.{CandidatAuthentifieAction, CandidatNonAuthentifieAction, SessionCandidatAuthentifie}
 import controllers.FlashMessages._
+import controllers.candidat.routes
 import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
-import fr.poleemploi.perspectives.candidat._
+import fr.poleemploi.perspectives.candidat.{CandidatCommandHandler, InscrireCandidatCommand}
 import fr.poleemploi.perspectives.commun.domain.{Email, Genre, Nom, Prenom}
 import javax.inject.{Inject, Singleton}
+import play.api.Logging
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
 
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class InscriptionController @Inject()(cc: ControllerComponents,
-                                      implicit val webAppConfig: WebAppConfig,
-                                      candidatCommandHandler: CandidatCommandHandler,
-                                      peConnectController: PEConnectController)(implicit exec: ExecutionContext) extends AbstractController(cc) {
+class LocalCandidatController @Inject()(cc: ControllerComponents,
+                                        candidatNonAuthentifieAction: CandidatNonAuthentifieAction,
+                                        candidatAuthentifieAction: CandidatAuthentifieAction,
+                                        candidatCommandHandler: CandidatCommandHandler)(implicit exec: ExecutionContext) extends AbstractController(cc) with Logging {
 
-  def inscription: Action[AnyContent] =
-    if (webAppConfig.usePEConnect)
-      peConnectController.inscription
-    else
-      inscriptionSimple
-
-  private def inscriptionSimple: Action[AnyContent] = Action.async { implicit request =>
+  def connexion: Action[AnyContent] = candidatNonAuthentifieAction.async { implicit request =>
     val candidatId = candidatCommandHandler.newId
     val command = InscrireCandidatCommand(
       id = candidatId,
@@ -42,5 +37,10 @@ class InscriptionController @Inject()(cc: ControllerComponents,
         .withSession(SessionCandidatAuthentifie.set(candidatAuthentifie, request.session))
         .flashing(request.flash.withCandidatInscrit)
     }
+  }
+
+  def deconnexion: Action[AnyContent] = candidatAuthentifieAction { implicit request =>
+    Redirect(routes.LandingController.landing())
+      .withSession(SessionCandidatAuthentifie.remove(request.session))
   }
 }

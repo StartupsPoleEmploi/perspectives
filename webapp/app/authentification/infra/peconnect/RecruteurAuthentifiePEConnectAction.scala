@@ -24,6 +24,7 @@ object SessionRecruteurPEConnect {
 
 case class RecruteurAuthentifiePEConnectRequest[A](idTokenPEConnect: JWTToken,
                                                    request: Request[A]) extends WrappedRequest[A](request)
+  with UtilisateurPEConnectAuthentifieRequest[A]
 
 class RecruteurAuthentifiePEConnectAction @Inject()(override val parser: BodyParsers.Default)
                                                    (implicit val executionContext: ExecutionContext)

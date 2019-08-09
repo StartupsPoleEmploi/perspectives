@@ -1,8 +1,8 @@
-package controllers.recruteur
+package authentification.infra.local
 
 import authentification._
-import conf.WebAppConfig
 import controllers.FlashMessages._
+import controllers.recruteur.routes
 import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
 import fr.poleemploi.perspectives.commun.domain.{Email, Genre, Nom, Prenom}
 import fr.poleemploi.perspectives.recruteur.{InscrireRecruteurCommand, RecruteurCommandHandler}
@@ -11,20 +11,14 @@ import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponent
 
 import scala.concurrent.ExecutionContext
 
+
 @Singleton
-class InscriptionController @Inject()(cc: ControllerComponents,
-                                      implicit val webappConfig: WebAppConfig,
-                                      recruteurCommandHandler: RecruteurCommandHandler,
-                                      recruteurAuthentifieAction: RecruteurAuthentifieAction,
-                                      peConnectController: PEConnectController)(implicit exec: ExecutionContext) extends AbstractController(cc) {
+class LocalRecruteurController @Inject()(cc: ControllerComponents,
+                                         recruteurNonAuthentifieAction: RecruteurNonAuthentifieAction,
+                                         recruteurAuthentifieAction: RecruteurAuthentifieAction,
+                                         recruteurCommandHandler: RecruteurCommandHandler)(implicit exec: ExecutionContext) extends AbstractController(cc) {
 
-  def inscription: Action[AnyContent] =
-    if (webappConfig.usePEConnect)
-      peConnectController.inscription
-    else
-      inscriptionSimple
-
-  private def inscriptionSimple: Action[AnyContent] = Action.async { implicit request =>
+  def connexion: Action[AnyContent] = recruteurNonAuthentifieAction.async { implicit request =>
     val recruteurId = recruteurCommandHandler.newId
     val command = InscrireRecruteurCommand(
       id = recruteurId,
@@ -43,5 +37,10 @@ class InscriptionController @Inject()(cc: ControllerComponents,
         .withSession(SessionRecruteurAuthentifie.set(recruteurAuthentifie, request.session))
         .flashing(request.flash.withRecruteurInscrit)
     }
+  }
+
+  def deconnexion: Action[AnyContent] = recruteurAuthentifieAction { implicit request =>
+    Redirect(routes.LandingController.landing())
+      .withSession(SessionRecruteurAuthentifie.remove(request.session))
   }
 }

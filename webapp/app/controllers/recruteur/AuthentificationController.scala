@@ -1,23 +1,30 @@
 package controllers.recruteur
 
-import authentification._
+import authentification.infra.local.LocalRecruteurController
+import authentification.infra.peconnect.PEConnectRecruteurController
 import conf.WebAppConfig
-import javax.inject.Inject
+import fr.poleemploi.perspectives.commun.infra.Environnement
+import javax.inject.{Inject, Singleton}
 import play.api.mvc._
 
-import scala.concurrent.ExecutionContext
-
+@Singleton
 class AuthentificationController @Inject()(cc: ControllerComponents,
-                                           webappConfig: WebAppConfig,
-                                           peConnectController: PEConnectController,
-                                           recruteurAuthentifieAction: RecruteurAuthentifieAction)(implicit exec: ExecutionContext) extends AbstractController(cc) {
+                                           webAppConfig: WebAppConfig,
+                                           peConnectController: PEConnectRecruteurController,
+                                           localController: LocalRecruteurController) extends AbstractController(cc) {
+
+  def connexion: Action[AnyContent] =
+    if (usePEConnect)
+      peConnectController.connexion
+    else
+      localController.connexion
 
   def deconnexion: Action[AnyContent] =
-    if (webappConfig.usePEConnect)
+    if (usePEConnect)
       peConnectController.deconnexion
     else
-      recruteurAuthentifieAction { implicit request: RecruteurAuthentifieRequest[AnyContent] =>
-        Redirect(routes.LandingController.landing())
-          .withSession(SessionRecruteurAuthentifie.remove(request.session))
-      }
+      localController.deconnexion
+
+  private def usePEConnect: Boolean =
+    Environnement.PRODUCTION == webAppConfig.environnement || webAppConfig.usePEConnect
 }

@@ -39,7 +39,7 @@ class CandidatAConnecterSiNonAuthentifieAction @Inject()(override val parser: Bo
         block(CandidatAuthentifieRequest(candidat, request))
           .map(r => r.withSession(SessionUtilisateurNonAuthentifie.remove(r.session(request))))
       ).getOrElse(
-      Future(Redirect(routes.InscriptionController.inscription())
+      Future(Redirect(routes.AuthentificationController.connexion())
         .withSession(SessionUtilisateurNonAuthentifie.setUriConnexion(request.uri, request.session))
       )
     )
