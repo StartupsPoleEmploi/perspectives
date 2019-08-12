@@ -93,7 +93,7 @@ class WebAppConfig(configuration: Configuration) {
     configuration.getOptional[Seq[String]]("mailjet.testeurs").map(_.map(Email(_)).toList).getOrElse(Nil)
 
   val localisationWSAdapterConfig: LocalisationWSAdapterConfig = LocalisationWSAdapterConfig(
-    urlApi = configuration.get[String]("emploiStore.localisation.urlApi")
+    urlApi = configuration.get[String]("localisation.urlApi")
   )
 
   val referentielMetierWSAdapterConfig: ReferentielMetierWSAdapterConfig = ReferentielMetierWSAdapterConfig(
