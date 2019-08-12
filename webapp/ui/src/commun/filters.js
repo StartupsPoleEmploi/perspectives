@@ -1,5 +1,4 @@
 import Vue from 'vue';
-import secteursActivites from '../domain/commun/secteurActivite.js';
 import statutsDemandeurEmploi from '../domain/candidat/statutDemandeurEmploi.js';
 import typesRecruteur from '../domain/recruteur/typeRecruteur.js';
 import typesContrats from '../domain/offre/typesContrats.js';
@@ -37,10 +36,6 @@ Vue.filter('typeRecruteur', function (value) {
 
 Vue.filter('typeContrat', function (value) {
     return (value && typesContrats[value]) ? typesContrats[value].label : value;
-});
-
-Vue.filter('secteurActivite', function (value) {
-    return (value && secteursActivites[value]) ? secteursActivites[value].label : '';
 });
 
 Vue.filter('tempsTravail', function (value) {
