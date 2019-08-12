@@ -7,6 +7,7 @@ import fr.poleemploi.perspectives.commun.domain.Email
 import fr.poleemploi.perspectives.commun.infra.Environnement
 import fr.poleemploi.perspectives.commun.infra.elasticsearch.EsConfig
 import fr.poleemploi.perspectives.commun.infra.oauth.{EmploiStoreOauthScopeBuilder, OauthConfig}
+import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
 import fr.poleemploi.perspectives.commun.infra.peconnect.ws.PEConnectWSAdapterConfig
 import fr.poleemploi.perspectives.commun.infra.slack.SlackConfig
 import fr.poleemploi.perspectives.conseiller.ConseillerId
@@ -48,6 +49,10 @@ class WebAppConfig(configuration: Configuration) {
         .avecApiExperiencesProfessionnelles
         .build
   )
+  val candidatsPEConnectTesteurs: List[PEConnectId] =
+    configuration.getOptional[Seq[String]]("emploiStore.candidat.testeurs")
+      .map(_.map(PEConnectId).toList)
+      .getOrElse(Nil)
 
   val recruteurOauthConfig: OauthConfig = OauthConfig(
     clientId = configuration.get[String]("emploiStore.oauth2.clientId"),
@@ -56,6 +61,10 @@ class WebAppConfig(configuration: Configuration) {
     realm = "employeur",
     scopes = emploiStoreOauthScopeBuilder.avecApiEntreprise.build
   )
+  val recruteursPEConnectTesteurs: List[PEConnectId] =
+    configuration.getOptional[Seq[String]]("emploiStore.recruteur.testeurs")
+      .map(_.map(PEConnectId).toList)
+      .getOrElse(Nil)
 
   val partenaireOauthConfig: OauthConfig = OauthConfig(
     clientId = configuration.get[String]("emploiStore.oauth2.clientId"),

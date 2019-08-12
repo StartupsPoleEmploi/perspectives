@@ -58,7 +58,13 @@ class PEConnectCandidatController @Inject()(cc: ControllerComponents,
           optCandidatPEConnect <- peConnectAdapter.findCandidat(infosCandidat.peConnectId)
           candidatId = optCandidatPEConnect.map(_.candidatId).getOrElse(candidatCommandHandler.newId)
           _ <- peConnectAccessTokenStorage.add(candidatId, accessTokenResponse)
-          _ <- optCandidatPEConnect.map(c => connecter(c.candidatId, infosCandidat)).getOrElse(inscrire(candidatId, infosCandidat))
+          _ <- optCandidatPEConnect
+            .map(c =>
+              if (webAppConfig.candidatsPEConnectTesteurs.contains(c.peConnectId))
+                Future.successful(())
+              else
+                connecter(c.candidatId, infosCandidat)
+            ).getOrElse(inscrire(candidatId, infosCandidat))
           optCriteresRecherche <- optCandidatPEConnect.map(c => candidatQueryHandler.handle(CandidatSaisieCriteresRechercheQuery(c.candidatId)).map(Some(_))).getOrElse(Future.successful(None))
         } yield {
           val candidatAuthentifie = CandidatAuthentifie(
