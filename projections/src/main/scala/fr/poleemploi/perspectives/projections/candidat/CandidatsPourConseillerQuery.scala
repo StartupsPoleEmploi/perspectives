@@ -32,23 +32,13 @@ case class CandidatPourConseillerDto(candidatId: CandidatId,
                                      rayonRecherche: Option[RayonRecherche],
                                      numeroTelephone: Option[NumeroTelephone],
                                      dateInscription: LocalDateTime,
-                                     dateDerniereConnexion: LocalDateTime) {
-
-  /**
-    * Ne se base pas sur statutDemandeurEmploi car il n'est pas forcément actualisé tout de suite
-    * par le candidat et cela implique une reconnexion via un service externe.
-    */
-  val rechercheEmploi: Boolean =
-    metiersValidesRecherches.nonEmpty ||
-      metiersRecherches.nonEmpty
-}
+                                     dateDerniereConnexion: LocalDateTime)
 
 object CandidatPourConseillerDto {
 
   import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
 
-  implicit val writes: Writes[CandidatPourConseillerDto] = (a: CandidatPourConseillerDto) =>
-    Json.writes[CandidatPourConseillerDto].writes(a) ++ Json.obj("rechercheEmploi" -> JsBoolean(a.rechercheEmploi))
+  implicit val writes: Writes[CandidatPourConseillerDto] = Json.writes[CandidatPourConseillerDto]
 }
 
 case class KeysetCandidatsPourConseiller(dateInscription: Long,
