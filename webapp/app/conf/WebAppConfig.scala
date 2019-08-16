@@ -28,7 +28,7 @@ class WebAppConfig(configuration: Configuration) {
   val useReferentielMetier: Boolean = configuration.getOptional[Boolean]("useReferentielMetier").getOrElse(true)
   val useReferentielOffre: Boolean = configuration.getOptional[Boolean]("useReferentielOffre").getOrElse(true)
   val useReferentielHabiletesMRS: Boolean = configuration.getOptional[Boolean]("useReferentielHabiletesMRS").getOrElse(true)
-  val useLocalisationWS: Boolean = configuration.getOptional[Boolean]("useLocalisationWS").getOrElse(true)
+  val useLocalisation: Boolean = configuration.getOptional[Boolean]("useLocalisation").getOrElse(true)
 
   val environnement: Environnement = Environnement.from(configuration.get[String]("environnement"))
   val version: String = BuildInfo.version

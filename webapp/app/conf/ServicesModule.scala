@@ -82,7 +82,7 @@ class ServicesModule extends AbstractModule {
   def localisationService(localisationWSAdapter: Provider[LocalisationWSAdapter],
                           localisationLocalAdapter: Provider[LocalisationLocalAdapter],
                           webAppConfig: WebAppConfig): LocalisationService =
-    if (webAppConfig.useLocalisationWS)
+    if (webAppConfig.useLocalisation)
       localisationWSAdapter.get()
     else
       localisationLocalAdapter.get()
