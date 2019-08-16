@@ -37,6 +37,9 @@ object RecruteurPourConseillerDto {
   implicit val writes: Writes[RecruteurPourConseillerDto] = Json.writes[RecruteurPourConseillerDto]
 }
 
+/**
+  * @param recruteurId sert de tiebreaker au cas où deux recruteurs se seraient inscrits à la même date
+  */
 case class KeysetRecruteursPourConseiller(dateInscription: ZonedDateTime,
                                           recruteurId: RecruteurId)
 
