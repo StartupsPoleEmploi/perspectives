@@ -1,7 +1,7 @@
 import Vue from "vue";
 import DepotCV from '../../composants/DepotCV.vue';
 
-var app = new Vue({
+new Vue({
     el: '#depotCVCandidat',
     components: {
         'depot-cv': DepotCV

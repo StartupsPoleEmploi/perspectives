@@ -4,7 +4,7 @@ import 'bootstrap/js/dist/modal';
 import Places from '../../composants/Places.vue';
 import ROME from '../../domain/metier/ROME';
 
-var app = new Vue({
+new Vue({
     el: '#saisieCriteresRechercheCandidat',
     components: {
         'places': Places
@@ -133,15 +133,16 @@ var app = new Vue({
                 }
 
                 if (this.criteresRechercheFormData.nouveauCandidat) {
+                    var self = this;
                     this.findLocalisation().done(function (response) {
-                        app.criteresRechercheFormData.localisation = response.localisation;
+                        self.criteresRechercheFormData.localisation = response.localisation;
                     });
                     this.findMetiersValides().done(function(response) {
                         // On coche tous les métiers validés pour un nouveau candidat
-                        app.criteresRechercheFormData.metiersValidesRecherches = response.metiersValides.map(function(m) {
+                        self.criteresRechercheFormData.metiersValidesRecherches = response.metiersValides.map(function(m) {
                             return m.codeROME;
                         });
-                        app.metiersValides = ROME.metiersParSecteur(response.metiersValides);
+                        self.metiersValides = ROME.metiersParSecteur(response.metiersValides);
                     });
                 }
             }

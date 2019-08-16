@@ -7,7 +7,7 @@ import Places from '../../composants/Places.vue';
 import rayonsRechercheOffre from "../../domain/offre/rayonRecherche";
 import typesContrats from '../../domain/offre/typesContrats.js';
 
-var app = new Vue({
+new Vue({
     el: '#rechercheOffres',
     components: {
         'pagination': Pagination,
