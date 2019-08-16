@@ -269,7 +269,7 @@
                             <div class="col-12 mb-3">
                                 <div class="conteneurSelecteur conteneurSelecteur--violet">
                                     <label for="secteursActivites" class="sr-only">Choisissez un secteur d'activité</label>
-                                    <select id="secteursActivites" name="secteurActivite" class="conteneurSelecteur-selecteur px-2 py-3 texte-noir font-size-sm"
+                                    <select id="secteursActivites" name="secteurActivite" class="conteneurSelecteur-selecteur px-2 py-3 border-0 texte-noir font-size-sm"
                                         v-model="secteurActivite" v-on:change="onSecteurActiviteModifie">
                                         <option value="">Quel secteur d'activité ?</option>
                                         <option v-for="secteurActivite in secteursActivites" v-bind:value="secteurActivite.code">{{secteurActivite.label}}</option>
@@ -279,7 +279,7 @@
                             <div class="col-12 mb-3">
                                 <div class="conteneurSelecteur conteneurSelecteur--violet">
                                     <label for="metiers" class="sr-only">Chosissez un métier</label>
-                                    <select id="metiers" name="metier" class="conteneurSelecteur-selecteur px-2 py-3 texte-noir font-size-sm"
+                                    <select id="metiers" name="metier" class="conteneurSelecteur-selecteur px-2 py-3 border-0 texte-noir font-size-sm"
                                             v-model="metier" v-bind:disabled="secteurActivite === null || secteurActivite === ''">
                                         <option value="" v-if="secteurActivite === null || secteurActivite === ''">Choisissez un secteur</option>
                                         <option value="" v-else>Tous les métiers du secteur</option>
