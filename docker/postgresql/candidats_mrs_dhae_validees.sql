@@ -16,5 +16,5 @@ COMMENT ON COLUMN candidats_mrs_dhae_validees.peconnect_id IS 'Identifiant uniqu
 COMMENT ON COLUMN candidats_mrs_dhae_validees.code_rome IS 'Code ROME du metier validé';
 COMMENT ON COLUMN candidats_mrs_dhae_validees.date_evaluation IS 'Date de l evaluation';
 
-CREATE INDEX candidats_mrs_dhae_validees_peconnect_id_idx ON candidats_mrs_validees (peconnect_id);
+CREATE INDEX candidats_mrs_dhae_validees_peconnect_id_idx ON candidats_mrs_dhae_validees (peconnect_id);
 ALTER TABLE candidats_mrs_dhae_validees ADD CONSTRAINT candidats_mrs_dhae_validees_unicite_mrs UNIQUE (peconnect_id, code_rome, code_departement);
