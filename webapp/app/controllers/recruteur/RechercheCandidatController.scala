@@ -33,43 +33,43 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
                                             recruteurAConnecterSiNonAuthentifieAction: RecruteurAConnecterSiNonAuthentifieAction)(implicit exec: ExecutionContext) extends AbstractController(cc) {
 
   def index: Action[AnyContent] = recruteurAConnecterSiNonAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
-      messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
-        (for {
-          typeRecruteur <- getTypeRecruteur(recruteurAuthentifieRequest)
-          query = RechercheCandidatsQuery(
-            typeRecruteur = typeRecruteur,
-            codeSecteurActivite = None,
-            codeROME = None,
-            coordonnees = None,
-            nbPagesACharger = 4,
-            page = None
+    messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
+      (for {
+        typeRecruteur <- getTypeRecruteur(recruteurAuthentifieRequest)
+        query = RechercheCandidatsQuery(
+          typeRecruteur = typeRecruteur,
+          codeSecteurActivite = None,
+          codeROME = None,
+          coordonnees = None,
+          nbPagesACharger = 4,
+          page = None
+        )
+        rechercheCandidatQueryResult <- candidatQueryHandler.handle(query)
+        secteursActivitesAvecCandidatsQueryResult <- candidatQueryHandler.handle(SecteursActivitesAvecCandidatsQuery(typeRecruteur))
+      } yield {
+        Ok(views.html.recruteur.rechercheCandidats(
+          recruteurAuthentifie = recruteurAuthentifieRequest.recruteurAuthentifie,
+          jsData = Json.obj(
+            "secteursActivites" -> secteursActivitesAvecCandidatsQueryResult.secteursActivites,
+            "resultatRecherche" -> rechercheCandidatQueryResult,
+            "nbCandidatsParPage" -> query.nbCandidatsParPage,
+            "csrfToken" -> CSRF.getToken.map(_.value),
+            "algoliaPlacesConfig" -> webAppConfig.algoliaPlacesConfig
           )
-          rechercheCandidatQueryResult <- candidatQueryHandler.handle(query)
-          secteursActivitesAvecCandidatsQueryResult <- candidatQueryHandler.handle(SecteursActivitesAvecCandidatsQuery(typeRecruteur))
-        } yield {
-          Ok(views.html.recruteur.rechercheCandidats(
-            recruteurAuthentifie = recruteurAuthentifieRequest.recruteurAuthentifie,
-            jsData = Json.obj(
-              "secteursActivites" -> secteursActivitesAvecCandidatsQueryResult.secteursActivites,
-              "resultatRecherche" -> rechercheCandidatQueryResult,
-              "nbCandidatsParPage" -> query.nbCandidatsParPage,
-              "csrfToken" -> CSRF.getToken.map(_.value),
-              "algoliaPlacesConfig" -> webAppConfig.algoliaPlacesConfig
-            )
-          ))
-        }).recover {
-          case ProfilRecruteurIncompletException =>
-            Redirect(routes.ProfilController.modificationProfil())
-              .flashing(messagesRequest.flash.withMessageErreur("Vous devez renseigner votre profil avant de pouvoir effectuer une recherche"))
-        }
-      }(recruteurAuthentifieRequest)
-    }
+        ))
+      }).recover {
+        case ProfilRecruteurIncompletException =>
+          Redirect(routes.ProfilController.modificationProfil())
+            .flashing(messagesRequest.flash.withMessageErreur("Vous devez renseigner votre profil avant de pouvoir effectuer une recherche"))
+      }
+    }(recruteurAuthentifieRequest)
+  }
 
   def rechercherCandidats: Action[AnyContent] = recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
       RechercheCandidatForm.form.bindFromRequest.fold(
         formWithErrors => Future.successful(BadRequest(formWithErrors.errorsAsJson)),
-        rechercheCandidatForm => {
+        rechercheCandidatForm =>
           (for {
             typeRecruteur <- getTypeRecruteur(recruteurAuthentifieRequest)
             rechercheCandidatQueryResult <- candidatQueryHandler.handle(RechercheCandidatsQuery(
@@ -89,7 +89,6 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
           }).recover {
             case ProfilRecruteurIncompletException => BadRequest("Vous devez renseigner votre profil avant de pouvoir effectuer une recherche")
           }
-        }
       )
     }(recruteurAuthentifieRequest)
   }
