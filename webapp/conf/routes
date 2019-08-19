@@ -31,4 +31,5 @@ POST          /conseiller/rechercherCandidats                          controlle
 POST          /conseiller/rechercherRecruteurs                         controllers.conseiller.ConseillerController.rechercherRecruteurs
 POST          /conseiller/ajouterMRSDHAECandidat                       controllers.conseiller.ConseillerController.ajouterMRSDHAECandidat
 
+GET           /robots.txt                                              controllers.Assets.at(path="/public", file="robots.txt")
 GET           /assets/*file                                            controllers.Assets.versioned(file: String)
