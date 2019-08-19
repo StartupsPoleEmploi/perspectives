@@ -41,7 +41,6 @@ class PEConnectRecruteurController @Inject()(cc: ControllerComponents,
       ).getOrElse(
       Redirect(authentification.infra.peconnect.routes.PEConnectRecruteurController.connexion())
         .withSession(SessionOauthTokensRecruteur.setOauthTokensRecruteur(peConnectAuthAdapter.generateTokens, request.session))
-        .withHeaders(("X-Robots-Tag", "none"))
     )
   }
 
