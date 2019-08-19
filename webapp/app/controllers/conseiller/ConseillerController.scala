@@ -5,13 +5,15 @@ import conf.WebAppConfig
 import controllers.AssetsFinder
 import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.candidat.mrs.domain.MRSValidee
-import fr.poleemploi.perspectives.commun.domain.{CodeDepartement, CodeROME}
+import fr.poleemploi.perspectives.commun.domain.{CodeDepartement, CodeROME, CodeSecteurActivite}
 import fr.poleemploi.perspectives.commun.infra.play.http.HttpCommandHandler
+import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
 import fr.poleemploi.perspectives.projections.candidat.{CandidatQueryHandler, CandidatsPourConseillerQuery, KeysetCandidatsPourConseiller}
 import fr.poleemploi.perspectives.projections.conseiller.ConseillerQueryHandler
-import fr.poleemploi.perspectives.projections.conseiller.mrs.CodeROMEsAvecHabiletesQuery
+import fr.poleemploi.perspectives.projections.geo.{DepartementsQuery, RegionQueryHandler, RegionsQuery}
+import fr.poleemploi.perspectives.projections.metier.{MetierQueryHandler, SecteursActiviteQuery}
 import fr.poleemploi.perspectives.projections.recruteur.{KeysetRecruteursPourConseiller, RecruteurQueryHandler, RecruteursPourConseillerQuery}
-import fr.poleemploi.perspectives.recruteur.RecruteurId
+import fr.poleemploi.perspectives.recruteur.{RecruteurId, TypeRecruteur}
 import javax.inject.Inject
 import play.api.libs.json.Json
 import play.api.mvc._
@@ -27,47 +29,76 @@ class ConseillerController @Inject()(cc: ControllerComponents,
                                      candidatQueryHandler: CandidatQueryHandler,
                                      conseillerQueryHandler: ConseillerQueryHandler,
                                      candidatCommandHandler: HttpCommandHandler[Candidat],
-                                     recruteurQueryHandler: RecruteurQueryHandler)(implicit exec: ExecutionContext) extends AbstractController(cc) {
+                                     recruteurQueryHandler: RecruteurQueryHandler,
+                                     regionQueryHandler: RegionQueryHandler,
+                                     metiersQueryHandler: MetierQueryHandler)(implicit exec: ExecutionContext) extends AbstractController(cc) {
 
-  def listeCandidats: Action[AnyContent] = conseillerAdminAuthentifieAction.async { implicit conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
-    val query = CandidatsPourConseillerQuery(
-      nbPagesACharger = 4,
-      page = None
-    )
+  def admin: Action[AnyContent] = conseillerAdminAuthentifieAction.async { implicit conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
     for {
-      codeROMEs <- conseillerQueryHandler.handle(CodeROMEsAvecHabiletesQuery)
-      candidatsPourConseillerQueryResult <- candidatQueryHandler.handle(query)
-    } yield {
-      Ok(views.html.conseiller.listeCandidats(
+      regions <- regionQueryHandler.handle(RegionsQuery)
+      departements <- regionQueryHandler.handle(DepartementsQuery)
+      secteursActivitesQueryResult <- metiersQueryHandler.handle(SecteursActiviteQuery)
+    } yield
+      Ok(views.html.conseiller.admin(
         conseillerAuthentifie = conseillerRequest.conseillerAuthentifie,
         jsData = Json.obj(
           "csrfToken" -> CSRF.getToken.map(_.value),
-          "nbCandidatsParPage" -> query.nbCandidatsParPage,
-          "candidats" -> candidatsPourConseillerQueryResult.candidats,
-          "pages" -> candidatsPourConseillerQueryResult.pages,
-          "codeROMEs" -> codeROMEs
+          "regions" -> regions.result,
+          "departements" -> departements.result,
+          "secteursActivites" -> secteursActivitesQueryResult.secteursActivites
         )
       ))
-    }
   }
 
-  def paginerCandidats: Action[AnyContent] = conseillerAdminAuthentifieAction.async { conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
+  def rechercherCandidats: Action[AnyContent] = conseillerAdminAuthentifieAction.async { conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
-      PaginationCandidatForm.form.bindFromRequest.fold(
+      RechercheCandidatsForm.form.bindFromRequest.fold(
         formWithErrors => Future.successful(BadRequest(formWithErrors.errorsAsJson)),
-        paginationCandidatForm =>
+        form =>
           candidatQueryHandler.handle(
             CandidatsPourConseillerQuery(
-              nbPagesACharger = 1,
-              page = Some(KeysetCandidatsPourConseiller(
-                dateInscription = paginationCandidatForm.dateInscription,
-                candidatId = CandidatId(paginationCandidatForm.candidatId)
-              ))
+              codesDepartement = form.codesDepartement.map(CodeDepartement),
+              codePostal = form.codePostal,
+              dateDebut = form.dateDebut,
+              dateFin = form.dateFin,
+              codeSecteurActivite = form.codeSecteurActivite.map(CodeSecteurActivite),
+              page =
+                for {
+                  dateInscription <- form.pagination.map(_.dateInscription)
+                  candidatId <- form.pagination.map(p => CandidatId(p.candidatId))
+                } yield KeysetCandidatsPourConseiller(
+                  dateInscription = dateInscription,
+                  candidatId = candidatId
+                )
             )
-          ).map(result => Ok(Json.obj(
-            "candidats" -> result.candidats,
-            "pageSuivante" -> result.pageSuivante
-          )))
+          ).map(result => Ok(Json.toJson(result)))
+      )
+    }(conseillerRequest)
+  }
+
+  def rechercherRecruteurs: Action[AnyContent] = conseillerAdminAuthentifieAction.async { conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
+    messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
+      RechercheRecruteursForm.form.bindFromRequest.fold(
+        formWithErrors => Future.successful(BadRequest(formWithErrors.errorsAsJson)),
+        form =>
+          recruteurQueryHandler.handle(
+            RecruteursPourConseillerQuery(
+              codesDepartement = form.codesDepartement.map(CodeDepartement),
+              codePostal = form.codePostal,
+              dateDebut = form.dateDebut,
+              dateFin = form.dateFin,
+              typeRecruteur = form.typeRecruteur.flatMap(TypeRecruteur.from),
+              contactParCandidats = form.contactParCandidats,
+              page =
+                for {
+                  dateInscription <- form.pagination.map(_.dateInscription)
+                  recruteurId <- form.pagination.map(p => RecruteurId(p.recruteurId))
+                } yield KeysetRecruteursPourConseiller(
+                  dateInscription = dateInscription,
+                  recruteurId = recruteurId
+                )
+            )
+          ).map(result => Ok(Json.toJson(result)))
       )
     }(conseillerRequest)
   }
@@ -91,45 +122,4 @@ class ConseillerController @Inject()(cc: ControllerComponents,
       )
     }(conseillerRequest)
   }
-
-  def listeRecruteurs: Action[AnyContent] = conseillerAdminAuthentifieAction.async { implicit conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
-    val query = RecruteursPourConseillerQuery(
-      nbPagesACharger = 4,
-      page = None
-    )
-    recruteurQueryHandler.handle(query).map(result =>
-      Ok(views.html.conseiller.listeRecruteurs(
-        conseillerAuthentifie = conseillerRequest.conseillerAuthentifie,
-        jsData = Json.obj(
-          "csrfToken" -> CSRF.getToken.map(_.value),
-          "nbRecruteursParPage" -> query.nbRecruteursParPage,
-          "recruteurs" -> result.recruteurs,
-          "pages" -> result.pages,
-        )
-      ))
-    )
-  }
-
-  def paginerRecruteurs: Action[AnyContent] = conseillerAdminAuthentifieAction.async { conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
-    messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
-      PaginationRecruteurForm.form.bindFromRequest.fold(
-        formWithErrors => Future.successful(BadRequest(formWithErrors.errorsAsJson)),
-        paginationRecruteurForm => {
-          recruteurQueryHandler.handle(
-            RecruteursPourConseillerQuery(
-              nbPagesACharger = 1,
-              page = Some(KeysetRecruteursPourConseiller(
-                dateInscription = paginationRecruteurForm.dateInscription,
-                recruteurId = RecruteurId(paginationRecruteurForm.recruteurId)
-              ))
-            )
-          ).map(result => Ok(Json.obj(
-            "recruteurs" -> result.recruteurs,
-            "pageSuivante" -> result.pageSuivante
-          )))
-        }
-      )
-    }(conseillerRequest)
-  }
-
 }

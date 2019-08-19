@@ -4,6 +4,7 @@ import com.google.inject._
 import fr.poleemploi.eventsourcing.eventstore.EventStoreListener
 import fr.poleemploi.perspectives.candidat.cv.domain.CVService
 import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielHabiletesMRS
+import fr.poleemploi.perspectives.commun.geo.domain.ReferentielRegion
 import fr.poleemploi.perspectives.emailing.domain.EmailingService
 import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
 import fr.poleemploi.perspectives.offre.domain.ReferentielOffre
@@ -18,6 +19,7 @@ import fr.poleemploi.perspectives.projections.recruteur._
 import fr.poleemploi.perspectives.projections.recruteur.infra.local.RecruteurNotificationLocalAdapter
 import fr.poleemploi.perspectives.projections.recruteur.infra.slack.RecruteurNotificationSlackAdapter
 import fr.poleemploi.perspectives.projections.recruteur.infra.sql.RecruteurProjectionSqlAdapter
+import fr.poleemploi.perspectives.projections.geo.RegionQueryHandler
 import net.codingwell.scalaguice.ScalaModule
 
 class RegisterProjections @Inject()(eventStoreListener: EventStoreListener,
@@ -119,4 +121,10 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
       referentielHabiletesMRS = referentielHabiletesMRS
     )
 
+  @Provides
+  @Singleton
+  def regionQueryHandler(referentielRegion: ReferentielRegion): RegionQueryHandler =
+    new RegionQueryHandler(
+      referentielRegion = referentielRegion
+    )
 }

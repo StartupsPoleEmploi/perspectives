@@ -10,6 +10,9 @@ import fr.poleemploi.perspectives.candidat.mrs.domain.{ReferentielHabiletesMRS, 
 import fr.poleemploi.perspectives.candidat.mrs.infra.local.{ReferentielHabiletesMRSLocalAdapter, ReferentielMRSLocalAdapter}
 import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.ReferentielMRSPEConnect
 import fr.poleemploi.perspectives.candidat.mrs.infra.sql.ReferentielHabiletesMRSSqlAdapter
+import fr.poleemploi.perspectives.commun.geo.domain.ReferentielRegion
+import fr.poleemploi.perspectives.commun.geo.infra.local.ReferentielRegionLocalAdapter
+import fr.poleemploi.perspectives.commun.geo.infra.ws.ReferentielRegionWSAdapter
 import fr.poleemploi.perspectives.conseiller.AutorisationService
 import fr.poleemploi.perspectives.emailing.domain.EmailingService
 import fr.poleemploi.perspectives.emailing.infra.local.LocalEmailingService
@@ -96,4 +99,14 @@ class ServicesModule extends AbstractModule {
       referentielOffreWSAdapter.get()
     else
       referentielOffreLocalAdapter.get()
+
+  @Provides
+  @Singleton
+  def referentielRegion(referentielRegionWSAdapter: Provider[ReferentielRegionWSAdapter],
+                        referentielRegionLocalAdapter: Provider[ReferentielRegionLocalAdapter],
+                        webAppConfig: WebAppConfig): ReferentielRegion =
+    if (webAppConfig.useReferentielRegion)
+      referentielRegionWSAdapter.get()
+    else
+      referentielRegionLocalAdapter.get()
 }

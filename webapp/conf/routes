@@ -26,10 +26,9 @@ GET           /recruteur/recherche                                     controlle
 POST          /recruteur/recherche                                     controllers.recruteur.RechercheCandidatController.rechercherCandidats
 GET           /recruteur/cv/telecharger/:candidatId/:nomFichier        controllers.recruteur.RechercheCandidatController.telechargerCV(candidatId, nomFichier)
 
-GET           /conseiller/candidats                                    controllers.conseiller.ConseillerController.listeCandidats
-POST          /conseiller/paginerCandidats                             controllers.conseiller.ConseillerController.paginerCandidats
+GET           /conseiller/admin                                        controllers.conseiller.ConseillerController.admin
+POST          /conseiller/rechercherCandidats                          controllers.conseiller.ConseillerController.rechercherCandidats
+POST          /conseiller/rechercherRecruteurs                         controllers.conseiller.ConseillerController.rechercherRecruteurs
 POST          /conseiller/ajouterMRSDHAECandidat                       controllers.conseiller.ConseillerController.ajouterMRSDHAECandidat
-GET           /conseiller/recruteurs                                   controllers.conseiller.ConseillerController.listeRecruteurs
-POST          /conseiller/paginerRecruteurs                            controllers.conseiller.ConseillerController.paginerRecruteurs
 
 GET           /assets/*file                                            controllers.Assets.versioned(file: String)

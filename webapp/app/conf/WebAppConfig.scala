@@ -4,6 +4,7 @@ import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.candidat.localisation.infra.algolia.AlgoliaPlacesConfig
 import fr.poleemploi.perspectives.candidat.localisation.infra.ws.LocalisationWSAdapterConfig
 import fr.poleemploi.perspectives.commun.domain.Email
+import fr.poleemploi.perspectives.commun.geo.infra.ws.ReferentielRegionWSConfig
 import fr.poleemploi.perspectives.commun.infra.Environnement
 import fr.poleemploi.perspectives.commun.infra.elasticsearch.EsConfig
 import fr.poleemploi.perspectives.commun.infra.oauth.{EmploiStoreOauthScopeBuilder, OauthConfig}
@@ -29,6 +30,7 @@ class WebAppConfig(configuration: Configuration) {
   val useReferentielOffre: Boolean = configuration.getOptional[Boolean]("useReferentielOffre").getOrElse(true)
   val useReferentielHabiletesMRS: Boolean = configuration.getOptional[Boolean]("useReferentielHabiletesMRS").getOrElse(true)
   val useLocalisation: Boolean = configuration.getOptional[Boolean]("useLocalisation").getOrElse(true)
+  val useReferentielRegion: Boolean = configuration.getOptional[Boolean]("useReferentielRegion").getOrElse(true)
 
   val environnement: Environnement = Environnement.from(configuration.get[String]("environnement"))
   val version: String = BuildInfo.version
@@ -113,6 +115,10 @@ class WebAppConfig(configuration: Configuration) {
   val referentielOffreWSAdapterConfig: ReferentielOffreWSAdapterConfig = ReferentielOffreWSAdapterConfig(
     urlApi = configuration.get[String]("emploiStore.urlApi"),
     oauthConfig = partenaireOauthConfig
+  )
+
+  val referentielRegionWSConfig: ReferentielRegionWSConfig = ReferentielRegionWSConfig(
+    urlApi = configuration.get[String]("referentielRegion.urlApi"),
   )
 
   val esConfig: EsConfig = EsConfig(

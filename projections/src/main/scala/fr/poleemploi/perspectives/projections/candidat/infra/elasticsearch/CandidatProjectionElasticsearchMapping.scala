@@ -1,5 +1,7 @@
 package fr.poleemploi.perspectives.projections.candidat.infra.elasticsearch
 
+import java.time.LocalDate
+
 import fr.poleemploi.perspectives.candidat.{ExperienceProfessionnelle, Formation, LocalisationRecherche}
 import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
@@ -381,18 +383,52 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
 
   def buildCandidatPourConseillerQuery(query: CandidatsPourConseillerQuery): JsObject = {
     val queryJson = Json.obj(
-      "size" -> (query.nbCandidatsParPage * query.nbPagesACharger),
+      "size" -> query.nbCandidatsParPage,
       "query" -> Json.obj(
         "bool" -> Json.obj(
-          "must" -> Json.obj(
-            "match_all" -> Json.obj()
+          "must" -> JsArray(
+            Seq(
+              query.codePostal.map(c =>
+                Json.obj("term" -> Json.obj("criteres_recherche.code_postal" -> c))
+              ).orElse(
+                if (query.codesDepartement.nonEmpty)
+                  Some(Json.obj("bool" -> Json.obj(
+                    "should" -> JsArray(
+                      query.codesDepartement.map(c =>
+                        Json.obj("prefix" -> Json.obj("criteres_recherche.code_postal" -> c.value))
+                      )
+                    )
+                  )))
+                else None
+              ),
+              if (query.dateDebut.isDefined || query.dateFin.isDefined)
+                Some(Json.obj("bool" -> Json.obj(
+                  "should" -> JsArray(
+                    Seq(
+                      buildFiltreDateInscription(query.dateDebut, query.dateFin),
+                      buildFiltreDateDerniereConnexion(query.dateDebut, query.dateFin)
+                    )
+                  )
+                )))
+              else None,
+              query.codeSecteurActivite.map(c =>
+                Json.obj("bool" -> Json.obj(
+                  "should" -> JsArray(
+                    Seq(
+                      Json.obj("prefix" -> Json.obj(metiers_valides_recherche -> c)),
+                      Json.obj("prefix" -> Json.obj(metiers_recherche -> c))
+                    )
+                  )
+                ))
+              )
+            ).flatten
           )
         )
       ),
       "sort" -> JsArray(
         Seq(
           Json.obj(date_inscription -> Json.obj("order" -> "desc")),
-          Json.obj(candidat_id -> "asc")
+          Json.obj(candidat_id -> "desc")
         )
       )
     )
@@ -450,6 +486,24 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
           "type" -> "point"
         ),
         "relation" -> "contains"
+      )
+    ))
+
+  private def buildFiltreDateInscription(dateDebut: Option[LocalDate],
+                                         dateFin: Option[LocalDate]): JsObject =
+    Json.obj("range" -> Json.obj(
+      date_inscription -> Json.obj(
+        "gte" -> dateDebut,
+        "lte" -> dateFin
+      )
+    ))
+
+  private def buildFiltreDateDerniereConnexion(dateDebut: Option[LocalDate],
+                                               dateFin: Option[LocalDate]): JsObject =
+    Json.obj("range" -> Json.obj(
+      date_derniere_connexion -> Json.obj(
+        "gte" -> dateDebut,
+        "lte" -> dateFin
       )
     ))
 

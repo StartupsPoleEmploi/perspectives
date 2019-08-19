@@ -239,20 +239,23 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
       .withHttpHeaders(jsonContentType)
       .post(mapping.buildCandidatPourConseillerQuery(query))
       .flatMap { response =>
-        val hits = (response.json \ "hits" \ "hits").as[JsArray]
-        val candidats = (hits \\ "_source").take(query.nbCandidatsParPage).map(_.as[CandidatPourConseillerDocument])
-        val pages = (hits \\ "sort").zipWithIndex
-          .filter(v => v._2 == 0 || (v._2 + 1) % query.nbCandidatsParPage == 0)
-          .map(v => KeysetCandidatsPourConseiller(
-            dateInscription = if (v._2 == 0) (v._1 \ 0).as[Long] + 1L else (v._1 \ 0).as[Long],
-            candidatId = (v._1 \ 1).as[CandidatId]
-          )).toList
+        val nbCandidatsTotal = (response.json \ "hits" \ "total").as[Int]
+        val candidats = (response.json \\ "_source").map(_.as[CandidatPourConseillerDocument]).toList
 
         mapping.buildCandidatPourConseillerDto(candidats).map(dtos =>
           CandidatsPourConseillerQueryResult(
+            nbCandidatsTotal = nbCandidatsTotal,
             candidats = dtos,
-            pages = query.page.map(k => k :: (if (pages.nonEmpty) pages.tail else Nil)).getOrElse(pages),
-            pageSuivante = pages.reverse.headOption
+            pageSuivante =
+              if (candidats.size < query.nbCandidatsParPage)
+                None
+              else {
+                val sort = (response.json \\ "sort").toList.last
+                Some(KeysetCandidatsPourConseiller(
+                  dateInscription = (sort \ 0).as[Long],
+                  candidatId = (sort \ 1).as[CandidatId]
+                ))
+              }
           )
         )
       }

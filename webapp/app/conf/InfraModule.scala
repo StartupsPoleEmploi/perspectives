@@ -20,6 +20,8 @@ import fr.poleemploi.perspectives.candidat.localisation.infra.ws.{LocalisationWS
 import fr.poleemploi.perspectives.candidat.mrs.infra.local.{ReferentielHabiletesMRSLocalAdapter, ReferentielMRSLocalAdapter}
 import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.{MRSDHAEValideesSqlAdapter, ReferentielMRSPEConnect}
 import fr.poleemploi.perspectives.candidat.mrs.infra.sql.ReferentielHabiletesMRSSqlAdapter
+import fr.poleemploi.perspectives.commun.geo.infra.local.ReferentielRegionLocalAdapter
+import fr.poleemploi.perspectives.commun.geo.infra.ws.{ReferentielRegionWSAdapter, ReferentielRegionWSMapping}
 import fr.poleemploi.perspectives.commun.infra.jackson.PerspectivesEventSourcingModule
 import fr.poleemploi.perspectives.commun.infra.oauth.OauthService
 import fr.poleemploi.perspectives.commun.infra.peconnect.sql.PEConnectSqlAdapter
@@ -307,6 +309,26 @@ class InfraModule extends AbstractModule with ScalaModule {
       wsClient = wsClient,
       config = webAppConfig.localisationWSAdapterConfig,
       mapping = mapping
+    )
+
+  @Provides
+  def referentielRegionLocalAdapter: ReferentielRegionLocalAdapter =
+    new ReferentielRegionLocalAdapter
+
+  @Provides
+  def referentielRegionsWSMapping: ReferentielRegionWSMapping =
+    new ReferentielRegionWSMapping
+
+  @Provides
+  def referentielRegionWSAdapter(wsClient: WSClient,
+                                 mapping: ReferentielRegionWSMapping,
+                                 asyncCacheApi: AsyncCacheApi,
+                                 webAppConfig: WebAppConfig): ReferentielRegionWSAdapter =
+    new ReferentielRegionWSAdapter(
+      wsClient = wsClient,
+      config = webAppConfig.referentielRegionWSConfig,
+      mapping = mapping,
+      cacheApi = asyncCacheApi
     )
 
   @Provides

@@ -1,6 +1,6 @@
 package fr.poleemploi.perspectives.projections.recruteur.infra.sql
 
-import java.time.ZonedDateTime
+import java.time.{ZoneId, ZonedDateTime}
 
 import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
@@ -64,13 +64,6 @@ class RecruteurProjectionSqlAdapter(database: Database) {
     recruteurTable
       .filter(r => r.recruteurId === recruteurId)
   }
-  val listerParDateInscriptionQuery = Compiled { (nbRecruteursParPage: ConstColumn[Long], avantDateInscription: Rep[ZonedDateTime]) =>
-    recruteurTable
-      .filter(_.dateInscription < avantDateInscription)
-      .sortBy(_.dateInscription.desc)
-      .take(nbRecruteursParPage)
-      .map(r => RecruteurPourConseillerLifted(r.recruteurId, r.nom, r.prenom, r.email, r.genre, r.typeRecruteur, r.raisonSociale, r.numeroSiret, r.numeroTelephone, r.contactParCandidats, r.dateInscription, r.dateDerniereConnexion))
-  }
   val modifierProfilQuery = Compiled { recruteurId: Rep[RecruteurId] =>
     for {
       r <- recruteurTable if r.recruteurId === recruteurId
@@ -112,23 +105,63 @@ class RecruteurProjectionSqlAdapter(database: Database) {
       )
     )
 
-  def listerPourConseiller(query: RecruteursPourConseillerQuery): Future[RecruteursPourConseillerQueryResult] =
-    database.run(listerParDateInscriptionQuery(query.nbRecruteursParPage * query.nbPagesACharger, query.page.map(_.dateInscription).getOrElse(ZonedDateTime.now())).result)
-      .map(r => {
-        val recruteurs = r.toList
-        val pages = recruteurs.zipWithIndex
-          .filter(v => v._2 == 0 || (v._2 + 1) % query.nbRecruteursParPage == 0)
-          .map(v => KeysetRecruteursPourConseiller(
-            dateInscription = if (v._2 == 0) v._1.dateInscription.plusSeconds(1) else v._1.dateInscription,
-            recruteurId = v._1.recruteurId
-          ))
+  def listerPourConseiller(query: RecruteursPourConseillerQuery): Future[RecruteursPourConseillerQueryResult] = {
+    val baseQuery = recruteurTable.filter { r =>
+      val filtresChamps = List[Option[Rep[Boolean]]](
+        query.dateDebut.map { d =>
+          val date = d.atStartOfDay().atZone(ZoneId.systemDefault())
+          r.dateInscription >= date || r.dateDerniereConnexion >= date
+        },
+        query.dateFin.map { d =>
+          val date = d.atStartOfDay().atZone(ZoneId.systemDefault())
+          r.dateInscription <= date || r.dateDerniereConnexion <= date
+        }
+      )
 
-        RecruteursPourConseillerQueryResult(
-          recruteurs = recruteurs.take(query.nbRecruteursParPage),
-          pages = query.page.map(k => k :: pages.tail).getOrElse(pages),
-          pageSuivante = pages.reverse.headOption
-        )
-      })
+      val filtresChampsOptionnels = List[Option[Rep[Option[Boolean]]]](
+        query.codePostal
+          .map(c => r.codePostal === c)
+          .orElse(
+            if (query.codesDepartement.nonEmpty)
+              Some(query.codesDepartement.foldLeft(Some(false): Rep[Option[Boolean]])((acc, codeDepartement) =>
+                acc || (r.codePostal like s"${codeDepartement.value}%")
+              ))
+            else None
+          ),
+        query.typeRecruteur.map(t => r.typeRecruteur === t),
+        query.contactParCandidats.map(c => r.contactParCandidats === c)
+      )
+
+      filtresChampsOptionnels.flatten.foldLeft(Some(true): Rep[Option[Boolean]])(_ && _) &&
+        filtresChamps.flatten.foldLeft(true: Rep[Boolean])(_ && _)
+    }
+
+    for {
+      nbRecruteursTotal <- query.page
+        .map(_ => Future.successful(0))
+        .getOrElse(database.run(baseQuery.length.result))
+      recruteurs <- database.run(
+        baseQuery
+          .filter(r => query.page.map(p => r.dateInscription < p.dateInscription || (r.dateInscription === p.dateInscription && r.recruteurId < p.recruteurId)).getOrElse(true: Rep[Boolean]))
+          .sortBy(r => (r.dateInscription.desc, r.recruteurId.desc))
+          .take(query.nbRecruteursParPage)
+          .map(r => RecruteurPourConseillerLifted(r.recruteurId, r.nom, r.prenom, r.typeRecruteur, r.raisonSociale, r.commune, r.codePostal, r.contactParCandidats, r.dateInscription, r.dateDerniereConnexion))
+          .result
+      ).map(_.toList)
+    } yield
+      RecruteursPourConseillerQueryResult(
+        nbRecruteursTotal = nbRecruteursTotal,
+        recruteurs = recruteurs,
+        pageSuivante =
+          if (recruteurs.size < query.nbRecruteursParPage)
+            None
+          else
+            Some(KeysetRecruteursPourConseiller(
+              dateInscription = recruteurs.last.dateInscription,
+              recruteurId = recruteurs.last.recruteurId
+            ))
+      )
+  }
 
   def onRecruteurInscritEvent(event: RecruteurInscritEvent): Future[Unit] =
     database
@@ -164,5 +197,4 @@ class RecruteurProjectionSqlAdapter(database: Database) {
       event.email,
       event.genre
     ))).map(_ => ())
-
 }
