@@ -222,11 +222,9 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
           "filter" -> buildFiltresRechercheCandidatQuery(query)
         )
       ),
-      "sort" -> JsArray(
-        Seq(
-          Json.obj(date_inscription -> Json.obj("order" -> "desc")),
-          Json.obj(candidat_id -> "asc")
-        )
+      "sort" -> Json.arr(
+        Json.obj(date_inscription -> "desc"),
+        Json.obj(candidat_id -> "desc")
       )
     )
 
@@ -252,42 +250,36 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
               "filter" -> buildFiltresRechercheCandidatQuery(query)
             )
           ),
-          "functions" -> JsArray(
-            Seq(
-              Json.obj(
-                "filter" -> Json.obj(
-                  "bool" -> Json.obj(
-                    "must" ->
-                      JsArray(Seq(
-                        Json.obj("prefix" -> Json.obj(metiers_valides_recherche -> codeSecteurActivite))
-                      ))
+          "functions" -> Json.arr(
+            Json.obj(
+              "filter" -> Json.obj(
+                "bool" -> Json.obj(
+                  "must" -> Json.arr(
+                    Json.obj("prefix" -> Json.obj(metiers_valides_recherche -> codeSecteurActivite))
                   )
-                ),
-                "weight" -> 3
+                )
               ),
-              Json.obj(
-                "filter" -> Json.obj(
-                  "bool" -> Json.obj(
-                    "must" ->
-                      JsArray(Seq(
-                        Json.obj("prefix" -> Json.obj(metiers_recherche -> codeSecteurActivite)),
-                      ))
+              "weight" -> 3
+            ),
+            Json.obj(
+              "filter" -> Json.obj(
+                "bool" -> Json.obj(
+                  "must" -> Json.arr(
+                    Json.obj("prefix" -> Json.obj(metiers_recherche -> codeSecteurActivite)),
                   )
-                ),
-                "weight" -> 2
-              )
+                )
+              ),
+              "weight" -> 2
             )
           ),
           "score_mode" -> "sum",
           "min_score" -> 2
         )
       ),
-      "sort" -> JsArray(
-        Seq(
-          Json.obj("_score" -> Json.obj("order" -> "desc")),
-          Json.obj(date_inscription -> Json.obj("order" -> "desc")),
-          Json.obj(candidat_id -> "asc")
-        )
+      "sort" -> Json.arr(
+        Json.obj("_score" -> "desc"),
+        Json.obj(date_inscription -> "desc"),
+        Json.obj(candidat_id -> "desc")
       )
     )
 
@@ -315,58 +307,49 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
               "filter" -> buildFiltresRechercheCandidatQuery(query)
             )
           ),
-          "functions" -> JsArray(
-            Seq(
-              Json.obj(
-                "filter" -> Json.obj(
-                  "bool" -> Json.obj(
-                    "must" ->
-                      JsArray(Seq(
-                        Json.obj("prefix" -> Json.obj(metiers_valides_recherche -> codeROME)),
-                      ))
-                  )
-                ),
-                "weight" -> 6
+          "functions" -> Json.arr(
+            Json.obj(
+              "filter" -> Json.obj(
+                "bool" -> Json.obj(
+                  "must" -> Json.arr(
+                    Json.obj("prefix" -> Json.obj(metiers_valides_recherche -> codeROME))
+                  ))
               ),
-              Json.obj(
-                "filter" -> Json.obj(
-                  "bool" -> Json.obj(
-                    "must_not" ->
-                      JsArray(Seq(
-                        Json.obj("prefix" -> Json.obj(metiers_valides_recherche -> codeROME))
-                      )),
-                    "must" ->
-                      JsArray(Seq(
-                        Json.obj("term" -> Json.obj(metiers_recherche -> codeROME)),
-                        Json.obj("prefix" -> Json.obj(metiers_valides_recherche -> codeROME.codeSecteurActivite)),
-                      ))
+              "weight" -> 6
+            ),
+            Json.obj(
+              "filter" -> Json.obj(
+                "bool" -> Json.obj(
+                  "must_not" -> Json.arr(
+                    Json.obj("prefix" -> Json.obj(metiers_valides_recherche -> codeROME))
+                  ),
+                  "must" -> Json.arr(
+                    Json.obj("term" -> Json.obj(metiers_recherche -> codeROME)),
+                    Json.obj("prefix" -> Json.obj(metiers_valides_recherche -> codeROME.codeSecteurActivite)),
                   )
-                ),
-                "weight" -> 3
+                )
               ),
-              Json.obj(
-                "filter" -> Json.obj(
-                  "bool" -> Json.obj(
-                    "must" ->
-                      JsArray(Seq(
-                        Json.obj("term" -> Json.obj(metiers_recherche -> codeROME))
-                      ))
+              "weight" -> 3
+            ),
+            Json.obj(
+              "filter" -> Json.obj(
+                "bool" -> Json.obj(
+                  "must" -> Json.arr(
+                    Json.obj("term" -> Json.obj(metiers_recherche -> codeROME))
                   )
-                ),
-                "weight" -> 2
-              )
+                )
+              ),
+              "weight" -> 2
             )
           ),
           "score_mode" -> "sum",
           "min_score" -> 2
         )
       ),
-      "sort" -> JsArray(
-        Seq(
-          Json.obj("_score" -> Json.obj("order" -> "desc")),
-          Json.obj(date_inscription -> Json.obj("order" -> "desc")),
-          Json.obj(candidat_id -> "asc")
-        )
+      "sort" -> Json.arr(
+        Json.obj("_score" -> "desc"),
+        Json.obj(date_inscription -> "desc"),
+        Json.obj(candidat_id -> "desc")
       )
     )
 
@@ -403,21 +386,17 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
               ),
               if (query.dateDebut.isDefined || query.dateFin.isDefined)
                 Some(Json.obj("bool" -> Json.obj(
-                  "should" -> JsArray(
-                    Seq(
-                      buildFiltreDateInscription(query.dateDebut, query.dateFin),
-                      buildFiltreDateDerniereConnexion(query.dateDebut, query.dateFin)
-                    )
+                  "should" -> Json.arr(
+                    buildFiltreDateInscription(query.dateDebut, query.dateFin),
+                    buildFiltreDateDerniereConnexion(query.dateDebut, query.dateFin)
                   )
                 )))
               else None,
               query.codeSecteurActivite.map(c =>
                 Json.obj("bool" -> Json.obj(
-                  "should" -> JsArray(
-                    Seq(
-                      Json.obj("prefix" -> Json.obj(metiers_valides_recherche -> c)),
-                      Json.obj("prefix" -> Json.obj(metiers_recherche -> c))
-                    )
+                  "should" -> Json.arr(
+                    Json.obj("prefix" -> Json.obj(metiers_valides_recherche -> c)),
+                    Json.obj("prefix" -> Json.obj(metiers_recherche -> c))
                   )
                 ))
               )
@@ -425,20 +404,18 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
           )
         )
       ),
-      "sort" -> JsArray(
-        Seq(
-          Json.obj(date_inscription -> Json.obj("order" -> "desc")),
-          Json.obj(candidat_id -> "desc")
-        )
+      "sort" -> Json.arr(
+        Json.obj(date_inscription -> "desc"),
+        Json.obj(candidat_id -> "desc")
       )
     )
 
     query.page.map(keysetPagination =>
       queryJson ++ Json.obj(
-        "search_after" -> JsArray(Seq(
-          JsNumber(keysetPagination.dateInscription),
-          JsString(keysetPagination.candidatId.value)
-        ))
+        "search_after" -> Json.arr(
+          keysetPagination.dateInscription,
+          keysetPagination.candidatId
+        )
       )
     ).getOrElse(queryJson)
   }
@@ -482,7 +459,7 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
     Json.obj("geo_shape" -> Json.obj(
       zone_recherche -> Json.obj(
         "shape" -> Json.obj(
-          "coordinates" -> JsArray(Seq(JsNumber(coordonnees.longitude), JsNumber(coordonnees.latitude))),
+          "coordinates" -> Json.arr(coordonnees.longitude, coordonnees.latitude),
           "type" -> "point"
         ),
         "relation" -> "contains"

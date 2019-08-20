@@ -26,10 +26,8 @@ class ReferentielMetierElasticsearchAdapter(wsClient: WSClient,
         "query" -> Json.obj(
           "match_all" -> Json.obj()
         ),
-        "sort" -> JsArray(
-          Seq(
-            Json.obj("label" -> "asc")
-          )
+        "sort" -> Json.arr(
+          Json.obj("label" -> "asc")
         )
       ))
       .flatMap(filtreStatutReponse(_))

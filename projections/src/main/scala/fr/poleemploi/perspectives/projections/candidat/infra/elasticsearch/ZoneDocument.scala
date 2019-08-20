@@ -20,7 +20,7 @@ object ZoneDocument {
   implicit val writes: Writes[ZoneDocument] = Writes(z =>
     Json.obj(
       "type" -> s"${z.typeMobilite}",
-      "coordinates" -> JsArray(Seq(JsNumber(z.longitude), JsNumber(z.latitude)))
+      "coordinates" -> Json.arr(z.longitude, z.latitude)
     ) ++ z.radius
       .map(r => Json.obj("radius" -> r))
       .getOrElse(Json.obj())
