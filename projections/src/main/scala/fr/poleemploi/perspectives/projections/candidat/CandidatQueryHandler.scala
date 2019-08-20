@@ -26,6 +26,7 @@ class CandidatQueryHandler(candidatProjection: CandidatProjection,
     ))
     case q: CVCandidatPourRecruteurQuery => cvCandidatPourRecruteur(q).map(CVCandidatPourRecruteurQueryResult)
     case q: CandidatSaisieCriteresRechercheQuery => candidatProjection.saisieCriteresRecherche(q)
+    case q: CandidatSaisieDisponibilitesQuery => candidatProjection.saisieDisponibilites(q)
     case q: CandidatLocalisationQuery => candidatProjection.localisation(q)
     case q: CandidatsPourConseillerQuery => candidatProjection.listerPourConseiller(q)
     case q: RechercheCandidatsQuery => candidatProjection.rechercherCandidats(q)

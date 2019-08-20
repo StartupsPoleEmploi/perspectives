@@ -11,6 +11,8 @@ GET         /candidat/peconnect/connexion/callback                   authentific
 GET         /candidat/peconnect/deconnexion/callback                 authentification.infra.peconnect.PEConnectCandidatController.deconnexionCallback
 GET         /candidat/criteres-recherche                             controllers.candidat.SaisieCriteresRechercheController.saisieCriteresRecherche
 POST        /candidat/criteres-recherche                             controllers.candidat.SaisieCriteresRechercheController.modifierCriteresRecherche
+GET         /candidat/disponibilites                                 controllers.candidat.SaisieDisponibilitesController.saisieDisponibilites
+POST        /candidat/disponibilites                                 controllers.candidat.SaisieDisponibilitesController.modifierDisponibilites
 GET         /candidat/offres                                         controllers.candidat.RechercheOffreController.index(codePostal: Option[String] ?= None, lieuTravail: Option[String] ?= None, rayonRecherche: Option[Int] ?= None)
 POST        /candidat/offres                                         controllers.candidat.RechercheOffreController.rechercherOffres
 

@@ -26,6 +26,7 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
   val docType = "_doc"
 
   val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+  val dateFormatter: DateTimeFormatter = DateTimeFormatter.ISO_DATE
 
   private val refreshParam: (String, String) = ("refresh", "true")
 
@@ -108,6 +109,18 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
           "temps_travail" -> event.tempsTravailRecherche
         )
       ))
+
+  override def onDisponibilitesModifieesEvent(event: DisponibilitesModifieesEvent): Future[Unit] = {
+    update(
+      candidatId = event.candidatId,
+      json = Json.obj(
+        contact_recruteur -> event.candidatEnRecherche,
+        contact_formation -> event.candidatEnRecherche,
+        prochaine_disponibilite -> event.prochaineDisponibilite.map(dateFormatter.format),
+        emploi_trouve_grace_perspectives -> event.emploiTrouveGracePerspectives
+      )
+    )
+  }
 
   override def onNumeroTelephoneModifieEvent(event: NumeroTelephoneModifieEvent): Future[Unit] =
     update(event.candidatId, Json.obj(
@@ -196,6 +209,13 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
       .get()
       .flatMap(filtreStatutReponse(_))
       .flatMap(r => mapping.buildCandidatSaisieCriteresRechercheQueryResult((r.json \ "_source").as[CandidatSaisieCriteresRechercheDocument]))
+
+  override def saisieDisponibilites(query: CandidatSaisieDisponibilitesQuery): Future[CandidatSaisieDisponibilitesQueryResult] =
+    wsClient
+      .url(s"$baseUrl/$indexName/$docType/${query.candidatId.value}")
+      .get()
+      .flatMap(filtreStatutReponse(_))
+      .map(r => mapping.buildCandidatSaisieDisponibilitesQueryResult((r.json \ "_source").as[CandidatSaisieDisponibilitesDocument]))
 
   override def localisation(query: CandidatLocalisationQuery): Future[CandidatLocalisationQueryResult] =
     wsClient

@@ -1,5 +1,7 @@
 package fr.poleemploi.perspectives.candidat
 
+import java.time.LocalDate
+
 import fr.poleemploi.eventsourcing.{Aggregate, Event}
 import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, CVService}
 import fr.poleemploi.perspectives.candidat.localisation.domain.LocalisationService
@@ -29,6 +31,9 @@ case class Candidat(id: CandidatId,
 
   def modifierCriteresRecherche(command: ModifierCriteresRechercheCommand): List[Event] =
     behavior.modifierCriteresRecherche(context = state, command = command)
+
+  def modifierDisponibilites(command: ModifierDisponibilitesCommand): List[Event] =
+    behavior.modifierDisponibilites(context = state, command = command)
 
   def ajouterCV(command: AjouterCVCommand, cvService: CVService): Future[List[Event]] =
     behavior.ajouterCV(context = state, command = command, cvService = cvService)
@@ -74,7 +79,9 @@ private[candidat] case class CandidatContext(statut: StatutCandidat = StatutCand
                                              savoirFaire: List[SavoirFaire] = Nil,
                                              formations: List[Formation] = Nil,
                                              experiencesProfessionnelles: List[ExperienceProfessionnelle] = Nil,
-                                             rechercheEmploi: Option[Boolean] = None) {
+                                             rechercheEmploi: Option[Boolean] = None,
+                                             emploiTrouveGracePerspectives: Option[Boolean] = None,
+                                             prochaineDisponibilite: Option[LocalDate] = None) {
 
   def apply(events: List[Event]): CandidatContext =
     events.foldLeft(this)((context, event) => event match {
@@ -108,6 +115,12 @@ private[candidat] case class CandidatContext(statut: StatutCandidat = StatutCand
           codesDomaineProfessionnelRecherches = e.codesDomaineProfessionnelRecherches,
           localisationRecherche = Some(e.localisationRecherche),
           tempsTravailRecherche = Some(e.tempsTravailRecherche)
+        )
+      case e: DisponibilitesModifieesEvent =>
+        context.copy(
+          rechercheEmploi = Some(e.candidatEnRecherche),
+          emploiTrouveGracePerspectives = Some(e.emploiTrouveGracePerspectives),
+          prochaineDisponibilite = e.prochaineDisponibilite
         )
       case e: NumeroTelephoneModifieEvent =>
         context.copy(numeroTelephone = Some(e.numeroTelephone))

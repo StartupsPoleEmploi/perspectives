@@ -1,5 +1,6 @@
 package fr.poleemploi.perspectives.candidat
 
+import java.time.LocalDate
 import java.util.UUID
 
 import fr.poleemploi.eventsourcing.Event
@@ -159,6 +160,18 @@ class CandidatBuilder {
       codesROMERecherches = codesROMERecherches,
       codesDomaineProfessionnelRecherches = codesDomaineProfessionnelRecherches,
       tempsTravailRecherche = tempsTravailRecherche.getOrElse(TempsTravail.TEMPS_PLEIN)
+    )
+    this
+  }
+
+  def avecDisponibilites(candidatEnRecherche: Option[Boolean] = None,
+                         emploiTrouveGracePerspectives: Option[Boolean] = None,
+                         prochaineDisponibilite: Option[LocalDate] = None): CandidatBuilder = {
+    events += DisponibilitesModifieesEvent(
+      candidatId = candidatId,
+      candidatEnRecherche = candidatEnRecherche.getOrElse(true),
+      emploiTrouveGracePerspectives = emploiTrouveGracePerspectives.getOrElse(true),
+      prochaineDisponibilite = prochaineDisponibilite
     )
     this
   }

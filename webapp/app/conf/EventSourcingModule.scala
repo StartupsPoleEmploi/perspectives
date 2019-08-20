@@ -56,6 +56,7 @@ class EventSourcingModule extends AbstractModule {
         case command: AutologgerCandidatCommand => c => Future(c.autologger(command))
         case command: ModifierProfilCandidatCommand => c => c.modifierProfil(command, localisationService)
         case command: ModifierCriteresRechercheCommand => c => Future(c.modifierCriteresRecherche(command))
+        case command: ModifierDisponibilitesCommand => c => Future(c.modifierDisponibilites(command))
         case command: AjouterCVCommand => c => c.ajouterCV(command, cvService)
         case command: RemplacerCVCommand => c => c.remplacerCV(command, cvService)
         case command: AjouterMRSValideesCommand => c => c.ajouterMRSValidee(command, referentielHabiletesMRS)

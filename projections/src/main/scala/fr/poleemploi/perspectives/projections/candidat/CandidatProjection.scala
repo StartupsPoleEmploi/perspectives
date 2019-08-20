@@ -19,6 +19,7 @@ trait CandidatProjection extends Projection {
     case e: ProfilCandidatModifieEvent => onProfilModifieEvent(e)
     case e: VisibiliteRecruteurModifieeEvent => onVisibiliteRecruteurModifieeEvent(e)
     case e: CriteresRechercheModifiesEvent => onCriteresRechercheModifiesEvent(e)
+    case e: DisponibilitesModifieesEvent => onDisponibilitesModifieesEvent(e)
     case e: NumeroTelephoneModifieEvent => onNumeroTelephoneModifieEvent(e)
     case e: AdresseModifieeEvent => onAdresseModifieeEvent(e)
     case e: StatutDemandeurEmploiModifieEvent => onStatutDemandeurEmploiModifieEvent(e)
@@ -36,6 +37,8 @@ trait CandidatProjection extends Projection {
   }
 
   def saisieCriteresRecherche(query: CandidatSaisieCriteresRechercheQuery): Future[CandidatSaisieCriteresRechercheQueryResult]
+
+  def saisieDisponibilites(query: CandidatSaisieDisponibilitesQuery): Future[CandidatSaisieDisponibilitesQueryResult]
 
   def localisation(query: CandidatLocalisationQuery): Future[CandidatLocalisationQueryResult]
 
@@ -64,6 +67,8 @@ trait CandidatProjection extends Projection {
   def onProfilModifieEvent(event: ProfilCandidatModifieEvent): Future[Unit]
 
   def onCriteresRechercheModifiesEvent(event: CriteresRechercheModifiesEvent): Future[Unit]
+
+  def onDisponibilitesModifieesEvent(event: DisponibilitesModifieesEvent): Future[Unit]
 
   def onNumeroTelephoneModifieEvent(event: NumeroTelephoneModifieEvent): Future[Unit]
 

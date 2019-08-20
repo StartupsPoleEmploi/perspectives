@@ -37,6 +37,14 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
         tempsTravail = document.criteresRecherche.tempsTravail
       ))
 
+  def buildCandidatSaisieDisponibilitesQueryResult(document: CandidatSaisieDisponibilitesDocument): CandidatSaisieDisponibilitesQueryResult =
+    CandidatSaisieDisponibilitesQueryResult(
+      candidatId = document.candidatId,
+      candidatEnRecherche = document.contactRecruteur.getOrElse(false) || document.contactFormation.getOrElse(false),
+      dateProchaineDisponibilite = document.dateProchaineDisponibilite,
+      emploiTrouveGracePerspectives = document.emploiTrouveGracePerspectives.getOrElse(false)
+    )
+
   def buildCandidatLocalisationQueryResult(document: CandidatLocalisationDocument): CandidatLocalisationQueryResult =
     CandidatLocalisationQueryResult(
       commune = document.commune,
@@ -555,4 +563,7 @@ object CandidatProjectionElasticsearchMapping {
   val commune_recherche = "criteres_recherche.commune"
   val rayon_recherche = "criteres_recherche.rayon"
   val zone_recherche = "criteres_recherche.zone"
+
+  val prochaine_disponibilite = "prochaine_disponibilite"
+  val emploi_trouve_grace_perspectives = "emploi_trouve_grace_perspectives"
 }

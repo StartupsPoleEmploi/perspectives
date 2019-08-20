@@ -67,6 +67,11 @@ case class CriteresRechercheModifiesEvent(candidatId: CandidatId,
                                           codesDomaineProfessionnelRecherches: Set[CodeDomaineProfessionnel],
                                           tempsTravailRecherche: TempsTravail) extends CandidatEvent
 
+case class DisponibilitesModifieesEvent(candidatId: CandidatId,
+                                        candidatEnRecherche: Boolean,
+                                        emploiTrouveGracePerspectives: Boolean,
+                                        prochaineDisponibilite: Option[LocalDate]) extends CandidatEvent
+
 case class NumeroTelephoneModifieEvent(candidatId: CandidatId,
                                        numeroTelephone: NumeroTelephone) extends CandidatEvent
 
