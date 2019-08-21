@@ -305,7 +305,7 @@ var app = new Vue({
                 url: '/recruteur/recherche',
                 data: formData,
                 dataType: 'json',
-                beforeSend: function (xhr) {
+                beforeSend: function () {
                     app.display.chargement = true;
                 }
             }).done(function (response) {

@@ -104,7 +104,7 @@ new Vue({
                 url: '/conseiller/rechercherCandidats',
                 data: formData,
                 dataType: 'json',
-                beforeSend: function (xhr) {
+                beforeSend: function () {
                     self.display.chargement = true;
                 }
             }).done(function (response) {
@@ -144,7 +144,7 @@ new Vue({
                 url: '/conseiller/rechercherRecruteurs',
                 data: formData,
                 dataType: 'json',
-                beforeSend: function (xhr) {
+                beforeSend: function () {
                     self.display.chargement = true;
                 }
             }).done(function (response) {
