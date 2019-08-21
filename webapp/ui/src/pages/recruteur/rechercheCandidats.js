@@ -40,7 +40,6 @@ var app = new Vue({
             localisationChoisie: null,
             resultatRecherche: Object.assign({
                 candidats: [],
-                nbCandidats: 0,
                 nbCandidatsTotal: 0,
                 pages: []
             }, jsData.resultatRecherche),
@@ -58,6 +57,9 @@ var app = new Vue({
                 ongletsDetailCandidat: null
             }
         }
+    },
+    created: function() {
+        this.buildPages(this.resultatRecherche.pagesSuivantes);
     },
     mounted: function () {
         var self = this;
@@ -262,9 +264,23 @@ var app = new Vue({
         },
         rechercherCandidatsSansPagination: function (e) {
             e.preventDefault();
-            this.rechercherCandidats(null).done(function (response) {
-                app.resultatRecherche.pages = response.pages;
+            this.rechercherCandidats({}).done(function (response) {
+                app.buildPages(response.pagesSuivantes);
                 app.$refs.pagination.pageChargee(1);
+            });
+        },
+        buildPages: function(pagesSuivantes) {
+            // pas de filtre de pagination pour la première page
+            this.resultatRecherche.pages = [{}].concat(pagesSuivantes);
+        },
+        chargerPage: function (index) {
+            var filtrePagination = this.resultatRecherche.pages[index - 1];
+
+            return this.rechercherCandidats(filtrePagination).done(function (response) {
+                if (index === app.resultatRecherche.pages.length) {
+                    app.resultatRecherche.pages = app.resultatRecherche.pages.concat(response.pagesSuivantes);
+                }
+                app.$refs.pagination.pageChargee(index);
             });
         },
         rechercherCandidats: function (filtrePagination) {
@@ -277,7 +293,7 @@ var app = new Vue({
                 formData.push({name: "coordonnees.latitude", value: this.localisation.latitude});
                 formData.push({name: "coordonnees.longitude", value: this.localisation.longitude});
             }
-            if (filtrePagination) {
+            if (filtrePagination.dateInscription && filtrePagination.candidatId) {
                 formData.push({name: "pagination.score", value: filtrePagination.score});
                 formData.push({name: "pagination.dateInscription", value: filtrePagination.dateInscription});
                 formData.push({name: "pagination.candidatId", value: filtrePagination.candidatId});
@@ -297,7 +313,6 @@ var app = new Vue({
                 app.metierChoisi = app.metier;
                 app.localisationChoisie = app.localisation.label;
                 app.resultatRecherche.candidats = response.candidats;
-                app.resultatRecherche.nbCandidats = response.nbCandidats;
                 app.resultatRecherche.nbCandidatsTotal = response.nbCandidatsTotal;
             }).always(function () {
                 app.display.chargement = false;
@@ -312,19 +327,6 @@ var app = new Vue({
         doitAfficherCandidatSuivant: function () {
             return !this.display.chargement &&
                 this.indexNavigationCandidat < (this.resultatRecherche.nbCandidatsTotal - 1);
-        },
-        chargerPage: function (index) {
-            // on récupère le critere correspondant à la page et on la charge
-            var filtrePagination = this.resultatRecherche.pages[index - 1];
-
-            return this.rechercherCandidats(filtrePagination).done(function (response) {
-                if (index === app.resultatRecherche.pages.length) {
-                    if (response.nbCandidats === app.nbCandidatsParPage) {
-                        app.resultatRecherche.pages.push(response.pageSuivante);
-                    }
-                }
-                app.$refs.pagination.pageChargee(index);
-            });
         },
         afficherCandidatSuivant: function () {
             var index = this.indexNavigationCandidat + 1;

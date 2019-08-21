@@ -5,14 +5,14 @@ import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.format.Formats._
 
-case class PaginationCandidat(score: Option[Int],
-                              dateInscription: Long,
-                              candidatId: String)
+case class PaginationCandidatForm(score: Option[Int],
+                                  dateInscription: Long,
+                                  candidatId: String)
 
 case class RechercheCandidatForm(secteurActivite: Option[String],
                                  metier: Option[String],
                                  coordonnees: Option[Coordonnees],
-                                 pagination: Option[PaginationCandidat])
+                                 pagination: Option[PaginationCandidatForm])
 
 object RechercheCandidatForm {
 
@@ -28,7 +28,7 @@ object RechercheCandidatForm {
         "score" -> optional(number),
         "dateInscription" -> of[Long],
         "candidatId" -> text
-      )(PaginationCandidat.apply)(PaginationCandidat.unapply))
+      )(PaginationCandidatForm.apply)(PaginationCandidatForm.unapply))
     )(RechercheCandidatForm.apply)(RechercheCandidatForm.unapply)
   )
 }

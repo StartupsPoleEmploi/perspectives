@@ -5,7 +5,18 @@ import java.time.LocalDateTime
 import fr.poleemploi.perspectives.candidat.{CandidatId, StatutDemandeurEmploi}
 import fr.poleemploi.perspectives.commun.domain._
 import play.api.libs.functional.syntax._
-import play.api.libs.json.{JsPath, Reads}
+import play.api.libs.json.{JsPath, Json, Reads, Writes}
+
+case class KeysetCandidatPourConseillerDocument(dateInscription: Long,
+                                                candidatId: CandidatId)
+
+object KeysetCandidatPourConseillerDocument {
+
+  import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
+
+  implicit val writes: Writes[KeysetCandidatPourConseillerDocument] =
+    k => Json.arr(k.dateInscription, k.candidatId)
+}
 
 case class CandidatPourConseillerDocument(candidatId: CandidatId,
                                           nom: Nom,
@@ -26,8 +37,8 @@ case class CandidatPourConseillerDocument(candidatId: CandidatId,
 
 object CandidatPourConseillerDocument {
 
-  import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
   import CandidatProjectionElasticsearchMapping._
+  import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
 
   implicit val reads: Reads[CandidatPourConseillerDocument] = (
     (JsPath \ candidat_id).read[CandidatId] and

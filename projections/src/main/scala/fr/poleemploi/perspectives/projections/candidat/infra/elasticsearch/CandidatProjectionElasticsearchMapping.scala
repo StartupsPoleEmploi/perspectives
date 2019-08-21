@@ -58,14 +58,14 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
       )
     )
 
-  def buildCandidatsRechercheDto(documents: Seq[CandidatRechercheRecruteurDocument]): Future[List[CandidatRechercheRecruteurDto]] =
+  def buildCandidatsRechercheDto(documents: Seq[CandidatPourRecruteurDocument]): Future[List[CandidatPourRecruteurDto]] =
     for {
       metiersValides <- referentielMetier.metiersParCodesROME(documents.flatMap(_.metiersValides.map(_.metier)).toSet)
       metiersRecherches <- referentielMetier.metiersRechercheParCodeROME(documents.flatMap(_.metiersRecherches).toSet)
     } yield {
       val mapMetiersValides = metiersValides.groupBy(_.codeROME)
       val mapMetiersRecherches = metiersRecherches.groupBy(_.codeROME)
-      documents.map(d => CandidatRechercheRecruteurDto(
+      documents.map(d => CandidatPourRecruteurDto(
         candidatId = d.candidatId,
         nom = d.nom,
         prenom = d.prenom,
@@ -177,14 +177,12 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
       "size" -> 0,
       "query" -> Json.obj(
         "bool" -> Json.obj(
-          "filter" -> JsArray(
-            Seq(
-              Some(buildFiltreTypeRecruteur(query.typeRecruteur)),
-              Some(buildFiltreMetiersValides),
-              Some(buildFiltreRechercheMetier),
-              Some(buildFiltreNumeroTelephone),
-              Some(buildFiltreCommuneRecherche)
-            ).flatten
+          "filter" -> Json.arr(
+            buildFiltreTypeRecruteur(query.typeRecruteur),
+            buildFiltreMetiersValides,
+            buildFiltreRechercheMetier,
+            buildFiltreNumeroTelephone,
+            buildFiltreCommuneRecherche
           )
         )
       ),
@@ -214,152 +212,136 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
       SecteursActivitesAvecCandidatsQueryResult(secteursAvecCandidats)
     }
 
-  def buildRechercheCandidatsParLocalisationQuery(query: RechercheCandidatsQuery): JsObject = {
-    val queryJson = Json.obj(
-      "size" -> query.nbCandidatsParPage * query.nbPagesACharger,
-      "query" -> Json.obj(
-        "bool" -> Json.obj(
-          "filter" -> buildFiltresRechercheCandidatQuery(query)
+  def buildRechercheCandidatsQuery(query: RechercheCandidatsQuery): JsObject = {
+    def buildQueryParLocalisation(query: RechercheCandidatsQuery): JsObject =
+      Json.obj(
+        "size" -> query.nbCandidatsParPage * query.nbPagesACharger,
+        "query" -> Json.obj(
+          "bool" -> Json.obj(
+            "filter" -> buildFiltresRechercheCandidatQuery(query)
+          )
+        ),
+        "sort" -> Json.arr(
+          Json.obj(date_inscription -> "desc"),
+          Json.obj(candidat_id -> "desc")
         )
-      ),
-      "sort" -> Json.arr(
-        Json.obj(date_inscription -> "desc"),
-        Json.obj(candidat_id -> "desc")
       )
-    )
 
-    query.page.map(keysetPagination =>
-      queryJson ++ Json.obj(
-        "search_after" -> JsArray(Seq(
-          Some(JsNumber(keysetPagination.dateInscription)),
-          keysetPagination.candidatId.map(c => JsString(c.value))
-        ).flatten)
-      )
-    ).getOrElse(queryJson)
-  }
-
-  def buildRechercheCandidatsParSecteurQuery(query: RechercheCandidatsQuery,
-                                             codeSecteurActivite: CodeSecteurActivite): JsObject = {
-    val queryJson = Json.obj(
-      "size" -> query.nbCandidatsParPage * query.nbPagesACharger,
-      "query" -> Json.obj(
-        "function_score" -> Json.obj(
-          "query" -> Json.obj(
-            "bool" -> Json.obj(
-              "must" -> Json.obj("match_all" -> Json.obj()),
-              "filter" -> buildFiltresRechercheCandidatQuery(query)
-            )
-          ),
-          "functions" -> Json.arr(
-            Json.obj(
-              "filter" -> Json.obj(
-                "bool" -> Json.obj(
-                  "must" -> Json.arr(
-                    Json.obj("prefix" -> Json.obj(metiers_valides_recherche -> codeSecteurActivite))
-                  )
-                )
-              ),
-              "weight" -> 3
+    def buildQueryParSecteur(query: RechercheCandidatsQuery,
+                             codeSecteurActivite: CodeSecteurActivite): JsObject =
+      Json.obj(
+        "size" -> query.nbCandidatsParPage * query.nbPagesACharger,
+        "query" -> Json.obj(
+          "function_score" -> Json.obj(
+            "query" -> Json.obj(
+              "bool" -> Json.obj(
+                "must" -> Json.obj("match_all" -> Json.obj()),
+                "filter" -> buildFiltresRechercheCandidatQuery(query)
+              )
             ),
-            Json.obj(
-              "filter" -> Json.obj(
-                "bool" -> Json.obj(
-                  "must" -> Json.arr(
-                    Json.obj("prefix" -> Json.obj(metiers_recherche -> codeSecteurActivite)),
+            "functions" -> Json.arr(
+              Json.obj(
+                "filter" -> Json.obj(
+                  "bool" -> Json.obj(
+                    "must" -> Json.arr(
+                      Json.obj("prefix" -> Json.obj(metiers_valides_recherche -> codeSecteurActivite))
+                    )
                   )
-                )
+                ),
+                "weight" -> 3
               ),
-              "weight" -> 2
-            )
-          ),
-          "score_mode" -> "sum",
-          "min_score" -> 2
+              Json.obj(
+                "filter" -> Json.obj(
+                  "bool" -> Json.obj(
+                    "must" -> Json.arr(
+                      Json.obj("prefix" -> Json.obj(metiers_recherche -> codeSecteurActivite)),
+                    )
+                  )
+                ),
+                "weight" -> 2
+              )
+            ),
+            "score_mode" -> "sum",
+            "min_score" -> 2
+          )
+        ),
+        "sort" -> Json.arr(
+          Json.obj("_score" -> "desc"),
+          Json.obj(date_inscription -> "desc"),
+          Json.obj(candidat_id -> "desc")
         )
-      ),
-      "sort" -> Json.arr(
-        Json.obj("_score" -> "desc"),
-        Json.obj(date_inscription -> "desc"),
-        Json.obj(candidat_id -> "desc")
       )
-    )
 
-    query.page.map(keysetPagination =>
-      queryJson ++ Json.obj(
-        "search_after" -> JsArray(Seq(
-          keysetPagination.score.map(JsNumber(_)),
-          Some(JsNumber(keysetPagination.dateInscription)),
-          keysetPagination.candidatId.map(c => JsString(c.value))
-        ).flatten)
-      )
-    ).getOrElse(queryJson)
-  }
-
-  // FIXME : on passe un codeRome mais ca peut aussi etre un code domaine!
-  def buildRechercheCandidatsParMetierQuery(query: RechercheCandidatsQuery,
-                                            codeROME: CodeROME): JsObject = {
-    val queryJson = Json.obj(
-      "size" -> query.nbCandidatsParPage * query.nbPagesACharger,
-      "query" -> Json.obj(
-        "function_score" -> Json.obj(
-          "query" -> Json.obj(
-            "bool" -> Json.obj(
-              "must" -> Json.obj("match_all" -> Json.obj()),
-              "filter" -> buildFiltresRechercheCandidatQuery(query)
-            )
-          ),
-          "functions" -> Json.arr(
-            Json.obj(
-              "filter" -> Json.obj(
-                "bool" -> Json.obj(
-                  "must" -> Json.arr(
-                    Json.obj("prefix" -> Json.obj(metiers_valides_recherche -> codeROME))
-                  ))
-              ),
-              "weight" -> 6
+    // FIXME : on passe un codeRome mais ca peut aussi etre un code domaine!
+    def buildQueryParMetier(query: RechercheCandidatsQuery,
+                            codeROME: CodeROME): JsObject =
+      Json.obj(
+        "size" -> query.nbCandidatsParPage * query.nbPagesACharger,
+        "query" -> Json.obj(
+          "function_score" -> Json.obj(
+            "query" -> Json.obj(
+              "bool" -> Json.obj(
+                "must" -> Json.obj("match_all" -> Json.obj()),
+                "filter" -> buildFiltresRechercheCandidatQuery(query)
+              )
             ),
-            Json.obj(
-              "filter" -> Json.obj(
-                "bool" -> Json.obj(
-                  "must_not" -> Json.arr(
-                    Json.obj("prefix" -> Json.obj(metiers_valides_recherche -> codeROME))
-                  ),
-                  "must" -> Json.arr(
-                    Json.obj("term" -> Json.obj(metiers_recherche -> codeROME)),
-                    Json.obj("prefix" -> Json.obj(metiers_valides_recherche -> codeROME.codeSecteurActivite)),
-                  )
-                )
+            "functions" -> Json.arr(
+              Json.obj(
+                "filter" -> Json.obj(
+                  "bool" -> Json.obj(
+                    "must" -> Json.arr(
+                      Json.obj("prefix" -> Json.obj(metiers_valides_recherche -> codeROME))
+                    ))
+                ),
+                "weight" -> 6
               ),
-              "weight" -> 3
+              Json.obj(
+                "filter" -> Json.obj(
+                  "bool" -> Json.obj(
+                    "must_not" -> Json.arr(
+                      Json.obj("prefix" -> Json.obj(metiers_valides_recherche -> codeROME))
+                    ),
+                    "must" -> Json.arr(
+                      Json.obj("term" -> Json.obj(metiers_recherche -> codeROME)),
+                      Json.obj("prefix" -> Json.obj(metiers_valides_recherche -> codeROME.codeSecteurActivite)),
+                    )
+                  )
+                ),
+                "weight" -> 3
+              ),
+              Json.obj(
+                "filter" -> Json.obj(
+                  "bool" -> Json.obj(
+                    "must" -> Json.arr(
+                      Json.obj("term" -> Json.obj(metiers_recherche -> codeROME))
+                    )
+                  )
+                ),
+                "weight" -> 2
+              )
             ),
-            Json.obj(
-              "filter" -> Json.obj(
-                "bool" -> Json.obj(
-                  "must" -> Json.arr(
-                    Json.obj("term" -> Json.obj(metiers_recherche -> codeROME))
-                  )
-                )
-              ),
-              "weight" -> 2
-            )
-          ),
-          "score_mode" -> "sum",
-          "min_score" -> 2
+            "score_mode" -> "sum",
+            "min_score" -> 2
+          )
+        ),
+        "sort" -> Json.arr(
+          Json.obj("_score" -> "desc"),
+          Json.obj(date_inscription -> "desc"),
+          Json.obj(candidat_id -> "desc")
         )
-      ),
-      "sort" -> Json.arr(
-        Json.obj("_score" -> "desc"),
-        Json.obj(date_inscription -> "desc"),
-        Json.obj(candidat_id -> "desc")
       )
-    )
 
-    query.page.map(keysetPagination =>
+    val queryJson = query.codeROME.map(c => buildQueryParMetier(query, c))
+      .orElse(query.codeSecteurActivite.map(c => buildQueryParSecteur(query, c)))
+      .getOrElse(buildQueryParLocalisation(query))
+
+    query.page.map(keysetCandidatPourRecruteur =>
       queryJson ++ Json.obj(
-        "search_after" -> JsArray(Seq(
-          keysetPagination.score.map(JsNumber(_)),
-          Some(JsNumber(keysetPagination.dateInscription)),
-          keysetPagination.candidatId.map(c => JsString(c.value))
-        ).flatten)
+        "search_after" -> KeysetCandidatPourRecruteurDocument(
+          score = keysetCandidatPourRecruteur.score,
+          dateInscription = keysetCandidatPourRecruteur.dateInscription,
+          candidatId = keysetCandidatPourRecruteur.candidatId
+        )
       )
     ).getOrElse(queryJson)
   }
@@ -376,7 +358,7 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
               ).orElse(
                 if (query.codesDepartement.nonEmpty)
                   Some(Json.obj("bool" -> Json.obj(
-                    "should" -> JsArray(
+                    "should" -> Json.arr(
                       query.codesDepartement.map(c =>
                         Json.obj("prefix" -> Json.obj("criteres_recherche.code_postal" -> c.value))
                       )
@@ -412,9 +394,9 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
 
     query.page.map(keysetPagination =>
       queryJson ++ Json.obj(
-        "search_after" -> Json.arr(
-          keysetPagination.dateInscription,
-          keysetPagination.candidatId
+        "search_after" -> KeysetCandidatPourConseillerDocument(
+          dateInscription = keysetPagination.dateInscription,
+          candidatId = keysetPagination.candidatId
         )
       )
     ).getOrElse(queryJson)

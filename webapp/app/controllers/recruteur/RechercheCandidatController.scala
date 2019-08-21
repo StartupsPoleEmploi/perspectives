@@ -78,10 +78,10 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
               codeROME = rechercheCandidatForm.metier.map(CodeROME),
               coordonnees = rechercheCandidatForm.coordonnees,
               nbPagesACharger = rechercheCandidatForm.pagination.map(_ => 1).getOrElse(4),
-              page = rechercheCandidatForm.pagination.map(p => KeysetRechercherCandidats(
+              page = rechercheCandidatForm.pagination.map(p => KeysetCandidatPourRecruteur(
                 score = p.score,
                 dateInscription = p.dateInscription,
-                candidatId = Some(CandidatId(p.candidatId))
+                candidatId = CandidatId(p.candidatId)
               ))
             ))
           } yield {

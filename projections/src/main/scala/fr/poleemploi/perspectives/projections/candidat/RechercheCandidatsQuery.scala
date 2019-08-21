@@ -13,61 +13,59 @@ case class RechercheCandidatsQuery(typeRecruteur: TypeRecruteur,
                                    codeROME: Option[CodeROME],
                                    coordonnees: Option[Coordonnees],
                                    nbPagesACharger: Int,
-                                   page: Option[KeysetRechercherCandidats]) extends Query[RechercheCandidatQueryResult] {
+                                   page: Option[KeysetCandidatPourRecruteur]) extends Query[RechercheCandidatQueryResult] {
   val nbCandidatsParPage: Int = 10
 }
 
-case class CandidatRechercheRecruteurDto(candidatId: CandidatId,
-                                         nom: Nom,
-                                         prenom: Prenom,
-                                         email: Email,
-                                         metiersValides: List[MetierValideDTO],
-                                         metiersValidesRecherches: List[Metier],
-                                         metiersRecherches: List[Metier],
-                                         numeroTelephone: NumeroTelephone,
-                                         rayonRecherche: Option[RayonRecherche],
-                                         tempsTravailRecherche: Option[TempsTravail],
-                                         commune: String,
-                                         codePostal: String,
-                                         cvId: Option[CVId],
-                                         cvTypeMedia: Option[TypeMedia],
-                                         centresInteret: List[CentreInteret],
-                                         langues: List[Langue],
-                                         permis: List[Permis],
-                                         savoirEtre: List[SavoirEtre],
-                                         savoirFaire: List[SavoirFaire],
-                                         formations: List[Formation],
-                                         experiencesProfessionnelles: List[ExperienceProfessionnelle]) {
+case class CandidatPourRecruteurDto(candidatId: CandidatId,
+                                    nom: Nom,
+                                    prenom: Prenom,
+                                    email: Email,
+                                    metiersValides: List[MetierValideDTO],
+                                    metiersValidesRecherches: List[Metier],
+                                    metiersRecherches: List[Metier],
+                                    numeroTelephone: NumeroTelephone,
+                                    rayonRecherche: Option[RayonRecherche],
+                                    tempsTravailRecherche: Option[TempsTravail],
+                                    commune: String,
+                                    codePostal: String,
+                                    cvId: Option[CVId],
+                                    cvTypeMedia: Option[TypeMedia],
+                                    centresInteret: List[CentreInteret],
+                                    langues: List[Langue],
+                                    permis: List[Permis],
+                                    savoirEtre: List[SavoirEtre],
+                                    savoirFaire: List[SavoirFaire],
+                                    formations: List[Formation],
+                                    experiencesProfessionnelles: List[ExperienceProfessionnelle]) {
 
   def nomCV: Option[String] = cvTypeMedia.map(t => s"${prenom.value} ${nom.value}.${TypeMedia.getExtensionFichier(t)}")
 }
 
-object CandidatRechercheRecruteurDto {
+object CandidatPourRecruteurDto {
 
   import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
 
-  implicit val writes: Writes[CandidatRechercheRecruteurDto] = c =>
-    Json.writes[CandidatRechercheRecruteurDto].writes(c) ++ Json.obj(
+  implicit val writes: Writes[CandidatPourRecruteurDto] = c =>
+    Json.writes[CandidatPourRecruteurDto].writes(c) ++ Json.obj(
       "nomCV" -> c.nomCV
     )
 }
 
-case class KeysetRechercherCandidats(score: Option[Int],
-                                     dateInscription: Long,
-                                     candidatId: Option[CandidatId])
+case class KeysetCandidatPourRecruteur(score: Option[Int],
+                                       dateInscription: Long,
+                                       candidatId: CandidatId)
 
-object KeysetRechercherCandidats {
+object KeysetCandidatPourRecruteur {
 
   import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
 
-  implicit val writes: Writes[KeysetRechercherCandidats] = Json.writes[KeysetRechercherCandidats]
+  implicit val writes: Writes[KeysetCandidatPourRecruteur] = Json.writes[KeysetCandidatPourRecruteur]
 }
 
-case class RechercheCandidatQueryResult(candidats: List[CandidatRechercheRecruteurDto],
-                                        nbCandidats: Int,
+case class RechercheCandidatQueryResult(candidats: List[CandidatPourRecruteurDto],
                                         nbCandidatsTotal: Int,
-                                        pages: List[KeysetRechercherCandidats],
-                                        pageSuivante: Option[KeysetRechercherCandidats]) extends QueryResult
+                                        pagesSuivantes: List[KeysetCandidatPourRecruteur]) extends QueryResult
 
 object RechercheCandidatQueryResult {
 

@@ -271,53 +271,40 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
     wsClient
       .url(s"$baseUrl/$indexName/_search")
       .withHttpHeaders(jsonContentType)
-      .post(
-        query.codeROME.map(c => mapping.buildRechercheCandidatsParMetierQuery(query, c))
-          .orElse(query.codeSecteurActivite.map(c => mapping.buildRechercheCandidatsParSecteurQuery(query, c)))
-          .getOrElse(mapping.buildRechercheCandidatsParLocalisationQuery(query))
-      )
+      .post(mapping.buildRechercheCandidatsQuery(query))
       .flatMap { response =>
         val json = response.json
         val hits = (json \ "hits" \ "hits").as[JsArray]
-        val candidats = (hits \\ "_source").take(query.nbCandidatsParPage).map(_.as[CandidatRechercheRecruteurDocument])
+        val candidats = (hits \\ "_source").take(query.nbCandidatsParPage).map(_.as[CandidatPourRecruteurDocument])
         val nbCandidatsTotal = (json \ "hits" \ "total").as[Int]
-        val pages = buildKeysetRechercheCandidats(query, hits, nbCandidatsTotal)
 
         mapping.buildCandidatsRechercheDto(candidats).map(candidats =>
           RechercheCandidatQueryResult(
             candidats = candidats,
-            nbCandidats = candidats.size,
             nbCandidatsTotal = nbCandidatsTotal,
-            pages = query.page.map(p => p :: (if (pages.nonEmpty) pages.tail else Nil)).getOrElse(pages),
-            pageSuivante = pages.reverse.headOption
+            pagesSuivantes =
+              if (nbCandidatsTotal <= query.nbCandidatsParPage)
+                Nil
+              else
+                (hits \\ "sort").zipWithIndex
+                  .filter(v => (v._2 + 1) % query.nbCandidatsParPage == 0)
+                  .map(v =>
+                    if (query.codeSecteurActivite.isDefined || query.codeROME.isDefined)
+                      KeysetCandidatPourRecruteur(
+                        score = Some((v._1 \ 0).as[Int]),
+                        dateInscription = (v._1 \ 1).as[Long],
+                        candidatId = (v._1 \ 2).as[CandidatId]
+                      )
+                    else
+                      KeysetCandidatPourRecruteur(
+                        score = None,
+                        dateInscription = (v._1 \ 0).as[Long],
+                        candidatId = (v._1 \ 1).as[CandidatId]
+                      )
+                  ).toList
           )
         )
       }
-
-  // FIXME : refacto
-  private def buildKeysetRechercheCandidats(query: RechercheCandidatsQuery,
-                                            hits: JsArray,
-                                            nbHitsTotal: Int): List[KeysetRechercherCandidats] =
-    (hits \\ "sort").zipWithIndex
-      .filter(v => v._2 == 0 || ((v._2 + 1) % query.nbCandidatsParPage == 0 && nbHitsTotal > query.nbCandidatsParPage))
-      .map(v => KeysetRechercherCandidats(
-        score =
-          if (query.codeSecteurActivite.isDefined || query.codeROME.isDefined)
-            Some((v._1 \ 0).as[Int])
-          else
-            None,
-        dateInscription =
-          if (query.codeSecteurActivite.isDefined || query.codeROME.isDefined) {
-            if (v._2 == 0) (v._1 \ 1).as[Long] + 1L else (v._1 \ 1).as[Long]
-          } else {
-            if (v._2 == 0) (v._1 \ 0).as[Long] + 1L else (v._1 \ 0).as[Long]
-          },
-        candidatId =
-          if (query.codeSecteurActivite.isDefined || query.codeROME.isDefined)
-            Some((v._1 \ 2).as[CandidatId])
-          else
-            Some((v._1 \ 1).as[CandidatId])
-      )).toList
 
   private def update(candidatId: CandidatId, json: JsObject): Future[Unit] =
     wsClient
