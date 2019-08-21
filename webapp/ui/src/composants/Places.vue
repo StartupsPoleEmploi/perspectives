@@ -1,5 +1,5 @@
 <template>
-    <input v-bind:id="id" type="text"
+    <input v-bind:id="id" type="text" v-bind:class="[options.style ? 'ap-input' : 'ap-nostyle-input']"
            v-bind:value="value"
            v-on:input="$emit('input', $event.target.value)"/>
 </template>
