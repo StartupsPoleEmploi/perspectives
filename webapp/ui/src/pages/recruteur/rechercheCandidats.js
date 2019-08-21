@@ -38,11 +38,11 @@ var app = new Vue({
                 longitude: null
             },
             localisationChoisie: null,
-            resultatRecherche: Object.assign({
-                candidats: [],
-                nbCandidatsTotal: 0,
+            resultatRecherche: {
+                candidats: jsData.resultatRecherche.candidats,
+                nbCandidatsTotal: jsData.resultatRecherche.nbCandidatsTotal,
                 pages: []
-            }, jsData.resultatRecherche),
+            },
             placesOptions: {
                 appId: jsData.algoliaPlacesConfig.appId,
                 apiKey: jsData.algoliaPlacesConfig.apiKey,
@@ -59,7 +59,7 @@ var app = new Vue({
         }
     },
     created: function() {
-        this.buildPages(this.resultatRecherche.pagesSuivantes);
+        this.buildPages(jsData.resultatRecherche.pagesSuivantes);
     },
     mounted: function () {
         var self = this;
