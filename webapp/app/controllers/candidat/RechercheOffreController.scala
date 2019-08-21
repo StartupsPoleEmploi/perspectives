@@ -43,7 +43,7 @@ class RechercheOffreController @Inject()(cc: ControllerComponents,
       ).getOrElse(Future.successful(None))
     } yield {
       val form = RechercheOffresForm.form.fill(RechercheOffresForm(
-        motCle = None,
+        motsCles = None,
         localisation = buildLocalisationOffresFromRequest.orElse(candidat.flatMap(_.localisationRecherche).map(l =>
           LocalisationOffresForm(
             lieuTravail = l.commune,
@@ -74,7 +74,7 @@ class RechercheOffreController @Inject()(cc: ControllerComponents,
       def buildCriteresRechercheOffre(rechercheOffresForm: RechercheOffresForm,
                                       secteursActivites: List[SecteurActivite]): CriteresRechercheOffre =
         CriteresRechercheOffre(
-          motCle = rechercheOffresForm.motCle,
+          motsCles = rechercheOffresForm.motsCles.map(_.split(" ").toList).getOrElse(Nil),
           codePostal = rechercheOffresForm.localisation.map(_.codePostal),
           rayonRecherche = rechercheOffresForm.localisation.flatMap(_.rayonRecherche.map(RayonRecherche(_, uniteLongueur = UniteLongueur.KM))),
           typesContrats = rechercheOffresForm.typesContrats.flatMap(TypeContrat.from),
@@ -82,7 +82,7 @@ class RechercheOffreController @Inject()(cc: ControllerComponents,
           codesROME =
             if (rechercheOffresForm.metiers.nonEmpty)
               rechercheOffresForm.metiers.map(CodeROME)
-            else if (rechercheOffresForm.motCle.isEmpty)
+            else if (rechercheOffresForm.motsCles.isEmpty)
               secteursActivites.flatMap(_.metiers.map(_.codeROME))
             else
               Nil,

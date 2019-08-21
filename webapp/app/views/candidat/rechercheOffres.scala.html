@@ -299,20 +299,20 @@
                                                 v-on:change="placesChange" v-on:clear="placesClear"></places>
                                     </div>
                                     <div class="rechercheOffres-conteneurRayonRecherche">
-                                        <label for="js-rayonRecherche" class="sr-only">Renseignez un rayon de recherche</label>
-                                        <select id="js-rayonRecherche" name="localisation.rayonRecherche"
+                                        <label for="rayonRecherche" class="sr-only">Renseignez un rayon de recherche</label>
+                                        <select id="rayonRecherche" name="localisation.rayonRecherche"
                                                 v-model="rechercheFormData.localisation.rayonRecherche" class="rechercheOffres-rayonRecherche">
                                             <option v-for="rayonRecherche in rayonsRecherche" v-bind:key="rayonRecherche.value" v-bind:value="rayonRecherche.value">{{rayonRecherche.label}}</option>
                                         </select>
                                     </div>
                                 </div>
-                                <div v-for="error in rechercheFormErrors['localisation.codePostal']" class="texte-erreur font-size-sm">{{error}}</div>
+                                <div v-for="error in rechercheFormErrors.localisation" class="texte-erreur font-size-sm">{{error}}</div>
                             </div>
                             <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurAffichageFiltres"
                                  v-on:click="afficherFiltres">
-                                <label for="js-motCle" class="sr-only">Choisissez un métier</label>
-                                <input id="js-motCle" type="text" placeholder="Quel métier ?"
-                                v-model="rechercheFormData.motCle" name="motCle" class="rechercheOffres-metier" />
+                                <label for="motsCles" class="sr-only">Choisissez un métier</label>
+                                <input id="motsCles" type="text" placeholder="Quel métier ?"
+                                       v-model="rechercheFormData.motsCles" name="motsCles" class="rechercheOffres-metier" />
                             </div>
                             <div class="formulaireRecherche-conteneur formulaireRecherche-conteneurFiltres">
                                 <template v-if="metiersValides.length > 0">

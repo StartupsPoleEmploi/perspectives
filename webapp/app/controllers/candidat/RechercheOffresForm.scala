@@ -11,7 +11,7 @@ case class LocalisationOffresForm(codePostal: String,
                                   lieuTravail: String,
                                   rayonRecherche: Option[Int])
 
-case class RechercheOffresForm(motCle: Option[String],
+case class RechercheOffresForm(motsCles: Option[String],
                                localisation: Option[LocalisationOffresForm],
                                typesContrats: List[String],
                                metiers: List[String],
@@ -25,7 +25,7 @@ object RechercheOffresForm {
 
   val form = Form(
     mapping(
-      "motCle" -> optional(text),
+      "motsCles" -> optional(text),
       "localisation" -> optional(mapping(
         "codePostal" -> nonEmptyText,
         "lieuTravail" -> nonEmptyText,

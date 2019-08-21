@@ -2,7 +2,7 @@ package fr.poleemploi.perspectives.offre.domain
 
 import fr.poleemploi.perspectives.commun.domain.{CodeDomaineProfessionnel, CodeROME, CodeSecteurActivite}
 
-case class CriteresRechercheOffre(motCle: Option[String],
+case class CriteresRechercheOffre(motsCles: List[String],
                                   codePostal: Option[String],
                                   rayonRecherche: Option[RayonRecherche],
                                   typesContrats: List[TypeContrat],

@@ -34,7 +34,7 @@ new Vue({
                 langues: []
             },
             rechercheFormData: Object.assign({
-                motCle: null,
+                motsCles: null,
                 localisation: {
                     codePostal: null,
                     lieuTravail: null,
@@ -43,7 +43,9 @@ new Vue({
                 typesContrats: [],
                 metiers: []
             }, jsData.rechercheFormData),
-            rechercheFormErrors: {},
+            rechercheFormErrors: {
+                localisation: null
+            },
             rayonsRecherche: rayonsRechercheOffre,
             typesContrats: typesContrats,
             metiersValides: Object.assign([], jsData.metiersValides),
@@ -97,6 +99,11 @@ new Vue({
         }
     },
     methods: {
+        nettoyerErreursForm: function() {
+            this.rechercheFormErrors = {
+                localisation: []
+            };
+        },
         placesChange: function (suggestion) {
             this.rechercheFormData.localisation.codePostal = suggestion.postcode;
             this.rechercheFormData.localisation.lieuTravail = suggestion.name;
@@ -189,10 +196,19 @@ new Vue({
             }
         },
         rechercherOffresSansPagination: function () {
-            var self = this;
-            this.rechercherOffres(1, null).done(function (response) {
-                self.offres = response.offres;
-            });
+            this.nettoyerErreursForm();
+
+            if (!this.rechercheFormData.localisation.lieuTravail ||
+                !this.rechercheFormData.localisation.codePostal) {
+                this.rechercheFormErrors.localisation = ["Veuillez saisir une valeur pour ce champ"];
+            }
+
+            if (this.rechercheFormErrors.localisation.length === 0) {
+                var self = this;
+                this.rechercherOffres(1, null).done(function (response) {
+                    self.offres = response.offres;
+                });
+            }
         },
         rechercherOffres: function(index, pageSuivante) {
             var self = this;
@@ -216,13 +232,13 @@ new Vue({
                 self.pageSuivante = response.pageSuivante;
                 self.cacherFiltres();
                 self.display.erreurRecherche = false;
-                self.rechercheFormErrors = {};
+                self.nettoyerErreursForm();
             }).fail(function (jqXHR) {
                 self.offres = [];
                 if (jqXHR.status === 400) {
                     self.rechercheFormErrors = jqXHR.responseJSON;
                 } else {
-                    self.rechercheFormErrors = {};
+                    self.nettoyerErreursForm();
                     self.display.erreurRecherche = true;
                 }
             }).always(function () {

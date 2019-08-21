@@ -17,7 +17,7 @@ class ReferentielOffreWSMappingSpec extends WordSpec
 
   before {
     criteresRechercheOffre = mock[CriteresRechercheOffre]
-    when(criteresRechercheOffre.motCle) thenReturn None
+    when(criteresRechercheOffre.motsCles) thenReturn Nil
     when(criteresRechercheOffre.rayonRecherche) thenReturn None
     when(criteresRechercheOffre.typesContrats) thenReturn Nil
     when(criteresRechercheOffre.secteursActivites) thenReturn Nil
@@ -75,15 +75,89 @@ class ReferentielOffreWSMappingSpec extends WordSpec
       // Then
       request.contains(("origineOffre", "1")) mustBe true
     }
-    "doit valoriser le parametre motCle lorsqu'il est renseigne" in {
+    "doit valoriser le parametre motsCles lorsqu'un motCle est renseigne" in {
       // Given
-      when(criteresRechercheOffre.motCle) thenReturn Some("Soudeur")
+      when(criteresRechercheOffre.motsCles) thenReturn List("Soudeur")
 
       // When
       val request = mapping.buildRechercherOffresRequest(criteresRechercheOffre = criteresRechercheOffre, codeINSEE = None)
 
       // Then
       request.contains(("motsCles", "Soudeur")) mustBe true
+    }
+    "ne doit pas valoriser les motsCles s'ils font moins de deux caractères" in {
+      // Given
+      when(criteresRechercheOffre.motsCles) thenReturn List("à")
+
+      // When
+      val request = mapping.buildRechercherOffresRequest(criteresRechercheOffre = criteresRechercheOffre, codeINSEE = None)
+
+      // Then
+      request.exists(_._1 == "motsCles") mustBe false
+    }
+    "doit exclure les motsCles qui font moins de deux caractères" in {
+      // Given
+      when(criteresRechercheOffre.motsCles) thenReturn List("soudeur", "à", "industrie")
+
+      // When
+      val request = mapping.buildRechercherOffresRequest(criteresRechercheOffre = criteresRechercheOffre, codeINSEE = None)
+
+      // Then
+      request.contains(("motsCles", "soudeur,industrie")) mustBe true
+    }
+    "doit remplacer les virgules contenues dans les motsCles par des espaces pour prendre en compte tout le motCle et ne pas renvoyer d'erreur (la virgule est le caractère de séparation entre les motsCles dans l'API)" in {
+      // Given
+      when(criteresRechercheOffre.motsCles) thenReturn List("soudeur,industrie", "interim")
+
+      // When
+      val request = mapping.buildRechercherOffresRequest(criteresRechercheOffre = criteresRechercheOffre, codeINSEE = None)
+
+      // Then
+      request.contains(("motsCles", "soudeur industrie,interim")) mustBe true
+    }
+    "doit conserver les apostrophes dans les motsCles" in {
+      // Given
+      when(criteresRechercheOffre.motsCles) thenReturn List("d'industrie")
+
+      // When
+      val request = mapping.buildRechercherOffresRequest(criteresRechercheOffre = criteresRechercheOffre, codeINSEE = None)
+
+      // Then
+      request.contains(("motsCles", "d'industrie")) mustBe true
+    }
+    "doit supprimer les caractères spéciaux autres que les virgules et les apostrophes dans les motsCles" in {
+      // Given
+      when(criteresRechercheOffre.motsCles) thenReturn List("@#soudeur$%^/-\"\",industrie&+.")
+
+      // When
+      val request = mapping.buildRechercherOffresRequest(criteresRechercheOffre = criteresRechercheOffre, codeINSEE = None)
+
+      // Then
+      request.contains(("motsCles", "soudeur industrie")) mustBe true
+    }
+    "doit valoriser les motCles en les séparant par des virgules lorsqu'on a plusieurs mots clés" in {
+      // Given
+      when(criteresRechercheOffre.motsCles) thenReturn List("soudeur", "industrie")
+
+      // When
+      val request = mapping.buildRechercherOffresRequest(criteresRechercheOffre = criteresRechercheOffre, codeINSEE = None)
+
+      // Then
+      request.contains(("motsCles", "soudeur,industrie")) mustBe true
+    }
+    "doit valoriser les motCles en prennant en compte 7 mots maximum (limite de l'API)" in {
+      // Given
+      when(criteresRechercheOffre.motsCles) thenReturn List(
+        "soudeur", "industrie", "decoupe",
+        "conduite", "soudage", "robot",
+        "interim", "longue", "recherche"
+      )
+
+      // When
+      val request = mapping.buildRechercherOffresRequest(criteresRechercheOffre = criteresRechercheOffre, codeINSEE = None)
+
+      // Then
+      request.contains(("motsCles", "soudeur,industrie,decoupe,conduite,soudage,robot,interim")) mustBe true
     }
     "doit valoriser le parametre commune lorsque le codeINSEE est renseigné" in {
       // When

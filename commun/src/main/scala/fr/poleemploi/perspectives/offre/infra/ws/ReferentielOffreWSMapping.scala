@@ -231,31 +231,37 @@ class ReferentielOffreWSMapping {
     */
   def buildRechercherOffresRequest(criteresRechercheOffre: CriteresRechercheOffre,
                                    codeINSEE: Option[String]): List[(String, String)] = List(
-      criteresRechercheOffre.motCle.map(m => "motsCles" -> m),
-      codeINSEE.map(c => "commune" -> c),
-      codeINSEE.flatMap(_ => criteresRechercheOffre.rayonRecherche.map(r => "distance" ->
-        (r match {
-          case r@_ if UniteLongueur.KM == r.uniteLongueur => s"${r.value}"
-          case _ => throw new IllegalArgumentException(s"Rayon de recherche non géré : $r")
-        })
-      )),
-      criteresRechercheOffre.typesContrats match {
-        case Nil => None
-        case l@_ => Some("typeContrat" -> l.map(_.value).mkString(","))
-      },
-      criteresRechercheOffre.codesROME match {
-        case Nil => None
-        case l@_ if l.size <= 3 => Some("codeROME" -> l.map(_.value).mkString(","))
-        case _ => None
-      },
-      Some("experience" -> (criteresRechercheOffre.experience match {
-        case Experience.DEBUTANT => "1" // Moins d'un an d'experience
-        case e@_ => throw new IllegalArgumentException(s"Expérience non gérée : ${e.value}")
-      })),
-      Some("sort" -> "0"),
-      Some("origineOffre" -> "1"),
-      criteresRechercheOffre.page.map(p => ("range", s"${p.debut}-${p.fin}"))
-    ).flatten
+    criteresRechercheOffre.motsCles
+      .map(_.replaceAll("[^\\w&&[^,]&&[^']]", "").replaceAll(",", " "))
+      .filter(_.length >= 2)
+      .take(7) match {
+      case Nil => None
+      case l@_ => Some("motsCles", l.mkString(","))
+    },
+    codeINSEE.map(c => "commune" -> c),
+    codeINSEE.flatMap(_ => criteresRechercheOffre.rayonRecherche.map(r => "distance" ->
+      (r match {
+        case r@_ if UniteLongueur.KM == r.uniteLongueur => s"${r.value}"
+        case _ => throw new IllegalArgumentException(s"Rayon de recherche non géré : $r")
+      })
+    )),
+    criteresRechercheOffre.typesContrats match {
+      case Nil => None
+      case l@_ => Some("typeContrat" -> l.map(_.value).mkString(","))
+    },
+    criteresRechercheOffre.codesROME match {
+      case Nil => None
+      case l@_ if l.size <= 3 => Some("codeROME" -> l.map(_.value).mkString(","))
+      case _ => None
+    },
+    Some("experience" -> (criteresRechercheOffre.experience match {
+      case Experience.DEBUTANT => "1" // Moins d'un an d'experience
+      case e@_ => throw new IllegalArgumentException(s"Expérience non gérée : ${e.value}")
+    })),
+    Some("sort" -> "0"),
+    Some("origineOffre" -> "1"),
+    criteresRechercheOffre.page.map(p => ("range", s"${p.debut}-${p.fin}"))
+  ).flatten
 
   /**
     * l'API ne permet de passer que peu de filtres pour l'instant (que 3 codeROME par appels, deux secteurActivite par appel, etc.) : on fait donc plusieurs filtres à postériori. <br />
@@ -277,7 +283,7 @@ class ReferentielOffreWSMapping {
     )
 
   def buildPageOffres(contentRange: Option[String], acceptRange: Option[String]): Option[PageOffres] =
-  for {
+    for {
       nbOffresParPage <- acceptRange.map(_.toInt)
       matcher = contentRangePattern.matcher(contentRange.getOrElse(""))
       contentRange <- contentRange if matcher.matches()
