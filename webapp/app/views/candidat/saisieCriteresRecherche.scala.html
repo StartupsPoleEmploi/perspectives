@@ -110,11 +110,11 @@
                                 <div class="col-12 col-lg-5">
                                     <input id="numeroTelephone"
                                             name="numeroTelephone"
-                                            type="text" class="texte-noir font-size-sm font-italic px-3 py-3 input"
+                                            type="text" class="texte-noir font-size-sm font-italic px-3 py-3 inputText"
                                             maxlength="10"
                                             placeholder="06 XX XX XX XX"
                                             v-model="criteresRechercheFormData.numeroTelephone"
-                                            v-bind:class="{ 'input--erreur': criteresRechercheFormErrors.numeroTelephone.length > 0 }" />
+                                            v-bind:class="{ 'inputText--erreur': criteresRechercheFormErrors.numeroTelephone.length > 0 }" />
                                 </div>
                                 <div v-for="error in criteresRechercheFormErrors.numeroTelephone" class="col-12 texte-erreur font-size-sm mt-1">{{error}}</div>
                             </li>
@@ -140,9 +140,10 @@
                                     <input type="hidden" name="localisation.codePostal" v-model="criteresRechercheFormData.localisation.codePostal" />
                                     <input type="hidden" name="localisation.latitude" v-model="criteresRechercheFormData.localisation.latitude" />
                                     <input type="hidden" name="localisation.longitude" v-model="criteresRechercheFormData.localisation.longitude" />
-                                    <places id="communeRecherche" name="localisation.commune" class="texte-noir font-size-sm input algolia-themeCandidat"
+                                    <places id="communeRecherche" name="localisation.commune" class="texte-noir font-size-sm inputText algolia-themeCandidat"
                                             v-model="criteresRechercheFormData.localisation.commune" v-bind:options="placesOptions"
-                                            v-on:change="placesChange" v-on:clear="placesClear"></places>
+                                            v-on:change="placesChange" v-on:clear="placesClear"
+                                            v-bind:class="{ 'inputText--erreur': criteresRechercheFormErrors.localisation.length > 0 }"></places>
                                 </div>
                                 <div v-for="error in criteresRechercheFormErrors.localisation" class="col-12 texte-erreur font-size-sm mt-1">{{error}}</div>
                             </li>

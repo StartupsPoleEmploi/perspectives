@@ -42,9 +42,9 @@
                             <div class="col-12 col-lg-6">
                                 <input id="raisonSociale"
                                         name="raisonSociale"
-                                        type="text" class="texte-noir font-size-sm px-3 py-3 input"
+                                        type="text" class="texte-noir font-size-sm px-3 py-3 inputText"
                                         v-model="profilFormData.raisonSociale"
-                                        v-bind:class="{ 'input--erreur': profilFormErrors.raisonSociale.length > 0 }" />
+                                        v-bind:class="{ 'inputText--erreur': profilFormErrors.raisonSociale.length > 0 }" />
                             </div>
                             <div v-for="error in profilFormErrors.raisonSociale" class="col-12 texte-erreur font-size-sm mt-1">{{error}}</div>
                         </li>
@@ -55,10 +55,10 @@
                             <div class="col-12 col-lg-6">
                                 <input id="numeroSiret"
                                         name="numeroSiret"
-                                        type="text" class="texte-noir font-size-sm px-3 py-3 input"
+                                        type="text" class="texte-noir font-size-sm px-3 py-3 inputText"
                                         maxlength="14"
                                         v-model="profilFormData.numeroSiret"
-                                        v-bind:class="{ 'input--erreur': profilFormErrors.numeroSiret.length > 0 }" />
+                                        v-bind:class="{ 'inputText--erreur': profilFormErrors.numeroSiret.length > 0 }" />
                             </div>
                             <div v-for="error in profilFormErrors.numeroSiret" class="col-12 texte-erreur font-size-sm mt-1">{{error}}</div>
                         </li>
@@ -69,9 +69,10 @@
                             <div class="col-12 col-lg-6">
                                 <input type="hidden" name="adresse.codePostal" v-model="profilFormData.adresse.codePostal" />
                                 <input type="hidden" name="adresse.pays" v-model="profilFormData.adresse.pays" />
-                                <places id="commune" name="adresse.commune" class="texte-noir font-size-sm input algolia-themeRecruteur"
+                                <places id="commune" name="adresse.commune" class="texte-noir font-size-sm algolia-themeRecruteur inputText"
                                         v-model="profilFormData.adresse.commune" v-bind:options="placesOptions"
-                                        v-on:change="placesChange" v-on:clear="placesClear"></places>
+                                        v-on:change="placesChange" v-on:clear="placesClear"
+                                        v-bind:class="{ 'inputText--erreur': profilFormErrors.adresse.length > 0 }"></places>
                             </div>
                             <div v-for="error in profilFormErrors.adresse" class="col-12 texte-erreur font-size-sm mt-1">{{error}}</div>
                         </li>
@@ -82,11 +83,11 @@
                             <div class="col-12 col-lg-6">
                                 <input id="numeroTelephone"
                                         name="numeroTelephone"
-                                        type="text" class="texte-noir font-size-sm px-3 py-3 input"
+                                        type="text" class="texte-noir font-size-sm px-3 py-3 inputText"
                                         maxlength="10"
                                         placeholder="06 XX XX XX XX"
                                         v-model="profilFormData.numeroTelephone"
-                                        v-bind:class="{ 'input--erreur': profilFormErrors.numeroTelephone.length > 0 }" />
+                                        v-bind:class="{ 'inputText--erreur': profilFormErrors.numeroTelephone.length > 0 }" />
                             </div>
                             <div v-for="error in profilFormErrors.numeroTelephone" class="col-12 texte-erreur font-size-sm mt-1">{{error}}</div>
                         </li>
