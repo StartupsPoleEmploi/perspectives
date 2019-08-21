@@ -218,6 +218,7 @@ new Vue({
                 self.display.erreurRecherche = false;
                 self.rechercheFormErrors = {};
             }).fail(function (jqXHR) {
+                self.offres = [];
                 if (jqXHR.status === 400) {
                     self.rechercheFormErrors = jqXHR.responseJSON;
                 } else {
