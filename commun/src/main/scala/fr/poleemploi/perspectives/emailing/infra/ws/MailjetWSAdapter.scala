@@ -4,30 +4,43 @@ import java.nio.charset.StandardCharsets
 import java.util.Base64
 
 import fr.poleemploi.perspectives.candidat.Adresse
+import fr.poleemploi.perspectives.commun.domain.Email
 import fr.poleemploi.perspectives.commun.infra.ws.WSAdapter
 import fr.poleemploi.perspectives.emailing.domain._
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetContactId
 import fr.poleemploi.perspectives.recruteur.TypeRecruteur
+import play.api.cache.AsyncCacheApi
 import play.api.libs.json._
 import play.api.libs.ws.WSClient
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.concurrent.duration._
 
 class MailjetWSAdapter(config: MailjetWSAdapterConfig,
                        mapping: MailjetWSMapping,
-                       wsClient: WSClient) extends WSAdapter {
+                       wsClient: WSClient,
+                       cacheApi: AsyncCacheApi) extends WSAdapter {
 
-  val authorization: String = Base64.getEncoder
+  private val idListeCandidatsInscrits: Int = 9908
+  private val idListeCandidatsProspects: Int = 10066519
+
+  private val idListeRecruteursInscrits: Int = 9909
+  private val idListeRecruteursProspects: Int = 10145943
+
+  private val idListeTesteurs: Int = 10145941
+
+  private val cacheKeyTesteurs = "mailjetWSAdapter.testeurs"
+
+  private val authorization: String = Base64.getEncoder
     .encodeToString(s"${config.apiKeyPublic}:${config.apiKeyPrivate}".getBytes(StandardCharsets.UTF_8))
 
-  def ajouterCandidatInscrit(candidatInscrit: CandidatInscrit): Future[MailjetContactId] = {
-    val inscriptionRequest = mapping.buildRequestInscriptionCandidat(candidatInscrit)
+  def ajouterCandidatInscrit(candidatInscrit: CandidatInscrit): Future[MailjetContactId] =
     for {
-      mailjetContactId <- manageContact(inscriptionRequest.idListe, inscriptionRequest.request)
-      _ <- manageContactLists(mailjetContactId, mapping.buildContactListsRequestInscriptionCandidat)
+      idListe <- filtrerTesteur(idListeCandidatsInscrits, candidatInscrit.email)
+      mailjetContactId <- manageContact(idListe, mapping.buildContactRequestInscriptionCandidat(candidatInscrit))
+      _ <- manageContactLists(mailjetContactId, mapping.buildSuppressionContactListRequest(idListeCandidatsProspects))
     } yield mailjetContactId
-  }
 
   def mettreAJourCVCandidat(mailjetContactId: MailjetContactId, possedeCV: Boolean): Future[Unit] =
     updateContactData(
@@ -49,17 +62,16 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
 
   def importerProspectsCandidats(prospects: Stream[MRSValideeProspectCandidat]): Future[Unit] =
     if (prospects.nonEmpty)
-      manageManyContacts(mapping.buildRequestImportProspectsCandidats(prospects))
+      manageManyContacts(mapping.buildRequestImportProspectsCandidats(idListeCandidatsProspects, prospects))
     else
       Future.successful(())
 
-  def ajouterRecruteurInscrit(recruteurInscrit: RecruteurInscrit): Future[MailjetContactId] = {
-    val inscriptionRequest = mapping.buildRequestInscriptionRecruteur(recruteurInscrit)
+  def ajouterRecruteurInscrit(recruteurInscrit: RecruteurInscrit): Future[MailjetContactId] =
     for {
-      mailjetContactId <- manageContact(inscriptionRequest.idListe, inscriptionRequest.request)
-      _ <- manageContactLists(mailjetContactId, mapping.buildContactListsRequestInscriptionRecruteur)
+      idListe <- filtrerTesteur(idListeRecruteursInscrits, recruteurInscrit.email)
+      mailjetContactId <- manageContact(idListe, mapping.buildContactRequestInscriptionRecruteur(recruteurInscrit))
+      _ <- manageContactLists(mailjetContactId, mapping.buildSuppressionContactListRequest(idListeRecruteursProspects))
     } yield mailjetContactId
-  }
 
   def mettreAJourTypeRecruteur(mailjetContactId: MailjetContactId, typeRecruteur: TypeRecruteur): Future[Unit] =
     updateContactData(
@@ -101,6 +113,16 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
       .post(Json.toJson(request))
       .flatMap(filtreStatutReponse(_))
       .map(_ => ())
+
+  private def filtrerTesteur(idListe: Int, email: Email): Future[Int] =
+    cacheApi.getOrElseUpdate(key = cacheKeyTesteurs, expiration = 1.day)(
+      wsClient
+        .url(s"${config.urlApi}/v3/REST/contact?ContactsList=$idListeTesteurs&Limit=100")
+        .addHttpHeaders(jsonContentType, authorizationHeader)
+        .get()
+        .flatMap(filtreStatutReponse(_))
+        .map(r => (r.json \ "Data" \\ "Email").map(_.as[String]).map(Email(_)).toList)
+    ).map(t => if (t.contains(email)) idListeTesteurs else idListe)
 
   private def authorizationHeader: (String, String) = ("Authorization", s"Basic $authorization")
 }

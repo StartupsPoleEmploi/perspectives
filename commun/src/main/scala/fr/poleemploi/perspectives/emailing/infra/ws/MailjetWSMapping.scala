@@ -3,31 +3,18 @@ package fr.poleemploi.perspectives.emailing.infra.ws
 import java.time.format.DateTimeFormatter
 
 import fr.poleemploi.perspectives.candidat.Adresse
-import fr.poleemploi.perspectives.commun.domain.{Email, Genre}
+import fr.poleemploi.perspectives.commun.domain.Genre
 import fr.poleemploi.perspectives.emailing.domain._
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetContactId
 import fr.poleemploi.perspectives.recruteur.TypeRecruteur
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-class MailjetWSMapping(testeurs: List[Email]) {
+class MailjetWSMapping {
 
   import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetContactProperties._
 
   val formatter: DateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
-
-  val idListeCandidatsInscrits: Int = 9908
-  val idListeCandidatsProspects: Int = 10066519
-
-  val idListeRecruteursInscrits: Int = 9909
-  val idListeRecruteursProspects: Int = 10145943
-
-  val idListeTesteurs: Int = 10145941
-
-  def buildRequestInscriptionCandidat(candidatInscrit: CandidatInscrit): InscriptionRequest = InscriptionRequest(
-    idListe = filtrerListeTesteurs(idListeCandidatsInscrits, candidatInscrit.email),
-    request = buildContactRequestInscriptionCandidat(candidatInscrit)
-  )
 
   def buildContactRequestInscriptionCandidat(candidatInscrit: CandidatInscrit): ManageContactRequest =
     ManageContactRequest(
@@ -42,15 +29,10 @@ class MailjetWSMapping(testeurs: List[Email]) {
       )
     )
 
-  def buildContactListsRequestInscriptionCandidat: ManageContactListsRequest =
+  def buildSuppressionContactListRequest(idListe: Int): ManageContactListsRequest =
     ManageContactListsRequest(List(
-      ContactList(listID = s"$idListeCandidatsProspects", action = "remove")
+      ContactList(listID = s"$idListe", action = "remove")
     ))
-
-  def buildRequestInscriptionRecruteur(recruteurInscrit: RecruteurInscrit): InscriptionRequest = InscriptionRequest(
-    idListe = filtrerListeTesteurs(idListeRecruteursInscrits, recruteurInscrit.email),
-    request = buildContactRequestInscriptionRecruteur(recruteurInscrit)
-  )
 
   def buildRequestMiseAJourTypeRecruteur(typeRecruteur: TypeRecruteur): UpdateContactDataRequest =
     UpdateContactDataRequest(List(
@@ -69,11 +51,6 @@ class MailjetWSMapping(testeurs: List[Email]) {
       )
     )
 
-  def buildContactListsRequestInscriptionRecruteur: ManageContactListsRequest =
-    ManageContactListsRequest(List(
-      ContactList(listID = s"$idListeRecruteursProspects", action = "remove")
-    ))
-
   def buildRequestMiseAJourCVCandidat(possedeCV: Boolean): UpdateContactDataRequest =
     UpdateContactDataRequest(List(
       ContactDataProperty(cv, String.valueOf(possedeCV))
@@ -91,7 +68,7 @@ class MailjetWSMapping(testeurs: List[Email]) {
       ContactDataProperty(mrs_date, mrsValideeCandidat.dateEvaluation.atStartOfDay().format(formatter))
     ))
 
-  def buildRequestImportProspectsCandidats(prospectsCandidats: Stream[MRSValideeProspectCandidat]): ManageManyContactsRequest =
+  def buildRequestImportProspectsCandidats(idListe: Int, prospectsCandidats: Stream[MRSValideeProspectCandidat]): ManageManyContactsRequest =
     ManageManyContactsRequest(
       contacts = prospectsCandidats.map(p => Contact(
         email = p.email.value,
@@ -106,7 +83,7 @@ class MailjetWSMapping(testeurs: List[Email]) {
         )
       )).toList,
       contactsLists = List(ContactList(
-        listID = s"$idListeCandidatsProspects",
+        listID = s"$idListe",
         action = "addnoforce"
       ))
     )
@@ -117,9 +94,6 @@ class MailjetWSMapping(testeurs: List[Email]) {
     case g@_ => throw new IllegalArgumentException(s"Genre inconnu : $g")
   }
 
-  private def filtrerListeTesteurs(idListe: Int, email: Email): Int =
-    if (testeurs.contains(email)) idListeTesteurs else idListe
-
   private def buildTypeRecruteur(typeRecruteur: TypeRecruteur): String = typeRecruteur match {
     case TypeRecruteur.ENTREPRISE => "Entreprise"
     case TypeRecruteur.AGENCE_INTERIM => "Agence d'intérim"
@@ -127,9 +101,6 @@ class MailjetWSMapping(testeurs: List[Email]) {
     case t@_ => throw new IllegalArgumentException(s"TypeRecruteur non géré : ${t.value}")
   }
 }
-
-case class InscriptionRequest(idListe: Int,
-                              request: ManageContactRequest)
 
 case class ContactList(listID: String,
                        action: String)

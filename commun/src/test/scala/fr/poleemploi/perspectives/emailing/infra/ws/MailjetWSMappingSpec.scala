@@ -4,7 +4,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 import fr.poleemploi.perspectives.commun.domain._
-import fr.poleemploi.perspectives.emailing.domain.{CandidatInscrit, MRSValideeCandidat, RecruteurInscrit}
+import fr.poleemploi.perspectives.emailing.domain.{CandidatInscrit, MRSValideeCandidat}
 import fr.poleemploi.perspectives.metier.domain.Metier
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
@@ -18,7 +18,6 @@ class MailjetWSMappingSpec extends WordSpec
   var mapping: MailjetWSMapping = _
 
   var candidatInscrit: CandidatInscrit = _
-  var recruteurInscrit: RecruteurInscrit = _
   var mrsValideeCandidat: MRSValideeCandidat = _
 
   before {
@@ -28,12 +27,6 @@ class MailjetWSMappingSpec extends WordSpec
     when(candidatInscrit.prenom) thenReturn Prenom("Prenom")
     when(candidatInscrit.genre) thenReturn Genre.HOMME
 
-    recruteurInscrit = mock[RecruteurInscrit]
-    when(recruteurInscrit.email) thenReturn Email("nom.prenom@mail.com")
-    when(recruteurInscrit.nom) thenReturn Nom("Nom")
-    when(recruteurInscrit.prenom) thenReturn Prenom("Prenom")
-    when(recruteurInscrit.genre) thenReturn Genre.HOMME
-
     mrsValideeCandidat = mock[MRSValideeCandidat]
     when(mrsValideeCandidat.metier) thenReturn Metier(
       codeROME = CodeROME("A1401"),
@@ -41,7 +34,7 @@ class MailjetWSMappingSpec extends WordSpec
     )
     when(mrsValideeCandidat.dateEvaluation) thenReturn LocalDate.now()
 
-    mapping = new MailjetWSMapping(testeurs = Nil)
+    mapping = new MailjetWSMapping
   }
 
   "buildContactRequestInscriptionCandidat" should {
@@ -51,48 +44,6 @@ class MailjetWSMappingSpec extends WordSpec
 
       // Then
       (request.properties \ cv).as[Boolean] mustBe false
-    }
-  }
-  "buildRequestInscriptionCandidat" should {
-    "mettre le candidat dans la liste des testeurs lorsque c'est un testeur" in {
-      // Given
-      val emailTesteur = Email("candidat.testeur@domain.com")
-      when(candidatInscrit.email) thenReturn emailTesteur
-      mapping = new MailjetWSMapping(testeurs = List(emailTesteur))
-
-      // When
-      val request = mapping.buildRequestInscriptionCandidat(candidatInscrit)
-
-      // Then
-      request.idListe mustBe mapping.idListeTesteurs
-    }
-    "mettre le candidat dans la liste des candidats inscrits lorsque ce n'est pas un testeur" in {
-      // When
-      val request = mapping.buildRequestInscriptionCandidat(candidatInscrit)
-
-      // Then
-      request.idListe mustBe mapping.idListeCandidatsInscrits
-    }
-  }
-  "buildRequestInscriptionRecruteur" should {
-    "mettre le recruteur dans la liste des testeurs lorsque c'est un testeur" in {
-      // Given
-      val emailTesteur = Email("recruteur.testeur@domain.com")
-      when(recruteurInscrit.email) thenReturn emailTesteur
-      mapping = new MailjetWSMapping(testeurs = List(emailTesteur))
-
-      // When
-      val request = mapping.buildRequestInscriptionRecruteur(recruteurInscrit)
-
-      // Then
-      request.idListe mustBe mapping.idListeTesteurs
-    }
-    "mettre le recruteur dans la liste des recruteurs inscrits lorsque ce n'est pas un testeur" in {
-      // When
-      val request = mapping.buildRequestInscriptionRecruteur(recruteurInscrit)
-
-      // Then
-      request.idListe mustBe mapping.idListeRecruteursInscrits
     }
   }
   "buildRequestMiseAJourMRSValideeCandidat" should {

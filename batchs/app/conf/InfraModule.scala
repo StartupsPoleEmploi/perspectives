@@ -22,6 +22,7 @@ import fr.poleemploi.perspectives.emailing.infra.sql.MailjetSqlAdapter
 import fr.poleemploi.perspectives.emailing.infra.ws.{MailjetWSAdapter, MailjetWSMapping}
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
+import play.api.cache.AsyncCacheApi
 import play.api.inject.ApplicationLifecycle
 import play.api.libs.ws.WSClient
 import slick.jdbc.JdbcBackend.Database
@@ -125,17 +126,19 @@ class InfraModule extends AbstractModule with ScalaModule {
     )
 
   @Provides
-  def mailjetWSMapping(batchsConfig: BatchsConfig): MailjetWSMapping =
-    new MailjetWSMapping(batchsConfig.mailjetTesteurs)
+  def mailjetWSMapping: MailjetWSMapping =
+    new MailjetWSMapping
 
   @Provides
   def mailjetWSAdapter(wsClient: WSClient,
                        batchsConfig: BatchsConfig,
-                       mailjetWSMapping: MailjetWSMapping): MailjetWSAdapter =
+                       mailjetWSMapping: MailjetWSMapping,
+                       cacheApi: AsyncCacheApi): MailjetWSAdapter =
     new MailjetWSAdapter(
       wsClient = wsClient,
       config = batchsConfig.mailjetWSAdapterConfig,
-      mapping = mailjetWSMapping
+      mapping = mailjetWSMapping,
+      cacheApi = cacheApi
     )
 
   @Provides

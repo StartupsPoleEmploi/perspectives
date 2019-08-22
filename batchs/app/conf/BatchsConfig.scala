@@ -22,8 +22,6 @@ class BatchsConfig(configuration: Configuration) {
     apiKeyPublic = configuration.get[String]("mailjet.apiKey.public"),
     apiKeyPrivate = configuration.get[String]("mailjet.apiKey.private")
   )
-  val mailjetTesteurs: List[Email] =
-    configuration.getOptional[Seq[String]]("mailjet.testeurs").map(_.map(Email(_)).toList).getOrElse(Nil)
 
   val importPoleEmploiFileConfig: ImportFileAdapterConfig = ImportFileAdapterConfig(
     importDirectory = Paths.get(configuration.get[String]("exportPoleEmploi.directory")),
