@@ -138,7 +138,7 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   def peConnectJWTAdapter: PEConnectJWTAdapter =
-    new PEConnectJWTAdapter()
+    new PEConnectJWTAdapter
 
   @Provides
   def peConnectSqlAdapter(database: Database): PEConnectSqlAdapter =
@@ -149,7 +149,7 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   def peConnectWSMapping: PEConnectWSMapping =
-    new PEConnectWSMapping()
+    new PEConnectWSMapping
 
   @Provides
   @Singleton
@@ -234,7 +234,7 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   def referentielMetierWSMapping: ReferentielMetierWSMapping =
-    new ReferentielMetierWSMapping()
+    new ReferentielMetierWSMapping
 
   @Provides
   def referentielMetierWSAdapter(wsClient: WSClient,
@@ -252,7 +252,7 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   def referentielMetierLocalAdapter: ReferentielMetierLocalAdapter =
-    new ReferentielMetierLocalAdapter()
+    new ReferentielMetierLocalAdapter
 
   @Provides
   @Singleton
@@ -293,7 +293,7 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   def referentielHabiletesMRSLocalAdapter: ReferentielHabiletesMRSLocalAdapter =
-    new ReferentielHabiletesMRSLocalAdapter()
+    new ReferentielHabiletesMRSLocalAdapter
 
   @Provides
   def localisationLocalAdapter: LocalisationLocalAdapter =
@@ -301,7 +301,7 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   def localisationWSMapping: LocalisationWSMapping =
-    new LocalisationWSMapping()
+    new LocalisationWSMapping
 
   @Provides
   def localisationWSAdapter(wsClient: WSClient,
@@ -343,11 +343,11 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   def candidatNotificationLocalAdapter: CandidatNotificationLocalAdapter =
-    new CandidatNotificationLocalAdapter()
+    new CandidatNotificationLocalAdapter
 
   @Provides
   def referentielOffreWSMapping: ReferentielOffreWSMapping =
-    new ReferentielOffreWSMapping()
+    new ReferentielOffreWSMapping
 
   @Provides
   def referentielOffreWSAdapter(wsClient: WSClient,
@@ -363,7 +363,7 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   def referentielOffreLocalAdapter: ReferentielOffreLocalAdapter =
-    new ReferentielOffreLocalAdapter()
+    new ReferentielOffreLocalAdapter
 
   @Provides
   def candidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetier): CandidatProjectionElasticsearchMapping =
@@ -391,7 +391,7 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   def recruteurNotificationLocalAdapter: RecruteurNotificationLocalAdapter =
-    new RecruteurNotificationLocalAdapter()
+    new RecruteurNotificationLocalAdapter
 
   @Provides
   def recruteurProjectionSqlAdapter(database: Database): RecruteurProjectionSqlAdapter =
