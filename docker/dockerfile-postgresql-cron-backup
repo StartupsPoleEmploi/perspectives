@@ -5,7 +5,8 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
     apt-get -y install software-properties-common && \
     apt-get -y install cron && \
-    apt-get -y install postgresql-client
+    apt-get -y install postgresql-client && \
+    rm -rf /var/lib/apt/lists/*
 
 ARG POSTGRES_DB=perspectives
 
@@ -14,6 +15,8 @@ ARG POSTGRES_USER=perspectives
 ARG POSTGRES_PASSWORD=perspectives
 
 ARG POSTGRES_HOST=database
+
+ARG BACKUP_ROTATION_DAYS=30
 
 RUN mkdir /opt/postgresql-cron-backup
 RUN mkdir /var/opt/postgresql-cron-backup
@@ -31,6 +34,7 @@ RUN echo "export PGUSER=${POSTGRES_USER}\n\
 export PGPASSWORD=${POSTGRES_PASSWORD}\n\
 export PGHOST=${POSTGRES_HOST}\n\
 export PGDATABASE=${POSTGRES_DB}\n\
-export BACKUP_DIR=/var/opt/postgresql-cron-backup" > /opt/postgresql-cron-backup/pgenv.sh
+export BACKUP_DIR=/var/opt/postgresql-cron-backup\n\
+export BACKUP_ROTATION_DAYS=${BACKUP_ROTATION_DAYS}" > /opt/postgresql-cron-backup/pgenv.sh
 
 CMD ["cron", "-f"]
