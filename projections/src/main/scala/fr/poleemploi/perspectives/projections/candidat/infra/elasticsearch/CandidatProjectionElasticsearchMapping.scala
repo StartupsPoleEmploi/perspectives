@@ -213,6 +213,18 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
     }
 
   def buildRechercheCandidatsQuery(query: RechercheCandidatsQuery): JsObject = {
+    def buildFiltresRechercheCandidatQuery(query: RechercheCandidatsQuery): JsArray =
+      JsArray(
+        Seq(
+          Some(buildFiltreTypeRecruteur(query.typeRecruteur)),
+          Some(buildFiltreMetiersValides),
+          Some(buildFiltreRechercheMetier),
+          Some(buildFiltreNumeroTelephone),
+          Some(buildFiltreCommuneRecherche),
+          query.coordonnees.map(c => buildFiltreLocalisation(c))
+        ).flatten
+      )
+
     def buildQueryParLocalisation(query: RechercheCandidatsQuery): JsObject =
       Json.obj(
         "size" -> query.nbCandidatsParPage * query.nbPagesACharger,
@@ -401,18 +413,6 @@ class CandidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetie
       )
     ).getOrElse(queryJson)
   }
-
-  private def buildFiltresRechercheCandidatQuery(query: RechercheCandidatsQuery): JsArray =
-    JsArray(
-      Seq(
-        Some(buildFiltreTypeRecruteur(query.typeRecruteur)),
-        Some(buildFiltreMetiersValides),
-        Some(buildFiltreRechercheMetier),
-        Some(buildFiltreNumeroTelephone),
-        Some(buildFiltreCommuneRecherche),
-        query.coordonnees.map(c => buildFiltreLocalisation(c))
-      ).flatten
-    )
 
   private def buildFiltreTypeRecruteur(typeRecruteur: TypeRecruteur): JsObject = typeRecruteur match {
     case TypeRecruteur.ORGANISME_FORMATION =>
