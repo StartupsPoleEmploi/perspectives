@@ -33,22 +33,6 @@ services:
     networks:
       - net
 
-  database_cron_backup:
-    image: perspectives-postgresql-cron-backup
-    depends_on:
-      - database
-    volumes:
-      - postgresql_backups:/var/opt/postgresql-cron-backup
-    deploy:
-      replicas: 1
-    logging:
-      driver: fluentd
-      options:
-        tag: "perspectives_database.{{.ID}}"
-        fluentd-async-connect: "true"
-    networks:
-      - net
-
   elasticsearch:
     image: perspectives-elasticsearch
     volumes:
@@ -92,6 +76,20 @@ services:
       driver: fluentd
       options:
         tag: "perspectives_batchs.{{.ID}}"
+        fluentd-async-connect: "true"
+    networks:
+      - net
+
+  backups:
+    image: perspectives-backups
+    volumes:
+      - postgresql_backups:/var/opt/backups/postgresql
+    deploy:
+      replicas: 1
+    logging:
+      driver: fluentd
+      options:
+        tag: "perspectives_backups.{{.ID}}"
         fluentd-async-connect: "true"
     networks:
       - net

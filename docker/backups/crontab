@@ -1,0 +1,2 @@
+#m	 h	  d	   m    w	 command
+0    1    *    *    *    sh /etc/periodic/backups/postgresql

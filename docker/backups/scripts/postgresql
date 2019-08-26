@@ -1,0 +1,13 @@
+#!/bin/sh
+
+source /etc/periodic/backups/pgenv.sh
+
+pg_dump -F c -T candidats_cv > $POSTGRES_BACKUP_DIR/dump-sans-candidats-cv-`date +%Y-%m-%d"_"%H_%M_%S`
+
+pg_dump -F c -t candidats_cv > $POSTGRES_BACKUP_DIR/dump-candidats-cv-`date +%Y-%m-%d"_"%H_%M_%S`
+
+# Nettoyage des anciens backups
+find . -mtime +$BACKUP_ROTATION_DAYS -type f -exec rm {} \;
+
+# Synchronise vers un autre répertoire que l'on pourra monter vers une machine distante pour avoir une sauvegarde (en plus de la sauvegarde locale)
+rsync -vd $POSTGRES_BACKUP_DIR/ $POSTGRES_BACKUP_REMOTE_DIR/
