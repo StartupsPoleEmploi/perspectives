@@ -9,5 +9,6 @@ libraryDependencies ++= Seq(
   Dependencies.akkaLogging,
   Dependencies.akkaQuartzScheduler,
   Dependencies.scalaGuice,
-  Dependencies.scalatestplus
+  Dependencies.scalatestplus,
+  Dependencies.mockito
 )

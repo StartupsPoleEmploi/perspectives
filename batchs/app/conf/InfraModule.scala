@@ -1,6 +1,8 @@
 package conf
 
 import akka.actor.ActorSystem
+import candidat.activite.infra.local.LocalEmailingDisponibilitesService
+import candidat.activite.infra.mailjet.MailjetEmailingDisponibilitesService
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.inject.name.Named
 import com.google.inject.{AbstractModule, Provider, Provides, Singleton}
@@ -9,17 +11,27 @@ import fr.poleemploi.eventsourcing.infra.akka.AkkaEventStoreListener
 import fr.poleemploi.eventsourcing.infra.jackson.EventSourcingObjectMapperBuilder
 import fr.poleemploi.eventsourcing.infra.postgresql.{PostgreSQLAppendOnlyStore, PostgreSQLSnapshotStore, PostgresDriver => EventSourcingPostgresDriver}
 import fr.poleemploi.eventsourcing.snapshotstore.SnapshotStore
+import fr.poleemploi.perspectives.authentification.infra.autologin.AutologinService
+import fr.poleemploi.perspectives.candidat.activite.infra.csv.{ActiviteCandidatCSVAdapter, ImportActiviteCandidatCsvAdapter}
+import fr.poleemploi.perspectives.candidat.activite.infra.sql.DisponibiliteCandidatSqlAdapter
+import fr.poleemploi.perspectives.candidat.cv.infra.sql.CVSqlAdapter
 import fr.poleemploi.perspectives.candidat.mrs.infra.csv.{HabiletesMRSCsvAdapter, ImportHabiletesMRSCsvAdapter}
 import fr.poleemploi.perspectives.candidat.mrs.infra.local.{ImportHabiletesMRSLocalAdapter, ImportMRSDHAELocalAdapter}
 import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect._
 import fr.poleemploi.perspectives.candidat.mrs.infra.sql.ReferentielHabiletesMRSSqlAdapter
 import fr.poleemploi.perspectives.commun.infra.jackson.PerspectivesEventSourcingModule
+import fr.poleemploi.perspectives.commun.infra.peconnect.sql.PEConnectSqlAdapter
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
 import fr.poleemploi.perspectives.emailing.infra.csv.{ImportMRSValideeProspectCandidatCSVAdapter, MRSValideeProspectCandidatCSVAdapter}
 import fr.poleemploi.perspectives.emailing.infra.local.LocalImportProspectService
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetImportProspectService
 import fr.poleemploi.perspectives.emailing.infra.sql.MailjetSqlAdapter
 import fr.poleemploi.perspectives.emailing.infra.ws.{MailjetWSAdapter, MailjetWSMapping}
+import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
+import fr.poleemploi.perspectives.metier.infra.local.ReferentielMetierLocalAdapter
+import fr.poleemploi.perspectives.projections.candidat.CandidatQueryHandler
+import fr.poleemploi.perspectives.projections.candidat.infra.elasticsearch.{CandidatProjectionElasticsearchQueryAdapter, CandidatProjectionElasticsearchQueryMapping}
+import fr.poleemploi.perspectives.projections.recruteur.infra.sql.RecruteurProjectionSqlAdapter
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
 import play.api.cache.AsyncCacheApi
@@ -124,6 +136,100 @@ class InfraModule extends AbstractModule with ScalaModule {
       actorSystem = actorSystem,
       mrsValideeProspectCandidatCSVAdapter = mrsValideeProspectCandidatCSVAdapter
     )
+
+  @Provides
+  def activiteCandidatCSVAdapter(actorSystem: ActorSystem): ActiviteCandidatCSVAdapter =
+    new ActiviteCandidatCSVAdapter(actorSystem = actorSystem)
+
+  @Provides
+  def importActiviteCandidatCsvAdapter(batchsConfig: BatchsConfig,
+                                       actorSystem: ActorSystem,
+                                       activiteCandidatCSVAdapter: ActiviteCandidatCSVAdapter): ImportActiviteCandidatCsvAdapter =
+    new ImportActiviteCandidatCsvAdapter(
+      config = batchsConfig.importPoleEmploiFileConfig,
+      actorSystem = actorSystem,
+      activiteCandidatCSVAdapter = activiteCandidatCSVAdapter
+    )
+  @Provides
+  def candidatProjectionElasticsearchQueryMapping(referentielMetier: ReferentielMetier): CandidatProjectionElasticsearchQueryMapping =
+    new CandidatProjectionElasticsearchQueryMapping(
+      referentielMetier = referentielMetier
+    )
+
+  @Provides
+  def candidatProjectionElasticsearchQueryAdapter(batchsConfig: BatchsConfig,
+                                                  wsClient: WSClient,
+                                                  mapping: CandidatProjectionElasticsearchQueryMapping): CandidatProjectionElasticsearchQueryAdapter =
+    new CandidatProjectionElasticsearchQueryAdapter(
+      wsClient = wsClient,
+      esConfig = batchsConfig.esConfig,
+      mapping = mapping
+    )
+
+  @Provides
+  def peConnectSqlAdapter(database: Database): PEConnectSqlAdapter =
+    new PEConnectSqlAdapter(
+      driver = PostgresDriver,
+      database = database
+    )
+
+  @Provides
+  def disponibiliteCandidatSqlAdapter(database: Database): DisponibiliteCandidatSqlAdapter =
+    new DisponibiliteCandidatSqlAdapter(
+      driver = PostgresDriver,
+      database = database
+    )
+
+  @Provides
+  def recruteurProjectionSqlAdapter(database: Database): RecruteurProjectionSqlAdapter =
+    new RecruteurProjectionSqlAdapter(
+      database = database
+    )
+
+  // we do not use referentielMetier in batches so it's a dummy implementation
+  @Provides
+  @Singleton
+  def referentielMetier: ReferentielMetier =
+    new ReferentielMetierLocalAdapter
+
+  @Provides
+  def csvSqlAdapter(database: Database): CVSqlAdapter =
+    new CVSqlAdapter(
+      database = database,
+      driver = PostgresDriver
+    )
+
+  @Provides
+  @Singleton
+  def autologinService(batchsConfig: BatchsConfig): AutologinService =
+    new AutologinService(
+      autologinConfig = batchsConfig.autologinConfig
+    )
+
+  @Provides
+  @Singleton
+  def mailjetEmailingDisponibilitesService(importActiviteCandidatCsvAdapter: ImportActiviteCandidatCsvAdapter,
+                                           batchsConfig: BatchsConfig,
+                                           actorSystem: ActorSystem,
+                                           mailjetWSAdapter: MailjetWSAdapter,
+                                           candidatQueryHandler: CandidatQueryHandler,
+                                           autologinService: AutologinService,
+                                           peConnectSqlAdapter: PEConnectSqlAdapter,
+                                           disponibiliteCandidatSqlAdapter: DisponibiliteCandidatSqlAdapter): MailjetEmailingDisponibilitesService =
+    new MailjetEmailingDisponibilitesService(
+      baseUrl = batchsConfig.baseUrl,
+      actorSystem = actorSystem,
+      importFileAdapter = importActiviteCandidatCsvAdapter,
+      peConnectSqlAdapter = peConnectSqlAdapter,
+      disponibiliteCandidatSqlAdapter = disponibiliteCandidatSqlAdapter,
+      candidatQueryHandler = candidatQueryHandler,
+      autologinService = autologinService,
+      mailjetWSAdapter = mailjetWSAdapter
+    )
+
+  @Provides
+  def localEmailingDisponibilitesService: LocalEmailingDisponibilitesService =
+    new LocalEmailingDisponibilitesService
 
   @Provides
   def mailjetWSMapping: MailjetWSMapping =

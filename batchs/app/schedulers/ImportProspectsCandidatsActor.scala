@@ -38,7 +38,7 @@ class ImportProspectsCandidatsActor(importProspectService: ImportProspectService
     case StartImportProspectsCandidats =>
       log.warning("Import des prospects candidats déjà en cours")
     case ImportProspectsCandidatsDone =>
-      log.info("Intégration des prospects candidats terminéé")
+      log.info("Intégration des prospects candidats terminée")
       context.unbecome()
     case Failure(t) =>
       log.error(t, "Erreur lors de l'import des prospects candidats")

@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets
 import java.util.Base64
 
 import fr.poleemploi.perspectives.candidat.Adresse
+import fr.poleemploi.perspectives.candidat.activite.domain.EmailingDisponibiliteCandidatAvecEmail
 import fr.poleemploi.perspectives.commun.domain.Email
 import fr.poleemploi.perspectives.commun.infra.ws.WSAdapter
 import fr.poleemploi.perspectives.emailing.domain._
@@ -30,10 +31,15 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
 
   private val idListeTesteurs: Int = 10145941
 
+  private val idTemplateDisponibiliteCandidat: Int = 1001166
+
   private val cacheKeyTesteurs = "mailjetWSAdapter.testeurs"
 
   private val authorization: String = Base64.getEncoder
     .encodeToString(s"${config.apiKeyPublic}:${config.apiKeyPrivate}".getBytes(StandardCharsets.UTF_8))
+
+  // limitation de l'API /send de mailjet
+  private val nbMaxDestinataires: Int = 50
 
   def ajouterCandidatInscrit(candidatInscrit: CandidatInscrit): Future[MailjetContactId] =
     for {
@@ -59,6 +65,18 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
       mailjetContactId = mailjetContactId,
       request = mapping.buildRequestMiseAJourMRSValideeCandidat(mrsValideeCandidat)
     ).map(_ => ())
+
+  def envoyerDisponibilitesCandidat(baseUrl: String, candidats: Stream[EmailingDisponibiliteCandidatAvecEmail]): Future[Unit] =
+    if (candidats.nonEmpty)
+      Future.sequence(candidats.grouped(nbMaxDestinataires).map(candidatChunk =>
+        sendMail(mapping.buildRequestEmailDisponibiliteCandidat(
+          baseUrl = baseUrl,
+          candidats = candidatChunk,
+          idTemplate = idTemplateDisponibiliteCandidat
+        ))
+      )).map(_ => ())
+    else
+      Future.successful(())
 
   def importerProspectsCandidats(prospects: Stream[MRSProspectCandidat]): Future[Unit] =
     if (prospects.nonEmpty)
@@ -123,6 +141,14 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
         .flatMap(filtreStatutReponse(_))
         .map(r => (r.json \ "Data" \\ "Email").map(_.as[String]).map(Email(_)).toList)
     ).map(t => if (t.contains(email)) idListeTesteurs else idListe)
+
+  private def sendMail(request: SendMailRequest): Future[Unit] =
+    wsClient
+      .url(s"${config.urlApi}/v3.1/send")
+      .addHttpHeaders(jsonContentType, authorizationHeader)
+      .post(Json.toJson(request))
+      .flatMap(filtreStatutReponse(_))
+      .map(_ => ())
 
   private def authorizationHeader: (String, String) = ("Authorization", s"Basic $authorization")
 }

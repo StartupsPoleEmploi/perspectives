@@ -1,24 +1,19 @@
 package fr.poleemploi.perspectives.projections.candidat.infra.elasticsearch
 
 import fr.poleemploi.perspectives.commun.domain.{Coordonnees, RayonRecherche, UniteLongueur}
-import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, MustMatchers, WordSpec}
 
-class CandidatProjectionElasticsearchMappingSpec extends WordSpec
+class CandidatProjectionElasticsearchUpdateMappingSpec extends WordSpec
   with MustMatchers with MockitoSugar with BeforeAndAfter {
-
-  var referentielMetier: ReferentielMetier = _
 
   val rayonRecherche: RayonRecherche = RayonRecherche.MAX_10
   val coordonnees = Coordonnees(latitude = 1.77878, longitude = 48.475645)
 
-  var mapping: CandidatProjectionElasticsearchMapping = _
+  var mapping: CandidatProjectionElasticsearchUpdateMapping = _
 
   before {
-    referentielMetier = mock[ReferentielMetier]
-
-    mapping = new CandidatProjectionElasticsearchMapping(referentielMetier)
+    mapping = new CandidatProjectionElasticsearchUpdateMapping
   }
 
   "buildZoneDocument" should {

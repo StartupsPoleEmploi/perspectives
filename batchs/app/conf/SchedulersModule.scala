@@ -1,6 +1,7 @@
 package conf
 
 import akka.actor.{ActorRef, ActorSystem}
+import candidat.activite.domain.EmailingDisponibilitesService
 import com.google.inject.{AbstractModule, Inject, Provides, Singleton}
 import fr.poleemploi.perspectives.candidat.mrs.domain.ImportHabiletesMRS
 import fr.poleemploi.perspectives.emailing.domain.ImportProspectService
@@ -18,6 +19,7 @@ class SchedulersModule extends AbstractModule with ScalaModule with AkkaGuiceSup
   override def configure(): Unit = {
     bindActor[ImportHabiletesMRSActor](ImportHabiletesMRSActor.name)
     bindActor[ImportProspectsCandidatsActor](ImportProspectsCandidatsActor.name)
+    bindActor[EmailingDisponibilitesCandidatActor](EmailingDisponibilitesCandidatActor.name)
 
     bind(classOf[Scheduled]).asEagerSingleton()
   }
@@ -35,15 +37,24 @@ class SchedulersModule extends AbstractModule with ScalaModule with AkkaGuiceSup
     )
 
   @Provides
+  def emailingDisponibilitesCandidatActor(emailingDisponibilitesService: EmailingDisponibilitesService): EmailingDisponibilitesCandidatActor =
+    new EmailingDisponibilitesCandidatActor(
+      emailingDisponibilitesService = emailingDisponibilitesService
+    )
+
+  @Provides
   @Singleton
   def batchsScheduler(actorSystem: ActorSystem,
                       @Named(ImportHabiletesMRSActor.name)
                       importHabiletesMRSActor: ActorRef,
                       @Named(ImportProspectsCandidatsActor.name)
-                      importProspectsCandidatsActor: ActorRef): BatchsScheduler =
+                      importProspectsCandidatsActor: ActorRef,
+                      @Named(EmailingDisponibilitesCandidatActor.name)
+                      emailingDisponibilitesCandidatActor: ActorRef): BatchsScheduler =
     new BatchsScheduler(
       actorSystem = actorSystem,
       importHabiletesMRSActor = importHabiletesMRSActor,
-      importProspectsCandidatsActor = importProspectsCandidatsActor
+      importProspectsCandidatsActor = importProspectsCandidatsActor,
+      emailingDisponibilitesCandidatActor = emailingDisponibilitesCandidatActor
     )
 }

@@ -39,7 +39,7 @@ import fr.poleemploi.perspectives.metier.infra.local.ReferentielMetierLocalAdapt
 import fr.poleemploi.perspectives.metier.infra.ws.{ReferentielMetierWSAdapter, ReferentielMetierWSMapping}
 import fr.poleemploi.perspectives.offre.infra.local.ReferentielOffreLocalAdapter
 import fr.poleemploi.perspectives.offre.infra.ws.{ReferentielOffreWSAdapter, ReferentielOffreWSMapping}
-import fr.poleemploi.perspectives.projections.candidat.infra.elasticsearch.{CandidatProjectionElasticsearchAdapter, CandidatProjectionElasticsearchMapping}
+import fr.poleemploi.perspectives.projections.candidat.infra.elasticsearch.{CandidatProjectionElasticsearchQueryAdapter, CandidatProjectionElasticsearchQueryMapping, CandidatProjectionElasticsearchUpdateAdapter, CandidatProjectionElasticsearchUpdateMapping}
 import fr.poleemploi.perspectives.projections.candidat.infra.local.CandidatNotificationLocalAdapter
 import fr.poleemploi.perspectives.projections.candidat.infra.slack.CandidatNotificationSlackAdapter
 import fr.poleemploi.perspectives.projections.recruteur.infra.local.RecruteurNotificationLocalAdapter
@@ -367,16 +367,30 @@ class InfraModule extends AbstractModule with ScalaModule {
     new ReferentielOffreLocalAdapter
 
   @Provides
-  def candidatProjectionElasticsearchMapping(referentielMetier: ReferentielMetier): CandidatProjectionElasticsearchMapping =
-    new CandidatProjectionElasticsearchMapping(
+  def candidatProjectionElasticsearchUpdateMapping: CandidatProjectionElasticsearchUpdateMapping =
+    new CandidatProjectionElasticsearchUpdateMapping
+
+  @Provides
+  def candidatProjectionElasticsearchQueryMapping(referentielMetier: ReferentielMetier): CandidatProjectionElasticsearchQueryMapping =
+    new CandidatProjectionElasticsearchQueryMapping(
       referentielMetier = referentielMetier
     )
 
   @Provides
-  def candidatProjectionElasticsearchAdapter(webAppConfig: WebAppConfig,
-                                             wsClient: WSClient,
-                                             mapping: CandidatProjectionElasticsearchMapping): CandidatProjectionElasticsearchAdapter =
-    new CandidatProjectionElasticsearchAdapter(
+  def candidatProjectionElasticsearchUpdateAdapter(webAppConfig: WebAppConfig,
+                                                   wsClient: WSClient,
+                                                   mapping: CandidatProjectionElasticsearchUpdateMapping): CandidatProjectionElasticsearchUpdateAdapter =
+    new CandidatProjectionElasticsearchUpdateAdapter(
+      wsClient = wsClient,
+      esConfig = webAppConfig.esConfig,
+      mapping = mapping
+    )
+
+  @Provides
+  def candidatProjectionElasticsearchQueryAdapter(webAppConfig: WebAppConfig,
+                                                  wsClient: WSClient,
+                                                  mapping: CandidatProjectionElasticsearchQueryMapping): CandidatProjectionElasticsearchQueryAdapter =
+    new CandidatProjectionElasticsearchQueryAdapter(
       wsClient = wsClient,
       esConfig = webAppConfig.esConfig,
       mapping = mapping

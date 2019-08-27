@@ -3,9 +3,11 @@ package fr.poleemploi.perspectives.emailing.infra.ws
 import java.time.format.DateTimeFormatter
 
 import fr.poleemploi.perspectives.candidat.Adresse
+import fr.poleemploi.perspectives.candidat.activite.domain.EmailingDisponibiliteCandidatAvecEmail
 import fr.poleemploi.perspectives.commun.domain.Genre
 import fr.poleemploi.perspectives.emailing.domain._
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetContactId
+import fr.poleemploi.perspectives.emailing.infra.ws.MailjetWSMapping.{DISPONIBILITE_CANDIDAT_CATEGORY, VAR_URL_FORMULAIRE_DISPO_CANDIDAT_EN_RECHERCHE, VAR_URL_FORMULAIRE_DISPO_CANDIDAT_PAS_EN_RECHERCHE}
 import fr.poleemploi.perspectives.recruteur.TypeRecruteur
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
@@ -88,6 +90,21 @@ class MailjetWSMapping {
       ))
     )
 
+  def buildRequestEmailDisponibiliteCandidat(baseUrl: String, idTemplate: Int, candidats: Stream[EmailingDisponibiliteCandidatAvecEmail]): SendMailRequest =
+    SendMailRequest(
+      messages = candidats.map(c => SendMailMessage(
+        from = None,
+        to = Seq(EmailAndName(email = c.email.value)),
+        subject = None,
+        templateId = idTemplate,
+        category = Some(DISPONIBILITE_CANDIDAT_CATEGORY),
+        variables = Map(
+          VAR_URL_FORMULAIRE_DISPO_CANDIDAT_EN_RECHERCHE -> s"$baseUrl/candidat/disponibilites?candidatEnRecherche=true&token=${c.autologinToken.value}",
+          VAR_URL_FORMULAIRE_DISPO_CANDIDAT_PAS_EN_RECHERCHE -> s"$baseUrl/candidat/disponibilites?candidatEnRecherche=false&token=${c.autologinToken.value}"
+        )
+      ))
+    )
+
   private def buildGenre(genre: Genre): String = genre match {
     case Genre.HOMME => "M."
     case Genre.FEMME => "Mme"
@@ -100,6 +117,12 @@ class MailjetWSMapping {
     case TypeRecruteur.ORGANISME_FORMATION => "Organisme de formation"
     case t@_ => throw new IllegalArgumentException(s"TypeRecruteur non géré : ${t.value}")
   }
+}
+
+object MailjetWSMapping {
+  val VAR_URL_FORMULAIRE_DISPO_CANDIDAT_EN_RECHERCHE = "urlFormulaireDispoOui"
+  val VAR_URL_FORMULAIRE_DISPO_CANDIDAT_PAS_EN_RECHERCHE = "urlFormulaireDispoNon"
+  val DISPONIBILITE_CANDIDAT_CATEGORY = "disponibilite_candidat"
 }
 
 case class ContactList(listID: String,
@@ -199,4 +222,45 @@ object ManageContactResponse {
     (JsPath \ "Count").read[Int] and
       (JsPath \ "Data" \\ "ContactID").read[Long].map(MailjetContactId)
     ) (ManageContactResponse.apply _)
+}
+
+case class EmailAndName(email: String,
+                        name: Option[String] = None)
+
+object EmailAndName {
+  implicit val writes: Writes[EmailAndName] = (
+    (JsPath \ "Email").write[String] and
+      (JsPath \ "Name").writeNullable[String]
+    ) (unlift(EmailAndName.unapply))
+}
+
+case class SendMailMessage(from: Option[EmailAndName],
+                           to: Seq[EmailAndName],
+                           subject: Option[String],
+                           templateId: Int,
+                           templateLanguage: Boolean = true,
+                           category: Option[String] = None,
+                           variables: Map[String, String] = Map())
+
+object SendMailMessage {
+  implicit val writes: Writes[SendMailMessage] = (
+    (JsPath \ "From").writeNullable[EmailAndName] and
+      (JsPath \ "To").write[Seq[EmailAndName]] and
+      (JsPath \ "Subject").writeNullable[String] and
+      (JsPath \ "TemplateID").write[Int] and
+      (JsPath \ "TemplateLanguage").write[Boolean] and
+      (JsPath \ "MonitoringCategory").writeNullable[String] and
+      (JsPath \ "Variables").write[Map[String, String]]
+    ) (unlift(SendMailMessage.unapply))
+}
+
+case class SendMailRequest(messages: Seq[SendMailMessage],
+                           sandbox: Boolean = false)
+
+object SendMailRequest {
+
+  implicit val writes: Writes[SendMailRequest] = (
+    (JsPath \ "Messages").write[Seq[SendMailMessage]] and
+      (JsPath \ "SandboxMode").write[Boolean]
+    ) (unlift(SendMailRequest.unapply))
 }

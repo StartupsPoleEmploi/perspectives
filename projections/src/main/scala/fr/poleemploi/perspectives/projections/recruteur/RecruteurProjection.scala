@@ -5,8 +5,6 @@ import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.perspectives.projections.recruteur.infra.sql.RecruteurProjectionSqlAdapter
 import fr.poleemploi.perspectives.recruteur._
 
-import scala.concurrent.Future
-
 class RecruteurProjection(adapter: RecruteurProjectionSqlAdapter) extends Projection {
 
   override def listenTo: List[Class[_ <: Event]] = List(classOf[RecruteurEvent])
@@ -20,13 +18,4 @@ class RecruteurProjection(adapter: RecruteurProjectionSqlAdapter) extends Projec
     case e: AdresseRecruteurModifieeEvent => adapter.onAdresseModifieeEvent(e)
     case e: ProfilGerantModifieEvent => adapter.onProfilGerantModifieEvent(e)
   }
-
-  def typeRecruteur(query: TypeRecruteurQuery): Future[TypeRecruteurQueryResult] =
-    adapter.typeRecruteur(query)
-
-  def profilRecruteur(query: ProfilRecruteurQuery): Future[ProfilRecruteurQueryResult] =
-    adapter.profilRecruteur(query)
-
-  def listerPourConseiller(query: RecruteursPourConseillerQuery): Future[RecruteursPourConseillerQueryResult] =
-    adapter.listerPourConseiller(query)
 }

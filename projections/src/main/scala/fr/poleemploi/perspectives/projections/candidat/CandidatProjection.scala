@@ -2,7 +2,7 @@ package fr.poleemploi.perspectives.projections.candidat
 
 import fr.poleemploi.cqrs.projection.Projection
 import fr.poleemploi.eventsourcing.Event
-import fr.poleemploi.perspectives.candidat.{CandidatId, _}
+import fr.poleemploi.perspectives.candidat._
 
 import scala.concurrent.Future
 
@@ -35,26 +35,6 @@ trait CandidatProjection extends Projection {
     case e: MRSAjouteeEvent => onMRSAjouteeEvent(e)
     case e: RepriseEmploiDeclareeParConseillerEvent => onRepriseEmploiDeclareeParConseillerEvent(e)
   }
-
-  def saisieCriteresRecherche(query: CandidatSaisieCriteresRechercheQuery): Future[CandidatSaisieCriteresRechercheQueryResult]
-
-  def saisieDisponibilites(query: CandidatSaisieDisponibilitesQuery): Future[CandidatSaisieDisponibilitesQueryResult]
-
-  def localisation(query: CandidatLocalisationQuery): Future[CandidatLocalisationQueryResult]
-
-  def metiersValides(query: CandidatMetiersValidesQuery): Future[CandidatMetiersValidesQueryResult]
-
-  def rechercheOffre(query: CandidatPourRechercheOffreQuery): Future[CandidatPourRechercheOffreQueryResult]
-
-  def candidatContactRecruteur(candidatId: CandidatId): Future[CandidatContactRecruteurQueryResult]
-
-  def secteursActivitesAvecCandidats(query: SecteursActivitesAvecCandidatsQuery): Future[SecteursActivitesAvecCandidatsQueryResult]
-
-  def rechercherCandidats(query: RechercheCandidatsQuery): Future[RechercheCandidatQueryResult]
-
-  def listerPourConseiller(query: CandidatsPourConseillerQuery): Future[CandidatsPourConseillerQueryResult]
-
-  def existeCandidat(query: ExisteCandidatQuery): Future[ExisteCandidatQueryResult]
 
   def onCandidatInscritEvent(event: CandidatInscritEvent): Future[Unit]
 

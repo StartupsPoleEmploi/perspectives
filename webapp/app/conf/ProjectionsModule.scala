@@ -9,17 +9,17 @@ import fr.poleemploi.perspectives.emailing.domain.EmailingService
 import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
 import fr.poleemploi.perspectives.offre.domain.ReferentielOffre
 import fr.poleemploi.perspectives.projections.candidat._
-import fr.poleemploi.perspectives.projections.candidat.infra.elasticsearch.CandidatProjectionElasticsearchAdapter
+import fr.poleemploi.perspectives.projections.candidat.infra.elasticsearch.{CandidatProjectionElasticsearchQueryAdapter, CandidatProjectionElasticsearchUpdateAdapter}
 import fr.poleemploi.perspectives.projections.candidat.infra.local.CandidatNotificationLocalAdapter
 import fr.poleemploi.perspectives.projections.candidat.infra.slack.CandidatNotificationSlackAdapter
 import fr.poleemploi.perspectives.projections.conseiller.ConseillerQueryHandler
 import fr.poleemploi.perspectives.projections.emailing.{CandidatEmailProjection, RecruteurEmailProjection}
+import fr.poleemploi.perspectives.projections.geo.RegionQueryHandler
 import fr.poleemploi.perspectives.projections.metier.MetierQueryHandler
 import fr.poleemploi.perspectives.projections.recruteur._
 import fr.poleemploi.perspectives.projections.recruteur.infra.local.RecruteurNotificationLocalAdapter
 import fr.poleemploi.perspectives.projections.recruteur.infra.slack.RecruteurNotificationSlackAdapter
 import fr.poleemploi.perspectives.projections.recruteur.infra.sql.RecruteurProjectionSqlAdapter
-import fr.poleemploi.perspectives.projections.geo.RegionQueryHandler
 import net.codingwell.scalaguice.ScalaModule
 
 class RegisterProjections @Inject()(eventStoreListener: EventStoreListener,
@@ -41,8 +41,13 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
-  def candidatProjection(candidatProjectionElasticsearchAdapter: CandidatProjectionElasticsearchAdapter): CandidatProjection =
-    candidatProjectionElasticsearchAdapter
+  def candidatProjection(candidatProjectionElasticsearchUpdateAdapter: CandidatProjectionElasticsearchUpdateAdapter): CandidatProjection =
+    candidatProjectionElasticsearchUpdateAdapter
+
+  @Provides
+  @Singleton
+  def candidatProjectionQuery(candidatProjectionElasticsearchQueryAdapter: CandidatProjectionElasticsearchQueryAdapter): CandidatProjectionQuery =
+    candidatProjectionElasticsearchQueryAdapter
 
   @Provides
   @Singleton
@@ -56,13 +61,13 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
-  def candidatQueryHandler(candidatProjection: CandidatProjection,
-                           recruteurProjection: RecruteurProjection,
+  def candidatQueryHandler(candidatProjectionQuery: CandidatProjectionQuery,
+                           recruteurProjectionQuery: RecruteurProjectionQuery,
                            cvService: CVService,
                            referentielOffre: ReferentielOffre): CandidatQueryHandler =
     new CandidatQueryHandler(
-      candidatProjection = candidatProjection,
-      recruteurProjection = recruteurProjection,
+      candidatProjectionQuery = candidatProjectionQuery,
+      recruteurProjectionQuery = recruteurProjectionQuery,
       cvService = cvService,
       referentielOffre = referentielOffre
     )
@@ -85,6 +90,13 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
+  def recruteurProjectionQuery(recruteurProjectionSqlAdapter: RecruteurProjectionSqlAdapter): RecruteurProjectionQuery =
+    new RecruteurProjectionQuery(
+      adapter = recruteurProjectionSqlAdapter
+    )
+
+  @Provides
+  @Singleton
   def recruteurEmailProjection(emailingService: EmailingService): RecruteurEmailProjection =
     new RecruteurEmailProjection(
       emailingService = emailingService
@@ -102,9 +114,9 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
-  def recruteurQueryHandler(recruteurProjection: RecruteurProjection): RecruteurQueryHandler =
+  def recruteurQueryHandler(recruteurProjectionQuery: RecruteurProjectionQuery): RecruteurQueryHandler =
     new RecruteurQueryHandler(
-      recruteurProjection = recruteurProjection
+      recruteurProjectionQuery = recruteurProjectionQuery
     )
 
   @Provides

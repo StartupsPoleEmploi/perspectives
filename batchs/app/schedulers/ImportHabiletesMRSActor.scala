@@ -38,7 +38,7 @@ class ImportHabiletesMRSActor(importHabiletesMRS: ImportHabiletesMRS) extends Ac
     case StartImportHabiletesMRS =>
       log.warning("Import des Habiletés MRS déjà en cours")
     case ImportHabiletesMRSDone =>
-      log.info("Intégration des Habiletés MRS terminéé")
+      log.info("Intégration des Habiletés MRS terminée")
       context.unbecome()
     case Failure(t) =>
       log.error(t, "Erreur lors de l'import des Habiletés MRS")
