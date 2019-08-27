@@ -2,11 +2,10 @@ FROM openjdk:8-jre-slim
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-# Common software : always run apt-get update et apt-get install in the same run statement
 RUN apt-get update && \
     apt-get -y install unzip && \
     apt-get -y install curl && \
-    rm -rf /var/lib/apt/lists/* # delete all the apt list files since they're big and get stale quickly
+    rm -rf /var/lib/apt/lists/*
 
 # Make port 9000 available to the world outside this container
 EXPOSE 9000
