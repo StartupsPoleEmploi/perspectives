@@ -2,8 +2,8 @@ package fr.poleemploi.perspectives.commun.infra.peconnect.ws
 
 import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.candidat.mrs.domain.MRSValidee
-import fr.poleemploi.perspectives.commun.infra.ws.{AccessToken, WSAdapter, WebServiceException}
-import play.api.libs.ws.{WSClient, WSResponse}
+import fr.poleemploi.perspectives.commun.infra.ws.{AccessToken, WSAdapter}
+import play.api.libs.ws.WSClient
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -113,22 +113,4 @@ class PEConnectWSAdapter(wsClient: WSClient,
         .get()
         .flatMap(filtreStatutReponse(_))
     ).map(r => mapping.buildExperienceProfessionnelles(r.json.as[List[ExperienceProfessionnelleResponse]]))
-
-  /**
-    * Effectue un nombre de réessai si un service échoue en raison d'un statut 429 (Too many requests). <br />
-    * Les services de l'emploi store sont limités en nombre de requêtes/seconde,
-    * et il se peut qu'un autre client ou nous-mêmes fassions trop de requêtes et bloquions une API pour tous les autres.
-    */
-  private def handleRateLimit(nbRetriesMax: Int = 5, sleepingTime: Long = 1000)(block: => Future[WSResponse]): Future[WSResponse] =
-    if (nbRetriesMax == 0)
-      Future.failed(new RuntimeException("Nombre de réessai maximum atteint"))
-    else
-      block recoverWith {
-        case t: WebServiceException if t.statut == 429 =>
-          peConnectWSLogger.warn(s"Réessai d'appel suite à un statut ${t.statut}", t)
-          handleRateLimit(nbRetriesMax - 1, sleepingTime) {
-            Thread.sleep(sleepingTime)
-            block
-          }
-      }
 }

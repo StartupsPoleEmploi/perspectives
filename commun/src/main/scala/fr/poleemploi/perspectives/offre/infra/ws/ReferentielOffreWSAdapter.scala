@@ -1,7 +1,7 @@
 package fr.poleemploi.perspectives.offre.infra.ws
 
 import fr.poleemploi.perspectives.commun.infra.oauth.OauthConfig
-import fr.poleemploi.perspectives.commun.infra.ws.{AccessToken, AccessTokenResponse, WSAdapter, WebServiceException}
+import fr.poleemploi.perspectives.commun.infra.ws.{AccessToken, AccessTokenResponse, WSAdapter}
 import fr.poleemploi.perspectives.offre.domain._
 import play.api.cache.AsyncCacheApi
 import play.api.libs.ws.WSClient
@@ -24,31 +24,24 @@ class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
     */
   def rechercherOffres(criteres: CriteresRechercheOffre): Future[RechercheOffreResult] = {
     def callWS(accessToken: AccessToken, params: List[(String, String)]): Future[RechercheOffreResult] =
-      wsClient.url(s"${config.urlApi}/offresdemploi/v2/offres/search")
-        .addQueryStringParameters(params: _ *)
-        .addHttpHeaders(authorizationBearer(accessToken), jsonContentType)
-        .get()
-        .flatMap(r => filtreStatutReponse(response = r, statutNonGere = s => s != 200 && s != 206))
-        .map(r =>
-          // FIXME : Si 206 mais qu'on a pas assez d'offres après avoir filtrer pour remplir au moins une page, alors on rappelle l'API et on recalcule
-          RechercheOffreResult(
-            offres = mapping.filterOffresResponses(
-              criteresRechercheOffre = criteres,
-              offres = (r.json \ "resultats").as[List[OffreResponse]]).map(mapping.buildOffre),
-            pageSuivante =
-              if (r.status == 206)
-                mapping.buildPageOffres(r.header("Content-Range"), r.header("Accept-Range"))
-              else
-                None
-          )
-        ).recoverWith {
-        case e: WebServiceException if e.statut == 429 =>
-          referentielOffreWSLogger.error(e.getMessage)
-          Future.successful(RechercheOffreResult(
-            offres = Nil,
-            pageSuivante = None
-          ))
-      }
+      handleRateLimit()(
+        wsClient.url(s"${config.urlApi}/offresdemploi/v2/offres/search")
+          .addQueryStringParameters(params: _ *)
+          .addHttpHeaders(authorizationBearer(accessToken), jsonContentType)
+          .get()
+          .flatMap(r => filtreStatutReponse(response = r, statutNonGere = s => s != 200 && s != 206))
+      ).map(r => RechercheOffreResult(
+        offres = mapping
+          .filterOffresResponses(
+            criteresRechercheOffre = criteres,
+            offres = (r.json \ "resultats").as[List[OffreResponse]])
+          .map(mapping.buildOffre),
+        pageSuivante =
+          if (r.status == 206)
+            mapping.buildPageOffres(r.header("Content-Range"), r.header("Accept-Range"))
+          else
+            None
+      ))
 
     for {
       accessToken <- getAccessToken
