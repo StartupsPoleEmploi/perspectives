@@ -43,34 +43,34 @@
                     </div>
                     <template v-else-if="offreCourante">
                         <div class="container">
-                            <div class="detailOffre">
-                                <div class="detailOffre-sousSection">
+                            <div class="row detailOffre">
+                                <div class="col-12">
                                     <h2 id="titreModaleDetailOffre" class="detailOffre-intitule">{{offreCourante.intitule}}</h2>
                                     <p class="texte-gris font-size-sm font-italic">Actualisée le {{offreCourante.dateActualisation | date}}</p>
                                 </div>
-                                <div class="detailOffre-sousSection detailOffre-resume">
-                                    <ul class="list-unstyled resumeDetailOffre">
-                                        <li class="resumeDetailOffre-item texte-noir font-size-sm">
+                                <div class="col-12 py-3">
+                                    <ul class="row d-block d-lg-flex list-unstyled">
+                                        <li class="col-auto resumeDetailOffre-item texte-noir font-size-sm">
                                             <img class="mr-2" src="@assetsFinder.path("images/pages/candidat/rechercheOffres/contrat.svg")" alt="Contrat de travail" height="16" width="16" />
                                             <span>{{offreCourante.contrat.label}}</span>
                                             <span class="detailOffre-natureContrat" v-show="offreCourante.contrat.nature">{{offreCourante.contrat.nature}}</span>
                                         </li>
-                                        <li v-show="offreCourante.entreprise.nom" class="resumeDetailOffre-item texte-noir font-size-sm">
+                                        <li v-show="offreCourante.entreprise.nom" class="col-auto resumeDetailOffre-item texte-noir font-size-sm">
                                             <img class="mr-2" src="@assetsFinder.path("images/pages/candidat/rechercheOffres/entreprise.svg")" alt="Entreprise" height="16" width="16" />
                                             {{offreCourante.entreprise.nom | capitalize}}
                                         </li>
-                                        <li class="resumeDetailOffre-item texte-noir font-size-sm">
+                                        <li class="col-auto resumeDetailOffre-item texte-noir font-size-sm">
                                             <img class="mr-2" src="@assetsFinder.path("images/pages/candidat/rechercheOffres/lieuTravail.svg")" alt="Lieu de travail" height="16" width="16" />
                                             {{offreCourante.lieuTravail.libelle}}
                                             <span v-show="offreCourante.lieuTravail.codePostal">({{offreCourante.lieuTravail.codePostal}})</span>
                                         </li>
                                     </ul>
                                 </div>
-                                <div class="detailOffre-section">
+                                <div class="col-12 detailOffre-section">
                                     <div class="postuler">
                                         <div class="postuler-texte">
-                                            <p class="texte-noir font-weight-bold detailOffre-info--sansMarge">Cette offre vous intéresse, postulez !</p>
-                                            <p class="texte-noir detailOffre-info--sansMarge">Veuillez adresser votre CV et une lettre de motivation en précisant le numéro de l'offre : <span class="font-weight-bold">n°{{offreCourante.id}}</span></p>
+                                            <p class="mb-0 texte-noir font-weight-bold">Cette offre vous intéresse, postulez !</p>
+                                            <p class="mb-0 texte-noir">Veuillez adresser votre CV et une lettre de motivation en précisant le numéro de l'offre : <span class="font-weight-bold">n°{{offreCourante.id}}</span></p>
                                         </div>
                                         <div class="postuler-cta">
                                             <button type="button" class="bouton bouton-action bouton--block bouton--blancSurVert gtm-candidat-detail-postuler" v-show="!display.contact && !doitAfficherLienOrigineOffre(offreCourante.contact)" v-on:click="display.contact = true">Je contacte le recruteur</button>
@@ -97,7 +97,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="detailOffre-section detailOffre-sectionDescription" v-show="offreCourante.description">
+                                <div class="col-12 col-lg-9 detailOffre-section" v-show="offreCourante.description">
                                     <h3 class="detailOffre-titreSection">Description</h3>
                                     <p class="texte-noir detailOffre--description">{{offreCourante.description}}</p>
                                 </div>
@@ -106,26 +106,26 @@
                         <div class="detailOffre-informationsCles">
                             <div class="container">
                                 <div class="detailOffre">
-                                    <div class="detailOffre-section">
+                                    <div class="col-12 detailOffre-section">
                                         <h3 class="detailOffre-titreSection">Informations clés</h3>
-                                        <div class="infosClesDetailOffre">
-                                            <div class="infosClesDetailOffre-colonne">
+                                        <div class="row">
+                                            <div class="col-12 col-lg-6">
                                                 <p class="texte-noir font-size-sm" v-if="offreCourante.libelleDureeTravail">
-                                                    <img class="infosClesDetailOffre-icone" src="@assetsFinder.path("images/pages/candidat/rechercheOffres/horaire.svg")" alt="Duree de travail" height="16" width="16" />
+                                                    <img class="mr-1" src="@assetsFinder.path("images/pages/candidat/rechercheOffres/horaire.svg")" alt="Duree de travail" height="16" width="16" />
                                                     {{offreCourante.libelleDureeTravail}}
                                                 </p>
                                                 <p class="texte-noir font-size-sm" v-if="offreCourante.complementExercice">
-                                                    <img class="infosClesDetailOffre-icone" src="@assetsFinder.path("images/pages/candidat/rechercheOffres/calendrier.svg")" alt="Complément exercice" height="16" width="16" />
+                                                    <img class="mr-1" src="@assetsFinder.path("images/pages/candidat/rechercheOffres/calendrier.svg")" alt="Complément exercice" height="16" width="16" />
                                                     {{offreCourante.complementExercice}}
                                                 </p>
                                                 <p class="texte-noir font-size-sm" v-if="offreCourante.libelleDeplacement">
-                                                    <img class="infosClesDetailOffre-icone" src="@assetsFinder.path("images/pages/candidat/rechercheOffres/deplacement.svg")" alt="Deplacements" height="16" width="16" />
+                                                    <img class="mr-1" src="@assetsFinder.path("images/pages/candidat/rechercheOffres/deplacement.svg")" alt="Deplacements" height="16" width="16" />
                                                     {{offreCourante.libelleDeplacement}}
                                                 </p>
                                             </div>
-                                            <div class="infosClesDetailOffre-colonne">
-                                                <p class="texte-noir font-size-sm detailOffre-info--sansMarge" v-if="offreCourante.salaire.libelle || offreCourante.salaire.commentaire">
-                                                    <img class="infosClesDetailOffre-icone" src="@assetsFinder.path("images/pages/candidat/rechercheOffres/salaire.svg")" alt="Salaire" height="16" width="16" />
+                                            <div class="col-12 col-lg-6">
+                                                <p class="mb-0 texte-noir font-size-sm" v-if="offreCourante.salaire.libelle || offreCourante.salaire.commentaire">
+                                                    <img class="mr-1" src="@assetsFinder.path("images/pages/candidat/rechercheOffres/salaire.svg")" alt="Salaire" height="16" width="16" />
                                                     {{offreCourante.salaire.libelle || offreCourante.salaire.commentaire}}
                                                 </p>
                                                 <ul class="texte-noir font-size-sm" v-if="offreCourante.salaire.complement1 || offreCourante.salaire.complement2">
@@ -141,7 +141,7 @@
                         <div class="detailOffre-profil">
                             <div class="container">
                                 <div class="detailOffre">
-                                    <div class="detailOffre-section">
+                                    <div class="col-12 detailOffre-section">
                                         <h3 class="detailOffre-titreSection">Votre profil</h3>
                                         <div class="infoProfil font-size-sm">
                                             <span class="infoProfil-puce infoProfil-puce--souhaite"></span>
@@ -205,7 +205,7 @@
                         </div>
                         <div class="container">
                             <div class="detailOffre">
-                                <div class="detailOffre-section">
+                                <div class="col-12 detailOffre-section">
                                     <h3 class="detailOffre-titreSection">L'entreprise</h3>
                                     <p v-show="offreCourante.entreprise.urlLogo">
                                         <img v-bind:alt="'Logo ' + offreCourante.entreprise.nom" v-bind:src="offreCourante.entreprise.urlLogo" height="100"/>
@@ -216,11 +216,11 @@
                                     <p class="texte-noir font-size-sm" v-show="offreCourante.entreprise.effectif">{{offreCourante.entreprise.effectif}}</p>
                                     <a class="texte-noir font-size-sm" v-show="offreCourante.entreprise.urlSite" v-bind:href="offreCourante.entreprise.urlSite" target="_blank">{{offreCourante.entreprise.urlSite}}</a>
                                 </div>
-                                <div class="detailOffre-section">
+                                <div class="col-12 detailOffre-section">
                                     <div class="postuler">
                                         <div class="postuler-texte">
-                                            <p class="texte-noir font-weight-bold detailOffre-info--sansMarge">Cette offre vous intéresse, postulez !</p>
-                                            <p class="texte-noir detailOffre-info--sansMarge">Veuillez adresser votre CV et une lettre de motivation en précisant le numéro de l'offre : <span class="font-weight-bold">n°{{offreCourante.id}}</span></p>
+                                            <p class="mb-0 texte-noir font-weight-bold">Cette offre vous intéresse, postulez !</p>
+                                            <p class="mb-0 texte-noir">Veuillez adresser votre CV et une lettre de motivation en précisant le numéro de l'offre : <span class="font-weight-bold">n°{{offreCourante.id}}</span></p>
                                         </div>
                                         <div class="postuler-cta">
                                             <button type="button" class="bouton bouton-action bouton--blancSurVert w-100 gtm-candidat-detail-postuler" v-show="!display.contact && !doitAfficherLienOrigineOffre(offreCourante.contact)" v-on:click="display.contact = true">Je contacte le recruteur</button>
@@ -366,9 +366,9 @@
                                  v-on:click="afficherOffre(offre, index)"
                                  class="offres-item offre gtm-candidat-detail-offre">
                                 <div class="offre-resume gtm-candidat-detail-offre">
-                                    <p class="offre-info offre-intitule gtm-candidat-detail-offre">{{offre.intitule | capitalize}}</p>
-                                    <p class="offre-info offre-nomEntreprise gtm-candidat-detail-offre">{{offre.entreprise.nom | capitalize}}</p>
-                                    <p class="texte-noir font-size-sm mb-0 gtm-candidat-detail-offre">
+                                    <p class="mb-0 texte-noir font-weight-bold gtm-candidat-detail-offre">{{offre.intitule | capitalize}}</p>
+                                    <p class="mb-3 texte-noir font-size-sm gtm-candidat-detail-offre">{{offre.entreprise.nom | capitalize}}</p>
+                                    <p class="mb-0 texte-noir font-size-sm gtm-candidat-detail-offre">
                                         <img alt="Localisation" src="@assetsFinder.path("images/commun/localisation.svg")" height="16" width="16" />
                                         {{offre.lieuTravail.libelle}}
                                     </p>
