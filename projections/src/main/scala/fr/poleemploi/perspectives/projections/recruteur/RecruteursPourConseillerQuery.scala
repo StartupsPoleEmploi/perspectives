@@ -4,7 +4,7 @@ import java.time.{LocalDate, ZonedDateTime}
 
 import fr.poleemploi.cqrs.projection.{Query, QueryResult}
 import fr.poleemploi.perspectives.commun.domain._
-import fr.poleemploi.perspectives.recruteur.{RecruteurId, TypeRecruteur}
+import fr.poleemploi.perspectives.recruteur.{NumeroSiret, RecruteurId, TypeRecruteur}
 import play.api.libs.json.{Json, Writes}
 
 case class RecruteursPourConseillerQuery(codesDepartement: List[CodeDepartement],
@@ -29,11 +29,14 @@ object RecruteursPourConseillerQueryResult {
 case class RecruteurPourConseillerDto(recruteurId: RecruteurId,
                                       nom: Nom,
                                       prenom: Prenom,
+                                      email: Email,
                                       typeRecruteur: Option[TypeRecruteur],
                                       raisonSociale: Option[String],
                                       codePostal: Option[String],
                                       commune: Option[String],
                                       contactParCandidats: Option[Boolean],
+                                      numeroSiret: Option[NumeroSiret],
+                                      numeroTelephone: Option[NumeroTelephone],
                                       dateInscription: ZonedDateTime,
                                       dateDerniereConnexion: ZonedDateTime)
 

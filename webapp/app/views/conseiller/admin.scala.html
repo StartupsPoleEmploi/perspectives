@@ -166,6 +166,8 @@
                         <tr>
                             <th>Raison sociale</th>
                             <th>Gérant</th>
+                            <th>Contact</th>
+                            <th>SIRET</th>
                             <th>Type</th>
                             <th>Ville</th>
                             <th>Date d'inscription</th>
@@ -176,10 +178,13 @@
                         <tr v-for="recruteur in rechercheRecruteurs.resultats">
                             <td>{{recruteur.raisonSociale}}</td>
                             <td>{{recruteur.prenom}} {{recruteur.nom}}</td>
-                            <td>{{recruteur.typeRecruteur | typeRecruteur}}</td>
                             <td>
-                                <template v-if="recruteur.commune">{{recruteur.commune}} ({{recruteur.codePostal}})</template>
+                                <p class="mb-1">{{recruteur.email}}</p>
+                                <p class="mb-0" v-if="recruteur.numeroTelephone">{{recruteur.numeroTelephone | numeroTelephone}}</p>
                             </td>
+                            <td><template v-if="recruteur.numeroSiret">{{recruteur.numeroSiret}}</template></td>
+                            <td>{{recruteur.typeRecruteur | typeRecruteur}}</td>
+                            <td><template v-if="recruteur.commune">{{recruteur.commune}} ({{recruteur.codePostal}})</template></td>
                             <td>{{recruteur.dateInscription | date}}</td>
                             <td>{{recruteur.dateDerniereConnexion | date}}</td>
                         </tr>

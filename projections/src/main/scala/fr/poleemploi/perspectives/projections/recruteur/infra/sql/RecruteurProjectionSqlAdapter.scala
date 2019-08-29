@@ -145,7 +145,7 @@ class RecruteurProjectionSqlAdapter(database: Database) {
           .filter(r => query.page.map(p => r.dateInscription < p.dateInscription || (r.dateInscription === p.dateInscription && r.recruteurId < p.recruteurId)).getOrElse(true: Rep[Boolean]))
           .sortBy(r => (r.dateInscription.desc, r.recruteurId.desc))
           .take(query.nbRecruteursParPage)
-          .map(r => RecruteurPourConseillerLifted(r.recruteurId, r.nom, r.prenom, r.typeRecruteur, r.raisonSociale, r.commune, r.codePostal, r.contactParCandidats, r.dateInscription, r.dateDerniereConnexion))
+          .map(r => RecruteurPourConseillerLifted(r.recruteurId, r.nom, r.prenom, r.email, r.typeRecruteur, r.raisonSociale, r.commune, r.codePostal, r.contactParCandidats, r.numeroSiret, r.numeroTelephone, r.dateInscription, r.dateDerniereConnexion))
           .result
       ).map(_.toList)
     } yield
