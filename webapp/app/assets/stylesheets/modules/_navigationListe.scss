@@ -92,7 +92,7 @@
         left: -10px;
       }
       @include media-breakpoint-down(sm) {
-        top: 5px;
+        top: -5px;
         left: 10px;
       }
     }
@@ -119,7 +119,7 @@
         right: -10px;
       }
       @include media-breakpoint-down(sm) {
-        top: 5px;
+        top: -5px;
         right: 10px;
       }
     }
