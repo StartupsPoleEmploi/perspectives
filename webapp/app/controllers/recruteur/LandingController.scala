@@ -15,14 +15,14 @@ class LandingController @Inject()(cc: ControllerComponents,
                                   optionalCandidatAuthentifieAction: OptionalCandidatAuthentifieAction,
                                   optionalRecruteurAuthentifieAction: OptionalRecruteurAuthentifieAction)(implicit exec: ExecutionContext) extends AbstractController(cc) {
 
-  def landing: Action[AnyContent] = optionalRecruteurAuthentifieAction.async { optionalRecruteurAuthentifieRequest: OptionalRecruteurAuthentifieRequest[AnyContent] =>
-    optionalCandidatAuthentifieAction { implicit optionalCandidatAuthentifieRequest: OptionalCandidatAuthentifieRequest[AnyContent] =>
+  def landing: Action[AnyContent] = optionalCandidatAuthentifieAction.async { optionalCandidatAuthentifieRequest: OptionalCandidatAuthentifieRequest[AnyContent] =>
+    optionalRecruteurAuthentifieAction { implicit optionalRecruteurAuthentifieRequest: OptionalRecruteurAuthentifieRequest[AnyContent] =>
       if (optionalRecruteurAuthentifieRequest.isRecruteurAuthentifie)
         Redirect(controllers.recruteur.routes.RechercheCandidatController.index())
       else if (optionalCandidatAuthentifieRequest.isCandidatAuthentifie)
         Redirect(controllers.candidat.routes.RechercheOffreController.index())
       else
         Ok(views.html.recruteur.landing())
-    }(optionalRecruteurAuthentifieRequest)
+    }(optionalCandidatAuthentifieRequest)
   }
 }
