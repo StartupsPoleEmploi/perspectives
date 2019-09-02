@@ -41,7 +41,7 @@ services:
       - net
 
   webapp:
-    image: perspectives-webapp
+    image: perspectives-webapp:${WEBAPP_VERSION:-latest}
     depends_on:
       - database
     deploy:
@@ -51,11 +51,35 @@ services:
       options:
         tag: "perspectives_webapp.{{.ID}}"
         fluentd-async-connect: "true"
+    environment:
+      ALGOLIA_PLACES_APIKEY_FILE: /run/secrets/algolia_places_apikey
+      ALGOLIA_PLACES_APPID_FILE: /run/secrets/algolia_places_appid
+      OAUTH2_CLIENT_ID_FILE: /run/secrets/oauth2_client_id
+      OAUTH2_CLIENT_SECRET_FILE: /run/secrets/oauth2_client_secret
+      MAILJET_APIKEY_PUBLIC_FILE: /run/secrets/mailjet_apikey_public
+      MAILJET_APIKEY_PRIVATE_FILE: /run/secrets/mailjet_apikey_private
+      AUTOLOGIN_SECRET_KEY_FILE: /run/secrets/autologin_secret_key
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      PLAY_HTTP_SECRET_KEY_FILE: /run/secrets/play_http_secret_key
+      GOOGLE_TAG_MANAGER_CONTAINER_ID_FILE: /run/secrets/google_tag_manager_container_id
+      SLACK_WEBHOOK_URL_FILE: /run/secrets/slack_webhook_url
+    secrets:
+      - algolia_places_apikey
+      - algolia_places_appid
+      - oauth2_client_id
+      - oauth2_client_secret
+      - mailjet_apikey_public
+      - mailjet_apikey_private
+      - autologin_secret_key
+      - postgres_password
+      - play_http_secret_key
+      - google_tag_manager_container_id
+      - slack_webhook_url
     networks:
       - net
 
   batchs:
-    image: perspectives-batchs
+    image: perspectives-batchs:${BATCHS_VERSION:-latest}
     depends_on:
       - database
     deploy:
@@ -65,6 +89,18 @@ services:
       options:
         tag: "perspectives_batchs.{{.ID}}"
         fluentd-async-connect: "true"
+    environment:
+      MAILJET_APIKEY_PUBLIC_FILE: /run/secrets/mailjet_apikey_public
+      MAILJET_APIKEY_PRIVATE_FILE: /run/secrets/mailjet_apikey_private
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      PLAY_HTTP_SECRET_KEY_FILE: /run/secrets/play_http_secret_key
+      AUTOLOGIN_SECRET_KEY_FILE: /run/secrets/autologin_secret_key
+    secrets:
+      - mailjet_apikey_public
+      - mailjet_apikey_private
+      - postgres_password
+      - play_http_secret_key
+      - autologin_secret_key
     networks:
       - net
 
@@ -110,3 +146,27 @@ configs:
     file: ./elasticsearch/elasticsearch.yml
   fluent_bit:
     file: ./fluent-bit/fluent-bit.conf
+
+secrets:
+  algolia_places_apikey:
+    external: true
+  algolia_places_appid:
+    external: true
+  oauth2_client_id:
+    external: true
+  oauth2_client_secret:
+    external: true
+  mailjet_apikey_public:
+    external: true
+  mailjet_apikey_private:
+    external: true
+  autologin_secret_key:
+    external: true
+  postgres_password:
+    external: true
+  play_http_secret_key:
+    external: true
+  google_tag_manager_container_id:
+    external: true
+  slack_webhook_url:
+    external: true

@@ -7,6 +7,12 @@ project/project/
 target/
 webapp/public/
 webapp/conf/application-*.conf
+!webapp/conf/application-recette.conf
+!webapp/conf/application-production.conf
+webapp/conf/*.conf.bak
 batchs/public/
 batchs/conf/application-*.conf
+!batchs/conf/application-recette.conf
+!batchs/conf/application-production.conf
+batchs/conf/*.conf.bak
 .DS_STORE

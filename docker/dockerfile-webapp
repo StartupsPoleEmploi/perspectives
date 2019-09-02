@@ -27,4 +27,8 @@ RUN unzip perspectives-webapp-${WEBAPP_VERSION}.zip
 
 HEALTHCHECK --interval=15s --timeout=10s --start-period=60s CMD curl -f http://localhost:9000 || exit 1
 
-CMD ["sh", "-c", "./perspectives-webapp-${WEBAPP_VERSION}/bin/perspectives-webapp -Dlogger.resource=${WEBAPP_LOGBACK_RESOURCE} -Dconfig.resource=${WEBAPP_CONFIG_RESOURCE}"]
+COPY webapp_entrypoint.sh .
+
+RUN chmod +x ./webapp_entrypoint.sh
+
+ENTRYPOINT ["./webapp_entrypoint.sh"]
