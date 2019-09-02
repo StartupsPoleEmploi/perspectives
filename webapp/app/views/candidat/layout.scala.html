@@ -24,11 +24,7 @@
         @if(webAppConfig.useGoogleTagManager) {@commun.googleTagManagerNoScript()}
         @commun.navigation(menuNavigation = partials.menuCandidat(candidatAuthentifie), theme = Some("themeCandidat"))
         @commun.flashMessages()
-
         @content
-
-        <script src="@assetsFinder.path("javascripts/menuNavigation.js")" type="text/javascript"></script>
-
         @commun.infosWebapp()
     </body>
 </html>
