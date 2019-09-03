@@ -17,7 +17,10 @@ object Settings {
 
   // Configuration sans publication
   val noPublishSettings: Seq[Setting[_]] = Seq(
-    skip in publish := true
+    skip in publish := true,
+    publishTo := {
+      Some(Resolver.mavenLocal)
+    }
   )
 
   // Configuration spécifique de la publication pour une appli Play!
