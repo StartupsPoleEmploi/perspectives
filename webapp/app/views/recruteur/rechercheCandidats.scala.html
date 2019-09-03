@@ -6,7 +6,7 @@
 @(recruteurAuthentifie: RecruteurAuthentifie,
         jsData: JsObject)(implicit request: MessagesRequestHeader, flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
-@layout(recruteurAuthentifie = Some(recruteurAuthentifie)) {
+@layout(recruteurAuthentifie = Some(recruteurAuthentifie), cssFooter = Some("bg-gris-light")) {
     <div id="rechercheCandidats" v-cloak>
         <div id="detailCandidat" class="modal" tabindex="-1" role="dialog" aria-labelledby="titreModaleDetailCandidat"
              v-on:scroll="onScroll" ref="modaleDetailCandidat">

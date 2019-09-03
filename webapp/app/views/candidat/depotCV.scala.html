@@ -6,7 +6,7 @@
 @(candidatAuthentifie: CandidatAuthentifie,
         jsData: JsObject)(implicit request: MessagesRequestHeader, flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
-@layout(candidatAuthentifie = Some(candidatAuthentifie)) {
+@layout(candidatAuthentifie = Some(candidatAuthentifie), cssFooter = Some("bg-vert-emeraude-light")) {
     <div id="depotCVCandidat" class="bg-vert-emeraude-light" v-cloak>
         <section class="container py-md-5 py-2">
             <div class="row justify-content-center">

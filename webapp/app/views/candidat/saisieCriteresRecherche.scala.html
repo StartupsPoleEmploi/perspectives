@@ -6,7 +6,7 @@
 @(candidatAuthentifie: CandidatAuthentifie,
         jsData: JsObject)(implicit request: MessagesRequestHeader, flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
-@layout(candidatAuthentifie = Some(candidatAuthentifie)) {
+@layout(candidatAuthentifie = Some(candidatAuthentifie), cssFooter = Some("bg-vert-emeraude-light")) {
     <div id="saisieCriteresRechercheCandidat" class="bg-vert-emeraude-light" v-cloak>
         <div id="js-modaleContactRecruteur" class="modal" tabindex="-1" role="dialog" aria-labelledby="titreModaleContactRecruteur">
             <div class="modal-dialog modaleSaisie" role="document">

@@ -1,0 +1,35 @@
+#infosLegales {
+  .navigationSticky {
+    position: sticky;
+    top: 0;
+  }
+
+  .lienNavigation {
+    color: $noir;
+
+    &:hover {
+      color: $orange;
+      font-weight: bold;
+      text-decoration: none;
+    }
+  }
+
+  .lienMenu {
+    &--deplie {
+      color: $orange;
+    }
+
+    &--plie {
+      color: $noir;
+
+      &:after {
+        position: absolute;
+        content: '+';
+        top: 3px;
+        right: 1rem;
+        font-size: 2rem;
+        color: $noir;
+      }
+    }
+  }
+}

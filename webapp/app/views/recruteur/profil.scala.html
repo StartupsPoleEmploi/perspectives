@@ -6,7 +6,7 @@
 @(recruteurAuthentifie: RecruteurAuthentifie,
         jsData: JsObject)(implicit request: MessagesRequestHeader, flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
-@layout(recruteurAuthentifie = Some(recruteurAuthentifie)) {
+@layout(recruteurAuthentifie = Some(recruteurAuthentifie), cssFooter = Some("bg-violet-light")) {
 <div id="profilRecruteur" class="bg-violet-light" v-cloak>
     <section class="container py-md-5 py-2">
         <div class="row justify-content-center">

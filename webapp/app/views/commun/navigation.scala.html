@@ -1,7 +1,10 @@
 @import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
 @import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
 
-@(menuNavigation: Html, theme: Option[String] = None)(implicit assetsFinder: AssetsFinder)
+@(menuConnecte: Option[Html],
+        theme: Option[String] = None,
+        lienLandingCandidatActif: Boolean = false,
+        lienLandingRecruteurActif: Boolean = false)(implicit assetsFinder: AssetsFinder)
 
 <header class="container py-3">
     <div class="row align-items-center">
@@ -20,7 +23,29 @@
             <span class="texte-vert-emeraude burgerMenu-iconeFermeture @theme.map(t => s"burgerMenu-iconeFermeture--$t") js-navigation-iconeFermeture">&times;</span>
         </div>
         <div class="col-12 col-lg-auto ml-lg-auto navigation-conteneurMenu js-navigation-conteneurMenu">
-            @menuNavigation
+            @menuConnecte.getOrElse {
+            <nav class="menuNavigation">
+                <a class="menuNavigation-item menuNavigation-lien @if(lienLandingCandidatActif){menuNavigation-lien--themeCandidat}else{menuNavigation-lien--inactif}" href="@controllers.candidat.routes.LandingController.landing()">Trouver un emploi</a>
+                <a class="menuNavigation-item menuNavigation-lien @if(lienLandingRecruteurActif){menuNavigation-lien--themeRecruteur}else{menuNavigation-lien--inactif}" href="@controllers.recruteur.routes.LandingController.landing()">Recruter un candidat</a>
+                <div class="menuNavigation-item menuConnexion menuConnexion--deconnecte">
+                    <span class="texte-noir">Se connecter</span>
+                    <ul class="menuConnexionActions">
+                        <li class="menuConnexionActions-item">
+                            <a class="menuConnexionActions-lien gtm-candidat-connexion" href="@controllers.candidat.routes.AuthentificationController.connexion()">
+                                <img alt="Connexion Candidat" class="menuConnexion-icone" src="@assetsFinder.path("images/modules/menuNavigation/candidat.svg")">
+                                Candidat
+                            </a>
+                        </li>
+                        <li class="menuConnexionActions-item">
+                            <a class="menuConnexionActions-lien gtm-recruteur-connexion" href="@controllers.recruteur.routes.AuthentificationController.connexion()">
+                                <img alt="Connexion Recruteur" class="menuConnexion-icone" src="@assetsFinder.path("images/modules/menuNavigation/recruteur.svg")">
+                                Recruteur
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            }
         </div>
     </div>
 </header>

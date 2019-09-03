@@ -1,9 +1,8 @@
 @import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
 
-@(recruteurAuthentifie: Option[RecruteurAuthentifie])(implicit assetsFinder: AssetsFinder)
+@(recruteurAuthentifie: RecruteurAuthentifie)(implicit assetsFinder: AssetsFinder)
 
 <nav class="menuNavigation">
-    @recruteurAuthentifie.map { recruteurAuthentifie =>
     <div class="menuNavigation-item menuConnexion">
         <img alt="Recruteur connecté" class="menuConnexion-icone menuConnexion-icone--themeRecruteur" src="@assetsFinder.path("images/modules/menuNavigation/connecte.svg")">
         <span class="texte-violet text-capitalize font-size-sm font-weight-bold">@recruteurAuthentifie.prenom.value @recruteurAuthentifie.nom.value</span>
@@ -22,25 +21,4 @@
             </li>
         </ul>
     </div>
-    }.getOrElse {
-        <a class="menuNavigation-item menuNavigation-lien menuNavigation-lien--inactif" href="@controllers.candidat.routes.LandingController.landing()">Trouver un emploi</a>
-        <a class="menuNavigation-item menuNavigation-lien menuNavigation-lien--themeRecruteur" href="#">Recruter un candidat</a>
-        <div class="menuNavigation-item menuConnexion menuConnexion--deconnecte">
-            <span class="texte-noir">Se connecter</span>
-            <ul class="menuConnexionActions">
-                <li class="menuConnexionActions-item">
-                    <a class="menuConnexionActions-lien gtm-recruteur-connexion" href="@controllers.recruteur.routes.AuthentificationController.connexion()">
-                        <img alt="Connexion Recruteur" class="menuConnexion-icone" src="@assetsFinder.path("images/modules/menuNavigation/recruteur.svg")">
-                        Recruteur
-                    </a>
-                </li>
-                <li class="menuConnexionActions-item">
-                    <a class="menuConnexionActions-lien gtm-candidat-connexion" href="@controllers.candidat.routes.AuthentificationController.connexion()">
-                        <img alt="Connexion Candidat" class="menuConnexion-icone" src="@assetsFinder.path("images/modules/menuNavigation/candidat.svg")">
-                        Candidat
-                    </a>
-                </li>
-            </ul>
-        </div>
-    }
 </nav>

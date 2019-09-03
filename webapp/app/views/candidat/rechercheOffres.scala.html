@@ -5,7 +5,7 @@
 @(candidatAuthentifie: Option[CandidatAuthentifie],
         jsData: JsObject)(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
-@layout(candidatAuthentifie = candidatAuthentifie) {
+@layout(candidatAuthentifie = candidatAuthentifie, cssFooter = Some("bg-gris-light")) {
     <div id="rechercheOffres" v-cloak>
         <div id="detailOffre" class="modal" tabindex="-1" role="dialog" aria-labelledby="titreModaleDetailOffre">
             <div class="modal-dialog modaleDetailOffre" role="document">

@@ -22,6 +22,7 @@
 
 @import "modules/navigation";
 @import "modules/navigationListe";
+@import "modules/footer";
 @import "modules/vuejs";
 
 @import "composants/places";
@@ -31,6 +32,8 @@
 @import "composants/radio";
 @import "composants/rechercheOffres";
 @import "composants/temoignages";
+
+@import "pages/infosLegales";
 
 @import "pages/candidat/depotCV";
 @import "pages/candidat/landing";

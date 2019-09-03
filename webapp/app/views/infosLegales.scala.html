@@ -1,0 +1,219 @@
+@import conf.WebAppConfig
+@import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
+@import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
+
+@(candidatAuthentifie: Option[CandidatAuthentifie],
+        recruteurAuthentifie: Option[RecruteurAuthentifie])(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
+
+@views.html.layout(
+    menuNavigation = views.html.commun.navigation(
+        menuConnecte = candidatAuthentifie.map(c => views.html.candidat.partials.menuCandidat(c))
+                .orElse(recruteurAuthentifie.map(r => views.html.recruteur.partials.menuRecruteur(r))),
+        theme = candidatAuthentifie.map(_ => "themeCandidat")
+                .orElse(recruteurAuthentifie.map(r => "themRecruteur"))
+    ),
+    cssFooter = Some("bg-gris-light")
+) {
+    <div id="infosLegales" class="bg-gris-light" v-cloak>
+        <div class="container py-md-5 py-2">
+            <div class="row">
+                <nav class="col-12 col-md-3">
+                    <div class="navigationSticky">
+                        <a class="py-3 d-block font-weight-bold lienNavigation" href="#"
+                        v-on:click="display.menu = 'cgu'"
+                        v-bind:class="[display.menu === 'cgu' ? 'lienMenu--deplie' : 'lienMenu--plie']">CGU</a>
+                        <ol class="font-size-sm pl-3" v-show="display.menu === 'cgu'">
+                            <li class="pb-3"><a class="lienNavigation" href="#paragraphe-1">Directeur de publication et hébergeur</a></li>
+                            <li class="pb-3"><a class="lienNavigation" href="#paragraphe-2">Objet du service</a></li>
+                            <li class="pb-3"><a class="lienNavigation" href="#paragraphe-3">Création de compte</a></li>
+                            <li class="pb-3"><a class="lienNavigation" href="#paragraphe-4">Protection des données à caractère personnel</a></li>
+                            <li class="pb-3"><a class="lienNavigation" href="#paragraphe-5">Cookies et autres traceurs</a></li>
+                            <li class="pb-3"><a class="lienNavigation" href="#paragraphe-6">Usages non autorisés</a></li>
+                            <li class="pb-3"><a class="lienNavigation" href="#paragraphe-7">Diffusion de contenus sur internet</a></li>
+                            <li class="pb-3"><a class="lienNavigation" href="#paragraphe-8">Responsabilité</a></li>
+                            <li><a class="lienNavigation" href="#paragraphe-9">Propriété intellectuelle</a></li>
+                        </ol>
+                        <a class="py-3 d-block border-top border-bottom border-dark font-weight-bold lienNavigation" href="#creditsPhotos"
+                        v-on:click="display.menu = 'creditsPhotos'"
+                        v-bind:class="{'texte-orange': display.menu === 'creditsPhotos'}">Crédits photos</a>
+                    </div>
+                </nav>
+                <div class="col-12 col-md-9 pt-3 pt-md-0">
+                    <div id="cgu" v-show="display.menu === 'cgu'">
+                        <h1 class="texte-noir font-size-lg font-weight-bold">Conditions générales d'utilisation</h1>
+                        <div class="mb-5">
+                            <p class="texte-noir mb-0">
+                                L’utilisateur du service doit respecter ces conditions générales d’utilisation.
+                                Elles peuvent être modifiées par Pôle emploi et s’imposent à l’utilisateur dès leur mise en ligne.
+                                L’utilisateur est donc invité à consulter régulièrement la dernière version mise à jour.
+                            </p>
+                            <p class="texte-noir">Dernière modification : 3 septembre 2019</p>
+                        </div>
+
+                        <h2 id="paragraphe-1" class="mb-3 texte-noir font-size-md">1. Directeur de la publication et hébergeur</h2>
+                        <div class="mb-5 texte-noir">
+                            <p class="text-preline">Le directeur de la publication est :
+                                <span class="font-weight-bold">M. Jean Bassères, directeur général de Pôle emploi</span>
+                            </p>
+                            <p class="text-preline">dont le siège est situé au :
+                                1, avenue du Docteur Gley, 75020 Paris
+                                Tél. 33(0)1 40 30 60 00
+                            </p>
+                            <p class="text-preline">L’hébergeur du service est OVH :
+                                2 rue Kellermann, 59100 Roubaix
+                                Tél. 09 72 10 10 07
+                            </p>
+                        </div>
+
+                        <h2 id="paragraphe-2" class="mb-3 texte-noir font-size-md">2. Objet du service</h2>
+                        <div class="mb-5 texte-noir">
+                            <p>Le site Perspectives met en relation des candidats qui ont été validé par la Méthode de Recrutement par Simulation de Pôle emploi et des recruteurs / organismes de formation.</p>
+                            <p class="font-weight-bold mb-1">Les recruteurs / organismes de formation ont accès aux données suivantes des candidats :</p>
+                            <ul class="pl-3">
+                                <li class="mb-1">la Méthode de Recrutement par simulation des candidats,</li>
+                                <li class="mb-1">les habiletés validées,</li>
+                                <li class="mb-1">nom, prénom, téléphone, CV,</li>
+                                <li class="mb-1">les métiers que le candidat recherche</li>
+                                <li>
+                                    <span class="mb-1">les données rendues visibles pour les recruteurs sur le site de Pôle Emploi sont les suivantes :</span>
+                                    <ul>
+                                        <li>Savoir être professionnel</li>
+                                        <li>Savoirs et savoir-faire</li>
+                                        <li>Expériences professionnelles</li>
+                                        <li>Formations</li>
+                                        <li>Langue(s) parlée(s)</li>
+                                        <li>Permis de conduire</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <h2 id="paragraphe-3" class="mb-3 texte-noir font-size-md">3. Création de compte</h2>
+                        <div class="mb-5 texte-noir">
+                            <p>L’utilisation du site Perspectives est réservée aux demandeurs d’emploi (personnes inscrites sur la liste des demandeurs d’emploi) et recruteurs qui ont déjà créé un compte candidat ou un compte recruteur sur pole-emploi.fr.</p>
+                            <p>La connexion au site perspective s’effectue avec les identifiants et mot de passe du compte candidat ou recruteur de pole-emploi.fr.</p>
+                        </div>
+
+                        <h2 id="paragraphe-4" class="mb-3 texte-noir font-size-md">4. Protection des données à caractère personnel</h2>
+                        <div class="mb-5 texte-noir">
+                            <p>Vos données personnelles sont utilisées pour nous permettre de délivrer le service décrit à l’article 2. Elles peuvent également être utilisées à des fins statistiques propres à Perspectives et Pôle emploi ou dans le but d’améliorer notre service.</p>
+                            <p>Vos données sont destinées à Perspectives et, selon le cas, aux recruteurs, aux conseillers Pôle emploi, ainsi qu’aux organismes de formation. Nous utilisons également la solution Mailjet pour envoyer nos emails (genre, nom, prénom, méthode de recrutement par simulation validée et le département).</p>
+                            <p>Vos données sont conservées pendant une durée maximale de 24 mois.</p>
+                            <p class="mb-1">Vous pouvez demander à accéder à vos données, à les faire rectifier ou effacer, à limiter le traitement qui en est fait ou prendre des dispositions pour le transfert de vos données à tiers au moment de votre décès, en vous adressant par courrier postal ou électronique à correspondant informatique et libertés de Pôle emploi :</p>
+                            <p class="text-preline">
+                                1, avenue du Docteur Gley, 75987 Paris cedex 20
+                                <u>Courriers-cnil@@pole-emploi.fr</u>
+                                ou de <u>perspectives@@pole-emploi.fr</u>
+                            </p>
+                        </div>
+
+                        <h2 id="paragraphe-5" class="mb-3 texte-noir font-size-md">5. Cookies et autres traceurs</h2>
+                        <div class="mb-5 texte-noir">
+                            <p>
+                                Pôle emploi utilise des cookies permettant d’enregistrer des informations relatives à la navigation de l’utilisateur de manière anonyme et dans un but d’analyses statistiques. Les cookies générés ont une durée de conservation limitée à 13 mois. Ces cookies sont émis par les sociétés Google et Hotjar.
+                                L’utilisateur peut s’opposer à l'enregistrement de cookies sur son ordinateur <span class="font-weight-bold">en configurant son poste informatique de la manière suivante :</span>
+                            </p>
+                            <div class="pl-4 mb-4">
+                                <span class="font-weight-bold">Pour Microsoft Internet Explorer 6.0 et + :</span>
+                                <ul>
+                                    <li>Choisir le menu "Outils" (ou "Tools"), puis "Options Internet" (ou "Internet Options")</li>
+                                    <li>Cliquer sur l'onglet "Confidentialité" (ou "Confidentiality")</li>
+                                    <li>Sélectionner le niveau souhaité à l'aide du curseur ou cliquer sur le bouton "Avancé" pour personnaliser la gestion des cookies.</li>
+                                </ul>
+                            </div>
+                            <div class="pl-4 mb-4">
+                                <span class="font-weight-bold">Pour Firefox 3.5 et + :</span>
+                                <ul>
+                                    <li>Choisir le menu "Outils" (ou "Tools"), puis "Options"</li>
+                                    <li>Cliquer sur l'onglet "Vie privée"</li>
+                                    <li>Dans « Règles de conservation », sélectionner « Utiliser les paramètres personnalisés pour l’historique » et décocher le bouton "Accepter les cookies".</li>
+                                </ul>
+                            </div>
+                            <div class="pl-4 mb-4">
+                                <span class="font-weight-bold">Pour Chrome :</span>
+                                <ul>
+                                    <li>Choisir le menu "Outils" (ou "Tools"), puis "Options"</li>
+                                    <li>Cliquer sur l'onglet "Options avancées"</li>
+                                    <li>Dans « Paramètres de contenu », cocher le bouton « Interdire à tous les sites de stocker les données».</li>
+                                </ul>
+                            </div>
+                            <div class="pl-4 mb-4">
+                                <span class="font-weight-bold">Pour Netscape 6.X et 7.X :</span>
+                                <ul>
+                                    <li>Choisir le menu "Edition">"Préférences"</li>
+                                    <li>Confidentialité et Sécurité</li>
+                                    <li>Cookies</li>
+                                </ul>
+                            </div>
+                            <div class="pl-4 mb-4">
+                                <span class="font-weight-bold">Pour Opéra 6.0 et au-delà :</span>
+                                <ul>
+                                    <li>Choisir le menu "Fichier">"Préférences"</li>
+                                    <li>Vie Privée</li>
+                                </ul>
+                            </div>
+                            <p>En continuant votre navigation sur notre site, vous acceptez ces traceurs.</p>
+                        </div>
+
+                        <h2 id="paragraphe-6" class="mb-3 texte-noir font-size-md">6. Usages non autorisés</h2>
+                        <div class="mb-5 texte-noir">
+                            <p>L’utilisateur ne doit pas utiliser le service dans un autre but que celui fixé à l’article 2 ou de façon contraire aux conditions générales d’utilisation.</p>
+                            <p>Pôle emploi peut bloquer l’accès au compte de l’utilisateur en cas de violation de ces dispositions.</p>
+                        </div>
+
+                        <h2 id="paragraphe-7" class="mb-3 texte-noir font-size-md">7. Diffusion de contenus sur internet</h2>
+                        <div class="mb-5 texte-noir">
+                            <p class="mb-1 font-weight-bold">L’utilisateur ne doit pas, sous peine de sanctions pénales, mettre en ligne des contenus illégaux, notamment :</p>
+                            <ul class="pl-3">
+                                <li>faire l’apologie de crimes contre l’humanité ;</li>
+                                <li>inciter à la commission d’acte de terrorisme ou faire leur apologie ;</li>
+                                <li>inciter à haine raciale ;</li>
+                                <li>inciter à la haine à l’égard de personnes à raison de leur sexe, de leur orientation ou identité sexuelle ;</li>
+                                <li>inciter à la haine à l’égard de personnes à raison de leur handicap ;</li>
+                                <li>diffuser de la pornographie, notamment enfantine ;</li>
+                                <li>inciter à la violence, notamment, aux violences faites aux femmes ;</li>
+                                <li>porter atteinte à la dignité humaine ;</li>
+                                <li>proférer des injures ;</li>
+                                <li>alléguer ou imputer un fait qui porte atteinte à l'honneur ou à la considération d'une personne (diffamation).</li>
+                            </ul>
+
+                            <p class="mb-1 font-weight-bold">Par ailleurs, l’utilisateur s’engage à ne pas mettre en ligne des contenus inappropriés, notamment :</p>
+                            <ul class="pl-3">
+                                <li>sans rapport avec l’objet des services de Pôle emploi ;</li>
+                                <li>comportant des opinions, politiques, religieuses ou philosophiques ;</li>
+                                <li>contraires aux bonnes mœurs.</li>
+                            </ul>
+                            <p>Une procédure de signalement permet à tout utilisateur de signaler tout contenu manifestement illicite (incitation à la haine, à la violence, injures, etc.)</p>
+                            <p>Le signalement s’effectue en nous <a class="texte-noir" href="mailto:perspectives@@pole-emploi.fr">envoyant un mail</a></p>
+                            <p class="font-weight-bold">Pôle emploi supprime, sans avertissement, tout contenu contraire au présent article.</p>
+                        </div>
+
+                        <h2 id="paragraphe-8" class="mb-3 texte-noir font-size-md">8. Responsabilité</h2>
+                        <p class="mb-5 texte-noir">L’utilisateur ne peut prétendre à aucune indemnité en cas d’impossibilité d’accéder au service ou en cas de dommages de toute nature, directs ou indirects, résultant de l’utilisation du service.</p>
+
+                        <h2 id="paragraphe-9" class="mb-3 texte-noir font-size-md">9. Propriété intellectuelle</h2>
+                        <div class="mb-5 texte-noir">
+                            <p>Le service Perspectives est protégé au titre du droit d’auteur défini aux articles L.111-1 et suivants du code de la propriété intellectuelle. Toute représentation, reproduction ou diffusion, intégrale ou partielle du service, sur quelque support que ce soit, sans l’autorisation expresse et préalable de Pôle emploi constitue un acte de contrefaçon, sanctionné au titre des articles L.335-2 et L.335-3 du même code, sans préjudice des dispositions de l’article L.122-5 du code de la propriété intellectuelle.</p>
+                            <p>Par ailleurs, toute représentation, reproduction ou diffusion, intégrale ou partielle de la marque Pôle emploi, sur quelque support que ce soit, sans l'autorisation expresse et préalable de Pôle emploi constitue un acte de contrefaçon, sanctionné au titre de l’article L.716-1 du même code.</p>
+                        </div>
+                    </div>
+                    <div id="creditsPhotos" class="row" v-show="display.menu === 'creditsPhotos'">
+                        <h1 class="col mb-3 texte-noir font-size-lg font-weight-bold">Crédits photos</h1>
+                        <div v-for="page in pagesCreditsPhotos">
+                            <p class="col font-size-md texte-noir">{{page.titre}}</p>
+                            <ul class="row text-center list-unstyled">
+                                <li class="col-12 col-sm-6 col-lg-4 pb-5" v-for="photo in page.photos">
+                                    <img class="mb-2"
+                                    v-bind:alt="photo.credit" v-bind:src="'/assets/images/pages/infosLegales/' + photo.src"/>
+                                    <p class="mb-0 texte-noir">Photo by {{photo.credit}}</p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="@assetsFinder.path("javascripts/infosLegales.js")" type="text/javascript"></script>
+    @commun.infosWebapp()
+}

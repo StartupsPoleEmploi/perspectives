@@ -1,0 +1,21 @@
+.footer {
+  &-lien {
+    color: $noir;
+
+    &:hover {
+      color: $noir;
+    }
+  }
+
+  &-item {
+    display: inline;
+
+    &:not(:last-child) {
+      &:after {
+        content: "•";
+        position: absolute;
+        right: 0;
+      }
+    }
+  }
+}

@@ -3,15 +3,16 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 module.exports = {
     entry: {
-        recruteurLanding: './src/pages/recruteur/landing.js',
-        recruteurProfil: './src/pages/recruteur/profil.js',
-        recruteurRechercheCandidats: './src/pages/recruteur/rechercheCandidats.js',
-        conseillerAdmin: './src/pages/conseiller/admin.js',
+        candidatDepotCV: './src/pages/candidat/depotCV.js',
         candidatLanding: './src/pages/candidat/landing.js',
         candidatRechercheOffres: './src/pages/candidat/rechercheOffres.js',
         candidatSaisieCriteresRecherche: './src/pages/candidat/saisieCriteresRecherche.js',
-        candidatDepotCV: './src/pages/candidat/depotCV.js',
-        menuNavigation: './src/modules/menuNavigation.js'
+        conseillerAdmin: './src/pages/conseiller/admin.js',
+        infosLegales: './src/pages/infosLegales.js',
+        menuNavigation: './src/modules/menuNavigation.js',
+        recruteurLanding: './src/pages/recruteur/landing.js',
+        recruteurProfil: './src/pages/recruteur/profil.js',
+        recruteurRechercheCandidats: './src/pages/recruteur/rechercheCandidats.js'
     },
     output: {
         filename: '[name].js',
