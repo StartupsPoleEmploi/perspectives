@@ -14,7 +14,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 // FIXME : perf referentiel metier
-// FIXME : mapping pagination
 // FIXME : requete en passant des sous domaines + labels domaine ou sous secteur
 class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
                                              esConfig: EsConfig,
