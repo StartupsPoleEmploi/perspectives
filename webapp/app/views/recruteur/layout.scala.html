@@ -20,6 +20,9 @@
         @if(webAppConfig.useGoogleTagManager) {<script src="@assetsFinder.path("javascripts/vendor/googleTagManager.js")" type="text/javascript"></script>}
     </head>
     <body>
+        <noscript>
+            <strong>Nous sommes désolé, mais Perspectives ne fonctionnera pas correctement sans JavaScript activé. Veuillez activez JavaScript.</strong>
+        </noscript>
         @if(webAppConfig.useGoogleTagManager) {@commun.googleTagManagerNoScript()}
         @commun.navigation(menuNavigation = views.html.recruteur.partials.menuRecruteur(recruteurAuthentifie), theme = Some("themeRecruteur"))
         @commun.flashMessages()

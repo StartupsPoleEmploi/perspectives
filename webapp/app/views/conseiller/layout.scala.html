@@ -17,6 +17,9 @@
         @commun.polyfill()
     </head>
     <body>
+        <noscript>
+            <strong>Nous sommes désolé, mais Perspectives ne fonctionnera pas correctement sans JavaScript activé. Veuillez activez JavaScript.</strong>
+        </noscript>
         @commun.navigation(menuNavigation = partials.menuConseiller(conseillerAuthentifie), theme = Some("themeConseiller"))
         @commun.flashMessages()
         @content
