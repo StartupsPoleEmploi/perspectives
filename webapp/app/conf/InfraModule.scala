@@ -11,6 +11,7 @@ import fr.poleemploi.eventsourcing.infra.akka.AkkaEventStoreListener
 import fr.poleemploi.eventsourcing.infra.jackson.EventSourcingObjectMapperBuilder
 import fr.poleemploi.eventsourcing.infra.postgresql.{PostgreSQLAppendOnlyStore, PostgreSQLSnapshotStore, PostgresDriver => EventSourcingPostgresDriver}
 import fr.poleemploi.eventsourcing.snapshotstore.SnapshotStore
+import fr.poleemploi.perspectives.authentification.infra.autologin.AutologinService
 import fr.poleemploi.perspectives.authentification.infra.peconnect.PEConnectAuthAdapter
 import fr.poleemploi.perspectives.authentification.infra.peconnect.jwt.PEConnectJWTAdapter
 import fr.poleemploi.perspectives.authentification.infra.peconnect.ws.PEConnectAuthWSAdapter
@@ -405,4 +406,12 @@ class InfraModule extends AbstractModule with ScalaModule {
     new SessionConseillerAuthentifie(
       candidatsConseillers = webAppConfig.candidatsConseillers
     )
+
+  @Provides
+  @Singleton
+  def autologinService(webAppConfig: WebAppConfig): AutologinService =
+    new AutologinService(
+      autologinConfig = webAppConfig.autologinConfig
+    )
+
 }

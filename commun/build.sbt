@@ -6,6 +6,7 @@ libraryDependencies ++= Seq(
   Dependencies.alpakka,
   Dependencies.commonCompress,
   Dependencies.slickPg,
+  Dependencies.jwtPlayJson,
   Dependencies.scalatestplus,
   Dependencies.mockito
 )

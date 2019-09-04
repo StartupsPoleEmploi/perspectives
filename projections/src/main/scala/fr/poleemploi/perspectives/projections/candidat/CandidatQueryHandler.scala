@@ -34,6 +34,7 @@ class CandidatQueryHandler(candidatProjection: CandidatProjection,
       .map(r => OffresCandidatQueryResult(offres = r.offres, pageSuivante = r.pageSuivante))
     case q: CandidatPourRechercheOffreQuery => candidatProjection.rechercheOffre(q)
     case q: SecteursActivitesAvecCandidatsQuery => candidatProjection.secteursActivitesAvecCandidats(q)
+    case q: ExisteCandidatQuery => candidatProjection.existeCandidat(q)
   }
 
   private def cvCandidatPourRecruteur(query: CVCandidatPourRecruteurQuery): Future[CV] = {

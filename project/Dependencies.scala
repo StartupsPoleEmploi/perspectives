@@ -43,6 +43,8 @@ object Dependencies {
 
   val alpakka = "com.lightbend.akka" %% "akka-stream-alpakka-csv" % "1.0.0"
 
+  val jwtPlayJson = "com.pauldijou" %% "jwt-play-json" % "3.1.0"
+
   val scalatestplus = "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test
 
   val mockito = "org.mockito" % "mockito-core" % "2.18.3" % "test"

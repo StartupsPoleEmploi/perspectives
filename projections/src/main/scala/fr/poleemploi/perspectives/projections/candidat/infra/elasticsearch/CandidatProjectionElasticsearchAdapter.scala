@@ -62,6 +62,11 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
       date_derniere_connexion -> dateTimeFormatter.format(event.date)
     ))
 
+  override def onCandidatAutologgeEvent(event: CandidatAutologgeEvent): Future[Unit] =
+    update(event.candidatId, Json.obj(
+      date_derniere_connexion -> dateTimeFormatter.format(event.date)
+    ))
+
   override def onProfilModifieEvent(event: ProfilCandidatModifieEvent): Future[Unit] =
     update(event.candidatId, Json.obj(
       nom -> event.nom,
@@ -258,6 +263,16 @@ class CandidatProjectionElasticsearchAdapter(wsClient: WSClient,
           )
         )
       }
+
+  override def existeCandidat(query: ExisteCandidatQuery): Future[ExisteCandidatQueryResult] =
+    wsClient
+      .url(s"$baseUrl/$indexName/$docType/${query.candidatId.value}")
+      .get()
+      .flatMap(filtreStatutReponse(_))
+      .map(_ => ExisteCandidatQueryResult(true))
+    .recover {
+      case _ => ExisteCandidatQueryResult(false)
+    }
 
   def secteursActivitesAvecCandidats(query: SecteursActivitesAvecCandidatsQuery): Future[SecteursActivitesAvecCandidatsQueryResult] =
     wsClient

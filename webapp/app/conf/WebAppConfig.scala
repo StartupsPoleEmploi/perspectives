@@ -1,5 +1,6 @@
 package conf
 
+import fr.poleemploi.perspectives.authentification.infra.autologin.AutologinConfig
 import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.candidat.localisation.infra.algolia.AlgoliaPlacesConfig
 import fr.poleemploi.perspectives.candidat.localisation.infra.ws.LocalisationWSAdapterConfig
@@ -127,6 +128,12 @@ class WebAppConfig(configuration: Configuration) {
   val algoliaPlacesConfig: AlgoliaPlacesConfig = AlgoliaPlacesConfig(
     appId = configuration.get[String]("algoliaPlaces.appId"),
     apiKey = configuration.get[String]("algoliaPlaces.apiKey")
+  )
+
+  val autologinConfig: AutologinConfig = AutologinConfig(
+    secretKey = configuration.get[String]("autologin.secretKey"),
+    issuer = configuration.get[String]("autologin.issuer"),
+    expirationInSeconds = configuration.get[Long]("autologin.expirationInSeconds")
   )
 
   val candidatsConseillers: Map[CandidatId, ConseillerId] =

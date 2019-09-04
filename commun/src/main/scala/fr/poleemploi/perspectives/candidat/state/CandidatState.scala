@@ -18,6 +18,9 @@ trait CandidatState {
   def connecter(context: CandidatContext, command: ConnecterCandidatCommand): List[Event] =
     default(context, command)
 
+  def autologger(context: CandidatContext, command: AutologgerCandidatCommand): List[Event] =
+    default(context, command)
+
   def modifierCriteresRecherche(context: CandidatContext, command: ModifierCriteresRechercheCommand): List[Event] =
     default(context, command)
 

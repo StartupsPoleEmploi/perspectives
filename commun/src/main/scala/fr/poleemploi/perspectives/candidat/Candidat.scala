@@ -21,6 +21,9 @@ case class Candidat(id: CandidatId,
   def connecter(command: ConnecterCandidatCommand): List[Event] =
     behavior.connecter(context = state, command = command)
 
+  def autologger(command: AutologgerCandidatCommand): List[Event] =
+    behavior.autologger(context = state, command = command)
+
   def modifierProfil(command: ModifierProfilCandidatCommand, localisationService: LocalisationService): Future[List[Event]] =
     behavior.modifierProfil(context = state, command = command, localisationService = localisationService)
 

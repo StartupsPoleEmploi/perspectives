@@ -1,9 +1,11 @@
 package authentification
 
+import authentification.infra.autologin.AutologinCandidat
 import controllers.FlashMessages._
 import controllers.candidat.routes
 import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
-import fr.poleemploi.perspectives.candidat.CandidatId
+import fr.poleemploi.perspectives.authentification.infra.autologin.AutologinService
+import fr.poleemploi.perspectives.candidat.{CandidatCommandHandler, CandidatId}
 import fr.poleemploi.perspectives.projections.candidat.{CandidatQueryHandler, CandidatSaisieCriteresRechercheQuery}
 import javax.inject.Inject
 import play.api.mvc._
@@ -17,20 +19,28 @@ case class CandidatAuthentifieRequest[A](candidatAuthentifie: CandidatAuthentifi
 }
 
 
-class CandidatAuthentifieAction @Inject()(override val parser: BodyParsers.Default)
+class CandidatAuthentifieAction @Inject()(override val parser: BodyParsers.Default,
+                                          override val autologinService: AutologinService,
+                                          override val candidatQueryHandler: CandidatQueryHandler,
+                                          override val candidatCommandHandler: CandidatCommandHandler)
                                          (implicit val executionContext: ExecutionContext)
-  extends ActionBuilder[CandidatAuthentifieRequest, AnyContent] with Results {
+  extends ActionBuilder[CandidatAuthentifieRequest, AnyContent] with Results with AutologinCandidat {
 
   override def invokeBlock[A](request: Request[A], block: CandidatAuthentifieRequest[A] => Future[Result]): Future[Result] =
     SessionCandidatAuthentifie
       .get(request.session)
       .map(candidat => block(CandidatAuthentifieRequest(candidat, request)))
-      .getOrElse(Future.successful(Unauthorized))
+      .getOrElse(
+        autologgerCandidat(request, block).map(_.getOrElse(Unauthorized))
+      )
 }
 
-class CandidatAConnecterSiNonAuthentifieAction @Inject()(override val parser: BodyParsers.Default)
+class CandidatAConnecterSiNonAuthentifieAction @Inject()(override val parser: BodyParsers.Default,
+                                                         override val autologinService: AutologinService,
+                                                         override val candidatQueryHandler: CandidatQueryHandler,
+                                                         override val candidatCommandHandler: CandidatCommandHandler)
                                                         (implicit val executionContext: ExecutionContext)
-  extends ActionBuilder[CandidatAuthentifieRequest, AnyContent] with Results {
+  extends ActionBuilder[CandidatAuthentifieRequest, AnyContent] with Results with AutologinCandidat {
 
   override def invokeBlock[A](request: Request[A], block: CandidatAuthentifieRequest[A] => Future[Result]): Future[Result] =
     SessionCandidatAuthentifie
@@ -39,8 +49,8 @@ class CandidatAConnecterSiNonAuthentifieAction @Inject()(override val parser: Bo
         block(CandidatAuthentifieRequest(candidat, request))
           .map(r => r.withSession(SessionUtilisateurNonAuthentifie.remove(r.session(request))))
       ).getOrElse(
-      Future(Redirect(routes.AuthentificationController.connexion())
-        .withSession(SessionUtilisateurNonAuthentifie.setUriConnexion(request.uri, request.session))
+      autologgerCandidat(request, block).map(_.getOrElse(Redirect(routes.AuthentificationController.connexion())
+        .withSession(SessionUtilisateurNonAuthentifie.setUriConnexion(request.uri, request.session)))
       )
     )
 }

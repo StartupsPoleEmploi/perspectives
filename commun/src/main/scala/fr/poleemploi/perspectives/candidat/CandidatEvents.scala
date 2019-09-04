@@ -20,6 +20,8 @@ case class CandidatInscritEvent(candidatId: CandidatId,
 
 case class CandidatConnecteEvent(candidatId: CandidatId) extends CandidatEvent
 
+case class CandidatAutologgeEvent(candidatId: CandidatId) extends CandidatEvent
+
 case class ProfilCandidatModifieEvent(candidatId: CandidatId,
                                       nom: Nom,
                                       prenom: Prenom,
