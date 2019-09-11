@@ -22,7 +22,6 @@ class RechercheOffreController @Inject()(cc: ControllerComponents,
                                          implicit val webAppConfig: WebAppConfig,
                                          messagesAction: MessagesActionBuilder,
                                          optionalCandidatAuthentifieAction: OptionalCandidatAuthentifieAction,
-                                         candidatAuthentifieAction: CandidatAuthentifieAction,
                                          candidatQueryHandler: CandidatQueryHandler,
                                          metierQueryHandler: MetierQueryHandler)(implicit exec: ExecutionContext) extends AbstractController(cc) with Logging {
 

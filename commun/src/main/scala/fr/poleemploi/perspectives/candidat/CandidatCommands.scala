@@ -20,6 +20,8 @@ case class ConnecterCandidatCommand(id: CandidatId,
                                     email: Email,
                                     genre: Genre) extends Command[Candidat]
 
+case class AutologgerCandidatCommand(id: CandidatId) extends Command[Candidat]
+
 case class ModifierProfilCandidatCommand(id: CandidatId,
                                          adresse: Option[Adresse],
                                          statutDemandeurEmploi: Option[StatutDemandeurEmploi],

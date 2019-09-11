@@ -32,6 +32,10 @@ object CandidatInscritState extends CandidatState {
     List(candidatConnecteEvent, profilCandidatModifieEvent).flatten
   }
 
+  override def autologger(context: CandidatContext,
+                         command: AutologgerCandidatCommand): List[Event] =
+    List(CandidatAutologgeEvent(command.id))
+
   override def modifierProfil(context: CandidatContext, command: ModifierProfilCandidatCommand, localisationService: LocalisationService): Future[List[Event]] = {
     val adresseModifieeEvent = command.adresse.map(adresse =>
       if (!context.adresse.contains(adresse)) {

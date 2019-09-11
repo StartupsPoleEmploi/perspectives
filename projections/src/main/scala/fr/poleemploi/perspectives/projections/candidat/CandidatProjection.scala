@@ -15,6 +15,7 @@ trait CandidatProjection extends Projection {
   override def onEvent: ReceiveEvent = {
     case e: CandidatInscritEvent => onCandidatInscritEvent(e)
     case e: CandidatConnecteEvent => onCandidatConnecteEvent(e)
+    case e: CandidatAutologgeEvent => onCandidatAutologgeEvent(e)
     case e: ProfilCandidatModifieEvent => onProfilModifieEvent(e)
     case e: VisibiliteRecruteurModifieeEvent => onVisibiliteRecruteurModifieeEvent(e)
     case e: CriteresRechercheModifiesEvent => onCriteresRechercheModifiesEvent(e)
@@ -50,11 +51,15 @@ trait CandidatProjection extends Projection {
 
   def listerPourConseiller(query: CandidatsPourConseillerQuery): Future[CandidatsPourConseillerQueryResult]
 
+  def existeCandidat(query: ExisteCandidatQuery): Future[ExisteCandidatQueryResult]
+
   def onCandidatInscritEvent(event: CandidatInscritEvent): Future[Unit]
 
   def onVisibiliteRecruteurModifieeEvent(event: VisibiliteRecruteurModifieeEvent): Future[Unit]
 
   def onCandidatConnecteEvent(event: CandidatConnecteEvent): Future[Unit]
+
+  def onCandidatAutologgeEvent(event: CandidatAutologgeEvent): Future[Unit]
 
   def onProfilModifieEvent(event: ProfilCandidatModifieEvent): Future[Unit]
 
