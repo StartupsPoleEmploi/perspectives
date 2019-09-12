@@ -1,8 +1,10 @@
 package fr.poleemploi.perspectives.candidat.mrs.domain
 
+import fr.poleemploi.perspectives.emailing.domain.MRSDHAEValideeProspectCandidat
+
 import scala.concurrent.Future
 
 trait ImportMRSDHAE {
 
-  def integrerMRSDHAEValidees: Future[Unit]
+  def importerProspectsCandidats: Future[Stream[MRSDHAEValideeProspectCandidat]]
 }

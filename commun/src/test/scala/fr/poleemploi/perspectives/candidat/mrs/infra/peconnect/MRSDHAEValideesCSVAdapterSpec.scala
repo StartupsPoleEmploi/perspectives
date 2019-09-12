@@ -17,12 +17,12 @@ class MRSDHAEValideesCSVAdapterSpec extends AsyncWordSpec
   val actorSystem: ActorSystem = ActorSystem(this.getClass.getSimpleName)
   val mrsDHAEValideesCSVAdapter: MRSDHAEValideesCSVAdapter = new MRSDHAEValideesCSVAdapter(actorSystem)
 
-  "integrerMRSValidees" should {
+  "integrerMRSDHAEValidees" should {
     "ne rien faire si aucune ligne n'est présente dans la source" in {
       // Given
       val source = Source.single(
         ByteString(
-          """kn_individu_national;dc_individu_local;kc_action_prestation_id;dd_datedebutprestation;dc_uniteprescriptrice;dc_ididentiteexterne;kd_datemodification;dc_rome_id""".stripMargin)
+          """kn_individu_national;dc_individu_local;dc_nom;dc_prenom;dc_sexe_id;dc_codepostal;dc_adresseemail;kc_action_prestation_id;dd_datedebutprestation;dc_uniteprescriptrice;dc_ididentiteexterne;kd_datemodification;dc_rome_id;dc_lblrome""".stripMargin)
       )
 
       // When
@@ -35,8 +35,8 @@ class MRSDHAEValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """kn_individu_national;dc_individu_local;kc_action_prestation_id;dd_datedebutprestation;dc_uniteprescriptrice;dc_ididentiteexterne;kd_datemodification;dc_rome_id
-            |1208342958;01341957989;P50;2019-02-11 00:00:00;85012;;2019-03-07 20:52:33;H2102""".stripMargin)
+          """kn_individu_national;dc_individu_local;dc_nom;dc_prenom;dc_sexe_id;dc_codepostal;dc_adresseemail;kc_action_prestation_id;dd_datedebutprestation;dc_uniteprescriptrice;dc_ididentiteexterne;kd_datemodification;dc_rome_id;dc_lblrome
+            |1208342958;01341957989;NOM;PRENOM;F;85000;PRENOM.NOM@mail.com;P50;2019-02-11 00:00:00;85012;;2019-03-07 20:52:33;H2102;Peinture industrielle""".stripMargin)
       )
 
       // When
@@ -49,8 +49,8 @@ class MRSDHAEValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """kn_individu_national;dc_individu_local;kc_action_prestation_id;dd_datedebutprestation;dc_uniteprescriptrice;dc_ididentiteexterne;kd_datemodification;dc_rome_id
-            |1208342958;01341957989;P50;2019-02-11 00:00:00;85012;NULL;2019-03-07 20:52:33;H2102""".stripMargin)
+          """kn_individu_national;dc_individu_local;dc_nom;dc_prenom;dc_sexe_id;dc_codepostal;dc_adresseemail;kc_action_prestation_id;dd_datedebutprestation;dc_uniteprescriptrice;dc_ididentiteexterne;kd_datemodification;dc_rome_id;dc_lblrome
+            |1208342958;01341957989;NOM;PRENOM;F;85000;PRENOM.NOM@mail.com;P50;2019-02-11 00:00:00;85012;NULL;2019-03-07 20:52:33;H2102;Peinture industrielle""".stripMargin)
       )
 
       // When
@@ -63,8 +63,8 @@ class MRSDHAEValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """kn_individu_national;dc_individu_local;kc_action_prestation_id;dd_datedebutprestation;dc_uniteprescriptrice;dc_ididentiteexterne;kd_datemodification;dc_rome_id
-            |1208342958;01341957989;P50;;85012;28d0b75a-b694-4de3-8849-18bfbfebd729;2019-03-07 20:52:33;H2102""".stripMargin)
+          """kn_individu_national;dc_individu_local;dc_nom;dc_prenom;dc_sexe_id;dc_codepostal;dc_adresseemail;kc_action_prestation_id;dd_datedebutprestation;dc_uniteprescriptrice;dc_ididentiteexterne;kd_datemodification;dc_rome_id;dc_lblrome
+            |1208342958;01341957989;NOM;PRENOM;F;85000;PRENOM.NOM@mail.com;P50;;85012;28d0b75a-b694-4de3-8849-18bfbfebd729;2019-03-07 20:52:33;H2102;Peinture industrielle""".stripMargin)
       )
 
       // When
@@ -77,8 +77,22 @@ class MRSDHAEValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """kn_individu_national;dc_individu_local;kc_action_prestation_id;dd_datedebutprestation;dc_uniteprescriptrice;dc_ididentiteexterne;kd_datemodification;dc_rome_id
-            |1208342958;01341957989;P50;2019-02-11 00:00:00;85012;28d0b75a-b694-4de3-8849-18bfbfebd729;2019-03-07 20:52:33;""".stripMargin)
+          """kn_individu_national;dc_individu_local;dc_nom;dc_prenom;dc_sexe_id;dc_codepostal;dc_adresseemail;kc_action_prestation_id;dd_datedebutprestation;dc_uniteprescriptrice;dc_ididentiteexterne;kd_datemodification;dc_rome_id;dc_lblrome
+            |1208342958;01341957989;NOM;PRENOM;F;85000;PRENOM.NOM@mail.com;P50;2019-02-11 00:00:00;85012;28d0b75a-b694-4de3-8849-18bfbfebd729;2019-03-07 20:52:33;;Peinture industrielle""".stripMargin)
+      )
+
+      // When
+      val future = mrsDHAEValideesCSVAdapter.load(source)
+
+      // Then
+      future.map(s => s.isEmpty mustBe true)
+    }
+    "ignorer la ligne si elle ne contient pas le label du ROME de la MRS" in {
+      // Given
+      val source = Source.single(
+        ByteString(
+          """kn_individu_national;dc_individu_local;dc_nom;dc_prenom;dc_sexe_id;dc_codepostal;dc_adresseemail;kc_action_prestation_id;dd_datedebutprestation;dc_uniteprescriptrice;dc_ididentiteexterne;kd_datemodification;dc_rome_id;dc_lblrome
+            |1208342958;01341957989;NOM;PRENOM;F;85000;PRENOM.NOM@mail.com;P50;2019-02-11 00:00:00;85012;28d0b75a-b694-4de3-8849-18bfbfebd729;2019-03-07 20:52:33;H2102;""".stripMargin)
       )
 
       // When
@@ -91,8 +105,8 @@ class MRSDHAEValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """kn_individu_national;dc_individu_local;kc_action_prestation_id;dd_datedebutprestation;dc_uniteprescriptrice;dc_ididentiteexterne;kd_datemodification;dc_rome_id
-            |1208342958;01341957989;P50;2019-02-11 00:00:00;;28d0b75a-b694-4de3-8849-18bfbfebd729;2019-03-07 20:52:33;H2102""".stripMargin)
+          """kn_individu_national;dc_individu_local;dc_nom;dc_prenom;dc_sexe_id;dc_codepostal;dc_adresseemail;kc_action_prestation_id;dd_datedebutprestation;dc_uniteprescriptrice;dc_ididentiteexterne;kd_datemodification;dc_rome_id;dc_lblrome
+            |1208342958;01341957989;NOM;PRENOM;F;85000;PRENOM.NOM@mail.com;P50;2019-02-11 00:00:00;;28d0b75a-b694-4de3-8849-18bfbfebd729;2019-03-07 20:52:33;H2102;Peinture industrielle""".stripMargin)
       )
 
       // When
@@ -105,8 +119,78 @@ class MRSDHAEValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """kn_individu_national;dc_individu_local;kc_action_prestation_id;dd_datedebutprestation;dc_uniteprescriptrice;dc_ididentiteexterne;kd_datemodification;dc_rome_id
-            |1208342958;01341957989;P50;2019-02-11 00:00:00;NULL;28d0b75a-b694-4de3-8849-18bfbfebd729;2019-03-07 20:52:33;H2102""".stripMargin)
+          """kn_individu_national;dc_individu_local;dc_nom;dc_prenom;dc_sexe_id;dc_codepostal;dc_adresseemail;kc_action_prestation_id;dd_datedebutprestation;dc_uniteprescriptrice;dc_ididentiteexterne;kd_datemodification;dc_rome_id;dc_lblrome
+            |1208342958;01341957989;NOM;PRENOM;F;85000;PRENOM.NOM@mail.com;P50;2019-02-11 00:00:00;NULL;28d0b75a-b694-4de3-8849-18bfbfebd729;2019-03-07 20:52:33;H2102;Peinture industrielle""".stripMargin)
+      )
+
+      // When
+      val future = mrsDHAEValideesCSVAdapter.load(source)
+
+      // Then
+      future.map(s => s.isEmpty mustBe true)
+    }
+    "ignorer la ligne si elle ne contient pas le nom" in {
+      // Given
+      val source = Source.single(
+        ByteString(
+          """kn_individu_national;dc_individu_local;dc_nom;dc_prenom;dc_sexe_id;dc_codepostal;dc_adresseemail;kc_action_prestation_id;dd_datedebutprestation;dc_uniteprescriptrice;dc_ididentiteexterne;kd_datemodification;dc_rome_id;dc_lblrome
+            |1208342958;01341957989;;PRENOM;F;85000;PRENOM.NOM@mail.com;P50;2019-02-11 00:00:00;85012;28d0b75a-b694-4de3-8849-18bfbfebd729;2019-03-07 20:52:33;H2102;Peinture industrielle""".stripMargin)
+      )
+
+      // When
+      val future = mrsDHAEValideesCSVAdapter.load(source)
+
+      // Then
+      future.map(s => s.isEmpty mustBe true)
+    }
+    "ignorer la ligne si elle ne contient pas le prénom" in {
+      // Given
+      val source = Source.single(
+        ByteString(
+          """kn_individu_national;dc_individu_local;dc_nom;dc_prenom;dc_sexe_id;dc_codepostal;dc_adresseemail;kc_action_prestation_id;dd_datedebutprestation;dc_uniteprescriptrice;dc_ididentiteexterne;kd_datemodification;dc_rome_id;dc_lblrome
+            |1208342958;01341957989;NOM;;F;85000;PRENOM.NOM@mail.com;P50;2019-02-11 00:00:00;85012;28d0b75a-b694-4de3-8849-18bfbfebd729;2019-03-07 20:52:33;H2102;Peinture industrielle""".stripMargin)
+      )
+
+      // When
+      val future = mrsDHAEValideesCSVAdapter.load(source)
+
+      // Then
+      future.map(s => s.isEmpty mustBe true)
+    }
+    "ignorer la ligne si elle ne contient pas le code postal" in {
+      // Given
+      val source = Source.single(
+        ByteString(
+          """kn_individu_national;dc_individu_local;dc_nom;dc_prenom;dc_sexe_id;dc_codepostal;dc_adresseemail;kc_action_prestation_id;dd_datedebutprestation;dc_uniteprescriptrice;dc_ididentiteexterne;kd_datemodification;dc_rome_id;dc_lblrome
+            |1208342958;01341957989;NOM;PRENOM;F;;PRENOM.NOM@mail.com;P50;2019-02-11 00:00:00;85012;28d0b75a-b694-4de3-8849-18bfbfebd729;2019-03-07 20:52:33;H2102;Peinture industrielle""".stripMargin)
+      )
+
+      // When
+      val future = mrsDHAEValideesCSVAdapter.load(source)
+
+      // Then
+      future.map(s => s.isEmpty mustBe true)
+    }
+    "ignorer la ligne si elle ne contient pas d'email" in {
+      // Given
+      val source = Source.single(
+        ByteString(
+          """kn_individu_national;dc_individu_local;dc_nom;dc_prenom;dc_sexe_id;dc_codepostal;dc_adresseemail;kc_action_prestation_id;dd_datedebutprestation;dc_uniteprescriptrice;dc_ididentiteexterne;kd_datemodification;dc_rome_id;dc_lblrome
+            |1208342958;01341957989;NOM;PRENOM;F;85000;;P50;2019-02-11 00:00:00;85012;28d0b75a-b694-4de3-8849-18bfbfebd729;2019-03-07 20:52:33;H2102;Peinture industrielle""".stripMargin)
+      )
+
+      // When
+      val future = mrsDHAEValideesCSVAdapter.load(source)
+
+      // Then
+      future.map(s => s.isEmpty mustBe true)
+    }
+    "ignorer la ligne si elle ne contient pas de genre" in {
+      // Given
+      val source = Source.single(
+        ByteString(
+          """kn_individu_national;dc_individu_local;dc_nom;dc_prenom;dc_sexe_id;dc_codepostal;dc_adresseemail;kc_action_prestation_id;dd_datedebutprestation;dc_uniteprescriptrice;dc_ididentiteexterne;kd_datemodification;dc_rome_id;dc_lblrome
+            |1208342958;01341957989;NOM;PRENOM;;85000;PRENOM.NOM@mail.com;P50;2019-02-11 00:00:00;85012;28d0b75a-b694-4de3-8849-18bfbfebd729;2019-03-07 20:52:33;H2102;Peinture industrielle""".stripMargin)
       )
 
       // When
@@ -119,8 +203,8 @@ class MRSDHAEValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """kn_individu_national;dc_individu_local;kc_action_prestation_id;dd_datedebutprestation;dc_uniteprescriptrice;dc_ididentiteexterne;kd_datemodification;dc_rome_id
-            |1208342958;01341957989;P50;2019-02-11 00:00:00;85012;28d0b75a-b694-4de3-8849-18bfbfebd729;2019-03-07 20:52:33;H2102""".stripMargin)
+          """kn_individu_national;dc_individu_local;dc_nom;dc_prenom;dc_sexe_id;dc_codepostal;dc_adresseemail;kc_action_prestation_id;dd_datedebutprestation;dc_uniteprescriptrice;dc_ididentiteexterne;kd_datemodification;dc_rome_id;dc_lblrome
+            |1208342958;01341957989;NOM;PRENOM;F;85000;PRENOM.NOM@mail.com;P50;2019-02-11 00:00:00;85012;28d0b75a-b694-4de3-8849-18bfbfebd729;2019-03-07 20:52:33;H2102;Peinture industrielle""".stripMargin)
       )
 
       // When
@@ -133,8 +217,8 @@ class MRSDHAEValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """kn_individu_national;dc_individu_local;kc_action_prestation_id;dd_datedebutprestation;dc_uniteprescriptrice;dc_ididentiteexterne;kd_datemodification;dc_rome_id
-            |1208342958;01341957989;P50;2019-02-11 00:00:00;85012;28d0b75a-b694-4de3-8849-18bfbfebd729;2019-03-07 20:52:33;H2102""".stripMargin)
+          """kn_individu_national;dc_individu_local;dc_nom;dc_prenom;dc_sexe_id;dc_codepostal;dc_adresseemail;kc_action_prestation_id;dd_datedebutprestation;dc_uniteprescriptrice;dc_ididentiteexterne;kd_datemodification;dc_rome_id;dc_lblrome
+            |1208342958;01341957989;NOM;PRENOM;F;85000;PRENOM.NOM@mail.com;P50;2019-02-11 00:00:00;85012;28d0b75a-b694-4de3-8849-18bfbfebd729;2019-03-07 20:52:33;H2102;Peinture industrielle""".stripMargin)
       )
 
       // When
@@ -149,8 +233,8 @@ class MRSDHAEValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """kn_individu_national;dc_individu_local;kc_action_prestation_id;dd_datedebutprestation;dc_uniteprescriptrice;dc_ididentiteexterne;kd_datemodification;dc_rome_id
-            |1208342958;01341957989;P50;2019-02-11 00:00:00;85012;28d0b75a-b694-4de3-8849-18bfbfebd729;2019-03-07 20:52:33;H2102""".stripMargin)
+          """kn_individu_national;dc_individu_local;dc_nom;dc_prenom;dc_sexe_id;dc_codepostal;dc_adresseemail;kc_action_prestation_id;dd_datedebutprestation;dc_uniteprescriptrice;dc_ididentiteexterne;kd_datemodification;dc_rome_id;dc_lblrome
+            |1208342958;01341957989;NOM;PRENOM;F;85000;PRENOM.NOM@mail.com;P50;2019-02-11 00:00:00;85012;28d0b75a-b694-4de3-8849-18bfbfebd729;2019-03-07 20:52:33;H2102;Peinture industrielle""".stripMargin)
       )
 
       // When
@@ -163,8 +247,8 @@ class MRSDHAEValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """kn_individu_national;dc_individu_local;kc_action_prestation_id;dd_datedebutprestation;dc_uniteprescriptrice;dc_ididentiteexterne;kd_datemodification;dc_rome_id
-            |1208342958;01341957989;P50;2019-02-11 00:00:00;85012;28d0b75a-b694-4de3-8849-18bfbfebd729;2019-03-07 20:52:33;H2102""".stripMargin)
+          """kn_individu_national;dc_individu_local;dc_nom;dc_prenom;dc_sexe_id;dc_codepostal;dc_adresseemail;kc_action_prestation_id;dd_datedebutprestation;dc_uniteprescriptrice;dc_ididentiteexterne;kd_datemodification;dc_rome_id;dc_lblrome
+            |1208342958;01341957989;NOM;PRENOM;F;85000;PRENOM.NOM@mail.com;P50;2019-02-11 00:00:00;85012;28d0b75a-b694-4de3-8849-18bfbfebd729;2019-03-07 20:52:33;H2102;Peinture industrielle""".stripMargin)
       )
 
       // When
@@ -177,23 +261,23 @@ class MRSDHAEValideesCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """kn_individu_national;dc_individu_local;kc_action_prestation_id;dd_datedebutprestation;dc_uniteprescriptrice;dc_ididentiteexterne;kd_datemodification;dc_rome_id
-            |1208342958;01341957989;P50;2019-02-11 00:00:00;85012;28d0b75a-b694-4de3-8849-18bfbfebd729;2019-03-07 20:52:33;H2102""".stripMargin)
+          """kn_individu_national;dc_individu_local;dc_nom;dc_prenom;dc_sexe_id;dc_codepostal;dc_adresseemail;kc_action_prestation_id;dd_datedebutprestation;dc_uniteprescriptrice;dc_ididentiteexterne;kd_datemodification;dc_rome_id;dc_lblrome
+            |1208342958;01341957989;NOM;PRENOM;F;85000;PRENOM.NOM@mail.com;P50;2019-02-11 00:00:00;85012;28d0b75a-b694-4de3-8849-18bfbfebd729;2019-03-07 20:52:33;H2102;Peinture industrielle""".stripMargin)
       )
 
       // When
       val future = mrsDHAEValideesCSVAdapter.load(source)
 
       // Then
-      future.map(s => s.toList.head.codeROME mustBe CodeROME("H2102"))
+      future.map(s => s.toList.head.metier.codeROME mustBe CodeROME("H2102"))
     }
     "integrer une seule ligne lorsque la même MRS apparait en doublon (peut avoir une date de modification différente)" in {
       // Given
       val source = Source.single(
         ByteString(
-          """kn_individu_national;dc_individu_local;kc_action_prestation_id;dd_datedebutprestation;dc_uniteprescriptrice;dc_ididentiteexterne;kd_datemodification;dc_rome_id
-            |1208342958;01341957989;P50;2019-02-11 00:00:00;85012;28d0b75a-b694-4de3-8849-18bfbfebd729;2019-03-07 20:52:33;H2102
-            |1208342958;01341957989;P50;2019-02-11 00:00:00;85012;28d0b75a-b694-4de3-8849-18bfbfebd729;2019-05-08 11:24:49;H2102""".stripMargin)
+          """kn_individu_national;dc_individu_local;dc_nom;dc_prenom;dc_sexe_id;dc_codepostal;dc_adresseemail;kc_action_prestation_id;dd_datedebutprestation;dc_uniteprescriptrice;dc_ididentiteexterne;kd_datemodification;dc_rome_id;dc_lblrome
+            |1208342958;01341957989;NOM;PRENOM;F;85000;PRENOM.NOM@mail.com;P50;2019-02-11 00:00:00;85012;28d0b75a-b694-4de3-8849-18bfbfebd729;2019-03-07 20:52:33;H2102;Peinture industrielle
+            |1208342958;01341957989;NOM;PRENOM;F;85000;PRENOM.NOM@mail.com;P50;2019-02-11 00:00:00;85012;28d0b75a-b694-4de3-8849-18bfbfebd729;2019-05-08 11:24:49;H2102;Peinture industrielle""".stripMargin)
       )
 
       // When

@@ -168,13 +168,15 @@ class InfraModule extends AbstractModule with ScalaModule {
   @Provides
   @Singleton
   def importProspectServiceMailjet(importMRSValideeProspectCandidatCSVAdapter: ImportMRSValideeProspectCandidatCSVAdapter,
+                                   importMRSDHAEPEConnectAdapter: ImportMRSDHAEPEConnectAdapter,
                                    actorSystem: ActorSystem,
                                    mrsValideeProspectCandidatCSVAdapter: MRSValideeProspectCandidatCSVAdapter,
                                    mailjetSqlAdapter: MailjetSqlAdapter,
                                    mailjetWSAdapter: MailjetWSAdapter): MailjetImportProspectService =
     new MailjetImportProspectService(
       actorSystem = actorSystem,
-      importFileAdapter = importMRSValideeProspectCandidatCSVAdapter,
+      importMRSValideeProspectCandidatCSVAdapter = importMRSValideeProspectCandidatCSVAdapter,
+      importMRSDHAEPEConnectAdapter = importMRSDHAEPEConnectAdapter,
       mailjetSQLAdapter = mailjetSqlAdapter,
       mailjetWSAdapter = mailjetWSAdapter
     )

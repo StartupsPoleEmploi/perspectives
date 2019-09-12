@@ -44,7 +44,7 @@ class MRSValideeProspectCandidatCSVAdapter(val actorSystem: ActorSystem) {
           nom = Nom(data("dc_nom")),
           prenom = Prenom(data("dc_prenom")),
           email = Email(data("dc_adresseemail")),
-          genre = buildGenre(data("dc_sexe_id")),
+          genre = Genre.buildFrom(data("dc_sexe_id")),
           codeDepartement = CodeDepartement(data("dc_codepostal").take(2)),
           metier = Metier(
             codeROME = CodeROME(data("dc_rome_id")),
@@ -61,9 +61,4 @@ class MRSValideeProspectCandidatCSVAdapter(val actorSystem: ActorSystem) {
   private def isConsentementMailValide(consentement: String): Boolean =
     consentement == "O"
 
-  private def buildGenre(genre: String): Genre = genre match {
-    case "M" => Genre.HOMME
-    case "F" => Genre.FEMME
-    case g@_ => throw new IllegalArgumentException(s"Genre inconnu : $g")
-  }
 }

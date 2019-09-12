@@ -68,7 +68,7 @@ class MailjetWSMapping {
       ContactDataProperty(mrs_date, mrsValideeCandidat.dateEvaluation.atStartOfDay().format(formatter))
     ))
 
-  def buildRequestImportProspectsCandidats(idListe: Int, prospectsCandidats: Stream[MRSValideeProspectCandidat]): ManageManyContactsRequest =
+  def buildRequestImportProspectsCandidats(idListe: Int, prospectsCandidats: Stream[MRSProspectCandidat]): ManageManyContactsRequest =
     ManageManyContactsRequest(
       contacts = prospectsCandidats.map(p => Contact(
         email = p.email.value,

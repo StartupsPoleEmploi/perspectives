@@ -3,8 +3,9 @@ package fr.poleemploi.perspectives.emailing.infra.mailjet
 import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.stream.scaladsl.Source
+import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.ImportMRSDHAEPEConnectAdapter
 import fr.poleemploi.perspectives.commun.domain.Email
-import fr.poleemploi.perspectives.emailing.domain.MRSValideeProspectCandidat
+import fr.poleemploi.perspectives.emailing.domain.{MRSDHAEValideeProspectCandidat, MRSValideeProspectCandidat}
 import fr.poleemploi.perspectives.emailing.infra.csv.ImportMRSValideeProspectCandidatCSVAdapter
 import fr.poleemploi.perspectives.emailing.infra.sql.MailjetSqlAdapter
 import fr.poleemploi.perspectives.emailing.infra.ws.MailjetWSAdapter
@@ -21,20 +22,23 @@ class MailjetImportProspectServiceSpec extends AsyncWordSpec
 
   val actorSystem: ActorSystem = ActorSystem(this.getClass.getSimpleName)
 
-  var importFileAdapter: ImportMRSValideeProspectCandidatCSVAdapter = _
+  var importMRSValideeProspectCandidatCSVAdapter: ImportMRSValideeProspectCandidatCSVAdapter = _
+  var importMRSDHAEPEConnectAdapter: ImportMRSDHAEPEConnectAdapter = _
   var mailjetWSAdapter: MailjetWSAdapter = _
   var mailjetSQLAdapter: MailjetSqlAdapter = _
 
   var mailjetImportProspectService: MailjetImportProspectService = _
 
   before {
-    importFileAdapter = mock[ImportMRSValideeProspectCandidatCSVAdapter]
+    importMRSValideeProspectCandidatCSVAdapter = mock[ImportMRSValideeProspectCandidatCSVAdapter]
+    importMRSDHAEPEConnectAdapter = mock[ImportMRSDHAEPEConnectAdapter]
     mailjetWSAdapter = mock[MailjetWSAdapter]
     mailjetSQLAdapter = mock[MailjetSqlAdapter]
 
     mailjetImportProspectService = new MailjetImportProspectService(
       actorSystem = actorSystem,
-      importFileAdapter = importFileAdapter,
+      importMRSValideeProspectCandidatCSVAdapter = importMRSValideeProspectCandidatCSVAdapter,
+      importMRSDHAEPEConnectAdapter = importMRSDHAEPEConnectAdapter,
       mailjetWSAdapter = mailjetWSAdapter,
       mailjetSQLAdapter = mailjetSQLAdapter
     )
@@ -47,7 +51,10 @@ class MailjetImportProspectServiceSpec extends AsyncWordSpec
       // Given
       val prospectsInscrits = Stream.tabulate(10)(mockMRSProspectInscrit)
       val prospectsNonInscrits = Stream.tabulate(10)(mockMRSProspectNonInscrit)
-      when(importFileAdapter.importerProspectsCandidats) thenReturn Future.successful(prospectsInscrits ++ prospectsNonInscrits)
+      val prospectsDHAEInscrits = Stream.tabulate(10)(mockMRSDHAEProspectInscrit)
+      val prospectsDHAENonInscrits = Stream.tabulate(10)(mockMRSDHAEProspectNonInscrit)
+      when(importMRSValideeProspectCandidatCSVAdapter.importerProspectsCandidats) thenReturn Future.successful(prospectsInscrits ++ prospectsNonInscrits)
+      when(importMRSDHAEPEConnectAdapter.importerProspectsCandidats) thenReturn Future.successful(prospectsDHAEInscrits ++ prospectsDHAENonInscrits)
 
       val candidatsInscrits: Source[CandidatMailjet, NotUsed] = Source(Stream.tabulate(50)(mockCandidatMailjet))
       when(mailjetSQLAdapter.streamCandidats) thenReturn candidatsInscrits
@@ -57,8 +64,11 @@ class MailjetImportProspectServiceSpec extends AsyncWordSpec
 
       // Then
       result.map(r => {
-        r.forall(m => prospectsNonInscrits.contains(m)) mustBe true
-        r.forall(m => !prospectsInscrits.contains(m)) mustBe true
+        val emailsProspectsCandidats = r.map(_.email)
+        emailsProspectsCandidats.forall(m => prospectsNonInscrits.map(_.email).contains(m)) mustBe true
+        emailsProspectsCandidats.forall(m => prospectsDHAENonInscrits.map(_.email).contains(m)) mustBe true
+        emailsProspectsCandidats.forall(m => !prospectsInscrits.map(_.email).contains(m)) mustBe true
+        emailsProspectsCandidats.forall(m => !prospectsDHAEInscrits.map(_.email).contains(m)) mustBe true
         Succeeded
       })
     }
@@ -72,6 +82,18 @@ class MailjetImportProspectServiceSpec extends AsyncWordSpec
 
   private def mockMRSProspectNonInscrit(n: Int): MRSValideeProspectCandidat = {
     val mrs = mock[MRSValideeProspectCandidat]
+    when(mrs.email) thenReturn Email(s"$n-non-inscrit@domain.com")
+    mrs
+  }
+
+  private def mockMRSDHAEProspectInscrit(n: Int): MRSDHAEValideeProspectCandidat = {
+    val mrs = mock[MRSDHAEValideeProspectCandidat]
+    when(mrs.email) thenReturn Email(s"$n-inscrit@domain.com")
+    mrs
+  }
+
+  private def mockMRSDHAEProspectNonInscrit(n: Int): MRSDHAEValideeProspectCandidat = {
+    val mrs = mock[MRSDHAEValideeProspectCandidat]
     when(mrs.email) thenReturn Email(s"$n-non-inscrit@domain.com")
     mrs
   }

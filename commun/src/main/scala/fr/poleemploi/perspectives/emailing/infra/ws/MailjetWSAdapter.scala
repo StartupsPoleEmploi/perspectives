@@ -60,7 +60,7 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
       request = mapping.buildRequestMiseAJourMRSValideeCandidat(mrsValideeCandidat)
     ).map(_ => ())
 
-  def importerProspectsCandidats(prospects: Stream[MRSValideeProspectCandidat]): Future[Unit] =
+  def importerProspectsCandidats(prospects: Stream[MRSProspectCandidat]): Future[Unit] =
     if (prospects.nonEmpty)
       manageManyContacts(mapping.buildRequestImportProspectsCandidats(idListeCandidatsProspects, prospects))
     else
