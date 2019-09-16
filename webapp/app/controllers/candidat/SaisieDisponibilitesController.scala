@@ -27,15 +27,19 @@ class SaisieDisponibilitesController @Inject()(components: ControllerComponents,
                                                candidatAuthentifieAction: CandidatAuthentifieAction,
                                                candidatAConnecterSiNonAuthentifieAction: CandidatAConnecterSiNonAuthentifieAction)(implicit exec: ExecutionContext) extends AbstractController(components) {
 
-  def saisieDisponibilites: Action[AnyContent] = candidatAConnecterSiNonAuthentifieAction.async { candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
+  def saisieDisponibilites(candidatEnRecherche: Option[Boolean]): Action[AnyContent] = candidatAConnecterSiNonAuthentifieAction.async { candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
       for {
         candidatSaisieDisponibilitesQueryResult <-
           candidatQueryHandler.handle(CandidatSaisieDisponibilitesQuery(candidatAuthentifieRequest.candidatId)).map(Some(_))
       } yield {
-        val form = candidatSaisieDisponibilitesQueryResult
-          .map(SaisieDisponibilitesForm.fromCandidatDisponibilitesQueryResult)
-          .getOrElse(SaisieDisponibilitesForm.nouvellesDisponibilites)
+        val form = candidatEnRecherche.map(c =>
+          SaisieDisponibilitesForm.nouvellesDisponibilites(Some(c))
+        ).getOrElse(
+          candidatSaisieDisponibilitesQueryResult
+            .map(SaisieDisponibilitesForm.fromCandidatDisponibilitesQueryResult)
+            .getOrElse(SaisieDisponibilitesForm.nouvellesDisponibilites(None))
+        )
 
         Ok(views.html.candidat.saisieDisponibilites(
           candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie,

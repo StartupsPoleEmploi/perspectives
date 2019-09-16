@@ -39,9 +39,9 @@ object SaisieDisponibilitesForm {
     )(SaisieDisponibilitesForm.apply)(SaisieDisponibilitesForm.unapply) verifying disponibiliteConstraint
   )
 
-  def nouvellesDisponibilites: Form[SaisieDisponibilitesForm] = SaisieDisponibilitesForm.form.fill(
+  def nouvellesDisponibilites(candidatEnRecherche: Option[Boolean]): Form[SaisieDisponibilitesForm] = SaisieDisponibilitesForm.form.fill(
     SaisieDisponibilitesForm(
-      candidatEnRecherche = "",
+      candidatEnRecherche = FormHelpers.optBooleanToString(candidatEnRecherche),
       disponibiliteConnue = None,
       nbMoisProchaineDisponibilite = None,
       emploiTrouveGracePerspectives = None

@@ -32,6 +32,7 @@
                             <li>Vous pourrez toujours consulter nos offres d'emploi</li>
                         </ul>
                         <p>Revenez quand vous le souhaitez et modifiez votre disponibilité dans votre compte.</p>
+                        <a class="bouton bouton-action bouton--vertSurBlanc w-50" href="@controllers.candidat.routes.AuthentificationController.deconnexion()">Me déconnecter</a>
                     </div>
                     <div class="row py-3 align-items-center" v-show="display.confirmationNonDispoSansDelai">
                         <p>Revenez nous voir pour mettre à jour votre profil lorsque vous serez de nouveau disponible.</p>
@@ -39,6 +40,7 @@
                             <li>Votre profil ne sera plus visible des recruteurs</li>
                             <li>Vous pourrez toujours consulter nos offres d'emploi</li>
                         </ul>
+                        <a class="bouton bouton-action bouton--vertSurBlanc w-50" href="@controllers.candidat.routes.AuthentificationController.deconnexion()">Me déconnecter</a>
                     </div>
 
                     <form id="disponibilitesCandidatsForm" method="post" class="row py-3 align-items-center"
