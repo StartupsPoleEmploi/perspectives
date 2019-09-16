@@ -266,9 +266,10 @@ class ReferentielOffreWSMapping {
   /**
     * l'API ne permet de passer que peu de filtres pour l'instant (que 3 codeROME par appels, deux secteurActivite par appel, etc.) : on fait donc plusieurs filtres à postériori. <br />
     * <ul>
-      * <li>Si l'experience est DEBUTANT cela signifie moins d'un an d'expérience côté API, on doit donc quand même vérifier qu'il n'y ait pas d'expérience exigée</li>
-      * <li>Si l'experience est DEBUTANT, malgré le filtre sur l'expérience l'offre peut aussi contenir des formations exigées</li>
-      * <li>l'API ne permet pas de passer beaucoup de codeROME, on filtre donc à postériori sur les secteurs, domaines ou codeROME</li>
+    * <li>Si l'experience est DEBUTANT cela signifie moins d'un an d'expérience côté API, on doit donc quand même vérifier qu'il n'y ait pas d'expérience exigée</li>
+    * <li>Si l'experience est DEBUTANT, malgré le filtre sur l'expérience l'offre peut aussi contenir des formations exigées</li>
+    * <li>l'API ne permet pas de passer beaucoup de codeROME, on filtre donc à postériori sur les secteurs, domaines ou codeROME</li>
+    * <li>on exclue certains codes ROME tels que N41 (Transport routier) qui pose pas mal de soucis</li>
     * </ul>
     */
   def filterOffresResponses(criteresRechercheOffre: CriteresRechercheOffre,
@@ -278,7 +279,8 @@ class ReferentielOffreWSMapping {
         o.romeCode.exists(r =>
           (criteresRechercheOffre.codesROME.isEmpty || criteresRechercheOffre.codesROME.exists(c => r.startsWith(c.value))) &&
             (criteresRechercheOffre.secteursActivites.isEmpty || criteresRechercheOffre.secteursActivites.exists(c => r.startsWith(c.value))) &&
-            (criteresRechercheOffre.codesDomaineProfessionnels.isEmpty || criteresRechercheOffre.codesDomaineProfessionnels.exists(c => r.startsWith(c.value)))
+            (criteresRechercheOffre.codesDomaineProfessionnels.isEmpty || criteresRechercheOffre.codesDomaineProfessionnels.exists(c => r.startsWith(c.value))) &&
+            !r.startsWith("N41")
         )
     )
 

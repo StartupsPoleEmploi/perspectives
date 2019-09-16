@@ -458,6 +458,20 @@ class ReferentielOffreWSMappingSpec extends WordSpec
       // Then
       result mustBe List(offreResponse)
     }
+    "ne pas retourner l'offre lorsqu'elle correspond au codeROME N41" in {
+      // Given
+      when(criteresRechercheOffre.codesROME) thenReturn List(
+        CodeROME("A1401"),
+        CodeROME("N4103")
+      )
+      when(offreResponse.romeCode) thenReturn Some("N4103")
+
+      // When
+      val result = mapping.filterOffresResponses(criteresRechercheOffre, List(offreResponse))
+
+      // Then
+      result.isEmpty mustBe true
+    }
     "buildPageOffres" should {
       "ne pas retourner de page suivante lorsqu'aucun range n'est retourné" in {
         // Given
