@@ -48,6 +48,16 @@ class PEConnectWSMapping {
       certifie = buildCertifie(response.habilitation)
     )
 
+  def buildPEConnectRecruteurInfosAlternative(response: UserInfosEntrepriseAlternativeResponse): PEConnectRecruteurInfos =
+    PEConnectRecruteurInfos(
+      peConnectId = PEConnectId(response.sub),
+      nom = Nom(response.familyName),
+      prenom = Prenom(response.givenName),
+      email = Email(response.email.toLowerCase),
+      genre = buildGenre(response.gender),
+      certifie = buildCertifieFromArray(response.habilitation)
+    )
+
   def buildStatutDemandeurEmploi(response: StatutCandidatReponse): StatutDemandeurEmploi =
     response.codeStatutIndividu match {
       case "0" => StatutDemandeurEmploi.NON_DEMANDEUR_EMPLOI
@@ -137,8 +147,11 @@ class PEConnectWSMapping {
     case g@_ => throw new IllegalArgumentException(s"Gender non géré : $g")
   }
 
-  private def buildCertifie(habilitation: Option[String]): Boolean = habilitation match {
-    case Some("recruteurcertifie") => true
+  private def buildCertifie(habilitation: Option[String]): Boolean =
+    buildCertifieFromArray(habilitation.map(Seq(_)))
+
+  private def buildCertifieFromArray(habilitation: Option[Seq[String]]): Boolean = habilitation match {
+    case Some(x) if x.contains("recruteurcertifie") => true
     case _ => false
   }
 
@@ -204,6 +217,25 @@ object UserInfosEntrepriseResponse {
       (JsPath \ "gender").read[String] and
       (JsPath \ "habilitation").readNullable[String]
     ) (UserInfosEntrepriseResponse.apply _)
+}
+
+private[ws] case class UserInfosEntrepriseAlternativeResponse(sub: String,
+                                                              familyName: String,
+                                                              givenName: String,
+                                                              email: String,
+                                                              gender: String,
+                                                              habilitation: Option[Seq[String]])
+
+object UserInfosEntrepriseAlternativeResponse {
+
+  implicit val reads: Reads[UserInfosEntrepriseAlternativeResponse] = (
+    (JsPath \ "sub").read[String] and
+      (JsPath \ "family_name").read[String] and
+      (JsPath \ "given_name").read[String] and
+      (JsPath \ "email").read[String] and
+      (JsPath \ "gender").read[String] and
+      (JsPath \ "habilitation").readNullable[Seq[String]]
+    ) (UserInfosEntrepriseAlternativeResponse.apply _)
 }
 
 private[ws] case class CoordonneesCandidatReponse(adresse1: Option[String],

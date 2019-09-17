@@ -541,6 +541,76 @@ class PEConnectWSMappingSpec extends WordSpec
       result.exists(_.niveau.contains(NiveauSavoirFaire.DEBUTANT)) mustBe true
     }
   }
+  "buildPEConnectRecruteurInfos" should {
+    "renvoyer non certifie quand l'habilitation est vide" in {
+      // Given
+      val response = mockRecruteurInfosResponseValide
+      when(response.habilitation) thenReturn None
+
+      // When
+      val result = mapping.buildPEConnectRecruteurInfos(response)
+
+      // Then
+      result.certifie mustBe false
+    }
+    "renvoyer non certifie quand l'habilitation ne contient pas la valeur recruteurcertifie" in {
+      // Given
+      val response = mockRecruteurInfosResponseValide
+      when(response.habilitation) thenReturn Some("noncertifie")
+
+      // When
+      val result = mapping.buildPEConnectRecruteurInfos(response)
+
+      // Then
+      result.certifie mustBe false
+    }
+    "renvoyer certifie quand l'habilitation contient la valeur recruteurcertifie" in {
+      // Given
+      val response = mockRecruteurInfosResponseValide
+      when(response.habilitation) thenReturn Some("recruteurcertifie")
+
+      // When
+      val result = mapping.buildPEConnectRecruteurInfos(response)
+
+      // Then
+      result.certifie mustBe true
+    }
+  }
+  "buildPEConnectRecruteurInfosAlternative" should {
+    "renvoyer non certifie quand la liste d'habilitations est vide" in {
+      // Given
+      val response = mockRecruteurInfosAlternativeResponseValide
+      when(response.habilitation) thenReturn None
+
+      // When
+      val result = mapping.buildPEConnectRecruteurInfosAlternative(response)
+
+      // Then
+      result.certifie mustBe false
+    }
+    "renvoyer non certifie quand la liste d'habilitations ne contient pas la valeur recruteurcertifie" in {
+      // Given
+      val response = mockRecruteurInfosAlternativeResponseValide
+      when(response.habilitation) thenReturn Some(Seq("administrateur", "noncertifie"))
+
+      // When
+      val result = mapping.buildPEConnectRecruteurInfosAlternative(response)
+
+      // Then
+      result.certifie mustBe false
+    }
+    "renvoyer certifie quand la liste d'habilitations contient la valeur recruteurcertifie" in {
+      // Given
+      val response = mockRecruteurInfosAlternativeResponseValide
+      when(response.habilitation) thenReturn Some(Seq("administrateur", "recruteurcertifie"))
+
+      // When
+      val result = mapping.buildPEConnectRecruteurInfosAlternative(response)
+
+      // Then
+      result.certifie mustBe true
+    }
+  }
 
   private def mockResultatRendezVousResponseValide: ResultatRendezVousResponse = {
     val response = mock[ResultatRendezVousResponse]
@@ -620,6 +690,28 @@ class PEConnectWSMappingSpec extends WordSpec
     when(response.libelle) thenReturn Some("Réaliser une opération d'affûtage")
     when(response.typeCompetence) thenReturn TypeCompetenceResponse.SAVOIR_FAIRE_METIER
     when(response.niveau) thenReturn None
+    response
+  }
+
+  private def mockRecruteurInfosResponseValide: UserInfosEntrepriseResponse = {
+    val response = mock[UserInfosEntrepriseResponse]
+    when(response.email) thenReturn "test@pole-emploi.fr"
+    when(response.sub) thenReturn "test"
+    when(response.familyName) thenReturn "Patulacci"
+    when(response.givenName) thenReturn "Marcel"
+    when(response.gender) thenReturn "male"
+    when(response.habilitation) thenReturn Some("recruteurcertifie")
+    response
+  }
+
+  private def mockRecruteurInfosAlternativeResponseValide: UserInfosEntrepriseAlternativeResponse = {
+    val response = mock[UserInfosEntrepriseAlternativeResponse]
+    when(response.email) thenReturn "test@pole-emploi.fr"
+    when(response.sub) thenReturn "test"
+    when(response.familyName) thenReturn "Patulacci"
+    when(response.givenName) thenReturn "Marcel"
+    when(response.gender) thenReturn "male"
+    when(response.habilitation) thenReturn Some(Seq("recruteurcertifie"))
     response
   }
 }

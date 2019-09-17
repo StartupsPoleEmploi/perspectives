@@ -35,8 +35,10 @@ class PEConnectWSAdapter(wsClient: WSClient,
       json.validate[UserInfosEntrepriseResponse] match {
         case JsSuccess(response, _) => mapping.buildPEConnectRecruteurInfos(response)
         case e: JsError =>
-          logger.error(s"Errors in JSON ${Json.stringify(json)} : ${JsError toJson e}")
-          throw new IllegalArgumentException(s"Errors in JSON ${Json.stringify(json)}")
+          // in PE-Connect API documentation, habilitation field is a string but in some cases it may be an array of strings... (ex : ["administrateur","recruteurcertifie"])
+          logger.warn(s"Could not deserialize JSON ${Json.stringify(json)} to UserInfosEntrepriseResponse. Errors : ${JsError toJson e}")
+          val alternativeResponse = json.as[UserInfosEntrepriseAlternativeResponse]
+          mapping.buildPEConnectRecruteurInfosAlternative(alternativeResponse)
       }
     }
 
