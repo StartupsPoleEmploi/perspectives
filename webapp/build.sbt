@@ -1,6 +1,6 @@
 name := "perspectives-webapp"
 
-maintainer := "brice.friederich@beta.gouv.fr"
+maintainer := "mickael.barroux@beta.gouv.fr"
 
 libraryDependencies ++= Seq(
   guice,
