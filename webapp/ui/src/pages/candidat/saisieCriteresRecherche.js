@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import $ from 'jquery';
+import _ from 'lodash';
 import 'bootstrap/js/dist/modal';
 import Places from '../../composants/Places.vue';
 import ROME from '../../domain/metier/ROME';
@@ -209,7 +210,7 @@ new Vue({
             });
         },
         hasMetiersValides: function() {
-            return Object.keys(this.metiersValides).length > 0;
+            return Object.keys(this.metiersValides).length > 0 && _.intersection(Object.keys(this.metiersValides), Object.keys(this.secteursActivitesParCode)).length > 0
         },
         ajouterMetierSelectionne: function(metier, codeSecteur) {
             var checked = this.criteresRechercheFormData.metiersRecherches.indexOf(metier.codeROME) !== -1;

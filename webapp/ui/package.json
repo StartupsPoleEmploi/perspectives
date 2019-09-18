@@ -10,7 +10,8 @@
     "jquery": "3.4.1",
     "places.js": "1.16.4",
     "popper.js": "1.14.7",
-    "vue": "2.6.10"
+    "vue": "2.6.10",
+    "lodash": "4.17.15"
   },
   "devDependencies": {
     "vue-loader": "15.7.0",
