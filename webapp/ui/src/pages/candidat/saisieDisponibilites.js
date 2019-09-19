@@ -15,7 +15,7 @@ new Vue({
                 csrfToken: jsData.csrfToken,
                 candidatEnRecherche: null,
                 disponibiliteConnue: null,
-                nbMoisProchaineDisponibilite: 6,
+                nbMoisProchaineDisponibilite: null,
                 emploiTrouveGracePerspectives: null
             }, jsData.disponibilitesFormData),
             disponibilitesFormErrors: Object.assign({
