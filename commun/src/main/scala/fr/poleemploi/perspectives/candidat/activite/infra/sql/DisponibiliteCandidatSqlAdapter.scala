@@ -36,7 +36,7 @@ class DisponibiliteCandidatSqlAdapter(val driver: PostgresDriver,
 
   val disponibiliteCandidatTable = TableQuery[DisponibiliteCandidatTable]
 
-  def ajouter(disponibiliteCandidat: Stream[CandidatId]): Future[Unit] = {
+  def ajouter(disponibiliteCandidat: Seq[CandidatId]): Future[Unit] = {
     val bulkInsert: DBIO[Option[Int]] = disponibiliteCandidatTable.map(
       m => (m.candidatId, m.dateDernierEnvoiMail)
     ) insertOrUpdateAll disponibiliteCandidat.map(

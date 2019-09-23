@@ -90,7 +90,7 @@ class MailjetWSMapping {
       ))
     )
 
-  def buildRequestEmailDisponibiliteCandidat(baseUrl: String, idTemplate: Int, candidats: Stream[EmailingDisponibiliteCandidatAvecEmail]): SendMailRequest =
+  def buildRequestEmailDisponibiliteCandidat(baseUrl: String, idTemplate: Int, candidats: Seq[EmailingDisponibiliteCandidatAvecEmail]): SendMailRequest =
     SendMailRequest(
       messages = candidats.map(c => SendMailMessage(
         from = None,

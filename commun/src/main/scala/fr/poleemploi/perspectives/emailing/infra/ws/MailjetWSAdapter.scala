@@ -66,7 +66,7 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
       request = mapping.buildRequestMiseAJourMRSValideeCandidat(mrsValideeCandidat)
     ).map(_ => ())
 
-  def envoyerDisponibilitesCandidat(baseUrl: String, candidats: Stream[EmailingDisponibiliteCandidatAvecEmail]): Future[Unit] =
+  def envoyerDisponibilitesCandidat(baseUrl: String, candidats: Seq[EmailingDisponibiliteCandidatAvecEmail]): Future[Unit] =
     if (candidats.nonEmpty)
       Future.sequence(candidats.grouped(nbMaxDestinataires).map(candidatChunk =>
         sendMail(mapping.buildRequestEmailDisponibiliteCandidat(

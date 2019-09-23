@@ -5,7 +5,7 @@ import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.commun.domain._
 import play.api.libs.json._
 
-case class CandidatsPourBatchDisponibilitesQuery(candidatIds: Stream[CandidatId]) extends Query[CandidatsPourBatchDisponibilitesQueryResult]
+case class CandidatsPourBatchDisponibilitesQuery(candidatIds: Seq[CandidatId]) extends Query[CandidatsPourBatchDisponibilitesQueryResult]
 
 case class CandidatsPourBatchDisponibilitesQueryResult(candidats: List[CandidatPourBatchDisponibilitesDto]) extends QueryResult
 
