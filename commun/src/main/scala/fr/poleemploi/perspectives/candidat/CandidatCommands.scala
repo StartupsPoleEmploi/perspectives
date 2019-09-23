@@ -1,6 +1,7 @@
 package fr.poleemploi.perspectives.candidat
 
 import java.nio.file.Path
+import java.time.LocalDate
 
 import fr.poleemploi.cqrs.command.Command
 import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
@@ -42,6 +43,11 @@ case class ModifierCriteresRechercheCommand(id: CandidatId,
                                             codesROMERecherches: Set[CodeROME],
                                             codesDomaineProfessionnelRecherches: Set[CodeDomaineProfessionnel],
                                             tempsTravailRecherche: TempsTravail) extends Command[Candidat]
+
+case class ModifierDisponibilitesCommand(id: CandidatId,
+                                         candidatEnRecherche: Boolean,
+                                         emploiTrouveGracePerspectives: Boolean,
+                                         prochaineDisponibilite: Option[LocalDate]) extends Command[Candidat]
 
 case class AjouterCVCommand(id: CandidatId,
                             typeMedia: TypeMedia,

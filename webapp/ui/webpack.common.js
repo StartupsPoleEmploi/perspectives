@@ -7,6 +7,7 @@ module.exports = {
         candidatLanding: './src/pages/candidat/landing.js',
         candidatRechercheOffres: './src/pages/candidat/rechercheOffres.js',
         candidatSaisieCriteresRecherche: './src/pages/candidat/saisieCriteresRecherche.js',
+        candidatSaisieDisponibilites: './src/pages/candidat/saisieDisponibilites.js',
         conseillerAdmin: './src/pages/conseiller/admin.js',
         infosLegales: './src/pages/infosLegales.js',
         menuNavigation: './src/modules/menuNavigation.js',
@@ -45,3 +46,4 @@ module.exports = {
         }
     }
 };
+

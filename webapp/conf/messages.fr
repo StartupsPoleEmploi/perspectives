@@ -8,5 +8,7 @@ constraint.numeroTelephone=Le numéro de téléphone n''est pas valide
 constraint.typeRecruteur=Le type de recruteur n''est pas valide
 constraint.rayonRecherche=Le rayon de recherche n''est pas valide
 constraint.tempsTravail=Le temps de travail n''est pas valide
+constraint.criteres.disponibiliteConnue=Vous devez renseigner votre date de disponibilité
+constraint.criteres.emploiTrouveGracePerspectives=Vous devez renseigner si vous avez trouvé votre emploi avec Perspectives
 
 format.zonedatetime=ZonedDateTime

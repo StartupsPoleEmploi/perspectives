@@ -171,6 +171,23 @@ object CandidatInscritState extends CandidatState {
     List(visibiliteRecruteurModifieeEvent, numeroTelephoneModifieEvent, criteresRechercheModifiesEvent).flatten
   }
 
+  override def modifierDisponibilites(context: CandidatContext, command: ModifierDisponibilitesCommand): List[Event] = {
+    val disponibilitesModifieesEvent =
+      if (!context.rechercheEmploi.contains(command.candidatEnRecherche) ||
+        !context.emploiTrouveGracePerspectives.contains(command.emploiTrouveGracePerspectives) ||
+        command.prochaineDisponibilite.exists(p => !context.prochaineDisponibilite.contains(p)) ||
+        context.prochaineDisponibilite.exists(p => !command.prochaineDisponibilite.contains(p)))
+        Some(DisponibilitesModifieesEvent(
+          candidatId = command.id,
+          candidatEnRecherche = command.candidatEnRecherche,
+          emploiTrouveGracePerspectives = command.emploiTrouveGracePerspectives,
+          prochaineDisponibilite = command.prochaineDisponibilite
+        ))
+        else None
+
+    List(disponibilitesModifieesEvent).flatten
+  }
+
   override def ajouterCV(context: CandidatContext, command: AjouterCVCommand, cvService: CVService): Future[List[Event]] = {
     require(context.cvId.isEmpty, s"Impossible d'ajouter un CV au candidat ${command.id.value}, il existe déjà")
     require(context.nom.isDefined, "Impossible d'ajouter un CV à un candidat sans nom")

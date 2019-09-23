@@ -152,6 +152,12 @@
         "date_derniere_connexion": {
           "type": "date"
         },
+        "prochaine_disponibilite": {
+          "type": "date"
+        },
+        "emploi_trouve_grace_perspectives": {
+          "type": "boolean"
+        },
         "criteres_recherche": {
           "properties": {
             "metiers_valides": {

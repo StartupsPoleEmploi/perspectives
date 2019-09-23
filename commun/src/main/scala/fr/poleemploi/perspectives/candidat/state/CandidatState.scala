@@ -24,6 +24,9 @@ trait CandidatState {
   def modifierCriteresRecherche(context: CandidatContext, command: ModifierCriteresRechercheCommand): List[Event] =
     default(context, command)
 
+  def modifierDisponibilites(context: CandidatContext, command: ModifierDisponibilitesCommand): List[Event] =
+    default(context, command)
+
   def modifierProfil(context: CandidatContext, command: ModifierProfilCandidatCommand, localisationService: LocalisationService): Future[List[Event]] =
     Future(default(context, command))
 
