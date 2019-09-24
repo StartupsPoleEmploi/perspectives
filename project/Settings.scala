@@ -1,6 +1,7 @@
 import sbt.Keys._
 import sbt._
 import sbtbuildinfo.{BuildInfoKey, BuildInfoKeys}
+import sbtrelease.ReleasePlugin.autoImport._
 
 object Settings {
 
@@ -15,12 +16,20 @@ object Settings {
     BuildInfoKeys.buildInfoPackage := "fr.poleemploi.perspectives.infra"
   )
 
+  private val runtimeVersion = Def.task {
+    val v1 = (version in ThisBuild).value
+    val v2 = version.value
+    if (releaseUseGlobalVersion.value) v1 else v2
+  }
+
   // Configuration sans publication
   val noPublishSettings: Seq[Setting[_]] = Seq(
     skip in publish := true,
     publishTo := {
       Some(Resolver.mavenLocal)
-    }
+    },
+    // Customization of release commit message in order to skip gitlab CI job when pushing new snapshot version commit
+    releaseCommitMessage := s"Setting version to ${runtimeVersion.value}" + (if (runtimeVersion.value.endsWith("-SNAPSHOT")) " [ci skip]" else "")
   )
 
   // Configuration spécifique de la publication pour une appli Play!
