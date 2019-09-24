@@ -1,0 +1,94 @@
+variables:
+  GIT_SSL_NO_VERIFY: "1"
+  SBT_OPTS: "-Dsbt.ivy.home=/cache/.ivy2 -Dsbt.boot.credentials=/root/.ivy2/.credentials -Xms512M -Xss2M -Xmx2G"
+
+image: "mozilla/sbt:8u181_1.2.7"
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - "webapp/ui/node_modules/"
+    - "/cache/.ivy2"
+    - "/cache/target"
+    - "/root/.sbt"
+
+stages:
+  - 🔨_build
+  - 🚀_release
+  - 📦_package
+  - 🚚_deploy
+
+before_script:
+  # Installation de nodejs et docker => optimisation = creer une image custom pour le build avec ces outils pre-installes
+  - curl -sSL https://get.docker.com/ | sh
+  - curl -sL https://deb.nodesource.com/setup_11.x | bash -
+  - apt-get update && apt-get install -y --no-install-recommends nodejs
+  # On remplace le CI_JOB_TOKEN par un CI_CUSTOM_JOB_TOKEN qui possede le droit de push sur le repo (personal access token defini dans les gitlab secret variables)
+  - url_host=`git remote get-url origin | sed -e "s/https:\/\/gitlab-ci-token:.*@//g"`
+  - git remote set-url origin "https://gitlab-ci-token:${CI_CUSTOM_JOB_TOKEN}@${url_host}"
+  - git remote -v # to debug
+  # Conf git pour pusher lors de la release
+  - git config --global user.email "perspectives@pole-emploi.fr"
+  - git config --global user.name "Perspectives CI"
+  # Build la partie front (les node_modules sont mis en cache pour pas tout retelecharger a chaque fois)
+  - cd webapp/ui
+  - npm install
+  - cd ../..
+
+🔨_build:
+  stage: 🔨_build
+  script:
+    - sbt ";clean;compile;test"
+  cache:
+    paths:
+      - ./.m2/repository
+    key: m2
+  except:
+    refs:
+      - tags
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /ci-skip/ # do not run job if commit message contains "ci-skip"
+
+🚀_release:
+  stage: 🚀_release
+  script:
+    # gitlab CI bosse en mode detache sur un commit alors que la release a besoin de se faire sur une branche pour pusher les changements de versions dans gitlab
+    - git checkout $CI_COMMIT_REF_NAME
+    - git reset --hard origin/$CI_COMMIT_REF_NAME
+    - sbt "release with-defaults"
+  cache:
+    paths:
+      - ./.m2/repository
+    key: m2
+  when: manual
+  except:
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /ci-skip/ # do not run job if commit message contains "ci-skip"
+  only:
+    - master
+
+📦_package:
+  stage: 📦_package
+  variables:
+    LOGBACK_RESOURCE: logback-production.xml
+    CONFIG_RESOURCE: application-production.conf
+  script:
+    - echo $(grep "version in ThisBuild := \".*\"" version.sbt | cut -d "\"" -f 2) > /tmp/version.txt
+    - sbt dist
+    - cd docker
+    - cp ../batchs/target/universal/perspectives-batchs-*.zip .
+    - cp ../webapp/target/universal/perspectives-webapp-*.zip .
+    - docker build --build-arg BATCHS_LOGBACK_RESOURCE=$LOGBACK_RESOURCE --build-arg BATCHS_CONFIG_RESOURCE=$CONFIG_RESOURCE --build-arg BATCHS_VERSION=$(cat /tmp/version.txt) -f dockerfile-batchs -t $CI_REGISTRY_IMAGE/perspectives-batchs:$(cat /tmp/version.txt) .
+    - docker build --build-arg WEBAPP_LOGBACK_RESOURCE=$LOGBACK_RESOURCE --build-arg WEBAPP_CONFIG_RESOURCE=$CONFIG_RESOURCE --build-arg WEBAPP_VERSION=$(cat /tmp/version.txt) -f dockerfile-webapp -t $CI_REGISTRY_IMAGE/perspectives-webapp:$(cat /tmp/version.txt) .
+    - docker push $CI_REGISTRY_IMAGE/perspectives-batchs:$(cat /tmp/version.txt)
+    - docker push $CI_REGISTRY_IMAGE/perspectives-webapp:$(cat /tmp/version.txt)
+  cache:
+    paths:
+      - ./.m2/repository
+    key: m2
+  artifacts:
+    paths:
+      - ./**/target/universal/*.zip
+    expire_in: 1 week
+  only:
+    - tags
