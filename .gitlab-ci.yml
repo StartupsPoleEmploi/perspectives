@@ -78,10 +78,10 @@ before_script:
     - cd docker
     - cp ../batchs/target/universal/perspectives-batchs-*.zip .
     - cp ../webapp/target/universal/perspectives-webapp-*.zip .
-    - docker build --build-arg BATCHS_LOGBACK_RESOURCE=$LOGBACK_RESOURCE --build-arg BATCHS_CONFIG_RESOURCE=$CONFIG_RESOURCE --build-arg BATCHS_VERSION=$(cat /tmp/version.txt) -f dockerfile-batchs -t $CI_REGISTRY_IMAGE/perspectives-batchs:$(cat /tmp/version.txt) .
-    - docker build --build-arg WEBAPP_LOGBACK_RESOURCE=$LOGBACK_RESOURCE --build-arg WEBAPP_CONFIG_RESOURCE=$CONFIG_RESOURCE --build-arg WEBAPP_VERSION=$(cat /tmp/version.txt) -f dockerfile-webapp -t $CI_REGISTRY_IMAGE/perspectives-webapp:$(cat /tmp/version.txt) .
-    - docker push $CI_REGISTRY_IMAGE/perspectives-batchs:$(cat /tmp/version.txt)
-    - docker push $CI_REGISTRY_IMAGE/perspectives-webapp:$(cat /tmp/version.txt)
+    - sudo docker build --build-arg BATCHS_LOGBACK_RESOURCE=$LOGBACK_RESOURCE --build-arg BATCHS_CONFIG_RESOURCE=$CONFIG_RESOURCE --build-arg BATCHS_VERSION=$(cat /tmp/version.txt) -f dockerfile-batchs -t $CI_REGISTRY_IMAGE/perspectives-batchs:$(cat /tmp/version.txt) .
+    - sudo docker build --build-arg WEBAPP_LOGBACK_RESOURCE=$LOGBACK_RESOURCE --build-arg WEBAPP_CONFIG_RESOURCE=$CONFIG_RESOURCE --build-arg WEBAPP_VERSION=$(cat /tmp/version.txt) -f dockerfile-webapp -t $CI_REGISTRY_IMAGE/perspectives-webapp:$(cat /tmp/version.txt) .
+    - sudo docker push $CI_REGISTRY_IMAGE/perspectives-batchs:$(cat /tmp/version.txt)
+    - sudo docker push $CI_REGISTRY_IMAGE/perspectives-webapp:$(cat /tmp/version.txt)
   cache:
     paths:
       - ./.m2/repository
