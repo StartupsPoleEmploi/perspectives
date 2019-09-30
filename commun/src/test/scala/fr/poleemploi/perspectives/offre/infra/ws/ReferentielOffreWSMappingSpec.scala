@@ -458,7 +458,7 @@ class ReferentielOffreWSMappingSpec extends WordSpec
       // Then
       result mustBe List(offreResponse)
     }
-    "ne pas retourner l'offre lorsqu'elle correspond au codeROME N41" in {
+    "ne pas retourner l'offre lorsqu'elle correspond au codeROME N41 (trop d'offres avec ce code exigent des permis et des qualifications)" in {
       // Given
       when(criteresRechercheOffre.codesROME) thenReturn List(
         CodeROME("A1401"),

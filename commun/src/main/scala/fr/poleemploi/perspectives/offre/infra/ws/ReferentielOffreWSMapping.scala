@@ -269,7 +269,7 @@ class ReferentielOffreWSMapping {
     * <li>Si l'experience est DEBUTANT cela signifie moins d'un an d'expérience côté API, on doit donc quand même vérifier qu'il n'y ait pas d'expérience exigée</li>
     * <li>Si l'experience est DEBUTANT, malgré le filtre sur l'expérience l'offre peut aussi contenir des formations exigées</li>
     * <li>l'API ne permet pas de passer beaucoup de codeROME, on filtre donc à postériori sur les secteurs, domaines ou codeROME</li>
-    * <li>on exclue certains codes ROME tels que N41 (Transport routier) qui pose pas mal de soucis</li>
+    * <li>on exclut certains codes ROME tels que N41 (Transport routier) qui posent des problèmes au niveau des permis et qualifications exigeés</li>
     * </ul>
     */
   def filterOffresResponses(criteresRechercheOffre: CriteresRechercheOffre,
