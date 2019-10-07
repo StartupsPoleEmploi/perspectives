@@ -3,8 +3,6 @@ package fr.poleemploi.perspectives.commun.infra.peconnect.ws
 import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.candidat.mrs.domain.MRSValidee
 import fr.poleemploi.perspectives.commun.infra.ws.{AccessToken, WSAdapter}
-import play.api.Logging
-import play.api.libs.json.{JsError, JsSuccess, Json}
 import play.api.libs.ws.WSClient
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -12,7 +10,7 @@ import scala.concurrent.Future
 
 class PEConnectWSAdapter(wsClient: WSClient,
                          config: PEConnectWSAdapterConfig,
-                         mapping: PEConnectWSMapping) extends WSAdapter with Logging {
+                         mapping: PEConnectWSMapping) extends WSAdapter {
 
   def mrsValideesCandidat(accessToken: AccessToken): Future[List[MRSValidee]] =
     handleRateLimit()(
@@ -30,18 +28,7 @@ class PEConnectWSAdapter(wsClient: WSClient,
         .addHttpHeaders(authorizationBearer(accessToken))
         .get()
         .flatMap(filtreStatutReponse(_))
-    ).map{ r =>
-      val json = r.json
-      json.validate[UserInfosEntrepriseResponse] match {
-        case JsSuccess(response, _) => mapping.buildPEConnectRecruteurInfos(response)
-        case e: JsError =>
-          // in PE-Connect API documentation, habilitation field is a string but in some cases it may be an array of strings... (ex : ["administrateur","recruteurcertifie"])
-          logger.warn(s"Could not deserialize JSON ${Json.stringify(json)} to UserInfosEntrepriseResponse. Errors : ${JsError toJson e}")
-          val alternativeResponse = json.as[UserInfosEntrepriseAlternativeResponse]
-          mapping.buildPEConnectRecruteurInfosAlternative(alternativeResponse)
-      }
-    }
-
+    ).map(r => mapping.buildPEConnectRecruteurInfos(r.json.as[UserInfosEntrepriseResponse]))
 
   def infosCandidat(accessToken: AccessToken): Future[PEConnectCandidatInfos] =
     handleRateLimit()(

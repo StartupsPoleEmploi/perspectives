@@ -7,7 +7,7 @@ import fr.poleemploi.perspectives.candidat.mrs.domain.MRSValidee
 import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
 import play.api.libs.functional.syntax._
-import play.api.libs.json.{JsPath, Json, Reads, __}
+import play.api.libs.json._
 
 class PEConnectWSMapping {
 
@@ -45,17 +45,7 @@ class PEConnectWSMapping {
       prenom = Prenom(response.givenName),
       email = Email(response.email.toLowerCase),
       genre = buildGenre(response.gender),
-      certifie = buildCertifie(response.habilitation)
-    )
-
-  def buildPEConnectRecruteurInfosAlternative(response: UserInfosEntrepriseAlternativeResponse): PEConnectRecruteurInfos =
-    PEConnectRecruteurInfos(
-      peConnectId = PEConnectId(response.sub),
-      nom = Nom(response.familyName),
-      prenom = Prenom(response.givenName),
-      email = Email(response.email.toLowerCase),
-      genre = buildGenre(response.gender),
-      certifie = buildCertifieFromArray(response.habilitation)
+      certifie = response.habilitations.contains("recruteurcertifie")
     )
 
   def buildStatutDemandeurEmploi(response: StatutCandidatReponse): StatutDemandeurEmploi =
@@ -147,14 +137,6 @@ class PEConnectWSMapping {
     case g@_ => throw new IllegalArgumentException(s"Gender non géré : $g")
   }
 
-  private def buildCertifie(habilitation: Option[String]): Boolean =
-    buildCertifieFromArray(habilitation.map(Seq(_)))
-
-  private def buildCertifieFromArray(habilitation: Option[Seq[String]]): Boolean = habilitation match {
-    case Some(x) if x.contains("recruteurcertifie") => true
-    case _ => false
-  }
-
   private def buildNiveauLangue(niveauLangueResponse: NiveauLangueResponse): Option[NiveauLangue] = niveauLangueResponse.code match {
     case "1" => Some(NiveauLangue.DEBUTANT)
     case "2" => Some(NiveauLangue.INTERMEDIAIRE)
@@ -205,37 +187,23 @@ private[ws] case class UserInfosEntrepriseResponse(sub: String,
                                                    givenName: String,
                                                    email: String,
                                                    gender: String,
-                                                   habilitation: Option[String])
+                                                   habilitations: List[String])
 
 object UserInfosEntrepriseResponse {
 
-  implicit val reads: Reads[UserInfosEntrepriseResponse] = (
-    (JsPath \ "sub").read[String] and
-      (JsPath \ "family_name").read[String] and
-      (JsPath \ "given_name").read[String] and
-      (JsPath \ "email").read[String] and
-      (JsPath \ "gender").read[String] and
-      (JsPath \ "habilitation").readNullable[String]
-    ) (UserInfosEntrepriseResponse.apply _)
-}
-
-private[ws] case class UserInfosEntrepriseAlternativeResponse(sub: String,
-                                                              familyName: String,
-                                                              givenName: String,
-                                                              email: String,
-                                                              gender: String,
-                                                              habilitation: Option[Seq[String]])
-
-object UserInfosEntrepriseAlternativeResponse {
-
-  implicit val reads: Reads[UserInfosEntrepriseAlternativeResponse] = (
-    (JsPath \ "sub").read[String] and
-      (JsPath \ "family_name").read[String] and
-      (JsPath \ "given_name").read[String] and
-      (JsPath \ "email").read[String] and
-      (JsPath \ "gender").read[String] and
-      (JsPath \ "habilitation").readNullable[Seq[String]]
-    ) (UserInfosEntrepriseAlternativeResponse.apply _)
+  // l'API indique dans sa documentation que le champ habilitation est une String, mais dans certains cas, on reçoit un tableau (ex : ["administrateur","recruteurcertifie"])
+  implicit val reads: Reads[UserInfosEntrepriseResponse] = (json: JsValue) => JsSuccess(
+    UserInfosEntrepriseResponse(
+      sub = (json \ "sub").as[String],
+      familyName = (json \ "family_name").as[String],
+      givenName = (json \ "given_name").as[String],
+      email = (json \ "email").as[String],
+      gender = (json \ "gender").as[String],
+      habilitations = (json \ "habilitation").asOpt[String].map(h => List(h))
+        .orElse((json \ "habilitation").asOpt[List[String]])
+        .getOrElse(Nil)
+    )
+  )
 }
 
 private[ws] case class CoordonneesCandidatReponse(adresse1: Option[String],

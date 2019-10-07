@@ -7,6 +7,7 @@ import fr.poleemploi.perspectives.commun.domain.{CodeDepartement, CodeROME}
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, MustMatchers, WordSpec}
+import play.api.libs.json.Json
 
 class PEConnectWSMappingSpec extends WordSpec
   with MustMatchers with MockitoSugar with BeforeAndAfter {
@@ -542,10 +543,10 @@ class PEConnectWSMappingSpec extends WordSpec
     }
   }
   "buildPEConnectRecruteurInfos" should {
-    "renvoyer non certifie quand l'habilitation est vide" in {
+    "retourner non certifie quand aucune habilitations n'est présente" in {
       // Given
       val response = mockRecruteurInfosResponseValide
-      when(response.habilitation) thenReturn None
+      when(response.habilitations) thenReturn Nil
 
       // When
       val result = mapping.buildPEConnectRecruteurInfos(response)
@@ -553,10 +554,10 @@ class PEConnectWSMappingSpec extends WordSpec
       // Then
       result.certifie mustBe false
     }
-    "renvoyer non certifie quand l'habilitation ne contient pas la valeur recruteurcertifie" in {
+    "retourner non certifie quand les habilitations ne contiennent pas la valeur recruteurcertifie" in {
       // Given
       val response = mockRecruteurInfosResponseValide
-      when(response.habilitation) thenReturn Some("noncertifie")
+      when(response.habilitations) thenReturn List("noncertifie")
 
       // When
       val result = mapping.buildPEConnectRecruteurInfos(response)
@@ -564,10 +565,10 @@ class PEConnectWSMappingSpec extends WordSpec
       // Then
       result.certifie mustBe false
     }
-    "renvoyer certifie quand l'habilitation contient la valeur recruteurcertifie" in {
+    "retourner certifie quand les habilitations contiennent la valeur recruteurcertifie" in {
       // Given
       val response = mockRecruteurInfosResponseValide
-      when(response.habilitation) thenReturn Some("recruteurcertifie")
+      when(response.habilitations) thenReturn List("administrateur", "recruteurcertifie")
 
       // When
       val result = mapping.buildPEConnectRecruteurInfos(response)
@@ -576,39 +577,95 @@ class PEConnectWSMappingSpec extends WordSpec
       result.certifie mustBe true
     }
   }
-  "buildPEConnectRecruteurInfosAlternative" should {
-    "renvoyer non certifie quand la liste d'habilitations est vide" in {
+  "UserInfosEntrepriseResponse.reads" should {
+    "retourner une seule habilitation lorsque la réponse JSON comporte une seule habilitation (la réponse de l'API peut être une liste d'habilitations OU une String" in {
       // Given
-      val response = mockRecruteurInfosAlternativeResponseValide
-      when(response.habilitation) thenReturn None
+      val json = Json.parse(
+        s"""{
+          "sub" : "12452145512",
+          "family_name" : "robert",
+          "given_name" : "jacques",
+          "email" : "robert.jacques@mail.com",
+          "gender" : "male",
+          "habilitation": "recruteurcertifie"
+        }""")
 
       // When
-      val result = mapping.buildPEConnectRecruteurInfosAlternative(response)
+      val res = json.as[UserInfosEntrepriseResponse]
 
       // Then
-      result.certifie mustBe false
+      res.habilitations mustBe List("recruteurcertifie")
     }
-    "renvoyer non certifie quand la liste d'habilitations ne contient pas la valeur recruteurcertifie" in {
+    "retourner une seule habilitation lorsque la réponse JSON comporte une seule habilitation en liste (la réponse de l'API peut être une liste d'habilitations OU une String" in {
       // Given
-      val response = mockRecruteurInfosAlternativeResponseValide
-      when(response.habilitation) thenReturn Some(Seq("administrateur", "noncertifie"))
+      val json = Json.parse(
+        s"""{
+          "sub" : "12452145512",
+          "family_name" : "robert",
+          "given_name" : "jacques",
+          "email" : "robert.jacques@mail.com",
+          "gender" : "male",
+          "habilitation": ["recruteurcertifie"]
+        }""")
 
       // When
-      val result = mapping.buildPEConnectRecruteurInfosAlternative(response)
+      val res = json.as[UserInfosEntrepriseResponse]
 
       // Then
-      result.certifie mustBe false
+      res.habilitations mustBe List("recruteurcertifie")
     }
-    "renvoyer certifie quand la liste d'habilitations contient la valeur recruteurcertifie" in {
+    "retourner plusieurs habilitations lorsque la réponse JSON en comporte plusieurs (la réponse de l'API peut être une liste d'habilitations OU une String" in {
       // Given
-      val response = mockRecruteurInfosAlternativeResponseValide
-      when(response.habilitation) thenReturn Some(Seq("administrateur", "recruteurcertifie"))
+      val json = Json.parse(
+        s"""{
+          "sub" : "12452145512",
+          "family_name" : "robert",
+          "given_name" : "jacques",
+          "email" : "robert.jacques@mail.com",
+          "gender" : "male",
+          "habilitation": ["administrateur", "recruteurcertifie"]
+        }""")
 
       // When
-      val result = mapping.buildPEConnectRecruteurInfosAlternative(response)
+      val res = json.as[UserInfosEntrepriseResponse]
 
       // Then
-      result.certifie mustBe true
+      res.habilitations mustBe List("administrateur", "recruteurcertifie")
+    }
+    "ne retourner aucune habilitations lorsque la réponse JSON ne comporte pas le champ" in {
+      // Given
+      val json = Json.parse(
+        s"""{
+          "sub" : "12452145512",
+          "family_name" : "robert",
+          "given_name" : "jacques",
+          "email" : "robert.jacques@mail.com",
+          "gender" : "male"
+        }""")
+
+      // When
+      val res = json.as[UserInfosEntrepriseResponse]
+
+      // Then
+      res.habilitations mustBe Nil
+    }
+    "ne retourner aucune habilitations lorsque la réponse JSON comporte une liste vide" in {
+      // Given
+      val json = Json.parse(
+        s"""{
+          "sub" : "12452145512",
+          "family_name" : "robert",
+          "given_name" : "jacques",
+          "email" : "robert.jacques@mail.com",
+          "gender" : "male",
+          "habilitation": []
+    }""")
+
+      // When
+      val res = json.as[UserInfosEntrepriseResponse]
+
+      // Then
+      res.habilitations mustBe Nil
     }
   }
 
@@ -700,18 +757,7 @@ class PEConnectWSMappingSpec extends WordSpec
     when(response.familyName) thenReturn "Patulacci"
     when(response.givenName) thenReturn "Marcel"
     when(response.gender) thenReturn "male"
-    when(response.habilitation) thenReturn Some("recruteurcertifie")
-    response
-  }
-
-  private def mockRecruteurInfosAlternativeResponseValide: UserInfosEntrepriseAlternativeResponse = {
-    val response = mock[UserInfosEntrepriseAlternativeResponse]
-    when(response.email) thenReturn "test@pole-emploi.fr"
-    when(response.sub) thenReturn "test"
-    when(response.familyName) thenReturn "Patulacci"
-    when(response.givenName) thenReturn "Marcel"
-    when(response.gender) thenReturn "male"
-    when(response.habilitation) thenReturn Some(Seq("recruteurcertifie"))
+    when(response.habilitations) thenReturn List("recruteurcertifie")
     response
   }
 }
