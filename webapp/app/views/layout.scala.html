@@ -20,6 +20,7 @@
         <script src="@assetsFinder.path("javascripts/vendor.bundle.js")" type="text/javascript"></script>
         @views.html.commun.polyfill()
         @if(webAppConfig.useGoogleTagManager) {@commun.googleTagManagerScript()}
+        @if(webAppConfig.useCrisp) {@commun.crispScript()}
     </head>
     <body>
         <noscript>

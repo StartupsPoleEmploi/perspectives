@@ -27,6 +27,7 @@ class WebAppConfig(configuration: Configuration) {
   val useSlackNotification: Boolean = configuration.getOptional[Boolean]("useSlackNotification").getOrElse(true)
   val useMailjet: Boolean = configuration.getOptional[Boolean]("useMailjet").getOrElse(true)
   val useGoogleTagManager: Boolean = configuration.getOptional[Boolean]("useGoogleTagManager").getOrElse(true)
+  val useCrisp: Boolean = configuration.getOptional[Boolean]("useCrisp").getOrElse(true)
   val useReferentielMetier: Boolean = configuration.getOptional[Boolean]("useReferentielMetier").getOrElse(true)
   val useReferentielOffre: Boolean = configuration.getOptional[Boolean]("useReferentielOffre").getOrElse(true)
   val useReferentielHabiletesMRS: Boolean = configuration.getOptional[Boolean]("useReferentielHabiletesMRS").getOrElse(true)
@@ -82,6 +83,8 @@ class WebAppConfig(configuration: Configuration) {
   )
 
   val googleTagManagerContainerId: String = configuration.get[String]("googleTagManager.containerId")
+
+  val crispWebsiteId: String = configuration.get[String]("crisp.websiteId")
 
   val slackConfig: SlackConfig = SlackConfig(configuration.get[String]("slack.webhook.url"))
 
