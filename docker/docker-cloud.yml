@@ -63,7 +63,6 @@ services:
       PLAY_HTTP_SECRET_KEY_FILE: /run/secrets/play_http_secret_key
       GOOGLE_TAG_MANAGER_CONTAINER_ID_FILE: /run/secrets/google_tag_manager_container_id
       SLACK_WEBHOOK_URL_FILE: /run/secrets/slack_webhook_url
-      CRISP_WEBSITE_ID_FILE: /run/secrets/crisp_website_id
     secrets:
       - algolia_places_apikey
       - algolia_places_appid
@@ -76,7 +75,6 @@ services:
       - play_http_secret_key
       - google_tag_manager_container_id
       - slack_webhook_url
-      - crisp_website_id
     networks:
       - net
 
@@ -171,6 +169,4 @@ secrets:
   google_tag_manager_container_id:
     external: true
   slack_webhook_url:
-    external: true
-  crisp_website_id:
     external: true
