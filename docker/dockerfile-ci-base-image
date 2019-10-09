@@ -1,0 +1,7 @@
+FROM mozilla/sbt:8u181_1.2.7
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get -y install --no-install-recommends nodejs && \
+    apt-get -y install curl && \
+    rm -rf /var/lib/apt/lists/*

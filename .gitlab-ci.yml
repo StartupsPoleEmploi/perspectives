@@ -2,7 +2,7 @@ variables:
   GIT_SSL_NO_VERIFY: "1"
   SBT_OPTS: "-Dsbt.ivy.home=/cache/.ivy2 -Dsbt.boot.credentials=/root/.ivy2/.credentials -Xms512M -Xss2M -Xmx2G"
 
-image: "mozilla/sbt:8u181_1.2.7"
+image: "registry.beta.pole-emploi.fr/perspectives/perspectives/perspectives-ci-base-image:latest"
 
 cache:
   key: ${CI_COMMIT_REF_SLUG}
@@ -19,19 +19,14 @@ stages:
   - 🐳_docker
 #  - 🚚_deploy # uncomment when jobs to deploy docker images on recette / env will be available
 
-before_script:
-  # Installation de nodejs => optimisation = creer une image custom pour le build avec ces outils pre-installes
-  - curl -sL https://deb.nodesource.com/setup_11.x | bash -
-  - apt-get update && apt-get install -y --no-install-recommends nodejs
-  # Build la partie front (les node_modules sont mis en cache pour pas tout retelecharger a chaque fois)
-  - cd webapp/ui
-  - npm install
-  - cd ../..
-
 # job automatique qui compile et lance les tests sur toutes les branches
 🔨_build:
   stage: 🔨_build
   script:
+    # Build la partie front (les node_modules sont mis en cache pour pas tout retelecharger a chaque fois)
+    - cd webapp/ui
+    - npm install
+    - cd ../..
     - sbt ";clean;compile;test"
   cache:
     paths:
@@ -40,6 +35,7 @@ before_script:
   except:
     refs:
       - tags
+      - docker-ci-base-image
     variables:
       - $CI_COMMIT_MESSAGE =~ /ci-skip/ # do not run job if commit message contains "ci-skip"
 
@@ -74,6 +70,11 @@ before_script:
   variables:
     LOGBACK_RESOURCE: logback-production.xml
     CONFIG_RESOURCE: application-production.conf
+  before_script:
+    # Build la partie front (les node_modules sont mis en cache pour pas tout retelecharger a chaque fois)
+    - cd webapp/ui
+    - npm install
+    - cd ../..
   script:
     - sbt dist
   cache:
@@ -88,26 +89,36 @@ before_script:
     - tags
 
 # uncomment when a runner with docker executor will be available to build docker images...
-#🐳_build-docker-image:
-#  stage: 🐳_docker
-#  before_script:
-#    - echo -n $CI_JOB_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
-#  variables:
-#    DOCKER_HOST: tcp://docker:2375/
-#    DOCKER_DRIVER: overlay2
-#    DOCKER_TLS_CERTDIR: ""
-#    LOGBACK_RESOURCE: logback-production.xml
-#    CONFIG_RESOURCE: application-production.conf
-#  script:
-#    - echo $(grep "version in ThisBuild := \".*\"" version.sbt | cut -d "\"" -f 2) > /tmp/version.txt
-#    - cd docker
-#    - cp ../batchs/target/universal/perspectives-batchs-*.zip .
-#    - cp ../webapp/target/universal/perspectives-webapp-*.zip .
-#    - docker build --build-arg BATCHS_LOGBACK_RESOURCE=$LOGBACK_RESOURCE --build-arg BATCHS_CONFIG_RESOURCE=$CONFIG_RESOURCE --build-arg BATCHS_VERSION=$(cat /tmp/version.txt) -f dockerfile-batchs -t $CI_REGISTRY_IMAGE/perspectives-batchs:$(cat /tmp/version.txt) .
-#    - docker build --build-arg WEBAPP_LOGBACK_RESOURCE=$LOGBACK_RESOURCE --build-arg WEBAPP_CONFIG_RESOURCE=$CONFIG_RESOURCE --build-arg WEBAPP_VERSION=$(cat /tmp/version.txt) -f dockerfile-webapp -t $CI_REGISTRY_IMAGE/perspectives-webapp:$(cat /tmp/version.txt) .
-#    - docker push $CI_REGISTRY_IMAGE/perspectives-batchs:$(cat /tmp/version.txt)
-#    - docker push $CI_REGISTRY_IMAGE/perspectives-webapp:$(cat /tmp/version.txt)
-#  only:
-#    - tags
-#  tags:
-#    - docker # when a runner with docker executor will be available...
+🐳_build-docker-image:
+  stage: 🐳_docker
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  variables:
+    LOGBACK_RESOURCE: logback-production.xml
+    CONFIG_RESOURCE: application-production.conf
+  script:
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - cat /kaniko/.docker/config.json
+    - echo $(grep "version in ThisBuild := \".*\"" version.sbt | cut -d "\"" -f 2) > /kaniko/version.txt
+    - cd docker
+    - cp ../batchs/target/universal/perspectives-batchs-*.zip .
+    - cp ../webapp/target/universal/perspectives-webapp-*.zip .
+    - /kaniko/executor --context $CI_PROJECT_DIR/docker --build-arg WEBAPP_LOGBACK_RESOURCE=$LOGBACK_RESOURCE --build-arg WEBAPP_CONFIG_RESOURCE=$CONFIG_RESOURCE --build-arg WEBAPP_VERSION=$(cat /kaniko/version.txt) --dockerfile $CI_PROJECT_DIR/docker/dockerfile-webapp --destination $CI_REGISTRY_IMAGE/perspectives-webapp:$(cat /kaniko/version.txt)
+    - /kaniko/executor --context $CI_PROJECT_DIR/docker --build-arg BATCHS_LOGBACK_RESOURCE=$LOGBACK_RESOURCE --build-arg BATCHS_CONFIG_RESOURCE=$CONFIG_RESOURCE --build-arg BATCHS_VERSION=$(cat /kaniko/version.txt) --dockerfile $CI_PROJECT_DIR/docker/dockerfile-batchs --destination $CI_REGISTRY_IMAGE/perspectives-batchs:$(cat /kaniko/version.txt)
+  only:
+    - tags
+
+# job manuel qui permet de builder l'image docker qui sert de base aux autres jobs Gitlab CI (pour pas reinstaller tous les outils a chaque job...)
+🐳_build-ci-base-image:
+  stage: 🐳_docker
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  script:
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - cat /kaniko/.docker/config.json
+    - cd docker
+    - /kaniko/executor --context $CI_PROJECT_DIR/docker --dockerfile $CI_PROJECT_DIR/docker/dockerfile-ci-base-image --destination $CI_REGISTRY_IMAGE/perspectives-ci-base-image:latest
+  only:
+    - docker-ci-base-image
