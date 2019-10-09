@@ -33,6 +33,8 @@ class CandidatQueryHandler(candidatProjectionQuery: CandidatProjectionQuery,
     case q: CandidatMetiersValidesQuery => candidatProjectionQuery.metiersValides(q)
     case q: OffresCandidatQuery => referentielOffre.rechercherOffres(q.criteresRechercheOffre)
       .map(r => OffresCandidatQueryResult(offres = r.offres, pageSuivante = r.pageSuivante))
+    case q: OffreCandidatQuery => referentielOffre.getOffre(q.offreId)
+      .map(OffreCandidatQueryResult(_))
     case q: CandidatPourRechercheOffreQuery => candidatProjectionQuery.rechercheOffre(q)
     case q: SecteursActivitesAvecCandidatsQuery => candidatProjectionQuery.secteursActivitesAvecCandidats(q)
     case q: ExisteCandidatQuery => candidatProjectionQuery.existeCandidat(q)

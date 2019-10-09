@@ -19,4 +19,6 @@ trait ReferentielOffre {
 
   def rechercherOffres(criteres: CriteresRechercheOffre): Future[RechercheOffreResult]
 
+  def getOffre(offreId: OffreId): Future[Option[Offre]]
+
 }

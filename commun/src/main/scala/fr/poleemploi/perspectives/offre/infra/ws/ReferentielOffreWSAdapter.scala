@@ -22,7 +22,7 @@ class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
     * L'API est limitée en nombre d'appels par seconde, il faut donc gérer le statut 429. <br />
     * Il faut aussi gérer le statut 206 (Partial Content) pour prendre en compte le fait qu'on ne récupère pas tous les résultats en une fois.
     */
-  def rechercherOffres(criteres: CriteresRechercheOffre): Future[RechercheOffreResult] = {
+  override def rechercherOffres(criteres: CriteresRechercheOffre): Future[RechercheOffreResult] = {
     def callWS(accessToken: AccessToken, params: List[(String, String)]): Future[RechercheOffreResult] =
       handleRateLimit()(
         wsClient.url(s"${config.urlApi}/offresdemploi/v2/offres/search")
@@ -53,6 +53,21 @@ class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
         params = mapping.buildRechercherOffresRequest(criteres, codeInsee)
       )
     } yield rechercheOffresResult
+  }
+
+  override def getOffre(offreId: OffreId): Future[Option[Offre]] = {
+    def callWS(accessToken: AccessToken): Future[Option[Offre]] =
+      handleRateLimit()(
+        wsClient.url(s"${config.urlApi}/offresdemploi/v2/offres/${offreId.value}")
+          .addHttpHeaders(authorizationBearer(accessToken), jsonContentType)
+          .get()
+          .flatMap(r => filtreStatutReponse(response = r, statutNonGere = s => s != 200 && s != 206))
+      ).map(r => r.json.asOpt[OffreResponse].map(mapping.buildOffre))
+
+    for {
+      accessToken <- getAccessToken
+      getOffreResult <- callWS(accessToken)
+    } yield getOffreResult
   }
 
   private def getAccessToken: Future[AccessToken] =
@@ -99,5 +114,4 @@ class ReferentielOffreWSAdapter(config: ReferentielOffreWSAdapterConfig,
         .flatMap(filtreStatutReponse(_))
         .map(r => r.json.as[List[CommuneResponse]].map(c => c.codePostal -> c.code).toMap)
     } yield communes
-
 }

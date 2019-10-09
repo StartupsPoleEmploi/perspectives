@@ -5,7 +5,7 @@ import conf.WebAppConfig
 import controllers.AssetsFinder
 import fr.poleemploi.perspectives.commun.domain.{CodeROME, UniteLongueur}
 import fr.poleemploi.perspectives.metier.domain.SecteurActivite
-import fr.poleemploi.perspectives.offre.domain.{CriteresRechercheOffre, PageOffres, RayonRecherche, TypeContrat}
+import fr.poleemploi.perspectives.offre.domain._
 import fr.poleemploi.perspectives.projections.candidat._
 import fr.poleemploi.perspectives.projections.metier.{MetierQueryHandler, SecteursActiviteQuery}
 import javax.inject.{Inject, Singleton}
@@ -66,6 +66,15 @@ class RechercheOffreController @Inject()(cc: ControllerComponents,
         )
       ))
     }
+  }
+
+  def getOffre(offreId: String): Action[AnyContent] = optionalCandidatAuthentifieAction.async { request: OptionalCandidatAuthentifieRequest[AnyContent] =>
+    messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
+      candidatQueryHandler.handle(OffreCandidatQuery(OffreId(offreId)))
+        .map(_.offre.map(x =>
+          Ok(Json.toJson(x))
+        ).getOrElse(NotFound))
+    }(request)
   }
 
   def rechercherOffres: Action[AnyContent] = optionalCandidatAuthentifieAction.async { request: OptionalCandidatAuthentifieRequest[AnyContent] =>

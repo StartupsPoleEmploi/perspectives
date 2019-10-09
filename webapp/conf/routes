@@ -15,6 +15,7 @@ GET         /candidat/disponibilites                                 controllers
 POST        /candidat/disponibilites                                 controllers.candidat.SaisieDisponibilitesController.modifierDisponibilites
 GET         /candidat/offres                                         controllers.candidat.RechercheOffreController.index(codePostal: Option[String] ?= None, lieuTravail: Option[String] ?= None, rayonRecherche: Option[Int] ?= None)
 POST        /candidat/offres                                         controllers.candidat.RechercheOffreController.rechercherOffres
+GET         /candidat/offres/:id                                     controllers.candidat.RechercheOffreController.getOffre(id)
 
 GET         /recruteur                                               controllers.recruteur.LandingController.landing
 GET         /recruteur/connexion                                     controllers.recruteur.AuthentificationController.connexion

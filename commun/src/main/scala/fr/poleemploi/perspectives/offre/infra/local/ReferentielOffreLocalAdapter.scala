@@ -240,4 +240,63 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
       offres = offres,
       pageSuivante = None
     ))
+
+  override def getOffre(offreId: OffreId): Future[Option[Offre]] =
+    Future.successful(Some(Offre(
+      id = offreId,
+      intitule = s"Manoeuvre bâtiment",
+      urlOrigine = "https://candidat.pole-emploi.fr/offres/recherche/detail/083LRLN",
+      contrat = Contrat(code = "CDD", label = "Contrat à durée déterminée - 1 Mois", nature = Some("Contrat travail")),
+      codeROME = Some(CodeROME("H2903")),
+      description = Some("L'agence Osmose emploi recherche pour l'un de ses clients un MANŒUVRE (H/F) sur le secteur de Pau (64)\n\nVotre mission consiste a préparer le terrain, les outils et les matériaux nécessaires à l'exécution de travaux de construction, de réparation ou d'entretien dans le bâtiment, sur les routes ou voiries,selon les règles de sécurité.\n\nVous pouvez être amené a assister le maçon et développer vos compétences en maçonnerie.\n\nCe poste est ouvert a toutes les personnes qui souhaitent s'investir pleinement et devenir autonome et polyvalent sur différentes tâches."),
+      lieuTravail = LieuTravail(libelle = Some("Tournai"), codePostal = None),
+      libelleDureeTravail = None,
+      complementExercice = None,
+      conditionExercice = None,
+      libelleDeplacement = None,
+      experience = ExperienceExige(label = Some("2 ans"), commentaire = None, exige = Some(true)),
+      competences = List(
+        Competence(label = "Appliquer les mesures correctives", exige = true),
+        Competence(label = "Contrôler un produit fini", exige = true),
+        Competence(label = "Etudier une demande client", exige = true),
+        Competence(label = "Modalités d'accueil", exige = false),
+        Competence(label = "Orienter les personnes selon leur demande", exige = false),
+        Competence(label = "Règles et consignes de sécurité", exige = false)
+      ),
+      qualitesProfessionnelles = List(
+        QualiteProfessionnelle(label = "Sens de la communication", description = ""),
+        QualiteProfessionnelle(label = "Autonomie", description = ""),
+        QualiteProfessionnelle(label = "Sens de l’organisation", description = "")
+      ),
+      salaire = Salaire(
+        libelle = Some("Mensuel de 2000.00 Euros à 3000.00 Euros sur 12 mois"),
+        commentaire = None,
+        complement1 = Some("Chèque repas"),
+        complement2 = Some("Mutuelle")
+      ),
+      permis = List(
+        Permis(label = "CE - Poids lourd", exige = true),
+        Permis(label = "EC - Remorque", exige = false)
+      ),
+      langues = Nil,
+      formations = Nil,
+      entreprise = Entreprise(
+        nom = Some("OSMOSE EMPLOI"),
+        description = Some("Agence d'emplois, travail temporaire, Placements CDD, CDI"),
+        urlLogo = Some("https://entreprise.pole-emploi.fr/static/img/logos/bveAgfMUYhAUWFSa5L0RHqDh7QY7saik.png"),
+        urlSite = Some("http://recrutement@iello.fr"),
+        effectif = None,
+        secteurActivite = Some("Conseil pour les affaires et autres conseils de gestion")
+      ),
+      contact = Contact(
+        nom = None,
+        coordonnees1 = Some("93 RUE DE LA MARNE"),
+        coordonnees2 = Some("95220 HERBLAY"),
+        coordonnees3 = Some("Courriel : ape.95132@pole-emploi.fr"),
+        telephone = None,
+        email = None,
+        urlPostuler = None
+      ),
+      dateActualisation = LocalDateTime.now()
+    )))
 }
