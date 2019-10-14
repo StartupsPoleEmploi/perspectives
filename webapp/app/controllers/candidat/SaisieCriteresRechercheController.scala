@@ -12,6 +12,7 @@ import fr.poleemploi.perspectives.projections.metier.{MetierQueryHandler, Secteu
 import javax.inject.Inject
 import play.api.libs.json.Json
 import play.api.mvc.{Action, _}
+import play.filters.csrf.CSRF
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -43,6 +44,7 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
             "metiersValides" -> candidatSaisieCriteresQueryResult.map(_.metiersValides),
             "secteursActivites" -> secteursActivitesQueryResult.secteursActivites,
             "criteresRechercheFormData" -> form.value,
+            "csrfToken" -> CSRF.getToken.map(_.value),
             "algoliaPlacesConfig" -> webAppConfig.algoliaPlacesConfig
           )
         ))

@@ -1,6 +1,5 @@
 @import conf.WebAppConfig
 @import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
-@import helper._
 @import play.api.libs.json.JsObject
 
 @(recruteurAuthentifie: RecruteurAuthentifie,
@@ -13,11 +12,10 @@
             <h1 class="col-12 col-lg-8 texte-noir font-weight-bold font-size-lg">
                 Bonjour @recruteurAuthentifie.prenom.value @recruteurAuthentifie.nom.value
             </h1>
-            @form(action = controllers.recruteur.routes.ProfilController.modifierProfil(),
-                'id -> "profilForm",
-                'class -> "col-12 col-lg-8",
-                Symbol("v-on:submit.prevent") -> "validerProfil") {
-                @CSRF.formField
+            <form action="@controllers.recruteur.routes.ProfilController.modifierProfil()" method="POST" id="profilForm"
+                  class="col-12 col-lg-8"
+                  v-on:submit.prevent="validerProfil">
+                <input type="hidden" name="csrfToken" v-bind:value="profilFormData.csrfToken" />
                 <input type="hidden" name="nouveauRecruteur" v-bind:value="profilFormData.nouveauRecruteur" />
                 <fieldset>
                     <legend class="texte-noir font-size-md mb-4" v-if="!profilFormData.nouveauRecruteur">
@@ -116,7 +114,7 @@
                         </div>
                     </div>
                 </fieldset>
-            }
+            </form>
         </div>
     </section>
 </div>

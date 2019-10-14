@@ -1,6 +1,5 @@
 @import conf.WebAppConfig
 @import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
-@import helper._
 @import play.api.libs.json.JsObject
 
 @(candidatAuthentifie: CandidatAuthentifie,
@@ -57,11 +56,10 @@
                 <h1 class="col-12 col-lg-8 texte-noir font-weight-bold font-size-lg" v-show="display.etape1">
                     Bonjour @candidatAuthentifie.prenom.value @candidatAuthentifie.nom.value
                 </h1>
-                @form(action = controllers.candidat.routes.SaisieCriteresRechercheController.modifierCriteresRecherche(),
-                    'id -> "criteresRechercheForm",
-                    'class -> "col-12 col-lg-8",
-                    Symbol("v-on:submit.prevent") -> "validerCriteres") {
-                    @CSRF.formField
+                <form action="@controllers.candidat.routes.SaisieCriteresRechercheController.modifierCriteresRecherche()" method="POST" id="criteresRechercheForm"
+                      class="col-12 col-lg-8"
+                      v-on:submit.prevent="validerCriteres">
+                    <input type="hidden" name="csrfToken" v-bind:value="criteresRechercheFormData.csrfToken" />
                     <input type="hidden" name="nouveauCandidat" v-bind:value="criteresRechercheFormData.nouveauCandidat" />
                     <fieldset v-show="display.etape1">
                         <legend class="texte-noir font-size-md mb-4">
@@ -292,7 +290,7 @@
                             </div>
                         </div>
                     </fieldset>
-                }
+                </form>
             </div>
         </section>
     </div>

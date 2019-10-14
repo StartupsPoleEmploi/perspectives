@@ -13,6 +13,7 @@ new Vue({
     data: function () {
         return {
             criteresRechercheFormData: Object.assign({
+                csrfToken: jsData.csrfToken,
                 nouveauCandidat: false,
                 contactRecruteur: null,
                 contactFormation: null,

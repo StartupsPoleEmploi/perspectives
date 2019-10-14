@@ -11,6 +11,7 @@ import javax.inject.Inject
 import play.api.Logging
 import play.api.libs.json.Json
 import play.api.mvc._
+import play.filters.csrf.CSRF
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -38,6 +39,7 @@ class ProfilController @Inject()(components: ControllerComponents,
           recruteurAuthentifie = recruteurAuthentifieRequest.recruteurAuthentifie,
           jsData = Json.obj(
             "profilFormData" -> form.value,
+            "csrfToken" -> CSRF.getToken.map(_.value),
             "algoliaPlacesConfig" -> webAppConfig.algoliaPlacesConfig
           )
         ))

@@ -1,6 +1,5 @@
 @import conf.WebAppConfig
 @import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
-@import helper._
 @import play.api.libs.json.JsObject
 
 @(recruteurAuthentifie: RecruteurAuthentifie,
@@ -259,7 +258,7 @@
                         <form action="@controllers.recruteur.routes.RechercheCandidatController.rechercherCandidats()" method="POST" id="criteresRechercheForm"
                               class="row mb-5"
                               v-on:submit="rechercherCandidatsSansPagination">
-                            @CSRF.formField
+                            <input type="hidden" name="csrfToken" v-bind:value="csrfToken" />
                             <div class="col-12 mb-3">
                                 <label for="localisation" class="sr-only">Choisissez un lieu de travail</label>
                                 <places id="localisation" placeholder="Lieu de travail" class="inputText h-auto texte-noir font-size-sm px-2 py-3 algolia-themeRecruteur"

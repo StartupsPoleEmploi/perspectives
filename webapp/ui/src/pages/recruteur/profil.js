@@ -9,6 +9,7 @@ new Vue({
     data: function () {
         return {
             profilFormData: Object.assign({
+                csrfToken: jsData.csrfToken,
                 nouveauRecruteur: false,
                 typeRecruteur: null,
                 raisonSociale: null,
