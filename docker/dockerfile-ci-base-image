@@ -1,7 +1,20 @@
-FROM mozilla/sbt:8u181_1.2.7
+FROM openjdk:8-jdk-slim
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get -y install --no-install-recommends nodejs && \
-    apt-get -y install curl && \
+RUN apt-get update && \
+    apt-get install -y curl && \
+    curl -sL https://deb.nodesource.com/setup_11.x | bash - && \
+    apt-get -y install nodejs && \
+    curl -L -o sbt-1.2.7.deb https://dl.bintray.com/sbt/debian/sbt-1.2.7.deb && \
+    dpkg -i sbt-1.2.7.deb && \
+    rm sbt-1.2.7.deb && \
     rm -rf /var/lib/apt/lists/*
+
+# Prepare sbt (warm cache)
+RUN mkdir -p project && \
+  echo "scalaVersion := \"2.12.8\"" > build.sbt && \
+  echo "sbt.version=1.2.7" > project/build.properties && \
+  echo "case object Temp" > Temp.scala && \
+  sbt compile && \
+  rm -r project && rm build.sbt && rm Temp.scala && rm -r target
