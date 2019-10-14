@@ -4,6 +4,7 @@ import 'bootstrap/js/dist/modal';
 import '../../commun/filters.js';
 import Pagination from '../../composants/Pagination.vue';
 import Places from '../../composants/Places.vue';
+import PostulerOffre from '../../composants/PostulerOffre.vue';
 import rayonsRechercheOffre from "../../domain/offre/rayonRecherche";
 import typesContrats from '../../domain/offre/typesContrats.js';
 
@@ -11,7 +12,8 @@ new Vue({
     el: '#rechercheOffres',
     components: {
         'pagination': Pagination,
-        'places': Places
+        'places': Places,
+        'postuler-offre': PostulerOffre
     },
     data: function () {
         return {
@@ -170,18 +172,6 @@ new Vue({
         },
         doitAfficherMiseEnAvantCV: function () {
             return this.isCandidatAuthentifie && !this.cv;
-        },
-        doitAfficherCoordonnees1: function (contact) {
-            return contact.coordonnees1 &&
-                contact.coordonnees1 !== contact.urlPostuler &&
-                contact.coordonnees1.indexOf(contact.email) === -1 &&
-                contact.coordonnees1.indexOf(contact.telephone) === -1;
-        },
-        doitAfficherLienOrigineOffre: function (contact) {
-            return !contact.email &&
-                !contact.telephone &&
-                !contact.urlPostuler &&
-                !contact.coordonnees1;
         },
         afficherFiltres: function () {
             if ($(".formulaireRecherche-jsResponsive").is(":visible")) {

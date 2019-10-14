@@ -5,20 +5,6 @@
   }
 
   .formulaireRecherche {
-    @include make-row();
-
-    &-titre {
-      color: $noir;
-      font-weight: 700;
-      margin: 0.5rem 0;
-    }
-
-    &-conteneur {
-      @include make-col-ready();
-      @include make-col(12);
-      margin-bottom: 1rem;
-    }
-
     &-jsResponsive {
       @include media-breakpoint-up(md) {
         display: none;
@@ -45,17 +31,10 @@
       padding-left: 1rem;
 
       &:after {
-        content: '';
-        position: absolute;
-        width: 10px;
-        height: 10px;
         top: 4px;
         left: 3px;
-        -webkit-transform: rotate(-45deg);
-        -ms-transform: rotate(-45deg);
-        transform: rotate(-45deg);
-        border: solid $noir;
-        border-width: 2px 0 0 2px;
+
+        @include after(10px, 10px, solid $noir, 2px 0 0 2px, -45deg);
       }
     }
 
@@ -81,29 +60,6 @@
     background-color: white;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
     cursor: pointer;
-
-    &-resume {
-      @include media-breakpoint-up(md) {
-        @include make-col(9);
-      }
-
-      @include media-breakpoint-down(md) {
-        @include make-col(12);
-      }
-    }
-
-    &-typeContrat {
-      @include media-breakpoint-up(md) {
-        @include make-col(3);
-        text-align: right;
-      }
-
-      @include media-breakpoint-down(md) {
-        @include make-col(12);
-        text-align: left;
-        margin-top: 1rem;
-      }
-    }
   }
 
   .typeContrat {
@@ -143,13 +99,6 @@
       border-radius: unset;
     }
 
-    &-fermer {
-      cursor: pointer;
-      font-size: 2rem;
-      padding: 0;
-      margin: 0;
-    }
-
     &-navigation {
       background-color: #EAEBED;
       border-bottom: 1px solid rgba(216, 216, 216, 0.5);
@@ -166,14 +115,6 @@
         padding-top: 0.5rem;
         padding-bottom: 0.5rem;
       }
-    }
-
-    &-intitule {
-      font-weight: 700;
-      color: $noir;
-      font-size: 2rem;
-      margin-bottom: 0;
-      padding-top: 2rem;
     }
 
     &-informationsCles {
@@ -225,32 +166,6 @@
     }
   }
 
-  .postuler {
-    @include make-row();
-    align-items: center;
-
-    &-texte {
-      @include make-col-ready();
-
-      @include media-breakpoint-up(md) {
-        @include make-col(9);
-      }
-      @include media-breakpoint-down(md) {
-        @include make-col(12);
-      }
-    }
-    &-cta {
-      @include make-col-ready();
-
-      @include media-breakpoint-up(md) {
-        @include make-col(3);
-      }
-      @include media-breakpoint-down(md) {
-        @include make-col(12);
-      }
-    }
-  }
-
   .infoProfil {
     display: inline-block;
     border-radius: 18px;
@@ -258,10 +173,6 @@
     padding: 0.5rem 1rem 0.5rem 3rem;
     position: relative;
     margin-bottom: 0.5rem;
-
-    &--exige {
-      font-weight: 600;
-    }
 
     &-puce {
       position: absolute;
@@ -272,20 +183,13 @@
       border-radius: 50%;
 
       &:after {
-        content: '';
-        position: absolute;
         top: 9px;
         left: 13px;
-        width: 8px;
-        height: 15px;
-        -webkit-transform: rotate(45deg);
-        -ms-transform: rotate(45deg);
-        transform: rotate(45deg);
+
+        @include after(8px, 15px, none, 0, 45deg);
       }
 
       &--souhaite {
-        background-color: white;
-
         &:after {
           border: solid $vert-emeraude;
           border-width: 0 3px 3px 0;
@@ -307,13 +211,5 @@
       left: 10px;
       top: 10px;
     }
-  }
-
-  .infosPostuler {
-    background-color: #F4F9FA;
-    color: $noir;
-    font-size: 0.875rem;
-    padding: 1rem;
-    border-radius: 8px;
   }
 }
