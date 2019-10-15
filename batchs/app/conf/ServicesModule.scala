@@ -1,11 +1,14 @@
 package conf
 
-import candidat.activite.domain.EmailingDisponibilitesService
-import candidat.activite.infra.local.LocalEmailingDisponibilitesService
-import candidat.activite.infra.mailjet.MailjetEmailingDisponibilitesService
+import candidat.activite.domain.{EmailingDisponibilitesService, ImportOffresGereesParRecruteurService}
+import candidat.activite.infra.local.{LocalEmailingDisponibilitesService, LocalImportOffresGereesParRecruteurService}
+import candidat.activite.infra.mailjet.{MailjetEmailingDisponibilitesService, MailjetImportOffresGereesParRecruteur}
 import com.google.inject.{AbstractModule, Provider, Provides, Singleton}
 import fr.poleemploi.perspectives.candidat.cv.domain.CVService
 import fr.poleemploi.perspectives.candidat.cv.infra.sql.CVSqlAdapter
+import fr.poleemploi.perspectives.candidat.localisation.domain.LocalisationService
+import fr.poleemploi.perspectives.candidat.localisation.infra.local.LocalisationLocalAdapter
+import fr.poleemploi.perspectives.candidat.localisation.infra.ws.LocalisationWSAdapter
 import fr.poleemploi.perspectives.candidat.mrs.domain.{ImportHabiletesMRS, ImportMRSDHAE}
 import fr.poleemploi.perspectives.candidat.mrs.infra.csv.ImportHabiletesMRSCsvAdapter
 import fr.poleemploi.perspectives.candidat.mrs.infra.local.{ImportHabiletesMRSLocalAdapter, ImportMRSDHAELocalAdapter}
@@ -52,6 +55,16 @@ class ServicesModule extends AbstractModule {
 
   @Provides
   @Singleton
+  def importOffresGereesParRecruteurService(mailjetImportOffresGereesParRecruteurService: Provider[MailjetImportOffresGereesParRecruteur],
+                                            localImportOffresGereesParRecruteurService: Provider[LocalImportOffresGereesParRecruteurService],
+                                            batchsConfig: BatchsConfig): ImportOffresGereesParRecruteurService =
+    if (batchsConfig.useMailjet)
+      mailjetImportOffresGereesParRecruteurService.get()
+    else
+      localImportOffresGereesParRecruteurService.get()
+
+  @Provides
+  @Singleton
   def emailingDisponibilitesService(mailjetEmailingDisponibilitesService: Provider[MailjetEmailingDisponibilitesService],
                                     localEmailingDisponibilitesService: Provider[LocalEmailingDisponibilitesService],
                                     batchsConfig: BatchsConfig): EmailingDisponibilitesService =
@@ -69,4 +82,14 @@ class ServicesModule extends AbstractModule {
   @Provides
   def referentielOffre: ReferentielOffre =
     new ReferentielOffreLocalAdapter
+
+  @Provides
+  @Singleton
+  def localisationService(localisationWSAdapter: Provider[LocalisationWSAdapter],
+                          localisationLocalAdapter: Provider[LocalisationLocalAdapter],
+                          batchsConfig: BatchsConfig): LocalisationService =
+    if (batchsConfig.useLocalisation)
+      localisationWSAdapter.get()
+    else
+      localisationLocalAdapter.get()
 }

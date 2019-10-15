@@ -1,8 +1,8 @@
 package conf
 
 import akka.actor.ActorSystem
-import candidat.activite.infra.local.LocalEmailingDisponibilitesService
-import candidat.activite.infra.mailjet.MailjetEmailingDisponibilitesService
+import candidat.activite.infra.local.{LocalEmailingDisponibilitesService, LocalImportOffresGereesParRecruteurService}
+import candidat.activite.infra.mailjet.{MailjetEmailingDisponibilitesService, MailjetImportOffresGereesParRecruteur}
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.inject.name.Named
 import com.google.inject.{AbstractModule, Provider, Provides, Singleton}
@@ -15,6 +15,9 @@ import fr.poleemploi.perspectives.authentification.infra.autologin.AutologinServ
 import fr.poleemploi.perspectives.candidat.activite.infra.csv.{ActiviteCandidatCSVAdapter, ImportActiviteCandidatCsvAdapter}
 import fr.poleemploi.perspectives.candidat.activite.infra.sql.DisponibiliteCandidatSqlAdapter
 import fr.poleemploi.perspectives.candidat.cv.infra.sql.CVSqlAdapter
+import fr.poleemploi.perspectives.candidat.localisation.domain.LocalisationService
+import fr.poleemploi.perspectives.candidat.localisation.infra.local.LocalisationLocalAdapter
+import fr.poleemploi.perspectives.candidat.localisation.infra.ws.{LocalisationWSAdapter, LocalisationWSMapping}
 import fr.poleemploi.perspectives.candidat.mrs.infra.csv.{HabiletesMRSCsvAdapter, ImportHabiletesMRSCsvAdapter}
 import fr.poleemploi.perspectives.candidat.mrs.infra.local.{ImportHabiletesMRSLocalAdapter, ImportMRSDHAELocalAdapter}
 import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect._
@@ -22,7 +25,7 @@ import fr.poleemploi.perspectives.candidat.mrs.infra.sql.ReferentielHabiletesMRS
 import fr.poleemploi.perspectives.commun.infra.jackson.PerspectivesEventSourcingModule
 import fr.poleemploi.perspectives.commun.infra.peconnect.sql.PEConnectSqlAdapter
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
-import fr.poleemploi.perspectives.emailing.infra.csv.{ImportMRSValideeProspectCandidatCSVAdapter, MRSValideeProspectCandidatCSVAdapter}
+import fr.poleemploi.perspectives.emailing.infra.csv.{ImportMRSValideeProspectCandidatCSVAdapter, ImportOffresGereesParRecruteurCSVAdapter, MRSValideeProspectCandidatCSVAdapter, OffresGereesParRecruteurCSVAdapter}
 import fr.poleemploi.perspectives.emailing.infra.local.LocalImportProspectService
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetImportProspectService
 import fr.poleemploi.perspectives.emailing.infra.sql.MailjetSqlAdapter
@@ -150,6 +153,7 @@ class InfraModule extends AbstractModule with ScalaModule {
       actorSystem = actorSystem,
       activiteCandidatCSVAdapter = activiteCandidatCSVAdapter
     )
+
   @Provides
   def candidatProjectionElasticsearchQueryMapping(referentielMetier: ReferentielMetier): CandidatProjectionElasticsearchQueryMapping =
     new CandidatProjectionElasticsearchQueryMapping(
@@ -290,6 +294,59 @@ class InfraModule extends AbstractModule with ScalaModule {
   @Provides
   def localImportProspectService: LocalImportProspectService =
     new LocalImportProspectService
+
+  @Provides
+  def offresGereesParRecruteurCSVAdapter(actorSystem: ActorSystem): OffresGereesParRecruteurCSVAdapter =
+    new OffresGereesParRecruteurCSVAdapter(actorSystem = actorSystem)
+
+  @Provides
+  def importOffresGereesParRecruteurCSVAdapter(batchsConfig: BatchsConfig,
+                                               actorSystem: ActorSystem,
+                                               offresGereesParRecruteurCSVAdapter: OffresGereesParRecruteurCSVAdapter): ImportOffresGereesParRecruteurCSVAdapter =
+    new ImportOffresGereesParRecruteurCSVAdapter(
+      config = batchsConfig.importPoleEmploiFileConfig,
+      actorSystem = actorSystem,
+      offresGereesParRecruteurCSVAdapter = offresGereesParRecruteurCSVAdapter
+    )
+
+  @Provides
+  def localisationLocalAdapter: LocalisationLocalAdapter =
+    new LocalisationLocalAdapter
+
+  @Provides
+  def localisationWSMapping(actorSystem: ActorSystem): LocalisationWSMapping =
+    new LocalisationWSMapping(actorSystem)
+
+  @Provides
+  def localisationWSAdapter(wsClient: WSClient,
+                            mapping: LocalisationWSMapping,
+                            batchsConfig: BatchsConfig): LocalisationWSAdapter =
+    new LocalisationWSAdapter(
+      wsClient = wsClient,
+      config = batchsConfig.localisationWSAdapterConfig,
+      mapping = mapping
+    )
+
+  @Provides
+  @Singleton
+  def importOffresGereesParRecruteurServiceMailjet(actorSystem: ActorSystem,
+                                                   batchsConfig: BatchsConfig,
+                                                   localisationService: LocalisationService,
+                                                   candidatQueryHandler: CandidatQueryHandler,
+                                                   importOffresGereesParRecruteurCSVAdapter: ImportOffresGereesParRecruteurCSVAdapter,
+                                                   mailjetWSAdapter: MailjetWSAdapter): MailjetImportOffresGereesParRecruteur =
+    new MailjetImportOffresGereesParRecruteur(
+      actorSystem = actorSystem,
+      baseUrl = batchsConfig.baseUrl,
+      importOffresGereesParRecruteurCSVAdapter = importOffresGereesParRecruteurCSVAdapter,
+      localisationService = localisationService,
+      candidatQueryHandler = candidatQueryHandler,
+      mailjetWSAdapter = mailjetWSAdapter
+    )
+
+  @Provides
+  def localImportOffresGereesParRecruteurService: LocalImportOffresGereesParRecruteurService =
+    new LocalImportOffresGereesParRecruteurService
 
   @Provides
   def referentielHabiletesMRSSqlAdapter(database: Database): ReferentielHabiletesMRSSqlAdapter =

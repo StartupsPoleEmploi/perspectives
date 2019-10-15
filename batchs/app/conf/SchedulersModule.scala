@@ -1,7 +1,7 @@
 package conf
 
 import akka.actor.{ActorRef, ActorSystem}
-import candidat.activite.domain.EmailingDisponibilitesService
+import candidat.activite.domain.{EmailingDisponibilitesService, ImportOffresGereesParRecruteurService}
 import com.google.inject.{AbstractModule, Inject, Provides, Singleton}
 import fr.poleemploi.perspectives.candidat.mrs.domain.ImportHabiletesMRS
 import fr.poleemploi.perspectives.emailing.domain.ImportProspectService
@@ -20,6 +20,7 @@ class SchedulersModule extends AbstractModule with ScalaModule with AkkaGuiceSup
     bindActor[ImportHabiletesMRSActor](ImportHabiletesMRSActor.name)
     bindActor[ImportProspectsCandidatsActor](ImportProspectsCandidatsActor.name)
     bindActor[EmailingDisponibilitesCandidatActor](EmailingDisponibilitesCandidatActor.name)
+    bindActor[ImportOffresGereesParRecruteurActor](ImportOffresGereesParRecruteurActor.name)
 
     bind(classOf[Scheduled]).asEagerSingleton()
   }
@@ -37,6 +38,12 @@ class SchedulersModule extends AbstractModule with ScalaModule with AkkaGuiceSup
     )
 
   @Provides
+  def importOffresGereesParRecruteur(importOffresGereesParRecruteurService: ImportOffresGereesParRecruteurService): ImportOffresGereesParRecruteurActor =
+    new ImportOffresGereesParRecruteurActor(
+      importOffresGereesParRecruteurService = importOffresGereesParRecruteurService
+    )
+
+  @Provides
   def emailingDisponibilitesCandidatActor(emailingDisponibilitesService: EmailingDisponibilitesService): EmailingDisponibilitesCandidatActor =
     new EmailingDisponibilitesCandidatActor(
       emailingDisponibilitesService = emailingDisponibilitesService
@@ -49,12 +56,15 @@ class SchedulersModule extends AbstractModule with ScalaModule with AkkaGuiceSup
                       importHabiletesMRSActor: ActorRef,
                       @Named(ImportProspectsCandidatsActor.name)
                       importProspectsCandidatsActor: ActorRef,
+                      @Named(ImportOffresGereesParRecruteurActor.name)
+                      importOffresGereesParRecruteurActor: ActorRef,
                       @Named(EmailingDisponibilitesCandidatActor.name)
                       emailingDisponibilitesCandidatActor: ActorRef): BatchsScheduler =
     new BatchsScheduler(
       actorSystem = actorSystem,
       importHabiletesMRSActor = importHabiletesMRSActor,
       importProspectsCandidatsActor = importProspectsCandidatsActor,
+      importOffresGereesParRecruteurActor = importOffresGereesParRecruteurActor,
       emailingDisponibilitesCandidatActor = emailingDisponibilitesCandidatActor
     )
 }
