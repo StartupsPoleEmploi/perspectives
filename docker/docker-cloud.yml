@@ -64,17 +64,28 @@ services:
       GOOGLE_TAG_MANAGER_CONTAINER_ID_FILE: /run/secrets/google_tag_manager_container_id
       SLACK_WEBHOOK_URL_FILE: /run/secrets/slack_webhook_url
     secrets:
-      - algolia_places_apikey
-      - algolia_places_appid
-      - oauth2_client_id
-      - oauth2_client_secret
-      - mailjet_apikey_public
-      - mailjet_apikey_private
-      - autologin_secret_key
-      - postgres_password
-      - play_http_secret_key
-      - google_tag_manager_container_id
-      - slack_webhook_url
+      - source: algolia_places_apikey_v1
+        target: algolia_places_apikey
+      - source: algolia_places_appid_v1
+        target: algolia_places_appid
+      - source: oauth2_client_id_v1
+        target: oauth2_client_id
+      - source: oauth2_client_secret_v1
+        target: oauth2_client_secret
+      - source: mailjet_apikey_public_v1
+        target: mailjet_apikey_public
+      - source: mailjet_apikey_private_v1
+        target: mailjet_apikey_private
+      - source: autologin_secret_key_v1
+        target: autologin_secret_key
+      - source: postgres_password_v1
+        target: postgres_password
+      - source: play_http_secret_key_v1
+        target: play_http_secret_key
+      - source: google_tag_manager_container_id_v1
+        target: google_tag_manager_container_id
+      - source: slack_webhook_url_v1
+        target: slack_webhook_url
     networks:
       - net
 
@@ -96,11 +107,16 @@ services:
       PLAY_HTTP_SECRET_KEY_FILE: /run/secrets/play_http_secret_key
       AUTOLOGIN_SECRET_KEY_FILE: /run/secrets/autologin_secret_key
     secrets:
-      - mailjet_apikey_public
-      - mailjet_apikey_private
-      - postgres_password
-      - play_http_secret_key
-      - autologin_secret_key
+      - source: mailjet_apikey_public_v1
+        target: mailjet_apikey_public
+      - source: mailjet_apikey_private_v1
+        target: mailjet_apikey_private
+      - source: postgres_password_v1
+        target: postgres_password
+      - source: play_http_secret_key_v1
+        target: play_http_secret_key
+      - source: autologin_secret_key_v1
+        target: autologin_secret_key
     networks:
       - net
 
@@ -148,25 +164,25 @@ configs:
     file: ./fluent-bit/fluent-bit.conf
 
 secrets:
-  algolia_places_apikey:
+  algolia_places_apikey_v1:
     external: true
-  algolia_places_appid:
+  algolia_places_appid_v1:
     external: true
-  oauth2_client_id:
+  oauth2_client_id_v1:
     external: true
-  oauth2_client_secret:
+  oauth2_client_secret_v1:
     external: true
-  mailjet_apikey_public:
+  mailjet_apikey_public_v1:
     external: true
-  mailjet_apikey_private:
+  mailjet_apikey_private_v1:
     external: true
-  autologin_secret_key:
+  autologin_secret_key_v1:
     external: true
-  postgres_password:
+  postgres_password_v1:
     external: true
-  play_http_secret_key:
+  play_http_secret_key_v1:
     external: true
-  google_tag_manager_container_id:
+  google_tag_manager_container_id_v1:
     external: true
-  slack_webhook_url:
+  slack_webhook_url_v1:
     external: true
