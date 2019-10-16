@@ -93,8 +93,27 @@ stages:
   only:
     - tags
 
-# uncomment when a runner with docker executor will be available to build docker images...
-🐳_build-docker-image:
+# job qui permet de builder l'image docker de la webapp
+🐳_build-docker-image-webapp:
+  stage: 🐳_docker
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  variables:
+    LOGBACK_RESOURCE: logback-production.xml
+    CONFIG_RESOURCE: application-production.conf
+  script:
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - cat /kaniko/.docker/config.json
+    - echo $(grep "version in ThisBuild := \".*\"" version.sbt | cut -d "\"" -f 2) > /kaniko/version.txt
+    - cd docker
+    - cp ../webapp/target/universal/perspectives-webapp-*.zip .
+    - /kaniko/executor --context $CI_PROJECT_DIR/docker --build-arg WEBAPP_LOGBACK_RESOURCE=$LOGBACK_RESOURCE --build-arg WEBAPP_CONFIG_RESOURCE=$CONFIG_RESOURCE --build-arg WEBAPP_VERSION=$(cat /kaniko/version.txt) --dockerfile $CI_PROJECT_DIR/docker/dockerfile-webapp --destination $CI_REGISTRY_IMAGE/perspectives-webapp:$(cat /kaniko/version.txt)
+  only:
+    - tags
+
+# job qui permet de builder l'image docker des batchs
+🐳_build-docker-image-batchs:
   stage: 🐳_docker
   image:
     name: gcr.io/kaniko-project/executor:debug
@@ -108,8 +127,6 @@ stages:
     - echo $(grep "version in ThisBuild := \".*\"" version.sbt | cut -d "\"" -f 2) > /kaniko/version.txt
     - cd docker
     - cp ../batchs/target/universal/perspectives-batchs-*.zip .
-    - cp ../webapp/target/universal/perspectives-webapp-*.zip .
-    - /kaniko/executor --context $CI_PROJECT_DIR/docker --build-arg WEBAPP_LOGBACK_RESOURCE=$LOGBACK_RESOURCE --build-arg WEBAPP_CONFIG_RESOURCE=$CONFIG_RESOURCE --build-arg WEBAPP_VERSION=$(cat /kaniko/version.txt) --dockerfile $CI_PROJECT_DIR/docker/dockerfile-webapp --destination $CI_REGISTRY_IMAGE/perspectives-webapp:$(cat /kaniko/version.txt)
     - /kaniko/executor --context $CI_PROJECT_DIR/docker --build-arg BATCHS_LOGBACK_RESOURCE=$LOGBACK_RESOURCE --build-arg BATCHS_CONFIG_RESOURCE=$CONFIG_RESOURCE --build-arg BATCHS_VERSION=$(cat /kaniko/version.txt) --dockerfile $CI_PROJECT_DIR/docker/dockerfile-batchs --destination $CI_REGISTRY_IMAGE/perspectives-batchs:$(cat /kaniko/version.txt)
   only:
     - tags
