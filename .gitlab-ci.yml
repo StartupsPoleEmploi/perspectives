@@ -52,6 +52,11 @@ stages:
     # gitlab CI bosse en mode detache sur un commit alors que la release a besoin de se faire sur une branche pour pusher les changements de versions dans gitlab
     - git checkout $CI_COMMIT_REF_NAME
     - git reset --hard origin/$CI_COMMIT_REF_NAME
+    # Build la partie front (les node_modules sont mis en cache pour pas tout retelecharger a chaque fois)
+    - cd webapp/ui
+    - npm install
+    - cd ../..
+    # Release
     - sbt "release with-defaults"
   cache:
     paths:
