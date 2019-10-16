@@ -98,13 +98,15 @@ class CandidatProjectionElasticsearchQueryMapping(referentielMetier: Referentiel
         langues = d.langues,
         permis = d.permis.sortBy(_.code),
         savoirEtre = d.savoirEtre.sortBy(_.value),
-        savoirFaire = d.savoirFaire.sortWith((s1, s2) =>
-          (s1.niveau, s2.niveau) match {
-            case (None, None) => s1.label < s2.label
-            case (Some(_), None) => true
-            case (None, Some(_)) => false
-            case (Some(n1), Some(n2)) => n1.value > n2.value || (n1.value == n2.value && s1.label < s2.label)
-          }
+        savoirFaire = d.savoirFaire
+          .filter(_.niveau.isDefined)
+          .sortWith((s1, s2) =>
+            (s1.niveau, s2.niveau) match {
+              case (None, None) => s1.label < s2.label
+              case (Some(_), None) => true
+              case (None, Some(_)) => false
+              case (Some(n1), Some(n2)) => n1.value > n2.value || (n1.value == n2.value && s1.label < s2.label)
+            }
         ),
         formations = d.formations.map(buildFormation).sortWith((f1, f2) => f1.anneeFin > f2.anneeFin),
         experiencesProfessionnelles = d.experiencesProfessionnelles.map(buildExperienceProfessionnelle).sortWith((e1, e2) => e1.dateDebut.isAfter(e2.dateDebut))
