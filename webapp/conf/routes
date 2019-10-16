@@ -24,7 +24,7 @@ GET         /recruteur/peconnect/connexion/callback                  authentific
 GET         /recruteur/peconnect/deconnexion/callback                authentification.infra.peconnect.PEConnectRecruteurController.deconnexionCallback
 GET         /recruteur/profil                                        controllers.recruteur.ProfilController.modificationProfil
 POST        /recruteur/profil                                        controllers.recruteur.ProfilController.modifierProfil
-GET         /recruteur/recherche                                     controllers.recruteur.RechercheCandidatController.index
+GET         /recruteur/recherche                                     controllers.recruteur.RechercheCandidatController.index(codeRome: Option[String] ?= None, latitude: Option[Double] ?= None, longitude: Option[Double] ?= None)
 POST        /recruteur/recherche                                     controllers.recruteur.RechercheCandidatController.rechercherCandidats
 GET         /recruteur/cv/telecharger/:candidatId/:nomFichier        controllers.recruteur.RechercheCandidatController.telechargerCV(candidatId, nomFichier)
 

@@ -8,7 +8,7 @@ import controllers.AssetsFinder
 import controllers.FlashMessages._
 import fr.poleemploi.cqrs.projection.UnauthorizedQueryException
 import fr.poleemploi.perspectives.candidat.CandidatId
-import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite}
+import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite, Coordonnees}
 import fr.poleemploi.perspectives.projections.candidat._
 import fr.poleemploi.perspectives.projections.candidat.cv.CVCandidatPourRecruteurQuery
 import fr.poleemploi.perspectives.projections.recruteur._
@@ -32,15 +32,24 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
                                             recruteurAuthentifieAction: RecruteurAuthentifieAction,
                                             recruteurAConnecterSiNonAuthentifieAction: RecruteurAConnecterSiNonAuthentifieAction)(implicit exec: ExecutionContext) extends AbstractController(cc) {
 
-  def index: Action[AnyContent] = recruteurAConnecterSiNonAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
+  def index(codeRome: Option[String] = None, latitude: Option[Double] = None, longitude: Option[Double] = None): Action[AnyContent] = recruteurAConnecterSiNonAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
+      def buildCoordonneesFromRequest: Option[Coordonnees] =
+        for {
+          latitude <- latitude
+          longitude <- longitude
+        } yield Coordonnees(
+          latitude = latitude,
+          longitude = longitude
+        )
+
       (for {
         typeRecruteur <- getTypeRecruteur(recruteurAuthentifieRequest)
         query = RechercheCandidatsQuery(
           typeRecruteur = typeRecruteur,
-          codeSecteurActivite = None,
-          codeROME = None,
-          coordonnees = None,
+          codeSecteurActivite = codeRome.map(CodeROME(_).codeSecteurActivite).orElse(None),
+          codeROME = codeRome.map(CodeROME).orElse(None),
+          coordonnees = buildCoordonneesFromRequest.orElse(None),
           nbPagesACharger = 4,
           page = None
         )
