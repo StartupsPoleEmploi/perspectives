@@ -4,7 +4,8 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
     apt-get -y install unzip && \
-    apt-get -y install curl
+    apt-get -y install curl && \
+    rm -rf /var/lib/apt/lists/*
 
 # Make port 9000 available to the world outside this container
 EXPOSE 9000

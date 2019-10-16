@@ -4,7 +4,11 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
     apt-get -y install unzip && \
-    apt-get -y install curl
+    apt-get -y install curl && \
+    apt-get -y remove curl libcurl4 && \
+    apt autoremove -y && \
+    apt-get -y install curl && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /opt/perspectives-batchs
 
