@@ -301,8 +301,8 @@ class InfraModule extends AbstractModule with ScalaModule {
     new LocalisationLocalAdapter
 
   @Provides
-  def localisationWSMapping: LocalisationWSMapping =
-    new LocalisationWSMapping
+  def localisationWSMapping(actorSystem: ActorSystem): LocalisationWSMapping =
+    new LocalisationWSMapping(actorSystem)
 
   @Provides
   def localisationWSAdapter(wsClient: WSClient,

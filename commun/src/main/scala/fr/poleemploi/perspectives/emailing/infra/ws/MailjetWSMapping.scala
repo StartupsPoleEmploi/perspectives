@@ -5,9 +5,10 @@ import java.time.format.DateTimeFormatter
 import fr.poleemploi.perspectives.candidat.Adresse
 import fr.poleemploi.perspectives.candidat.activite.domain.EmailingDisponibiliteCandidatAvecEmail
 import fr.poleemploi.perspectives.commun.domain.Genre
+import fr.poleemploi.perspectives.commun.infra.email.TrackingUtils
 import fr.poleemploi.perspectives.emailing.domain._
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetContactId
-import fr.poleemploi.perspectives.emailing.infra.ws.MailjetWSMapping.{DISPONIBILITE_CANDIDAT_CATEGORY, VAR_URL_FORMULAIRE_DISPO_CANDIDAT_EN_RECHERCHE, VAR_URL_FORMULAIRE_DISPO_CANDIDAT_PAS_EN_RECHERCHE}
+import fr.poleemploi.perspectives.emailing.infra.ws.MailjetWSMapping._
 import fr.poleemploi.perspectives.recruteur.TypeRecruteur
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
@@ -105,6 +106,44 @@ class MailjetWSMapping {
       ))
     )
 
+  def buildRequestCandidatsPourOffreGereeParRecruteur(baseUrl: String, idTemplate: Int, offresGereesParRecruteurAvecCandidats: Seq[OffreGereeParRecruteurAvecCandidats]): SendMailRequest = {
+    def buildUrlRechercheCandidats(baseUrl: String, offre: OffreGereeParRecruteurAvecCandidats): String = {
+      val gaTracking = TrackingUtils.buildTrackingGA(
+        utmCampaign = "offre-sans-preselection",
+        utmSource = s"offre-${offre.offreId.value}",
+        utmMedium = "email",
+        utmContent = "cta"
+      )
+      s"$baseUrl/recruteur/recherche?codeRome=${offre.codeROME.value}&latitude=${offre.coordonnees.latitude}&longitude=${offre.coordonnees.longitude}&$gaTracking"
+    }
+
+    def buildUrlHome(baseUrl: String, offre: OffreGereeParRecruteurAvecCandidats): String = {
+      val gaTracking = TrackingUtils.buildTrackingGA(
+        utmCampaign = "offre-sans-preselection",
+        utmSource = s"offre-${offre.offreId.value}",
+        utmMedium = "email",
+        utmContent = "header"
+      )
+      s"$baseUrl?$gaTracking"
+    }
+
+    SendMailRequest(
+      messages = offresGereesParRecruteurAvecCandidats.map(offre => SendMailMessage(
+        from = None,
+        to = Seq(EmailAndName(email = offre.emailCorrespondant.value)),
+        subject = None,
+        templateId = idTemplate,
+        category = Some(OFFRE_GEREE_PAR_RECRUTEUR_CATEGORY),
+        variables = Map(
+          VAR_TITRE_POSTE -> offre.intitule,
+          VAR_OFFRE_ID -> offre.offreId.value,
+          VAR_URL_RECHERCHE_CANDIDATS -> buildUrlRechercheCandidats(baseUrl, offre),
+          VAR_URL_PERSPECTIVES -> buildUrlHome(baseUrl, offre)
+        )
+      ))
+    )
+  }
+
   private def buildGenre(genre: Genre): String = genre match {
     case Genre.HOMME => "M."
     case Genre.FEMME => "Mme"
@@ -123,6 +162,11 @@ object MailjetWSMapping {
   val VAR_URL_FORMULAIRE_DISPO_CANDIDAT_EN_RECHERCHE = "urlFormulaireDispoOui"
   val VAR_URL_FORMULAIRE_DISPO_CANDIDAT_PAS_EN_RECHERCHE = "urlFormulaireDispoNon"
   val DISPONIBILITE_CANDIDAT_CATEGORY = "disponibilite_candidat"
+  val VAR_URL_PERSPECTIVES = "urlPerspectives"
+  val VAR_URL_RECHERCHE_CANDIDATS = "urlRechercheCandidats"
+  val VAR_OFFRE_ID = "offreId"
+  val VAR_TITRE_POSTE = "titrePoste"
+  val OFFRE_GEREE_PAR_RECRUTEUR_CATEGORY = "offre_geree_par_recruteur"
 }
 
 case class ContactList(listID: String,
