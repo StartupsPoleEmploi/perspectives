@@ -26,7 +26,7 @@ class OffresGereesParRecruteurCSVAdapter(val actorSystem: ActorSystem) {
       .filter(m =>
         m.get("kc_offre").exists(_.nonEmpty) &&
           m.get("code_postal").exists(CodePostal.from(_).isDefined) &&
-          m.get("mail_suivi").exists(_.nonEmpty) &&
+          m.get("mail_suivi").exists(isEmailValide) &&
           m.get("enseigne").exists(_.nonEmpty) &&
           m.get("nom_prenom_correspondant_offre").exists(_.nonEmpty) &&
           m.get("dc_rome_id").exists(_.nonEmpty) &&
@@ -47,4 +47,7 @@ class OffresGereesParRecruteurCSVAdapter(val actorSystem: ActorSystem) {
       )
       .runWith(Sink.collection)
   }
+
+  private def isEmailValide(email: String): Boolean =
+    email.nonEmpty && email != "null"
 }

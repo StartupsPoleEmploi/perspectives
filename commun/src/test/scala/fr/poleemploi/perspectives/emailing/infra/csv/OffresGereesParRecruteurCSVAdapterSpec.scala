@@ -83,6 +83,20 @@ class OffresGereesParRecruteurCSVAdapterSpec extends AsyncWordSpec
       // Then
       future.map(s => s.isEmpty mustBe true)
     }
+    "ignorer la ligne si elle contient un mail de recruteur null" in {
+      // Given
+      val source = Source.single(
+        ByteString(
+          """preselection_deduite;kc_offre;dd_datecreationreport;dc_rome_id;intitule;lieu_de_travail;siret;enseigne;code_postal;nom_prenom_correspondant_offre;mail_suivi
+            |non;094DLLY;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);BRIVE LA GAILLARDE (19);32992501005763;ENTREPRISE;19100;RH ENTREPRISE;null""".stripMargin)
+      )
+
+      // When
+      val future = adapter.load(source)
+
+      // Then
+      future.map(s => s.isEmpty mustBe true)
+    }
     "ignorer la ligne si elle ne contient pas le nom de l'enseigne qui recrute" in {
       // Given
       val source = Source.single(
