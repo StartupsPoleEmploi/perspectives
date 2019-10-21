@@ -46,7 +46,7 @@
                             <div class="row detailOffre">
                                 <div class="col-12">
                                     <h2 id="titreModaleDetailOffre" class="pt-4 texte-noir font-size-lg font-weight-bold mb-0">{{offreCourante.intitule}}</h2>
-                                    <p class="texte-gris font-size-sm font-italic">Actualisée le {{offreCourante.dateActualisation | date}}</p>
+                                    <p class="texte-gris font-size-sm font-italic" v-if="offreCourante.dateActualisation">Actualisée le {{offreCourante.dateActualisation | date}}</p>
                                 </div>
                                 <div class="col-12 py-3">
                                     <ul class="row d-block d-lg-flex list-unstyled">
@@ -327,7 +327,7 @@
                                         <img alt="Localisation" src="@assetsFinder.path("images/commun/localisation.svg")" height="16" width="16" />
                                         {{offre.lieuTravail.libelle}}
                                     </p>
-                                    <p class="texte-gris font-size-sm font-italic mb-0 gtm-candidat-detail-offre">Actualisée le {{offre.dateActualisation | date}}</p>
+                                    <p class="texte-gris font-size-sm font-italic mb-0 gtm-candidat-detail-offre" v-if="offreCourante.dateActualisation">Actualisée le {{offre.dateActualisation | date}}</p>
                                 </div>
                                 <div class="col-12 col-lg-3 mt-3 mt-lg-0 text-lg-right gtm-candidat-detail-offre">
                                     <span class="typeContrat gtm-candidat-detail-offre"

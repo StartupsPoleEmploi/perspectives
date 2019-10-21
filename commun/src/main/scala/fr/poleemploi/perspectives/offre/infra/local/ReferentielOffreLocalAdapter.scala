@@ -69,7 +69,7 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
             email = None,
             urlPostuler = None
           ),
-          dateActualisation = LocalDateTime.now()
+          dateActualisation = Some(LocalDateTime.now())
         )
       else if (n % 3 == 0)
         Offre(
@@ -122,7 +122,7 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
             email = None,
             urlPostuler = None
           ),
-          dateActualisation = LocalDateTime.now()
+          dateActualisation = Some(LocalDateTime.now())
         )
       else if (n % 2 == 0)
         Offre(
@@ -178,7 +178,7 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
             email = None,
             urlPostuler = None
           ),
-          dateActualisation = LocalDateTime.now()
+          dateActualisation = Some(LocalDateTime.now())
         )
       else
         Offre(
@@ -234,7 +234,7 @@ class ReferentielOffreLocalAdapter extends ReferentielOffre {
             email = None,
             urlPostuler = Some("https://joinus.saint-gobain.com/fr/fra/spc/f/53332/564788/magasinier-cariste-preparation-hf-challans-85?source=PE&utm_source=PE&utm_medium=SourcTargetContent&utm_campaign=DispanoChallans_Logistique")
           ),
-          dateActualisation = LocalDateTime.now()
+          dateActualisation = Some(LocalDateTime.now())
         )
     )).map(offres => RechercheOffreResult(
       offres = offres,

@@ -68,7 +68,7 @@ case class Offre(id: OffreId,
                  formations: List[Formation],
                  entreprise: Entreprise,
                  contact: Contact,
-                 dateActualisation: LocalDateTime) {
+                 dateActualisation: Option[LocalDateTime]) {
 
   override def equals(that: Any): Boolean =
     that match {
