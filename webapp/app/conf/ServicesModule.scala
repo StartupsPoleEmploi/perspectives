@@ -23,6 +23,9 @@ import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapter
 import fr.poleemploi.perspectives.offre.domain.ReferentielOffre
 import fr.poleemploi.perspectives.offre.infra.local.ReferentielOffreLocalAdapter
 import fr.poleemploi.perspectives.offre.infra.ws.ReferentielOffreWSAdapter
+import fr.poleemploi.perspectives.rome.domain.ReferentielRome
+import fr.poleemploi.perspectives.rome.infra.local.ReferentielRomeLocalAdapter
+import fr.poleemploi.perspectives.rome.infra.ws.ReferentielRomeWSAdapter
 
 class ServicesModule extends AbstractModule {
 
@@ -79,6 +82,16 @@ class ServicesModule extends AbstractModule {
       referentielMetierWSAdapter.get()
     else
       referentielMetierLocalAdapter.get()
+
+  @Provides
+  @Singleton
+  def referentielRome(referentielRomeWSAdapter: Provider[ReferentielRomeWSAdapter],
+                      referentielRomeLocalAdapter: Provider[ReferentielRomeLocalAdapter],
+                      webAppConfig: WebAppConfig): ReferentielRome =
+    if (webAppConfig.useReferentielRome)
+      referentielRomeWSAdapter.get()
+    else
+      referentielRomeLocalAdapter.get()
 
   @Provides
   @Singleton

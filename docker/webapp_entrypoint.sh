@@ -14,5 +14,6 @@ export POSTGRES_PASSWORD=$(cat "${POSTGRES_PASSWORD_FILE}")
 export PLAY_HTTP_SECRET_KEY=$(cat "${PLAY_HTTP_SECRET_KEY_FILE}")
 export GOOGLE_TAG_MANAGER_CONTAINER_ID=$(cat "${GOOGLE_TAG_MANAGER_CONTAINER_ID_FILE}")
 export SLACK_WEBHOOK_URL=$(cat "${SLACK_WEBHOOK_URL_FILE}")
+export ADMIN_API_KEY=$(cat "${ADMIN_API_KEY_FILE}")
 
 sh -c "./perspectives-webapp-${WEBAPP_VERSION}/bin/perspectives-webapp -Dlogger.resource=${WEBAPP_LOGBACK_RESOURCE} -Dconfig.resource=${WEBAPP_CONFIG_RESOURCE}"

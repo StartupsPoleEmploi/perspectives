@@ -26,6 +26,7 @@ GET         /recruteur/profil                                        controllers
 POST        /recruteur/profil                                        controllers.recruteur.ProfilController.modifierProfil
 GET         /recruteur/recherche                                     controllers.recruteur.RechercheCandidatController.index(codeRome: Option[String] ?= None, latitude: Option[Double] ?= None, longitude: Option[Double] ?= None)
 POST        /recruteur/recherche                                     controllers.recruteur.RechercheCandidatController.rechercherCandidats
+GET         /recruteur/recherche/metier                              controllers.recruteur.RechercheCandidatController.rechercherMetiers(q: String)
 GET         /recruteur/cv/telecharger/:candidatId/:nomFichier        controllers.recruteur.RechercheCandidatController.telechargerCV(candidatId, nomFichier)
 
 GET         /conseiller/admin                                        controllers.conseiller.ConseillerController.admin
@@ -34,6 +35,8 @@ POST        /conseiller/rechercherRecruteurs                         controllers
 POST        /conseiller/ajouterMRSDHAECandidat                       controllers.conseiller.ConseillerController.ajouterMRSDHAECandidat
 
 POST        /autologin                                               authentification.infra.autologin.AutologinCandidatController.genererTokenAutologin
+
+GET         /admin/recharger-appellations-metiers                    controllers.admin.AdminController.rechargerAppellationsMetiers
 
 GET         /infos-legales                                           controllers.InfosLegalesController.index
 

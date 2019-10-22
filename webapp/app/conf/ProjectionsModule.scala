@@ -20,6 +20,7 @@ import fr.poleemploi.perspectives.projections.recruteur._
 import fr.poleemploi.perspectives.projections.recruteur.infra.local.RecruteurNotificationLocalAdapter
 import fr.poleemploi.perspectives.projections.recruteur.infra.slack.RecruteurNotificationSlackAdapter
 import fr.poleemploi.perspectives.projections.recruteur.infra.sql.RecruteurProjectionSqlAdapter
+import fr.poleemploi.perspectives.rome.domain.ReferentielRome
 import net.codingwell.scalaguice.ScalaModule
 
 class RegisterProjections @Inject()(eventStoreListener: EventStoreListener,
@@ -114,9 +115,11 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
 
   @Provides
   @Singleton
-  def recruteurQueryHandler(recruteurProjectionQuery: RecruteurProjectionQuery): RecruteurQueryHandler =
+  def recruteurQueryHandler(recruteurProjectionQuery: RecruteurProjectionQuery,
+                            referentielRome: ReferentielRome): RecruteurQueryHandler =
     new RecruteurQueryHandler(
-      recruteurProjectionQuery = recruteurProjectionQuery
+      recruteurProjectionQuery = recruteurProjectionQuery,
+      referentielRome = referentielRome
     )
 
   @Provides

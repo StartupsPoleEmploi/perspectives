@@ -63,6 +63,7 @@ services:
       PLAY_HTTP_SECRET_KEY_FILE: /run/secrets/play_http_secret_key
       GOOGLE_TAG_MANAGER_CONTAINER_ID_FILE: /run/secrets/google_tag_manager_container_id
       SLACK_WEBHOOK_URL_FILE: /run/secrets/slack_webhook_url
+      ADMIN_API_KEY_FILE: /run/secrets/admin_api_key
     secrets:
       - source: algolia_places_apikey_v1
         target: algolia_places_apikey
@@ -86,6 +87,8 @@ services:
         target: google_tag_manager_container_id
       - source: slack_webhook_url_v1
         target: slack_webhook_url
+      - source: admin_api_key_v1
+        target: admin_api_key
     networks:
       - net
 
@@ -185,4 +188,6 @@ secrets:
   google_tag_manager_container_id_v1:
     external: true
   slack_webhook_url_v1:
+    external: true
+  admin_api_key_v1:
     external: true

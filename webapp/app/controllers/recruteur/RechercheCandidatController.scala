@@ -13,6 +13,7 @@ import fr.poleemploi.perspectives.projections.candidat._
 import fr.poleemploi.perspectives.projections.candidat.cv.CVCandidatPourRecruteurQuery
 import fr.poleemploi.perspectives.projections.recruteur._
 import fr.poleemploi.perspectives.recruteur._
+import fr.poleemploi.perspectives.rome.domain.ReferentielRome
 import javax.inject.{Inject, Singleton}
 import play.api.http.HttpEntity
 import play.api.libs.json.Json
@@ -29,6 +30,7 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
                                             candidatQueryHandler: CandidatQueryHandler,
                                             recruteurQueryHandler: RecruteurQueryHandler,
                                             recruteurCommandHandler: RecruteurCommandHandler,
+                                            referentielRome: ReferentielRome,
                                             recruteurAuthentifieAction: RecruteurAuthentifieAction,
                                             recruteurAConnecterSiNonAuthentifieAction: RecruteurAConnecterSiNonAuthentifieAction)(implicit exec: ExecutionContext) extends AbstractController(cc) {
 
@@ -71,6 +73,14 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
           Redirect(routes.ProfilController.modificationProfil())
             .flashing(messagesRequest.flash.withMessageErreur("Vous devez renseigner votre profil avant de pouvoir effectuer une recherche"))
       }
+    }(recruteurAuthentifieRequest)
+  }
+
+  def rechercherMetiers(q: String): Action[AnyContent] = recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
+    messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
+      recruteurQueryHandler.handle(MetiersRecruteurQuery(q)).map(metiersRecruteurQueryResult =>
+        Ok(Json.toJson(metiersRecruteurQueryResult))
+      )
     }(recruteurAuthentifieRequest)
   }
 

@@ -187,6 +187,20 @@ class EmploiStoreOauthScopeBuilder(environnement: Environnement) {
     this
   }
 
+  def avecApiRome: EmploiStoreOauthScopeBuilder = {
+    apis += EmploiStoreAPI(
+      name = "rome",
+      version = "v1",
+      qos = QualityOfService.BRONZE,
+      scopes = List(
+        OauthScope("api_romev1"),
+        OauthScope("nomenclatureRome")
+      )
+    )
+
+    this
+  }
+
   def build: List[OauthScope] = {
     val scopes = apis.foldLeft(List[OauthScope]())((acc, api) =>
       acc ++ (api.mainScope :: api.scopes) ++ List(EmploiStoreAPI.buildQOSScope(api)).flatten

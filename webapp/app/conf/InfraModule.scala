@@ -45,6 +45,9 @@ import fr.poleemploi.perspectives.projections.candidat.infra.slack.CandidatNotif
 import fr.poleemploi.perspectives.projections.recruteur.infra.local.RecruteurNotificationLocalAdapter
 import fr.poleemploi.perspectives.projections.recruteur.infra.slack.RecruteurNotificationSlackAdapter
 import fr.poleemploi.perspectives.projections.recruteur.infra.sql.RecruteurProjectionSqlAdapter
+import fr.poleemploi.perspectives.rome.infra.elasticsearch.{ReferentielRomeElasticsearchAdapter, ReferentielRomeElasticsearchMapping}
+import fr.poleemploi.perspectives.rome.infra.local.ReferentielRomeLocalAdapter
+import fr.poleemploi.perspectives.rome.infra.ws.{ReferentielRomeWSAdapter, ReferentielRomeWSMapping}
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
 import play.api.cache.AsyncCacheApi
@@ -254,6 +257,42 @@ class InfraModule extends AbstractModule with ScalaModule {
   @Provides
   def referentielMetierLocalAdapter: ReferentielMetierLocalAdapter =
     new ReferentielMetierLocalAdapter
+
+  @Provides
+  def referentielRomeElasticsearchMapping: ReferentielRomeElasticsearchMapping =
+    new ReferentielRomeElasticsearchMapping
+
+  @Provides
+  def referentielRomeElasticsearchAdapter(wsClient: WSClient,
+                                          webAppConfig: WebAppConfig,
+                                          referentielRomeElasticsearchMapping: ReferentielRomeElasticsearchMapping): ReferentielRomeElasticsearchAdapter =
+    new ReferentielRomeElasticsearchAdapter(
+      esConfig = webAppConfig.esConfig,
+      wsClient = wsClient,
+      mapping = referentielRomeElasticsearchMapping
+    )
+
+  @Provides
+  def referentielRomeWSMapping: ReferentielRomeWSMapping =
+    new ReferentielRomeWSMapping
+
+  @Provides
+  def referentielRomeWSAdapter(wsClient: WSClient,
+                               mapping: ReferentielRomeWSMapping,
+                               webAppConfig: WebAppConfig,
+                               cacheApi: AsyncCacheApi,
+                               referentielRomeElasticsearchAdapter: ReferentielRomeElasticsearchAdapter): ReferentielRomeWSAdapter =
+    new ReferentielRomeWSAdapter(
+      config = webAppConfig.referentielRomeWSAdapterConfig,
+      mapping = mapping,
+      wsClient = wsClient,
+      cacheApi = cacheApi,
+      elasticsearchAdapter = referentielRomeElasticsearchAdapter
+    )
+
+  @Provides
+  def referentielRomeLocalAdapter: ReferentielRomeLocalAdapter =
+    new ReferentielRomeLocalAdapter
 
   @Provides
   @Singleton

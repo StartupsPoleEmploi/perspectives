@@ -1,0 +1,76 @@
+{
+  "settings": {
+    "number_of_shards": 1,
+    "analysis": {
+      "analyzer": {
+        "standard": {
+          "tokenizer": "standard",
+          "filter": [
+            "standard",
+            "lowercase",
+            "elision",
+            "asciifolding",
+            "stop"
+          ]
+        },
+        "autocomplete": {
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": [
+            "lowercase",
+            "elision",
+            "asciifolding",
+            "stop",
+            "autocomplete_filter"
+          ]
+        }
+      },
+      "filter": {
+        "autocomplete_filter": {
+          "type": "edge_ngram",
+          "min_gram": 1,
+          "max_gram": 20
+        },
+        "elision": {
+          "type": "elision",
+          "articles": [
+            "l",
+            "m",
+            "t",
+            "qu",
+            "n",
+            "s",
+            "j",
+            "d",
+            "c",
+            "jusqu",
+            "quoiqu",
+            "lorsqu",
+            "puisqu"
+          ]
+        },
+        "stop": {
+          "type": "stop",
+          "stopwords": "_french_"
+        }
+      }
+    }
+  },
+  "mappings": {
+    "_doc": {
+      "properties": {
+        "codeAppellation": {
+          "type": "keyword"
+        },
+        "codeROME": {
+          "type": "keyword"
+        },
+        "label": {
+          "type": "text",
+          "analyzer": "autocomplete",
+          "search_analyzer": "standard"
+        }
+      }
+    }
+  }
+}
