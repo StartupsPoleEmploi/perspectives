@@ -293,7 +293,7 @@ object SendMailMessage {
       (JsPath \ "Subject").writeNullable[String] and
       (JsPath \ "TemplateID").write[Int] and
       (JsPath \ "TemplateLanguage").write[Boolean] and
-      (JsPath \ "MonitoringCategory").writeNullable[String] and
+      (JsPath \ "CustomCampaign").writeNullable[String] and
       (JsPath \ "Variables").write[Map[String, String]]
     ) (unlift(SendMailMessage.unapply))
 }
