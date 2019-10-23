@@ -41,7 +41,7 @@ services:
       - net
 
   webapp:
-    image: perspectives-webapp:${WEBAPP_VERSION:-latest}
+    image: registry.beta.pole-emploi.fr/perspectives/perspectives/perspectives-webapp:${WEBAPP_VERSION:-latest}
     depends_on:
       - database
     deploy:
@@ -93,7 +93,7 @@ services:
       - net
 
   batchs:
-    image: perspectives-batchs:${BATCHS_VERSION:-latest}
+    image: registry.beta.pole-emploi.fr/perspectives/perspectives/perspectives-batchs:${BATCHS_VERSION:-latest}
     depends_on:
       - database
     deploy:
