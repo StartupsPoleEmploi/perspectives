@@ -46,6 +46,7 @@ object JsonFormats {
   implicit val formatCodeROME: Format[CodeROME] = formatStringValueObject(CodeROME)
   implicit val formatCodeSecteurActivite: Format[CodeSecteurActivite] = formatStringValueObject(CodeSecteurActivite)
   implicit val formatCodeDomaineProfessionnel: Format[CodeDomaineProfessionnel] = formatStringValueObject(CodeDomaineProfessionnel)
+  implicit val formatCodeAppellation: Format[CodeAppellation] = formatStringValueObject(CodeAppellation)
   implicit val formatHabilete: Format[Habilete] = formatStringValueObject(Habilete)
 
   implicit val formatCoordonnees: Format[Coordonnees] = Json.format[Coordonnees]
