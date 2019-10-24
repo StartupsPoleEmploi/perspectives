@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import axios from 'axios';
+import afficherMessageSiPasDeMRS from "./candidatCommon";
 
 new Vue({
     el: '#saisieDisponibilitesCandidat',
@@ -25,6 +26,9 @@ new Vue({
                 emploiTrouveGracePerspectives: []
             }, jsData.disponibilitesFormErrors)
         }
+    },
+    created: function() {
+        afficherMessageSiPasDeMRS();
     },
     methods: {
         nettoyerErreursForm: function () {

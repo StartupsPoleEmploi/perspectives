@@ -1,0 +1,28 @@
+@import conf.WebAppConfig
+@import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
+
+@(candidatAuthentifie: CandidatAuthentifie)(implicit request: MessagesRequestHeader, flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
+
+@layout(candidatAuthentifie = Some(candidatAuthentifie)) {
+    <div id="candidatSansMrs" class="bg-vert-emeraude-light">
+        <section class="container py-md-5 py-2">
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-8">
+                    <div class="row py-3 align-items-center">
+                        <div class="col-12">
+                            <p class="texte-noir font-size-md">A ce jour, seuls les candidats ayant validé une MRS (Méthode de Recrutement par Simulation) peuvent être visibles dans la recherche de nos recruteurs.</p>
+                            <p class="texte-noir font-size-md">Si vous souhaitez avoir plus d'informations sur cette méthode, rapprochez-vous de votre centre Pôle emploi.</p>
+                            <p class="texte-noir font-size-md">En attendant vous pouvez continuer à consulter nos offres !</p>
+
+                            <div class="row justify-content-center">
+                                <div class="col-12 col-md-8">
+                                    <a class="bouton bouton-action bouton--vertSurBlanc w-100" href="@controllers.candidat.routes.RechercheOffreController.index()">Je consulte les offres sans inscription</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+}

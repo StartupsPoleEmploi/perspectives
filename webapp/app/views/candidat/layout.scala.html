@@ -1,6 +1,5 @@
 @import conf.WebAppConfig
 @import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
-@import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
 
 @(candidatAuthentifie: Option[CandidatAuthentifie],
         cssFooter: Option[String] = None)(content: Html)(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)

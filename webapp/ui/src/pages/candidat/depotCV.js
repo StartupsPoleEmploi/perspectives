@@ -1,5 +1,6 @@
 import Vue from "vue";
 import DepotCV from '../../composants/DepotCV.vue';
+import afficherMessageSiPasDeMRS from './candidatCommon';
 
 new Vue({
     el: '#depotCVCandidat',
@@ -16,5 +17,8 @@ new Vue({
             tailleMaxLabel: jsData.tailleMaxLabel,
             csrfToken: jsData.csrfToken
         }
+    },
+    created: function() {
+        afficherMessageSiPasDeMRS();
     }
 });
