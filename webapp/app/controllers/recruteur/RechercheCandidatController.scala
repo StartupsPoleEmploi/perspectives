@@ -51,6 +51,7 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
         typeRecruteur <- getTypeRecruteur(recruteurAuthentifieRequest)
         query = RechercheCandidatsQuery(
           typeRecruteur = typeRecruteur,
+          utiliserVersionDegradee = !recruteurAuthentifieRequest.recruteurAuthentifie.certifie,
           codeSecteurActivite = codeRome.map(CodeROME(_).codeSecteurActivite).orElse(None),
           codeROME = codeRome.map(CodeROME).orElse(None),
           coordonnees = buildCoordonneesFromRequest.orElse(None),
@@ -96,6 +97,7 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
             typeRecruteur <- getTypeRecruteur(recruteurAuthentifieRequest)
             rechercheCandidatQueryResult <- candidatQueryHandler.handle(RechercheCandidatsQuery(
               typeRecruteur = typeRecruteur,
+              utiliserVersionDegradee = !recruteurAuthentifieRequest.recruteurAuthentifie.certifie,
               codeSecteurActivite = rechercheCandidatForm.secteurActivite.map(CodeSecteurActivite),
               codeROME = rechercheCandidatForm.metier.map(CodeROME),
               coordonnees = rechercheCandidatForm.coordonnees,

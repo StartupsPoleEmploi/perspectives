@@ -31,7 +31,8 @@ class LocalRecruteurController @Inject()(cc: ControllerComponents,
       val recruteurAuthentifie = RecruteurAuthentifie(
         recruteurId = command.id,
         nom = command.nom,
-        prenom = command.prenom
+        prenom = command.prenom,
+        certifie = true
       )
       Redirect(routes.ProfilController.modificationProfil())
         .withSession(SessionRecruteurAuthentifie.set(recruteurAuthentifie, request.session))
