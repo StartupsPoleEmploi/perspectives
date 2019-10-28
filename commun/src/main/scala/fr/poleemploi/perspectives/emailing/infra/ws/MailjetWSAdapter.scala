@@ -35,6 +35,8 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
 
   private val idTemplateOffreGereeParRecruteur: Int = 1043344
 
+  private val idTemplateOffreGereeParConseiller: Int = 1042288
+
   private val cacheKeyTesteurs = "mailjetWSAdapter.testeurs"
 
   private val authorization: String = Base64.getEncoder
@@ -87,6 +89,18 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
           baseUrl = baseUrl,
           offresGereesParRecruteurAvecCandidats = offresChunk,
           idTemplate = idTemplateOffreGereeParRecruteur
+        ))
+      )).map(_ => ())
+    else
+      Future.successful(())
+
+  def envoyerCandidatsPourOffreGereeParConseiller(baseUrl: String, offresGereesParConseillerAvecCandidats: Seq[OffreGereeParConseillerAvecCandidats]): Future[Unit] =
+    if (offresGereesParConseillerAvecCandidats.nonEmpty)
+      Future.sequence(offresGereesParConseillerAvecCandidats.grouped(nbMaxDestinataires).map(offresChunk =>
+        sendMail(mapping.buildRequestCandidatsPourOffreGereeParConseiller(
+          baseUrl = baseUrl,
+          offresGereesParConseillerAvecCandidats = offresChunk,
+          idTemplate = idTemplateOffreGereeParConseiller
         ))
       )).map(_ => ())
     else

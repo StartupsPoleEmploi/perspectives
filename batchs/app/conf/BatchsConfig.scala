@@ -49,4 +49,3 @@ class BatchsConfig(configuration: Configuration) {
     urlApi = configuration.get[String]("localisation.urlApi")
   )
 }
-

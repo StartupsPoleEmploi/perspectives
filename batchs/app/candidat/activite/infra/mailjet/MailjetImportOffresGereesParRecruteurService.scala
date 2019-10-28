@@ -15,12 +15,12 @@ import play.api.Logging
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class MailjetImportOffresGereesParRecruteur(actorSystem: ActorSystem,
-                                            baseUrl: String,
-                                            importOffresGereesParRecruteurCSVAdapter: ImportOffresGereesParRecruteurCSVAdapter,
-                                            localisationService: LocalisationService,
-                                            candidatQueryHandler: CandidatQueryHandler,
-                                            mailjetWSAdapter: MailjetWSAdapter) extends ImportOffresGereesParRecruteurService with Logging {
+class MailjetImportOffresGereesParRecruteurService(actorSystem: ActorSystem,
+                                                   baseUrl: String,
+                                                   importOffresGereesParRecruteurCSVAdapter: ImportOffresGereesParRecruteurCSVAdapter,
+                                                   localisationService: LocalisationService,
+                                                   candidatQueryHandler: CandidatQueryHandler,
+                                                   mailjetWSAdapter: MailjetWSAdapter) extends ImportOffresGereesParRecruteurService with Logging {
 
   implicit val materializer: ActorMaterializer = ActorMaterializer()(actorSystem)
 

@@ -144,6 +144,45 @@ class MailjetWSMapping {
     )
   }
 
+  def buildRequestCandidatsPourOffreGereeParConseiller(baseUrl: String, idTemplate: Int, offresGereesParConseillerAvecCandidats: Seq[OffreGereeParConseillerAvecCandidats]): SendMailRequest = {
+    def buildUrlRechercheCandidats(baseUrl: String, offre: OffreGereeParConseillerAvecCandidats): String = {
+      val gaTracking = TrackingUtils.buildTrackingGA(
+        utmCampaign = "offre-avec-preselection",
+        utmSource = s"offre-${offre.offreId.value}",
+        utmMedium = "email",
+        utmContent = "cta"
+      )
+      s"$baseUrl/recruteur/recherche?codeRome=${offre.codeROME.value}&latitude=${offre.coordonnees.latitude}&longitude=${offre.coordonnees.longitude}&$gaTracking"
+    }
+
+    def buildUrlHome(baseUrl: String, offre: OffreGereeParConseillerAvecCandidats, content: String): String = {
+      val gaTracking = TrackingUtils.buildTrackingGA(
+        utmCampaign = "offre-avec-preselection",
+        utmSource = s"offre-${offre.offreId.value}",
+        utmMedium = "email",
+        utmContent = content
+      )
+      s"$baseUrl?$gaTracking"
+    }
+
+    SendMailRequest(
+      messages = offresGereesParConseillerAvecCandidats.map(offre => SendMailMessage(
+        from = None,
+        to = Seq(EmailAndName(email = offre.emailCorrespondant.value)),
+        subject = None,
+        templateId = idTemplate,
+        category = Some(OFFRE_GEREE_PAR_CONSEILLER_CATEGORY),
+        variables = Map(
+          VAR_TITRE_POSTE -> offre.intitule,
+          VAR_OFFRE_ID -> offre.offreId.value,
+          VAR_URL_RECHERCHE_CANDIDATS -> buildUrlRechercheCandidats(baseUrl, offre),
+          VAR_URL_PERSPECTIVES -> buildUrlHome(baseUrl, offre, "header"),
+          VAR_URL_PERSPECTIVES_2 -> buildUrlHome(baseUrl, offre, "cta-2")
+        )
+      ))
+    )
+  }
+
   private def buildGenre(genre: Genre): String = genre match {
     case Genre.HOMME => "M."
     case Genre.FEMME => "Mme"
@@ -163,10 +202,12 @@ object MailjetWSMapping {
   val VAR_URL_FORMULAIRE_DISPO_CANDIDAT_PAS_EN_RECHERCHE = "urlFormulaireDispoNon"
   val DISPONIBILITE_CANDIDAT_CATEGORY = "disponibilite_candidat"
   val VAR_URL_PERSPECTIVES = "urlPerspectives"
+  val VAR_URL_PERSPECTIVES_2 = "urlPerspectives2"
   val VAR_URL_RECHERCHE_CANDIDATS = "urlRechercheCandidats"
   val VAR_OFFRE_ID = "offreId"
   val VAR_TITRE_POSTE = "titrePoste"
   val OFFRE_GEREE_PAR_RECRUTEUR_CATEGORY = "offre_geree_par_recruteur"
+  val OFFRE_GEREE_PAR_CONSEILLER_CATEGORY = "offre_geree_par_conseiller"
 }
 
 case class ContactList(listID: String,

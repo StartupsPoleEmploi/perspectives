@@ -1,8 +1,8 @@
 package conf
 
-import candidat.activite.domain.{EmailingDisponibilitesService, ImportOffresGereesParRecruteurService}
-import candidat.activite.infra.local.{LocalEmailingDisponibilitesService, LocalImportOffresGereesParRecruteurService}
-import candidat.activite.infra.mailjet.{MailjetEmailingDisponibilitesService, MailjetImportOffresGereesParRecruteur}
+import candidat.activite.domain.{EmailingDisponibilitesService, ImportOffresGereesParRecruteurService,  ImportOffresGereesParConseillerService}
+import candidat.activite.infra.local.{LocalEmailingDisponibilitesService, LocalImportOffresGereesParRecruteurService, LocalImportOffresGereesParConseillerService}
+import candidat.activite.infra.mailjet.{MailjetEmailingDisponibilitesService, MailjetImportOffresGereesParRecruteurService, MailjetImportOffresGereesParConseillerService}
 import com.google.inject.{AbstractModule, Provider, Provides, Singleton}
 import fr.poleemploi.perspectives.candidat.cv.domain.CVService
 import fr.poleemploi.perspectives.candidat.cv.infra.sql.CVSqlAdapter
@@ -55,13 +55,23 @@ class ServicesModule extends AbstractModule {
 
   @Provides
   @Singleton
-  def importOffresGereesParRecruteurService(mailjetImportOffresGereesParRecruteurService: Provider[MailjetImportOffresGereesParRecruteur],
+  def importOffresGereesParRecruteurService(mailjetImportOffresGereesParRecruteurService: Provider[MailjetImportOffresGereesParRecruteurService],
                                             localImportOffresGereesParRecruteurService: Provider[LocalImportOffresGereesParRecruteurService],
                                             batchsConfig: BatchsConfig): ImportOffresGereesParRecruteurService =
     if (batchsConfig.useMailjet)
       mailjetImportOffresGereesParRecruteurService.get()
     else
       localImportOffresGereesParRecruteurService.get()
+
+  @Provides
+  @Singleton
+  def importOffresGereesParConseillerService(mailjetImportOffresGereesParConseillerService: Provider[MailjetImportOffresGereesParConseillerService],
+                                            localImportOffresGereesParConseillerService: Provider[LocalImportOffresGereesParConseillerService],
+                                            batchsConfig: BatchsConfig): ImportOffresGereesParConseillerService =
+    if (batchsConfig.useMailjet)
+      mailjetImportOffresGereesParConseillerService.get()
+    else
+      localImportOffresGereesParConseillerService.get()
 
   @Provides
   @Singleton
