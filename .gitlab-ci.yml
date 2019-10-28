@@ -1,3 +1,6 @@
+include:
+  - local: '/templates/build-docker-image-template.yml'
+
 variables:
   GIT_SSL_NO_VERIFY: "1"
   SBT_OPTS: "-Dsbt.ivy.home=/cache/.ivy2 -Dsbt.boot.credentials=/root/.ivy2/.credentials -Xms512M -Xss2M -Xmx2G"
@@ -72,9 +75,6 @@ stages:
 # job automatique qui package l'application en zip apres chaque release sur le nouveau tag cree
 📦_package:
   stage: 📦_package
-  variables:
-    LOGBACK_RESOURCE: logback-production.xml
-    CONFIG_RESOURCE: application-production.conf
   before_script:
     # Build la partie front (les node_modules sont mis en cache pour pas tout retelecharger a chaque fois)
     - cd webapp/ui
@@ -92,44 +92,55 @@ stages:
     expire_in: 1 week
   only:
     - tags
+    - recette
 
 # job qui permet de builder l'image docker de la webapp
 🐳_build-docker-image-webapp:
-  stage: 🐳_docker
-  image:
-    name: gcr.io/kaniko-project/executor:debug
-    entrypoint: [""]
+  extends: .build-docker-image
   variables:
     LOGBACK_RESOURCE: logback-production.xml
     CONFIG_RESOURCE: application-production.conf
-  script:
-    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
-    - cat /kaniko/.docker/config.json
-    - echo $(grep "version in ThisBuild := \".*\"" version.sbt | cut -d "\"" -f 2) > /kaniko/version.txt
-    - cd docker
-    - cp ../webapp/target/universal/perspectives-webapp-*.zip .
-    - /kaniko/executor --context $CI_PROJECT_DIR/docker --build-arg WEBAPP_LOGBACK_RESOURCE=$LOGBACK_RESOURCE --build-arg WEBAPP_CONFIG_RESOURCE=$CONFIG_RESOURCE --build-arg WEBAPP_VERSION=$(cat /kaniko/version.txt) --dockerfile $CI_PROJECT_DIR/docker/dockerfile-webapp --destination $CI_REGISTRY_IMAGE/perspectives-webapp:$(cat /kaniko/version.txt)
-  only:
-    - tags
+    PROJECT: webapp
+    ENV_NAME_LOGBACK_RESOURCE: WEBAPP_LOGBACK_RESOURCE
+    ENV_NAME_CONFIG_RESOURCE: WEBAPP_CONFIG_RESOURCE
+    ENV_NAME_VERSION: WEBAPP_VERSION
 
 # job qui permet de builder l'image docker des batchs
 🐳_build-docker-image-batchs:
-  stage: 🐳_docker
-  image:
-    name: gcr.io/kaniko-project/executor:debug
-    entrypoint: [""]
+  extends: .build-docker-image
   variables:
     LOGBACK_RESOURCE: logback-production.xml
     CONFIG_RESOURCE: application-production.conf
-  script:
-    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
-    - cat /kaniko/.docker/config.json
-    - echo $(grep "version in ThisBuild := \".*\"" version.sbt | cut -d "\"" -f 2) > /kaniko/version.txt
-    - cd docker
-    - cp ../batchs/target/universal/perspectives-batchs-*.zip .
-    - /kaniko/executor --context $CI_PROJECT_DIR/docker --build-arg BATCHS_LOGBACK_RESOURCE=$LOGBACK_RESOURCE --build-arg BATCHS_CONFIG_RESOURCE=$CONFIG_RESOURCE --build-arg BATCHS_VERSION=$(cat /kaniko/version.txt) --dockerfile $CI_PROJECT_DIR/docker/dockerfile-batchs --destination $CI_REGISTRY_IMAGE/perspectives-batchs:$(cat /kaniko/version.txt)
+    PROJECT: batchs
+    ENV_NAME_LOGBACK_RESOURCE: BATCHS_LOGBACK_RESOURCE
+    ENV_NAME_CONFIG_RESOURCE: BATCHS_CONFIG_RESOURCE
+    ENV_NAME_VERSION: BATCHS_VERSION
+
+# job qui permet de builder l'image docker de la webapp pour la recette (SNAPSHOT)
+🐳_build-r7-docker-image-webapp:
+  extends: .build-docker-image
+  variables:
+    LOGBACK_RESOURCE: logback-recette.xml
+    CONFIG_RESOURCE: application-recette.conf
+    PROJECT: webapp
+    ENV_NAME_LOGBACK_RESOURCE: WEBAPP_LOGBACK_RESOURCE
+    ENV_NAME_CONFIG_RESOURCE: WEBAPP_CONFIG_RESOURCE
+    ENV_NAME_VERSION: WEBAPP_VERSION
   only:
-    - tags
+    - recette
+
+# job qui permet de builder l'image docker des batchs pour la recette (SNAPSHOT)
+🐳_build-r7-docker-image-batchs:
+  extends: .build-docker-image
+  variables:
+    LOGBACK_RESOURCE: logback-recette.xml
+    CONFIG_RESOURCE: application-recette.conf
+    PROJECT: batchs
+    ENV_NAME_LOGBACK_RESOURCE: BATCHS_LOGBACK_RESOURCE
+    ENV_NAME_CONFIG_RESOURCE: BATCHS_CONFIG_RESOURCE
+    ENV_NAME_VERSION: BATCHS_VERSION
+  only:
+    - recette
 
 # job manuel qui permet de builder l'image docker qui sert de base aux autres jobs Gitlab CI (pour pas reinstaller tous les outils a chaque job...)
 🐳_build-ci-base-image:
