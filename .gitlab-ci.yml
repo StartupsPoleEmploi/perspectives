@@ -103,7 +103,6 @@ stages:
     PROJECT: webapp
     ENV_NAME_LOGBACK_RESOURCE: WEBAPP_LOGBACK_RESOURCE
     ENV_NAME_CONFIG_RESOURCE: WEBAPP_CONFIG_RESOURCE
-    ENV_NAME_VERSION: WEBAPP_VERSION
 
 # job qui permet de builder l'image docker des batchs
 🐳_build-docker-image-batchs:
@@ -114,7 +113,6 @@ stages:
     PROJECT: batchs
     ENV_NAME_LOGBACK_RESOURCE: BATCHS_LOGBACK_RESOURCE
     ENV_NAME_CONFIG_RESOURCE: BATCHS_CONFIG_RESOURCE
-    ENV_NAME_VERSION: BATCHS_VERSION
 
 # job qui permet de builder l'image docker de la webapp pour la recette (SNAPSHOT)
 🐳_build-r7-docker-image-webapp:
@@ -125,7 +123,6 @@ stages:
     PROJECT: webapp
     ENV_NAME_LOGBACK_RESOURCE: WEBAPP_LOGBACK_RESOURCE
     ENV_NAME_CONFIG_RESOURCE: WEBAPP_CONFIG_RESOURCE
-    ENV_NAME_VERSION: WEBAPP_VERSION
   only:
     - recette
 
@@ -138,7 +135,6 @@ stages:
     PROJECT: batchs
     ENV_NAME_LOGBACK_RESOURCE: BATCHS_LOGBACK_RESOURCE
     ENV_NAME_CONFIG_RESOURCE: BATCHS_CONFIG_RESOURCE
-    ENV_NAME_VERSION: BATCHS_VERSION
   only:
     - recette
 

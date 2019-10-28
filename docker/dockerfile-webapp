@@ -18,12 +18,13 @@ ENV WEBAPP_LOGBACK_RESOURCE=${WEBAPP_LOGBACK_RESOURCE}
 ARG WEBAPP_CONFIG_RESOURCE=application.conf
 ENV WEBAPP_CONFIG_RESOURCE=${WEBAPP_CONFIG_RESOURCE}
 
-ARG WEBAPP_VERSION
-ENV WEBAPP_VERSION=${WEBAPP_VERSION}
+COPY perspectives-webapp-*.zip ./perspectives-webapp.zip
 
-COPY perspectives-webapp-${WEBAPP_VERSION}.zip .
+RUN unzip perspectives-webapp.zip
 
-RUN unzip perspectives-webapp-${WEBAPP_VERSION}.zip
+RUN mv ./perspectives-webapp-* ./perspectives-webapp
+
+RUN rm perspectives-webapp.zip
 
 HEALTHCHECK --interval=15s --timeout=10s --start-period=60s CMD curl -f http://localhost:9000 || exit 1
 

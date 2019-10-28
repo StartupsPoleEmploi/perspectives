@@ -10,13 +10,12 @@
     PROJECT: webapp
     ENV_NAME_LOGBACK_RESOURCE: WEBAPP_LOGBACK_RESOURCE
     ENV_NAME_CONFIG_RESOURCE: WEBAPP_CONFIG_RESOURCE
-    ENV_NAME_VERSION: WEBAPP_VERSION
   script:
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
     - cat /kaniko/.docker/config.json
     - echo $(grep "version in ThisBuild := \".*\"" version.sbt | cut -d "\"" -f 2) > /kaniko/version.txt
     - cd docker
     - cp ../$PROJECT/target/universal/perspectives-$PROJECT-*.zip .
-    - /kaniko/executor --context $CI_PROJECT_DIR/docker --build-arg $ENV_NAME_LOGBACK_RESOURCE=$LOGBACK_RESOURCE --build-arg $ENV_NAME_CONFIG_RESOURCE=$CONFIG_RESOURCE --build-arg $ENV_NAME_VERSION=$(cat /kaniko/version.txt) --dockerfile $CI_PROJECT_DIR/docker/dockerfile-$PROJECT --destination $CI_REGISTRY_IMAGE/perspectives-$PROJECT:$(cat /kaniko/version.txt)
+    - /kaniko/executor --context $CI_PROJECT_DIR/docker --build-arg $ENV_NAME_LOGBACK_RESOURCE=$LOGBACK_RESOURCE --build-arg $ENV_NAME_CONFIG_RESOURCE=$CONFIG_RESOURCE --dockerfile $CI_PROJECT_DIR/docker/dockerfile-$PROJECT --destination $CI_REGISTRY_IMAGE/perspectives-$PROJECT:$(cat /kaniko/version.txt)
   only:
     - tags

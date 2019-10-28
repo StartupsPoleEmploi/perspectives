@@ -15,9 +15,6 @@ ENV BATCHS_LOGBACK_RESOURCE=${BATCHS_LOGBACK_RESOURCE}
 ARG BATCHS_CONFIG_RESOURCE=application.conf
 ENV BATCHS_CONFIG_RESOURCE=${BATCHS_CONFIG_RESOURCE}
 
-ARG BATCHS_VERSION
-ENV BATCHS_VERSION=${BATCHS_VERSION}
-
 ARG EXPORT_POLEEMPLOI_DIRECTORY=/var/perspectives/export_poleemploi
 ENV EXPORT_POLEEMPLOI_DIRECTORY=${EXPORT_POLEEMPLOI_DIRECTORY}
 
@@ -27,9 +24,13 @@ ENV EXPORT_POLEEMPLOI_ARCHIVE_DIRECTORY=${EXPORT_POLEEMPLOI_ARCHIVE_DIRECTORY}
 RUN mkdir -p ${EXPORT_POLEEMPLOI_DIRECTORY}
 RUN mkdir -p ${EXPORT_POLEEMPLOI_ARCHIVE_DIRECTORY}
 
-COPY perspectives-batchs-${BATCHS_VERSION}.zip .
+COPY perspectives-batchs-*.zip ./perspectives-batchs.zip
 
-RUN unzip perspectives-batchs-${BATCHS_VERSION}.zip
+RUN unzip perspectives-batchs.zip
+
+RUN mv ./perspectives-batchs-* ./perspectives-batchs
+
+RUN rm perspectives-batchs.zip
 
 HEALTHCHECK --interval=15s --timeout=10s --start-period=60s CMD curl -f http://localhost:9000 || exit 1
 
