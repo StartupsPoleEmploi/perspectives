@@ -4,6 +4,7 @@ import _ from 'lodash';
 import 'bootstrap/js/dist/modal';
 import Places from '../../composants/Places.vue';
 import ROME from '../../domain/metier/ROME';
+import afficherMessageSiPasDeMRS from './candidatCommon';
 
 new Vue({
     el: '#saisieCriteresRechercheCandidat',
@@ -68,6 +69,7 @@ new Vue({
         }
     },
     created: function() {
+        afficherMessageSiPasDeMRS();
         var secteursActivites = {};
         var secteursActivitesParCode = {};
         var metiersSelectionnesParSecteur = {};
