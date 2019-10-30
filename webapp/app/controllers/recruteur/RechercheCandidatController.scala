@@ -34,6 +34,8 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
                                             recruteurAuthentifieAction: RecruteurAuthentifieAction,
                                             recruteurAConnecterSiNonAuthentifieAction: RecruteurAConnecterSiNonAuthentifieAction)(implicit exec: ExecutionContext) extends AbstractController(cc) {
 
+  private val MIN_CARACTERES_RECHERCHE_PAR_METIER = 2
+
   def index(codeRome: Option[String] = None, latitude: Option[Double] = None, longitude: Option[Double] = None): Action[AnyContent] = recruteurAConnecterSiNonAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
       def buildCoordonneesFromRequest: Option[Coordonnees] =
@@ -78,7 +80,8 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
 
   def rechercherMetiers(q: String): Action[AnyContent] = recruteurAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
-      recruteurQueryHandler.handle(MetiersRecruteurQuery(q)).map(metiersRecruteurQueryResult =>
+      if (q.isEmpty || q.trim.length < MIN_CARACTERES_RECHERCHE_PAR_METIER) Future.successful(BadRequest)
+      else recruteurQueryHandler.handle(MetiersRecruteurQuery(q)).map(metiersRecruteurQueryResult =>
         Ok(Json.toJson(metiersRecruteurQueryResult))
       )
     }(recruteurAuthentifieRequest)
