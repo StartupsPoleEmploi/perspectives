@@ -8,9 +8,11 @@ import akka.stream.ActorMaterializer
 import akka.stream.alpakka.csv.scaladsl.{CsvParsing, CsvToMap}
 import akka.stream.scaladsl.{Sink, Source}
 import akka.util.ByteString
+import fr.poleemploi.perspectives.candidat.mrs.infra.peconnect.idPEConnectPattern
 import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.emailing.domain.MRSValideeProspectCandidat
 import fr.poleemploi.perspectives.metier.domain.Metier
+import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -29,7 +31,9 @@ class MRSValideeProspectCandidatCSVAdapter(val actorSystem: ActorSystem) {
       .via(CsvParsing.lineScanner(delimiter = ';'))
       .via(CsvToMap.toMapAsStrings())
       .filter(m =>
-        m.get("dc_nom").exists(_.nonEmpty) &&
+        m.get("id_peconnect").exists(s => s.isEmpty || idPEConnectPattern.matcher(s).matches()) &&
+          m.get("identifiant_local").exists(s => identifiantLocalPattern.matcher(s).matches()) &&
+          m.get("dc_nom").exists(_.nonEmpty) &&
           m.get("dc_prenom").exists(_.nonEmpty) &&
           m.get("dc_sexe_id").exists(_.nonEmpty) &&
           m.get("dd_daterealisation").exists(_.nonEmpty) &&
@@ -41,6 +45,8 @@ class MRSValideeProspectCandidatCSVAdapter(val actorSystem: ActorSystem) {
       )
       .map(data =>
         MRSValideeProspectCandidat(
+          peConnectId = data.get("id_peconnect").filterNot(_.isEmpty).map(PEConnectId),
+          identifiantLocal = IdentifiantLocal(data("identifiant_local")),
           nom = Nom(data("dc_nom")),
           prenom = Prenom(data("dc_prenom")),
           email = Email(data("dc_adresseemail")),
