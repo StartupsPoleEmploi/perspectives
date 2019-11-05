@@ -68,7 +68,8 @@ class PEConnectRecruteurController @Inject()(cc: ControllerComponents,
           val recruteurAuthentifie = RecruteurAuthentifie(
             recruteurId = recruteurId,
             nom = recruteurInfos.nom,
-            prenom = recruteurInfos.prenom
+            prenom = recruteurInfos.prenom,
+            certifie = recruteurInfos.certifie
           )
           val session = SessionRecruteurPEConnect.setJWTToken(accessTokenResponse.idToken, SessionRecruteurAuthentifie.set(recruteurAuthentifie, SessionOauthTokensRecruteur.removeOauthTokensRecruteur(request.session)))
 

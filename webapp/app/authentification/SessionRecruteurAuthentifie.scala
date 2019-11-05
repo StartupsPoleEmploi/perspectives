@@ -11,6 +11,7 @@ object SessionRecruteurAuthentifie {
   private val recruteurIdAttribute: String = s"$namespace.recruteurId"
   private val nomAttribute: String = s"$namespace.nom"
   private val prenomAttribute: String = s"$namespace.prenom"
+  private val certifieAttribute: String = s"$namespace.certifie"
 
   def get(session: Session): Option[RecruteurAuthentifie] =
     for {
@@ -20,13 +21,18 @@ object SessionRecruteurAuthentifie {
     } yield RecruteurAuthentifie(
       recruteurId = recruteurId,
       nom = nom,
-      prenom = prenom
+      prenom = prenom,
+      certifie = session.get(certifieAttribute).exists(_.toBoolean)
     )
 
   def set(recruteurAuthentifie: RecruteurAuthentifie,
           session: Session): Session =
-    session + (recruteurIdAttribute -> recruteurAuthentifie.recruteurId.value) + (nomAttribute -> recruteurAuthentifie.nom.value) + (prenomAttribute -> recruteurAuthentifie.prenom.value)
+    session +
+      (recruteurIdAttribute -> recruteurAuthentifie.recruteurId.value) +
+      (nomAttribute -> recruteurAuthentifie.nom.value) +
+      (prenomAttribute -> recruteurAuthentifie.prenom.value) +
+      (certifieAttribute -> recruteurAuthentifie.certifie.toString)
 
   def remove(session: Session): Session =
-    session - recruteurIdAttribute - nomAttribute - prenomAttribute
+    session - recruteurIdAttribute - nomAttribute - prenomAttribute - certifieAttribute
 }

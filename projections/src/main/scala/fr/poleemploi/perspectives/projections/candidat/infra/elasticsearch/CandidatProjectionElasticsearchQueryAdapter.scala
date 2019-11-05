@@ -144,7 +144,8 @@ class CandidatProjectionElasticsearchQueryAdapter(wsClient: WSClient,
       .flatMap(r => mapping.buildSecteursActivitesAvecCandidatQueryResult(r.json))
 
   override def rechercherCandidats(query: RechercheCandidatsQuery): Future[RechercheCandidatQueryResult] =
-    wsClient
+    if (query.utiliserVersionDegradee) Future.successful(RechercheCandidatQueryResult.mock)
+    else wsClient
       .url(s"$baseUrl/$indexName/_search")
       .withHttpHeaders(jsonContentType)
       .post(mapping.buildRechercheCandidatsQuery(query))

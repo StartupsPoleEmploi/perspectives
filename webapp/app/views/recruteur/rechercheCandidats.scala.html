@@ -250,6 +250,18 @@
             </div>
         </div>
 
+        <div class="bg-noir">
+            <div class="container">
+                <template v-if="!@recruteurAuthentifie.certifie">
+                    <div class="row align-items-center py-3 bandeau-recruteur-non-certifie">
+                        <p class="col-12 mb-2 mb-sm-0 texte-blanc font-weight-bold font-size-md text-md-center">Les données sont anonymisées</p>
+                        <p class="col-12 mb-2 mb-sm-0 texte-blanc font-size-sm text-md-center">Pour contacter directement les candidats de Perspectives, votre espace doit être certifié par un(e) conseiller(ère) qui vous contactera sous 48h.</p>
+                        <p class="col-12 mb-2 mb-sm-0 texte-blanc font-size-sm text-md-center">Vous pouvez également vous rapprocher de <a href="https://www.pole-emploi.fr/annuaire/" target="_blank" title="Votre agence Pôle Emploi">votre agence Pôle Emploi.</a></p>
+                    </div>
+                </template>
+            </div>
+        </div>
+
         <div class="bg-gris-light">
             <div class="container pt-5 rechercheCandidatsConteneur">
                 <div class="row">

@@ -5,4 +5,5 @@ import fr.poleemploi.perspectives.recruteur.RecruteurId
 
 case class RecruteurAuthentifie(recruteurId: RecruteurId,
                                 nom: Nom,
-                                prenom: Prenom)
+                                prenom: Prenom,
+                                certifie: Boolean)
