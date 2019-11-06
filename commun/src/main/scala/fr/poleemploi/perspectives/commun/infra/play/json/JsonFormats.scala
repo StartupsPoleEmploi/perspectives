@@ -4,6 +4,7 @@ import fr.poleemploi.eventsourcing.{AggregateId, IntValueObject, StringValueObje
 import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
 import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.commun.domain._
+import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
 import fr.poleemploi.perspectives.offre.domain.OffreId
 import fr.poleemploi.perspectives.recruteur.{NumeroSiret, RecruteurId, TypeRecruteur}
 import play.api.libs.json._
@@ -29,6 +30,8 @@ object JsonFormats {
   implicit val formatNumeroTelephone: Format[NumeroTelephone] = formatStringValueObject(NumeroTelephone(_))
   implicit val formatStatutDemandeurEmploi: Format[StatutDemandeurEmploi] = formatStringValueObject(StatutDemandeurEmploi(_))
   implicit val formatTypeMedia: Format[TypeMedia] = formatStringValueObject(TypeMedia(_))
+  implicit val formatPEConnectId: Format[PEConnectId] = formatStringValueObject(PEConnectId)
+  implicit val formatIdentifiantLocal: Format[IdentifiantLocal] = formatStringValueObject(IdentifiantLocal)
 
   implicit val formatCentreInteret: Format[CentreInteret] = formatStringValueObject(CentreInteret(_))
   implicit val formatNiveauLangue: Format[NiveauLangue] = formatStringValueObject(NiveauLangue(_))

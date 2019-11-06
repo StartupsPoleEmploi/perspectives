@@ -1,8 +1,8 @@
 package conf
 
 import akka.actor.ActorSystem
-import candidat.activite.infra.local.{LocalEmailingDisponibilitesService, LocalImportOffresGereesParRecruteurService, LocalImportOffresGereesParConseillerService}
-import candidat.activite.infra.mailjet.{MailjetEmailingDisponibilitesService, MailjetImportOffresGereesParRecruteurService, MailjetImportOffresGereesParConseillerService}
+import candidat.activite.infra.local.{LocalEmailingDisponibilitesService, LocalImportOffresGereesParConseillerService, LocalImportOffresGereesParRecruteurService}
+import candidat.activite.infra.mailjet.{MailjetEmailingDisponibilitesService, MailjetImportOffresGereesParConseillerService, MailjetImportOffresGereesParRecruteurService}
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.inject.name.Named
 import com.google.inject.{AbstractModule, Provider, Provides, Singleton}
@@ -24,7 +24,7 @@ import fr.poleemploi.perspectives.candidat.mrs.infra.sql.ReferentielHabiletesMRS
 import fr.poleemploi.perspectives.commun.infra.jackson.PerspectivesEventSourcingModule
 import fr.poleemploi.perspectives.commun.infra.peconnect.sql.PEConnectSqlAdapter
 import fr.poleemploi.perspectives.commun.infra.sql.PostgresDriver
-import fr.poleemploi.perspectives.emailing.infra.csv.{ImportMRSValideeProspectCandidatCSVAdapter, ImportOffresGereesParRecruteurCSVAdapter, ImportOffresGereesParConseillerCSVAdapter, MRSValideeProspectCandidatCSVAdapter, OffresGereesParRecruteurCSVAdapter, OffresGereesParConseillerCSVAdapter}
+import fr.poleemploi.perspectives.emailing.infra.csv.{ImportMRSValideeProspectCandidatCSVAdapter, ImportOffresGereesParConseillerCSVAdapter, ImportOffresGereesParRecruteurCSVAdapter, MRSValideeProspectCandidatCSVAdapter, OffresGereesParConseillerCSVAdapter, OffresGereesParRecruteurCSVAdapter}
 import fr.poleemploi.perspectives.emailing.infra.local.LocalImportProspectService
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetImportProspectService
 import fr.poleemploi.perspectives.emailing.infra.sql.MailjetSqlAdapter
@@ -34,6 +34,9 @@ import fr.poleemploi.perspectives.metier.infra.local.ReferentielMetierLocalAdapt
 import fr.poleemploi.perspectives.projections.candidat.CandidatQueryHandler
 import fr.poleemploi.perspectives.projections.candidat.infra.elasticsearch.{CandidatProjectionElasticsearchQueryAdapter, CandidatProjectionElasticsearchQueryMapping}
 import fr.poleemploi.perspectives.projections.recruteur.infra.sql.RecruteurProjectionSqlAdapter
+import fr.poleemploi.perspectives.prospect.domain.ReferentielProspectCandidat
+import fr.poleemploi.perspectives.prospect.infra.local.ReferentielProspectCandidatLocalAdapter
+import fr.poleemploi.perspectives.prospect.infra.sql.ReferentielProspectCandidatSqlAdapter
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
 import play.api.cache.AsyncCacheApi
@@ -274,13 +277,15 @@ class InfraModule extends AbstractModule with ScalaModule {
                                    actorSystem: ActorSystem,
                                    mrsValideeProspectCandidatCSVAdapter: MRSValideeProspectCandidatCSVAdapter,
                                    mailjetSqlAdapter: MailjetSqlAdapter,
-                                   mailjetWSAdapter: MailjetWSAdapter): MailjetImportProspectService =
+                                   mailjetWSAdapter: MailjetWSAdapter,
+                                   referentielProspectCandidat: ReferentielProspectCandidat): MailjetImportProspectService =
     new MailjetImportProspectService(
       actorSystem = actorSystem,
       importMRSValideeProspectCandidatCSVAdapter = importMRSValideeProspectCandidatCSVAdapter,
       importMRSDHAEPEConnectAdapter = importMRSDHAEPEConnectAdapter,
       mailjetSQLAdapter = mailjetSqlAdapter,
-      mailjetWSAdapter = mailjetWSAdapter
+      mailjetWSAdapter = mailjetWSAdapter,
+      referentielProspectCandidat = referentielProspectCandidat
     )
 
   @Provides
@@ -313,6 +318,17 @@ class InfraModule extends AbstractModule with ScalaModule {
       config = batchsConfig.importPoleEmploiFileConfig,
       actorSystem = actorSystem,
       offresGereesParConseillerCSVAdapter = offresGereesParConseillerCSVAdapter
+    )
+
+  @Provides
+  def referentielProspectCandidatLocalAdapter: ReferentielProspectCandidatLocalAdapter =
+    new ReferentielProspectCandidatLocalAdapter
+
+  @Provides
+  def referentielProspectCandidatSqlAdapter(database: Database): ReferentielProspectCandidatSqlAdapter =
+    new ReferentielProspectCandidatSqlAdapter(
+      driver = PostgresDriver,
+      database = database
     )
 
   @Provides

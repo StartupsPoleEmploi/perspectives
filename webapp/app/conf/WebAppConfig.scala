@@ -30,6 +30,7 @@ class WebAppConfig(configuration: Configuration) {
   val useGoogleTagManager: Boolean = configuration.getOptional[Boolean]("useGoogleTagManager").getOrElse(true)
   val useReferentielMetier: Boolean = configuration.getOptional[Boolean]("useReferentielMetier").getOrElse(true)
   val useReferentielRome: Boolean = configuration.getOptional[Boolean]("useReferentielRome").getOrElse(true)
+  val useReferentielProspectCandidat: Boolean = configuration.getOptional[Boolean]("useReferentielProspectCandidat").getOrElse(true)
   val useReferentielOffre: Boolean = configuration.getOptional[Boolean]("useReferentielOffre").getOrElse(true)
   val useReferentielHabiletesMRS: Boolean = configuration.getOptional[Boolean]("useReferentielHabiletesMRS").getOrElse(true)
   val useLocalisation: Boolean = configuration.getOptional[Boolean]("useLocalisation").getOrElse(true)

@@ -15,10 +15,12 @@ import fr.poleemploi.perspectives.projections.conseiller.ConseillerQueryHandler
 import fr.poleemploi.perspectives.projections.emailing.{CandidatEmailProjection, RecruteurEmailProjection}
 import fr.poleemploi.perspectives.projections.geo.RegionQueryHandler
 import fr.poleemploi.perspectives.projections.metier.MetierQueryHandler
+import fr.poleemploi.perspectives.projections.prospect.CandidatProspectProjection
 import fr.poleemploi.perspectives.projections.recruteur._
 import fr.poleemploi.perspectives.projections.recruteur.infra.local.RecruteurNotificationLocalAdapter
 import fr.poleemploi.perspectives.projections.recruteur.infra.slack.RecruteurNotificationSlackAdapter
 import fr.poleemploi.perspectives.projections.recruteur.infra.sql.RecruteurProjectionSqlAdapter
+import fr.poleemploi.perspectives.prospect.domain.ReferentielProspectCandidat
 import fr.poleemploi.perspectives.rome.domain.ReferentielRome
 import net.codingwell.scalaguice.ScalaModule
 
@@ -26,10 +28,11 @@ class RegisterProjections @Inject()(eventStoreListener: EventStoreListener,
                                     candidatProjection: CandidatProjection,
                                     candidatNotificationProjection: CandidatNotificationProjection,
                                     candidatMailProjection: CandidatEmailProjection,
+                                    candidatProspectProjection: CandidatProspectProjection,
                                     recruteurProjection: RecruteurProjection,
                                     recruteurEmailProjection: RecruteurEmailProjection,
                                     recruteurNotificationProjection: RecruteurNotificationProjection) {
-  eventStoreListener.subscribe(candidatProjection, candidatMailProjection, candidatNotificationProjection)
+  eventStoreListener.subscribe(candidatProjection, candidatMailProjection, candidatNotificationProjection, candidatProspectProjection)
   eventStoreListener.subscribe(recruteurProjection, recruteurEmailProjection, recruteurNotificationProjection)
 }
 
@@ -77,6 +80,13 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
     new CandidatEmailProjection(
       emailingService = emailingService,
       referentielMetier = referentielMetier
+    )
+
+  @Provides
+  @Singleton
+  def candidatProspectProjection(referentielProspectCandidat: ReferentielProspectCandidat): CandidatProspectProjection =
+    new CandidatProspectProjection(
+      referentielProspectCandidat = referentielProspectCandidat
     )
 
   @Provides

@@ -27,4 +27,6 @@ trait CandidatProjectionQuery {
   def existeCandidat(query: ExisteCandidatQuery): Future[ExisteCandidatQueryResult]
 
   def listerPourBatchDisponibilites(query: CandidatsPourBatchDisponibilitesQuery): Future[CandidatsPourBatchDisponibilitesQueryResult]
+
+  def listerPourCsv(query: CandidatsPourCsvQuery.type): Future[CandidatsPourCsvQueryResult]
 }

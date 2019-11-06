@@ -44,6 +44,8 @@ import fr.poleemploi.perspectives.projections.candidat.infra.slack.CandidatNotif
 import fr.poleemploi.perspectives.projections.recruteur.infra.local.RecruteurNotificationLocalAdapter
 import fr.poleemploi.perspectives.projections.recruteur.infra.slack.RecruteurNotificationSlackAdapter
 import fr.poleemploi.perspectives.projections.recruteur.infra.sql.RecruteurProjectionSqlAdapter
+import fr.poleemploi.perspectives.prospect.infra.local.ReferentielProspectCandidatLocalAdapter
+import fr.poleemploi.perspectives.prospect.infra.sql.ReferentielProspectCandidatSqlAdapter
 import fr.poleemploi.perspectives.rome.infra.elasticsearch.{ReferentielRomeElasticsearchAdapter, ReferentielRomeElasticsearchMapping}
 import fr.poleemploi.perspectives.rome.infra.local.ReferentielRomeLocalAdapter
 import fr.poleemploi.perspectives.rome.infra.ws.{ReferentielRomeWSAdapter, ReferentielRomeWSMapping}
@@ -285,6 +287,17 @@ class InfraModule extends AbstractModule with ScalaModule {
   @Provides
   def referentielRomeLocalAdapter: ReferentielRomeLocalAdapter =
     new ReferentielRomeLocalAdapter
+
+  @Provides
+  def referentielProspectCandidatLocalAdapter: ReferentielProspectCandidatLocalAdapter =
+    new ReferentielProspectCandidatLocalAdapter
+
+  @Provides
+  def referentielProspectCandidatSqlAdapter(database: Database): ReferentielProspectCandidatSqlAdapter =
+    new ReferentielProspectCandidatSqlAdapter(
+      driver = PostgresDriver,
+      database = database
+    )
 
   @Provides
   @Singleton

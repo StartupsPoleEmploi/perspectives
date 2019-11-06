@@ -35,6 +35,8 @@ class CandidatProjectionElasticsearchUpdateAdapter(wsClient: WSClient,
       .withHttpHeaders(jsonContentType)
       .post(Json.obj(
         candidat_id -> event.candidatId,
+        peconnect_id -> event.peConnectId,
+        identifiant_local -> event.identifiantLocal,
         nom -> event.nom,
         prenom -> event.prenom,
         genre -> event.genre,

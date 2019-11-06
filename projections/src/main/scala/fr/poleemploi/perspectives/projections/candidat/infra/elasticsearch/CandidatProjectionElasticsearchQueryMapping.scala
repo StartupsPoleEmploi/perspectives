@@ -5,7 +5,7 @@ import java.time.LocalDate
 import fr.poleemploi.perspectives.candidat.{ExperienceProfessionnelle, Formation, LocalisationRecherche}
 import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
-import fr.poleemploi.perspectives.metier.domain.ReferentielMetier
+import fr.poleemploi.perspectives.metier.domain.{Metier, ReferentielMetier}
 import fr.poleemploi.perspectives.projections.candidat._
 import fr.poleemploi.perspectives.recruteur.TypeRecruteur
 import play.api.libs.json._
@@ -65,6 +65,23 @@ class CandidatProjectionElasticsearchQueryMapping(referentielMetier: Referentiel
       )
     )
 
+  def buildCandidatPourStatistiquesDto(document: CandidatPourStatistiquesDocument): Option[CandidatPourCsvDto] =
+    document.metiersValides.headOption.map(mrs => // on ne prend que les candidats qui ont passe une MRS
+      CandidatPourCsvDto(
+        peConnectId = document.peConnectId,
+        identifiantLocal = document.identifiantLocal,
+        nom = document.nom,
+        prenom = document.prenom,
+        email = document.email,
+        genre = document.genre,
+        codeDepartement = mrs.departement,
+        metier = Metier(
+          codeROME = mrs.metier,
+          label = ""
+        )
+      )
+    )
+
   def buildCandidatsRechercheDto(documents: Seq[CandidatPourRecruteurDocument]): Future[List[CandidatPourRecruteurDto]] =
     for {
       metiersValides <- referentielMetier.metiersParCodesROME(documents.flatMap(_.metiersValides.map(_.metier)).toSet)
@@ -107,7 +124,7 @@ class CandidatProjectionElasticsearchQueryMapping(referentielMetier: Referentiel
               case (None, Some(_)) => false
               case (Some(n1), Some(n2)) => n1.value > n2.value || (n1.value == n2.value && s1.label < s2.label)
             }
-        ),
+          ),
         formations = d.formations.map(buildFormation).sortWith((f1, f2) => f1.anneeFin > f2.anneeFin),
         experiencesProfessionnelles = d.experiencesProfessionnelles.map(buildExperienceProfessionnelle).sortWith((e1, e2) => e1.dateDebut.isAfter(e2.dateDebut))
       )).toList

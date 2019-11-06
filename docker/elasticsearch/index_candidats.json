@@ -8,6 +8,12 @@
         "candidat_id": {
           "type": "keyword"
         },
+        "peconnect_id": {
+          "type": "keyword"
+        },
+        "identifiant_local": {
+          "type": "keyword"
+        },
         "nom": {
           "type": "text"
         },
