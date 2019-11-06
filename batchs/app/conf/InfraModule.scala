@@ -14,7 +14,6 @@ import fr.poleemploi.eventsourcing.snapshotstore.SnapshotStore
 import fr.poleemploi.perspectives.authentification.infra.autologin.AutologinService
 import fr.poleemploi.perspectives.candidat.activite.infra.csv.{ActiviteCandidatCSVAdapter, ImportActiviteCandidatCsvAdapter}
 import fr.poleemploi.perspectives.candidat.activite.infra.sql.DisponibiliteCandidatSqlAdapter
-import fr.poleemploi.perspectives.candidat.cv.infra.sql.CVSqlAdapter
 import fr.poleemploi.perspectives.candidat.localisation.domain.LocalisationService
 import fr.poleemploi.perspectives.candidat.localisation.infra.local.LocalisationLocalAdapter
 import fr.poleemploi.perspectives.candidat.localisation.infra.ws.{LocalisationWSAdapter, LocalisationWSMapping}
@@ -195,13 +194,6 @@ class InfraModule extends AbstractModule with ScalaModule {
   @Singleton
   def referentielMetier: ReferentielMetier =
     new ReferentielMetierLocalAdapter
-
-  @Provides
-  def csvSqlAdapter(database: Database): CVSqlAdapter =
-    new CVSqlAdapter(
-      database = database,
-      driver = PostgresDriver
-    )
 
   @Provides
   @Singleton

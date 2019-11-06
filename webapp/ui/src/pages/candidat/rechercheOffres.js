@@ -170,9 +170,6 @@ new Vue({
         doitAfficherMiseEnAvantInscription: function () {
             return !this.isCandidatAuthentifie;
         },
-        doitAfficherMiseEnAvantCV: function () {
-            return this.isCandidatAuthentifie && !this.cv;
-        },
         afficherFiltres: function () {
             if ($(".formulaireRecherche-jsResponsive").is(":visible")) {
                 $(".formulaireRecherche-conteneurFiltres").show();

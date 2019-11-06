@@ -15,7 +15,6 @@ import fr.poleemploi.perspectives.authentification.infra.autologin.AutologinServ
 import fr.poleemploi.perspectives.authentification.infra.peconnect.PEConnectAuthAdapter
 import fr.poleemploi.perspectives.authentification.infra.peconnect.jwt.PEConnectJWTAdapter
 import fr.poleemploi.perspectives.authentification.infra.peconnect.ws.PEConnectAuthWSAdapter
-import fr.poleemploi.perspectives.candidat.cv.infra.sql.CVSqlAdapter
 import fr.poleemploi.perspectives.candidat.localisation.infra.local.LocalisationLocalAdapter
 import fr.poleemploi.perspectives.candidat.localisation.infra.ws.{LocalisationWSAdapter, LocalisationWSMapping}
 import fr.poleemploi.perspectives.candidat.mrs.infra.local.{ReferentielHabiletesMRSLocalAdapter, ReferentielMRSLocalAdapter}
@@ -184,13 +183,6 @@ class InfraModule extends AbstractModule with ScalaModule {
     new PEConnectAdapter(
       peConnectWSAdapter = peConnectWSAdapter,
       peConnectSqlAdapter = peConnectSqlAdapter
-    )
-
-  @Provides
-  def csvSqlAdapter(database: Database): CVSqlAdapter =
-    new CVSqlAdapter(
-      database = database,
-      driver = PostgresDriver
     )
 
   @Provides

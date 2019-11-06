@@ -3,7 +3,7 @@ package fr.poleemploi.perspectives.candidat
 import java.time.LocalDate
 
 import fr.poleemploi.eventsourcing.{Aggregate, Event}
-import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, CVService}
+import fr.poleemploi.perspectives.candidat.cv.domain.CVId
 import fr.poleemploi.perspectives.candidat.localisation.domain.LocalisationService
 import fr.poleemploi.perspectives.candidat.mrs.domain.{MRSValidee, ReferentielHabiletesMRS}
 import fr.poleemploi.perspectives.candidat.state.{CandidatInscritState, CandidatState, NouveauCandidatState}
@@ -34,12 +34,6 @@ case class Candidat(id: CandidatId,
 
   def modifierDisponibilites(command: ModifierDisponibilitesCommand): List[Event] =
     behavior.modifierDisponibilites(context = state, command = command)
-
-  def ajouterCV(command: AjouterCVCommand, cvService: CVService): Future[List[Event]] =
-    behavior.ajouterCV(context = state, command = command, cvService = cvService)
-
-  def remplacerCV(command: RemplacerCVCommand, cvService: CVService): Future[List[Event]] =
-    behavior.remplacerCV(context = state, command = command, cvService = cvService)
 
   def ajouterMRSValidee(command: AjouterMRSValideesCommand, referentielHabiletesMRS: ReferentielHabiletesMRS): Future[List[Event]] =
     behavior.ajouterMRSValidee(context = state, command = command, referentielHabiletesMRS = referentielHabiletesMRS)

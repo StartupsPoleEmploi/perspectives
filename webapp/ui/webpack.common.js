@@ -3,7 +3,6 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 module.exports = {
     entry: {
-        candidatDepotCV: './src/pages/candidat/depotCV.js',
         candidatLanding: './src/pages/candidat/landing.js',
         candidatRechercheOffres: './src/pages/candidat/rechercheOffres.js',
         candidatSaisieCriteresRecherche: './src/pages/candidat/saisieCriteresRecherche.js',
