@@ -3,7 +3,6 @@ package fr.poleemploi.perspectives.candidat.state
 import fr.poleemploi.cqrs.command.Command
 import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.perspectives.candidat._
-import fr.poleemploi.perspectives.candidat.cv.domain.CVService
 import fr.poleemploi.perspectives.candidat.localisation.domain.LocalisationService
 import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielHabiletesMRS
 
@@ -28,12 +27,6 @@ trait CandidatState {
     default(context, command)
 
   def modifierProfil(context: CandidatContext, command: ModifierProfilCandidatCommand, localisationService: LocalisationService): Future[List[Event]] =
-    Future(default(context, command))
-
-  def ajouterCV(context: CandidatContext, command: AjouterCVCommand, cvService: CVService): Future[List[Event]] =
-    Future(default(context, command))
-
-  def remplacerCV(context: CandidatContext, command: RemplacerCVCommand, cvService: CVService): Future[List[Event]] =
     Future(default(context, command))
 
   def ajouterMRSValidee(context: CandidatContext, command: AjouterMRSValideesCommand, referentielHabiletesMRS: ReferentielHabiletesMRS): Future[List[Event]] =

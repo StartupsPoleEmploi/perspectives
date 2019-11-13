@@ -8,7 +8,6 @@ import fr.poleemploi.eventsourcing.eventstore.EventStore
 import fr.poleemploi.eventsourcing.snapshotstore.SnapshotStore
 import fr.poleemploi.eventsourcing.{AggregateRepository, Event}
 import fr.poleemploi.perspectives.candidat._
-import fr.poleemploi.perspectives.candidat.cv.domain.CVService
 import fr.poleemploi.perspectives.candidat.localisation.domain.LocalisationService
 import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielHabiletesMRS
 import fr.poleemploi.perspectives.commun.infra.play.http.HttpCommandHandler
@@ -44,7 +43,6 @@ class EventSourcingModule extends AbstractModule {
   @Provides
   @Singleton
   def candidatCommandHandler(candidatRepository: CandidatRepository,
-                             cvService: CVService,
                              referentielHabiletesMRS: ReferentielHabiletesMRS,
                              localisationService: LocalisationService): CandidatCommandHandler =
     new CandidatCommandHandler {
@@ -57,8 +55,6 @@ class EventSourcingModule extends AbstractModule {
         case command: ModifierProfilCandidatCommand => c => c.modifierProfil(command, localisationService)
         case command: ModifierCriteresRechercheCommand => c => Future(c.modifierCriteresRecherche(command))
         case command: ModifierDisponibilitesCommand => c => Future(c.modifierDisponibilites(command))
-        case command: AjouterCVCommand => c => c.ajouterCV(command, cvService)
-        case command: RemplacerCVCommand => c => c.remplacerCV(command, cvService)
         case command: AjouterMRSValideesCommand => c => c.ajouterMRSValidee(command, referentielHabiletesMRS)
         case command: DeclarerRepriseEmploiParConseillerCommand => c => Future(c.declarerRepriseEmploiParConseiller(command))
       }

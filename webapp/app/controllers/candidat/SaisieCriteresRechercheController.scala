@@ -73,10 +73,6 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
           val modifierCriteresCommand = buildModifierCandidatCommand(candidatAuthentifieRequest.candidatId, saisieCriteresRechercheForm)
 
           candidatCommandHandler.handle(modifierCriteresCommand).map(_ =>
-            if (saisieCriteresRechercheForm.nouveauCandidat)
-              Redirect(routes.CVController.index())
-                .flashing(messagesRequest.flash.withNouveauCandidat)
-            else
               Redirect(routes.RechercheOffreController.index(
                 codePostal = Some(modifierCriteresCommand.localisationRecherche.codePostal),
                 lieuTravail = Some(modifierCriteresCommand.localisationRecherche.commune),

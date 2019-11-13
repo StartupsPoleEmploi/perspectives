@@ -2,7 +2,6 @@ package fr.poleemploi.perspectives.candidat.state
 
 import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.perspectives.candidat._
-import fr.poleemploi.perspectives.candidat.cv.domain.CVService
 import fr.poleemploi.perspectives.candidat.localisation.domain.LocalisationService
 import fr.poleemploi.perspectives.candidat.mrs.domain.{MRSValidee, ReferentielHabiletesMRS}
 
@@ -33,7 +32,7 @@ object CandidatInscritState extends CandidatState {
   }
 
   override def autologger(context: CandidatContext,
-                         command: AutologgerCandidatCommand): List[Event] =
+                          command: AutologgerCandidatCommand): List[Event] =
     List(CandidatAutologgeEvent(command.id))
 
   override def modifierProfil(context: CandidatContext, command: ModifierProfilCandidatCommand, localisationService: LocalisationService): Future[List[Event]] = {
@@ -183,56 +182,10 @@ object CandidatInscritState extends CandidatState {
           emploiTrouveGracePerspectives = command.emploiTrouveGracePerspectives,
           prochaineDisponibilite = command.prochaineDisponibilite
         ))
-        else None
+      else None
 
     List(disponibilitesModifieesEvent).flatten
   }
-
-  override def ajouterCV(context: CandidatContext, command: AjouterCVCommand, cvService: CVService): Future[List[Event]] = {
-    require(context.cvId.isEmpty, s"Impossible d'ajouter un CV au candidat ${command.id.value}, il existe déjà")
-    require(context.nom.isDefined, "Impossible d'ajouter un CV à un candidat sans nom")
-    require(context.prenom.isDefined, "Impossible d'ajouter un CV à un candidat sans prénom")
-
-    val cvId = cvService.nextIdentity
-    cvService.save(
-      cvId = cvId,
-      candidatId = command.id,
-      nomFichier = buildNomCV(context).get,
-      typeMedia = command.typeMedia,
-      path = command.path
-    ).map(_ => List(
-      CVAjouteEvent(
-        candidatId = command.id,
-        cvId = cvId,
-        typeMedia = command.typeMedia
-      )
-    ))
-  }
-
-  override def remplacerCV(context: CandidatContext, command: RemplacerCVCommand, cvService: CVService): Future[List[Event]] = {
-    require(context.cvId.isDefined, s"Impossible de remplacer le CV inexistant du candidat ${command.id.value}")
-    require(context.nom.isDefined, "Impossible d'ajouter un CV à un candidat sans nom")
-    require(context.prenom.isDefined, "Impossible d'ajouter un CV à un candidat sans prénom")
-
-    cvService.update(
-      cvId = command.cvId,
-      nomFichier = buildNomCV(context).get,
-      typeMedia = command.typeMedia,
-      path = command.path
-    ).map(_ => List(
-      CVRemplaceEvent(
-        candidatId = command.id,
-        cvId = command.cvId,
-        typeMedia = command.typeMedia
-      )
-    ))
-  }
-
-  private def buildNomCV(context: CandidatContext): Option[String] =
-    for {
-      nom <- context.nom
-      prenom <- context.prenom
-    } yield s"${prenom.value} ${nom.value}"
 
   override def ajouterMRSValidee(context: CandidatContext,
                                  command: AjouterMRSValideesCommand,

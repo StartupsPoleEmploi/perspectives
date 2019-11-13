@@ -1,7 +1,6 @@
 package conf
 
 import com.google.inject._
-import fr.poleemploi.perspectives.candidat.cv.domain.CVService
 import fr.poleemploi.perspectives.offre.domain.ReferentielOffre
 import fr.poleemploi.perspectives.projections.candidat._
 import fr.poleemploi.perspectives.projections.candidat.infra.elasticsearch.CandidatProjectionElasticsearchQueryAdapter
@@ -29,12 +28,10 @@ class ProjectionsModule extends AbstractModule with ScalaModule {
   @Singleton
   def candidatQueryHandler(candidatProjectionQuery: CandidatProjectionQuery,
                            recruteurProjectionQuery: RecruteurProjectionQuery,
-                           cvService: CVService,
                            referentielOffre: ReferentielOffre): CandidatQueryHandler =
     new CandidatQueryHandler(
       candidatProjectionQuery = candidatProjectionQuery,
       recruteurProjectionQuery = recruteurProjectionQuery,
-      cvService = cvService,
       referentielOffre = referentielOffre
     )
 }

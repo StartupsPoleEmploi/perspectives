@@ -4,8 +4,6 @@ import candidat.activite.domain.{EmailingDisponibilitesService, ImportOffresGere
 import candidat.activite.infra.local.{LocalEmailingDisponibilitesService, LocalImportOffresGereesParRecruteurService, LocalImportOffresGereesParConseillerService}
 import candidat.activite.infra.mailjet.{MailjetEmailingDisponibilitesService, MailjetImportOffresGereesParRecruteurService, MailjetImportOffresGereesParConseillerService}
 import com.google.inject.{AbstractModule, Provider, Provides, Singleton}
-import fr.poleemploi.perspectives.candidat.cv.domain.CVService
-import fr.poleemploi.perspectives.candidat.cv.infra.sql.CVSqlAdapter
 import fr.poleemploi.perspectives.candidat.localisation.domain.LocalisationService
 import fr.poleemploi.perspectives.candidat.localisation.infra.local.LocalisationLocalAdapter
 import fr.poleemploi.perspectives.candidat.localisation.infra.ws.LocalisationWSAdapter
@@ -82,11 +80,6 @@ class ServicesModule extends AbstractModule {
       mailjetEmailingDisponibilitesService.get()
     else
       localEmailingDisponibilitesService.get()
-
-  @Provides
-  @Singleton
-  def cvService(csvSqlAdapter: CVSqlAdapter): CVService =
-    csvSqlAdapter
 
   // on met un fake referentiel offres car on ne s'en sert pas dans les batchs
   @Provides

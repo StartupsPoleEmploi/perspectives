@@ -1,21 +1,16 @@
 package controllers.recruteur
 
-import akka.stream.scaladsl.Source
-import akka.util.ByteString
 import authentification._
 import conf.WebAppConfig
 import controllers.AssetsFinder
 import controllers.FlashMessages._
-import fr.poleemploi.cqrs.projection.UnauthorizedQueryException
 import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite, Coordonnees}
 import fr.poleemploi.perspectives.projections.candidat._
-import fr.poleemploi.perspectives.projections.candidat.cv.CVCandidatPourRecruteurQuery
 import fr.poleemploi.perspectives.projections.recruteur._
 import fr.poleemploi.perspectives.recruteur._
 import fr.poleemploi.perspectives.rome.domain.ReferentielRome
 import javax.inject.{Inject, Singleton}
-import play.api.http.HttpEntity
 import play.api.libs.json.Json
 import play.api.mvc.{Action, _}
 import play.filters.csrf.CSRF
@@ -123,31 +118,6 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
       .getOrElse {
         recruteurQueryHandler.handle(TypeRecruteurQuery(request.recruteurId)).map(_.typeRecruteur.getOrElse(throw ProfilRecruteurIncompletException))
       }
-
-  def telechargerCV(candidatId: String, nomFichier: String): Action[AnyContent] = recruteurAuthentifieAction.async { implicit recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
-    candidatQueryHandler.handle(CVCandidatPourRecruteurQuery(
-      candidatId = CandidatId(candidatId),
-      recruteurId = recruteurAuthentifieRequest.recruteurId
-    )).map(cvCandidat => {
-      val source: Source[ByteString, _] = Source.fromIterator[ByteString](
-        () => Iterator.fill(1)(ByteString(cvCandidat.cv.data))
-      )
-
-      Result(
-        header = ResponseHeader(200, Map(
-          "Content-Disposition" -> "inline"
-        )),
-        body = HttpEntity.Streamed(
-          data = source,
-          contentLength = Some(cvCandidat.cv.data.length.toLong),
-          contentType = Some(cvCandidat.cv.typeMedia.value)
-        )
-      )
-    }).recover {
-      case _: UnauthorizedQueryException =>
-        Redirect(routes.LandingController.landing()).flashing(recruteurAuthentifieRequest.flash.withMessageErreur("Vous n'êtes pas autorisé à accéder à cette ressource"))
-    }
-  }
 }
 
 case object ProfilRecruteurIncompletException extends Exception
