@@ -6,7 +6,8 @@ import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
 import fr.poleemploi.perspectives.metier.domain.Metier
 
-case class MRSDHAEValideeProspectCandidat(peConnectId: PEConnectId,
+case class MRSDHAEValideeProspectCandidat(override val peConnectId: PEConnectId,
+                                          override val identifiantLocal: IdentifiantLocal,
                                           override val codeDepartement: CodeDepartement,
                                           override val dateEvaluation: LocalDate,
                                           override val nom: Nom,

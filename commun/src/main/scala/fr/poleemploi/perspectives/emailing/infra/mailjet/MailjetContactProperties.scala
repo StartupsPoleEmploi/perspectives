@@ -10,5 +10,7 @@ object MailjetContactProperties {
   val mrs_metier = "mrs_metier"
   val mrs_code_rome = "mrs_code_rome"
   val mrs_date = "mrs_date"
+  val id_peconnect = "id_peconnect"
+  val identifiant_local = "identifiant_local"
   val type_recruteur = "type_recruteur"
 }

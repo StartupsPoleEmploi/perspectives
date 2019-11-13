@@ -5,8 +5,9 @@ import java.time.format.DateTimeFormatter
 
 import fr.poleemploi.perspectives.authentification.infra.autologin.JwtToken
 import fr.poleemploi.perspectives.candidat.activite.domain.EmailingDisponibiliteCandidatAvecEmail
-import fr.poleemploi.perspectives.commun.domain._
-import fr.poleemploi.perspectives.emailing.domain.{CandidatInscrit, MRSValideeCandidat}
+import fr.poleemploi.perspectives.commun.domain.{CodeDepartement, _}
+import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
+import fr.poleemploi.perspectives.emailing.domain.{CandidatInscrit, MRSProspectCandidat, MRSValideeCandidat}
 import fr.poleemploi.perspectives.emailing.infra.ws.MailjetWSMapping._
 import fr.poleemploi.perspectives.metier.domain.Metier
 import org.mockito.Mockito.when
@@ -25,6 +26,7 @@ class MailjetWSMappingSpec extends WordSpec
 
   val templateId = 12345
   val baseUrl = "https://perspectives.pole-emploi.fr"
+  val idListe = 12345
 
   before {
     candidatInscrit = mock[CandidatInscrit]
@@ -85,6 +87,28 @@ class MailjetWSMappingSpec extends WordSpec
       ) mustBe true
     }
   }
+  "buildRequestImportProspectsCandidats" should {
+    "construire une requete avec l'identifiant PEConnect" in {
+      // Given
+      val prospect = mockMRSProspectCandidat
+
+      // When
+      val request = mapping.buildRequestImportProspectsCandidats(idListe, Stream(prospect))
+
+      // Then
+      (request.contacts.head.properties \ id_peconnect).as[String] mustBe prospect.peConnectId.value
+    }
+    "construire une requete avec l'identifiant local" in {
+      // Given
+      val prospect = mockMRSProspectCandidat
+
+      // When
+      val request = mapping.buildRequestImportProspectsCandidats(idListe, Stream(prospect))
+
+      // Then
+      (request.contacts.head.properties \ identifiant_local).as[String] mustBe prospect.identifiantLocal.value
+    }
+  }
   "buildRequestEmailDisponibiliteCandidat" should {
 
     "construire une requete avec l'id du template mailjet" in {
@@ -138,6 +162,23 @@ class MailjetWSMappingSpec extends WordSpec
       request.messages.head.variables.get(VAR_URL_FORMULAIRE_DISPO_CANDIDAT_EN_RECHERCHE) mustBe Some("https://perspectives.pole-emploi.fr/candidat/disponibilites?candidatEnRecherche=true&token=token")
       request.messages.head.variables.get(VAR_URL_FORMULAIRE_DISPO_CANDIDAT_PAS_EN_RECHERCHE) mustBe Some("https://perspectives.pole-emploi.fr/candidat/disponibilites?candidatEnRecherche=false&token=token")
     }
+  }
+
+  private def mockMRSProspectCandidat: MRSProspectCandidat = {
+    val prospect = mock[MRSProspectCandidat]
+    when(prospect.email) thenReturn Email("nom.prenom@mail.com")
+    when(prospect.nom) thenReturn Nom("Nom")
+    when(prospect.prenom) thenReturn Prenom("Prenom")
+    when(prospect.genre) thenReturn Genre.HOMME
+    when(prospect.codeDepartement) thenReturn CodeDepartement("69")
+    when(prospect.metier) thenReturn Metier(
+      codeROME = CodeROME("A1401"),
+      label = "Agriculteur"
+    )
+    when(prospect.dateEvaluation) thenReturn LocalDate.now()
+    when(prospect.peConnectId) thenReturn PEConnectId("28d0b75a-b694-4de3-8849-18bfbfebd729")
+    when(prospect.identifiantLocal) thenReturn IdentifiantLocal("0123456789A")
+    prospect
   }
 
   private def mockEmailingDisponibiliteCandidatAvecEmail: EmailingDisponibiliteCandidatAvecEmail = {
