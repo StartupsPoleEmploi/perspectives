@@ -31,7 +31,7 @@ class MRSValideeProspectCandidatCSVAdapter(val actorSystem: ActorSystem) {
       .via(CsvParsing.lineScanner(delimiter = ';'))
       .via(CsvToMap.toMapAsStrings())
       .filter(m =>
-        m.get("id_peconnect").exists(s => s.isEmpty || idPEConnectPattern.matcher(s).matches()) &&
+        m.get("id_peconnect").exists(s => idPEConnectPattern.matcher(s).matches()) &&
           m.get("identifiant_local").exists(s => identifiantLocalPattern.matcher(s).matches()) &&
           m.get("dc_nom").exists(_.nonEmpty) &&
           m.get("dc_prenom").exists(_.nonEmpty) &&
@@ -45,7 +45,7 @@ class MRSValideeProspectCandidatCSVAdapter(val actorSystem: ActorSystem) {
       )
       .map(data =>
         MRSValideeProspectCandidat(
-          peConnectId = data.get("id_peconnect").filterNot(_.isEmpty).map(PEConnectId),
+          peConnectId = PEConnectId(data("id_peconnect")),
           identifiantLocal = IdentifiantLocal(data("identifiant_local")),
           nom = Nom(data("dc_nom")),
           prenom = Prenom(data("dc_prenom")),

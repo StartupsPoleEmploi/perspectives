@@ -31,6 +31,20 @@ class MRSValideeProspectCandidatCSVAdapterSpec extends AsyncWordSpec
       // Then
       future map (s => s.isEmpty mustBe true)
     }
+    "ignorer la ligne si elle ne contient pas l'identifiant PEConnect" in {
+      // Given
+      val source = Source.single(
+        ByteString(
+          """id_peconnect;identifiant_local;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome
+            |;0123456789A;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle""".stripMargin)
+      )
+
+      // When
+      val future = adapter.load(source)
+
+      // Then
+      future.map(s => s.isEmpty mustBe true)
+    }
     "ignorer la ligne si elle contient un identifiant PEConnect invalide" in {
       // Given
       val source = Source.single(
@@ -227,20 +241,6 @@ class MRSValideeProspectCandidatCSVAdapterSpec extends AsyncWordSpec
       // Then
       future.map(s => s.size mustBe 1)
     }
-    "integrer la ligne lorsqu'elle ne contient pas d'identifiant PEConnect" in {
-      // Given
-      val source = Source.single(
-        ByteString(
-          """id_peconnect;identifiant_local;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome
-            |;0123456789A;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle""".stripMargin)
-      )
-
-      // When
-      val future = adapter.load(source)
-
-      // Then
-      future.map(s => { s.size mustBe 1;  s.toList.head.peConnectId mustBe None})
-    }
     "integrer l'identifiant PEConnect de la ligne" in {
       // Given
       val source = Source.single(
@@ -254,7 +254,7 @@ class MRSValideeProspectCandidatCSVAdapterSpec extends AsyncWordSpec
 
       // Then
       future.map(s => {
-        s.toList.head.peConnectId mustBe Some(PEConnectId("28d0b75a-b694-4de3-8849-18bfbfebd729"))
+        s.toList.head.peConnectId mustBe PEConnectId("28d0b75a-b694-4de3-8849-18bfbfebd729")
       })
     }
     "integrer l'identifiant local de la ligne" in {

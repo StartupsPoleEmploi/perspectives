@@ -12,6 +12,7 @@ import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
 import fr.poleemploi.perspectives.emailing.domain.MRSDHAEValideeProspectCandidat
 import fr.poleemploi.perspectives.metier.domain.Metier
+import fr.poleemploi.perspectives.emailing.infra.csv.identifiantLocalPattern
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -28,6 +29,7 @@ class MRSDHAEValideesCSVAdapter(val actorSystem: ActorSystem) {
       .via(CsvToMap.toMapAsStrings())
       .filter(
         m => m.get("dc_ididentiteexterne").exists(s => idPEConnectPattern.matcher(s).matches()) &&
+          m.get("dc_individu_local").exists(s => identifiantLocalPattern.matcher(s).matches()) &&
           m.get("dc_uniteprescriptrice").exists(s => sitePrescripteurPattern.matcher(s).matches()) &&
           m.get("dd_datedebutprestation").exists(_.nonEmpty) &&
           m.get("kc_action_prestation_id").contains("P50") &&
@@ -42,6 +44,7 @@ class MRSDHAEValideesCSVAdapter(val actorSystem: ActorSystem) {
       ).map(data =>
       MRSDHAEValideeProspectCandidat(
         peConnectId = PEConnectId(data("dc_ididentiteexterne")),
+        identifiantLocal = IdentifiantLocal(data("dc_individu_local")),
         codeDepartement = CodeDepartement(data("dc_codepostal").take(2)),
         dateEvaluation = data.get("dd_datedebutprestation").map(s => LocalDate.parse(s.take(10), dateTimeFormatter)).get,
         nom = Nom(data("dc_nom")),
