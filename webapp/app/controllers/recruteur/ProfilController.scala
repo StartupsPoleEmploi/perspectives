@@ -12,6 +12,7 @@ import play.api.Logging
 import play.api.libs.json.Json
 import play.api.mvc._
 import play.filters.csrf.CSRF
+import tracking.TrackingService
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -41,6 +42,10 @@ class ProfilController @Inject()(components: ControllerComponents,
             "profilFormData" -> form.value,
             "csrfToken" -> CSRF.getToken.map(_.value),
             "algoliaPlacesConfig" -> webAppConfig.algoliaPlacesConfig
+          ),
+          gtmDataLayer = TrackingService.buildTrackingRecruteur(
+            optRecruteurAuthentifie = Some(recruteurAuthentifieRequest.recruteurAuthentifie),
+            flash = Some(messagesRequest.flash)
           )
         ))
       }
@@ -57,7 +62,8 @@ class ProfilController @Inject()(components: ControllerComponents,
               "profilFormErrors" -> formWithErrors.errorsAsJson,
               "profilFormData" -> formWithErrors.data,
               "algoliaPlacesConfig" -> webAppConfig.algoliaPlacesConfig
-            )
+            ),
+            gtmDataLayer = TrackingService.buildTrackingRecruteur(Some(recruteurAuthentifieRequest.recruteurAuthentifie))
           ))),
         profilForm => {
           val command = ModifierProfilCommand(

@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Temoignages from '../../composants/Temoignages.vue';
 import Places from '../../composants/Places.vue';
 import rayonsRechercheOffres from "../../domain/offre/rayonRecherche";
+import tracking from '../../commun/tracking';
 
 new Vue({
     el: '#landingCandidat',
@@ -38,6 +39,9 @@ new Vue({
             }
         }
     },
+    created: function() {
+        tracking.trackCommonActions();
+    },
     methods: {
         placesChange: function(suggestion) {
             this.rechercheOffresFormData.codePostal = suggestion.postcode;
@@ -54,6 +58,12 @@ new Vue({
             }
 
             if (this.rechercheOffresFormErrors.length === 0) {
+                tracking.sendEvent(tracking.Events.CANDIDAT_RECHERCHE_OFFRE, {
+                    'code_postal': this.rechercheOffresFormData.codePostal,
+                    'lieu_recherche': this.rechercheOffresFormData.lieuTravail,
+                    'rayon_recherche': this.rechercheOffresFormData.rayonRecherche
+                });
+
                 var params = [];
                 params.push('codePostal=' + this.rechercheOffresFormData.codePostal);
                 params.push('lieuTravail=' + this.rechercheOffresFormData.lieuTravail);

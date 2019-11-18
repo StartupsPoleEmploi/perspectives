@@ -4,6 +4,7 @@ import authentification.{OptionalCandidatAuthentifieAction, OptionalCandidatAuth
 import conf.WebAppConfig
 import javax.inject._
 import play.api.mvc._
+import tracking.TrackingService
 
 import scala.concurrent.ExecutionContext
 
@@ -18,7 +19,11 @@ class InfosLegalesController @Inject()(cc: ControllerComponents,
     optionalCandidatAuthentifieAction { implicit optionalCandidatAuthentifieRequest: OptionalCandidatAuthentifieRequest[AnyContent] =>
       Ok(views.html.infosLegales(
         candidatAuthentifie = optionalCandidatAuthentifieRequest.candidatAuthentifie,
-        recruteurAuthentifie = optionalRecruteurAuthentifieRequest.recruteurAuthentifie
+        recruteurAuthentifie = optionalRecruteurAuthentifieRequest.recruteurAuthentifie,
+        gtmDataLayer = TrackingService.buildTrackingCommun(
+          optCandidatAuthentifie = optionalCandidatAuthentifieRequest.candidatAuthentifie,
+          optRecruteurAuthentifie = optionalRecruteurAuthentifieRequest.recruteurAuthentifie
+        )
       ))
     }(optionalRecruteurAuthentifieRequest)
   }

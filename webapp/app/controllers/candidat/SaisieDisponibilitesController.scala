@@ -4,7 +4,6 @@ import java.time.LocalDate
 
 import authentification._
 import conf.WebAppConfig
-import controllers.FlashMessages._
 import controllers.{AssetsFinder, FormHelpers}
 import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.commun.infra.play.http.HttpCommandHandler
@@ -14,6 +13,7 @@ import javax.inject.Inject
 import play.api.libs.json.Json
 import play.api.mvc._
 import play.filters.csrf.CSRF
+import tracking.TrackingService
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -46,6 +46,10 @@ class SaisieDisponibilitesController @Inject()(components: ControllerComponents,
           jsData = Json.obj(
             "csrfToken" -> CSRF.getToken.map(_.value),
             "disponibilitesFormData" -> form.value
+          ),
+          gtmDataLayer = TrackingService.buildTrackingCandidat(
+            optCandidatAuthentifie = Some(candidatAuthentifieRequest.candidatAuthentifie),
+            flash = Some(messagesRequest.flash)
           )
         ))
       }

@@ -7,6 +7,7 @@ import Places from '../../composants/Places.vue';
 import PostulerOffre from '../../composants/PostulerOffre.vue';
 import rayonsRechercheOffre from "../../domain/offre/rayonRecherche";
 import typesContrats from '../../domain/offre/typesContrats.js';
+import tracking from '../../commun/tracking';
 
 new Vue({
     el: '#rechercheOffres',
@@ -64,6 +65,7 @@ new Vue({
         }
     },
     created: function() {
+        tracking.trackCommonActions();
         if (!this.rechercheFormData.localisation.rayonRecherche) {
             this.rechercheFormData.localisation.rayonRecherche = 0;
         }
@@ -78,6 +80,8 @@ new Vue({
         }).on('hide.bs.modal', function () {
             self.display.modaleDetailOffre = false;
             window.location = '#';
+
+            tracking.sendEvent(tracking.Events.CANDIDAT_FERMETURE_DETAIL_OFFRE, self.contexteOffreCourante());
         });
         window.onpopstate = function (event) {
             if (self.display.modaleDetailOffre && window.location.href.endsWith('#')) {
@@ -126,6 +130,10 @@ new Vue({
             } else {
                 this.indexPaginationOffre = index;
                 this.$refs.pagination.pageChargee(index);
+
+                tracking.sendEvent(tracking.Events.CANDIDAT_AFFICHAGE_RESULTATS_RECHERCHE_OFFRE, {
+                    'page_courante': index
+                });
             }
         },
         cssTypeContrat: function (offre) {
@@ -146,6 +154,10 @@ new Vue({
             this.offreCourante = offre;
             this.indexNavigationOffre = index;
 
+            tracking.sendEvent(tracking.Events.CANDIDAT_AFFICHAGE_DETAIL_OFFRE, Object.assign({
+                'source': 'liste'
+            }, this.contexteOffreCourante()));
+
             $('#detailOffre').modal('show');
         },
         afficherOffreSuivante: function () {
@@ -161,11 +173,13 @@ new Vue({
             } else {
                 this.offreCourante = this.offres[this.indexNavigationOffre];
             }
+            this.trackerOffreSuivante();
         },
         afficherOffrePrecedente: function () {
             this.display.contact = false;
             this.indexNavigationOffre = this.indexNavigationOffre - 1;
             this.offreCourante = this.offres[this.indexNavigationOffre];
+            this.trackerOffrePrecedente();
         },
         doitAfficherMiseEnAvantInscription: function () {
             return !this.isCandidatAuthentifie;
@@ -205,6 +219,15 @@ new Vue({
                 formData.push({name: "page.fin", value: pageSuivante.fin});
             }
 
+            tracking.sendEvent(tracking.Events.CANDIDAT_RECHERCHE_OFFRE, {
+                'code_postal': this.rechercheFormData.localisation ? this.rechercheFormData.localisation.codePostal : '',
+                'lieu_recherche': this.rechercheFormData.localisation ? this.rechercheFormData.localisation.lieuTravail : '',
+                'rayon_recherche': this.rechercheFormData.localisation ? this.rechercheFormData.localisation.rayonRecherche : '',
+                'types_contrat': this.rechercheFormData.typesContrats,
+                'metiers': this.rechercheFormData.metiers,
+                'mots_cles': this.rechercheFormData.motsCles
+            });
+
             return $.ajax({
                 type: "POST",
                 url: "/candidat/offres",
@@ -220,6 +243,10 @@ new Vue({
                 self.cacherFiltres();
                 self.display.erreurRecherche = false;
                 self.nettoyerErreursForm();
+
+                tracking.sendEvent(tracking.Events.CANDIDAT_AFFICHAGE_RESULTATS_RECHERCHE_OFFRE, {
+                    'page_courante': index
+                });
             }).fail(function (jqXHR) {
                 self.offres = [];
                 if (jqXHR.status === 400) {
@@ -231,6 +258,31 @@ new Vue({
             }).always(function () {
                 self.display.chargement = false;
             });
+        },
+        afficherContact: function() {
+            this.display.contact = true;
+            tracking.sendEvent(tracking.Events.CANDIDAT_CLIC_BTN_CONTACT_RECRUTEUR, this.contexteOffreCourante());
+        },
+        voirOffreSurPoleEmploi: function() {
+            tracking.sendEvent(tracking.Events.CANDIDAT_CLIC_BTN_VOIR_OFFRE_SUR_POLE_EMPLOI, this.contexteOffreCourante());
+        },
+        trackerOffreSuivante: function() {
+            tracking.sendEvent(tracking.Events.CANDIDAT_AFFICHAGE_DETAIL_OFFRE, Object.assign({
+                'source': 'clic_btn_suivant'
+            }, this.contexteOffreCourante()));
+        },
+        trackerOffrePrecedente: function() {
+            tracking.sendEvent(tracking.Events.CANDIDAT_AFFICHAGE_DETAIL_OFFRE, Object.assign({
+                'source': 'clic_btn_precedent'
+            }, this.contexteOffreCourante()));
+        },
+        contexteOffreCourante: function() {
+            return {
+                'offre_id': this.offreCourante.id,
+                'code_rome': this.offreCourante.codeROME,
+                'code_postal': this.offreCourante.lieuTravail ? this.offreCourante.lieuTravail.codePostal : '',
+                'localisation': this.offreCourante.lieuTravail ? this.offreCourante.lieuTravail.libelle : ''
+            }
         }
     }
 });

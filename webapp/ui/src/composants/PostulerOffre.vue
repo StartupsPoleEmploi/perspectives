@@ -10,7 +10,9 @@
                     v-on:click="afficherContact()">Je contacte le recruteur
             </button>
             <a target="_blank" class="bouton bouton-action bouton--blancSurVert w-100 gtm-candidat-detail-postuler"
-               v-show="doitAfficherLienOrigineOffre()" v-bind:href="urlOrigine">
+               v-show="doitAfficherLienOrigineOffre()"
+               v-bind:href="urlOrigine"
+               v-on:click="voirOffreSurPoleEmploi()">
                 Voir l'offre sur Pôle Emploi
             </a>
             <div class="bg-vert-emeraude-light p-3 border-radius-sm texte-noir font-size-sm" v-show="doitAfficherContact && !doitAfficherLienOrigineOffre()">
@@ -64,6 +66,9 @@
             },
             afficherContact: function () {
                 this.$emit('afficher-contact');
+            },
+            voirOffreSurPoleEmploi: function() {
+                this.$emit('voir-offre-sur-pole-emploi');
             }
         }
     }

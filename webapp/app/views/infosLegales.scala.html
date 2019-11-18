@@ -1,9 +1,11 @@
 @import conf.WebAppConfig
 @import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
 @import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
+@import play.api.libs.json.JsArray
 
 @(candidatAuthentifie: Option[CandidatAuthentifie],
-        recruteurAuthentifie: Option[RecruteurAuthentifie])(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
+        recruteurAuthentifie: Option[RecruteurAuthentifie],
+        gtmDataLayer: JsArray)(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
 @views.html.layout(
     menuNavigation = views.html.commun.navigation(
@@ -12,7 +14,8 @@
         theme = candidatAuthentifie.map(_ => "themeCandidat")
                 .orElse(recruteurAuthentifie.map(r => "themRecruteur"))
     ),
-    cssFooter = Some("bg-gris-light")
+    cssFooter = Some("bg-gris-light"),
+    gtmDataLayer = Some(gtmDataLayer)
 ) {
     <div id="infosLegales" class="bg-gris-light" v-cloak>
         <div class="container py-md-5 py-2">

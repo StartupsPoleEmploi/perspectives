@@ -9,6 +9,7 @@ import javax.inject.Inject
 import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
+import controllers.FlashMessages._
 
 object SessionCandidatAutologge {
 
@@ -43,7 +44,7 @@ trait AutologinCandidat {
       block(CandidatAuthentifieRequest(candidatAutologge.candidatAuthentifie, request))
         .map { r =>
           val session = SessionCandidatAutologge.setAutologinToken(candidatAutologge.autologinToken, SessionCandidatAuthentifie.set(candidatAutologge.candidatAuthentifie, r.session(request)))
-          Some(r.withSession(session))
+          Some(r.withSession(session).flashing(request.flash.withCandidatAutologue))
         }
     ).getOrElse(Future(None)))
 
@@ -61,7 +62,8 @@ trait AutologinCandidat {
         candidatAuthentifie = CandidatAuthentifie(
           candidatId = candidatId,
           nom = autologinToken.nom,
-          prenom = autologinToken.prenom
+          prenom = autologinToken.prenom,
+          email = autologinToken.email
         ),
         autologinToken = JwtToken(token)
       ))).recover { case t: Throwable =>

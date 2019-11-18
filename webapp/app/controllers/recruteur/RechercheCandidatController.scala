@@ -14,6 +14,7 @@ import javax.inject.{Inject, Singleton}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, _}
 import play.filters.csrf.CSRF
+import tracking.TrackingService
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -64,6 +65,10 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
             "nbCandidatsParPage" -> query.nbCandidatsParPage,
             "csrfToken" -> CSRF.getToken.map(_.value),
             "algoliaPlacesConfig" -> webAppConfig.algoliaPlacesConfig
+          ),
+          gtmDataLayer = TrackingService.buildTrackingRecruteur(
+            optRecruteurAuthentifie = Some(recruteurAuthentifieRequest.recruteurAuthentifie),
+            flash = Some(messagesRequest.flash)
           )
         ))
       }).recover {

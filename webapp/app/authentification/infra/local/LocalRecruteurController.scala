@@ -32,7 +32,9 @@ class LocalRecruteurController @Inject()(cc: ControllerComponents,
         recruteurId = command.id,
         nom = command.nom,
         prenom = command.prenom,
-        certifie = true
+        certifie = true,
+        email = command.email,
+        typeRecruteur = None
       )
       Redirect(routes.ProfilController.modificationProfil())
         .withSession(SessionRecruteurAuthentifie.set(recruteurAuthentifie, request.session))
@@ -43,5 +45,6 @@ class LocalRecruteurController @Inject()(cc: ControllerComponents,
   def deconnexion: Action[AnyContent] = recruteurAuthentifieAction { implicit request =>
     Redirect(routes.LandingController.landing())
       .withSession(SessionRecruteurAuthentifie.remove(request.session))
+      .flashing(request.flash.withRecruteurDeconnecte)
   }
 }

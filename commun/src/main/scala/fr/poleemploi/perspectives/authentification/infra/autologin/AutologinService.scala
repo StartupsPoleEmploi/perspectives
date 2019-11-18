@@ -4,7 +4,7 @@ import java.time.Clock
 import java.util.UUID
 
 import fr.poleemploi.perspectives.candidat.CandidatId
-import fr.poleemploi.perspectives.commun.domain.{Nom, Prenom}
+import fr.poleemploi.perspectives.commun.domain.{Email, Nom, Prenom}
 import fr.poleemploi.perspectives.recruteur.RecruteurId
 import pdi.jwt.{JwtAlgorithm, JwtClaim, JwtJson}
 import play.api.libs.json.{JsError, JsObject, JsSuccess, Json}
@@ -20,13 +20,15 @@ class AutologinService(autologinConfig: AutologinConfig) {
 
   def genererTokenCandidat(candidatId: CandidatId,
                            nom: Nom,
-                           prenom: Prenom): JwtToken =
-    genererToken(candidatId.value, nom, prenom)
+                           prenom: Prenom,
+                           email: Email): JwtToken =
+    genererToken(candidatId.value, nom, prenom, email)
 
   def genererTokenRecruteur(recruteurId: RecruteurId,
                             nom: Nom,
-                            prenom: Prenom): JwtToken =
-    genererToken(recruteurId.value, nom, prenom, isCandidat = false)
+                            prenom: Prenom,
+                            email: Email): JwtToken =
+    genererToken(recruteurId.value, nom, prenom, email, isCandidat = false)
 
   def extractAutologinToken(token: String): Try[AutologinToken] =
     JwtJson.decodeJson(token = token, key = autologinConfig.secretKey, algorithms = Seq(ALGORITHM)).flatMap { decodedClaim =>
@@ -39,6 +41,7 @@ class AutologinService(autologinConfig: AutologinConfig) {
   private def genererToken(identifiant: String,
                            nom: Nom,
                            prenom: Prenom,
+                           email: Email,
                            isCandidat: Boolean = true): JwtToken = {
     import pdi.jwt.JwtJson._
 
@@ -46,6 +49,7 @@ class AutologinService(autologinConfig: AutologinConfig) {
       identifiant = identifiant,
       nom = nom,
       prenom = prenom,
+      email = Some(email),
       typeUtilisateur = if (isCandidat) TypeUtilisateur.CANDIDAT else TypeUtilisateur.RECRUTEUR
     )
     val jwtClaim = JwtClaim()

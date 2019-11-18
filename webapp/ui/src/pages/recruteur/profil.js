@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Places from '../../composants/Places.vue';
+import tracking from '../../commun/tracking';
 
 new Vue({
     el: '#profilRecruteur',
@@ -42,6 +43,7 @@ new Vue({
         }
     },
     created: function() {
+        tracking.trackCommonActions();
         // FIXME : Lien entre back et front : le back renvoit la key en string plutot qu'en json (fix à faire cote back)
         if (jsData.profilFormData.hasOwnProperty('adresse.codePostal')) {
             this.profilFormData.adresse.codePostal = jsData.profilFormData['adresse.codePostal'];
@@ -88,6 +90,9 @@ new Vue({
             }
 
             if (!erreur) {
+                tracking.sendEvent(tracking.Events.RECRUTEUR_PROFIL_MODIFIE, {
+                    'is_creation': this.profilFormData.nouveauRecruteur
+                });
                 document.querySelector('#profilForm').submit();
             }
         }

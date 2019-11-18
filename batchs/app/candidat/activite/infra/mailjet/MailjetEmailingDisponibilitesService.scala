@@ -70,7 +70,7 @@ class MailjetEmailingDisponibilitesService(actorSystem: ActorSystem,
         nom = c.nom,
         prenom = c.prenom,
         email = c2.email,
-        autologinToken = autologinService.genererTokenCandidat(c.candidatId, c.nom, c.prenom)
+        autologinToken = autologinService.genererTokenCandidat(c.candidatId, c.nom, c.prenom, c2.email)
       ))
     )
 

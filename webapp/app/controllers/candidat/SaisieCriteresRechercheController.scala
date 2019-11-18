@@ -13,6 +13,7 @@ import javax.inject.Inject
 import play.api.libs.json.Json
 import play.api.mvc.{Action, _}
 import play.filters.csrf.CSRF
+import tracking.TrackingService
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -46,6 +47,10 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
             "criteresRechercheFormData" -> form.value,
             "csrfToken" -> CSRF.getToken.map(_.value),
             "algoliaPlacesConfig" -> webAppConfig.algoliaPlacesConfig
+          ),
+          gtmDataLayer = TrackingService.buildTrackingCandidat(
+            optCandidatAuthentifie = Some(candidatAuthentifieRequest.candidatAuthentifie),
+            flash = Some(messagesRequest.flash)
           )
         ))
       }
@@ -67,17 +72,18 @@ class SaisieCriteresRechercheController @Inject()(components: ControllerComponen
                 "secteursActivites" -> secteursActivitesQueryResult.secteursActivites,
                 "criteresRechercheFormErrors" -> formWithErrors.errorsAsJson,
                 "algoliaPlacesConfig" -> webAppConfig.algoliaPlacesConfig
-              )
+              ),
+              gtmDataLayer = TrackingService.buildTrackingCandidat(Some(candidatAuthentifieRequest.candidatAuthentifie))
             )),
         saisieCriteresRechercheForm => {
           val modifierCriteresCommand = buildModifierCandidatCommand(candidatAuthentifieRequest.candidatId, saisieCriteresRechercheForm)
 
           candidatCommandHandler.handle(modifierCriteresCommand).map(_ =>
-              Redirect(routes.RechercheOffreController.index(
-                codePostal = Some(modifierCriteresCommand.localisationRecherche.codePostal),
-                lieuTravail = Some(modifierCriteresCommand.localisationRecherche.commune),
-                rayonRecherche = modifierCriteresCommand.localisationRecherche.rayonRecherche.map(_.value)
-              ))
+            Redirect(routes.RechercheOffreController.index(
+              codePostal = Some(modifierCriteresCommand.localisationRecherche.codePostal),
+              lieuTravail = Some(modifierCriteresCommand.localisationRecherche.commune),
+              rayonRecherche = modifierCriteresCommand.localisationRecherche.rayonRecherche.map(_.value)
+            ))
           )
         })
     }(candidatAuthentifieRequest)

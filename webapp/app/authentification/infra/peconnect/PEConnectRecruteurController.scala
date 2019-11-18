@@ -69,17 +69,19 @@ class PEConnectRecruteurController @Inject()(cc: ControllerComponents,
             recruteurId = recruteurId,
             nom = recruteurInfos.nom,
             prenom = recruteurInfos.prenom,
-            certifie = recruteurInfos.certifie
+            certifie = recruteurInfos.certifie,
+            email = recruteurInfos.email,
+            typeRecruteur = optProfilRecruteur.flatMap(_.typeRecruteur)
           )
           val session = SessionRecruteurPEConnect.setJWTToken(accessTokenResponse.idToken, SessionRecruteurAuthentifie.set(recruteurAuthentifie, SessionOauthTokensRecruteur.removeOauthTokensRecruteur(request.session)))
 
           if (optProfilRecruteur.exists(_.profilComplet))
             SessionUtilisateurNonAuthentifie.getUriConnexion(request.session)
-              .map(uri => Redirect(uri).withSession(SessionUtilisateurNonAuthentifie.remove(session)))
-              .getOrElse(Redirect(controllers.recruteur.routes.RechercheCandidatController.rechercherCandidats()).withSession(session))
+              .map(uri => Redirect(uri).withSession(SessionUtilisateurNonAuthentifie.remove(session)).flashing(request.flash.withRecruteurConnecte))
+              .getOrElse(Redirect(controllers.recruteur.routes.RechercheCandidatController.rechercherCandidats()).withSession(session).flashing(request.flash.withRecruteurConnecte))
           else if (optProfilRecruteur.isDefined)
             Redirect(controllers.recruteur.routes.ProfilController.modificationProfil()).withSession(session)
-              .flashing(request.flash.withMessageAlerte("Veuillez finaliser la saisie de votre profil"))
+              .flashing(request.flash.withMessageAlerte("Veuillez finaliser la saisie de votre profil").withRecruteurConnecte)
           else
             Redirect(controllers.recruteur.routes.ProfilController.modificationProfil()).withSession(session)
               .flashing(request.flash.withRecruteurInscrit)
@@ -105,7 +107,7 @@ class PEConnectRecruteurController @Inject()(cc: ControllerComponents,
       // Nettoyage de session et redirect
       Future(Redirect(controllers.recruteur.routes.LandingController.landing()).withSession(
         SessionRecruteurAuthentifie.remove(SessionRecruteurPEConnect.remove(recruteurAuthentifiePEConnectRequest.session))
-      ))
+      ).flashing(recruteurAuthentifieRequest.flash.withRecruteurDeconnecte))
     }(recruteurAuthentifieRequest)
   }
 

@@ -4,7 +4,7 @@ import java.time.Clock
 
 import fr.poleemploi.perspectives.authentification.infra.autologin.AutologinService.ALGORITHM
 import fr.poleemploi.perspectives.candidat.CandidatId
-import fr.poleemploi.perspectives.commun.domain.{Nom, Prenom}
+import fr.poleemploi.perspectives.commun.domain.{Email, Nom, Prenom}
 import fr.poleemploi.perspectives.recruteur.RecruteurId
 import org.mockito.Mockito.when
 import org.scalatest.concurrent.ScalaFutures
@@ -39,8 +39,9 @@ class AutologinServiceSpec extends WordSpec
       // Given
       val prenom = "Marcel"
       val nom = "Patulacci"
+      val email = "marcel.patulacci@perspectives.fr"
       val identifiant = "123456"
-      val jwtToken = autologinService.genererTokenCandidat(CandidatId(identifiant), Nom(nom), Prenom(prenom)).value
+      val jwtToken = autologinService.genererTokenCandidat(CandidatId(identifiant), Nom(nom), Prenom(prenom), Email(email)).value
 
       // When
       val jwtClaim = JwtJson.decode(token = jwtToken, key = secretKey, algorithms = Seq(ALGORITHM))
@@ -63,8 +64,9 @@ class AutologinServiceSpec extends WordSpec
       // Given
       val prenom = "Marcel"
       val nom = "Patulacci"
+      val email = "marcel.patulacci@perspectives.fr"
       val identifiant = "123456"
-      val jwtToken = autologinService.genererTokenRecruteur(RecruteurId(identifiant), Nom(nom), Prenom(prenom)).value
+      val jwtToken = autologinService.genererTokenRecruteur(RecruteurId(identifiant), Nom(nom), Prenom(prenom), Email(email)).value
 
       // When
       val jwtClaim = JwtJson.decode(token = jwtToken, key = secretKey, algorithms = Seq(ALGORITHM))
@@ -95,8 +97,9 @@ class AutologinServiceSpec extends WordSpec
       // Given
       val prenom = "Marcel"
       val nom = "Patulacci"
+      val email = "marcel.patulacci@perspectives.fr"
       val identifiant = "123456"
-      val jwtToken = autologinService.genererTokenCandidat(CandidatId(identifiant), Nom(nom), Prenom(prenom)).value
+      val jwtToken = autologinService.genererTokenCandidat(CandidatId(identifiant), Nom(nom), Prenom(prenom), Email(email)).value
       when(autologinConfig.secretKey).thenReturn("another-secret-key")
 
       // When
@@ -110,9 +113,10 @@ class AutologinServiceSpec extends WordSpec
       // Given
       val prenom = "Marcel"
       val nom = "Patulacci"
+      val email = "marcel.patulacci@perspectives.fr"
       val identifiant = "123456"
       when(autologinConfig.expirationInSeconds).thenReturn(0)
-      val jwtToken = autologinService.genererTokenCandidat(CandidatId(identifiant), Nom(nom), Prenom(prenom)).value
+      val jwtToken = autologinService.genererTokenCandidat(CandidatId(identifiant), Nom(nom), Prenom(prenom), Email(email)).value
 
       // When
       val autologinToken = autologinService.extractAutologinToken(jwtToken)
@@ -125,8 +129,9 @@ class AutologinServiceSpec extends WordSpec
       // Given
       val prenom = "Marcel"
       val nom = "Patulacci"
+      val email = "marcel.patulacci@perspectives.fr"
       val identifiant = "123456"
-      val jwtToken = autologinService.genererTokenCandidat(CandidatId(identifiant), Nom(nom), Prenom(prenom)).value
+      val jwtToken = autologinService.genererTokenCandidat(CandidatId(identifiant), Nom(nom), Prenom(prenom), Email(email)).value
 
       // When
       val autologinToken = autologinService.extractAutologinToken(jwtToken)

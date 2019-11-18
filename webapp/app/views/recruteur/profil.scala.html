@@ -1,11 +1,12 @@
 @import conf.WebAppConfig
 @import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
-@import play.api.libs.json.JsObject
+@import play.api.libs.json.{JsObject, JsArray}
 
 @(recruteurAuthentifie: RecruteurAuthentifie,
-        jsData: JsObject)(implicit request: MessagesRequestHeader, flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
+        jsData: JsObject,
+        gtmDataLayer: JsArray)(implicit request: MessagesRequestHeader, flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
-@layout(recruteurAuthentifie = Some(recruteurAuthentifie), cssFooter = Some("bg-violet-light")) {
+@layout(recruteurAuthentifie = Some(recruteurAuthentifie), cssFooter = Some("bg-violet-light"), gtmDataLayer = Some(gtmDataLayer)) {
 <div id="profilRecruteur" class="bg-violet-light" v-cloak>
     <section class="container py-md-5 py-2">
         <div class="row justify-content-center">

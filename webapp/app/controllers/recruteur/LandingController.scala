@@ -5,6 +5,7 @@ import conf.WebAppConfig
 import controllers.AssetsFinder
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
+import tracking.TrackingService
 
 import scala.concurrent.ExecutionContext
 
@@ -22,7 +23,12 @@ class LandingController @Inject()(cc: ControllerComponents,
       else if (optionalCandidatAuthentifieRequest.isCandidatAuthentifie)
         Redirect(controllers.candidat.routes.RechercheOffreController.index())
       else
-        Ok(views.html.recruteur.landing())
+        Ok(views.html.recruteur.landing(
+          gtmDataLayer = TrackingService.buildTrackingRecruteur(
+            optRecruteurAuthentifie = None,
+            flash = Some(optionalRecruteurAuthentifieRequest.flash)
+          )
+        ))
     }(optionalCandidatAuthentifieRequest)
   }
 }

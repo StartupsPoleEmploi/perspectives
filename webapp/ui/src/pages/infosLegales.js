@@ -1,4 +1,5 @@
 import Vue from "vue";
+import tracking from '../commun/tracking';
 
 new Vue({
     el: '#infosLegales',
@@ -35,6 +36,7 @@ new Vue({
         }
     },
     created: function () {
+        tracking.trackCommonActions();
         location.hash === '#creditsPhotos' ? this.display.menu = 'creditsPhotos' : this.display.menu = 'cgu';
     }
 });

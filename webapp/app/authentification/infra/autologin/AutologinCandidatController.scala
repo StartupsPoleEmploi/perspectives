@@ -2,9 +2,10 @@ package authentification.infra.autologin
 
 import authentification._
 import conf.WebAppConfig
+import controllers.FlashMessages._
 import fr.poleemploi.perspectives.authentification.infra.autologin.AutologinService
 import fr.poleemploi.perspectives.candidat.CandidatId
-import fr.poleemploi.perspectives.commun.domain.{Nom, Prenom}
+import fr.poleemploi.perspectives.commun.domain.{Email, Nom, Prenom}
 import javax.inject.{Inject, Singleton}
 import play.api.Logging
 import play.api.libs.json.Json
@@ -24,7 +25,7 @@ class AutologinCandidatController @Inject()(cc: ControllerComponents,
   def deconnexion: Action[AnyContent] = candidatAutologgeAction.async { candidatAutologgeRequest: CandidatAutologgeRequest[AnyContent] =>
     Future(Redirect(controllers.candidat.routes.LandingController.landing()).withSession(
       SessionCandidatAuthentifie.remove(SessionCandidatAutologge.remove(candidatAutologgeRequest.session))
-    ))
+    ).flashing(candidatAutologgeRequest.flash.withCandidatDeconnecte))
   }
 
   def genererTokenAutologin: Action[AnyContent] = conseillerAdminAuthentifieAction.async { conseillerRequest: ConseillerAuthentifieRequest[AnyContent] =>
@@ -32,7 +33,7 @@ class AutologinCandidatController @Inject()(cc: ControllerComponents,
       GenererCandidatAutologinTokenForm.form.bindFromRequest.fold(
         formWithErrors => Future.successful(BadRequest(formWithErrors.errorsAsJson)),
         form => {
-          val token = autologinService.genererTokenCandidat(CandidatId(form.candidatId), Nom(form.nom), Prenom(form.prenom))
+          val token = autologinService.genererTokenCandidat(CandidatId(form.candidatId), Nom(form.nom), Prenom(form.prenom), Email(form.email))
           Future(Ok(Json.obj("token" -> token.value)))
         }
       )
