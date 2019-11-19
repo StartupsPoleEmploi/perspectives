@@ -1,7 +1,8 @@
 <template>
     <input v-bind:id="id" type="text" v-bind:class="[options.style ? 'ap-input' : 'ap-nostyle-input']"
            v-bind:value="value"
-           v-on:input="$emit('input', $event.target.value)"/>
+           v-on:input="$emit('input', $event.target.value)"
+           autocomplete="disabled"/>
 </template>
 
 <script>
