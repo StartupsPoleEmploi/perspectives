@@ -5,6 +5,8 @@ object CandidatProjectionElasticsearchMapping {
   val docType = "_doc"
 
   val candidat_id = "candidat_id"
+  val peconnect_id = "peconnect_id"
+  val identifiant_local = "identifiant_local"
   val nom = "nom"
   val prenom = "prenom"
   val genre = "genre"

@@ -17,6 +17,7 @@ class BatchsConfig(configuration: Configuration) {
   val usePEConnect: Boolean = configuration.getOptional[Boolean]("usePEConnect").getOrElse(true)
   val useImportHabiletesMRS: Boolean = configuration.getOptional[Boolean]("useImportHabiletesMRS").getOrElse(true)
   val useLocalisation: Boolean = configuration.getOptional[Boolean]("useLocalisation").getOrElse(true)
+  val useReferentielProspectCandidat: Boolean = configuration.getOptional[Boolean]("useReferentielProspectCandidat").getOrElse(true)
 
   val baseUrl: String = configuration.get[String]("baseUrl")
 

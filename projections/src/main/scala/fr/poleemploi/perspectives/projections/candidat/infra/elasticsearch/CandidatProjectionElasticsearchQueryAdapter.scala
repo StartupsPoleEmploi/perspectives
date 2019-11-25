@@ -2,11 +2,14 @@ package fr.poleemploi.perspectives.projections.candidat.infra.elasticsearch
 
 import java.time.format.DateTimeFormatter
 
+import akka.stream.alpakka.elasticsearch.scaladsl.ElasticsearchSource
 import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.commun.infra.elasticsearch.EsConfig
 import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
 import fr.poleemploi.perspectives.commun.infra.ws.WSAdapter
 import fr.poleemploi.perspectives.projections.candidat._
+import org.apache.http.HttpHost
+import org.elasticsearch.client.RestClient
 import play.api.libs.json._
 import play.api.libs.ws.WSClient
 
@@ -24,6 +27,8 @@ class CandidatProjectionElasticsearchQueryAdapter(wsClient: WSClient,
   val baseUrl = s"${esConfig.host}:${esConfig.port}"
 
   val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+
+  implicit val client: RestClient = RestClient.builder(buildHost).build()
 
   override def saisieCriteresRecherche(query: CandidatSaisieCriteresRechercheQuery): Future[CandidatSaisieCriteresRechercheQueryResult] =
     wsClient
@@ -182,4 +187,26 @@ class CandidatProjectionElasticsearchQueryAdapter(wsClient: WSClient,
           )
         )
       }
+
+  override def listerPourCsv(query: CandidatsPourCsvQuery.type): Future[CandidatsPourCsvQueryResult] =
+    Future(CandidatsPourCsvQueryResult(
+      ElasticsearchSource
+        .create(
+          indexName = indexName,
+          typeName = docType,
+          query = """{"match_all": {}}"""
+        )
+        .map { message =>
+          val candidatPourStatistiquesDocument = Json.parse(message.source.toString()).as[CandidatPourStatistiquesDocument]
+          mapping.buildCandidatPourStatistiquesDto(candidatPourStatistiquesDocument)
+        }
+        .filter(_.isDefined)
+        .map(_.get)
+    ))
+
+  private def buildHost: HttpHost =
+    new HttpHost(
+      esConfig.host.replace("http://", "").replace("https://", ""),
+      esConfig.port
+    )
 }

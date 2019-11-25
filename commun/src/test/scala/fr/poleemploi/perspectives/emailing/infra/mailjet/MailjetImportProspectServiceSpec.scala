@@ -9,7 +9,9 @@ import fr.poleemploi.perspectives.emailing.domain.{MRSDHAEValideeProspectCandida
 import fr.poleemploi.perspectives.emailing.infra.csv.ImportMRSValideeProspectCandidatCSVAdapter
 import fr.poleemploi.perspectives.emailing.infra.sql.MailjetSqlAdapter
 import fr.poleemploi.perspectives.emailing.infra.ws.MailjetWSAdapter
+import fr.poleemploi.perspectives.prospect.domain.{ProspectCandidat, ReferentielProspectCandidat}
 import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
@@ -26,6 +28,7 @@ class MailjetImportProspectServiceSpec extends AsyncWordSpec
   var importMRSDHAEPEConnectAdapter: ImportMRSDHAEPEConnectAdapter = _
   var mailjetWSAdapter: MailjetWSAdapter = _
   var mailjetSQLAdapter: MailjetSqlAdapter = _
+  var referentielProspectCandidat: ReferentielProspectCandidat = _
 
   var mailjetImportProspectService: MailjetImportProspectService = _
 
@@ -34,16 +37,19 @@ class MailjetImportProspectServiceSpec extends AsyncWordSpec
     importMRSDHAEPEConnectAdapter = mock[ImportMRSDHAEPEConnectAdapter]
     mailjetWSAdapter = mock[MailjetWSAdapter]
     mailjetSQLAdapter = mock[MailjetSqlAdapter]
+    referentielProspectCandidat = mock[ReferentielProspectCandidat]
 
     mailjetImportProspectService = new MailjetImportProspectService(
       actorSystem = actorSystem,
       importMRSValideeProspectCandidatCSVAdapter = importMRSValideeProspectCandidatCSVAdapter,
       importMRSDHAEPEConnectAdapter = importMRSDHAEPEConnectAdapter,
       mailjetWSAdapter = mailjetWSAdapter,
-      mailjetSQLAdapter = mailjetSQLAdapter
+      mailjetSQLAdapter = mailjetSQLAdapter,
+      referentielProspectCandidat = referentielProspectCandidat
     )
 
-    when(mailjetWSAdapter.importerProspectsCandidats(ArgumentMatchers.any[Stream[MRSValideeProspectCandidat]]())) thenReturn Future.successful(())
+    when(mailjetWSAdapter.importerProspectsCandidats(any[Stream[MRSValideeProspectCandidat]])) thenReturn Future.successful(())
+    when(referentielProspectCandidat.ajouter(any[Stream[ProspectCandidat]])) thenReturn Future.successful(())
   }
 
   "importerProspectsCandidat" should {

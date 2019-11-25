@@ -35,6 +35,8 @@ trait PostgresDriver extends ExPostgresProfile
 
     implicit val peConnectIdColumnType: BaseColumnType[PEConnectId] = mapStringValueObject(PEConnectId)
 
+    implicit val identifiantLocalColumnType: BaseColumnType[IdentifiantLocal] = mapStringValueObject(IdentifiantLocal)
+
     implicit val mailjetContactIdColumnType: BaseColumnType[MailjetContactId] = mapLongValueObject(MailjetContactId)
 
     implicit val typeRecruteurColumnType: BaseColumnType[TypeRecruteur] = mapStringValueObject(TypeRecruteur(_))

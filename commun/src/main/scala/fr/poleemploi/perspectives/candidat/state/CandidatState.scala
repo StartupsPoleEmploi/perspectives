@@ -5,14 +5,15 @@ import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.candidat.localisation.domain.LocalisationService
 import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielHabiletesMRS
+import fr.poleemploi.perspectives.prospect.domain.ReferentielProspectCandidat
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 trait CandidatState {
 
-  def inscrire(context: CandidatContext, command: InscrireCandidatCommand): List[Event] =
-    default(context, command)
+  def inscrire(context: CandidatContext, command: InscrireCandidatCommand, referentielProspectCandidat: ReferentielProspectCandidat): Future[List[Event]] =
+    Future(default(context, command))
 
   def connecter(context: CandidatContext, command: ConnecterCandidatCommand): List[Event] =
     default(context, command)

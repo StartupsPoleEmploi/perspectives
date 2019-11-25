@@ -8,6 +8,7 @@ import fr.poleemploi.perspectives.candidat.localisation.domain.LocalisationServi
 import fr.poleemploi.perspectives.candidat.mrs.domain.{MRSValidee, ReferentielHabiletesMRS}
 import fr.poleemploi.perspectives.candidat.state.{CandidatInscritState, CandidatState, NouveauCandidatState}
 import fr.poleemploi.perspectives.commun.domain._
+import fr.poleemploi.perspectives.prospect.domain.ReferentielProspectCandidat
 
 import scala.concurrent.Future
 
@@ -17,8 +18,8 @@ case class Candidat(id: CandidatId,
 
   override type Id = CandidatId
 
-  def inscrire(command: InscrireCandidatCommand): List[Event] =
-    behavior.inscrire(context = state, command = command)
+  def inscrire(command: InscrireCandidatCommand, referentielProspectCandidat: ReferentielProspectCandidat): Future[List[Event]] =
+    behavior.inscrire(context = state, command = command, referentielProspectCandidat = referentielProspectCandidat)
 
   def connecter(command: ConnecterCandidatCommand): List[Event] =
     behavior.connecter(context = state, command = command)

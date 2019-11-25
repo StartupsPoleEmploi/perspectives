@@ -11,6 +11,7 @@ import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.candidat.localisation.domain.LocalisationService
 import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielHabiletesMRS
 import fr.poleemploi.perspectives.commun.infra.play.http.HttpCommandHandler
+import fr.poleemploi.perspectives.prospect.domain.ReferentielProspectCandidat
 import fr.poleemploi.perspectives.recruteur._
 import javax.inject.Singleton
 
@@ -44,12 +45,13 @@ class EventSourcingModule extends AbstractModule {
   @Singleton
   def candidatCommandHandler(candidatRepository: CandidatRepository,
                              referentielHabiletesMRS: ReferentielHabiletesMRS,
-                             localisationService: LocalisationService): CandidatCommandHandler =
+                             localisationService: LocalisationService,
+                             referentielProspectCandidat: ReferentielProspectCandidat): CandidatCommandHandler =
     new CandidatCommandHandler {
       override val repository: AggregateRepository[Candidat] = candidatRepository
 
       override def configure: PartialFunction[Command[Candidat], Candidat => Future[List[Event]]] = {
-        case command: InscrireCandidatCommand => c => Future(c.inscrire(command))
+        case command: InscrireCandidatCommand => c => c.inscrire(command, referentielProspectCandidat)
         case command: ConnecterCandidatCommand => c => Future(c.connecter(command))
         case command: AutologgerCandidatCommand => c => Future(c.autologger(command))
         case command: ModifierProfilCandidatCommand => c => c.modifierProfil(command, localisationService)

@@ -3,7 +3,8 @@ name := "perspectives-commun"
 libraryDependencies ++= Seq(
   ws,
   cacheApi,
-  Dependencies.alpakka,
+  Dependencies.alpakkaCsv,
+  Dependencies.alpakkaElasticsearch,
   Dependencies.commonCompress,
   Dependencies.slickPg,
   Dependencies.jwtPlayJson,

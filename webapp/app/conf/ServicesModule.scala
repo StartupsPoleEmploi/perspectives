@@ -21,6 +21,10 @@ import fr.poleemploi.perspectives.metier.infra.ws.ReferentielMetierWSAdapter
 import fr.poleemploi.perspectives.offre.domain.ReferentielOffre
 import fr.poleemploi.perspectives.offre.infra.local.ReferentielOffreLocalAdapter
 import fr.poleemploi.perspectives.offre.infra.ws.ReferentielOffreWSAdapter
+import fr.poleemploi.perspectives.prospect.domain.ReferentielProspectCandidat
+import fr.poleemploi.perspectives.prospect.infra.csv.ProspectCandidatCsvGenerator
+import fr.poleemploi.perspectives.prospect.infra.local.ReferentielProspectCandidatLocalAdapter
+import fr.poleemploi.perspectives.prospect.infra.sql.ReferentielProspectCandidatSqlAdapter
 import fr.poleemploi.perspectives.rome.domain.ReferentielRome
 import fr.poleemploi.perspectives.rome.infra.local.ReferentielRomeLocalAdapter
 import fr.poleemploi.perspectives.rome.infra.ws.ReferentielRomeWSAdapter
@@ -85,6 +89,21 @@ class ServicesModule extends AbstractModule {
       referentielRomeWSAdapter.get()
     else
       referentielRomeLocalAdapter.get()
+
+  @Provides
+  @Singleton
+  def referentielProspectCandidat(referentielProspectCandidatSqlAdapter: Provider[ReferentielProspectCandidatSqlAdapter],
+                                  referentielProspectCandidatLocalAdapater: Provider[ReferentielProspectCandidatLocalAdapter],
+                                  webAppConfig: WebAppConfig): ReferentielProspectCandidat =
+    if (webAppConfig.useReferentielProspectCandidat)
+      referentielProspectCandidatSqlAdapter.get()
+    else
+      referentielProspectCandidatLocalAdapater.get()
+
+  @Provides
+  @Singleton
+  def prospectCandidatCsvGenerator: ProspectCandidatCsvGenerator =
+    new ProspectCandidatCsvGenerator
 
   @Provides
   @Singleton

@@ -1,8 +1,8 @@
 package conf
 
-import candidat.activite.domain.{EmailingDisponibilitesService, ImportOffresGereesParRecruteurService,  ImportOffresGereesParConseillerService}
-import candidat.activite.infra.local.{LocalEmailingDisponibilitesService, LocalImportOffresGereesParRecruteurService, LocalImportOffresGereesParConseillerService}
-import candidat.activite.infra.mailjet.{MailjetEmailingDisponibilitesService, MailjetImportOffresGereesParRecruteurService, MailjetImportOffresGereesParConseillerService}
+import candidat.activite.domain.{EmailingDisponibilitesService, ImportOffresGereesParConseillerService, ImportOffresGereesParRecruteurService}
+import candidat.activite.infra.local.{LocalEmailingDisponibilitesService, LocalImportOffresGereesParConseillerService, LocalImportOffresGereesParRecruteurService}
+import candidat.activite.infra.mailjet.{MailjetEmailingDisponibilitesService, MailjetImportOffresGereesParConseillerService, MailjetImportOffresGereesParRecruteurService}
 import com.google.inject.{AbstractModule, Provider, Provides, Singleton}
 import fr.poleemploi.perspectives.candidat.localisation.domain.LocalisationService
 import fr.poleemploi.perspectives.candidat.localisation.infra.local.LocalisationLocalAdapter
@@ -16,6 +16,9 @@ import fr.poleemploi.perspectives.emailing.infra.local.LocalImportProspectServic
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetImportProspectService
 import fr.poleemploi.perspectives.offre.domain.ReferentielOffre
 import fr.poleemploi.perspectives.offre.infra.local.ReferentielOffreLocalAdapter
+import fr.poleemploi.perspectives.prospect.domain.ReferentielProspectCandidat
+import fr.poleemploi.perspectives.prospect.infra.local.ReferentielProspectCandidatLocalAdapter
+import fr.poleemploi.perspectives.prospect.infra.sql.ReferentielProspectCandidatSqlAdapter
 
 class ServicesModule extends AbstractModule {
 
@@ -85,6 +88,16 @@ class ServicesModule extends AbstractModule {
   @Provides
   def referentielOffre: ReferentielOffre =
     new ReferentielOffreLocalAdapter
+
+  @Provides
+  @Singleton
+  def referentielProspectCandidat(referentielProspectCandidatSqlAdapter: Provider[ReferentielProspectCandidatSqlAdapter],
+                                  referentielProspectCandidatLocalAdapater: Provider[ReferentielProspectCandidatLocalAdapter],
+                                  batchsConfig: BatchsConfig): ReferentielProspectCandidat =
+    if (batchsConfig.useReferentielProspectCandidat)
+      referentielProspectCandidatSqlAdapter.get()
+    else
+      referentielProspectCandidatLocalAdapater.get()
 
   @Provides
   @Singleton

@@ -5,6 +5,7 @@ import java.time.LocalDate
 import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
 import fr.poleemploi.perspectives.commun.domain.{Coordonnees, _}
+import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
 import fr.poleemploi.perspectives.conseiller.ConseillerId
 
 sealed trait CandidatEvent extends Event {
@@ -13,6 +14,8 @@ sealed trait CandidatEvent extends Event {
 }
 
 case class CandidatInscritEvent(candidatId: CandidatId,
+                                peConnectId: Option[PEConnectId] = None,
+                                identifiantLocal: Option[IdentifiantLocal] = None,
                                 nom: Nom,
                                 prenom: Prenom,
                                 email: Email,

@@ -12,6 +12,8 @@ object Dependencies {
 
   val slickPgVersion = "0.17.2"
 
+  val alpakkaVersion = "1.0.0"
+
   val akkaActor = "com.typesafe.akka" %% "akka-actor" % akkaVersion
 
   val akkaLogging = "com.typesafe.akka" %% "akka-actor" % akkaVersion
@@ -41,7 +43,9 @@ object Dependencies {
 
   val slickHikariCp = "com.typesafe.slick" %% "slick-hikaricp" % slickVersion
 
-  val alpakka = "com.lightbend.akka" %% "akka-stream-alpakka-csv" % "1.0.0"
+  val alpakkaCsv = "com.lightbend.akka" %% "akka-stream-alpakka-csv" % alpakkaVersion
+
+  val alpakkaElasticsearch = "com.lightbend.akka" %% "akka-stream-alpakka-elasticsearch" % alpakkaVersion
 
   val jwtPlayJson = "com.pauldijou" %% "jwt-play-json" % "3.1.0"
 
