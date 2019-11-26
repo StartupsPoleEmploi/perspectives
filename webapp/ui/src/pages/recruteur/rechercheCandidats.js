@@ -306,7 +306,7 @@ var app = new Vue({
 
             tracking.sendEvent(tracking.Events.RECRUTEUR_RECHERCHE_CANDIDAT, {
                 'secteur_activite': this.secteurActivite,
-                'metier': this.metier,
+                'metiers': this.metier,
                 'localisation': this.localisation ? this.localisation.label : ''
             });
 

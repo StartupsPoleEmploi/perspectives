@@ -10,6 +10,8 @@ const Events = Object.freeze({
     CANDIDAT_MODIFICATION_CRITERES_RECHERCHE_EMPLOI: 'candidat_modification_criteres_recherche_emploi',
     CANDIDAT_MODIFICATION_CRITERES_RECHERCHE_METIERS: 'candidat_modification_criteres_recherche_metiers',
     CANDIDAT_MODIFICATION_DISPONIBILITE: 'candidat_modification_disponibilite',
+    CANDIDAT_CLIC_BTN_CONTACT_RECRUTEUR: 'candidat_clic_btn_contact_recruteur',
+    CANDIDAT_CLIC_BTN_VOIR_OFFRE_SUR_POLE_EMPLOI: 'candidat_clic_btn_voir_offre_sur_pole_emploi',
     RECRUTEUR_CLIC_BTN_CONNEXION: 'recruteur_clic_btn_connexion',
     RECRUTEUR_CLIC_BTN_VOIR_VIDEO: 'recruteur_clic_btn_voir_video',
     RECRUTEUR_CLIC_BTN_LIRE_ARTICLE: 'recruteur_clic_btn_lire_article',
@@ -23,8 +25,6 @@ const Events = Object.freeze({
     RECRUTEUR_DETAIL_CANDIDAT_POTENTIEL: 'recruteur_detail_candidat_potentiel',
     RECRUTEUR_DETAIL_CANDIDAT_PROFIL: 'recruteur_detail_candidat_profil',
     RECRUTEUR_DETAIL_CANDIDAT_EXPERIENCE: 'recruteur_detail_candidat_experience',
-    CANDIDAT_CLIC_BTN_CONTACT_RECRUTEUR: 'candidat_clic_btn_contact_recruteur',
-    CANDIDAT_CLIC_BTN_VOIR_OFFRE_SUR_POLE_EMPLOI: 'candidat_clic_btn_voir_offre_sur_pole_emploi',
     AFFICHAGE_CGU: 'affichage_cgu',
     AFFICHAGE_CREDITS_PHOTOS: 'affichage_credits_photos',
     CONTACT_PAR_EMAIL: 'contact_par_email'
@@ -59,10 +59,10 @@ function trackCandidatLinks() {
 }
 
 function trackRecruteurLinks() {
-    trackClickEvent('.js-menu-connexion-recruteur', Events.CANDIDAT_CLIC_BTN_CONNEXION, {
+    trackClickEvent('.js-menu-connexion-recruteur', Events.RECRUTEUR_CLIC_BTN_CONNEXION, {
         'source': 'menu'
     });
-    trackClickEvent('.js-landing-recruteur-btn-connexion-1', Events.CANDIDAT_CLIC_BTN_CONNEXION, {
+    trackClickEvent('.js-landing-recruteur-btn-connexion-1', Events.RECRUTEUR_CLIC_BTN_CONNEXION, {
         'source': 'landing_page_btn1'
     });
     trackClickEvent('.js-landing-recruteur-btn-connexion-2', Events.RECRUTEUR_CLIC_BTN_CONNEXION, {
