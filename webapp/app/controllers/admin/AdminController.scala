@@ -1,5 +1,8 @@
 package controllers.admin
 
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import authentification._
@@ -15,6 +18,7 @@ import play.api.http.HttpEntity
 import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
 
 @Singleton
 class AdminController @Inject()(cc: ControllerComponents,
@@ -33,19 +37,22 @@ class AdminController @Inject()(cc: ControllerComponents,
 
   implicit val materializer: ActorMaterializer = ActorMaterializer()(actorSystem)
 
+  private val dateFormatter: DateTimeFormatter = DateTimeFormatter.ISO_DATE
+
   def rechargerAppellationsMetiers: Action[AnyContent] = Action.async { implicit request =>
     if (isAutorise(request))
       referentielRome.rechargerAppellations.map(_ => NoContent)
     else Future(Unauthorized)
   }
 
-  def genererCsvProspectsCandidats: Action[AnyContent] = Action { implicit request =>
-    if (isAutorise(request))
+  def genererCsvProspectsCandidats(dateMax: Option[String]): Action[AnyContent] = Action { implicit request =>
+    if (isAutorise(request)) {
+      val dateMaxEvaluationMrs = dateMax.flatMap(d => Try(LocalDate.parse(d, dateFormatter)).toOption)
       Result(
         header = ResponseHeader(OK, Map(CONTENT_DISPOSITION -> s"attachment; filename=$PROSPECTS_CANDIDATS_CSV_FILENAME")),
-        body = HttpEntity.Streamed(prospectCandidatCsvGenerator.generate(referentielProspectCandidat.streamProspectsCandidats), None, None)
+        body = HttpEntity.Streamed(prospectCandidatCsvGenerator.generate(referentielProspectCandidat.streamProspectsCandidats(dateMaxEvaluationMrs)), None, None)
       )
-    else Unauthorized
+    } else Unauthorized
   }
 
   def genererCsvCandidatsInscrits: Action[AnyContent] = Action.async { implicit request =>

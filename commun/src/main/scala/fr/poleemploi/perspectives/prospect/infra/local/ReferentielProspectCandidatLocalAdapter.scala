@@ -29,7 +29,7 @@ class ReferentielProspectCandidatLocalAdapter extends ReferentielProspectCandida
     dateEvaluation = LocalDate.now
   )
 
-  override def streamProspectsCandidats: Source[ProspectCandidat, NotUsed] =
+  override def streamProspectsCandidats(dateMaxEvaluationMrs: Option[LocalDate]): Source[ProspectCandidat, NotUsed] =
     Source.fromIterator[ProspectCandidat](() => Iterator.fill(1)(prospectCandidat))
 
   override def ajouter(prospectsCandidats: Stream[ProspectCandidat]): Future[Unit] =

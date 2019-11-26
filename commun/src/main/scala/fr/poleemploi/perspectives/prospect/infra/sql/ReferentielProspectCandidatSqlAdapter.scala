@@ -58,9 +58,10 @@ class ReferentielProspectCandidatSqlAdapter(val driver: PostgresDriver,
     prospectCandidatTable.filter(_.email === email)
   }
 
-  override def streamProspectsCandidats: Source[ProspectCandidat, NotUsed] = Source.fromPublisher {
+  override def streamProspectsCandidats(dateMaxEvaluationMrs: Option[LocalDate]): Source[ProspectCandidat, NotUsed] = Source.fromPublisher {
     database.stream(
       prospectCandidatTable
+        .filter(_.dateEvaluationMrs <= dateMaxEvaluationMrs.getOrElse(LocalDate.now) )
         .sortBy(_.id)
         .result
         .transactionally

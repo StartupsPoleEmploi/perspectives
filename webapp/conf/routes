@@ -35,7 +35,7 @@ POST        /conseiller/ajouterMRSDHAECandidat                       controllers
 POST        /autologin                                               authentification.infra.autologin.AutologinCandidatController.genererTokenAutologin
 
 GET         /admin/recharger-appellations-metiers                    controllers.admin.AdminController.rechargerAppellationsMetiers
-GET         /admin/stats/prospects-candidats.csv                     controllers.admin.AdminController.genererCsvProspectsCandidats
+GET         /admin/stats/prospects-candidats.csv                     controllers.admin.AdminController.genererCsvProspectsCandidats(dateMaxEvaluationMrs: Option[String] ?= None)
 GET         /admin/stats/candidats-inscrits.csv                      controllers.admin.AdminController.genererCsvCandidatsInscrits
 
 GET         /infos-legales                                           controllers.InfosLegalesController.index
