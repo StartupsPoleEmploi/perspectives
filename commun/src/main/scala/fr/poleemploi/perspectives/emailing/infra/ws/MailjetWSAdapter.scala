@@ -125,6 +125,14 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
       request = mapping.buildRequestMiseAJourTypeRecruteur(typeRecruteur)
     ).map(_ => ())
 
+  private def getProprietesContact(email: Email): Future[List[ContactPropertyResponse]] =
+    wsClient
+      .url(s"${config.urlApi}/v3/REST/contactdata/${email.value}")
+      .addHttpHeaders(jsonContentType, authorizationHeader)
+      .get()
+      .flatMap(filtreStatutReponse(_))
+      .map(_.json.as[ContactPropertiesResponse].properties)
+
   private def updateContactData(mailjetContactId: MailjetContactId,
                                 request: UpdateContactDataRequest): Future[MailjetContactId] =
     wsClient

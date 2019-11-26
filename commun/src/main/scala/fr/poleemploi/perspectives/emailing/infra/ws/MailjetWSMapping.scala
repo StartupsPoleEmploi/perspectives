@@ -311,6 +311,28 @@ object ManageContactResponse {
     ) (ManageContactResponse.apply _)
 }
 
+case class ContactPropertiesResponse(count: Int,
+                                     properties: List[ContactPropertyResponse])
+
+object ContactPropertiesResponse {
+
+  implicit val reads: Reads[ContactPropertiesResponse] = (
+    (JsPath \ "Count").read[Int] and
+      (JsPath \ "Data" \\ "Data").read[List[ContactPropertyResponse]]
+    ) (ContactPropertiesResponse.apply _)
+}
+
+case class ContactPropertyResponse(name: String,
+                                   value: String)
+
+object ContactPropertyResponse {
+
+  implicit val reads: Reads[ContactPropertyResponse] = (
+    (JsPath \ "Name").read[String] and
+      (JsPath \ "Value").read[String]
+    ) (ContactPropertyResponse.apply _)
+}
+
 case class EmailAndName(email: String,
                         name: Option[String] = None)
 
