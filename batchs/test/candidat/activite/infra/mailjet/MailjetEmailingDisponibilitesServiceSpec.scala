@@ -77,7 +77,7 @@ class MailjetEmailingDisponibilitesServiceSpec extends AsyncWordSpec
 
     when(mailjetWSAdapter.envoyerDisponibilitesCandidat(any[String], any[Stream[EmailingDisponibiliteCandidatAvecEmail]]())) thenReturn Future.successful(())
     when(disponibiliteCandidatSqlAdapter.ajouter(any[Stream[CandidatId]])) thenReturn Future.successful(())
-    when(autologinService.genererTokenCandidat(any[CandidatId], any[Nom], any[Prenom])) thenReturn JwtToken("token")
+    when(autologinService.genererTokenCandidat(any[CandidatId], any[Nom], any[Prenom], any[Email])) thenReturn JwtToken("token")
   }
 
   "envoyerEmailsDisponibilites" should {

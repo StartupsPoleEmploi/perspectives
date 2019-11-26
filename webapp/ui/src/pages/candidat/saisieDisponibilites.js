@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import axios from 'axios';
 import afficherMessageSiPasDeMRS from "./candidatCommon";
+import tracking from '../../commun/tracking';
 
 new Vue({
     el: '#saisieDisponibilitesCandidat',
@@ -29,6 +30,7 @@ new Vue({
     },
     created: function() {
         afficherMessageSiPasDeMRS();
+        tracking.trackCommonActions();
     },
     methods: {
         nettoyerErreursForm: function () {
@@ -65,6 +67,11 @@ new Vue({
                     .then(function (response) {
                         self.display.erreurDisponibilites = false;
                         self.nettoyerErreursForm();
+
+                        tracking.sendEvent(tracking.Events.CANDIDAT_MODIFICATION_DISPONIBILITE, {
+                            'is_en_recherche': response.data.candidatEnRecherche,
+                            'is_disponibilite_connue': self.isDisponibiliteConnue()
+                        });
 
                         if (response.data.candidatEnRecherche) {
                             self.display.confirmationDispo = true;

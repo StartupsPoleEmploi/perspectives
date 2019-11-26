@@ -69,17 +69,18 @@ class PEConnectCandidatController @Inject()(cc: ControllerComponents,
           val candidatAuthentifie = CandidatAuthentifie(
             candidatId = candidatId,
             nom = infosCandidat.nom,
-            prenom = infosCandidat.prenom
+            prenom = infosCandidat.prenom,
+            email = infosCandidat.email
           )
           val session = SessionCandidatPEConnect.setJWTToken(accessTokenResponse.idToken, SessionCandidatAuthentifie.set(candidatAuthentifie, SessionOauthTokensCandidat.removeOauthTokensCandidat(request.session)))
 
           if (optCriteresRecherche.exists(_.saisieComplete))
             SessionUtilisateurNonAuthentifie.getUriConnexion(request.session)
-              .map(uri => Redirect(uri).withSession(SessionUtilisateurNonAuthentifie.remove(session)))
-              .getOrElse(Redirect(controllers.candidat.routes.RechercheOffreController.index()).withSession(session))
+              .map(uri => Redirect(uri).withSession(SessionUtilisateurNonAuthentifie.remove(session)).flashing(request.flash.withCandidatConnecte))
+              .getOrElse(Redirect(controllers.candidat.routes.RechercheOffreController.index()).withSession(session).flashing(request.flash.withCandidatConnecte))
           else if (optCriteresRecherche.isDefined)
             Redirect(controllers.candidat.routes.SaisieCriteresRechercheController.saisieCriteresRecherche()).withSession(session)
-              .flashing(request.flash.withMessageAlerte("Veuillez finaliser la saisie de vos critères"))
+              .flashing(request.flash.withMessageAlerte("Veuillez finaliser la saisie de vos critères").withCandidatConnecte)
           else
             Redirect(controllers.candidat.routes.SaisieCriteresRechercheController.saisieCriteresRecherche()).withSession(session)
               .flashing(request.flash.withCandidatInscrit)
@@ -87,7 +88,7 @@ class PEConnectCandidatController @Inject()(cc: ControllerComponents,
           case CandidatPEConnectEmailManquantException =>
             Redirect(controllers.candidat.routes.LandingController.landing())
               .withSession(SessionOauthTokensCandidat.removeOauthTokensCandidat(request.session))
-              .flashing(request.flash.withMessageErreur("Veuillez réessayer après avoir renseigner votre adresse email dans votre profil en vous connectant sur https://candidat.pole-emploi.fr"))
+              .flashing(request.flash.withMessageErreur("Veuillez réessayer après avoir renseigné votre adresse email dans votre profil en vous connectant sur https://candidat.pole-emploi.fr"))
         }
     ).recover {
       case t: Throwable =>
@@ -111,7 +112,7 @@ class PEConnectCandidatController @Inject()(cc: ControllerComponents,
         // Nettoyage de session et redirect
         Redirect(controllers.candidat.routes.LandingController.landing()).withSession(
           SessionCandidatAuthentifie.remove(SessionCandidatPEConnect.remove(candidatAuthentifiePEConnectRequest.session))
-        )
+        ).flashing(candidatAuthentifieRequest.flash.withCandidatDeconnecte)
       )
     }(candidatAuthentifieRequest)
   }

@@ -1,11 +1,12 @@
 @import conf.WebAppConfig
 @import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
-@import play.api.libs.json.JsObject
+@import play.api.libs.json.{JsObject, JsArray}
 
 @(candidatAuthentifie: CandidatAuthentifie,
-        jsData: JsObject)(implicit request: MessagesRequestHeader, flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
+        jsData: JsObject,
+        gtmDataLayer: JsArray)(implicit request: MessagesRequestHeader, flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
-@layout(candidatAuthentifie = Some(candidatAuthentifie), cssFooter = Some("bg-vert-emeraude-light")) {
+@layout(candidatAuthentifie = Some(candidatAuthentifie), cssFooter = Some("bg-vert-emeraude-light"), gtmDataLayer = Some(gtmDataLayer)) {
     <div id="saisieCriteresRechercheCandidat" class="bg-vert-emeraude-light" v-cloak>
         <div id="js-modaleContactRecruteur" class="modal" tabindex="-1" role="dialog" aria-labelledby="titreModaleContactRecruteur">
             <div class="modal-dialog modaleSaisie" role="document">

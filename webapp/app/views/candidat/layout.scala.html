@@ -1,8 +1,11 @@
 @import conf.WebAppConfig
 @import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
+@import play.api.libs.json.JsArray
 
 @(candidatAuthentifie: Option[CandidatAuthentifie],
-        cssFooter: Option[String] = None)(content: Html)(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
+        cssFooter: Option[String] = None,
+        gtmDataLayer: Option[JsArray] = None
+)(content: Html)(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
 @views.html.layout(
     metaDescription = Some("Vous avez été évalué par la méthode de recrutement par simulation Pôle emploi ? Vous êtes toujours disponible ?"),
@@ -11,5 +14,6 @@
         lienLandingCandidatActif = true,
         theme = Some("themeCandidat")
     ),
-    cssFooter = cssFooter
+    cssFooter = cssFooter,
+    gtmDataLayer = gtmDataLayer
 )(content)

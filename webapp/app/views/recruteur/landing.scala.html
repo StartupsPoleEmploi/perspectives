@@ -1,8 +1,9 @@
 @import conf.WebAppConfig
+@import play.api.libs.json.JsArray
 
-@()(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
+@(gtmDataLayer: JsArray)(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
-@layout(recruteurAuthentifie = None) {
+@layout(recruteurAuthentifie = None, gtmDataLayer = Some(gtmDataLayer)) {
     <div id="landingRecruteur" class="container" v-cloak>
         <div id="js-modaleVideo" class="modal" tabindex="-1">
             <div class="modal-dialog modaleVideo" role="document">
@@ -25,7 +26,7 @@
                     <h1 class="col-12 text-center texte-noir text-preline font-weight-bold font-size-lg">Vous avez des difficultés à recruter
                         sur des métiers en tension ?</h1>
                     <p class="col-12 text-center texte-noir font-size-md">Formez des candidats avec un potentiel validé* sur un nouveau métier.</p>
-                    <a class="col-9 col-lg-5 mb-2 bouton bouton-action bouton--theme3 w-100" href="@controllers.recruteur.routes.AuthentificationController.connexion()">Je me connecte</a>
+                    <a class="col-9 col-lg-5 mb-2 bouton bouton-action bouton--theme3 w-100 js-landing-recruteur-btn-connexion-1" href="@controllers.recruteur.routes.AuthentificationController.connexion()">Je me connecte</a>
                     <p class="col-12 mb-0 text-center cursor-pointer"
                        data-toggle="modal" data-target="#js-modaleVideo" v-bind:data-urlVideo="urlVideoMRS">* Méthode de Recrutement par Simulation</p>
                 </div>
@@ -55,7 +56,7 @@
                             <li class="texte-noir">Vous n'avez pas d'offre à déposer !</li>
                             <li class="texte-noir">Vous pouvez contacter les candidats disponibles !</li>
                         </ul>
-                        <a class="bouton bouton-action bouton--theme3 w-100" href="@controllers.recruteur.routes.AuthentificationController.connexion()">Je me connecte avec mon compte Pôle Emploi</a>
+                        <a class="bouton bouton-action bouton--theme3 w-100 js-landing-recruteur-btn-connexion-2" href="@controllers.recruteur.routes.AuthentificationController.connexion()">Je me connecte avec mon compte Pôle Emploi</a>
                     </div>
                 </div>
             </div>
@@ -67,7 +68,7 @@
                         <h2 class="mb-4 texte-noir text-preline font-weight-bold font-size-lg">La Méthode de Recrutement par Simulation : Comment les candidats sont-ils
                             validés ?</h2>
                         <p class="mb-4 texte-noir">La Méthode de Recrutement par Simulation reproduit les conditions de travail et permet de tester les aptitudes des candidats à exercer un nouveau métier</p>
-                        <a class="bouton bouton-action bouton--theme3 w-100" href="@controllers.recruteur.routes.AuthentificationController.connexion()">Je me connecte avec mon compte Pôle Emploi</a>
+                        <a class="bouton bouton-action bouton--theme3 w-100 js-landing-recruteur-btn-connexion-3" href="@controllers.recruteur.routes.AuthentificationController.connexion()">Je me connecte avec mon compte Pôle Emploi</a>
                     </div>
                 </div>
             </div>
@@ -93,7 +94,7 @@
                         <h3 class="texte-noir font-size-md">Dans l'émission <span class="font-weight-bold">9h50 EMPLOI sur France 3</span></h3>
                         <p class="texte-noir">Le 13/12/2018</p>
                         <p class="texte-noir font-size-sm">Mickaël RIZZI nous présente Perspectives, un service dédié aux recruteurs et aux candidats.</p>
-                        <button class="bouton bouton-action bouton--theme3Secondaire"
+                        <button class="bouton bouton-action bouton--theme3Secondaire js-landing-recruteur-btn-voir-video"
                                 data-toggle="modal" data-target="#js-modaleVideo" v-bind:data-urlVideo="urlVideoEmission">Voir la vidéo</button>
                     </div>
                 </div>
@@ -105,7 +106,7 @@
                         <h3 class="texte-noir font-size-md">Dans la presse <span class="font-weight-bold">Info Formation</span></h3>
                         <p class="texte-noir">Le 15/06/2019</p>
                         <p class="texte-noir font-size-sm">Mickaël RIZZI fait partie des deux gagnants sélectionnés en mars 2018 à l'issue de la finale du challenge interne Pôle Emploi "Y'a t'il un intrapreneur parmis nous ?"</p>
-                        <a class="bouton bouton-action bouton--theme3Secondaire" href="@assetsFinder.path("images/pages/recruteur/landing/INFFO FORMATION juin 2019.pdf")" target="_blank">Lire l'article</a>
+                        <a class="bouton bouton-action bouton--theme3Secondaire js-landing-recruteur-btn-lire-article" href="@assetsFinder.path("images/pages/recruteur/landing/INFFO FORMATION juin 2019.pdf")" target="_blank">Lire l'article</a>
                     </div>
                 </div>
             </article>

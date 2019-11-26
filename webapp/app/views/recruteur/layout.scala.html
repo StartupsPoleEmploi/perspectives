@@ -1,8 +1,10 @@
 @import conf.WebAppConfig
 @import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
+@import play.api.libs.json.JsArray
 
 @(recruteurAuthentifie: Option[RecruteurAuthentifie],
-        cssFooter: Option[String] = None)(content: Html)(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
+        cssFooter: Option[String] = None,
+        gtmDataLayer: Option[JsArray] = None)(content: Html)(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
 @views.html.layout(
     metaDescription = Some("Vous avez des difficultés à recruteur sur des métiers en tension ?"),
@@ -11,5 +13,6 @@
         lienLandingRecruteurActif = true,
         theme = Some("themeRecruteur")
     ),
-    cssFooter = cssFooter
+    cssFooter = cssFooter,
+    gtmDataLayer = gtmDataLayer
 )(content)

@@ -5,6 +5,7 @@ import 'bootstrap/js/dist/modal';
 import Places from '../../composants/Places.vue';
 import ROME from '../../domain/metier/ROME';
 import afficherMessageSiPasDeMRS from './candidatCommon';
+import tracking from '../../commun/tracking';
 
 new Vue({
     el: '#saisieCriteresRechercheCandidat',
@@ -70,6 +71,7 @@ new Vue({
     },
     created: function() {
         afficherMessageSiPasDeMRS();
+        tracking.trackCommonActions();
         var secteursActivites = {};
         var secteursActivitesParCode = {};
         var metiersSelectionnesParSecteur = {};
@@ -134,6 +136,7 @@ new Vue({
                 } else {
                     this.display.etape1 = false;
                     this.display.etape2 = true;
+                    this.trackerValidationEtape1();
                 }
 
                 if (this.criteresRechercheFormData.nouveauCandidat) {
@@ -168,6 +171,7 @@ new Vue({
                 this.criteresRechercheFormData.tempsTravail) {
                 this.display.etape2 = false;
                 this.display.etape3 = true;
+                this.trackerValidationEtape2();
             }
         },
         retourEtape1: function () {
@@ -186,11 +190,13 @@ new Vue({
             } else {
                 this.display.etape1 = false;
                 this.display.etape2 = true;
+                this.trackerValidationEtape1();
             }
         },
         continuerSansContactRecruteur: function() {
             this.display.etape1 = false;
             this.display.etape2 = true;
+            this.trackerValidationEtape1();
         },
         accepterAucunMetiers: function () {
             $('#criteresRechercheForm').submit();
@@ -234,8 +240,24 @@ new Vue({
                 this.criteresRechercheFormData.domainesProfessionnelsRecherches.length === 0) {
                 $('#js-modaleMetiers').modal('show');
             } else {
+                this.trackerValidationEtape3();
                 $('#criteresRechercheForm').submit();
             }
+        },
+        trackerValidationEtape1: function() {
+            tracking.sendEvent(tracking.Events.CANDIDAT_MODIFICATION_CRITERES_RECHERCHE_CONTACT, {
+                'is_creation': this.criteresRechercheFormData.nouveauCandidat
+            });
+        },
+        trackerValidationEtape2: function() {
+            tracking.sendEvent(tracking.Events.CANDIDAT_MODIFICATION_CRITERES_RECHERCHE_EMPLOI, {
+                'is_creation': this.criteresRechercheFormData.nouveauCandidat
+            });
+        },
+        trackerValidationEtape3: function() {
+            tracking.sendEvent(tracking.Events.CANDIDAT_MODIFICATION_CRITERES_RECHERCHE_METIERS, {
+                'is_creation': this.criteresRechercheFormData.nouveauCandidat
+            });
         }
     }
 });

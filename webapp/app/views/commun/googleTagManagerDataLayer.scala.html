@@ -1,0 +1,7 @@
+@import play.api.libs.json.{JsArray, Json}
+
+@(gtmDataLayer: JsArray)
+
+<script>
+    window.dataLayer = @Html(Json.stringify(gtmDataLayer));
+</script>

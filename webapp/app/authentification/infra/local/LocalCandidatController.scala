@@ -31,7 +31,8 @@ class LocalCandidatController @Inject()(cc: ControllerComponents,
       val candidatAuthentifie = CandidatAuthentifie(
         candidatId = command.id,
         nom = command.nom,
-        prenom = command.prenom
+        prenom = command.prenom,
+        email = Some(command.email)
       )
       Redirect(routes.SaisieCriteresRechercheController.saisieCriteresRecherche())
         .withSession(SessionCandidatAuthentifie.set(candidatAuthentifie, request.session))
@@ -42,5 +43,6 @@ class LocalCandidatController @Inject()(cc: ControllerComponents,
   def deconnexion: Action[AnyContent] = candidatAuthentifieAction { implicit request =>
     Redirect(routes.LandingController.landing())
       .withSession(SessionCandidatAuthentifie.remove(request.session))
+      .flashing(request.flash.withCandidatDeconnecte)
   }
 }

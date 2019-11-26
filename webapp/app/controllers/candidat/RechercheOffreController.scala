@@ -13,6 +13,7 @@ import play.api.Logging
 import play.api.libs.json.Json
 import play.api.mvc._
 import play.filters.csrf.CSRF
+import tracking.TrackingService
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -25,47 +26,53 @@ class RechercheOffreController @Inject()(cc: ControllerComponents,
                                          candidatQueryHandler: CandidatQueryHandler,
                                          metierQueryHandler: MetierQueryHandler)(implicit exec: ExecutionContext) extends AbstractController(cc) with Logging {
 
-  def index(codePostal: Option[String], lieuTravail: Option[String], rayonRecherche: Option[Int]): Action[AnyContent] = optionalCandidatAuthentifieAction.async { implicit optCandidatAuthentifieRequest: OptionalCandidatAuthentifieRequest[AnyContent] =>
-    def buildLocalisationOffresFromRequest: Option[LocalisationOffresForm] =
-      for {
-        lieuTravail <- lieuTravail
-        codePostal <- codePostal
-      } yield LocalisationOffresForm(
-        lieuTravail = lieuTravail,
-        codePostal = codePostal,
-        rayonRecherche = rayonRecherche // FIXME : unité
-      )
-
-    for {
-      candidat <- optCandidatAuthentifieRequest.candidatAuthentifie.map(c =>
-        candidatQueryHandler.handle(CandidatPourRechercheOffreQuery(c.candidatId)).map(Some(_))
-      ).getOrElse(Future.successful(None))
-    } yield {
-      val form = RechercheOffresForm.form.fill(RechercheOffresForm(
-        motsCles = None,
-        localisation = buildLocalisationOffresFromRequest.orElse(candidat.flatMap(_.localisationRecherche).map(l =>
-          LocalisationOffresForm(
-            lieuTravail = l.commune,
-            codePostal = l.codePostal,
-            rayonRecherche = l.rayonRecherche.map(_.value) // FIXME : unité
-          ))),
-        typesContrats = Nil,
-        metiers = Nil,
-        page = None
-      ))
-
-      Ok(views.html.candidat.rechercheOffres(
-        candidatAuthentifie = optCandidatAuthentifieRequest.candidatAuthentifie,
-        jsData = Json.obj(
-          "candidatAuthentifie" -> candidat.isDefined,
-          "cv" -> candidat.exists(_.cv),
-          "metiersValides" -> candidat.map(_.metiersValides),
-          "csrfToken" -> CSRF.getToken.map(_.value),
-          "rechercheFormData" -> form.value,
-          "algoliaPlacesConfig" -> webAppConfig.algoliaPlacesConfig
+  def index(codePostal: Option[String], lieuTravail: Option[String], rayonRecherche: Option[Int]): Action[AnyContent] = optionalCandidatAuthentifieAction.async { optCandidatAuthentifieRequest: OptionalCandidatAuthentifieRequest[AnyContent] =>
+    messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
+      def buildLocalisationOffresFromRequest: Option[LocalisationOffresForm] =
+        for {
+          lieuTravail <- lieuTravail
+          codePostal <- codePostal
+        } yield LocalisationOffresForm(
+          lieuTravail = lieuTravail,
+          codePostal = codePostal,
+          rayonRecherche = rayonRecherche // FIXME : unité
         )
-      ))
-    }
+
+      for {
+        candidat <- optCandidatAuthentifieRequest.candidatAuthentifie.map(c =>
+          candidatQueryHandler.handle(CandidatPourRechercheOffreQuery(c.candidatId)).map(Some(_))
+        ).getOrElse(Future.successful(None))
+      } yield {
+        val form = RechercheOffresForm.form.fill(RechercheOffresForm(
+          motsCles = None,
+          localisation = buildLocalisationOffresFromRequest.orElse(candidat.flatMap(_.localisationRecherche).map(l =>
+            LocalisationOffresForm(
+              lieuTravail = l.commune,
+              codePostal = l.codePostal,
+              rayonRecherche = l.rayonRecherche.map(_.value) // FIXME : unité
+            ))),
+          typesContrats = Nil,
+          metiers = Nil,
+          page = None
+        ))
+
+        Ok(views.html.candidat.rechercheOffres(
+          candidatAuthentifie = optCandidatAuthentifieRequest.candidatAuthentifie,
+          jsData = Json.obj(
+            "candidatAuthentifie" -> candidat.isDefined,
+            "cv" -> candidat.exists(_.cv),
+            "metiersValides" -> candidat.map(_.metiersValides),
+            "csrfToken" -> CSRF.getToken.map(_.value),
+            "rechercheFormData" -> form.value,
+            "algoliaPlacesConfig" -> webAppConfig.algoliaPlacesConfig
+          ),
+          gtmDataLayer = TrackingService.buildTrackingCandidat(
+            optCandidatAuthentifie = optCandidatAuthentifieRequest.candidatAuthentifie,
+            flash = Some(messagesRequest.flash)
+          )
+        ))
+      }
+    }(optCandidatAuthentifieRequest)
   }
 
   def rechercherOffres: Action[AnyContent] = optionalCandidatAuthentifieAction.async { request: OptionalCandidatAuthentifieRequest[AnyContent] =>

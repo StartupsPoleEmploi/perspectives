@@ -2,7 +2,7 @@ package authentification.infra.autologin
 
 import fr.poleemploi.perspectives.authentification.infra.autologin.{AutologinService, AutologinToken, TypeUtilisateur}
 import fr.poleemploi.perspectives.candidat.{AutologgerCandidatCommand, CandidatCommandHandler}
-import fr.poleemploi.perspectives.commun.domain.{Nom, Prenom}
+import fr.poleemploi.perspectives.commun.domain.{Email, Nom, Prenom}
 import fr.poleemploi.perspectives.projections.candidat.{CandidatQueryHandler, ExisteCandidatQuery, ExisteCandidatQueryResult}
 import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito.when
@@ -23,7 +23,7 @@ class AutologinCandidatSpec extends AsyncWordSpec
   var _candidatQueryHandler: CandidatQueryHandler = _
   var _candidatCommandHandler: CandidatCommandHandler = _
 
-  val autologinTokenCandidat = AutologinToken("123456", Nom("Patulacci"), Prenom("Marcel"), TypeUtilisateur.CANDIDAT)
+  val autologinTokenCandidat = AutologinToken("123456", Nom("Patulacci"), Prenom("Marcel"), Some(Email("marcel.patulacci@perspectives.fr")), TypeUtilisateur.CANDIDAT)
   val tokenQueryParam = "xxxx"
   val request: Request[AnyContentAsEmpty.type] = FakeRequest("GET", s"/ma-super-url?param1=1&token=$tokenQueryParam&param2=2")
 
@@ -121,6 +121,7 @@ class AutologinCandidatSpec extends AsyncWordSpec
         candidatAutologge.get.candidatAuthentifie.candidatId.value mustBe autologinTokenCandidat.identifiant
         candidatAutologge.get.candidatAuthentifie.nom mustBe autologinTokenCandidat.nom
         candidatAutologge.get.candidatAuthentifie.prenom mustBe autologinTokenCandidat.prenom
+        candidatAutologge.get.candidatAuthentifie.email mustBe autologinTokenCandidat.email
       })
     }
   }

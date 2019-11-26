@@ -1,9 +1,11 @@
 @import conf.WebAppConfig
 @import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
+@import play.api.libs.json.JsArray
 
-@(candidatAuthentifie: CandidatAuthentifie)(implicit request: MessagesRequestHeader, flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
+@(candidatAuthentifie: CandidatAuthentifie,
+        gtmDataLayer: JsArray)(implicit request: MessagesRequestHeader, flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
-@layout(candidatAuthentifie = Some(candidatAuthentifie)) {
+@layout(candidatAuthentifie = Some(candidatAuthentifie), gtmDataLayer = Some(gtmDataLayer)) {
     <div id="candidatSansMrs" class="bg-vert-emeraude-light">
         <section class="container py-md-5 py-2">
             <div class="row justify-content-center">

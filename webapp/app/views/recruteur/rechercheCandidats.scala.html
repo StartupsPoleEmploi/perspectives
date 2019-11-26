@@ -1,11 +1,12 @@
 @import conf.WebAppConfig
 @import fr.poleemploi.perspectives.authentification.domain.RecruteurAuthentifie
-@import play.api.libs.json.JsObject
+@import play.api.libs.json.{JsArray, JsObject}
 
 @(recruteurAuthentifie: RecruteurAuthentifie,
-        jsData: JsObject)(implicit request: MessagesRequestHeader, flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
+        jsData: JsObject,
+        gtmDataLayer: JsArray)(implicit request: MessagesRequestHeader, flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
-@layout(recruteurAuthentifie = Some(recruteurAuthentifie), cssFooter = Some("bg-gris-light")) {
+@layout(recruteurAuthentifie = Some(recruteurAuthentifie), cssFooter = Some("bg-gris-light"), gtmDataLayer = Some(gtmDataLayer)) {
     <div id="rechercheCandidats" v-cloak>
         <div id="detailCandidat" class="modal" tabindex="-1" role="dialog" aria-labelledby="titreModaleDetailCandidat"
              v-on:scroll="onScroll" ref="modaleDetailCandidat">
@@ -72,7 +73,7 @@
                                         </a>
                                     </li>
                                     <li class="col-12 col-lg-3 ml-lg-auto">
-                                        <button type="button" class="bouton bouton-action bouton--theme3 w-100 gtm-recruteur-profils-detail-telephone"
+                                        <button type="button" class="bouton bouton-action bouton--theme3 w-100 gtm-recruteur-profils-detail-telephone js-recruteur-contacter-candidat"
                                                 v-show="!display.contact"
                                                 v-on:click="display.contact = !display.contact">Je contacte ce candidat</button>
                                         <button type="button" class="bouton bouton-action bouton--theme3Secondaire w-100"
@@ -98,7 +99,7 @@
                                          v-for="metierValide in candidatCourant.metiersValides"
                                          v-bind:class="[display.habiletesParMetier[metierValide.metier.codeROME] ? 'pb-5' : 'pb-3', mrsMiseEnAvant(metierValide.metier.codeROME, candidatCourant.metiersValidesRecherches) ? 'infoCandidat--miseEnAvant' : '']">
                                         <div class="row justify-content-center align-items-center cursor-pointer"
-                                             v-on:click="display.habiletesParMetier[metierValide.metier.codeROME] = !display.habiletesParMetier[metierValide.metier.codeROME]">
+                                             v-on:click="deplierOuReplierHabiletes(metierValide)">
                                             <div class="col-1 d-none d-md-flex">
                                                 <img width="45" height="45" alt="Secteur d'activité"
                                                      v-bind:src="'/assets/images/commun/secteursActivite/' + codeSecteurActivite(metierValide.metier.codeROME) + '.svg'" />

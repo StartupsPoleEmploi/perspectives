@@ -6,6 +6,7 @@ import controllers.AssetsFinder
 import javax.inject._
 import play.api.libs.json.Json
 import play.api.mvc._
+import tracking.TrackingService
 
 import scala.concurrent.ExecutionContext
 
@@ -26,6 +27,10 @@ class LandingController @Inject()(cc: ControllerComponents,
           Ok(views.html.candidat.landing(
             jsData = Json.obj(
               "algoliaPlacesConfig" -> webAppConfig.algoliaPlacesConfig
+            ),
+            gtmDataLayer = TrackingService.buildTrackingCandidat(
+              optCandidatAuthentifie = None,
+              flash = Some(optionalCandidatAuthentifieRequest.flash)
             )
           ))
     }(optionalRecruteurAuthentifieRequest)

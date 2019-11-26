@@ -2,6 +2,7 @@ import Vue from 'vue';
 import $ from 'jquery';
 import 'bootstrap/js/dist/modal';
 import Temoignages from '../../composants/Temoignages.vue';
+import tracking from '../../commun/tracking';
 
 new Vue({
     el: '#landingRecruteur',
@@ -25,6 +26,7 @@ new Vue({
         }
     },
     mounted: function () {
+        tracking.trackCommonActions();
         var modaleVideoYoutube = $("#js-modaleVideo");
         var videoMRSYoutube = $("#js-videoMRSYoutube");
 

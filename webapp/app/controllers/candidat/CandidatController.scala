@@ -7,6 +7,7 @@ import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielMRS
 import javax.inject.Inject
 import play.api.libs.json.Json
 import play.api.mvc._
+import tracking.TrackingService
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -19,7 +20,13 @@ class CandidatController @Inject()(components: ControllerComponents,
 
   def candidatSansMRS: Action[AnyContent] = candidatAuthentifieAction.async { candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
-      Future(Ok(views.html.candidat.candidatSansMrs(candidatAuthentifieRequest.candidatAuthentifie)))
+      Future(Ok(views.html.candidat.candidatSansMrs(
+        candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie,
+        gtmDataLayer = TrackingService.buildTrackingCandidat(
+          optCandidatAuthentifie = None,
+          flash = Some(messagesRequest.flash)
+        )
+      )))
     }(candidatAuthentifieRequest)
   }
 

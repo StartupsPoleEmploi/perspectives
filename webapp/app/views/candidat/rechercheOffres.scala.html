@@ -1,11 +1,12 @@
 @import conf.WebAppConfig
 @import fr.poleemploi.perspectives.authentification.domain.CandidatAuthentifie
-@import play.api.libs.json.JsObject
+@import play.api.libs.json.{JsObject, JsArray}
 
 @(candidatAuthentifie: Option[CandidatAuthentifie],
-        jsData: JsObject)(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
+        jsData: JsObject,
+        gtmDataLayer: JsArray)(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
-@layout(candidatAuthentifie = candidatAuthentifie, cssFooter = Some("bg-gris-light")) {
+@layout(candidatAuthentifie = candidatAuthentifie, cssFooter = Some("bg-gris-light"), gtmDataLayer = Some(gtmDataLayer)) {
     <div id="rechercheOffres" v-cloak>
         <div id="detailOffre" class="modal" tabindex="-1" role="dialog" aria-labelledby="titreModaleDetailOffre">
             <div class="modal-dialog modaleDetailOffre" role="document">
@@ -71,7 +72,8 @@
                                                     v-bind:contact="offreCourante.contact"
                                                     v-bind:url-origine="offreCourante.urlOrigine"
                                                     v-bind:doit-afficher-contact="display.contact"
-                                                    v-on:afficher-contact="display.contact = true"></postuler-offre>
+                                                    v-on:afficher-contact="afficherContact()"
+                                                    v-on:voir-offre-sur-pole-emploi="voirOffreSurPoleEmploi()"></postuler-offre>
                                 </div>
                                 <div class="col-12 col-lg-9 detailOffre-section" v-show="offreCourante.description">
                                     <h3 class="detailOffre-titreSection">Description</h3>
@@ -197,7 +199,8 @@
                                                     v-bind:contact="offreCourante.contact"
                                                     v-bind:url-origine="offreCourante.urlOrigine"
                                                     v-bind:doit-afficher-contact="display.contact"
-                                                    v-on:afficher-contact="display.contact = true"></postuler-offre>
+                                                    v-on:afficher-contact="afficherContact()"
+                                                    v-on:voir-offre-sur-pole-emploi="voirOffreSurPoleEmploi()"></postuler-offre>
                                 </div>
                             </div>
                         </div>
@@ -206,7 +209,7 @@
                                 <div class="row align-items-center py-4">
                                     <p class="col-sm-8 col-12 mb-2 mb-sm-0 texte-blanc font-weight-bold font-size-md text-md-right">Inscrivez-vous et faites-vous contacter par des recruteurs !</p>
                                     <div class="col-sm-4 col-12 px-2">
-                                        <a class="bouton bouton-action bouton--noirSurBlanc gtm-candidat-offres-incentive-inscription" href="@controllers.candidat.routes.AuthentificationController.connexion()">Je me connecte avec mon identifiant Pôle Emploi</a>
+                                        <a class="bouton bouton-action bouton--noirSurBlanc gtm-candidat-offres-incentive-inscription js-candidat-btn-connexion-bandeau-detail-offre" href="@controllers.candidat.routes.AuthentificationController.connexion()">Je me connecte avec mon identifiant Pôle Emploi</a>
                                     </div>
                                 </div>
                             </div>
@@ -221,7 +224,7 @@
                     <div class="row align-items-center py-4">
                         <p class="col-sm-7 col-12 mb-2 mb-sm-0 texte-blanc font-weight-bold font-size-md text-md-right">Faites-vous contacter par des recruteurs !</p>
                         <div class="col-sm-5 col-12">
-                            <a class="bouton bouton-action bouton--noirSurBlanc gtm-candidat-offres-incentive-inscription" href="@controllers.candidat.routes.AuthentificationController.connexion()">Je me connecte avec mon identifiant Pôle Emploi</a>
+                            <a class="bouton bouton-action bouton--noirSurBlanc gtm-candidat-offres-incentive-inscription js-candidat-btn-connexion-bandeau-liste-offres" href="@controllers.candidat.routes.AuthentificationController.connexion()">Je me connecte avec mon identifiant Pôle Emploi</a>
                         </div>
                     </div>
                 </template>

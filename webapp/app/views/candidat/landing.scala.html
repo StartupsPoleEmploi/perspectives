@@ -1,9 +1,10 @@
 @import conf.WebAppConfig
-@import play.api.libs.json.JsObject
+@import play.api.libs.json.{JsObject, JsArray}
 
-@(jsData: JsObject)(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
+@(jsData: JsObject,
+        gtmDataLayer: JsArray)(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
-@layout(candidatAuthentifie = None) {
+@layout(candidatAuthentifie = None, gtmDataLayer = Some(gtmDataLayer)) {
     <div id="landingCandidat" class="container" v-cloak>
         <section class="row align-items-center justify-content-center presentation">
             <div class="col-11 col-md-8 p-3 p-md-4 bg-blanc border-radius-sm">
@@ -58,7 +59,7 @@
                             <li class="mb-3">je postule à des offres</li>
                             <li class="mb-3">les recruteurs me proposent un emploi en lien avec mon potentiel MRS</li>
                         </ol>
-                        <a class="bouton bouton-action bouton--blancSurVert w-100 gtm-candidat-landing-connexion" href="@controllers.candidat.routes.AuthentificationController.connexion()">Je me connecte avec mon identifiant Pôle Emploi</a>
+                        <a class="bouton bouton-action bouton--blancSurVert w-100 gtm-candidat-landing-connexion js-landing-candidat-btn-connexion" href="@controllers.candidat.routes.AuthentificationController.connexion()">Je me connecte avec mon identifiant Pôle Emploi</a>
                         <p class="pt-5 mb-0">* MRS : Méthode de recrutement par simulation</p>
                     </div>
                 </div>
