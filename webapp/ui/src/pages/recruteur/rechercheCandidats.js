@@ -73,8 +73,7 @@ var app = new Vue({
         }).on('hide.bs.modal', function () {
             self.display.modaleDetailCandidat = false;
             window.location = '#';
-
-            tracking.sendEvent(tracking.Events.RECRUTEUR_FERMETURE_DETAIL_CANDIDAT, this.contexteCandidatCourant());
+            tracking.sendEvent(tracking.Events.RECRUTEUR_FERMETURE_DETAIL_CANDIDAT, self.contexteCandidatCourant());
         });
         window.onpopstate = function (event) {
             if (self.display.modaleDetailCandidat && window.location.href.endsWith('#')) {
