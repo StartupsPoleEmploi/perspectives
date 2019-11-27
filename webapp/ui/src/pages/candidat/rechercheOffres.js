@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import $ from 'jquery';
+import Cookies from 'js-cookie';
 import 'bootstrap/js/dist/modal';
 import '../../commun/filters.js';
 import Pagination from '../../composants/Pagination.vue';
@@ -8,6 +9,8 @@ import PostulerOffre from '../../composants/PostulerOffre.vue';
 import rayonsRechercheOffre from "../../domain/offre/rayonRecherche";
 import typesContrats from '../../domain/offre/typesContrats.js';
 import tracking from '../../commun/tracking';
+
+const NOM_COOKIE_POPUP_OFFRES_FRAUDULEUSES = 'PerspectivesPopupOffresFrauduleusesFerme';
 
 new Vue({
     el: '#rechercheOffres',
@@ -71,9 +74,9 @@ new Vue({
         }
     },
     mounted: function () {
-        var self = this;
+        const self = this;
         window.location = '#';
-        var modaleDetail = $('#detailOffre');
+        const modaleDetail = $('#detailOffre');
         modaleDetail.on('show.bs.modal', function () {
             self.display.modaleDetailOffre = true;
             window.location = '#detailOffre';
@@ -83,7 +86,7 @@ new Vue({
 
             tracking.sendEvent(tracking.Events.CANDIDAT_FERMETURE_DETAIL_OFFRE, self.contexteOffreCourante());
         });
-        window.onpopstate = function (event) {
+        window.onpopstate = function () {
             if (self.display.modaleDetailOffre && window.location.href.endsWith('#')) {
                 modaleDetail.modal('hide');
             }
@@ -93,12 +96,13 @@ new Vue({
         };
 
         this.rechercherOffresSansPagination();
+        this.initPopupSensibilisationOffresFrauduleuses();
     },
     computed: {
         pages: function () {
-            var nbPages = Math.ceil(this.offres.length / this.nbOffresParPage);
-            var result = [];
-            for (var i = 0; i < nbPages; i++) {
+            const nbPages = Math.ceil(this.offres.length / this.nbOffresParPage);
+            let result = [];
+            for (let i = 0; i < nbPages; i++) {
                 result.push(i * this.nbOffresParPage);
             }
             return result;
@@ -114,7 +118,7 @@ new Vue({
             this.rechercheFormData.localisation.codePostal = suggestion.postcode;
             this.rechercheFormData.localisation.lieuTravail = suggestion.name;
 
-            var localisation = this.rechercheFormData.localisation;
+            const localisation = this.rechercheFormData.localisation;
             history.pushState({}, '', window.location.pathname + '?codePostal=' + localisation.codePostal + '&lieuTravail=' + localisation.lieuTravail + '&rayonRecherche=' + localisation.rayonRecherche + '#');
         },
         placesClear: function () {
@@ -123,7 +127,7 @@ new Vue({
         },
         chargerPage: function (index) {
             if (index === this.pages.length && this.pageSuivante) {
-                var self = this;
+                const self = this;
                 this.rechercherOffres(index, this.pageSuivante).done(function (response) {
                     self.offres = self.offres.concat(response.offres);
                 });
@@ -136,11 +140,22 @@ new Vue({
                 });
             }
         },
+        initPopupSensibilisationOffresFrauduleuses: function() {
+            const $modaleOffresFrauduleuses = $('#modaleOffresFrauduleuses');
+            if(!Cookies.get(NOM_COOKIE_POPUP_OFFRES_FRAUDULEUSES)) {
+                $modaleOffresFrauduleuses.modal('show');
+            }
+
+            $modaleOffresFrauduleuses.on('hide.bs.modal', () => {
+                Cookies.set(NOM_COOKIE_POPUP_OFFRES_FRAUDULEUSES, 'true', { expires: 15 });
+                tracking.sendEvent(tracking.Events.CANDIDAT_FERMETURE_MODALE_OFFRES_FRAUDULEUSES, {});
+            });
+        },
         cssTypeContrat: function (offre) {
             return (offre && offre.contrat && typesContrats[offre.contrat.code]) ? 'typeContrat--' + offre.contrat.code : 'typeContrat--default';
         },
         doitAfficherOffre: function (index) {
-            var max = this.indexPaginationOffre * this.nbOffresParPage;
+            const max = this.indexPaginationOffre * this.nbOffresParPage;
             return index >= (max - this.nbOffresParPage) && index < (max);
         },
         doitAfficherOffreSuivante: function () {
@@ -205,15 +220,15 @@ new Vue({
             }
 
             if (this.rechercheFormErrors.localisation.length === 0) {
-                var self = this;
+                const self = this;
                 this.rechercherOffres(1, null).done(function (response) {
                     self.offres = response.offres;
                 });
             }
         },
         rechercherOffres: function(index, pageSuivante) {
-            var self = this;
-            var formData = $("#js-rechercheOffresForm").serializeArray();
+            const self = this;
+            let formData = $("#js-rechercheOffresForm").serializeArray();
             if (pageSuivante) {
                 formData.push({name: "page.debut", value: pageSuivante.debut});
                 formData.push({name: "page.fin", value: pageSuivante.fin});

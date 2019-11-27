@@ -12,6 +12,7 @@ const Events = Object.freeze({
     CANDIDAT_MODIFICATION_DISPONIBILITE: 'candidat_modification_disponibilite',
     CANDIDAT_CLIC_BTN_CONTACT_RECRUTEUR: 'candidat_clic_btn_contact_recruteur',
     CANDIDAT_CLIC_BTN_VOIR_OFFRE_SUR_POLE_EMPLOI: 'candidat_clic_btn_voir_offre_sur_pole_emploi',
+    CANDIDAT_FERMETURE_MODALE_OFFRES_FRAUDULEUSES: 'candidat_fermeture_modale_offres_frauduleuses',
     RECRUTEUR_CLIC_BTN_CONNEXION: 'recruteur_clic_btn_connexion',
     RECRUTEUR_CLIC_BTN_VOIR_VIDEO: 'recruteur_clic_btn_voir_video',
     RECRUTEUR_CLIC_BTN_LIRE_ARTICLE: 'recruteur_clic_btn_lire_article',
