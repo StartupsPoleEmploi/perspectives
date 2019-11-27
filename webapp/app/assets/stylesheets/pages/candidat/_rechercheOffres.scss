@@ -212,4 +212,111 @@
       top: 10px;
     }
   }
+
+  #modaleOffresFrauduleuses {
+    .modal-header {
+      border: none;
+      padding-bottom: 0;
+      padding-left: 2rem;
+      padding-right: 2rem;
+
+      .close {
+        border: none;
+        background: none;
+        padding-top: 6px;
+        padding-right: 0;
+        font-size: 1.3rem;
+
+        .texte {
+          font-size: 0.9rem;
+        }
+      }
+    }
+
+    .modal-body {
+      font-size: 0.9rem;
+
+      p {
+        padding-left: 2rem;
+        padding-right: 2rem;
+      }
+
+      a {
+        color: $noir;
+        text-decoration: underline;
+
+        &:hover {
+          color: $vert-emeraude;
+        }
+      }
+
+      .liste-arguments {
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: stretch;
+        margin-bottom: 1rem;
+
+        @include media-breakpoint-down(xs) {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .argument {
+          flex-grow: 1;
+          width: 20%;
+          font-size: 0.8rem;
+          background-color: white;
+          box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+          padding: 0.3rem;
+          border-radius: 2px;
+          margin-right: 1rem;
+
+          @include media-breakpoint-down(xs) {
+            width: 80%;
+            margin-bottom: 0.5rem;
+            margin-left: 0;
+            margin-right: 0;
+          }
+
+          &.first {
+            margin-left: 2rem;
+
+            @include media-breakpoint-down(xs) {
+              margin-left: 0;
+            }
+          }
+          &.last {
+            margin-right: 2rem;
+
+            @include media-breakpoint-down(xs) {
+              margin-right: 0;
+            }
+          }
+        }
+      }
+
+      .bandeau-signalement {
+        padding-top: 15px;
+        padding-bottom: 15px;
+        background-color: $vert-emeraude;
+        color: white;
+
+        a {
+          color: white;
+          text-decoration: underline;
+
+          &:hover {
+            color: $noir;
+          }
+        }
+      }
+    }
+
+    .modal-footer {
+      border: none;
+      padding-top: 0;
+      display: flex;
+      flex-direction: column;
+    }
+  }
 }

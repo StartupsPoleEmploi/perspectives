@@ -338,6 +338,49 @@
                 </div>
             </div>
         </div>
+
+        <!-- Modale offres frauduleuses -->
+        <div class="modal fade texte-noir" id="modaleOffresFrauduleuses" tabindex="-1" role="dialog" aria-labelledby="Sensibilisation aux offres frauduleuses" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Mieux vaut prévenir que guérir :-)</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+                            <span class="texte">Fermer </span><span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body pl-0 pr-0">
+                        <p class="font-weight-bold mb-1">Nous sommes vigilants sur les offres que nous vous proposons, mais parfois certaines offres passent à travers les mailles du filet.</p>
+                        <p>Sans vouloir vous inquiéter, nous vous suggérons de rester vigilant à la lecture d'une offre trop alléchante ou lorsque vous êtes en contact avec un recruteur.</p>
+                        <p class="font-weight-bold mb-1">Voici les quelques conseils de Pôle Emploi :</p>
+
+                        <div class="liste-arguments">
+                            <div class="argument first">
+                                <strong>Ne pas envoyer d'argent</strong> à un employeur qui le demanderait
+                            </div>
+                            <div class="argument">
+                                <strong>Ne pas fournir de données personnelles à un inconnu</strong> (n° de sécurité sociale, RIB, n° de permis de conduire...)
+                            </div>
+                            <div class="argument">
+                                <strong>Lire attentivement tous les documents</strong> et ne pas apposer sa signature sans savoir de quoi il s'agit
+                            </div>
+                            <div class="argument last">
+                                <strong>Ne versez aucune somme d'argent en échange d'un contrat</strong> de travail potentiel ou pour suivre une formation préalable à l'embauche
+                            </div>
+                        </div>
+
+                        <p>Pour plus d'informations, consultez le site <a href="https://www.pole-emploi.fr" target="_blank" title="Plus d'informations">pole-emploi.fr</a></p>
+
+                        <div class="bandeau-signalement">
+                            <p class="font-weight-bold mb-0">&rarr; Si vous détectez une offre frauduleuse, signalez-la : <a href="https://www.internet-signalement.gouv.fr" target="_blank" title="Signaler une offre frauduleuse">internet-signalement.gouv.fr</a></p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="bouton bouton-action bouton--vertSurBlanc w-50" type="button" data-dismiss="modal">J'ai compris, merci !</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     @commun.jsData(jsData)
     <script src="@assetsFinder.path("javascripts/candidatRechercheOffres.js")" type="text/javascript"></script>
