@@ -11,6 +11,7 @@ case class PaginationRecruteursForm(dateInscription: ZonedDateTime,
 
 case class RechercheRecruteursForm(codesDepartement: List[String],
                                    codePostal: Option[String],
+                                   rechercheParDateInscription: Option[Boolean],
                                    dateDebut: Option[LocalDate],
                                    dateFin: Option[LocalDate],
                                    typeRecruteur: Option[String],
@@ -23,6 +24,7 @@ object RechercheRecruteursForm {
     mapping(
       "codesDepartement" -> list(text),
       "codePostal" -> optional(text),
+      "rechercheParDateInscription" -> optional(boolean),
       "dateDebut" -> optional(localDate),
       "dateFin" -> optional(localDate),
       "typeRecruteur" -> optional(text),

@@ -110,11 +110,23 @@ class RecruteurProjectionSqlAdapter(database: Database) {
       val filtresChamps = List[Option[Rep[Boolean]]](
         query.dateDebut.map { d =>
           val date = d.atStartOfDay().atZone(ZoneId.systemDefault())
-          r.dateInscription >= date || r.dateDerniereConnexion >= date
+          if (query.rechercheParDateInscription.isEmpty) { // on recherche par date d'inscription ou de derniere connexion
+            r.dateInscription >= date || r.dateDerniereConnexion >= date
+          } else if (query.rechercheParDateInscription.get) { // recherche seulement par date d'inscription
+            r.dateInscription >= date
+          } else {
+            r.dateDerniereConnexion >= date
+          }
         },
         query.dateFin.map { d =>
           val date = d.atStartOfDay().atZone(ZoneId.systemDefault())
-          r.dateInscription <= date || r.dateDerniereConnexion <= date
+          if (query.rechercheParDateInscription.isEmpty) { // on recherche par date d'inscription ou de derniere connexion
+            r.dateInscription <= date || r.dateDerniereConnexion <= date
+          } else if (query.rechercheParDateInscription.get) { // recherche seulement par date d'inscription
+            r.dateInscription <= date
+          } else {
+            r.dateDerniereConnexion <= date
+          }
         }
       )
 

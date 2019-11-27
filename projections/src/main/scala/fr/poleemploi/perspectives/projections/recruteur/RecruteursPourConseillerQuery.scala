@@ -9,6 +9,7 @@ import play.api.libs.json.{Json, Writes}
 
 case class RecruteursPourConseillerQuery(codesDepartement: List[CodeDepartement],
                                          codePostal: Option[String],
+                                         rechercheParDateInscription: Option[Boolean],
                                          dateDebut: Option[LocalDate],
                                          dateFin: Option[LocalDate],
                                          typeRecruteur: Option[TypeRecruteur],

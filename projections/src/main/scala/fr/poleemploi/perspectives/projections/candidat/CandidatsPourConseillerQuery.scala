@@ -10,6 +10,9 @@ import play.api.libs.json._
 
 case class CandidatsPourConseillerQuery(codesDepartement: List[CodeDepartement],
                                         codePostal: Option[String],
+                                        rechercheParLieuHabitation: Option[Boolean],
+                                        rechercheParSecteurMrs: Option[Boolean],
+                                        rechercheParDateInscription: Option[Boolean],
                                         dateDebut: Option[LocalDate],
                                         dateFin: Option[LocalDate],
                                         codeSecteurActivite: Option[CodeSecteurActivite],
@@ -39,6 +42,8 @@ case class CandidatPourConseillerDto(candidatId: CandidatId,
                                      communeRecherche: Option[String],
                                      codePostalRecherche: Option[String],
                                      rayonRecherche: Option[RayonRecherche],
+                                     communeHabitation: Option[String],
+                                     codePostalHabitation: Option[String],
                                      numeroTelephone: Option[NumeroTelephone],
                                      dateInscription: LocalDateTime,
                                      dateDerniereConnexion: LocalDateTime)
