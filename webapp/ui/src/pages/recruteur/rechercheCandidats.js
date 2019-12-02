@@ -29,10 +29,10 @@ var app = new Vue({
             indexPaginationSavoirFaireCandidat: 1,
             indexNavigationCandidat: 0,
             secteursActivites: jsData.secteursActivites,
-            secteurActivite: '',
-            metier: '',
-            secteurActiviteChoisi: null,
-            metierChoisi: null,
+            secteurActivite: jsData.secteurActivite,
+            metier: jsData.metier,
+            secteurActiviteChoisi: jsData.secteurActiviteChoisi,
+            metierChoisi: jsData.metierChoisi,
             localisation: {
                 label: '',
                 latitude: null,
@@ -114,7 +114,7 @@ var app = new Vue({
                     }
                 });
                 var titreSectionInteresses = '';
-                if (self.$refs.pagination.getPageCourante() === 1 && candidatsValides.length === 0) {
+                if ((!self.$refs.pagination || self.$refs.pagination.getPageCourante() === 1) && candidatsValides.length === 0) {
                     titreSectionInteresses = self.titreSansCandidatsValides() + self.suffixeMetier(labelMetier) + this.suffixeVille();
                 } else {
                     titreSectionInteresses = 'D\'autres candidats recherchent ' + self.suffixeMetier(labelMetier);

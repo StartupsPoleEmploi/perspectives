@@ -6,12 +6,13 @@ import controllers.AssetsFinder
 import controllers.FlashMessages._
 import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.commun.domain.{CodeROME, CodeSecteurActivite, Coordonnees}
+import fr.poleemploi.perspectives.metier.domain.SecteurActivite
 import fr.poleemploi.perspectives.projections.candidat._
 import fr.poleemploi.perspectives.projections.recruteur._
 import fr.poleemploi.perspectives.recruteur._
 import fr.poleemploi.perspectives.rome.domain.ReferentielRome
 import javax.inject.{Inject, Singleton}
-import play.api.libs.json.Json
+import play.api.libs.json.{JsString, Json}
 import play.api.mvc.{Action, _}
 import play.filters.csrf.CSRF
 import tracking.TrackingService
@@ -43,6 +44,29 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
           longitude = longitude
         )
 
+      def getCodeSecteurActiviteSelectionne(query: RechercheCandidatsQuery,
+                                            secteursActivites: List[SecteurActivite]) =
+        query.codeSecteurActivite.flatMap(c => secteursActivites.find(_.code == c)).map(s => s.code)
+
+      def getCodeMetierSelectionne(query: RechercheCandidatsQuery,
+                                   secteursActivites: List[SecteurActivite],
+                                   codeSecteurActiviteSelectionne: Option[CodeSecteurActivite]) =
+        codeSecteurActiviteSelectionne.flatMap(codeSecteurActivite =>
+          query.codeROME.flatMap { c =>
+            val secteurActivite = secteursActivites.find(_.code == codeSecteurActivite)
+            secteurActivite.flatMap(_.metiers
+              .find(_.codeROME == c)
+              .map(_.codeROME)
+            )
+              .orElse(
+                secteurActivite.flatMap(_.metiers
+                  .find(_.codeROME.codeDomaineProfessionnel == c.codeDomaineProfessionnel)
+                  .map(_.codeROME)
+                )
+              )
+          }
+        )
+
       (for {
         typeRecruteur <- getTypeRecruteur(recruteurAuthentifieRequest)
         query = RechercheCandidatsQuery(
@@ -56,20 +80,25 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
         )
         rechercheCandidatQueryResult <- candidatQueryHandler.handle(query)
         secteursActivitesAvecCandidatsQueryResult <- candidatQueryHandler.handle(SecteursActivitesAvecCandidatsQuery(typeRecruteur))
+        codeSecteurActiviteSelectionne = getCodeSecteurActiviteSelectionne(query, secteursActivitesAvecCandidatsQueryResult.secteursActivites)
+        codeMetierSelectionne = getCodeMetierSelectionne(query, secteursActivitesAvecCandidatsQueryResult.secteursActivites, codeSecteurActiviteSelectionne)
       } yield {
         Ok(views.html.recruteur.rechercheCandidats(
           recruteurAuthentifie = recruteurAuthentifieRequest.recruteurAuthentifie,
+          gtmDataLayer = TrackingService.buildTrackingRecruteur(
+            optRecruteurAuthentifie = Some(recruteurAuthentifieRequest.recruteurAuthentifie),
+            flash = Some(messagesRequest.flash)
+          ),
           jsData = Json.obj(
             "secteursActivites" -> secteursActivitesAvecCandidatsQueryResult.secteursActivites,
             "resultatRecherche" -> rechercheCandidatQueryResult,
             "nbCandidatsParPage" -> query.nbCandidatsParPage,
             "csrfToken" -> CSRF.getToken.map(_.value),
-            "algoliaPlacesConfig" -> webAppConfig.algoliaPlacesConfig
-          ),
-          gtmDataLayer = TrackingService.buildTrackingRecruteur(
-            optRecruteurAuthentifie = Some(recruteurAuthentifieRequest.recruteurAuthentifie),
-            flash = Some(messagesRequest.flash)
-          )
+            "algoliaPlacesConfig" -> webAppConfig.algoliaPlacesConfig,
+            "secteurActivite" -> JsString(codeSecteurActiviteSelectionne.map(_.value).getOrElse("")),
+            "metier" -> JsString(codeMetierSelectionne.map(_.value).getOrElse(""))
+          ) ++ codeSecteurActiviteSelectionne.map(s => Json.obj("secteurActiviteChoisi" -> s.value)).getOrElse(Json.obj())
+            ++ codeMetierSelectionne.map(m => Json.obj("metierChoisi" -> m.value)).getOrElse(Json.obj())
         ))
       }).recover {
         case ProfilRecruteurIncompletException =>
