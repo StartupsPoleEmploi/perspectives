@@ -25,7 +25,17 @@ module.exports = {
     },
     module: {
         rules: [
-            { test: /\.vue$/, use: 'vue-loader' }
+            { test: /\.vue$/, use: 'vue-loader' },
+            {
+                test: /\.js$/,
+                exclude: /(node_modules)/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['@babel/preset-env']
+                    }
+                }
+            }
         ]
     },
     plugins: [

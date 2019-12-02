@@ -13,7 +13,10 @@
     "vue": "2.6.10",
     "lodash": "4.17.15",
     "axios": "0.19.0",
-    "js-cookie": "^2.2.1"
+    "js-cookie": "^2.2.1",
+    "@babel/core": "^7.7.4",
+    "@babel/preset-env": "^7.7.4",
+    "babel-loader": "^8.0.6"
   },
   "devDependencies": {
     "vue-loader": "15.7.0",
