@@ -13,7 +13,7 @@ Vue.filter('dateExperience', function (value) {
     return new Date(value).toLocaleString('fr-FR', {month: 'long', year: "numeric"});
 });
 
-var app = new Vue({
+const app = new Vue({
     el: '#rechercheCandidats',
     components: {
         'pagination': Pagination,
@@ -34,11 +34,11 @@ var app = new Vue({
             secteurActiviteChoisi: jsData.secteurActiviteChoisi,
             metierChoisi: jsData.metierChoisi,
             localisation: {
-                label: '',
-                latitude: null,
-                longitude: null
+                label: jsData.localisation ? jsData.localisation.name : '',
+                latitude: jsData.localisation ? jsData.localisation.latitude : null,
+                longitude: jsData.localisation ? jsData.localisation.longitude : null
             },
-            localisationChoisie: null,
+            localisationChoisie: jsData.localisation ? jsData.localisation.name : null,
             resultatRecherche: {
                 candidats: jsData.resultatRecherche.candidats,
                 nbCandidatsTotal: jsData.resultatRecherche.nbCandidatsTotal,
@@ -59,14 +59,14 @@ var app = new Vue({
             }
         }
     },
-    created: function() {
+    created: function () {
         tracking.trackCommonActions();
         this.buildPages(jsData.resultatRecherche.pagesSuivantes);
     },
     mounted: function () {
-        var self = this;
+        const self = this;
         window.location = '#';
-        var modaleDetail = $('#detailCandidat');
+        const modaleDetail = $('#detailCandidat');
         modaleDetail.on('show.bs.modal', function () {
             self.display.modaleDetailCandidat = true;
             window.location = '#detailCandidat';
@@ -83,10 +83,14 @@ var app = new Vue({
                 modaleDetail.modal('show');
             }
         };
+
+        if (jsData.localisation) {
+            this.$refs.localisation.setLocalisationLabel(jsData.localisation.name);
+        }
     },
     computed: {
         metiers: function () {
-            var self = this;
+            const self = this;
             if (this.secteurActivite !== null && this.secteurActivite !== '') {
                 return this.secteursActivites.find(function (s) {
                     return s.code === self.secteurActivite;
@@ -95,17 +99,18 @@ var app = new Vue({
                 return [];
             }
         },
-        sectionsCandidats: function() {
-            var self = this;
-            var candidatsValides = [];
-            var candidatsInteresses = [];
+        sectionsCandidats: function () {
+            const self = this,
+                candidatsValides = [],
+                candidatsInteresses = [];
+            let titreSectionInteresses = '';
             if (self.metierChoisi) {
-                var metiersSecteur = self.secteurActiviteParCode(self.secteurActiviteChoisi).metiers;
-                var labelMetier = metiersSecteur.find(function(m) {
+                const metiersSecteur = self.secteurActiviteParCode(self.secteurActiviteChoisi).metiers;
+                const labelMetier = metiersSecteur.find(function (m) {
                     return m.codeROME === self.metierChoisi;
                 }).label;
-                self.resultatRecherche.candidats.forEach(function(c) {
-                    if (c.metiersValidesRecherches.filter(function(m) {
+                self.resultatRecherche.candidats.forEach(function (c) {
+                    if (c.metiersValidesRecherches.filter(function (m) {
                         return m.codeROME.indexOf(self.metierChoisi) !== -1;
                     }).length !== 0) {
                         candidatsValides.push(c);
@@ -113,9 +118,8 @@ var app = new Vue({
                         candidatsInteresses.push(c);
                     }
                 });
-                var titreSectionInteresses = '';
                 if ((!self.$refs.pagination || self.$refs.pagination.getPageCourante() === 1) && candidatsValides.length === 0) {
-                    titreSectionInteresses = self.titreSansCandidatsValides() + self.suffixeMetier(labelMetier) + this.suffixeVille();
+                    titreSectionInteresses = self.titreSansCandidatsValides() + self.suffixeMetier(labelMetier) + self.suffixeVille();
                 } else {
                     titreSectionInteresses = 'D\'autres candidats recherchent ' + self.suffixeMetier(labelMetier);
                 }
@@ -129,9 +133,9 @@ var app = new Vue({
                     },
                 ]
             } else if (self.secteurActiviteChoisi) {
-                var labelSecteurActivite = self.secteurActiviteParCode(self.secteurActiviteChoisi).label;
-                self.resultatRecherche.candidats.forEach(function(c) {
-                    if (c.metiersValidesRecherches.filter(function(m) {
+                const labelSecteurActivite = self.secteurActiviteParCode(self.secteurActiviteChoisi).label;
+                self.resultatRecherche.candidats.forEach(function (c) {
+                    if (c.metiersValidesRecherches.filter(function (m) {
                         return self.secteurActiviteChoisi === ROME.codeSecteurActivite(m.codeROME);
                     }).length !== 0) {
                         candidatsValides.push(c);
@@ -139,7 +143,6 @@ var app = new Vue({
                         candidatsInteresses.push(c);
                     }
                 });
-                var titreSectionInteresses = '';
                 if (self.$refs.pagination.getPageCourante() === 1 && candidatsValides.length === 0) {
                     titreSectionInteresses = self.titreSansCandidatsValides() + self.suffixeSecteur(labelSecteurActivite) + this.suffixeVille();
                 } else {
@@ -161,24 +164,24 @@ var app = new Vue({
                 }]
             }
         },
-        metiersRecherchesParSecteurs: function() {
-            var metiersFiltres = [];
+        metiersRecherchesParSecteurs: function () {
+            let metiersFiltres = [];
 
             if (this.metierChoisi) {
-                metiersFiltres = app.candidatCourant.metiersRecherches.filter(function(metier) {
+                metiersFiltres = app.candidatCourant.metiersRecherches.filter(function (metier) {
                     return app.metierChoisi === metier.codeROME;
                 });
             } else if (this.secteurActiviteChoisi) {
-                metiersFiltres = app.candidatCourant.metiersRecherches.filter(function(metier) {
+                metiersFiltres = app.candidatCourant.metiersRecherches.filter(function (metier) {
                     return app.secteurActiviteChoisi === ROME.codeSecteurActivite(metier.codeROME);
                 });
             } else {
                 metiersFiltres = app.candidatCourant.metiersRecherches;
             }
 
-            var metiersParSecteur = ROME.metiersParSecteur(metiersFiltres);
-            var result = [];
-            for (var codeSecteur in metiersParSecteur) {
+            const metiersParSecteur = ROME.metiersParSecteur(metiersFiltres);
+            const result = [];
+            for (let codeSecteur in metiersParSecteur) {
                 result.push({
                     code: codeSecteur,
                     label: app.secteurActiviteParCode(codeSecteur).label,
@@ -187,10 +190,10 @@ var app = new Vue({
             }
             return result;
         },
-        pagesSavoirFaire: function() {
-            var nbPages = Math.ceil(this.candidatCourant.savoirFaire.length / this.nbSavoirFaireParPage);
-            var result = [];
-            for (var i = 0; i < nbPages; i++) {
+        pagesSavoirFaire: function () {
+            const nbPages = Math.ceil(this.candidatCourant.savoirFaire.length / this.nbSavoirFaireParPage);
+            const result = [];
+            for (let i = 0; i < nbPages; i++) {
                 result.push(i * this.nbSavoirFaireParPage);
             }
             return result;
@@ -211,54 +214,54 @@ var app = new Vue({
                 longitude: null
             };
         },
-        secteurActiviteParCode: function(codeSecteur) {
-            return this.secteursActivites.find(function(s) {
+        secteurActiviteParCode: function (codeSecteur) {
+            return this.secteursActivites.find(function (s) {
                 return s.code === codeSecteur;
             });
         },
-        codeSecteurActivite: function(codeROME) {
+        codeSecteurActivite: function (codeROME) {
             return ROME.codeSecteurActivite(codeROME);
         },
-        titreSansCandidatsValides: function() {
-          return 'Nous n\'avons pour l\'instant aucun candidat validé MRS ' + this.imageValideMRS() + ', mais d\'autres candidats recherchent ';
+        titreSansCandidatsValides: function () {
+            return 'Nous n\'avons pour l\'instant aucun candidat validé MRS ' + this.imageValideMRS() + ', mais d\'autres candidats recherchent ';
         },
-        titreSectionValides: function() {
+        titreSectionValides: function () {
             return 'Candidats Perspectives validés MRS ' + this.imageValideMRS();
         },
-        suffixeSecteur: function(secteurActivite) {
+        suffixeSecteur: function (secteurActivite) {
             return ' dans le secteur "' + secteurActivite + '"';
         },
-        suffixeMetier: function(metier) {
+        suffixeMetier: function (metier) {
             return ' dans le domaine "' + metier + '"';
         },
-        suffixeVille: function() {
+        suffixeVille: function () {
             return (this.localisationChoisie) ? ' à "' + this.localisationChoisie + '"' : '';
         },
-        imageValideMRS: function() {
+        imageValideMRS: function () {
             return '<img width="20" height="20" alt="MRS" src="/assets/images/commun/metier-valide.svg" />';
         },
-        mrsMiseEnAvant: function(metierValide, metiersValidesRecherches) {
+        mrsMiseEnAvant: function (metierValide, metiersValidesRecherches) {
             if (this.metierChoisi) {
-                return metierValide.indexOf(this.metierChoisi) !== -1 && metiersValidesRecherches.findIndex(function(metier) {
+                return metierValide.indexOf(this.metierChoisi) !== -1 && metiersValidesRecherches.findIndex(function (metier) {
                     return metierValide.indexOf(metier.codeROME) !== -1;
                 }) !== -1;
             } else if (this.secteurActiviteChoisi) {
-                return ROME.codeSecteurActivite(metierValide) === this.secteurActiviteChoisi && metiersValidesRecherches.findIndex(function(metier) {
+                return ROME.codeSecteurActivite(metierValide) === this.secteurActiviteChoisi && metiersValidesRecherches.findIndex(function (metier) {
                     return ROME.codeSecteurActivite(metier.codeROME) === app.secteurActiviteChoisi;
                 }) !== -1;
             }
             return false;
         },
-        secteurMisEnAvant: function() {
+        secteurMisEnAvant: function () {
             return (this.metierChoisi || this.secteurActiviteChoisi);
         },
-        interessePar: function(metiers) { // FIXME : indexsection == 0 à nettoyer
+        interessePar: function (metiers) { // FIXME : indexsection == 0 à nettoyer
             if (this.metierChoisi) {
-                return metiers.filter(function(metier) {
+                return metiers.filter(function (metier) {
                     return app.metierChoisi === metier.codeROME;
                 });
             } else if (this.secteurActiviteChoisi) {
-                return metiers.filter(function(metier) {
+                return metiers.filter(function (metier) {
                     return app.secteurActiviteChoisi === ROME.codeSecteurActivite(metier.codeROME);
                 });
             } else {
@@ -272,12 +275,12 @@ var app = new Vue({
                 app.$refs.pagination.pageChargee(1);
             });
         },
-        buildPages: function(pagesSuivantes) {
+        buildPages: function (pagesSuivantes) {
             // pas de filtre de pagination pour la première page
             this.resultatRecherche.pages = [{}].concat(pagesSuivantes);
         },
         chargerPage: function (index) {
-            var filtrePagination = this.resultatRecherche.pages[index - 1];
+            const filtrePagination = this.resultatRecherche.pages[index - 1];
 
             return this.rechercherCandidats(filtrePagination).done(function (response) {
                 if (index === app.resultatRecherche.pages.length) {
@@ -287,7 +290,7 @@ var app = new Vue({
             });
         },
         rechercherCandidats: function (filtrePagination) {
-            var formData = [
+            const formData = [
                 {name: "csrfToken", value: this.csrfToken},
                 {name: "secteurActivite", value: this.secteurActivite},
                 {name: "metier", value: this.metier}
@@ -343,21 +346,21 @@ var app = new Vue({
                 this.indexNavigationCandidat < (this.resultatRecherche.nbCandidatsTotal - 1);
         },
         afficherCandidatSuivant: function () {
-            var index = this.indexNavigationCandidat + 1;
+            const index = this.indexNavigationCandidat + 1;
             if (index !== 0 && index % this.nbCandidatsParPage === 0) {
-                var pageACharger = this.$refs.pagination.getPageCourante() + 1;
+                const pageACharger = this.$refs.pagination.getPageCourante() + 1;
                 this.chargerPage(pageACharger).done(function (response) {
                     app.afficherCandidat(0, 'clic_btn_suivant');
                 });
             } else {
-                this.afficherCandidat(index % this.nbCandidatsParPage,'clic_btn_suivant');
+                this.afficherCandidat(index % this.nbCandidatsParPage, 'clic_btn_suivant');
             }
         },
         afficherCandidatPrecedent: function () {
-            var index = this.indexNavigationCandidat - 1;
+            const index = this.indexNavigationCandidat - 1;
             if (this.indexNavigationCandidat !== 0 &&
                 this.indexNavigationCandidat % this.nbCandidatsParPage === 0) {
-                var pageACharger = this.$refs.pagination.getPageCourante() - 1;
+                const pageACharger = this.$refs.pagination.getPageCourante() - 1;
                 this.chargerPage(pageACharger).done(function (response) {
                     app.afficherCandidat(app.resultatRecherche.candidats.length - 1, 'clic_btn_precedent');
                 });
@@ -371,18 +374,33 @@ var app = new Vue({
                 this.indexPaginationSavoirFaireCandidat = 1;
                 this.candidatCourant = this.resultatRecherche.candidats[index];
 
-                var habiletesParMetier = {};
+                let habiletesParMetier = {};
                 this.candidatCourant.metiersValides.forEach(function (m) {
                     habiletesParMetier[m.metier.codeROME] = false;
                 });
                 this.display.habiletesParMetier = Object.assign({}, habiletesParMetier);
 
-                var ongletsDetailCandidat = [{courant: true, label: 'Son potentiel', ref: 'potentiel', scrollInterval: []}];
+                const ongletsDetailCandidat = [{
+                    courant: true,
+                    label: 'Son potentiel',
+                    ref: 'potentiel',
+                    scrollInterval: []
+                }];
                 if (this.candidatCourant.savoirEtre.length > 0 || this.candidatCourant.savoirFaire.length > 0) {
-                    ongletsDetailCandidat.push({courant: false, label: 'Son profil', ref: 'profil', scrollInterval: []});
+                    ongletsDetailCandidat.push({
+                        courant: false,
+                        label: 'Son profil',
+                        ref: 'profil',
+                        scrollInterval: []
+                    });
                 }
                 if (this.candidatCourant.experiencesProfessionnelles.length > 0) {
-                    ongletsDetailCandidat.push({courant: false, label: 'Son expérience', ref: 'experiences', scrollInterval: []});
+                    ongletsDetailCandidat.push({
+                        courant: false,
+                        label: 'Son expérience',
+                        ref: 'experiences',
+                        scrollInterval: []
+                    });
                 }
                 this.display.ongletsDetailCandidat = Object.assign([], ongletsDetailCandidat);
                 this.$refs.modaleDetailCandidat.scrollTop = 0;
@@ -396,8 +414,8 @@ var app = new Vue({
                 $('#detailCandidat').modal('show');
             }
         },
-        deplierOuReplierHabiletes: function(metierValide) {
-            if(!this.display.habiletesParMetier[metierValide.metier.codeROME]) {
+        deplierOuReplierHabiletes: function (metierValide) {
+            if (!this.display.habiletesParMetier[metierValide.metier.codeROME]) {
                 // on ne tracke que si les habiletes ne sont pas deja depliees
                 tracking.sendEvent(tracking.Events.RECRUTEUR_DETAIL_CANDIDAT_MRS, this.contexteCandidatCourant());
             }
@@ -406,9 +424,9 @@ var app = new Vue({
         cssTempsTravail: function (tempsTravail) {
             return (tempsTravail && listeTempsTravail[tempsTravail]) ? 'tempsTravail--' + tempsTravail : '';
         },
-        afficherLangues: function() {
-            return this.candidatCourant.langues.map(function(l) {
-                return l.label + (niveauxLangues[l.niveau] ? ' ' + niveauxLangues[l.niveau].label : '') ;
+        afficherLangues: function () {
+            return this.candidatCourant.langues.map(function (l) {
+                return l.label + (niveauxLangues[l.niveau] ? ' ' + niveauxLangues[l.niveau].label : '');
             }).join(', ');
         },
         copierNumeroTelephone: function () {
@@ -420,15 +438,15 @@ var app = new Vue({
                 app.display.numeroTelephoneCopie = false;
             }, 1000);
         },
-        onScroll: function(e) {
-            var scrollTop = this.$refs.modaleDetailCandidat.scrollTop;
+        onScroll: function (e) {
+            const scrollTop = this.$refs.modaleDetailCandidat.scrollTop;
 
             if (this.display.ongletsDetailCandidat.length > 1) {
                 if (this.display.ongletsDetailCandidat[0].scrollInterval.length === 0) {
-                   app.calculHauteurOnglets();
+                    app.calculHauteurOnglets();
                 }
 
-                for (var onglet = 0; onglet < this.display.ongletsDetailCandidat.length; onglet++) {
+                for (let onglet = 0; onglet < this.display.ongletsDetailCandidat.length; onglet++) {
                     if (scrollTop >= this.display.ongletsDetailCandidat[onglet].scrollInterval[0] &&
                         scrollTop < this.display.ongletsDetailCandidat[onglet].scrollInterval[1]) {
                         app.display.ongletsDetailCandidat[onglet].courant = true;
@@ -444,7 +462,7 @@ var app = new Vue({
                 }
             }
         },
-        eventPourOngletCourant: function() {
+        eventPourOngletCourant: function () {
             let event;
             let ongletAffiche = this.display.ongletsDetailCandidat.find(onglet => onglet.courant === true);
             if (ongletAffiche) {
@@ -455,7 +473,7 @@ var app = new Vue({
             }
             return event;
         },
-        contexteCandidatCourant: function() {
+        contexteCandidatCourant: function () {
             return {
                 'candidat_id': this.candidatCourant.candidatId,
                 'metiers_valides': this.candidatCourant.metiersValides.map(x => x.metier.codeROME).join(', '),
@@ -463,16 +481,16 @@ var app = new Vue({
                 'localisation': this.candidatCourant.commune
             }
         },
-        setOngletCourant: function(index) {
+        setOngletCourant: function (index) {
             if (this.display.ongletsDetailCandidat[0].scrollInterval.length === 0) {
                 app.calculHauteurOnglets();
             }
 
             this.$refs.modaleDetailCandidat.scrollTop = this.display.ongletsDetailCandidat[index].scrollInterval[0];
         },
-        calculHauteurOnglets: function() {
-            var lastHeight = 0, sumHeight = 0;
-            for (var onglet = 0; onglet < this.display.ongletsDetailCandidat.length; onglet++) {
+        calculHauteurOnglets: function () {
+            let lastHeight = 0, sumHeight = 0;
+            for (let onglet = 0; onglet < this.display.ongletsDetailCandidat.length; onglet++) {
                 lastHeight = onglet === 0 ? 0 : this.display.ongletsDetailCandidat[onglet - 1].scrollInterval[1];
                 sumHeight += this.$refs[this.display.ongletsDetailCandidat[onglet].ref].clientHeight;
 
@@ -483,7 +501,7 @@ var app = new Vue({
                 }
             }
         },
-        doitAfficherDernierBloc: function() {
+        doitAfficherDernierBloc: function () {
             return this.candidatCourant &&
                 (this.candidatCourant.formations.length > 0 ||
                     this.candidatCourant.langues.length > 0 ||
@@ -491,10 +509,10 @@ var app = new Vue({
                     this.candidatCourant.permis.length > 0);
         },
         doitAfficherSavoirFaire: function (index) {
-            var max = this.indexPaginationSavoirFaireCandidat * this.nbSavoirFaireParPage;
+            const max = this.indexPaginationSavoirFaireCandidat * this.nbSavoirFaireParPage;
             return index >= (max - this.nbSavoirFaireParPage) && index < (max);
         },
-        chargerPageSavoirFaire: function(index) {
+        chargerPageSavoirFaire: function (index) {
             tracking.sendEvent(tracking.Events.RECRUTEUR_DETAIL_CANDIDAT_PAGINATION_SAVOIR_FAIRE, Object.assign({
                 'page_courante': index
             }, this.contexteCandidatCourant()));
