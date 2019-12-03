@@ -14,11 +14,14 @@ new Vue({
                 csrfToken: jsData.csrfToken,
                 codesDepartement: [],
                 codePostal: null,
+                rechercheParLieuHabitation: '',
+                rechercheParDateInscription: '',
                 dateDebut: null,
                 dateFin: null,
             },
             rechercheCandidatsFormData: {
-                codeSecteurActivite: ''
+                codeSecteurActivite: '',
+                rechercheParSecteurMrs: ''
             },
             rechercheRecruteursFormData: {
                 typeRecruteur: '',

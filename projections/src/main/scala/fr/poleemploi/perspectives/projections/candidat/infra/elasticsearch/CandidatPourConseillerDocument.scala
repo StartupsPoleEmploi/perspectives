@@ -31,6 +31,8 @@ case class CandidatPourConseillerDocument(candidatId: CandidatId,
                                           communeRecherche: Option[String],
                                           codePostalRecherche: Option[String],
                                           rayonRecherche: Option[RayonRechercheDocument],
+                                          communeHabitation: Option[String],
+                                          codePostalHabitation: Option[String],
                                           numeroTelephone: Option[NumeroTelephone],
                                           dateInscription: LocalDateTime,
                                           dateDerniereConnexion: LocalDateTime)
@@ -54,6 +56,8 @@ object CandidatPourConseillerDocument {
       (JsPath \ criteres_recherche \ commune).readNullable[String] and
       (JsPath \ criteres_recherche \ code_postal).readNullable[String] and
       (JsPath \ criteres_recherche \ "rayon").readNullable[RayonRechercheDocument] and
+      (JsPath \ commune).readNullable[String] and
+      (JsPath \ code_postal).readNullable[String] and
       (JsPath \ numero_telephone).readNullable[NumeroTelephone] and
       (JsPath \ date_inscription).read[LocalDateTime] and
       (JsPath \ date_derniere_connexion).read[LocalDateTime]

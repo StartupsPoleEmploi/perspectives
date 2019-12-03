@@ -8,7 +8,7 @@
 @layout(conseillerAuthentifie = conseillerAuthentifie) {
     <div id="adminConseiller" class="bg-gris-light" v-cloak>
         <section class="container">
-            <div class="row py-3 align-items-center justify-content-end">
+            <div class="row pt-3 align-items-center justify-content-end">
                 <div class="col-3">
                     <div class="conteneurSelecteur">
                         <label for="regions" class="sr-only">Choisissez une région</label>
@@ -39,7 +39,39 @@
                            v-model="rechercheFormData.dateFin" />
                 </div>
             </div>
-            <nav class="row">
+            <div class="row align-items-center justify-content-start">
+                <div class="col-8">
+                    <template v-if="display.resultats == 'candidats'">
+                        <div>
+                            <input id="rechercheParLieuHabitationOui" type="radio" name="rechercheParLieuHabitation" value="true" v-model="rechercheFormData.rechercheParLieuHabitation">
+                            <label for="rechercheParLieuHabitationOui">Le candidat habite à cet endroit</label>
+                        </div>
+                        <div>
+                            <input id="rechercheParLieuHabitationNon" type="radio" name="rechercheParLieuHabitation" value="false" v-model="rechercheFormData.rechercheParLieuHabitation">
+                            <label for="rechercheParLieuHabitationNon">Le candidat recherche à cet endroit</label>
+                        </div>
+                        <div>
+                            <input id="rechercheParLieuHabitationTous" type="radio" name="rechercheParLieuHabitation" value="" v-model="rechercheFormData.rechercheParLieuHabitation">
+                            <label for="rechercheParLieuHabitationTous">L'un ou l'autre</label>
+                        </div>
+                    </template>
+                </div>
+                <div class="col-4">
+                    <div>
+                        <input id="rechercheParDateInscriptionOui" type="radio" name="rechercheParDateInscription" value="true" v-model="rechercheFormData.rechercheParDateInscription">
+                        <label for="rechercheParDateInscriptionOui">Date d'inscription</label>
+                    </div>
+                    <div>
+                        <input id="rechercheParDateInscriptionNon" type="radio" name="rechercheParDateInscription" value="false" v-model="rechercheFormData.rechercheParDateInscription">
+                        <label for="rechercheParDateInscriptionNon">Date de dernière connexion</label>
+                    </div>
+                    <div>
+                        <input id="rechercheParDateInscriptionTous" type="radio" name="rechercheParDateInscription" value="" v-model="rechercheFormData.rechercheParDateInscription">
+                        <label for="rechercheParDateInscriptionTous">L'un ou l'autre</label>
+                    </div>
+                </div>
+            </div>
+            <nav class="row pt-3">
                 <button type="button" class="bouton rounded-left border-0 col-2 py-3"
                         v-bind:class="[display.resultats == 'candidats' ? 'bouton--blancSurVert' : 'bouton--vertSurBlanc']"
                         v-on:click="display.resultats = 'candidats'">Candidats</button>
@@ -57,6 +89,8 @@
                     <option v-for="departement in departements" v-bind:value="departement.code"></option>
                 </select>
                 <input type="hidden" name="codePostal" v-bind:value="rechercheFormData.codePostal" />
+                <input type="hidden" name="rechercheParLieuHabitation" v-bind:value="rechercheFormData.rechercheParLieuHabitation" />
+                <input type="hidden" name="rechercheParDateInscription" v-bind:value="rechercheFormData.rechercheParDateInscription" />
                 <input type="hidden" name="dateDebut" v-bind:value="rechercheFormData.dateDebut" />
                 <input type="hidden" name="dateFin" v-bind:value="rechercheFormData.dateFin" />
 
@@ -68,6 +102,21 @@
                             <option value="">Tous les secteurs</option>
                             <option v-for="secteurActivite in secteursActivites" v-bind:value="secteurActivite.code">{{secteurActivite.label}}</option>
                         </select>
+                    </div>
+                </div>
+
+                <div class="col-5">
+                    <div>
+                        <input id="rechercheParSecteurMrsOui" type="radio" name="rechercheParSecteurMrs" value="true" v-model="rechercheCandidatsFormData.rechercheParSecteurMrs">
+                        <label for="rechercheParSecteurMrsOui">Le candidat a une MRS dans ce secteur</label>
+                    </div>
+                    <div>
+                        <input id="rechercheParSecteurMrsNon" type="radio" name="rechercheParSecteurMrs" value="false" v-model="rechercheCandidatsFormData.rechercheParSecteurMrs">
+                        <label for="rechercheParSecteurMrsNon">Le candidat recherche dans ce secteur</label>
+                    </div>
+                    <div>
+                        <input id="rechercheParSecteurMrsTous" type="radio" name="rechercheParSecteurMrs" value="" v-model="rechercheCandidatsFormData.rechercheParSecteurMrs">
+                        <label for="rechercheParSecteurMrsTous">L'un ou l'autre</label>
                     </div>
                 </div>
 
@@ -89,6 +138,9 @@
                             <th>Prénom</th>
                             <th>Téléphone</th>
                             <th>Lieu de recherche</th>
+                            <th>Lieu d'habitation</th>
+                            <th>Secteurs recherchés</th>
+                            <th>Secteurs validés MRS</th>
                             <th>Date d'inscription</th>
                             <th>Date de dernière connexion</th>
                         </tr>
@@ -102,6 +154,21 @@
                                 <template v-if="candidat.communeRecherche">
                                     {{candidat.communeRecherche}} ({{candidat.codePostalRecherche}})
                                     <template v-if="candidat.rayonRecherche">+{{candidat.rayonRecherche.value}}{{candidat.rayonRecherche.uniteLongueur}}</template>
+                                </template>
+                            </td>
+                            <td>
+                                <template v-if="candidat.communeHabitation">
+                                    {{candidat.communeHabitation}} ({{candidat.codePostalHabitation}})
+                                </template>
+                            </td>
+                            <td>
+                                <template v-if="candidat.metiersRecherches.length > 0">
+                                    {{candidat.metiersRecherches.map(x => x.codeROME).sort().join(', ')}}
+                                </template>
+                            </td>
+                            <td>
+                                <template v-if="candidat.metiersValides.length > 0">
+                                    {{candidat.metiersValides.map(x => x.metier.codeROME).sort().join(', ')}}
                                 </template>
                             </td>
                             <td>{{candidat.dateInscription | date}}</td>
@@ -123,6 +190,7 @@
                     <option v-for="departement in departements" v-bind:value="departement.code"></option>
                 </select>
                 <input type="hidden" name="codePostal" v-bind:value="rechercheFormData.codePostal" />
+                <input type="hidden" name="rechercheParDateInscription" v-bind:value="rechercheFormData.rechercheParDateInscription" />
                 <input type="hidden" name="dateDebut" v-bind:value="rechercheFormData.dateDebut" />
                 <input type="hidden" name="dateFin" v-bind:value="rechercheFormData.dateFin" />
 

@@ -1,5 +1,6 @@
 package fr.poleemploi.perspectives.commun.geo.infra.ws
 
+import fr.poleemploi.perspectives.commun.StringUtils
 import fr.poleemploi.perspectives.commun.domain.{Departement, Region}
 import fr.poleemploi.perspectives.commun.geo.domain.ReferentielRegion
 import fr.poleemploi.perspectives.commun.infra.ws._
@@ -23,7 +24,7 @@ class ReferentielRegionWSAdapter(wsClient: WSClient,
         .withHttpHeaders(("Accept", "application/json"))
         .get()
         .flatMap(filtreStatutReponse(_))
-        .map(_.json.as[List[RegionResponse]].map(mapping.buildRegion))
+        .map(_.json.as[List[RegionResponse]].map(mapping.buildRegion).sortBy(x => StringUtils.unaccent(x.label)))
     )
 
   override def departements: Future[List[Departement]] =
@@ -32,6 +33,6 @@ class ReferentielRegionWSAdapter(wsClient: WSClient,
         .withHttpHeaders(("Accept", "application/json"))
         .get()
         .flatMap(filtreStatutReponse(_))
-        .map(_.json.as[List[DepartementResponse]].map(mapping.buildDepartement))
+        .map(_.json.as[List[DepartementResponse]].map(mapping.buildDepartement).sortBy(_.label.toUpperCase()))
     )
 }

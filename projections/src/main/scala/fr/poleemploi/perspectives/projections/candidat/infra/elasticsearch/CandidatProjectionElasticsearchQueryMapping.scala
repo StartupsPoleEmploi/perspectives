@@ -159,6 +159,8 @@ class CandidatProjectionElasticsearchQueryMapping(referentielMetier: Referentiel
           communeRecherche = d.communeRecherche,
           codePostalRecherche = d.codePostalRecherche,
           rayonRecherche = d.rayonRecherche.map(buildRayonRecherche),
+          communeHabitation = d.communeHabitation,
+          codePostalHabitation = d.codePostalHabitation,
           numeroTelephone = d.numeroTelephone,
           dateInscription = d.dateInscription,
           dateDerniereConnexion = d.dateDerniereConnexion
@@ -380,33 +382,65 @@ class CandidatProjectionElasticsearchQueryMapping(referentielMetier: Referentiel
           "must" -> JsArray(
             Seq(
               query.codePostal.map(c =>
-                Json.obj("term" -> Json.obj("criteres_recherche.code_postal" -> c))
+                if (query.rechercheParLieuHabitation.isEmpty) { // on recherche sur lieu d'habitation ou lieu de recherche
+                  Json.obj("bool" -> Json.obj(
+                    "should" -> Json.arr(
+                      Json.obj("term" -> Json.obj(code_postal_recherche -> c)),
+                      Json.obj("term" -> Json.obj(code_postal -> c)),
+                    )
+                  ))
+                } else if (query.rechercheParLieuHabitation.get) { // recherche seulement sur lieu d'habitation
+                  Json.obj("term" -> Json.obj(code_postal -> c))
+                } else {
+                  Json.obj("term" -> Json.obj(code_postal_recherche -> c))
+                }
               ).orElse(
                 if (query.codesDepartement.nonEmpty)
                   Some(Json.obj("bool" -> Json.obj(
                     "should" -> Json.arr(
-                      query.codesDepartement.map(c =>
-                        Json.obj("prefix" -> Json.obj("criteres_recherche.code_postal" -> c.value))
+                      query.codesDepartement.flatMap(c =>
+                        if (query.rechercheParLieuHabitation.isEmpty) { // on recherche sur lieu d'habitation ou lieu de recherche
+                          List(
+                            Json.obj("prefix" -> Json.obj(code_postal_recherche -> c.value)),
+                            Json.obj("prefix" -> Json.obj(code_postal -> c.value))
+                          )
+                        } else if (query.rechercheParLieuHabitation.get) { // recherche seulement sur lieu d'habitation
+                          List(Json.obj("prefix" -> Json.obj(code_postal -> c.value)))
+                        } else {
+                          List(Json.obj("prefix" -> Json.obj(code_postal_recherche -> c.value)))
+                        }
                       )
                     )
                   )))
                 else None
               ),
-              if (query.dateDebut.isDefined || query.dateFin.isDefined)
-                Some(Json.obj("bool" -> Json.obj(
-                  "should" -> Json.arr(
-                    buildFiltreDateInscription(query.dateDebut, query.dateFin),
-                    buildFiltreDateDerniereConnexion(query.dateDebut, query.dateFin)
-                  )
-                )))
-              else None,
+              if (query.dateDebut.isDefined || query.dateFin.isDefined) {
+                if (query.rechercheParDateInscription.isEmpty) { // on recherche par date d'inscription ou de derniere connexion
+                  Some(Json.obj("bool" -> Json.obj(
+                    "should" -> Json.arr(
+                      buildFiltreDateInscription(query.dateDebut, query.dateFin),
+                      buildFiltreDateDerniereConnexion(query.dateDebut, query.dateFin)
+                    )
+                  )))
+                } else if (query.rechercheParDateInscription.get) { // recherche seulement par date d'inscription
+                  Some(buildFiltreDateInscription(query.dateDebut, query.dateFin))
+                } else {
+                  Some(buildFiltreDateDerniereConnexion(query.dateDebut, query.dateFin))
+                }
+              } else None,
               query.codeSecteurActivite.map(c =>
-                Json.obj("bool" -> Json.obj(
-                  "should" -> Json.arr(
-                    Json.obj("prefix" -> Json.obj(metiers_valides_recherche -> c)),
-                    Json.obj("prefix" -> Json.obj(metiers_recherche -> c))
-                  )
-                ))
+                if (query.rechercheParSecteurMrs.isEmpty) { // on recherche par secteur validé MRS ou secteur recherché
+                  Json.obj("bool" -> Json.obj(
+                    "should" -> Json.arr(
+                      Json.obj("prefix" -> Json.obj(metiers_valides_recherche -> c)),
+                      Json.obj("prefix" -> Json.obj(metiers_recherche -> c)),
+                    )
+                  ))
+                } else if (query.rechercheParSecteurMrs.get) { // recherche seulement par secteur validé MRS
+                  Json.obj("prefix" -> Json.obj(metiers_valides_recherche -> c))
+                } else {
+                  Json.obj("prefix" -> Json.obj(metiers_recherche -> c))
+                }
               )
             ).flatten
           )
