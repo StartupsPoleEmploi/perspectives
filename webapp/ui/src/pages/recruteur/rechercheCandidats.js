@@ -495,7 +495,7 @@ var app = new Vue({
             return index >= (max - this.nbSavoirFaireParPage) && index < (max);
         },
         chargerPageSavoirFaire: function(index) {
-            tracking.sendEvent(tracking.Events.CANDIDAT_AFFICHAGE_DETAIL_OFFRE, Object.assign({
+            tracking.sendEvent(tracking.Events.RECRUTEUR_DETAIL_CANDIDAT_PAGINATION_SAVOIR_FAIRE, Object.assign({
                 'page_courante': index
             }, this.contexteCandidatCourant()));
             this.indexPaginationSavoirFaireCandidat = index;

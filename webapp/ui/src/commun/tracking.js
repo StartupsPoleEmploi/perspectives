@@ -26,6 +26,7 @@ const Events = Object.freeze({
     RECRUTEUR_DETAIL_CANDIDAT_POTENTIEL: 'recruteur_detail_candidat_potentiel',
     RECRUTEUR_DETAIL_CANDIDAT_PROFIL: 'recruteur_detail_candidat_profil',
     RECRUTEUR_DETAIL_CANDIDAT_EXPERIENCE: 'recruteur_detail_candidat_experience',
+    RECRUTEUR_DETAIL_CANDIDAT_PAGINATION_SAVOIR_FAIRE: 'recruteur_detail_candidat_pagination_savoir_faire',
     AFFICHAGE_CGU: 'affichage_cgu',
     AFFICHAGE_CREDITS_PHOTOS: 'affichage_credits_photos',
     CONTACT_PAR_EMAIL: 'contact_par_email'
