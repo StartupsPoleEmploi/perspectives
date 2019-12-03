@@ -116,7 +116,7 @@ class MailjetWSMapping {
         utmMedium = "email",
         utmContent = "cta"
       )
-      s"$baseUrl/recruteur/recherche?codeRome=${offre.codeROME.value}&latitude=${offre.coordonnees.latitude}&longitude=${offre.coordonnees.longitude}&$gaTracking"
+      s"$baseUrl/recruteur/recherche?codeRome=${offre.codeROME.value}&latitude=${offre.coordonnees.latitude}&longitude=${offre.coordonnees.longitude}&localisation=${offre.lieuTravail}&$gaTracking"
     }
 
     def buildUrlHome(baseUrl: String, offre: OffreGereeParRecruteurAvecCandidats): String = {
@@ -154,7 +154,7 @@ class MailjetWSMapping {
         utmMedium = "email",
         utmContent = "cta"
       )
-      s"$baseUrl/recruteur/recherche?codeRome=${offre.codeROME.value}&latitude=${offre.coordonnees.latitude}&longitude=${offre.coordonnees.longitude}&$gaTracking"
+      s"$baseUrl/recruteur/recherche?codeRome=${offre.codeROME.value}&latitude=${offre.coordonnees.latitude}&longitude=${offre.coordonnees.longitude}&localisation=${offre.lieuTravail}&$gaTracking"
     }
 
     def buildUrlHome(baseUrl: String, offre: OffreGereeParConseillerAvecCandidats, content: String): String = {

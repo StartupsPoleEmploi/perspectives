@@ -53,6 +53,11 @@
             this.places.on('clear', function() {
                 self.$emit('clear');
             });
+        },
+        methods: {
+            setLocalisationLabel: function (localisationLabel) {
+                this.places.setVal(localisationLabel);
+            }
         }
     }
 </script>

@@ -12,7 +12,7 @@ import fr.poleemploi.perspectives.projections.recruteur._
 import fr.poleemploi.perspectives.recruteur._
 import fr.poleemploi.perspectives.rome.domain.ReferentielRome
 import javax.inject.{Inject, Singleton}
-import play.api.libs.json.{JsString, Json}
+import play.api.libs.json.{JsObject, JsString, Json}
 import play.api.mvc.{Action, _}
 import play.filters.csrf.CSRF
 import tracking.TrackingService
@@ -33,7 +33,7 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
 
   private val MIN_CARACTERES_RECHERCHE_PAR_METIER = 2
 
-  def index(codeRome: Option[String] = None, latitude: Option[Double] = None, longitude: Option[Double] = None): Action[AnyContent] = recruteurAConnecterSiNonAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
+  def index(codeRome: Option[String] = None, latitude: Option[Double] = None, longitude: Option[Double] = None, localisation: Option[String] = None): Action[AnyContent] = recruteurAConnecterSiNonAuthentifieAction.async { recruteurAuthentifieRequest: RecruteurAuthentifieRequest[AnyContent] =>
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
       def buildCoordonneesFromRequest: Option[Coordonnees] =
         for {
@@ -65,6 +65,19 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
                 )
               )
           }
+        )
+
+      def localisationAsJson: Option[JsObject] =
+        for {
+          latitude <- latitude
+          longitude <- longitude
+          localisation <- localisation
+        } yield Json.obj("localisation" ->
+          Json.toJson(LocalisationDto(
+            label = localisation,
+            latitude = latitude,
+            longitude = longitude
+          ))
         )
 
       (for {
@@ -99,6 +112,7 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
             "metier" -> JsString(codeMetierSelectionne.map(_.value).getOrElse(""))
           ) ++ codeSecteurActiviteSelectionne.map(s => Json.obj("secteurActiviteChoisi" -> s.value)).getOrElse(Json.obj())
             ++ codeMetierSelectionne.map(m => Json.obj("metierChoisi" -> m.value)).getOrElse(Json.obj())
+            ++ localisationAsJson.getOrElse(Json.obj())
         ))
       }).recover {
         case ProfilRecruteurIncompletException =>
