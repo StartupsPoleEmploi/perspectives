@@ -4,6 +4,7 @@ import fr.poleemploi.eventsourcing.infra.jackson.EventSourcingModule
 import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
 import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.commun.domain._
+import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
 import fr.poleemploi.perspectives.conseiller.ConseillerId
 import fr.poleemploi.perspectives.recruteur.{NumeroSiret, RecruteurId, StatutRecruteur, TypeRecruteur}
 
@@ -38,4 +39,6 @@ object PerspectivesEventSourcingModule extends EventSourcingModule {
   addStringValueObject(classOf[NiveauSavoirFaire], NiveauSavoirFaire(_))
   addStringValueObject(classOf[NiveauFormation], NiveauFormation)
   addStringValueObject(classOf[DomaineFormation], DomaineFormation)
+  addStringValueObject(classOf[PEConnectId], PEConnectId)
+  addStringValueObject(classOf[IdentifiantLocal], IdentifiantLocal)
 }
