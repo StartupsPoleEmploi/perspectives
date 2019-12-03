@@ -84,7 +84,9 @@ function trackFooterLinks() {
 }
 
 function trackClickEvent(selector, event, context) {
-    $(selector).on('click', () => sendEvent(event, context ? context : {}));
+    $(document).on('click', selector, () =>
+        sendEvent(event, context ? context : {})
+    );
 }
 
 export default {sendEvent, trackCommonActions, Events};
