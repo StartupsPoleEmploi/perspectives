@@ -132,7 +132,8 @@ object KeysetCandidatPourRecruteur {
 
 case class RechercheCandidatQueryResult(candidats: List[CandidatPourRecruteurDto],
                                         nbCandidatsTotal: Int,
-                                        pagesSuivantes: List[KeysetCandidatPourRecruteur]) extends QueryResult
+                                        pagesSuivantes: List[KeysetCandidatPourRecruteur],
+                                        metierRecherche: Option[Metier]) extends QueryResult
 
 object RechercheCandidatQueryResult {
 
@@ -145,6 +146,7 @@ object RechercheCandidatQueryResult {
   val mock = RechercheCandidatQueryResult(
     candidats = CandidatPourRecruteurDto.mock(MOCK_SIZE),
     nbCandidatsTotal = MOCK_SIZE,
-    pagesSuivantes = Nil
+    pagesSuivantes = Nil,
+    metierRecherche = None
   )
 }

@@ -82,6 +82,11 @@ class CandidatProjectionElasticsearchQueryMapping(referentielMetier: Referentiel
       )
     )
 
+  def metierParCodeRome(codeROME: Option[CodeROME]): Future[Option[Metier]] =
+    codeROME.map(code => referentielMetier.metierParCodeROME(code).map(Some(_)).recoverWith {
+      case _ => Future.successful(None)
+    }).getOrElse(Future.successful(None))
+
   def buildCandidatsRechercheDto(documents: Seq[CandidatPourRecruteurDocument]): Future[List[CandidatPourRecruteurDto]] =
     for {
       metiersValides <- referentielMetier.metiersParCodesROME(documents.flatMap(_.metiersValides.map(_.metier)).toSet)
