@@ -69,8 +69,8 @@ new Vue({
                         self.nettoyerErreursForm();
 
                         tracking.sendEvent(tracking.Events.CANDIDAT_MODIFICATION_DISPONIBILITE, {
-                            'is_en_recherche': response.data.candidatEnRecherche,
-                            'is_disponibilite_connue': self.isDisponibiliteConnue()
+                            'is_en_recherche': response.data.candidatEnRecherche ? 1 : 0,
+                            'is_disponibilite_connue': self.isDisponibiliteConnue() ? 1 : 0
                         });
 
                         if (response.data.candidatEnRecherche) {

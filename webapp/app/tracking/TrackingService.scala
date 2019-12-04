@@ -3,7 +3,7 @@ package tracking
 import controllers.FlashMessages._
 import fr.poleemploi.perspectives.authentification.domain.{CandidatAuthentifie, RecruteurAuthentifie}
 import fr.poleemploi.perspectives.recruteur.TypeRecruteur
-import play.api.libs.json.{JsArray, JsObject, Json}
+import play.api.libs.json.{JsArray, JsNumber, JsObject, Json}
 import play.api.mvc.Flash
 
 object TrackingService {
@@ -21,12 +21,12 @@ object TrackingService {
   val email = "email"
   val isConnecte = "is_connecte"
   val typeUtilisateur = "type_utilisateur"
-  val typeUtilisateurCandidat = "candidat"
-  val typeUtilisateurRecruteur = "recruteur"
+  val typeUtilisateurCandidat = 0
+  val typeUtilisateurRecruteur = 1
   val typeRecruteur = "type_recruteur"
-  val typeRecruteurOrganismeFormation = "organisme_formation"
-  val typeRecruteurAgenceInterim = "agence_interim"
-  val typeRecruteurEntreprise = "entreprise"
+  val typeRecruteurOrganismeFormation = 1
+  val typeRecruteurAgenceInterim = 2
+  val typeRecruteurEntreprise = 3
   val isRecruteurCertifie = "is_certifie"
 
   def buildTrackingCommun(optCandidatAuthentifie: Option[CandidatAuthentifie],
@@ -55,8 +55,8 @@ object TrackingService {
     )
 
     Json.arr(Json.obj(
-      isConnecte -> optCandidatAuthentifie.isDefined,
-      typeUtilisateur -> typeUtilisateurCandidat
+      isConnecte -> JsNumber(optCandidatAuthentifie.map(_ => BigDecimal(1)).getOrElse(BigDecimal(0))),
+      typeUtilisateur -> JsNumber(typeUtilisateurCandidat)
     ) ++ jsonCandidatId ++ jsonCandidatEmail ++ jsonCandidatEvent)
   }
 
@@ -65,7 +65,7 @@ object TrackingService {
     val jsonRecruteurInfos = optRecruteurAuthentifie.map(x => Json.obj(
       recruteurId -> x.recruteurId.value,
       email -> x.email.value,
-      isRecruteurCertifie -> x.certifie
+      isRecruteurCertifie -> JsNumber(if(x.certifie) 1 else 0)
     )).getOrElse(Json.obj())
 
     val jsonRecruteurEvent = buildTrackingEvenementRecruteur(
@@ -82,12 +82,12 @@ object TrackingService {
       .getOrElse(Json.obj())
 
     Json.arr(Json.obj(
-      isConnecte -> optRecruteurAuthentifie.isDefined,
-      typeUtilisateur -> typeUtilisateurRecruteur
+      isConnecte -> JsNumber(optRecruteurAuthentifie.map(_ => BigDecimal(1)).getOrElse(BigDecimal(0))),
+      typeUtilisateur -> JsNumber(typeUtilisateurRecruteur)
     ) ++ jsonRecruteurInfos ++ jsonTypeRecruteur ++ jsonRecruteurEvent)
   }
 
-  private def buildTypeRecruteur(typeRecruteur: TypeRecruteur): Option[String] =
+  private def buildTypeRecruteur(typeRecruteur: TypeRecruteur): Option[Int] =
     typeRecruteur match {
       case TypeRecruteur.ENTREPRISE => Some(typeRecruteurEntreprise)
       case TypeRecruteur.AGENCE_INTERIM => Some(typeRecruteurAgenceInterim)

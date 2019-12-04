@@ -246,17 +246,17 @@ new Vue({
         },
         trackerValidationEtape1: function() {
             tracking.sendEvent(tracking.Events.CANDIDAT_MODIFICATION_CRITERES_RECHERCHE_CONTACT, {
-                'is_creation': this.criteresRechercheFormData.nouveauCandidat
+                'is_creation': this.criteresRechercheFormData.nouveauCandidat ? 1 : 0
             });
         },
         trackerValidationEtape2: function() {
             tracking.sendEvent(tracking.Events.CANDIDAT_MODIFICATION_CRITERES_RECHERCHE_EMPLOI, {
-                'is_creation': this.criteresRechercheFormData.nouveauCandidat
+                'is_creation': this.criteresRechercheFormData.nouveauCandidat ? 1 : 0
             });
         },
         trackerValidationEtape3: function() {
             tracking.sendEvent(tracking.Events.CANDIDAT_MODIFICATION_CRITERES_RECHERCHE_METIERS, {
-                'is_creation': this.criteresRechercheFormData.nouveauCandidat
+                'is_creation': this.criteresRechercheFormData.nouveauCandidat ? 1 : 0
             });
         }
     }

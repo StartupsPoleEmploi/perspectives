@@ -238,8 +238,13 @@ new Vue({
                 'code_postal': this.rechercheFormData.localisation ? this.rechercheFormData.localisation.codePostal : '',
                 'lieu_recherche': this.rechercheFormData.localisation ? this.rechercheFormData.localisation.lieuTravail : '',
                 'rayon_recherche': this.rechercheFormData.localisation ? this.rechercheFormData.localisation.rayonRecherche : '',
-                'types_contrat': this.rechercheFormData.typesContrats,
-                'metiers': this.rechercheFormData.metiers,
+                'types_contrat': this.rechercheFormData.typesContrats.map(tc => {
+                    if (tc === 'CDI') return 0;
+                    else if (tc === 'CDD') return 1;
+                    else if (tc === 'MIS') return 2;
+                    else if (tc === 'SAI') return 3;
+                }),
+                'code_rome': this.rechercheFormData.metiers,
                 'mots_cles': this.rechercheFormData.motsCles
             });
 
