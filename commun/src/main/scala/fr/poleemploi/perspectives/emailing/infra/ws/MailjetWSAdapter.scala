@@ -17,6 +17,7 @@ import play.api.libs.ws.WSClient
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration._
+import scala.util.Random
 
 class MailjetWSAdapter(config: MailjetWSAdapterConfig,
                        mapping: MailjetWSMapping,
@@ -39,7 +40,9 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
 
   private val idTemplateOffreEnDifficulteGereeParConseiller: Int = 1126280
 
-  private val idTemplateOffreEnDifficulteGereeParRecruteur: Int = 1087136
+  private val idTemplateOffreEnDifficulteGereeParRecruteurVersionA: Int = 1087136
+
+  private val idTemplateOffreEnDifficulteGereeParRecruteurVersionB: Int = 1087136 // TODO à valoriser quand on aura un deuxieme template
 
   private val cacheKeyTesteurs = "mailjetWSAdapter.testeurs"
 
@@ -100,11 +103,11 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
 
   def envoyerCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl: String, offresGereesParRecruteurAvecCandidats: Seq[OffreGereeParRecruteurAvecCandidats]): Future[Unit] =
     if (offresGereesParRecruteurAvecCandidats.nonEmpty)
-      Future.sequence(offresGereesParRecruteurAvecCandidats.take(3).grouped(nbMaxDestinataires).map(offresChunk =>
+      Future.sequence(offresGereesParRecruteurAvecCandidats.grouped(nbMaxDestinataires).map(offresChunk =>
         sendMail(mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(
           baseUrl = baseUrl,
           offresGereesParRecruteurAvecCandidats = offresChunk,
-          idTemplate = idTemplateOffreEnDifficulteGereeParRecruteur
+          idTemplate = if (Random.nextBoolean()) idTemplateOffreEnDifficulteGereeParRecruteurVersionA else idTemplateOffreEnDifficulteGereeParRecruteurVersionB
         ))
       )).map(_ => ())
     else
