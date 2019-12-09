@@ -37,6 +37,10 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
 
   private val idTemplateOffreGereeParConseiller: Int = 1042288
 
+  private val idTemplateOffreEnDifficulteGereeParConseiller: Int = 1126280
+
+  private val idTemplateOffreEnDifficulteGereeParRecruteur: Int = 1087136
+
   private val cacheKeyTesteurs = "mailjetWSAdapter.testeurs"
 
   private val authorization: String = Base64.getEncoder
@@ -94,6 +98,18 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
     else
       Future.successful(())
 
+  def envoyerCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl: String, offresGereesParRecruteurAvecCandidats: Seq[OffreGereeParRecruteurAvecCandidats]): Future[Unit] =
+    if (offresGereesParRecruteurAvecCandidats.nonEmpty)
+      Future.sequence(offresGereesParRecruteurAvecCandidats.take(3).grouped(nbMaxDestinataires).map(offresChunk =>
+        sendMail(mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(
+          baseUrl = baseUrl,
+          offresGereesParRecruteurAvecCandidats = offresChunk,
+          idTemplate = idTemplateOffreEnDifficulteGereeParRecruteur
+        ))
+      )).map(_ => ())
+    else
+      Future.successful(())
+
   def envoyerCandidatsPourOffreGereeParConseiller(baseUrl: String, offresGereesParConseillerAvecCandidats: Seq[OffreGereeParConseillerAvecCandidats]): Future[Unit] =
     if (offresGereesParConseillerAvecCandidats.nonEmpty)
       Future.sequence(offresGereesParConseillerAvecCandidats.grouped(nbMaxDestinataires).map(offresChunk =>
@@ -101,6 +117,18 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
           baseUrl = baseUrl,
           offresGereesParConseillerAvecCandidats = offresChunk,
           idTemplate = idTemplateOffreGereeParConseiller
+        ))
+      )).map(_ => ())
+    else
+      Future.successful(())
+
+  def envoyerCandidatsPourOffreEnDifficulteGereeParConseiller(baseUrl: String, offresGereesParConseillerAvecCandidats: Seq[OffreGereeParConseillerAvecCandidats]): Future[Unit] =
+    if (offresGereesParConseillerAvecCandidats.nonEmpty)
+      Future.sequence(offresGereesParConseillerAvecCandidats.grouped(nbMaxDestinataires).map(offresChunk =>
+        sendMail(mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParConseiller(
+          baseUrl = baseUrl,
+          offresGereesParConseillerAvecCandidats = offresChunk,
+          idTemplate = idTemplateOffreEnDifficulteGereeParConseiller
         ))
       )).map(_ => ())
     else

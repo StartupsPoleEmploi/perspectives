@@ -1,5 +1,8 @@
 package fr.poleemploi.perspectives.emailing.infra.csv
 
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import akka.stream.alpakka.csv.scaladsl.{CsvParsing, CsvToMap}
@@ -19,7 +22,9 @@ class OffresGereesParRecruteurCSVAdapter(val actorSystem: ActorSystem) {
 
   implicit val materializer: ActorMaterializer = ActorMaterializer()(actorSystem)
 
-  def load(source: Source[ByteString, _]): Future[Stream[OffreGereeParRecruteur]] = {
+  val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ISO_DATE
+
+  def load(source: Source[ByteString, _]): Future[Stream[OffreGereeParRecruteur]] =
     source
       .via(CsvParsing.lineScanner(delimiter = ';'))
       .via(CsvToMap.toMapAsStrings())
@@ -31,7 +36,8 @@ class OffresGereesParRecruteurCSVAdapter(val actorSystem: ActorSystem) {
           m.get("nom_prenom_correspondant_offre").exists(_.nonEmpty) &&
           m.get("dc_rome_id").exists(_.nonEmpty) &&
           m.get("intitule").exists(_.nonEmpty) &&
-          m.get("lieu_de_travail").exists(_.nonEmpty)
+          m.get("lieu_de_travail").exists(_.nonEmpty) &&
+          m.get("dd_datecreationreport").exists(_.nonEmpty)
       )
       .map(data =>
         OffreGereeParRecruteur(
@@ -42,11 +48,11 @@ class OffresGereesParRecruteurCSVAdapter(val actorSystem: ActorSystem) {
           codePostal = CodePostal(data("code_postal")),
           codeROME = CodeROME(data("dc_rome_id")),
           intitule = data("intitule"),
-          lieuTravail = data("lieu_de_travail")
+          lieuTravail = data("lieu_de_travail"),
+          datePublication = data.get("dd_datecreationreport").map(s => LocalDate.parse(s.take(10), dateTimeFormatter)).get
         )
       )
       .runWith(Sink.collection)
-  }
 
   private def isEmailValide(email: String): Boolean =
     email.nonEmpty && email != "null"
