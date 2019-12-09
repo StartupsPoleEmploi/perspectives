@@ -18,6 +18,7 @@ class MailjetWSMapping {
   import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetContactProperties._
 
   val formatter: DateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+  val prettyDateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
   def buildContactRequestInscriptionCandidat(candidatInscrit: CandidatInscrit): ManageContactRequest =
     ManageContactRequest(
@@ -108,27 +109,10 @@ class MailjetWSMapping {
       ))
     )
 
-  def buildRequestCandidatsPourOffreGereeParRecruteur(baseUrl: String, idTemplate: Int, offresGereesParRecruteurAvecCandidats: Seq[OffreGereeParRecruteurAvecCandidats]): SendMailRequest = {
-    def buildUrlRechercheCandidats(baseUrl: String, offre: OffreGereeParRecruteurAvecCandidats): String = {
-      val gaTracking = TrackingUtils.buildTrackingGA(
-        utmCampaign = "offre-sans-preselection",
-        utmSource = s"offre-${offre.offreId.value}",
-        utmMedium = "email",
-        utmContent = "cta"
-      )
-      s"$baseUrl/recruteur/recherche?codeRome=${offre.codeROME.value}&latitude=${offre.coordonnees.latitude}&longitude=${offre.coordonnees.longitude}&localisation=${offre.lieuTravail}&$gaTracking"
-    }
-
-    def buildUrlHome(baseUrl: String, offre: OffreGereeParRecruteurAvecCandidats): String = {
-      val gaTracking = TrackingUtils.buildTrackingGA(
-        utmCampaign = "offre-sans-preselection",
-        utmSource = s"offre-${offre.offreId.value}",
-        utmMedium = "email",
-        utmContent = "header"
-      )
-      s"$baseUrl?$gaTracking"
-    }
-
+  def buildRequestCandidatsPourOffreGereeParRecruteur(baseUrl: String,
+                                                      idTemplate: Int,
+                                                      offresGereesParRecruteurAvecCandidats: Seq[OffreGereeParRecruteurAvecCandidats]): SendMailRequest = {
+    val utmCampaign = "offre-sans-preselection"
     SendMailRequest(
       messages = offresGereesParRecruteurAvecCandidats.map(offre => SendMailMessage(
         from = None,
@@ -139,34 +123,39 @@ class MailjetWSMapping {
         variables = Map(
           VAR_TITRE_POSTE -> offre.intitule,
           VAR_OFFRE_ID -> offre.offreId.value,
-          VAR_URL_RECHERCHE_CANDIDATS -> buildUrlRechercheCandidats(baseUrl, offre),
-          VAR_URL_PERSPECTIVES -> buildUrlHome(baseUrl, offre)
+          VAR_URL_RECHERCHE_CANDIDATS -> buildUrlRechercheCandidats(baseUrl, offre, utmCampaign),
+          VAR_URL_PERSPECTIVES -> buildUrlHome(baseUrl, offre, "header", utmCampaign)
         )
       ))
     )
   }
 
-  def buildRequestCandidatsPourOffreGereeParConseiller(baseUrl: String, idTemplate: Int, offresGereesParConseillerAvecCandidats: Seq[OffreGereeParConseillerAvecCandidats]): SendMailRequest = {
-    def buildUrlRechercheCandidats(baseUrl: String, offre: OffreGereeParConseillerAvecCandidats): String = {
-      val gaTracking = TrackingUtils.buildTrackingGA(
-        utmCampaign = "offre-avec-preselection",
-        utmSource = s"offre-${offre.offreId.value}",
-        utmMedium = "email",
-        utmContent = "cta"
-      )
-      s"$baseUrl/recruteur/recherche?codeRome=${offre.codeROME.value}&latitude=${offre.coordonnees.latitude}&longitude=${offre.coordonnees.longitude}&localisation=${offre.lieuTravail}&$gaTracking"
-    }
+  def buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl: String,
+                                                                  idTemplate: Int,
+                                                                  offresGereesParRecruteurAvecCandidats: Seq[OffreGereeParRecruteurAvecCandidats]): SendMailRequest = {
+    val utmCampaign = "offre-en-difficulte-sans-preselection"
+    SendMailRequest(
+      messages = offresGereesParRecruteurAvecCandidats.map(offre => SendMailMessage(
+        from = None,
+        to = Seq(EmailAndName(email = offre.emailCorrespondant.value)),
+        subject = None,
+        templateId = idTemplate,
+        category = Some(OFFRE_GEREE_PAR_RECRUTEUR_CATEGORY),
+        variables = Map(
+          VAR_TITRE_POSTE -> offre.intitule,
+          VAR_OFFRE_ID -> offre.offreId.value,
+          VAR_DATE_OFFRE -> offre.datePublication.format(prettyDateFormatter),
+          VAR_URL_RECHERCHE_CANDIDATS -> buildUrlRechercheCandidats(baseUrl, offre, utmCampaign),
+          VAR_URL_PERSPECTIVES -> buildUrlHome(baseUrl, offre, "header", utmCampaign)
+        )
+      ))
+    )
+  }
 
-    def buildUrlHome(baseUrl: String, offre: OffreGereeParConseillerAvecCandidats, content: String): String = {
-      val gaTracking = TrackingUtils.buildTrackingGA(
-        utmCampaign = "offre-avec-preselection",
-        utmSource = s"offre-${offre.offreId.value}",
-        utmMedium = "email",
-        utmContent = content
-      )
-      s"$baseUrl?$gaTracking"
-    }
-
+  def buildRequestCandidatsPourOffreGereeParConseiller(baseUrl: String,
+                                                       idTemplate: Int,
+                                                       offresGereesParConseillerAvecCandidats: Seq[OffreGereeParConseillerAvecCandidats]): SendMailRequest = {
+    val utmCampaign = "offre-avec-preselection"
     SendMailRequest(
       messages = offresGereesParConseillerAvecCandidats.map(offre => SendMailMessage(
         from = None,
@@ -177,12 +166,60 @@ class MailjetWSMapping {
         variables = Map(
           VAR_TITRE_POSTE -> offre.intitule,
           VAR_OFFRE_ID -> offre.offreId.value,
-          VAR_URL_RECHERCHE_CANDIDATS -> buildUrlRechercheCandidats(baseUrl, offre),
-          VAR_URL_PERSPECTIVES -> buildUrlHome(baseUrl, offre, "header"),
-          VAR_URL_PERSPECTIVES_2 -> buildUrlHome(baseUrl, offre, "cta-2")
+          VAR_URL_RECHERCHE_CANDIDATS -> buildUrlRechercheCandidats(baseUrl, offre, utmCampaign),
+          VAR_URL_PERSPECTIVES -> buildUrlHome(baseUrl, offre, "header", utmCampaign),
+          VAR_URL_PERSPECTIVES_2 -> buildUrlHome(baseUrl, offre, "cta-2", utmCampaign)
         )
       ))
     )
+  }
+
+  def buildRequestCandidatsPourOffreEnDifficulteGereeParConseiller(baseUrl: String,
+                                                                   idTemplate: Int,
+                                                                   offresGereesParConseillerAvecCandidats: Seq[OffreGereeParConseillerAvecCandidats]): SendMailRequest = {
+    val utmCampaign = "offre-en-difficulte-avec-preselection"
+    SendMailRequest(
+      messages = offresGereesParConseillerAvecCandidats.map(offre => SendMailMessage(
+        from = None,
+        to = Seq(EmailAndName(email = offre.emailCorrespondant.value)),
+        subject = None,
+        templateId = idTemplate,
+        category = Some(OFFRE_EN_DIFFICULTE_GEREE_PAR_CONSEILLER_CATEGORY),
+        variables = Map(
+          VAR_TITRE_POSTE -> offre.intitule,
+          VAR_OFFRE_ID -> offre.offreId.value,
+          VAR_DATE_OFFRE -> offre.datePublication.format(prettyDateFormatter),
+          VAR_URL_RECHERCHE_CANDIDATS -> buildUrlRechercheCandidats(baseUrl, offre, utmCampaign),
+          VAR_URL_PERSPECTIVES -> buildUrlHome(baseUrl, offre, "header", utmCampaign),
+          VAR_URL_PERSPECTIVES_2 -> buildUrlHome(baseUrl, offre, "cta-2", utmCampaign)
+        )
+      ))
+    )
+  }
+
+  private def buildUrlRechercheCandidats(baseUrl: String,
+                                         offre: OffreAvecCandidats,
+                                         utmCampaign: String): String = {
+    val gaTracking = TrackingUtils.buildTrackingGA(
+      utmCampaign = utmCampaign,
+      utmSource = s"offre-${offre.offreId.value}",
+      utmMedium = "email",
+      utmContent = "cta"
+    )
+    s"$baseUrl/recruteur/recherche?codeRome=${offre.codeROME.value}&latitude=${offre.coordonnees.latitude}&longitude=${offre.coordonnees.longitude}&localisation=${offre.lieuTravail}&$gaTracking"
+  }
+
+  private def buildUrlHome(baseUrl: String,
+                           offre: OffreAvecCandidats,
+                           content: String,
+                           utmCampaign: String): String = {
+    val gaTracking = TrackingUtils.buildTrackingGA(
+      utmCampaign = utmCampaign,
+      utmSource = s"offre-${offre.offreId.value}",
+      utmMedium = "email",
+      utmContent = content
+    )
+    s"$baseUrl?$gaTracking"
   }
 
   private def buildGenre(genre: Genre): String = genre match {
@@ -208,8 +245,10 @@ object MailjetWSMapping {
   val VAR_URL_RECHERCHE_CANDIDATS = "urlRechercheCandidats"
   val VAR_OFFRE_ID = "offreId"
   val VAR_TITRE_POSTE = "titrePoste"
+  val VAR_DATE_OFFRE = "dateOffre"
   val OFFRE_GEREE_PAR_RECRUTEUR_CATEGORY = "offre_geree_par_recruteur"
   val OFFRE_GEREE_PAR_CONSEILLER_CATEGORY = "offre_geree_par_conseiller"
+  val OFFRE_EN_DIFFICULTE_GEREE_PAR_CONSEILLER_CATEGORY = "offre_en_difficulte_geree_par_conseiller"
 }
 
 case class ContactList(listID: String,

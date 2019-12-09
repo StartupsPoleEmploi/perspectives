@@ -1,8 +1,8 @@
 package conf
 
-import candidat.activite.domain.{EmailingDisponibilitesService, ImportOffresGereesParConseillerService, ImportOffresGereesParRecruteurService}
-import candidat.activite.infra.local.{LocalEmailingDisponibilitesService, LocalImportOffresGereesParConseillerService, LocalImportOffresGereesParRecruteurService}
-import candidat.activite.infra.mailjet.{MailjetEmailingDisponibilitesService, MailjetImportOffresGereesParConseillerService, MailjetImportOffresGereesParRecruteurService}
+import candidat.activite.domain._
+import candidat.activite.infra.local._
+import candidat.activite.infra.mailjet._
 import com.google.inject.{AbstractModule, Provider, Provides, Singleton}
 import fr.poleemploi.perspectives.candidat.localisation.domain.LocalisationService
 import fr.poleemploi.perspectives.candidat.localisation.infra.local.LocalisationLocalAdapter
@@ -66,6 +66,16 @@ class ServicesModule extends AbstractModule {
 
   @Provides
   @Singleton
+  def importOffresEnDifficulteGereesParRecruteurService(mailjetImportOffresEnDifficulteGereesParRecruteurService: Provider[MailjetImportOffresEnDifficulteGereesParRecruteurService],
+                                                        localImportOffresEnDifficulteGereesParRecruteurService: Provider[LocalImportOffresEnDifficulteGereesParRecruteurService],
+                                                        batchsConfig: BatchsConfig): ImportOffresEnDifficulteGereesParRecruteurService =
+    if (batchsConfig.useMailjet)
+      mailjetImportOffresEnDifficulteGereesParRecruteurService.get()
+    else
+      localImportOffresEnDifficulteGereesParRecruteurService.get()
+
+  @Provides
+  @Singleton
   def importOffresGereesParConseillerService(mailjetImportOffresGereesParConseillerService: Provider[MailjetImportOffresGereesParConseillerService],
                                             localImportOffresGereesParConseillerService: Provider[LocalImportOffresGereesParConseillerService],
                                             batchsConfig: BatchsConfig): ImportOffresGereesParConseillerService =
@@ -73,6 +83,16 @@ class ServicesModule extends AbstractModule {
       mailjetImportOffresGereesParConseillerService.get()
     else
       localImportOffresGereesParConseillerService.get()
+
+  @Provides
+  @Singleton
+  def importOffresEnDifficulteGereesParConseillerService(mailjetImportOffresEnDifficulteGereesParConseillerService: Provider[MailjetImportOffresEnDifficulteGereesParConseillerService],
+                                                         localImportOffresEnDifficulteGereesParConseillerService: Provider[LocalImportOffresEnDifficulteGereesParConseillerService],
+                                                         batchsConfig: BatchsConfig): ImportOffresEnDifficulteGereesParConseillerService =
+    if (batchsConfig.useMailjet)
+      mailjetImportOffresEnDifficulteGereesParConseillerService.get()
+    else
+      localImportOffresEnDifficulteGereesParConseillerService.get()
 
   @Provides
   @Singleton
