@@ -7,9 +7,10 @@ import fr.poleemploi.perspectives.authentification.infra.autologin.JwtToken
 import fr.poleemploi.perspectives.candidat.activite.domain.EmailingDisponibiliteCandidatAvecEmail
 import fr.poleemploi.perspectives.commun.domain.{CodeDepartement, _}
 import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
-import fr.poleemploi.perspectives.emailing.domain.{CandidatInscrit, MRSProspectCandidat, MRSValideeCandidat}
+import fr.poleemploi.perspectives.emailing.domain.{CandidatInscrit, MRSProspectCandidat, MRSValideeCandidat, OffreGereeParRecruteurAvecCandidats}
 import fr.poleemploi.perspectives.emailing.infra.ws.MailjetWSMapping._
 import fr.poleemploi.perspectives.metier.domain.Metier
+import fr.poleemploi.perspectives.offre.domain.OffreId
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, MustMatchers, WordSpec}
@@ -109,8 +110,23 @@ class MailjetWSMappingSpec extends WordSpec
       (request.contacts.head.properties \ identifiant_local).as[String] mustBe prospect.identifiantLocal.value
     }
   }
-  "buildRequestEmailDisponibiliteCandidat" should {
+  "buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur" should {
+    "construire une requete avec la campagne GA de la version A du template" in {
+      // Given & When
+      val request = mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl, templateId, useVersionA = true, Seq(mockOffreGereeParRecruteurAvecCandidats))
 
+      // Then
+      request.messages.head.variables.getOrElse(VAR_URL_RECHERCHE_CANDIDATS, "") must include ("&utm_campaign=offre-en-difficulte-sans-preselection-version-a")
+    }
+    "construire une requete avec la campagne GA de la version B du template" in {
+      // Given & When
+      val request = mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl, templateId, useVersionA = false, Seq(mockOffreGereeParRecruteurAvecCandidats))
+
+      // Then
+      request.messages.head.variables.getOrElse(VAR_URL_RECHERCHE_CANDIDATS, "") must include ("&utm_campaign=offre-en-difficulte-sans-preselection-version-b")
+    }
+  }
+  "buildRequestEmailDisponibiliteCandidat" should {
     "construire une requete avec l'id du template mailjet" in {
       // Given
       val candidats = Stream(mockEmailingDisponibiliteCandidatAvecEmail)
@@ -186,5 +202,20 @@ class MailjetWSMappingSpec extends WordSpec
     when(candidat.email).thenReturn(Email("email@candidat.fr"))
     when(candidat.autologinToken).thenReturn(JwtToken("token"))
     candidat
+  }
+
+  private def mockOffreGereeParRecruteurAvecCandidats: OffreGereeParRecruteurAvecCandidats = {
+    val offre = mock[OffreGereeParRecruteurAvecCandidats]
+    when(offre.emailCorrespondant).thenReturn(Email("email@candidat.fr"))
+    when(offre.intitule).thenReturn("Mon offre")
+    when(offre.offreId).thenReturn(OffreId("123456789"))
+    when(offre.datePublication).thenReturn(LocalDate.now)
+    when(offre.codeROME).thenReturn(CodeROME("M1601"))
+    val coordonnees = mock[Coordonnees]
+    when(coordonnees.latitude).thenReturn(48.8534)
+    when(coordonnees.longitude).thenReturn(2.3488)
+    when(offre.coordonnees).thenReturn(coordonnees)
+    when(offre.lieuTravail).thenReturn("Paris")
+    offre
   }
 }

@@ -40,9 +40,9 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
 
   private val idTemplateOffreEnDifficulteGereeParConseiller: Int = 1126280
 
-  private val idTemplateOffreEnDifficulteGereeParRecruteurVersionA: Int = 1087136
+  private val idTemplateOffreEnDifficulteGereeParRecruteurVersionA: Int = 1128159
 
-  private val idTemplateOffreEnDifficulteGereeParRecruteurVersionB: Int = 1087136 // TODO à valoriser quand on aura un deuxieme template
+  private val idTemplateOffreEnDifficulteGereeParRecruteurVersionB: Int = 1128156
 
   private val cacheKeyTesteurs = "mailjetWSAdapter.testeurs"
 
@@ -103,13 +103,15 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
 
   def envoyerCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl: String, offresGereesParRecruteurAvecCandidats: Seq[OffreGereeParRecruteurAvecCandidats]): Future[Unit] =
     if (offresGereesParRecruteurAvecCandidats.nonEmpty)
-      Future.sequence(offresGereesParRecruteurAvecCandidats.grouped(nbMaxDestinataires).map(offresChunk =>
+      Future.sequence(offresGereesParRecruteurAvecCandidats.grouped(nbMaxDestinataires).map { offresChunk =>
+        val useVersionA = Random.nextBoolean()
         sendMail(mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(
           baseUrl = baseUrl,
           offresGereesParRecruteurAvecCandidats = offresChunk,
-          idTemplate = if (Random.nextBoolean()) idTemplateOffreEnDifficulteGereeParRecruteurVersionA else idTemplateOffreEnDifficulteGereeParRecruteurVersionB
+          idTemplate = if (useVersionA) idTemplateOffreEnDifficulteGereeParRecruteurVersionA else idTemplateOffreEnDifficulteGereeParRecruteurVersionB,
+          useVersionA = useVersionA
         ))
-      )).map(_ => ())
+      }).map(_ => ())
     else
       Future.successful(())
 
