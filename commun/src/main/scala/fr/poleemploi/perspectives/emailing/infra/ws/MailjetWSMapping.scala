@@ -141,7 +141,7 @@ class MailjetWSMapping {
         to = Seq(EmailAndName(email = offre.emailCorrespondant.value)),
         subject = None,
         templateId = idTemplate,
-        category = Some(OFFRE_EN_DIFFICULTE_GEREE_PAR_RECRUTEUR_CATEGORY),
+        category = Some(OFFRE_EN_DIFFICULTE_GEREE_PAR_RECRUTEUR_CATEGORY + (if(useVersionA) "_version_a" else "_version_b")),
         variables = Map(
           VAR_TITRE_POSTE -> offre.intitule,
           VAR_OFFRE_ID -> offre.offreId.value,

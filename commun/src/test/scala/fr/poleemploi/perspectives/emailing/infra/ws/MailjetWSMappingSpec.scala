@@ -125,6 +125,20 @@ class MailjetWSMappingSpec extends WordSpec
       // Then
       request.messages.head.variables.getOrElse(VAR_URL_RECHERCHE_CANDIDATS, "") must include ("&utm_campaign=offre-en-difficulte-sans-preselection-version-b")
     }
+    "construire une requete avec la campagne mailjet de la version A du template" in {
+      // Given & When
+      val request = mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl, templateId, useVersionA = true, Seq(mockOffreGereeParRecruteurAvecCandidats))
+
+      // Then
+      request.messages.head.category.getOrElse("") mustBe "offre_en_difficulte_geree_par_recruteur_version_a"
+    }
+    "construire une requete avec la campagne mailjet de la version B du template" in {
+      // Given & When
+      val request = mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl, templateId, useVersionA = false, Seq(mockOffreGereeParRecruteurAvecCandidats))
+
+      // Then
+      request.messages.head.category.getOrElse("") mustBe "offre_en_difficulte_geree_par_recruteur_version_b"
+    }
   }
   "buildRequestEmailDisponibiliteCandidat" should {
     "construire une requete avec l'id du template mailjet" in {
