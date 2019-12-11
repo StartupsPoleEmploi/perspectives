@@ -3,6 +3,7 @@ package fr.poleemploi.perspectives.commun.infra.peconnect
 import fr.poleemploi.cqrs.projection.Projection
 import fr.poleemploi.eventsourcing.Event
 import fr.poleemploi.perspectives.candidat._
+import fr.poleemploi.perspectives.candidat.mrs.domain.ReferentielMRS
 import fr.poleemploi.perspectives.commun.infra.peconnect.ws.PEConnectWSAdapter
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -14,6 +15,7 @@ import scala.concurrent.Future
   */
 class PEConnectCandidatProcessManager(peConnectAccessTokenStorage: PEConnectAccessTokenStorage,
                                       peConnectWSAdapter: PEConnectWSAdapter,
+                                      referentielMRS: ReferentielMRS,
                                       candidatCommandHandler: CandidatCommandHandler) extends Projection {
 
   override def listenTo: List[Class[_ <: Event]] = List(classOf[CandidatInscritEvent], classOf[CandidatConnecteEvent])
@@ -21,7 +23,7 @@ class PEConnectCandidatProcessManager(peConnectAccessTokenStorage: PEConnectAcce
   override def isReplayable: Boolean = false
 
   override def onEvent: ReceiveEvent = {
-    case e: CandidatInscritEvent => modifierProfilCandidat(e.candidatId)
+    case e: CandidatInscritEvent => onCandidatInscritEvent(e)
     case e: CandidatConnecteEvent => modifierProfilCandidat(e.candidatId)
   }
 
@@ -38,7 +40,28 @@ class PEConnectCandidatProcessManager(peConnectAccessTokenStorage: PEConnectAcce
       }
   }
 
-  def modifierProfilCandidat(candidatId: CandidatId): Future[Unit] =
+  def onCandidatInscritEvent(event: CandidatInscritEvent): Future[Unit] =
+    for {
+      _ <- recupererMrsValidees(event.candidatId)
+      res <- modifierProfilCandidat(event.candidatId)
+    } yield res
+
+  private def recupererMrsValidees(candidatId: CandidatId): Future[Unit] =
+    for {
+      mrsValidees <- referentielMRS.mrsValidees(candidatId).recover{
+        case t: Throwable =>
+          peConnectLogger.error(s"Erreur lors de la récupération des MRS validées du candidat ${candidatId.value}", t)
+          Nil
+      }
+      _ <- candidatCommandHandler.handle(
+        AjouterMRSValideesCommand(
+          id = candidatId,
+          mrsValidees = mrsValidees
+        )
+      )
+    } yield ()
+
+  private def modifierProfilCandidat(candidatId: CandidatId): Future[Unit] =
     for {
       accessToken <- peConnectAccessTokenStorage.find(candidatId).map(_.getOrElse(throw new IllegalArgumentException(s"Pas de token pour le candidat ${candidatId.value}")))
       adresse <- peConnectWSAdapter.coordonneesCandidat(accessToken).recoverWithNone(candidatId)
