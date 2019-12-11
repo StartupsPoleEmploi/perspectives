@@ -472,6 +472,34 @@ class ReferentielOffreWSMappingSpec extends WordSpec
       // Then
       result.isEmpty mustBe true
     }
+    "ne pas retourner l'offre lorsqu'elle correspond au codeROME K2110" in {
+      // Given
+      when(criteresRechercheOffre.codesROME) thenReturn List(
+        CodeROME("A1401"),
+        CodeROME("K2110")
+      )
+      when(offreResponse.romeCode) thenReturn Some("K2110")
+
+      // When
+      val result = mapping.filterOffresResponses(criteresRechercheOffre, List(offreResponse))
+
+      // Then
+      result.isEmpty mustBe true
+    }
+    "ne pas retourner l'offre lorsqu'elle correspond au codeROME K2503" in {
+      // Given
+      when(criteresRechercheOffre.codesROME) thenReturn List(
+        CodeROME("A1401"),
+        CodeROME("K2503")
+      )
+      when(offreResponse.romeCode) thenReturn Some("K2503")
+
+      // When
+      val result = mapping.filterOffresResponses(criteresRechercheOffre, List(offreResponse))
+
+      // Then
+      result.isEmpty mustBe true
+    }
     "buildPageOffres" should {
       "ne pas retourner de page suivante lorsqu'aucun range n'est retourné" in {
         // Given

@@ -280,7 +280,7 @@ class ReferentielOffreWSMapping {
           (criteresRechercheOffre.codesROME.isEmpty || criteresRechercheOffre.codesROME.exists(c => r.startsWith(c.value))) &&
             (criteresRechercheOffre.secteursActivites.isEmpty || criteresRechercheOffre.secteursActivites.exists(c => r.startsWith(c.value))) &&
             (criteresRechercheOffre.codesDomaineProfessionnels.isEmpty || criteresRechercheOffre.codesDomaineProfessionnels.exists(c => r.startsWith(c.value))) &&
-            !r.startsWith("N41")
+            !r.startsWith("N41") && !"K2110".equals(r) && !"K2503".equals(r)
         )
     )
 
