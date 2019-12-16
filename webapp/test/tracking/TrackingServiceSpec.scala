@@ -42,7 +42,7 @@ class TrackingServiceSpec extends WordSpec
       )
 
       // Then
-      (result \\ typeUtilisateur).head mustBe JsNumber(typeUtilisateurCandidat)
+      (result \\ typeUtilisateur).head mustBe JsString(typeUtilisateurCandidat)
     }
     "doit contenir un champ candidat_id renseigne quand candidat connecte" in {
       // Given
@@ -107,7 +107,7 @@ class TrackingServiceSpec extends WordSpec
       )
 
       // Then
-      (result \\ typeUtilisateur).head mustBe JsNumber(typeUtilisateurRecruteur)
+      (result \\ typeUtilisateur).head mustBe JsString(typeUtilisateurRecruteur)
     }
     "doit contenir un champ recruteur_id renseigne quand recruteur connecte" in {
       // Given
@@ -156,7 +156,7 @@ class TrackingServiceSpec extends WordSpec
       val result = TrackingService.buildTrackingCandidat(None)
 
       // Then
-      (result \\ typeUtilisateur).head mustBe JsNumber(typeUtilisateurCandidat)
+      (result \\ typeUtilisateur).head mustBe JsString(typeUtilisateurCandidat)
     }
     "doit contenir un champ typeUtilisateur a candidat quand candidat connecte" in {
       // Given
@@ -166,7 +166,7 @@ class TrackingServiceSpec extends WordSpec
       val result = TrackingService.buildTrackingCandidat(Some(candidatAuthentifie))
 
       // Then
-      (result \\ typeUtilisateur).head mustBe JsNumber(typeUtilisateurCandidat)
+      (result \\ typeUtilisateur).head mustBe JsString(typeUtilisateurCandidat)
     }
     "ne doit pas contenir de champ candidat_id quand candidat pas connecte" in {
       // Given & When
@@ -284,7 +284,7 @@ class TrackingServiceSpec extends WordSpec
       val result = TrackingService.buildTrackingRecruteur(None)
 
       // Then
-      (result \\ typeUtilisateur).head mustBe JsNumber(typeUtilisateurRecruteur)
+      (result \\ typeUtilisateur).head mustBe JsString(typeUtilisateurRecruteur)
     }
     "doit contenir un champ typeUtilisateur a recruteur quand recruteur connecte" in {
       // Given
@@ -294,7 +294,7 @@ class TrackingServiceSpec extends WordSpec
       val result = TrackingService.buildTrackingRecruteur(Some(recruteurAuthentifie))
 
       // Then
-      (result \\ typeUtilisateur).head mustBe JsNumber(typeUtilisateurRecruteur)
+      (result \\ typeUtilisateur).head mustBe JsString(typeUtilisateurRecruteur)
     }
     "ne doit pas contenir de champ typeRecruteur quand recruteur connecte sans type recruteur" in {
       // Given
@@ -314,7 +314,7 @@ class TrackingServiceSpec extends WordSpec
       val result = TrackingService.buildTrackingRecruteur(Some(recruteurAuthentifie))
 
       // Then
-      (result \\ typeRecruteur).head mustBe JsNumber(typeRecruteurEntreprise)
+      (result \\ typeRecruteur).head mustBe JsString(typeRecruteurEntreprise)
     }
     "doit contenir un champ typeRecruteur quand recruteur connecte et recruteur de type organisme de formation" in {
       // Given
@@ -324,7 +324,7 @@ class TrackingServiceSpec extends WordSpec
       val result = TrackingService.buildTrackingRecruteur(Some(recruteurAuthentifie))
 
       // Then
-      (result \\ typeRecruteur).head mustBe JsNumber(typeRecruteurOrganismeFormation)
+      (result \\ typeRecruteur).head mustBe JsString(typeRecruteurOrganismeFormation)
     }
     "doit contenir un champ typeRecruteur quand recruteur connecte et recruteur de type agence interim" in {
       // Given
@@ -334,7 +334,7 @@ class TrackingServiceSpec extends WordSpec
       val result = TrackingService.buildTrackingRecruteur(Some(recruteurAuthentifie))
 
       // Then
-      (result \\ typeRecruteur).head mustBe JsNumber(typeRecruteurAgenceInterim)
+      (result \\ typeRecruteur).head mustBe JsString(typeRecruteurAgenceInterim)
     }
     "ne doit pas contenir de champ recruteur_id quand recruteur pas connecte" in {
       // Given & When

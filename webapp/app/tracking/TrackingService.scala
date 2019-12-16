@@ -21,12 +21,12 @@ object TrackingService {
   val email = "email"
   val isConnecte = "is_connecte"
   val typeUtilisateur = "type_utilisateur"
-  val typeUtilisateurCandidat = 0
-  val typeUtilisateurRecruteur = 1
+  val typeUtilisateurCandidat = "candidat"
+  val typeUtilisateurRecruteur = "recruteur"
   val typeRecruteur = "type_recruteur"
-  val typeRecruteurOrganismeFormation = 1
-  val typeRecruteurAgenceInterim = 2
-  val typeRecruteurEntreprise = 3
+  val typeRecruteurOrganismeFormation = "organisme_formation"
+  val typeRecruteurAgenceInterim = "agence_interim"
+  val typeRecruteurEntreprise = "entreprise"
   val isRecruteurCertifie = "is_certifie"
 
   def buildTrackingCommun(optCandidatAuthentifie: Option[CandidatAuthentifie],
@@ -56,7 +56,7 @@ object TrackingService {
 
     Json.arr(Json.obj(
       isConnecte -> JsNumber(optCandidatAuthentifie.map(_ => BigDecimal(1)).getOrElse(BigDecimal(0))),
-      typeUtilisateur -> JsNumber(typeUtilisateurCandidat)
+      typeUtilisateur -> typeUtilisateurCandidat
     ) ++ jsonCandidatId ++ jsonCandidatEmail ++ jsonCandidatEvent)
   }
 
@@ -83,11 +83,11 @@ object TrackingService {
 
     Json.arr(Json.obj(
       isConnecte -> JsNumber(optRecruteurAuthentifie.map(_ => BigDecimal(1)).getOrElse(BigDecimal(0))),
-      typeUtilisateur -> JsNumber(typeUtilisateurRecruteur)
+      typeUtilisateur -> typeUtilisateurRecruteur
     ) ++ jsonRecruteurInfos ++ jsonTypeRecruteur ++ jsonRecruteurEvent)
   }
 
-  private def buildTypeRecruteur(typeRecruteur: TypeRecruteur): Option[Int] =
+  private def buildTypeRecruteur(typeRecruteur: TypeRecruteur): Option[String] =
     typeRecruteur match {
       case TypeRecruteur.ENTREPRISE => Some(typeRecruteurEntreprise)
       case TypeRecruteur.AGENCE_INTERIM => Some(typeRecruteurAgenceInterim)
