@@ -159,32 +159,39 @@ class CandidatProjectionElasticsearchQueryAdapter(wsClient: WSClient,
         val hits = (json \ "hits" \ "hits").as[JsArray]
         val candidats = (hits \\ "_source").take(query.nbCandidatsParPage).map(_.as[CandidatPourRecruteurDocument])
         val nbCandidatsTotal = (json \ "hits" \ "total").as[Int]
+        val fCandidats = mapping.buildCandidatsRechercheDto(candidats)
+        val fMetier = mapping.metierParCodeRome(query.codeROME)
+        val fSecteur = mapping.secteurParCodeSecteurActivite(query.codeSecteurActivite.orElse(query.codeROME.map(_.codeSecteurActivite)))
 
-        mapping.buildCandidatsRechercheDto(candidats).map(candidats =>
-          RechercheCandidatQueryResult(
-            candidats = candidats,
-            nbCandidatsTotal = nbCandidatsTotal,
-            pagesSuivantes =
-              if (nbCandidatsTotal <= query.nbCandidatsParPage)
-                Nil
-              else
-                (hits \\ "sort").zipWithIndex
-                  .filter(v => (v._2 + 1) % query.nbCandidatsParPage == 0)
-                  .map(v =>
-                    if (query.codeSecteurActivite.isDefined || query.codeROME.isDefined)
-                      KeysetCandidatPourRecruteur(
-                        score = Some((v._1 \ 0).as[Int]),
-                        dateInscription = (v._1 \ 1).as[Long],
-                        candidatId = (v._1 \ 2).as[CandidatId]
-                      )
-                    else
-                      KeysetCandidatPourRecruteur(
-                        score = None,
-                        dateInscription = (v._1 \ 0).as[Long],
-                        candidatId = (v._1 \ 1).as[CandidatId]
-                      )
-                  ).toList
-          )
+        for {
+          metier <- fMetier
+          secteur <- fSecteur
+          candidats <- fCandidats
+        } yield RechercheCandidatQueryResult(
+          candidats = candidats,
+          nbCandidatsTotal = nbCandidatsTotal,
+          metierRecherche = metier,
+          secteurRecherche = secteur,
+          pagesSuivantes =
+            if (nbCandidatsTotal <= query.nbCandidatsParPage)
+              Nil
+            else
+              (hits \\ "sort").zipWithIndex
+                .filter(v => (v._2 + 1) % query.nbCandidatsParPage == 0)
+                .map(v =>
+                  if (query.codeSecteurActivite.isDefined || query.codeROME.isDefined)
+                    KeysetCandidatPourRecruteur(
+                      score = Some((v._1 \ 0).as[Int]),
+                      dateInscription = (v._1 \ 1).as[Long],
+                      candidatId = (v._1 \ 2).as[CandidatId]
+                    )
+                  else
+                    KeysetCandidatPourRecruteur(
+                      score = None,
+                      dateInscription = (v._1 \ 0).as[Long],
+                      candidatId = (v._1 \ 1).as[CandidatId]
+                    )
+                ).toList
         )
       }
 
