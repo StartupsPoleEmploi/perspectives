@@ -17,6 +17,7 @@ class ReferentielProspectCandidatLocalAdapter extends ReferentielProspectCandida
   private val prospectCandidat = ProspectCandidat(
     peConnectId = PEConnectId("1111-2222-3333-4444"),
     identifiantLocal = IdentifiantLocal("123456789A"),
+    codeNeptune = CodeNeptune("IADE3110"),
     nom = Nom("Patulacci"),
     prenom = Prenom("Marcel"),
     email = Email("marcel.patulacci@pole-emploi.fr"),

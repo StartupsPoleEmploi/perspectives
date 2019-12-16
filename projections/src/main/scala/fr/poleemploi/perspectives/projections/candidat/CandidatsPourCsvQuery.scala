@@ -13,6 +13,7 @@ case class CandidatsPourCsvQueryResult(source: Source[CandidatPourCsvDto, NotUse
 
 case class CandidatPourCsvDto(peConnectId: Option[PEConnectId],
                               identifiantLocal: Option[IdentifiantLocal],
+                              codeNeptune: Option[CodeNeptune],
                               nom: Nom,
                               prenom: Prenom,
                               email: Email,

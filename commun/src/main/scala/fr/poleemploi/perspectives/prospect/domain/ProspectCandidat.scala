@@ -8,6 +8,7 @@ import fr.poleemploi.perspectives.metier.domain.Metier
 
 case class ProspectCandidat(peConnectId: PEConnectId,
                             identifiantLocal: IdentifiantLocal,
+                            codeNeptune: CodeNeptune,
                             nom: Nom,
                             prenom: Prenom,
                             email: Email,

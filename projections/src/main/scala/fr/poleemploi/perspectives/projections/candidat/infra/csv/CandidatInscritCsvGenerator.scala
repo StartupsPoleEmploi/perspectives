@@ -8,6 +8,7 @@ class CandidatInscritCsvGenerator extends CsvGenerator[CandidatPourCsvDto] {
   override val csvHeader = List(
     "Identifiant local",
     "PEConnectId",
+    "Code Neptune",
     "Nom",
     "Prenom",
     "Email",
@@ -21,6 +22,7 @@ class CandidatInscritCsvGenerator extends CsvGenerator[CandidatPourCsvDto] {
       List(
         identifiantLocal.value,
         candidatPourCsvDto.peConnectId.map(_.value).getOrElse(""),
+        candidatPourCsvDto.codeNeptune.map(_.value).getOrElse(""),
         candidatPourCsvDto.nom.value,
         candidatPourCsvDto.prenom.value,
         candidatPourCsvDto.email.value,

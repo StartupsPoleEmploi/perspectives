@@ -70,6 +70,7 @@ class CandidatProjectionElasticsearchQueryMapping(referentielMetier: Referentiel
       CandidatPourCsvDto(
         peConnectId = document.peConnectId,
         identifiantLocal = document.identifiantLocal,
+        codeNeptune = document.codeNeptune,
         nom = document.nom,
         prenom = document.prenom,
         email = document.email,

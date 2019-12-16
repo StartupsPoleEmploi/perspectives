@@ -17,6 +17,7 @@ object NouveauCandidatState extends CandidatState {
         candidatId = command.id,
         peConnectId = optProspectCandidat.map(_.peConnectId),
         identifiantLocal = optProspectCandidat.map(_.identifiantLocal),
+        codeNeptune = optProspectCandidat.map(_.codeNeptune),
         nom = command.nom,
         prenom = command.prenom,
         email = command.email,

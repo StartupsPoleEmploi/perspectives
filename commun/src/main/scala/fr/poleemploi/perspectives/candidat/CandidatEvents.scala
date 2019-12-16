@@ -16,6 +16,7 @@ sealed trait CandidatEvent extends Event {
 case class CandidatInscritEvent(candidatId: CandidatId,
                                 peConnectId: Option[PEConnectId] = None,
                                 identifiantLocal: Option[IdentifiantLocal] = None,
+                                codeNeptune: Option[CodeNeptune] = None,
                                 nom: Nom,
                                 prenom: Prenom,
                                 email: Email,
