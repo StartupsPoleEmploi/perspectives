@@ -159,17 +159,19 @@ class CandidatProjectionElasticsearchQueryAdapter(wsClient: WSClient,
         val hits = (json \ "hits" \ "hits").as[JsArray]
         val candidats = (hits \\ "_source").take(query.nbCandidatsParPage).map(_.as[CandidatPourRecruteurDocument])
         val nbCandidatsTotal = (json \ "hits" \ "total").as[Int]
-        val fMetier = mapping.metierParCodeRome(query.codeROME)
         val fCandidats = mapping.buildCandidatsRechercheDto(candidats)
-        val secteurRecherche = getSecteurRecherche(query)
+        val fMetier = mapping.metierParCodeRome(query.codeROME)
+        val fSecteur = mapping.secteurParCodeSecteurActivite(query.codeSecteurActivite.orElse(query.codeROME.map(_.codeSecteurActivite)))
 
         for {
           metier <- fMetier
+          secteur <- fSecteur
           candidats <- fCandidats
         } yield RechercheCandidatQueryResult(
           candidats = candidats,
           nbCandidatsTotal = nbCandidatsTotal,
           metierRecherche = metier,
+          secteurRecherche = secteur,
           pagesSuivantes =
             if (nbCandidatsTotal <= query.nbCandidatsParPage)
               Nil
@@ -192,11 +194,6 @@ class CandidatProjectionElasticsearchQueryAdapter(wsClient: WSClient,
                 ).toList
         )
       }
-
-  private def getSecteurRecherche(query: RechercheCandidatsQuery) = {
-    val codeSecteurActivite = query.codeSecteurActivite.orElse(query.codeROME.map(_.codeSecteurActivite))
-
-  }
 
   override def listerPourCsv(query: CandidatsPourCsvQuery.type): Future[CandidatsPourCsvQueryResult] =
     Future(CandidatsPourCsvQueryResult(

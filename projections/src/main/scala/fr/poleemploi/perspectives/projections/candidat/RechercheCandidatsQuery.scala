@@ -6,7 +6,7 @@ import fr.poleemploi.cqrs.projection.{Query, QueryResult}
 import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.candidat.cv.domain.{CVId, TypeMedia}
 import fr.poleemploi.perspectives.commun.domain.{Coordonnees, _}
-import fr.poleemploi.perspectives.metier.domain.Metier
+import fr.poleemploi.perspectives.metier.domain.{Metier, SecteurActivite}
 import fr.poleemploi.perspectives.recruteur.TypeRecruteur
 import play.api.libs.json.{Json, Writes}
 
@@ -133,7 +133,8 @@ object KeysetCandidatPourRecruteur {
 case class RechercheCandidatQueryResult(candidats: List[CandidatPourRecruteurDto],
                                         nbCandidatsTotal: Int,
                                         pagesSuivantes: List[KeysetCandidatPourRecruteur],
-                                        metierRecherche: Option[Metier]) extends QueryResult
+                                        metierRecherche: Option[Metier],
+                                        secteurRecherche: Option[SecteurActivite]) extends QueryResult
 
 object RechercheCandidatQueryResult {
 
@@ -147,6 +148,7 @@ object RechercheCandidatQueryResult {
     candidats = CandidatPourRecruteurDto.mock(MOCK_SIZE),
     nbCandidatsTotal = MOCK_SIZE,
     pagesSuivantes = Nil,
-    metierRecherche = None
+    metierRecherche = None,
+    secteurRecherche = None
   )
 }

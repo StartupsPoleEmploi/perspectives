@@ -5,7 +5,7 @@ import java.time.LocalDate
 import fr.poleemploi.perspectives.candidat.{ExperienceProfessionnelle, Formation, LocalisationRecherche}
 import fr.poleemploi.perspectives.commun.domain._
 import fr.poleemploi.perspectives.commun.infra.play.json.JsonFormats._
-import fr.poleemploi.perspectives.metier.domain.{Metier, ReferentielMetier}
+import fr.poleemploi.perspectives.metier.domain.{Metier, ReferentielMetier, SecteurActivite}
 import fr.poleemploi.perspectives.projections.candidat._
 import fr.poleemploi.perspectives.recruteur.TypeRecruteur
 import play.api.libs.json._
@@ -84,6 +84,11 @@ class CandidatProjectionElasticsearchQueryMapping(referentielMetier: Referentiel
 
   def metierParCodeRome(codeROME: Option[CodeROME]): Future[Option[Metier]] =
     codeROME.map(code => referentielMetier.metierParCodeROME(code).map(Some(_)).recoverWith {
+      case _ => Future.successful(None)
+    }).getOrElse(Future.successful(None))
+
+  def secteurParCodeSecteurActivite(codeSecteurActivite: Option[CodeSecteurActivite]): Future[Option[SecteurActivite]] =
+    codeSecteurActivite.map(code => referentielMetier.secteurActiviteRechercheParCode(code).map(Some(_)).recoverWith {
       case _ => Future.successful(None)
     }).getOrElse(Future.successful(None))
 
