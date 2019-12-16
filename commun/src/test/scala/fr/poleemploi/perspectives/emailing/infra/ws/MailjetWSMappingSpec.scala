@@ -109,6 +109,16 @@ class MailjetWSMappingSpec extends WordSpec
       // Then
       (request.contacts.head.properties \ identifiant_local).as[String] mustBe prospect.identifiantLocal.value
     }
+    "construire une requete avec le code neptune" in {
+      // Given
+      val prospect = mockMRSProspectCandidat
+
+      // When
+      val request = mapping.buildRequestImportProspectsCandidats(idListe, Stream(prospect))
+
+      // Then
+      (request.contacts.head.properties \ code_neptune).as[String] mustBe prospect.codeNeptune.value
+    }
   }
   "buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur" should {
     "construire une requete avec la campagne GA de la version A du template" in {
@@ -208,6 +218,7 @@ class MailjetWSMappingSpec extends WordSpec
     when(prospect.dateEvaluation) thenReturn LocalDate.now()
     when(prospect.peConnectId) thenReturn PEConnectId("28d0b75a-b694-4de3-8849-18bfbfebd729")
     when(prospect.identifiantLocal) thenReturn IdentifiantLocal("0123456789A")
+    when(prospect.codeNeptune) thenReturn CodeNeptune("IADE3110")
     prospect
   }
 

@@ -33,6 +33,7 @@ class MRSValideeProspectCandidatCSVAdapter(val actorSystem: ActorSystem) {
       .filter(m =>
         m.get("id_peconnect").exists(s => idPEConnectPattern.matcher(s).matches()) &&
           m.get("identifiant_local").exists(s => identifiantLocalPattern.matcher(s).matches()) &&
+          m.get("dc_agentpe_referent_id").exists(s => codeNeptunePattern.matcher(s).matches()) &&
           m.get("dc_nom").exists(_.nonEmpty) &&
           m.get("dc_prenom").exists(_.nonEmpty) &&
           m.get("dc_sexe_id").exists(_.nonEmpty) &&
@@ -47,6 +48,7 @@ class MRSValideeProspectCandidatCSVAdapter(val actorSystem: ActorSystem) {
         MRSValideeProspectCandidat(
           peConnectId = PEConnectId(data("id_peconnect")),
           identifiantLocal = IdentifiantLocal(data("identifiant_local")),
+          codeNeptune = CodeNeptune(data("dc_agentpe_referent_id")),
           nom = Nom(data("dc_nom")),
           prenom = Prenom(data("dc_prenom")),
           email = Email(data("dc_adresseemail")),

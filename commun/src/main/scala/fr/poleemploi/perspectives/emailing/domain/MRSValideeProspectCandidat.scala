@@ -8,6 +8,7 @@ import fr.poleemploi.perspectives.metier.domain.Metier
 
 case class MRSValideeProspectCandidat(override val peConnectId: PEConnectId,
                                       override val identifiantLocal: IdentifiantLocal,
+                                      override val codeNeptune: CodeNeptune,
                                       override val nom: Nom,
                                       override val prenom: Prenom,
                                       override val email: Email,
