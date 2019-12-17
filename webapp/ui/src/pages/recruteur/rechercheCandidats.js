@@ -449,13 +449,15 @@ const app = new Vue({
                 for (let onglet = 0; onglet < this.display.ongletsDetailCandidat.length; onglet++) {
                     if (scrollTop >= this.display.ongletsDetailCandidat[onglet].scrollInterval[0] &&
                         scrollTop < this.display.ongletsDetailCandidat[onglet].scrollInterval[1]) {
+                        const isToggled = !app.display.ongletsDetailCandidat[onglet].courant;
                         app.display.ongletsDetailCandidat[onglet].courant = true;
-
-                        let event = this.eventPourOngletCourant();
-                        if (event) {
-                            tracking.sendEvent(event, this.contexteCandidatCourant());
+                        // l'evenement est envoye seulement si on a change d'onglet
+                        if (isToggled) {
+                            let event = this.eventPourOngletCourant();
+                            if (event) {
+                                tracking.sendEvent(event, this.contexteCandidatCourant());
+                            }
                         }
-
                     } else {
                         app.display.ongletsDetailCandidat[onglet].courant = false;
                     }
