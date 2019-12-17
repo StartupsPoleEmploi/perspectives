@@ -42,7 +42,7 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
 
   private val idTemplateOffreEnDifficulteGereeParRecruteurVersionA: Int = 1128159
 
-  private val idTemplateOffreEnDifficulteGereeParRecruteurVersionB: Int = 1128156
+  private val idTemplateOffreEnDifficulteGereeParRecruteurVersionB: Int = 1140276
 
   private val cacheKeyTesteurs = "mailjetWSAdapter.testeurs"
 
