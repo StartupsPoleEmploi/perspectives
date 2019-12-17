@@ -126,28 +126,28 @@ class MailjetWSMappingSpec extends WordSpec
       val request = mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl, templateId, useVersionA = true, Seq(mockOffreGereeParRecruteurAvecCandidats))
 
       // Then
-      request.messages.head.variables.getOrElse(VAR_URL_RECHERCHE_CANDIDATS, "") must include ("&utm_campaign=offre-en-difficulte-sans-preselection-version-a")
+      request.messages.head.variables.getOrElse(VAR_URL_RECHERCHE_CANDIDATS, "") must include ("&utm_campaign=offre-en-difficulte-sans-preselection-version-a-a")
     }
     "construire une requete avec la campagne GA de la version B du template" in {
       // Given & When
       val request = mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl, templateId, useVersionA = false, Seq(mockOffreGereeParRecruteurAvecCandidats))
 
       // Then
-      request.messages.head.variables.getOrElse(VAR_URL_RECHERCHE_CANDIDATS, "") must include ("&utm_campaign=offre-en-difficulte-sans-preselection-version-b")
+      request.messages.head.variables.getOrElse(VAR_URL_RECHERCHE_CANDIDATS, "") must include ("&utm_campaign=offre-en-difficulte-sans-preselection-version-a-b")
     }
     "construire une requete avec la campagne mailjet de la version A du template" in {
       // Given & When
       val request = mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl, templateId, useVersionA = true, Seq(mockOffreGereeParRecruteurAvecCandidats))
 
       // Then
-      request.messages.head.category.getOrElse("") mustBe "offre_en_difficulte_geree_par_recruteur_version_a"
+      request.messages.head.category.getOrElse("") mustBe "offre_en_difficulte_geree_par_recruteur_version_a_a"
     }
     "construire une requete avec la campagne mailjet de la version B du template" in {
       // Given & When
       val request = mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl, templateId, useVersionA = false, Seq(mockOffreGereeParRecruteurAvecCandidats))
 
       // Then
-      request.messages.head.category.getOrElse("") mustBe "offre_en_difficulte_geree_par_recruteur_version_b"
+      request.messages.head.category.getOrElse("") mustBe "offre_en_difficulte_geree_par_recruteur_version_a_b"
     }
   }
   "buildRequestEmailDisponibiliteCandidat" should {
