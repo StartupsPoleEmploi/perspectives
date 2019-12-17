@@ -236,10 +236,10 @@ new Vue({
 
             tracking.sendEvent(tracking.Events.CANDIDAT_RECHERCHE_OFFRE, {
                 'code_postal': this.rechercheFormData.localisation ? this.rechercheFormData.localisation.codePostal : '',
-                'lieu_recherche': this.rechercheFormData.localisation ? this.rechercheFormData.localisation.lieuTravail : '',
+                'localisation': this.rechercheFormData.localisation ? this.rechercheFormData.localisation.lieuTravail : '',
                 'rayon_recherche': this.rechercheFormData.localisation ? this.rechercheFormData.localisation.rayonRecherche : '',
-                'types_contrat': this.rechercheFormData.typesContrats,
-                'metiers': this.rechercheFormData.metiers,
+                'types_contrat': this.rechercheFormData.typesContrats.join(', '),
+                'code_rome': this.rechercheFormData.metiers.join(', '),
                 'mots_cles': this.rechercheFormData.motsCles
             });
 

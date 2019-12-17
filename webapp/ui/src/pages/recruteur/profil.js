@@ -91,7 +91,7 @@ new Vue({
 
             if (!erreur) {
                 tracking.sendEvent(tracking.Events.RECRUTEUR_PROFIL_MODIFIE, {
-                    'is_creation': this.profilFormData.nouveauRecruteur
+                    'is_creation': this.profilFormData.nouveauRecruteur ? 1 : 0
                 });
                 document.querySelector('#profilForm').submit();
             }

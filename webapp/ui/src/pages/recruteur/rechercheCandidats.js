@@ -308,7 +308,7 @@ const app = new Vue({
 
             tracking.sendEvent(tracking.Events.RECRUTEUR_RECHERCHE_CANDIDAT, {
                 'secteur_activite': this.secteurActivite,
-                'metiers': this.metier,
+                'code_rome': this.metier,
                 'localisation': this.localisation ? this.localisation.label : ''
             });
 
@@ -449,13 +449,15 @@ const app = new Vue({
                 for (let onglet = 0; onglet < this.display.ongletsDetailCandidat.length; onglet++) {
                     if (scrollTop >= this.display.ongletsDetailCandidat[onglet].scrollInterval[0] &&
                         scrollTop < this.display.ongletsDetailCandidat[onglet].scrollInterval[1]) {
+                        const isToggled = !app.display.ongletsDetailCandidat[onglet].courant;
                         app.display.ongletsDetailCandidat[onglet].courant = true;
-
-                        let event = this.eventPourOngletCourant();
-                        if (event) {
-                            tracking.sendEvent(event, this.contexteCandidatCourant());
+                        // l'evenement est envoye seulement si on a change d'onglet
+                        if (isToggled) {
+                            let event = this.eventPourOngletCourant();
+                            if (event) {
+                                tracking.sendEvent(event, this.contexteCandidatCourant());
+                            }
                         }
-
                     } else {
                         app.display.ongletsDetailCandidat[onglet].courant = false;
                     }
@@ -474,12 +476,17 @@ const app = new Vue({
             return event;
         },
         contexteCandidatCourant: function () {
-            return {
+            let isMetierValide = {};
+            if (this.metier) {
+                isMetierValide = {
+                    'is_metier_valide': this.candidatCourant.metiersValides.find(m => m.metier.codeROME.startsWith(this.metier)) ? 1 : 0
+                }
+            }
+            return Object.assign({
                 'candidat_id': this.candidatCourant.candidatId,
-                'metiers_valides': this.candidatCourant.metiersValides.map(x => x.metier.codeROME).join(', '),
                 'code_postal': this.candidatCourant.codePostal,
                 'localisation': this.candidatCourant.commune
-            }
+            }, isMetierValide);
         },
         setOngletCourant: function (index) {
             if (this.display.ongletsDetailCandidat[0].scrollInterval.length === 0) {

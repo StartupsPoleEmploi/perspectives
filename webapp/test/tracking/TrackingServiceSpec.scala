@@ -8,7 +8,7 @@ import fr.poleemploi.perspectives.recruteur.{RecruteurId, TypeRecruteur}
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{MustMatchers, WordSpec}
-import play.api.libs.json.{JsFalse, JsString, JsTrue, Json}
+import play.api.libs.json.{JsNumber, JsString, Json}
 import play.api.mvc.Flash
 
 class TrackingServiceSpec extends WordSpec
@@ -57,20 +57,7 @@ class TrackingServiceSpec extends WordSpec
       // Then
       (result \\ TrackingService.candidatId).head mustBe JsString(candidatId)
     }
-    "ne doit pas contenir un champ email quand candidat connecte sans email renseigne" in {
-      // Given
-      val candidatAuthentifie = mockCandidatAuthentifie(candidatId, None)
-
-      // When
-      val result = TrackingService.buildTrackingCommun(
-        optCandidatAuthentifie = Some(candidatAuthentifie),
-        optRecruteurAuthentifie = None
-      )
-
-      // Then
-      (result \\ TrackingService.email).headOption mustBe None
-    }
-    "doit contenir un champ email renseigne quand candidat connecte et email renseigne" in {
+    "doit contenir un champ is_connecte a 1 quand candidat connecte" in {
       // Given
       val candidatAuthentifie = mockCandidatAuthentifie(candidatId, Some(email))
 
@@ -81,20 +68,7 @@ class TrackingServiceSpec extends WordSpec
       )
 
       // Then
-      (result \\ TrackingService.email).head mustBe JsString(email)
-    }
-    "doit contenir un champ is_connecte a true quand candidat connecte" in {
-      // Given
-      val candidatAuthentifie = mockCandidatAuthentifie(candidatId, Some(email))
-
-      // When
-      val result = TrackingService.buildTrackingCommun(
-        optCandidatAuthentifie = Some(candidatAuthentifie),
-        optRecruteurAuthentifie = None
-      )
-
-      // Then
-      (result \\ isConnecte).head mustBe JsTrue
+      (result \\ isConnecte).head mustBe JsNumber(1)
     }
     "doit contenir un champ typeUtilisateur a recruteur quand recruteur connecte" in {
       // Given
@@ -122,20 +96,7 @@ class TrackingServiceSpec extends WordSpec
       // Then
       (result \\ TrackingService.recruteurId).head mustBe JsString(recruteurId)
     }
-    "doit contenir un champ email renseigne quand recruteur connecte" in {
-      // Given
-      val recruteurAuthentifie = mockRecruteurAuthentifie(recruteurId, email)
-
-      // When
-      val result = TrackingService.buildTrackingCommun(
-        optCandidatAuthentifie = None,
-        optRecruteurAuthentifie = Some(recruteurAuthentifie)
-      )
-
-      // Then
-      (result \\ TrackingService.email).head mustBe JsString(email)
-    }
-    "doit contenir un champ is_connecte a true quand recruteur connecte" in {
+    "doit contenir un champ is_connecte a 1 quand recruteur connecte" in {
       // Given
       val recruteurAuthentifie = mockRecruteurAuthentifie(candidatId, email)
 
@@ -146,7 +107,7 @@ class TrackingServiceSpec extends WordSpec
       )
 
       // Then
-      (result \\ isConnecte).head mustBe JsTrue
+      (result \\ isConnecte).head mustBe JsNumber(1)
     }
   }
 
@@ -185,14 +146,14 @@ class TrackingServiceSpec extends WordSpec
       // Then
       (result \\ TrackingService.candidatId).head mustBe JsString(candidatId)
     }
-    "ne doit pas contenir de champ email quand candidat pas connecte" in {
+    "doit contenir un champ is_connecte a 0 quand candidat pas connecte" in {
       // Given & When
       val result = TrackingService.buildTrackingCandidat(None)
 
       // Then
-      (result \\ TrackingService.email).headOption mustBe None
+      (result \\ isConnecte).head mustBe JsNumber(0)
     }
-    "doit contenir un champ email quand candidat connecte" in {
+    "doit contenir un champ is_connecte a 1 quand candidat connecte" in {
       // Given
       val candidatAuthentifie = mockCandidatAuthentifie(candidatId, Some(email))
 
@@ -200,24 +161,7 @@ class TrackingServiceSpec extends WordSpec
       val result = TrackingService.buildTrackingCandidat(Some(candidatAuthentifie))
 
       // Then
-      (result \\ TrackingService.email).head mustBe JsString(email)
-    }
-    "doit contenir un champ is_connecte a false quand candidat pas connecte" in {
-      // Given & When
-      val result = TrackingService.buildTrackingCandidat(None)
-
-      // Then
-      (result \\ isConnecte).head mustBe JsFalse
-    }
-    "doit contenir un champ is_connecte a true quand candidat connecte" in {
-      // Given
-      val candidatAuthentifie = mockCandidatAuthentifie(candidatId, Some(email))
-
-      // When
-      val result = TrackingService.buildTrackingCandidat(Some(candidatAuthentifie))
-
-      // Then
-      (result \\ isConnecte).head mustBe JsTrue
+      (result \\ isConnecte).head mustBe JsNumber(1)
     }
     "ne doit pas contenir de champ event quand pas de flashScope" in {
       // Given & When
@@ -353,23 +297,6 @@ class TrackingServiceSpec extends WordSpec
       // Then
       (result \\ TrackingService.recruteurId).head mustBe JsString(recruteurId)
     }
-    "ne doit pas contenir de champ email quand recruteur pas connecte" in {
-      // Given & When
-      val result = TrackingService.buildTrackingRecruteur(None)
-
-      // Then
-      (result \\ TrackingService.email).headOption mustBe None
-    }
-    "doit contenir un champ email quand recruteur connecte" in {
-      // Given
-      val recruteurAuthentifie = mockRecruteurAuthentifie(recruteurId, email)
-
-      // When
-      val result = TrackingService.buildTrackingRecruteur(Some(recruteurAuthentifie))
-
-      // Then
-      (result \\ TrackingService.email).head mustBe JsString(email)
-    }
     "ne doit pas contenir de champ is_certifie quand recruteur pas connecte" in {
       // Given & When
       val result = TrackingService.buildTrackingRecruteur(None)
@@ -377,7 +304,7 @@ class TrackingServiceSpec extends WordSpec
       // Then
       (result \\ isRecruteurCertifie).headOption mustBe None
     }
-    "doit contenir un champ is_certifie quand recruteur pas certifie" in {
+    "doit contenir un champ is_certifie a 0 quand recruteur pas certifie" in {
       // Given
       val recruteurAuthentifie = mockRecruteurAuthentifie(recruteurId, email, certifie = false)
 
@@ -385,9 +312,9 @@ class TrackingServiceSpec extends WordSpec
       val result = TrackingService.buildTrackingRecruteur(Some(recruteurAuthentifie))
 
       // Then
-      (result \\ isRecruteurCertifie).head mustBe JsFalse
+      (result \\ isRecruteurCertifie).head mustBe JsNumber(0)
     }
-    "doit contenir un champ is_certifie quand recruteur certifie" in {
+    "doit contenir un champ is_certifie a 1 quand recruteur certifie" in {
       // Given
       val recruteurAuthentifie = mockRecruteurAuthentifie(recruteurId, email)
 
@@ -395,16 +322,16 @@ class TrackingServiceSpec extends WordSpec
       val result = TrackingService.buildTrackingRecruteur(Some(recruteurAuthentifie))
 
       // Then
-      (result \\ isRecruteurCertifie).head mustBe JsTrue
+      (result \\ isRecruteurCertifie).head mustBe JsNumber(1)
     }
-    "doit contenir un champ is_connecte a false quand recruteur pas connecte" in {
+    "doit contenir un champ is_connecte a 0 quand recruteur pas connecte" in {
       // Given & When
       val result = TrackingService.buildTrackingRecruteur(None)
 
       // Then
-      (result \\ isConnecte).head mustBe JsFalse
+      (result \\ isConnecte).head mustBe JsNumber(0)
     }
-    "doit contenir un champ is_connecte a true quand recruteur connecte" in {
+    "doit contenir un champ is_connecte a 1 quand recruteur connecte" in {
       // Given
       val recruteurAuthentifie = mockRecruteurAuthentifie(recruteurId, email)
 
@@ -412,7 +339,7 @@ class TrackingServiceSpec extends WordSpec
       val result = TrackingService.buildTrackingRecruteur(Some(recruteurAuthentifie))
 
       // Then
-      (result \\ isConnecte).head mustBe JsTrue
+      (result \\ isConnecte).head mustBe JsNumber(1)
     }
     "ne doit pas contenir de champ event quand pas de flashScope" in {
       // Given & When

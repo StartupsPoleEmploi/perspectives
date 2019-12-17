@@ -60,7 +60,7 @@ new Vue({
             if (this.rechercheOffresFormErrors.length === 0) {
                 tracking.sendEvent(tracking.Events.CANDIDAT_RECHERCHE_OFFRE, {
                     'code_postal': this.rechercheOffresFormData.codePostal,
-                    'lieu_recherche': this.rechercheOffresFormData.lieuTravail,
+                    'localisation': this.rechercheOffresFormData.lieuTravail,
                     'rayon_recherche': this.rechercheOffresFormData.rayonRecherche
                 });
 
