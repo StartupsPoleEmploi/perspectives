@@ -18,7 +18,6 @@ object TrackingService {
   val eventRecruteurInscrit = "recruteur_inscrit"
   val candidatId = "candidat_id"
   val recruteurId = "recruteur_id"
-  val email = "email"
   val isConnecte = "is_connecte"
   val typeUtilisateur = "type_utilisateur"
   val typeUtilisateurCandidat = "candidat"
@@ -43,10 +42,6 @@ object TrackingService {
       candidatId -> x.candidatId.value
     )).getOrElse(Json.obj())
 
-    val jsonCandidatEmail = optCandidatAuthentifie.flatMap(_.email.map(x => Json.obj(
-      email -> x.value
-    ))).getOrElse(Json.obj())
-
     val jsonCandidatEvent = buildTrackingEvenementCandidat(
       candidatInscrit = flash.exists(_.candidatInscrit),
       candidatConnecte = flash.exists(_.candidatConnecte),
@@ -57,14 +52,13 @@ object TrackingService {
     Json.arr(Json.obj(
       isConnecte -> JsNumber(optCandidatAuthentifie.map(_ => BigDecimal(1)).getOrElse(BigDecimal(0))),
       typeUtilisateur -> typeUtilisateurCandidat
-    ) ++ jsonCandidatId ++ jsonCandidatEmail ++ jsonCandidatEvent)
+    ) ++ jsonCandidatId ++ jsonCandidatEvent)
   }
 
   def buildTrackingRecruteur(optRecruteurAuthentifie: Option[RecruteurAuthentifie],
                              flash: Option[Flash] = None): JsArray = {
     val jsonRecruteurInfos = optRecruteurAuthentifie.map(x => Json.obj(
       recruteurId -> x.recruteurId.value,
-      email -> x.email.value,
       isRecruteurCertifie -> JsNumber(if(x.certifie) 1 else 0)
     )).getOrElse(Json.obj())
 
