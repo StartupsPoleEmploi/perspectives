@@ -29,6 +29,8 @@ class ReferentielProspectCandidatSqlAdapter(val driver: PostgresDriver,
 
     def identifiantLocal = column[IdentifiantLocal]("identifiant_local")
 
+    def codeNeptune = column[CodeNeptune]("code_neptune")
+
     def nom = column[Nom]("nom")
 
     def prenom = column[Prenom]("prenom")
@@ -49,7 +51,7 @@ class ReferentielProspectCandidatSqlAdapter(val driver: PostgresDriver,
 
     override def tableConstraints: Iterator[Constraint] = List(primaryKey("prospect_candidat_unique_key", (peConnectId, identifiantLocal, codeRomeMrs))).toIterator
 
-    def * = (peConnectId, identifiantLocal, nom, prenom, email, genre, codeDepartement, codeRomeMrs, metierMrs, dateEvaluationMrs) <> (ProspectCandidatRecord.tupled, ProspectCandidatRecord.unapply)
+    def * = (peConnectId, identifiantLocal, codeNeptune, nom, prenom, email, genre, codeDepartement, codeRomeMrs, metierMrs, dateEvaluationMrs) <> (ProspectCandidatRecord.tupled, ProspectCandidatRecord.unapply)
   }
 
   val prospectCandidatTable = TableQuery[ProspectCandidatTable]
@@ -75,9 +77,9 @@ class ReferentielProspectCandidatSqlAdapter(val driver: PostgresDriver,
 
   override def ajouter(prospectsCandidats: Stream[ProspectCandidat]): Future[Unit] = {
     val bulkInsert: DBIO[Option[Int]] = prospectCandidatTable.map(
-      m => (m.peConnectId, m.identifiantLocal, m.nom, m.prenom, m.email, m.genre, m.codeDepartement, m.codeRomeMrs, m.metierMrs, m.dateEvaluationMrs)
+      m => (m.peConnectId, m.identifiantLocal, m.codeNeptune, m.nom, m.prenom, m.email, m.genre, m.codeDepartement, m.codeRomeMrs, m.metierMrs, m.dateEvaluationMrs)
     ) insertOrUpdateAll prospectsCandidats.map(
-      m => (m.peConnectId, m.identifiantLocal, m.nom, m.prenom, m.email, m.genre, m.codeDepartement, m.metier.codeROME, m.metier.label, m.dateEvaluation)
+      m => (m.peConnectId, m.identifiantLocal, m.codeNeptune, m.nom, m.prenom, m.email, m.genre, m.codeDepartement, m.metier.codeROME, m.metier.label, m.dateEvaluation)
     )
 
     database.run(bulkInsert).map(_ => ())
@@ -95,6 +97,7 @@ class ReferentielProspectCandidatSqlAdapter(val driver: PostgresDriver,
   private def buildProspectCandidat(x: ProspectCandidatRecord) = ProspectCandidat(
     peConnectId = x.peConnectId,
     identifiantLocal = x.identifiantLocal,
+    codeNeptune = x.codeNeptune,
     nom = x.nom,
     prenom = x.prenom,
     email = x.email,

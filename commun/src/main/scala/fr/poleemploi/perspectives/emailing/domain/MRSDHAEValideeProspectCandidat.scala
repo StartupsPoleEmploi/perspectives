@@ -8,6 +8,7 @@ import fr.poleemploi.perspectives.metier.domain.Metier
 
 case class MRSDHAEValideeProspectCandidat(override val peConnectId: PEConnectId,
                                           override val identifiantLocal: IdentifiantLocal,
+                                          override val codeNeptune: CodeNeptune,
                                           override val codeDepartement: CodeDepartement,
                                           override val dateEvaluation: LocalDate,
                                           override val nom: Nom,
@@ -15,4 +16,3 @@ case class MRSDHAEValideeProspectCandidat(override val peConnectId: PEConnectId,
                                           override val email: Email,
                                           override val genre: Genre,
                                           override val metier: Metier) extends MRSProspectCandidat
-

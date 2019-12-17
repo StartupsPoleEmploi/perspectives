@@ -14,6 +14,9 @@
         "identifiant_local": {
           "type": "keyword"
         },
+        "code_neptune": {
+          "type": "keyword"
+        },
         "nom": {
           "type": "text"
         },

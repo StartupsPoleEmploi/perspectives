@@ -3,6 +3,7 @@ CREATE TABLE prospects_candidats
   id             BIGSERIAL              NOT NULL,
   peconnect_id   CHARACTER VARYING(255) NOT NULL,
   identifiant_local CHARACTER VARYING(255) NOT NULL,
+  code_neptune CHARACTER VARYING(255) NOT NULL,
   nom   CHARACTER VARYING(255) NOT NULL,
   prenom   CHARACTER VARYING(255) NOT NULL,
   email   CHARACTER VARYING(255) NOT NULL,

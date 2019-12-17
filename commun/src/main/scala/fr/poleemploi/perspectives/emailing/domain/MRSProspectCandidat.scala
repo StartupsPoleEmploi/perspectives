@@ -11,6 +11,8 @@ trait MRSProspectCandidat {
 
   def identifiantLocal: IdentifiantLocal
 
+  def codeNeptune: CodeNeptune
+
   def nom: Nom
 
   def prenom: Prenom

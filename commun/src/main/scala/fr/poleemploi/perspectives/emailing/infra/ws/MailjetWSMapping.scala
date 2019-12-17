@@ -85,7 +85,8 @@ class MailjetWSMapping {
           mrs_code_rome -> p.metier.codeROME.value,
           mrs_date -> s"${p.dateEvaluation.atStartOfDay().format(formatter)}",
           id_peconnect -> p.peConnectId.value,
-          identifiant_local -> p.identifiantLocal.value
+          identifiant_local -> p.identifiantLocal.value,
+          code_neptune -> p.codeNeptune.value
         )
       )).toList,
       contactsLists = List(ContactList(

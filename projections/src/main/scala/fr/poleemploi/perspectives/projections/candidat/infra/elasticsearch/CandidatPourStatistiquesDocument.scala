@@ -9,6 +9,7 @@ import play.api.libs.json._
 case class CandidatPourStatistiquesDocument(candidatId: CandidatId,
                                             peConnectId: Option[PEConnectId],
                                             identifiantLocal: Option[IdentifiantLocal],
+                                            codeNeptune: Option[CodeNeptune],
                                             nom: Nom,
                                             prenom: Prenom,
                                             email: Email,
@@ -24,6 +25,7 @@ object CandidatPourStatistiquesDocument {
     (JsPath \ candidat_id).read[CandidatId] and
       (JsPath \ peconnect_id).readNullable[PEConnectId] and
       (JsPath \ identifiant_local).readNullable[IdentifiantLocal] and
+      (JsPath \ code_neptune).readNullable[CodeNeptune] and
       (JsPath \ nom).read[Nom] and
       (JsPath \ prenom).read[Prenom] and
       (JsPath \ email).read[Email] and
