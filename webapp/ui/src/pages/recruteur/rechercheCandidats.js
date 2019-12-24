@@ -256,13 +256,14 @@ const app = new Vue({
             return (this.metierChoisi || this.secteurActiviteChoisi);
         },
         interessePar: function (metiers) { // FIXME : indexsection == 0 à nettoyer
-            if (this.metierChoisi) {
+            const self = this;
+            if (self.metierChoisi) {
                 return metiers.filter(function (metier) {
-                    return app.metierChoisi === metier.codeROME;
+                    return self.metierChoisi === metier.codeROME;
                 });
-            } else if (this.secteurActiviteChoisi) {
+            } else if (self.secteurActiviteChoisi) {
                 return metiers.filter(function (metier) {
-                    return app.secteurActiviteChoisi === ROME.codeSecteurActivite(metier.codeROME);
+                    return self.secteurActiviteChoisi === ROME.codeSecteurActivite(metier.codeROME);
                 });
             } else {
                 return [];
