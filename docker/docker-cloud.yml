@@ -30,8 +30,6 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.5.0
     volumes:
       - projections_elasticsearch:/usr/share/elasticsearch/data
-    ports:
-      - "9200:9200"
     deploy:
       replicas: 1
     configs:
