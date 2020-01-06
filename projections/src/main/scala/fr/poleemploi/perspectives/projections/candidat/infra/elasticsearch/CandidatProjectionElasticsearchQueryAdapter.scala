@@ -182,13 +182,13 @@ class CandidatProjectionElasticsearchQueryAdapter(wsClient: WSClient,
                   if (query.codeSecteurActivite.isDefined || query.codeROME.isDefined)
                     KeysetCandidatPourRecruteur(
                       score = Some((v._1 \ 0).as[Int]),
-                      dateInscription = (v._1 \ 1).as[Long],
+                      dateDerniereMajDisponibilite = (v._1 \ 1).as[Long],
                       candidatId = (v._1 \ 2).as[CandidatId]
                     )
                   else
                     KeysetCandidatPourRecruteur(
                       score = None,
-                      dateInscription = (v._1 \ 0).as[Long],
+                      dateDerniereMajDisponibilite = (v._1 \ 0).as[Long],
                       candidatId = (v._1 \ 1).as[CandidatId]
                     )
                 ).toList

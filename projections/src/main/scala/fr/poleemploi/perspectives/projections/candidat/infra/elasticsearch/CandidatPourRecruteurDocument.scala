@@ -7,7 +7,7 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 case class KeysetCandidatPourRecruteurDocument(score: Option[Int],
-                                               dateInscription: Long,
+                                               dateDerniereMajDisponibilite: Long,
                                                candidatId: CandidatId)
 
 object KeysetCandidatPourRecruteurDocument {
@@ -16,9 +16,9 @@ object KeysetCandidatPourRecruteurDocument {
 
   implicit val writes: Writes[KeysetCandidatPourRecruteurDocument] =
     k => k.score.map(s =>
-      Json.arr(s, k.dateInscription, k.candidatId)
+      Json.arr(s, k.dateDerniereMajDisponibilite, k.candidatId)
     ).getOrElse(
-      Json.arr(k.dateInscription, k.candidatId)
+      Json.arr(k.dateDerniereMajDisponibilite, k.candidatId)
     )
 }
 

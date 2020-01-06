@@ -300,9 +300,9 @@ const app = new Vue({
                 formData.push({name: "coordonnees.latitude", value: this.localisation.latitude});
                 formData.push({name: "coordonnees.longitude", value: this.localisation.longitude});
             }
-            if (filtrePagination.dateInscription && filtrePagination.candidatId) {
+            if (filtrePagination.dateDerniereMajDisponibilite && filtrePagination.candidatId) {
                 formData.push({name: "pagination.score", value: filtrePagination.score});
-                formData.push({name: "pagination.dateInscription", value: filtrePagination.dateInscription});
+                formData.push({name: "pagination.dateDerniereMajDisponibilite", value: filtrePagination.dateDerniereMajDisponibilite});
                 formData.push({name: "pagination.candidatId", value: filtrePagination.candidatId});
             }
             app.candidatCourant = null;

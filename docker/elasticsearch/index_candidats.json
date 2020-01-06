@@ -161,6 +161,9 @@
         "date_derniere_connexion": {
           "type": "date"
         },
+        "date_derniere_maj_disponibilite": {
+          "type": "date"
+        },
         "prochaine_disponibilite": {
           "type": "date"
         },

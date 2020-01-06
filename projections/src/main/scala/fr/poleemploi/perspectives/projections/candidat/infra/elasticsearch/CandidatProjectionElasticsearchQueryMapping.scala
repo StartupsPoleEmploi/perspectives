@@ -261,7 +261,7 @@ class CandidatProjectionElasticsearchQueryMapping(referentielMetier: Referentiel
           )
         ),
         "sort" -> Json.arr(
-          Json.obj(date_inscription -> "desc"),
+          Json.obj(date_derniere_maj_disponibilite -> "desc"),
           Json.obj(candidat_id -> "desc")
         )
       )
@@ -306,7 +306,7 @@ class CandidatProjectionElasticsearchQueryMapping(referentielMetier: Referentiel
         ),
         "sort" -> Json.arr(
           Json.obj("_score" -> "desc"),
-          Json.obj(date_inscription -> "desc"),
+          Json.obj(date_derniere_maj_disponibilite -> "desc"),
           Json.obj(candidat_id -> "desc")
         )
       )
@@ -365,7 +365,7 @@ class CandidatProjectionElasticsearchQueryMapping(referentielMetier: Referentiel
         ),
         "sort" -> Json.arr(
           Json.obj("_score" -> "desc"),
-          Json.obj(date_inscription -> "desc"),
+          Json.obj(date_derniere_maj_disponibilite -> "desc"),
           Json.obj(candidat_id -> "desc")
         )
       )
@@ -378,7 +378,7 @@ class CandidatProjectionElasticsearchQueryMapping(referentielMetier: Referentiel
       queryJson ++ Json.obj(
         "search_after" -> KeysetCandidatPourRecruteurDocument(
           score = keysetCandidatPourRecruteur.score,
-          dateInscription = keysetCandidatPourRecruteur.dateInscription,
+          dateDerniereMajDisponibilite = keysetCandidatPourRecruteur.dateDerniereMajDisponibilite,
           candidatId = keysetCandidatPourRecruteur.candidatId
         )
       )
@@ -458,7 +458,7 @@ class CandidatProjectionElasticsearchQueryMapping(referentielMetier: Referentiel
         )
       ),
       "sort" -> Json.arr(
-        Json.obj(date_inscription -> "desc"),
+        Json.obj(date_derniere_maj_disponibilite -> "desc"),
         Json.obj(candidat_id -> "desc")
       )
     )
