@@ -33,10 +33,10 @@ trait OffresGereesParRecruteurImportService {
   def importerOffresGereesParRecruteur: Future[Stream[OffreGereeParRecruteurAvecCandidats]] =
     for {
       offres <- importerOffres.map(_.toList)
-      coordonneesParCodePostal <- localisationService.localiserCodesPostaux(offres.map(_.codePostal))
+      coordonneesParCodePostal <- localisationService.localiserVilles(offres.map(_.lieuTravail))
       offresAvecCoordonnees = offres.flatMap(offre =>
         coordonneesParCodePostal
-          .get(offre.codePostal)
+          .get(offre.lieuTravail)
           .map(coordonnees => buildOffreAvecCoordonneesGereeParRecruteur(offre, coordonnees))
       )
       offresAvecCandidats <- Future.sequence(offresAvecCoordonnees.map(offre =>

@@ -2,7 +2,7 @@ package fr.poleemploi.perspectives.candidat.localisation.infra.ws
 
 import fr.poleemploi.perspectives.candidat.Adresse
 import fr.poleemploi.perspectives.candidat.localisation.domain.LocalisationService
-import fr.poleemploi.perspectives.commun.domain.{CodePostal, Coordonnees}
+import fr.poleemploi.perspectives.commun.domain.Coordonnees
 import fr.poleemploi.perspectives.commun.infra.ws.WSAdapter
 import play.api.libs.json._
 import play.api.libs.ws.WSClient
@@ -29,10 +29,10 @@ class LocalisationWSAdapter(wsClient: WSClient,
         coordonnees.map(mapping.buildCoordonnees)
       })
 
-  override def localiserCodesPostaux(codesPostaux: Seq[CodePostal]): Future[Map[CodePostal, Coordonnees]] =
-    if (codesPostaux.isEmpty) Future.successful(Map())
+  override def localiserVilles(villes: Seq[String]): Future[Map[String, Coordonnees]] =
+    if (villes.isEmpty) Future.successful(Map())
     else {
-      val (bulkRequest, csvFile) = mapping.buildLocalisationBulkRequest(codesPostaux)
+      val (bulkRequest, csvFile) = mapping.buildLocalisationBulkRequest(villes)
       wsClient.url(s"${config.urlApi}/search/csv")
         .post(bulkRequest)
         .flatMap(filtreStatutReponse(_))
