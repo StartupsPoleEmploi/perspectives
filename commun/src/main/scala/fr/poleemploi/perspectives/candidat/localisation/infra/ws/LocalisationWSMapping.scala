@@ -9,8 +9,7 @@ import akka.stream.ActorMaterializer
 import akka.stream.alpakka.csv.scaladsl.{CsvParsing, CsvToMap}
 import akka.stream.scaladsl.{FileIO, Sink, Source, StreamConverters}
 import akka.util.ByteString
-import fr.poleemploi.perspectives.candidat.localisation.infra.ws.LocalisationWSMapping.POSTCODE_COLUMN_NAME
-import fr.poleemploi.perspectives.commun.domain.{CodePostal, Coordonnees}
+import fr.poleemploi.perspectives.commun.domain.Coordonnees
 import fr.poleemploi.perspectives.commun.infra.file.FileUtils
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
@@ -23,6 +22,8 @@ import scala.concurrent.Future
 
 class LocalisationWSMapping(actorSystem: ActorSystem) {
 
+  import LocalisationWSMapping._
+
   implicit val materializer: ActorMaterializer = ActorMaterializer()(actorSystem)
 
   def buildCoordonnees(geometryCoordinates: GeometryCoordinates) =
@@ -31,42 +32,42 @@ class LocalisationWSMapping(actorSystem: ActorSystem) {
       longitude = geometryCoordinates.longitude
     )
 
-  def buildLocalisationBulkRequest(codesPostaux: Seq[CodePostal]): (Source[MultipartFormData.Part[Source[ByteString, _]], NotUsed], File) = {
-    val csvFile = buildLocalisationCsvFileRequest(codesPostaux)
+  def buildLocalisationBulkRequest(villes: Seq[String]): (Source[MultipartFormData.Part[Source[ByteString, _]], NotUsed], File) = {
+    val csvFile = buildLocalisationCsvFileRequest(villes)
     (Source(
       FilePart("data", "search.csv", None, FileIO.fromPath(csvFile.toPath)) :: DataPart(
-        "postcode",
-        POSTCODE_COLUMN_NAME
+        "columns",
+        CITY_COLUMN_NAME
       ) :: List()
     ), csvFile)
   }
 
-  def extractLocalisationBulkResponse(response: WSResponse): Future[Map[CodePostal, Coordonnees]] = {
+  def extractLocalisationBulkResponse(response: WSResponse): Future[Map[String, Coordonnees]] = {
     val csvResponse = FileUtils.createTempFile(response.bodyAsBytes.utf8String, "response.csv")
     StreamConverters
       .fromInputStream(() => Files.newInputStream(csvResponse.toPath))
       .via(CsvParsing.lineScanner(delimiter = ','))
       .via(CsvToMap.toMapAsStrings())
       .filter(m =>
-        m.get(POSTCODE_COLUMN_NAME).exists(_.nonEmpty) &&
+        m.get(CITY_COLUMN_NAME).exists(_.nonEmpty) &&
           m.get("latitude").exists(_.nonEmpty) &&
           m.get("longitude").exists(_.nonEmpty)
       )
       .map(data =>
-        CodePostal(data(POSTCODE_COLUMN_NAME)) -> Coordonnees(data("latitude").toDouble, data("longitude").toDouble)
+        data(CITY_COLUMN_NAME) -> Coordonnees(data("latitude").toDouble, data("longitude").toDouble)
       )
       .runWith(Sink.collection)
       .map(_.toMap)
   }
 
-  private def buildLocalisationCsvFileRequest(codesPostaux: Seq[CodePostal]): File = {
-    val content = codesPostaux.map(_.value).toSet.mkString("\n")
-    FileUtils.createTempFile(s"$POSTCODE_COLUMN_NAME\n$content", "search.csv")
+  private def buildLocalisationCsvFileRequest(villes: Seq[String]): File = {
+    val content = villes.toSet.mkString("\n")
+    FileUtils.createTempFile(s"$CITY_COLUMN_NAME\n$content", "search.csv")
   }
 }
 
 object LocalisationWSMapping {
-  private val POSTCODE_COLUMN_NAME = "postcode"
+  private val CITY_COLUMN_NAME = "city"
 }
 
 case class GeometryCoordinates(longitude: Double,
