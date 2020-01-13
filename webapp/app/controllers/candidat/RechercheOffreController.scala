@@ -13,6 +13,8 @@ import play.api.Logging
 import play.api.libs.json.Json
 import play.api.mvc._
 import play.filters.csrf.CSRF
+import play.twirl.api.HtmlFormat
+import security.QueryParamSanitizer
 import tracking.TrackingService
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -30,8 +32,8 @@ class RechercheOffreController @Inject()(cc: ControllerComponents,
     messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
       def buildLocalisationOffresFromRequest: Option[LocalisationOffresForm] =
         for {
-          lieuTravail <- lieuTravail
-          codePostal <- codePostal
+          lieuTravail <- QueryParamSanitizer.sanitize(lieuTravail)
+          codePostal <- QueryParamSanitizer.sanitize(codePostal)
         } yield LocalisationOffresForm(
           lieuTravail = lieuTravail,
           codePostal = codePostal,

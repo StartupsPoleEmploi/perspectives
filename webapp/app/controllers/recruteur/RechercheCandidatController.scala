@@ -15,6 +15,7 @@ import javax.inject.{Inject, Singleton}
 import play.api.libs.json.{JsObject, JsString, Json}
 import play.api.mvc.{Action, _}
 import play.filters.csrf.CSRF
+import security.QueryParamSanitizer
 import tracking.TrackingService
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -71,7 +72,7 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
         for {
           latitude <- latitude
           longitude <- longitude
-          localisation <- localisation
+          localisation <- QueryParamSanitizer.sanitize(localisation)
         } yield Json.obj("localisation" ->
           Json.toJson(LocalisationDto(
             label = localisation,
