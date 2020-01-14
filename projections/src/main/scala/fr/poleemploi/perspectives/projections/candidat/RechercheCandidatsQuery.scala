@@ -120,7 +120,7 @@ object CandidatPourRecruteurDto {
 }
 
 case class KeysetCandidatPourRecruteur(score: Option[Int],
-                                       dateInscription: Long,
+                                       dateDerniereMajDisponibilite: Long,
                                        candidatId: CandidatId)
 
 object KeysetCandidatPourRecruteur {

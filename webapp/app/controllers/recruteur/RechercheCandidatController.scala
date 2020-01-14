@@ -148,7 +148,7 @@ class RechercheCandidatController @Inject()(cc: ControllerComponents,
               nbPagesACharger = rechercheCandidatForm.pagination.map(_ => 1).getOrElse(4),
               page = rechercheCandidatForm.pagination.map(p => KeysetCandidatPourRecruteur(
                 score = p.score,
-                dateInscription = p.dateInscription,
+                dateDerniereMajDisponibilite = p.dateDerniereMajDisponibilite,
                 candidatId = CandidatId(p.candidatId)
               ))
             ))

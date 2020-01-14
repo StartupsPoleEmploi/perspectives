@@ -32,6 +32,7 @@ object CandidatProjectionElasticsearchMapping {
   val experiences_professionnelles = "experiences_professionnelles"
   val date_inscription = "date_inscription"
   val date_derniere_connexion = "date_derniere_connexion"
+  val date_derniere_maj_disponibilite = "date_derniere_maj_disponibilite"
 
   val criteres_recherche = "criteres_recherche"
   val metiers_valides_recherche = "criteres_recherche.metiers_valides"

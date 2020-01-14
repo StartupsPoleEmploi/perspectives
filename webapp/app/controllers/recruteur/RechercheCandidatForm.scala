@@ -6,7 +6,7 @@ import play.api.data.Forms._
 import play.api.data.format.Formats._
 
 case class PaginationCandidatForm(score: Option[Int],
-                                  dateInscription: Long,
+                                  dateDerniereMajDisponibilite: Long,
                                   candidatId: String)
 
 case class RechercheCandidatForm(secteurActivite: Option[String],
@@ -26,7 +26,7 @@ object RechercheCandidatForm {
       )(Coordonnees.apply)(Coordonnees.unapply)),
       "pagination" -> optional(mapping(
         "score" -> optional(number),
-        "dateInscription" -> of[Long],
+        "dateDerniereMajDisponibilite" -> of[Long],
         "candidatId" -> text
       )(PaginationCandidatForm.apply)(PaginationCandidatForm.unapply))
     )(RechercheCandidatForm.apply)(RechercheCandidatForm.unapply)

@@ -44,6 +44,7 @@ class CandidatProjectionElasticsearchUpdateAdapter(wsClient: WSClient,
         email -> event.email,
         date_inscription -> dateTimeFormatter.format(event.date),
         date_derniere_connexion -> dateTimeFormatter.format(event.date),
+        date_derniere_maj_disponibilite -> dateTimeFormatter.format(event.date),
         metiers_valides -> JsArray.empty,
         criteres_recherche -> Json.obj(
           "metiers_valides" -> JsArray.empty,
@@ -118,7 +119,8 @@ class CandidatProjectionElasticsearchUpdateAdapter(wsClient: WSClient,
         contact_recruteur -> event.candidatEnRecherche,
         contact_formation -> event.candidatEnRecherche,
         prochaine_disponibilite -> event.prochaineDisponibilite.map(dateFormatter.format),
-        emploi_trouve_grace_perspectives -> event.emploiTrouveGracePerspectives
+        emploi_trouve_grace_perspectives -> event.emploiTrouveGracePerspectives,
+        date_derniere_maj_disponibilite -> dateTimeFormatter.format(event.date)
       )
     )
   }
