@@ -7,7 +7,7 @@ import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
 
 case class ProspectCandidatRecord(peConnectId: PEConnectId,
                                   identifiantLocal: IdentifiantLocal,
-                                  codeNeptune: CodeNeptune,
+                                  codeNeptune: Option[CodeNeptune],
                                   nom: Nom,
                                   prenom: Prenom,
                                   email: Email,

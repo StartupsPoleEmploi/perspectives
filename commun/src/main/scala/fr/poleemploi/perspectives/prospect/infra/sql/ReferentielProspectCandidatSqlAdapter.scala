@@ -29,7 +29,7 @@ class ReferentielProspectCandidatSqlAdapter(val driver: PostgresDriver,
 
     def identifiantLocal = column[IdentifiantLocal]("identifiant_local")
 
-    def codeNeptune = column[CodeNeptune]("code_neptune")
+    def codeNeptune = column[Option[CodeNeptune]]("code_neptune")
 
     def nom = column[Nom]("nom")
 
@@ -63,7 +63,7 @@ class ReferentielProspectCandidatSqlAdapter(val driver: PostgresDriver,
   override def streamProspectsCandidats(dateMaxEvaluationMrs: Option[LocalDate]): Source[ProspectCandidat, NotUsed] = Source.fromPublisher {
     database.stream(
       prospectCandidatTable
-        .filter(_.dateEvaluationMrs <= dateMaxEvaluationMrs.getOrElse(LocalDate.now) )
+        .filter(_.dateEvaluationMrs <= dateMaxEvaluationMrs.getOrElse(LocalDate.now))
         .sortBy(_.id)
         .result
         .transactionally

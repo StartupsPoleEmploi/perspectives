@@ -42,7 +42,7 @@ class MailjetImportProspectService(actorSystem: ActorSystem,
   private def buildProspectCandidat(x: MRSProspectCandidat) = ProspectCandidat(
     peConnectId = x.peConnectId,
     identifiantLocal = x.identifiantLocal,
-    codeNeptune = x.codeNeptune,
+    codeNeptune = Some(x.codeNeptune),
     nom = x.nom,
     prenom = x.prenom,
     email = x.email,
