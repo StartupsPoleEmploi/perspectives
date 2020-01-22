@@ -10,6 +10,7 @@ GET         /candidat/criteres-recherche                             controllers
 POST        /candidat/criteres-recherche                             controllers.candidat.SaisieCriteresRechercheController.modifierCriteresRecherche
 GET         /candidat/disponibilites                                 controllers.candidat.SaisieDisponibilitesController.saisieDisponibilites(candidatEnRecherche: Option[Boolean])
 POST        /candidat/disponibilites                                 controllers.candidat.SaisieDisponibilitesController.modifierDisponibilites
+GET         /candidat/jvr/disponibilites                             controllers.candidat.SaisieDisponibilitesController.saisieDisponibilitesJVR(candidatEnRecherche: Boolean)
 GET         /candidat/offres                                         controllers.candidat.RechercheOffreController.index(codePostal: Option[String] ?= None, lieuTravail: Option[String] ?= None, rayonRecherche: Option[Int] ?= None)
 POST        /candidat/offres                                         controllers.candidat.RechercheOffreController.rechercherOffres
 GET         /candidat/mrs                                            controllers.candidat.CandidatController.listeMRS

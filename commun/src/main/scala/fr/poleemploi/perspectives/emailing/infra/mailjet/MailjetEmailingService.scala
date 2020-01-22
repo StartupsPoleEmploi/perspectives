@@ -40,6 +40,12 @@ class MailjetEmailingService(mailjetSqlAdapter: MailjetSqlAdapter,
       _ <- mailjetWSAdapter.mettreAJourCVCandidat(candidatMailjet.mailjetContactId, possedeCV)
     } yield ()
 
+  override def mettreAJourDisponibiliteCandidatJVR(candidatId: CandidatId, candidatEnRecherche: Boolean): Future[Unit] =
+    for {
+      candidatMailjet <- mailjetSqlAdapter.getCandidat(candidatId)
+      _ <- mailjetWSAdapter.mettreAJourDisponibiliteCandidatJVR(candidatMailjet.mailjetContactId, candidatEnRecherche)
+    } yield ()
+
   override def ajouterRecruteurInscrit(recruteurInscrit: RecruteurInscrit): Future[Unit] =
     for {
       mailjetContactId <- mailjetWSAdapter.ajouterRecruteurInscrit(recruteurInscrit)

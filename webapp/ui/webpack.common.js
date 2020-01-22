@@ -7,6 +7,7 @@ module.exports = {
         candidatRechercheOffres: './src/pages/candidat/rechercheOffres.js',
         candidatSaisieCriteresRecherche: './src/pages/candidat/saisieCriteresRecherche.js',
         candidatSaisieDisponibilites: './src/pages/candidat/saisieDisponibilites.js',
+        candidatSaisieDisponibilitesJVR: './src/pages/candidat/saisieDisponibilitesJVR.js',
         conseillerAdmin: './src/pages/conseiller/admin.js',
         infosLegales: './src/pages/infosLegales.js',
         menuNavigation: './src/modules/menuNavigation.js',

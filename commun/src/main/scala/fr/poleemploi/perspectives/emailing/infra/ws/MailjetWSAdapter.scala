@@ -34,6 +34,8 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
 
   private val idTemplateDisponibiliteCandidat: Int = 1001166
 
+  private val idTemplateDisponibiliteCandidatJVR: Int = 1151607
+
   private val idTemplateOffreGereeParRecruteur: Int = 1043344
 
   private val idTemplateOffreGereeParConseiller: Int = 1042288
@@ -75,6 +77,12 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
     updateContactData(
       mailjetContactId = mailjetContactId,
       request = mapping.buildRequestMiseAJourMRSValideeCandidat(mrsValideeCandidat)
+    ).map(_ => ())
+
+  def mettreAJourDisponibiliteCandidatJVR(mailjetContactId: MailjetContactId, candidatEnRecherche: Boolean): Future[Unit] =
+    updateContactData(
+      mailjetContactId = mailjetContactId,
+      request = mapping.buildRequestMiseAJourDisponibiliteCandidatJVR(candidatEnRecherche)
     ).map(_ => ())
 
   def envoyerDisponibilitesCandidat(baseUrl: String, candidats: Seq[EmailingDisponibiliteCandidatAvecEmail]): Future[Unit] =
@@ -134,6 +142,18 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
           baseUrl = baseUrl,
           offresGereesParConseillerAvecCandidats = offresChunk,
           idTemplate = idTemplateOffreEnDifficulteGereeParConseiller
+        ))
+      )).map(_ => ())
+    else
+      Future.successful(())
+
+  def envoyerCandidatsJVR(baseUrl: String, candidatsJVR: Seq[EmailingCandidatJVR]): Future[Unit] =
+    if (candidatsJVR.nonEmpty)
+      Future.sequence(candidatsJVR.grouped(nbMaxDestinataires).map(candidatChunk =>
+        sendMail(mapping.buildRequestEmailCandidatJVR(
+          baseUrl = baseUrl,
+          candidatsJVR = candidatChunk,
+          idTemplate = idTemplateDisponibiliteCandidatJVR
         ))
       )).map(_ => ())
     else

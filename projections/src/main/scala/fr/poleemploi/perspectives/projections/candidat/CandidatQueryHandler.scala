@@ -24,6 +24,7 @@ class CandidatQueryHandler(candidatProjectionQuery: CandidatProjectionQuery,
     case q: SecteursActivitesAvecCandidatsQuery => candidatProjectionQuery.secteursActivitesAvecCandidats(q)
     case q: ExisteCandidatQuery => candidatProjectionQuery.existeCandidat(q)
     case q: CandidatsPourBatchDisponibilitesQuery => candidatProjectionQuery.listerPourBatchDisponibilites(q)
+    case q: CandidatsPourBatchJVRQuery => candidatProjectionQuery.listerPourBatchJVR(q)
     case q: CandidatsPourCsvQuery.type => candidatProjectionQuery.listerPourCsv(q)
   }
 

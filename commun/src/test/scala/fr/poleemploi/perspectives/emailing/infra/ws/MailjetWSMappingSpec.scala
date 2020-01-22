@@ -7,7 +7,7 @@ import fr.poleemploi.perspectives.authentification.infra.autologin.JwtToken
 import fr.poleemploi.perspectives.candidat.activite.domain.EmailingDisponibiliteCandidatAvecEmail
 import fr.poleemploi.perspectives.commun.domain.{CodeDepartement, _}
 import fr.poleemploi.perspectives.commun.infra.peconnect.PEConnectId
-import fr.poleemploi.perspectives.emailing.domain.{CandidatInscrit, MRSProspectCandidat, MRSValideeCandidat, OffreGereeParRecruteurAvecCandidats}
+import fr.poleemploi.perspectives.emailing.domain.{CandidatInscrit, EmailingCandidatJVR, MRSProspectCandidat, MRSValideeCandidat, OffreGereeParRecruteurAvecCandidats}
 import fr.poleemploi.perspectives.emailing.infra.ws.MailjetWSMapping._
 import fr.poleemploi.perspectives.metier.domain.Metier
 import fr.poleemploi.perspectives.offre.domain.OffreId
@@ -199,8 +199,61 @@ class MailjetWSMappingSpec extends WordSpec
       val request = mapping.buildRequestEmailDisponibiliteCandidat(baseUrl, templateId, candidats)
 
       // Then
-      request.messages.head.variables.get(VAR_URL_FORMULAIRE_DISPO_CANDIDAT_EN_RECHERCHE) mustBe Some("https://perspectives.pole-emploi.fr/candidat/disponibilites?candidatEnRecherche=true&token=token")
-      request.messages.head.variables.get(VAR_URL_FORMULAIRE_DISPO_CANDIDAT_PAS_EN_RECHERCHE) mustBe Some("https://perspectives.pole-emploi.fr/candidat/disponibilites?candidatEnRecherche=false&token=token")
+      request.messages.head.variables.get(VAR_URL_FORMULAIRE_DISPO_CANDIDAT_EN_RECHERCHE) mustBe Some("https://perspectives.pole-emploi.fr/candidat/disponibilites?candidatEnRecherche=true&token=token&utm_campaign=disponibilite-candidat&utm_source=candidats-inscrits&utm_medium=email&utm_content=cta-oui")
+      request.messages.head.variables.get(VAR_URL_FORMULAIRE_DISPO_CANDIDAT_PAS_EN_RECHERCHE) mustBe Some("https://perspectives.pole-emploi.fr/candidat/disponibilites?candidatEnRecherche=false&token=token&utm_campaign=disponibilite-candidat&utm_source=candidats-inscrits&utm_medium=email&utm_content=cta-non")
+    }
+  }
+  "buildRequestEmailCandidatJVR" should {
+    "construire une requete avec l'id du template mailjet" in {
+      // Given
+      val candidatsJVR = Stream(mockEmailingCandidatJVR)
+
+      // When
+      val request = mapping.buildRequestEmailCandidatJVR(baseUrl, templateId, candidatsJVR)
+
+      // Then
+      request.messages.head.templateId mustBe templateId
+    }
+    "construire une requete avec la propriete templateLanguage a true" in {
+      // Given
+      val candidatsJVR = Stream(mockEmailingCandidatJVR)
+
+      // When
+      val request = mapping.buildRequestEmailCandidatJVR(baseUrl, templateId, candidatsJVR)
+
+      // Then
+      request.messages.head.templateLanguage mustBe true
+    }
+    "construire une requete avec la categorie specifique" in {
+      // Given
+      val candidatsJVR = Stream(mockEmailingCandidatJVR)
+
+      // When
+      val request = mapping.buildRequestEmailCandidatJVR(baseUrl, templateId, candidatsJVR)
+
+      // Then
+      request.messages.head.category mustBe Some(DISPONIBILITE_CANDIDAT_JVR_CATEGORY)
+    }
+    "construire une requete avec le mail du candidat en destinataire" in {
+      // Given
+      val candidatsJVR = Stream(mockEmailingCandidatJVR)
+
+      // When
+      val request = mapping.buildRequestEmailCandidatJVR(baseUrl, templateId, candidatsJVR)
+
+      // Then
+      request.messages.head.to.head.email mustBe "email@candidat.fr"
+    }
+    "construire une requete avec les variables mailjet contenant les URLs autologuees vers le recap disponibilites JVR" in {
+      // Given
+      val candidatsJVR = Stream(mockEmailingCandidatJVR)
+
+      // When
+      val request = mapping.buildRequestEmailCandidatJVR(baseUrl, templateId, candidatsJVR)
+
+      // Then
+      request.messages.head.variables.get(VAR_URL_FORMULAIRE_DISPO_CANDIDAT_EN_RECHERCHE) mustBe Some("https://perspectives.pole-emploi.fr/candidat/jvr/disponibilites?candidatEnRecherche=true&token=token&utm_campaign=disponibilite-candidat-jvr&utm_source=candidats-inscrits-jvr&utm_medium=email&utm_content=cta-oui")
+      request.messages.head.variables.get(VAR_URL_FORMULAIRE_DISPO_CANDIDAT_PAS_EN_RECHERCHE) mustBe Some("https://perspectives.pole-emploi.fr/candidat/jvr/disponibilites?candidatEnRecherche=false&token=token&utm_campaign=disponibilite-candidat-jvr&utm_source=candidats-inscrits-jvr&utm_medium=email&utm_content=cta-non")
     }
   }
 
@@ -224,6 +277,13 @@ class MailjetWSMappingSpec extends WordSpec
 
   private def mockEmailingDisponibiliteCandidatAvecEmail: EmailingDisponibiliteCandidatAvecEmail = {
     val candidat = mock[EmailingDisponibiliteCandidatAvecEmail]
+    when(candidat.email).thenReturn(Email("email@candidat.fr"))
+    when(candidat.autologinToken).thenReturn(JwtToken("token"))
+    candidat
+  }
+
+  private def mockEmailingCandidatJVR: EmailingCandidatJVR = {
+    val candidat = mock[EmailingCandidatJVR]
     when(candidat.email).thenReturn(Email("email@candidat.fr"))
     when(candidat.autologinToken).thenReturn(JwtToken("token"))
     candidat

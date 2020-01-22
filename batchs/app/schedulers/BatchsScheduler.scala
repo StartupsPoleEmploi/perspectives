@@ -12,11 +12,13 @@ class BatchsScheduler(actorSystem: ActorSystem,
                       importOffresEnDifficulteGereesParRecruteurActor: ActorRef,
                       importOffresGereesParConseillerActor: ActorRef,
                       importOffresEnDifficulteGereesParConseillerActor: ActorRef,
-                      emailingDisponibilitesCandidatActor: ActorRef) {
+                      emailingDisponibilitesCandidatActor: ActorRef,
+                      emailingCandidatsJVRActor: ActorRef) {
 
   import ImportHabiletesMRSActor._
   import ImportProspectsCandidatsActor._
   import EmailingDisponibilitesCandidatActor._
+  import EmailingCandidatsJVRActor._
   import ImportOffresGereesParRecruteurActor._
   import ImportOffresEnDifficulteGereesParRecruteurActor._
   import ImportOffresGereesParConseillerActor._
@@ -28,6 +30,7 @@ class BatchsScheduler(actorSystem: ActorSystem,
     scheduler.schedule("ImportHabiletesMRS", importHabiletesMRSActor, StartImportHabiletesMRS)
     scheduler.schedule("ImportProspectsCandidats", importProspectsCandidatsActor, StartImportProspectsCandidats)
     scheduler.schedule("EmailingDisponibilitesCandidat", emailingDisponibilitesCandidatActor, StartEmailingDisponibilitesCandidat)
+    scheduler.schedule("EmailingCandidatsJVR", emailingCandidatsJVRActor, StartEmailingCandidatsJVR)
     scheduler.schedule("ImportOffresGereesParRecruteur", importOffresGereesParRecruteurActor, StartImportOffresGereesParRecruteur)
     scheduler.schedule("ImportOffresEnDifficulteGereesParRecruteur", importOffresEnDifficulteGereesParRecruteurActor, StartImportOffresEnDifficulteGereesParRecruteur)
     scheduler.schedule("ImportOffresGereesParConseiller", importOffresGereesParConseillerActor, StartImportOffresGereesParConseiller)

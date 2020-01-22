@@ -104,6 +104,16 @@ class ServicesModule extends AbstractModule {
     else
       localEmailingDisponibilitesService.get()
 
+  @Provides
+  @Singleton
+  def emailingCandidatsJVRService(mailjetEmailingCandidatsJVRService: Provider[MailjetEmailingCandidatsJVRService],
+                                  localEmailingCandidatsJVRService: Provider[LocalEmailingCandidatsJVRService],
+                                  batchsConfig: BatchsConfig): EmailingCandidatsJVRService =
+    if (batchsConfig.useMailjet)
+      mailjetEmailingCandidatsJVRService.get()
+    else
+      localEmailingCandidatsJVRService.get()
+
   // on met un fake referentiel offres car on ne s'en sert pas dans les batchs
   @Provides
   def referentielOffre: ReferentielOffre =

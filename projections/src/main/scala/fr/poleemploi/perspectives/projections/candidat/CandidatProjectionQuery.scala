@@ -28,5 +28,7 @@ trait CandidatProjectionQuery {
 
   def listerPourBatchDisponibilites(query: CandidatsPourBatchDisponibilitesQuery): Future[CandidatsPourBatchDisponibilitesQueryResult]
 
+  def listerPourBatchJVR(query: CandidatsPourBatchJVRQuery): Future[CandidatsPourBatchJVRQueryResult]
+
   def listerPourCsv(query: CandidatsPourCsvQuery.type): Future[CandidatsPourCsvQueryResult]
 }

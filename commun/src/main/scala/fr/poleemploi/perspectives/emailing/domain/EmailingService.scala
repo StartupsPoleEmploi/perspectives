@@ -18,4 +18,6 @@ trait EmailingService {
   def ajouterRecruteurInscrit(recruteurInscrit: RecruteurInscrit): Future[Unit]
 
   def mettreAJourTypeRecruteur(recruteurId: RecruteurId, typeRecruteur: TypeRecruteur): Future[Unit]
+
+  def mettreAJourDisponibiliteCandidatJVR(candidatId: CandidatId, candidatEnRecherche: Boolean): Future[Unit]
 }

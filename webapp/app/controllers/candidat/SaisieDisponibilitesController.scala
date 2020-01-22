@@ -7,6 +7,7 @@ import conf.WebAppConfig
 import controllers.{AssetsFinder, FormHelpers}
 import fr.poleemploi.perspectives.candidat._
 import fr.poleemploi.perspectives.commun.infra.play.http.HttpCommandHandler
+import fr.poleemploi.perspectives.emailing.domain.EmailingService
 import fr.poleemploi.perspectives.projections.candidat.{CandidatQueryHandler, CandidatSaisieDisponibilitesQuery}
 import fr.poleemploi.perspectives.projections.metier.MetierQueryHandler
 import javax.inject.Inject
@@ -25,6 +26,7 @@ class SaisieDisponibilitesController @Inject()(components: ControllerComponents,
                                                candidatQueryHandler: CandidatQueryHandler,
                                                metierQueryHandler: MetierQueryHandler,
                                                candidatAuthentifieAction: CandidatAuthentifieAction,
+                                               emailingService: EmailingService,
                                                candidatAConnecterSiNonAuthentifieAction: CandidatAConnecterSiNonAuthentifieAction)(implicit exec: ExecutionContext) extends AbstractController(components) {
 
   def saisieDisponibilites(candidatEnRecherche: Option[Boolean]): Action[AnyContent] = candidatAConnecterSiNonAuthentifieAction.async { candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
@@ -65,6 +67,35 @@ class SaisieDisponibilitesController @Inject()(components: ControllerComponents,
           candidatCommandHandler.handle(modifierDisponibilitesCommand).map(_ =>
             Ok(Json.obj("candidatEnRecherche" -> modifierDisponibilitesCommand.candidatEnRecherche)))
         })
+    }(candidatAuthentifieRequest)
+  }
+
+  def saisieDisponibilitesJVR(candidatEnRecherche: Boolean): Action[AnyContent] = candidatAConnecterSiNonAuthentifieAction.async { candidatAuthentifieRequest: CandidatAuthentifieRequest[AnyContent] =>
+    messagesAction.async { implicit messagesRequest: MessagesRequest[AnyContent] =>
+      val saisieDisponibilitesForm = SaisieDisponibilitesForm(
+        candidatEnRecherche = FormHelpers.optBooleanToString(Some(candidatEnRecherche)),
+        disponibiliteConnue = None,
+        nbMoisProchaineDisponibilite = None,
+        emploiTrouveGracePerspectives = None
+      )
+      val modifierDisponibilitesCommand = buildModifierCandidatCommand(candidatAuthentifieRequest.candidatId, saisieDisponibilitesForm)
+
+      for {
+        _ <- candidatCommandHandler.handle(modifierDisponibilitesCommand)
+        _ <- emailingService.mettreAJourDisponibiliteCandidatJVR(candidatAuthentifieRequest.candidatId, candidatEnRecherche)
+      } yield {
+        Ok(views.html.candidat.saisieDisponibilitesJVR(
+          candidatAuthentifie = candidatAuthentifieRequest.candidatAuthentifie,
+          jsData = Json.obj(
+            "confirmationDispo" -> candidatEnRecherche,
+            "confirmationNonDispo" -> !candidatEnRecherche
+          ),
+          gtmDataLayer = TrackingService.buildTrackingCandidat(
+            optCandidatAuthentifie = Some(candidatAuthentifieRequest.candidatAuthentifie),
+            flash = Some(messagesRequest.flash)
+          )
+        ))
+      }
     }(candidatAuthentifieRequest)
   }
 
