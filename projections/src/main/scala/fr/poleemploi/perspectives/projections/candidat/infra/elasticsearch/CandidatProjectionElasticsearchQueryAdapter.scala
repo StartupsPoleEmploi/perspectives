@@ -141,6 +141,28 @@ class CandidatProjectionElasticsearchQueryAdapter(wsClient: WSClient,
         )
       }
 
+  override def listerPourBatchJVR(query: CandidatsPourBatchJVRQuery): Future[CandidatsPourBatchJVRQueryResult] =
+    if (query.candidatIds.isEmpty) Future(CandidatsPourBatchJVRQueryResult(Nil))
+    else wsClient
+      .url(s"$baseUrl/$indexName/_search")
+      .withHttpHeaders(jsonContentType)
+      .withQueryStringParameters(
+        ("_source", s"$candidat_id,$email,$nom,$prenom")
+      )
+      .post(mapping.buildCandidatPourBatchJVRQuery(query))
+      .map { response =>
+        val candidats = (response.json \\ "_source").map(_.as[CandidatPourConseillerBatchJVRDocument]).toList
+
+        CandidatsPourBatchJVRQueryResult(
+          candidats = candidats.map(c => CandidatPourBatchJVRDto(
+            candidatId = c.candidatId,
+            email = c.email,
+            nom = c.nom,
+            prenom = c.prenom
+          ))
+        )
+      }
+
   def secteursActivitesAvecCandidats(query: SecteursActivitesAvecCandidatsQuery): Future[SecteursActivitesAvecCandidatsQueryResult] =
     wsClient
       .url(s"$baseUrl/$indexName/_search")

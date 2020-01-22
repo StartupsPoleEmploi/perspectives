@@ -493,6 +493,26 @@ class CandidatProjectionElasticsearchQueryMapping(referentielMetier: Referentiel
       )
     )
 
+  def buildCandidatPourBatchJVRQuery(query: CandidatsPourBatchJVRQuery): JsObject =
+    Json.obj(
+      "size" -> query.candidatIds.size,
+      "query" -> Json.obj(
+        "bool" -> Json.obj(
+          "must" -> JsArray(
+            Seq(
+              Json.obj("terms" -> Json.obj(candidat_id -> JsArray(query.candidatIds.map(v => JsString(v.value))))),
+              Json.obj("bool" -> Json.obj(
+                "should" -> Json.arr(
+                  Json.obj("term" -> Json.obj(contact_recruteur -> true)),
+                  Json.obj("term" -> Json.obj(contact_formation -> true))
+                )
+              ))
+            )
+          )
+        )
+      )
+    )
+
   private def buildFiltreTypeRecruteur(typeRecruteur: TypeRecruteur): JsObject = typeRecruteur match {
     case TypeRecruteur.ORGANISME_FORMATION =>
       Json.obj("term" -> Json.obj(contact_formation -> true))

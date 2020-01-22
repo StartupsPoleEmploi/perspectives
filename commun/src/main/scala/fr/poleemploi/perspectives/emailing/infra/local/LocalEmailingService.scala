@@ -25,4 +25,7 @@ class LocalEmailingService extends EmailingService {
 
   override def mettreAJourTypeRecruteur(recruteurId: RecruteurId, typeRecruteur: TypeRecruteur): Future[Unit] =
     Future.successful(())
+
+  override def mettreAJourDisponibiliteCandidatJVR(candidatId: CandidatId, candidatEnRecherche: Boolean): Future[Unit] =
+    Future.successful(())
 }

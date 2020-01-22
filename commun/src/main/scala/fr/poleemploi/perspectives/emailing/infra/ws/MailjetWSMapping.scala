@@ -72,6 +72,11 @@ class MailjetWSMapping {
       ContactDataProperty(mrs_date, mrsValideeCandidat.dateEvaluation.atStartOfDay().format(formatter))
     ))
 
+  def buildRequestMiseAJourDisponibiliteCandidatJVR(candidatEnRecherche: Boolean): UpdateContactDataRequest =
+    UpdateContactDataRequest(List(
+      ContactDataProperty(disponible_jvr, String.valueOf(candidatEnRecherche))
+    ))
+
   def buildRequestImportProspectsCandidats(idListe: Int, prospectsCandidats: Stream[MRSProspectCandidat]): ManageManyContactsRequest =
     ManageManyContactsRequest(
       contacts = prospectsCandidats.map(p => Contact(
@@ -95,7 +100,25 @@ class MailjetWSMapping {
       ))
     )
 
-  def buildRequestEmailDisponibiliteCandidat(baseUrl: String, idTemplate: Int, candidats: Seq[EmailingDisponibiliteCandidatAvecEmail]): SendMailRequest =
+  def buildRequestEmailDisponibiliteCandidat(baseUrl: String, idTemplate: Int, candidats: Seq[EmailingDisponibiliteCandidatAvecEmail]): SendMailRequest = {
+    val gaTrackingCtaOui = TrackingUtils.buildTrackingGA(
+      utmCampaign = "disponibilite-candidat",
+      utmSource = "candidats-inscrits",
+      utmMedium = "email",
+      utmContent = "cta-oui"
+    )
+    val gaTrackingCtaNon = TrackingUtils.buildTrackingGA(
+      utmCampaign = "disponibilite-candidat",
+      utmSource = "candidats-inscrits",
+      utmMedium = "email",
+      utmContent = "cta-non"
+    )
+    val gaTrackingHeader = TrackingUtils.buildTrackingGA(
+      utmCampaign = "disponibilite-candidat",
+      utmSource = "candidats-inscrits",
+      utmMedium = "email",
+      utmContent = "header"
+    )
     SendMailRequest(
       messages = candidats.map(c => SendMailMessage(
         from = None,
@@ -104,11 +127,49 @@ class MailjetWSMapping {
         templateId = idTemplate,
         category = Some(DISPONIBILITE_CANDIDAT_CATEGORY),
         variables = Map(
-          VAR_URL_FORMULAIRE_DISPO_CANDIDAT_EN_RECHERCHE -> s"$baseUrl/candidat/disponibilites?candidatEnRecherche=true&token=${c.autologinToken.value}",
-          VAR_URL_FORMULAIRE_DISPO_CANDIDAT_PAS_EN_RECHERCHE -> s"$baseUrl/candidat/disponibilites?candidatEnRecherche=false&token=${c.autologinToken.value}"
+          VAR_URL_FORMULAIRE_DISPO_CANDIDAT_EN_RECHERCHE -> s"$baseUrl/candidat/disponibilites?candidatEnRecherche=true&token=${c.autologinToken.value}&$gaTrackingCtaOui",
+          VAR_URL_FORMULAIRE_DISPO_CANDIDAT_PAS_EN_RECHERCHE -> s"$baseUrl/candidat/disponibilites?candidatEnRecherche=false&token=${c.autologinToken.value}&$gaTrackingCtaNon",
+          VAR_URL_PERSPECTIVES -> s"$baseUrl?$gaTrackingHeader"
         )
       ))
     )
+  }
+
+  def buildRequestEmailCandidatJVR(baseUrl: String, idTemplate: Int, candidatsJVR: Seq[EmailingCandidatJVR]): SendMailRequest = {
+    val gaTrackingCtaOui = TrackingUtils.buildTrackingGA(
+      utmCampaign = "disponibilite-candidat-jvr",
+      utmSource = "candidats-inscrits-jvr",
+      utmMedium = "email",
+      utmContent = "cta-oui"
+    )
+    val gaTrackingCtaNon = TrackingUtils.buildTrackingGA(
+      utmCampaign = "disponibilite-candidat-jvr",
+      utmSource = "candidats-inscrits-jvr",
+      utmMedium = "email",
+      utmContent = "cta-non"
+    )
+    val gaTrackingHeader = TrackingUtils.buildTrackingGA(
+      utmCampaign = "disponibilite-candidat-jvr",
+      utmSource = "candidats-inscrits-jvr",
+      utmMedium = "email",
+      utmContent = "header"
+    )
+
+    SendMailRequest(
+      messages = candidatsJVR.map(c => SendMailMessage(
+        from = None,
+        to = Seq(EmailAndName(email = c.email.value)),
+        subject = None,
+        templateId = idTemplate,
+        category = Some(DISPONIBILITE_CANDIDAT_JVR_CATEGORY),
+        variables = Map(
+          VAR_URL_FORMULAIRE_DISPO_CANDIDAT_EN_RECHERCHE -> s"$baseUrl/candidat/jvr/disponibilites?candidatEnRecherche=true&token=${c.autologinToken.value}&$gaTrackingCtaOui",
+          VAR_URL_FORMULAIRE_DISPO_CANDIDAT_PAS_EN_RECHERCHE -> s"$baseUrl/candidat/jvr/disponibilites?candidatEnRecherche=false&token=${c.autologinToken.value}&$gaTrackingCtaNon",
+          VAR_URL_PERSPECTIVES -> s"$baseUrl?$gaTrackingHeader"
+        )
+      ))
+    )
+  }
 
   def buildRequestCandidatsPourOffreGereeParRecruteur(baseUrl: String,
                                                       idTemplate: Int,
@@ -242,6 +303,7 @@ object MailjetWSMapping {
   val VAR_URL_FORMULAIRE_DISPO_CANDIDAT_EN_RECHERCHE = "urlFormulaireDispoOui"
   val VAR_URL_FORMULAIRE_DISPO_CANDIDAT_PAS_EN_RECHERCHE = "urlFormulaireDispoNon"
   val DISPONIBILITE_CANDIDAT_CATEGORY = "disponibilite_candidat"
+  val DISPONIBILITE_CANDIDAT_JVR_CATEGORY = "disponibilite_candidat_jvr"
   val VAR_URL_PERSPECTIVES = "urlPerspectives"
   val VAR_URL_PERSPECTIVES_2 = "urlPerspectives2"
   val VAR_URL_RECHERCHE_CANDIDATS = "urlRechercheCandidats"

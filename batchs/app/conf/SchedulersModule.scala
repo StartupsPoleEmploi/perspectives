@@ -1,7 +1,7 @@
 package conf
 
 import akka.actor.{ActorRef, ActorSystem}
-import candidat.activite.domain.{EmailingDisponibilitesService, ImportOffresEnDifficulteGereesParConseillerService, ImportOffresEnDifficulteGereesParRecruteurService, ImportOffresGereesParConseillerService, ImportOffresGereesParRecruteurService}
+import candidat.activite.domain.{EmailingCandidatsJVRService, EmailingDisponibilitesService, ImportOffresEnDifficulteGereesParConseillerService, ImportOffresEnDifficulteGereesParRecruteurService, ImportOffresGereesParConseillerService, ImportOffresGereesParRecruteurService}
 import com.google.inject.{AbstractModule, Inject, Provides, Singleton}
 import fr.poleemploi.perspectives.candidat.mrs.domain.ImportHabiletesMRS
 import fr.poleemploi.perspectives.emailing.domain.ImportProspectService
@@ -20,6 +20,7 @@ class SchedulersModule extends AbstractModule with ScalaModule with AkkaGuiceSup
     bindActor[ImportHabiletesMRSActor](ImportHabiletesMRSActor.name)
     bindActor[ImportProspectsCandidatsActor](ImportProspectsCandidatsActor.name)
     bindActor[EmailingDisponibilitesCandidatActor](EmailingDisponibilitesCandidatActor.name)
+    bindActor[EmailingCandidatsJVRActor](EmailingCandidatsJVRActor.name)
     bindActor[ImportOffresGereesParRecruteurActor](ImportOffresGereesParRecruteurActor.name)
     bindActor[ImportOffresEnDifficulteGereesParRecruteurActor](ImportOffresEnDifficulteGereesParRecruteurActor.name)
     bindActor[ImportOffresGereesParConseillerActor](ImportOffresGereesParConseillerActor.name)
@@ -71,6 +72,12 @@ class SchedulersModule extends AbstractModule with ScalaModule with AkkaGuiceSup
     )
 
   @Provides
+  def emailingCandidatsJVRActor(emailingCandidatsJVRService: EmailingCandidatsJVRService): EmailingCandidatsJVRActor =
+    new EmailingCandidatsJVRActor(
+      emailingCandidatsJVRService = emailingCandidatsJVRService
+    )
+
+  @Provides
   @Singleton
   def batchsScheduler(actorSystem: ActorSystem,
                       @Named(ImportHabiletesMRSActor.name)
@@ -86,7 +93,9 @@ class SchedulersModule extends AbstractModule with ScalaModule with AkkaGuiceSup
                       @Named(ImportOffresEnDifficulteGereesParConseillerActor.name)
                       importOffresEnDifficulteGereesParConseillerActor: ActorRef,
                       @Named(EmailingDisponibilitesCandidatActor.name)
-                      emailingDisponibilitesCandidatActor: ActorRef): BatchsScheduler =
+                      emailingDisponibilitesCandidatActor: ActorRef,
+                      @Named(EmailingCandidatsJVRActor.name)
+                      emailingCandidatsJVRActor: ActorRef): BatchsScheduler =
     new BatchsScheduler(
       actorSystem = actorSystem,
       importHabiletesMRSActor = importHabiletesMRSActor,
@@ -95,6 +104,7 @@ class SchedulersModule extends AbstractModule with ScalaModule with AkkaGuiceSup
       importOffresEnDifficulteGereesParRecruteurActor = importOffresEnDifficulteGereesParRecruteurActor,
       importOffresGereesParConseillerActor = importOffresGereesParConseillerActor,
       importOffresEnDifficulteGereesParConseillerActor = importOffresEnDifficulteGereesParConseillerActor,
-      emailingDisponibilitesCandidatActor = emailingDisponibilitesCandidatActor
+      emailingDisponibilitesCandidatActor = emailingDisponibilitesCandidatActor,
+      emailingCandidatsJVRActor = emailingCandidatsJVRActor
     )
 }

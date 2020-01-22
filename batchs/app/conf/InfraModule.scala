@@ -230,6 +230,28 @@ class InfraModule extends AbstractModule with ScalaModule {
   def localEmailingDisponibilitesService: LocalEmailingDisponibilitesService =
     new LocalEmailingDisponibilitesService
 
+
+  @Provides
+  @Singleton
+  def mailjetEmailingCandidatsJVRService(importCandidatsJVRCSVAdapter: ImportCandidatsJVRCSVAdapter,
+                                         batchsConfig: BatchsConfig,
+                                         actorSystem: ActorSystem,
+                                         mailjetWSAdapter: MailjetWSAdapter,
+                                         candidatQueryHandler: CandidatQueryHandler,
+                                         autologinService: AutologinService): MailjetEmailingCandidatsJVRService =
+    new MailjetEmailingCandidatsJVRService(
+      baseUrl = batchsConfig.baseUrl,
+      actorSystem = actorSystem,
+      importFileAdapter = importCandidatsJVRCSVAdapter,
+      candidatQueryHandler = candidatQueryHandler,
+      autologinService = autologinService,
+      mailjetWSAdapter = mailjetWSAdapter
+    )
+
+  @Provides
+  def localEmailingCandidatsJVRService: LocalEmailingCandidatsJVRService =
+    new LocalEmailingCandidatsJVRService
+
   @Provides
   def mailjetWSMapping: MailjetWSMapping =
     new MailjetWSMapping
@@ -322,8 +344,8 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   def importOffresGereesParConseillerCSVAdapter(batchsConfig: BatchsConfig,
-                                               actorSystem: ActorSystem,
-                                               offresGereesParConseillerCSVAdapter: OffresGereesParConseillerCSVAdapter): ImportOffresGereesParConseillerCSVAdapter =
+                                                actorSystem: ActorSystem,
+                                                offresGereesParConseillerCSVAdapter: OffresGereesParConseillerCSVAdapter): ImportOffresGereesParConseillerCSVAdapter =
     new ImportOffresGereesParConseillerCSVAdapter(
       config = batchsConfig.importPoleEmploiFileConfig,
       actorSystem = actorSystem,
@@ -332,12 +354,26 @@ class InfraModule extends AbstractModule with ScalaModule {
 
   @Provides
   def importOffresEnDifficulteGereesParConseillerCSVAdapter(batchsConfig: BatchsConfig,
-                                                actorSystem: ActorSystem,
-                                                offresGereesParConseillerCSVAdapter: OffresGereesParConseillerCSVAdapter): ImportOffresEnDifficulteGereesParConseillerCSVAdapter =
+                                                            actorSystem: ActorSystem,
+                                                            offresGereesParConseillerCSVAdapter: OffresGereesParConseillerCSVAdapter): ImportOffresEnDifficulteGereesParConseillerCSVAdapter =
     new ImportOffresEnDifficulteGereesParConseillerCSVAdapter(
       config = batchsConfig.importPoleEmploiFileConfig,
       actorSystem = actorSystem,
       offresGereesParConseillerCSVAdapter = offresGereesParConseillerCSVAdapter
+    )
+
+  @Provides
+  def candidatsJVRCSVAdapter(actorSystem: ActorSystem): CandidatsJVRCSVAdapter =
+    new CandidatsJVRCSVAdapter(actorSystem = actorSystem)
+
+  @Provides
+  def importCandidatsJVRCSVAdapter(batchsConfig: BatchsConfig,
+                                   actorSystem: ActorSystem,
+                                   candidatsJVRCSVAdapter: CandidatsJVRCSVAdapter): ImportCandidatsJVRCSVAdapter =
+    new ImportCandidatsJVRCSVAdapter(
+      config = batchsConfig.importPoleEmploiFileConfig,
+      actorSystem = actorSystem,
+      candidatsJVRCSVAdapter = candidatsJVRCSVAdapter
     )
 
   @Provides
@@ -406,11 +442,11 @@ class InfraModule extends AbstractModule with ScalaModule {
   @Provides
   @Singleton
   def importOffresGereesParConseillerServiceMailjet(actorSystem: ActorSystem,
-                                                   batchsConfig: BatchsConfig,
-                                                   localisationService: LocalisationService,
-                                                   candidatQueryHandler: CandidatQueryHandler,
-                                                   importOffresGereesParConseillerCSVAdapter: ImportOffresGereesParConseillerCSVAdapter,
-                                                   mailjetWSAdapter: MailjetWSAdapter): MailjetImportOffresGereesParConseillerService =
+                                                    batchsConfig: BatchsConfig,
+                                                    localisationService: LocalisationService,
+                                                    candidatQueryHandler: CandidatQueryHandler,
+                                                    importOffresGereesParConseillerCSVAdapter: ImportOffresGereesParConseillerCSVAdapter,
+                                                    mailjetWSAdapter: MailjetWSAdapter): MailjetImportOffresGereesParConseillerService =
 
     new MailjetImportOffresGereesParConseillerService(
       actorSystem = actorSystem,
@@ -424,11 +460,11 @@ class InfraModule extends AbstractModule with ScalaModule {
   @Provides
   @Singleton
   def importOffresEnDifficulteGereesParConseillerServiceMailjet(actorSystem: ActorSystem,
-                                                    batchsConfig: BatchsConfig,
-                                                    localisationService: LocalisationService,
-                                                    candidatQueryHandler: CandidatQueryHandler,
-                                                    importOffresEnDifficulteGereesParConseillerCSVAdapter: ImportOffresEnDifficulteGereesParConseillerCSVAdapter,
-                                                    mailjetWSAdapter: MailjetWSAdapter): MailjetImportOffresEnDifficulteGereesParConseillerService =
+                                                                batchsConfig: BatchsConfig,
+                                                                localisationService: LocalisationService,
+                                                                candidatQueryHandler: CandidatQueryHandler,
+                                                                importOffresEnDifficulteGereesParConseillerCSVAdapter: ImportOffresEnDifficulteGereesParConseillerCSVAdapter,
+                                                                mailjetWSAdapter: MailjetWSAdapter): MailjetImportOffresEnDifficulteGereesParConseillerService =
 
     new MailjetImportOffresEnDifficulteGereesParConseillerService(
       actorSystem = actorSystem,

@@ -14,4 +14,5 @@ object MailjetContactProperties {
   val identifiant_local = "identifiant_local"
   val type_recruteur = "type_recruteur"
   val code_neptune = "code_neptune"
+  val disponible_jvr = "disponible_jvr"
 }
