@@ -30,8 +30,8 @@ class OffresGereesParConseillerCSVAdapter(val actorSystem: ActorSystem) {
       .via(CsvToMap.toMapAsStrings())
       .filter(m =>
         m.get("kc_offre").exists(_.nonEmpty) &&
-          m.get("code_postal").exists(CodePostal.from(_).isDefined) &&
-          m.get("mail_suivi").exists(_.nonEmpty) &&
+          m.get("code_postal").exists(isCodePostalCible) &&
+          m.get("mail_suivi").exists(isEmailValide) &&
           m.get("enseigne").exists(_.nonEmpty) &&
           m.get("dc_rome_id").exists(_.nonEmpty) &&
           m.get("intitule").exists(_.nonEmpty) &&
@@ -51,4 +51,10 @@ class OffresGereesParConseillerCSVAdapter(val actorSystem: ActorSystem) {
         )
       )
       .runWith(Sink.collection)
+
+  private def isEmailValide(email: String): Boolean =
+    email.nonEmpty && email != "null"
+
+  private def isCodePostalCible(codePostal: String): Boolean =
+    CodePostal.from(codePostal).isDefined && !codePostal.slice(0, 2).matches("^(16|17|19|23|24|33|40|47|64|79|86|87)$") // Region Nouvelle-Aquitaine exclue
 }

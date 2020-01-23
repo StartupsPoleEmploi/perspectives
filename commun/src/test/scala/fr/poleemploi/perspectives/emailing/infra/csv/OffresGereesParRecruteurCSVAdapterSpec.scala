@@ -32,7 +32,7 @@ class OffresGereesParRecruteurCSVAdapterSpec extends AsyncWordSpec
       val source = Source.single(
         ByteString(
           """preselection_deduite;kc_offre;dd_datecreationreport;dc_rome_id;intitule;lieu_de_travail;siret;enseigne;code_postal;nom_prenom_correspondant_offre;mail_suivi
-            |non;;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);BRIVE LA GAILLARDE (19);32992501005763;ENTREPRISE;19100;RH ENTREPRISE;test@email.fr""".stripMargin)
+            |non;;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);GRANVILLE (50);32992501005763;ENTREPRISE;50400;RH ENTREPRISE;test@email.fr""".stripMargin)
       )
 
       // When
@@ -46,7 +46,7 @@ class OffresGereesParRecruteurCSVAdapterSpec extends AsyncWordSpec
       val source = Source.single(
         ByteString(
           """preselection_deduite;kc_offre;dd_datecreationreport;dc_rome_id;intitule;lieu_de_travail;siret;enseigne;code_postal;nom_prenom_correspondant_offre;mail_suivi
-            |non;094DLLY;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);BRIVE LA GAILLARDE (19);32992501005763;ENTREPRISE;;RH ENTREPRISE;test@email.fr""".stripMargin)
+            |non;094DLLY;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);GRANVILLE (50);32992501005763;ENTREPRISE;;RH ENTREPRISE;test@email.fr""".stripMargin)
       )
 
       // When
@@ -60,7 +60,21 @@ class OffresGereesParRecruteurCSVAdapterSpec extends AsyncWordSpec
       val source = Source.single(
         ByteString(
           """preselection_deduite;kc_offre;dd_datecreationreport;dc_rome_id;intitule;lieu_de_travail;siret;enseigne;code_postal;nom_prenom_correspondant_offre;mail_suivi
-            |non;094DLLY;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);BRIVE LA GAILLARDE (19);32992501005763;ENTREPRISE;123456789;RH ENTREPRISE;test@email.fr""".stripMargin)
+            |non;094DLLY;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);GRANVILLE (50);32992501005763;ENTREPRISE;123456789;RH ENTREPRISE;test@email.fr""".stripMargin)
+      )
+
+      // When
+      val future = adapter.load(source)
+
+      // Then
+      future.map(s => s.isEmpty mustBe true)
+    }
+    "ignorer la ligne si elle ne contient pas de code postal cible" in {
+      // Given
+      val source = Source.single(
+        ByteString(
+          """preselection_deduite;kc_offre;dd_datecreationreport;dc_rome_id;intitule;lieu_de_travail;siret;enseigne;code_postal;nom_prenom_correspondant_offre;mail_suivi
+            |non;094DLLY;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);GRANVILLE (50);32992501005763;ENTREPRISE;19100;RH ENTREPRISE;test@email.fr""".stripMargin)
       )
 
       // When
@@ -74,7 +88,7 @@ class OffresGereesParRecruteurCSVAdapterSpec extends AsyncWordSpec
       val source = Source.single(
         ByteString(
           """preselection_deduite;kc_offre;dd_datecreationreport;dc_rome_id;intitule;lieu_de_travail;siret;enseigne;code_postal;nom_prenom_correspondant_offre;mail_suivi
-            |non;094DLLY;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);BRIVE LA GAILLARDE (19);32992501005763;ENTREPRISE;19100;RH ENTREPRISE;""".stripMargin)
+            |non;094DLLY;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);GRANVILLE (50);32992501005763;ENTREPRISE;50400;RH ENTREPRISE;""".stripMargin)
       )
 
       // When
@@ -88,7 +102,7 @@ class OffresGereesParRecruteurCSVAdapterSpec extends AsyncWordSpec
       val source = Source.single(
         ByteString(
           """preselection_deduite;kc_offre;dd_datecreationreport;dc_rome_id;intitule;lieu_de_travail;siret;enseigne;code_postal;nom_prenom_correspondant_offre;mail_suivi
-            |non;094DLLY;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);BRIVE LA GAILLARDE (19);32992501005763;ENTREPRISE;19100;RH ENTREPRISE;null""".stripMargin)
+            |non;094DLLY;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);GRANVILLE (50);32992501005763;ENTREPRISE;50400;RH ENTREPRISE;null""".stripMargin)
       )
 
       // When
@@ -102,7 +116,7 @@ class OffresGereesParRecruteurCSVAdapterSpec extends AsyncWordSpec
       val source = Source.single(
         ByteString(
           """preselection_deduite;kc_offre;dd_datecreationreport;dc_rome_id;intitule;lieu_de_travail;siret;enseigne;code_postal;nom_prenom_correspondant_offre;mail_suivi
-            |non;094DLLY;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);BRIVE LA GAILLARDE (19);32992501005763;;19100;RH ENTREPRISE;test@email.fr""".stripMargin)
+            |non;094DLLY;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);GRANVILLE (50);32992501005763;;50400;RH ENTREPRISE;test@email.fr""".stripMargin)
       )
 
       // When
@@ -116,7 +130,7 @@ class OffresGereesParRecruteurCSVAdapterSpec extends AsyncWordSpec
       val source = Source.single(
         ByteString(
           """preselection_deduite;kc_offre;dd_datecreationreport;dc_rome_id;intitule;lieu_de_travail;siret;enseigne;code_postal;nom_prenom_correspondant_offre;mail_suivi
-            |non;094DLLY;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);BRIVE LA GAILLARDE (19);32992501005763;ENTREPRISE;19100;;test@email.fr""".stripMargin)
+            |non;094DLLY;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);GRANVILLE (50);32992501005763;ENTREPRISE;50400;;test@email.fr""".stripMargin)
       )
 
       // When
@@ -130,7 +144,7 @@ class OffresGereesParRecruteurCSVAdapterSpec extends AsyncWordSpec
       val source = Source.single(
         ByteString(
           """preselection_deduite;kc_offre;dd_datecreationreport;dc_rome_id;intitule;lieu_de_travail;siret;enseigne;code_postal;nom_prenom_correspondant_offre;mail_suivi
-            |non;094DLLY;2019-10-01;;Conducteur / Conductrice de machines à onduler (H/F);BRIVE LA GAILLARDE (19);32992501005763;ENTREPRISE;19100;RH ENTREPRISE;test@email.fr""".stripMargin)
+            |non;094DLLY;2019-10-01;;Conducteur / Conductrice de machines à onduler (H/F);GRANVILLE (50);32992501005763;ENTREPRISE;50400;RH ENTREPRISE;test@email.fr""".stripMargin)
       )
 
       // When
@@ -144,7 +158,7 @@ class OffresGereesParRecruteurCSVAdapterSpec extends AsyncWordSpec
       val source = Source.single(
         ByteString(
           """preselection_deduite;kc_offre;dd_datecreationreport;dc_rome_id;intitule;lieu_de_travail;siret;enseigne;code_postal;nom_prenom_correspondant_offre;mail_suivi
-            |non;094DLLY;2019-10-01;H3101;;BRIVE LA GAILLARDE (19);32992501005763;ENTREPRISE;19100;RH ENTREPRISE;test@email.fr""".stripMargin)
+            |non;094DLLY;2019-10-01;H3101;;GRANVILLE (50);32992501005763;ENTREPRISE;50400;RH ENTREPRISE;test@email.fr""".stripMargin)
       )
 
       // When
@@ -158,7 +172,7 @@ class OffresGereesParRecruteurCSVAdapterSpec extends AsyncWordSpec
       val source = Source.single(
         ByteString(
           """preselection_deduite;kc_offre;dd_datecreationreport;dc_rome_id;intitule;lieu_de_travail;siret;enseigne;code_postal;nom_prenom_correspondant_offre;mail_suivi
-            |non;094DLLY;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);;32992501005763;ENTREPRISE;19100;RH ENTREPRISE;test@email.fr""".stripMargin)
+            |non;094DLLY;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);;32992501005763;ENTREPRISE;50400;RH ENTREPRISE;test@email.fr""".stripMargin)
       )
 
       // When
@@ -172,7 +186,7 @@ class OffresGereesParRecruteurCSVAdapterSpec extends AsyncWordSpec
       val source = Source.single(
         ByteString(
           """preselection_deduite;kc_offre;dd_datecreationreport;dc_rome_id;intitule;lieu_de_travail;siret;enseigne;code_postal;nom_prenom_correspondant_offre;mail_suivi
-            |non;094DLLY;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);BRIVE LA GAILLARDE (19);32992501005763;ENTREPRISE;19100;RH ENTREPRISE;test@email.fr""".stripMargin)
+            |non;094DLLY;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);GRANVILLE (50);32992501005763;ENTREPRISE;50400;RH ENTREPRISE;test@email.fr""".stripMargin)
       )
 
       // When
@@ -181,12 +195,12 @@ class OffresGereesParRecruteurCSVAdapterSpec extends AsyncWordSpec
       // Then
       future.map(s => s.size mustBe 1)
     }
-    "integrer l'id de l'offre'" in {
+    "integrer l'id de l'offre" in {
       // Given
       val source = Source.single(
         ByteString(
           """preselection_deduite;kc_offre;dd_datecreationreport;dc_rome_id;intitule;lieu_de_travail;siret;enseigne;code_postal;nom_prenom_correspondant_offre;mail_suivi
-            |non;094DLLY;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);BRIVE LA GAILLARDE (19);32992501005763;ENTREPRISE;19100;RH ENTREPRISE;test@email.fr""".stripMargin)
+            |non;094DLLY;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);GRANVILLE (50);32992501005763;ENTREPRISE;50400;RH ENTREPRISE;test@email.fr""".stripMargin)
       )
 
       // When
@@ -200,7 +214,7 @@ class OffresGereesParRecruteurCSVAdapterSpec extends AsyncWordSpec
       val source = Source.single(
         ByteString(
           """preselection_deduite;kc_offre;dd_datecreationreport;dc_rome_id;intitule;lieu_de_travail;siret;enseigne;code_postal;nom_prenom_correspondant_offre;mail_suivi
-            |non;094DLLY;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);BRIVE LA GAILLARDE (19);32992501005763;ENTREPRISE;19100;RH ENTREPRISE;test@email.fr""".stripMargin)
+            |non;094DLLY;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);GRANVILLE (50);32992501005763;ENTREPRISE;50400;RH ENTREPRISE;test@email.fr""".stripMargin)
       )
 
       // When
@@ -214,7 +228,7 @@ class OffresGereesParRecruteurCSVAdapterSpec extends AsyncWordSpec
       val source = Source.single(
         ByteString(
           """preselection_deduite;kc_offre;dd_datecreationreport;dc_rome_id;intitule;lieu_de_travail;siret;enseigne;code_postal;nom_prenom_correspondant_offre;mail_suivi
-            |non;094DLLY;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);BRIVE LA GAILLARDE (19);32992501005763;ENTREPRISE;19100;RH ENTREPRISE;test@email.fr""".stripMargin)
+            |non;094DLLY;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);GRANVILLE (50);32992501005763;ENTREPRISE;50400;RH ENTREPRISE;test@email.fr""".stripMargin)
       )
 
       // When
@@ -228,7 +242,7 @@ class OffresGereesParRecruteurCSVAdapterSpec extends AsyncWordSpec
       val source = Source.single(
         ByteString(
           """preselection_deduite;kc_offre;dd_datecreationreport;dc_rome_id;intitule;lieu_de_travail;siret;enseigne;code_postal;nom_prenom_correspondant_offre;mail_suivi
-            |non;094DLLY;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);BRIVE LA GAILLARDE (19);32992501005763;ENTREPRISE;19100;RH ENTREPRISE;test@email.fr""".stripMargin)
+            |non;094DLLY;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);GRANVILLE (50);32992501005763;ENTREPRISE;50400;RH ENTREPRISE;test@email.fr""".stripMargin)
       )
 
       // When
@@ -242,21 +256,21 @@ class OffresGereesParRecruteurCSVAdapterSpec extends AsyncWordSpec
       val source = Source.single(
         ByteString(
           """preselection_deduite;kc_offre;dd_datecreationreport;dc_rome_id;intitule;lieu_de_travail;siret;enseigne;code_postal;nom_prenom_correspondant_offre;mail_suivi
-            |non;094DLLY;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);BRIVE LA GAILLARDE (19);32992501005763;ENTREPRISE;19100;RH ENTREPRISE;test@email.fr""".stripMargin)
+            |non;094DLLY;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);GRANVILLE (50);32992501005763;ENTREPRISE;50400;RH ENTREPRISE;test@email.fr""".stripMargin)
       )
 
       // When
       val future = adapter.load(source)
 
       // Then
-      future.map(s => s.toList.head.codePostal.value mustBe "19100")
+      future.map(s => s.toList.head.codePostal.value mustBe "50400")
     }
     "integrer le code ROME" in {
       // Given
       val source = Source.single(
         ByteString(
           """preselection_deduite;kc_offre;dd_datecreationreport;dc_rome_id;intitule;lieu_de_travail;siret;enseigne;code_postal;nom_prenom_correspondant_offre;mail_suivi
-            |non;094DLLY;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);BRIVE LA GAILLARDE (19);32992501005763;ENTREPRISE;19100;RH ENTREPRISE;test@email.fr""".stripMargin)
+            |non;094DLLY;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);GRANVILLE (50);32992501005763;ENTREPRISE;50400;RH ENTREPRISE;test@email.fr""".stripMargin)
       )
 
       // When
@@ -270,7 +284,7 @@ class OffresGereesParRecruteurCSVAdapterSpec extends AsyncWordSpec
       val source = Source.single(
         ByteString(
           """preselection_deduite;kc_offre;dd_datecreationreport;dc_rome_id;intitule;lieu_de_travail;siret;enseigne;code_postal;nom_prenom_correspondant_offre;mail_suivi
-            |non;094DLLY;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);BRIVE LA GAILLARDE (19);32992501005763;ENTREPRISE;19100;RH ENTREPRISE;test@email.fr""".stripMargin)
+            |non;094DLLY;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);GRANVILLE (50);32992501005763;ENTREPRISE;50400;RH ENTREPRISE;test@email.fr""".stripMargin)
       )
 
       // When
@@ -284,14 +298,14 @@ class OffresGereesParRecruteurCSVAdapterSpec extends AsyncWordSpec
       val source = Source.single(
         ByteString(
           """preselection_deduite;kc_offre;dd_datecreationreport;dc_rome_id;intitule;lieu_de_travail;siret;enseigne;code_postal;nom_prenom_correspondant_offre;mail_suivi
-            |non;094DLLY;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);BRIVE LA GAILLARDE (19);32992501005763;ENTREPRISE;19100;RH ENTREPRISE;test@email.fr""".stripMargin)
+            |non;094DLLY;2019-10-01;H3101;Conducteur / Conductrice de machines à onduler (H/F);GRANVILLE (50);32992501005763;ENTREPRISE;50400;RH ENTREPRISE;test@email.fr""".stripMargin)
       )
 
       // When
       val future = adapter.load(source)
 
       // Then
-      future.map(s => s.toList.head.lieuTravail mustBe "BRIVE LA GAILLARDE (19)")
+      future.map(s => s.toList.head.lieuTravail mustBe "GRANVILLE (50)")
     }
   }
 }
