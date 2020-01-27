@@ -8,6 +8,7 @@ import fr.poleemploi.perspectives.offre.domain.OffreId
 case class OffreGereeParConseillerAvecCandidats(override val offreId: OffreId,
                                                 override val enseigne: String,
                                                 override val emailCorrespondant: Email,
+                                                override val codeSafir: CodeSafir,
                                                 override val intitule: String,
                                                 override val codePostal: CodePostal,
                                                 override val coordonnees: Coordonnees,

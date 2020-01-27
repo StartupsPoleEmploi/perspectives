@@ -39,6 +39,8 @@ trait PostgresDriver extends ExPostgresProfile
 
     implicit val codeNeptuneColumnType: BaseColumnType[CodeNeptune] = mapStringValueObject(CodeNeptune)
 
+    implicit val codeSafirColumnType: BaseColumnType[CodeSafir] = mapStringValueObject(CodeSafir(_))
+
     implicit val mailjetContactIdColumnType: BaseColumnType[MailjetContactId] = mapLongValueObject(MailjetContactId)
 
     implicit val typeRecruteurColumnType: BaseColumnType[TypeRecruteur] = mapStringValueObject(TypeRecruteur(_))

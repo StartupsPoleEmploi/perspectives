@@ -4,7 +4,7 @@ import java.time.format.DateTimeFormatter
 
 import fr.poleemploi.perspectives.candidat.Adresse
 import fr.poleemploi.perspectives.candidat.activite.domain.EmailingDisponibiliteCandidatAvecEmail
-import fr.poleemploi.perspectives.commun.domain.Genre
+import fr.poleemploi.perspectives.commun.domain.{CodeSafir, Email, Genre}
 import fr.poleemploi.perspectives.commun.infra.email.TrackingUtils
 import fr.poleemploi.perspectives.emailing.domain._
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetContactId
@@ -173,90 +173,110 @@ class MailjetWSMapping {
 
   def buildRequestCandidatsPourOffreGereeParRecruteur(baseUrl: String,
                                                       idTemplate: Int,
+                                                      correspondantsOffresParCodeSafir: Map[CodeSafir, Seq[Email]],
                                                       offresGereesParRecruteurAvecCandidats: Seq[OffreGereeParRecruteurAvecCandidats]): SendMailRequest = {
     val utmCampaign = "offre-sans-preselection"
     SendMailRequest(
-      messages = offresGereesParRecruteurAvecCandidats.map(offre => SendMailMessage(
-        from = None,
-        to = Seq(EmailAndName(email = offre.emailCorrespondant.value)),
-        subject = None,
-        templateId = idTemplate,
-        category = Some(OFFRE_GEREE_PAR_RECRUTEUR_CATEGORY),
-        variables = Map(
-          VAR_TITRE_POSTE -> offre.intitule,
-          VAR_OFFRE_ID -> offre.offreId.value,
-          VAR_URL_RECHERCHE_CANDIDATS -> buildUrlRechercheCandidats(baseUrl, offre, utmCampaign),
-          VAR_URL_PERSPECTIVES -> buildUrlHome(baseUrl, offre, "header", utmCampaign)
+      messages = offresGereesParRecruteurAvecCandidats.map(offre => {
+        val correspondantsOffre = correspondantsOffresParCodeSafir.get(offre.codeSafir)
+        SendMailMessage(
+          from = None,
+          to = Seq(EmailAndName(email = offre.emailCorrespondant.value)),
+          cc = correspondantsOffre.map(_.map(c => EmailAndName(email = c.value))),
+          subject = None,
+          templateId = idTemplate,
+          category = Some(OFFRE_GEREE_PAR_RECRUTEUR_CATEGORY),
+          variables = Map(
+            VAR_TITRE_POSTE -> offre.intitule,
+            VAR_OFFRE_ID -> offre.offreId.value,
+            VAR_URL_RECHERCHE_CANDIDATS -> buildUrlRechercheCandidats(baseUrl, offre, utmCampaign),
+            VAR_URL_PERSPECTIVES -> buildUrlHome(baseUrl, offre, "header", utmCampaign)
+          )
         )
-      ))
+      })
     )
   }
 
   def buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl: String,
                                                                   idTemplate: Int,
                                                                   useVersionA: Boolean,
+                                                                  correspondantsOffresParCodeSafir: Map[CodeSafir, Seq[Email]],
                                                                   offresGereesParRecruteurAvecCandidats: Seq[OffreGereeParRecruteurAvecCandidats]): SendMailRequest = {
     val utmCampaign = "offre-en-difficulte-sans-preselection" + (if(useVersionA) "-version-a-a" else "-version-a-b")
     SendMailRequest(
-      messages = offresGereesParRecruteurAvecCandidats.map(offre => SendMailMessage(
-        from = None,
-        to = Seq(EmailAndName(email = offre.emailCorrespondant.value)),
-        subject = None,
-        templateId = idTemplate,
-        category = Some(OFFRE_EN_DIFFICULTE_GEREE_PAR_RECRUTEUR_CATEGORY + (if(useVersionA) "_version_a_a" else "_version_a_b")),
-        variables = Map(
-          VAR_TITRE_POSTE -> offre.intitule,
-          VAR_OFFRE_ID -> offre.offreId.value,
-          VAR_DATE_OFFRE -> offre.datePublication.format(prettyDateFormatter),
-          VAR_URL_RECHERCHE_CANDIDATS -> buildUrlRechercheCandidats(baseUrl, offre, utmCampaign),
-          VAR_URL_PERSPECTIVES -> buildUrlHome(baseUrl, offre, "header", utmCampaign)
+      messages = offresGereesParRecruteurAvecCandidats.map(offre => {
+        val correspondantsOffre = correspondantsOffresParCodeSafir.get(offre.codeSafir)
+        SendMailMessage(
+          from = None,
+          to = Seq(EmailAndName(email = offre.emailCorrespondant.value)),
+          cc = correspondantsOffre.map(_.map(c => EmailAndName(email = c.value))),
+          subject = None,
+          templateId = idTemplate,
+          category = Some(OFFRE_EN_DIFFICULTE_GEREE_PAR_RECRUTEUR_CATEGORY + (if(useVersionA) "_version_a_a" else "_version_a_b")),
+          variables = Map(
+            VAR_TITRE_POSTE -> offre.intitule,
+            VAR_OFFRE_ID -> offre.offreId.value,
+            VAR_DATE_OFFRE -> offre.datePublication.format(prettyDateFormatter),
+            VAR_URL_RECHERCHE_CANDIDATS -> buildUrlRechercheCandidats(baseUrl, offre, utmCampaign),
+            VAR_URL_PERSPECTIVES -> buildUrlHome(baseUrl, offre, "header", utmCampaign)
+          )
         )
-      ))
+      })
     )
   }
 
   def buildRequestCandidatsPourOffreGereeParConseiller(baseUrl: String,
                                                        idTemplate: Int,
+                                                       correspondantsOffresParCodeSafir: Map[CodeSafir, Seq[Email]],
                                                        offresGereesParConseillerAvecCandidats: Seq[OffreGereeParConseillerAvecCandidats]): SendMailRequest = {
     val utmCampaign = "offre-avec-preselection"
     SendMailRequest(
-      messages = offresGereesParConseillerAvecCandidats.map(offre => SendMailMessage(
-        from = None,
-        to = Seq(EmailAndName(email = offre.emailCorrespondant.value)),
-        subject = None,
-        templateId = idTemplate,
-        category = Some(OFFRE_GEREE_PAR_CONSEILLER_CATEGORY),
-        variables = Map(
-          VAR_TITRE_POSTE -> offre.intitule,
-          VAR_OFFRE_ID -> offre.offreId.value,
-          VAR_URL_RECHERCHE_CANDIDATS -> buildUrlRechercheCandidats(baseUrl, offre, utmCampaign),
-          VAR_URL_PERSPECTIVES -> buildUrlHome(baseUrl, offre, "header", utmCampaign),
-          VAR_URL_PERSPECTIVES_2 -> buildUrlHome(baseUrl, offre, "cta-2", utmCampaign)
+      messages = offresGereesParConseillerAvecCandidats.map(offre => {
+        val correspondantsOffre = correspondantsOffresParCodeSafir.get(offre.codeSafir)
+        SendMailMessage(
+          from = None,
+          to = Seq(EmailAndName(email = offre.emailCorrespondant.value)),
+          cc = correspondantsOffre.map(_.map(c => EmailAndName(email = c.value))),
+          subject = None,
+          templateId = idTemplate,
+          category = Some(OFFRE_GEREE_PAR_CONSEILLER_CATEGORY),
+          variables = Map(
+            VAR_TITRE_POSTE -> offre.intitule,
+            VAR_OFFRE_ID -> offre.offreId.value,
+            VAR_URL_RECHERCHE_CANDIDATS -> buildUrlRechercheCandidats(baseUrl, offre, utmCampaign),
+            VAR_URL_PERSPECTIVES -> buildUrlHome(baseUrl, offre, "header", utmCampaign),
+            VAR_URL_PERSPECTIVES_2 -> buildUrlHome(baseUrl, offre, "cta-2", utmCampaign)
+          )
         )
-      ))
+      })
     )
   }
 
   def buildRequestCandidatsPourOffreEnDifficulteGereeParConseiller(baseUrl: String,
                                                                    idTemplate: Int,
+                                                                   correspondantsOffresParCodeSafir: Map[CodeSafir, Seq[Email]],
                                                                    offresGereesParConseillerAvecCandidats: Seq[OffreGereeParConseillerAvecCandidats]): SendMailRequest = {
     val utmCampaign = "offre-en-difficulte-avec-preselection"
     SendMailRequest(
-      messages = offresGereesParConseillerAvecCandidats.map(offre => SendMailMessage(
-        from = None,
-        to = Seq(EmailAndName(email = offre.emailCorrespondant.value)),
-        subject = None,
-        templateId = idTemplate,
-        category = Some(OFFRE_EN_DIFFICULTE_GEREE_PAR_CONSEILLER_CATEGORY),
-        variables = Map(
-          VAR_TITRE_POSTE -> offre.intitule,
-          VAR_OFFRE_ID -> offre.offreId.value,
-          VAR_DATE_OFFRE -> offre.datePublication.format(prettyDateFormatter),
-          VAR_URL_RECHERCHE_CANDIDATS -> buildUrlRechercheCandidats(baseUrl, offre, utmCampaign),
-          VAR_URL_PERSPECTIVES -> buildUrlHome(baseUrl, offre, "header", utmCampaign),
-          VAR_URL_PERSPECTIVES_2 -> buildUrlHome(baseUrl, offre, "cta-2", utmCampaign)
+      messages = offresGereesParConseillerAvecCandidats.map(offre => {
+        val correspondantsOffre = correspondantsOffresParCodeSafir.get(offre.codeSafir)
+        SendMailMessage(
+          from = None,
+          to = Seq(EmailAndName(email = offre.emailCorrespondant.value)),
+          cc = correspondantsOffre.map(_.map(c => EmailAndName(email = c.value))),
+          subject = None,
+          templateId = idTemplate,
+          category = Some(OFFRE_EN_DIFFICULTE_GEREE_PAR_CONSEILLER_CATEGORY),
+          variables = Map(
+            VAR_TITRE_POSTE -> offre.intitule,
+            VAR_OFFRE_ID -> offre.offreId.value,
+            VAR_DATE_OFFRE -> offre.datePublication.format(prettyDateFormatter),
+            VAR_URL_RECHERCHE_CANDIDATS -> buildUrlRechercheCandidats(baseUrl, offre, utmCampaign),
+            VAR_URL_PERSPECTIVES -> buildUrlHome(baseUrl, offre, "header", utmCampaign),
+            VAR_URL_PERSPECTIVES_2 -> buildUrlHome(baseUrl, offre, "cta-2", utmCampaign)
+          )
         )
-      ))
+      })
     )
   }
 
@@ -449,6 +469,7 @@ object EmailAndName {
 
 case class SendMailMessage(from: Option[EmailAndName],
                            to: Seq[EmailAndName],
+                           cc: Option[Seq[EmailAndName]] = None,
                            subject: Option[String],
                            templateId: Int,
                            templateLanguage: Boolean = true,
@@ -459,6 +480,7 @@ object SendMailMessage {
   implicit val writes: Writes[SendMailMessage] = (
     (JsPath \ "From").writeNullable[EmailAndName] and
       (JsPath \ "To").write[Seq[EmailAndName]] and
+      (JsPath \ "Cc").writeNullable[Seq[EmailAndName]] and
       (JsPath \ "Subject").writeNullable[String] and
       (JsPath \ "TemplateID").write[Int] and
       (JsPath \ "TemplateLanguage").write[Boolean] and

@@ -3,10 +3,12 @@ package conf
 import java.nio.file.Paths
 
 import fr.poleemploi.perspectives.authentification.infra.autologin.AutologinConfig
+import fr.poleemploi.perspectives.candidat.CandidatId
 import fr.poleemploi.perspectives.candidat.localisation.infra.ws.LocalisationWSAdapterConfig
-import fr.poleemploi.perspectives.commun.domain.Email
+import fr.poleemploi.perspectives.commun.domain.{CodeSafir, Email}
 import fr.poleemploi.perspectives.commun.infra.elasticsearch.EsConfig
 import fr.poleemploi.perspectives.commun.infra.file.ImportFileAdapterConfig
+import fr.poleemploi.perspectives.conseiller.ConseillerId
 import fr.poleemploi.perspectives.emailing.infra.ws.MailjetWSAdapterConfig
 import fr.poleemploi.perspectives.infra.BuildInfo
 import play.api.Configuration
@@ -49,4 +51,9 @@ class BatchsConfig(configuration: Configuration) {
   val localisationWSAdapterConfig: LocalisationWSAdapterConfig = LocalisationWSAdapterConfig(
     urlApi = configuration.get[String]("localisation.urlApi")
   )
+
+  val correspondantsOffresParCodeSafir: Map[CodeSafir, Seq[Email]] =
+    configuration.getOptional[Map[String, Seq[String]]]("correspondantsOffresParCodeSafir")
+      .map(_.map(v => (CodeSafir(v._1), v._2.map(x => Email(x)))))
+      .getOrElse(Map())
 }

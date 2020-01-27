@@ -3,7 +3,7 @@ package candidat.activite.domain
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import fr.poleemploi.perspectives.candidat.localisation.domain.LocalisationService
-import fr.poleemploi.perspectives.commun.domain.Coordonnees
+import fr.poleemploi.perspectives.commun.domain.{CodeSafir, Coordonnees, Email}
 import fr.poleemploi.perspectives.emailing.domain.{OffreAvecCoordonneesGereeParRecruteur, OffreGereeParRecruteur, OffreGereeParRecruteurAvecCandidats}
 import fr.poleemploi.perspectives.emailing.infra.ws.MailjetWSAdapter
 import fr.poleemploi.perspectives.projections.candidat.{CandidatQueryHandler, RechercheCandidatQueryResult, RechercheCandidatsQuery}
@@ -19,6 +19,8 @@ trait OffresGereesParRecruteurImportService {
   def actorSystem: ActorSystem
 
   def baseUrl: String
+
+  def correspondantsOffresParCodeSafir: Map[CodeSafir, Seq[Email]]
 
   def localisationService: LocalisationService
 
@@ -51,6 +53,7 @@ trait OffresGereesParRecruteurImportService {
       enseigne = offre.enseigne,
       nomCorrespondant = offre.nomCorrespondant,
       emailCorrespondant = offre.emailCorrespondant,
+      codeSafir = offre.codeSafir,
       intitule = offre.intitule,
       codePostal = offre.codePostal,
       coordonnees = coordonnees,
@@ -75,6 +78,7 @@ trait OffresGereesParRecruteurImportService {
       enseigne = offre.enseigne,
       nomCorrespondant = offre.nomCorrespondant,
       emailCorrespondant = offre.emailCorrespondant,
+      codeSafir = offre.codeSafir,
       intitule = offre.intitule,
       codePostal = offre.codePostal,
       coordonnees = offre.coordonnees,

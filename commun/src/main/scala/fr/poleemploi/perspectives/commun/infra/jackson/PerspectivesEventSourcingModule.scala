@@ -42,4 +42,5 @@ object PerspectivesEventSourcingModule extends EventSourcingModule {
   addStringValueObject(classOf[PEConnectId], PEConnectId)
   addStringValueObject(classOf[IdentifiantLocal], IdentifiantLocal)
   addStringValueObject(classOf[CodeNeptune], CodeNeptune)
+  addStringValueObject(classOf[CodeSafir], CodeSafir(_))
 }

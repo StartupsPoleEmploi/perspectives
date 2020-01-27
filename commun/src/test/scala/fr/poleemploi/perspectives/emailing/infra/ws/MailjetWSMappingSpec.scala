@@ -123,31 +123,53 @@ class MailjetWSMappingSpec extends WordSpec
   "buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur" should {
     "construire une requete avec la campagne GA de la version A du template" in {
       // Given & When
-      val request = mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl, templateId, useVersionA = true, Seq(mockOffreGereeParRecruteurAvecCandidats))
+      val request = mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl, templateId, useVersionA = true, Map(),Seq(mockOffreGereeParRecruteurAvecCandidats()))
 
       // Then
       request.messages.head.variables.getOrElse(VAR_URL_RECHERCHE_CANDIDATS, "") must include ("&utm_campaign=offre-en-difficulte-sans-preselection-version-a-a")
     }
     "construire une requete avec la campagne GA de la version B du template" in {
       // Given & When
-      val request = mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl, templateId, useVersionA = false, Seq(mockOffreGereeParRecruteurAvecCandidats))
+      val request = mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl, templateId, useVersionA = false, Map(), Seq(mockOffreGereeParRecruteurAvecCandidats()))
 
       // Then
       request.messages.head.variables.getOrElse(VAR_URL_RECHERCHE_CANDIDATS, "") must include ("&utm_campaign=offre-en-difficulte-sans-preselection-version-a-b")
     }
     "construire une requete avec la campagne mailjet de la version A du template" in {
       // Given & When
-      val request = mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl, templateId, useVersionA = true, Seq(mockOffreGereeParRecruteurAvecCandidats))
+      val request = mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl, templateId, useVersionA = true, Map(),Seq(mockOffreGereeParRecruteurAvecCandidats()))
 
       // Then
       request.messages.head.category.getOrElse("") mustBe "offre_en_difficulte_geree_par_recruteur_version_a_a"
     }
     "construire une requete avec la campagne mailjet de la version B du template" in {
       // Given & When
-      val request = mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl, templateId, useVersionA = false, Seq(mockOffreGereeParRecruteurAvecCandidats))
+      val request = mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl, templateId, useVersionA = false, Map(),Seq(mockOffreGereeParRecruteurAvecCandidats()))
 
       // Then
       request.messages.head.category.getOrElse("") mustBe "offre_en_difficulte_geree_par_recruteur_version_a_b"
+    }
+    "construire une requete sans correspondant en copie quand pas de correspondant pour le code safir de l'offre" in {
+      // Given
+      val codeSafir = CodeSafir("35410")
+      val correspondantsOffre = Map(codeSafir -> Seq(Email("correspondant-offre@perspectives.fr")))
+
+      // When
+      val request = mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl, templateId, useVersionA = false, correspondantsOffre, Seq(mockOffreGereeParRecruteurAvecCandidats(Some(CodeSafir("22220")))))
+
+      // Then
+      request.messages.head.cc mustBe None
+    }
+    "construire une requete avec en copie les correspondants de l'offre" in {
+      // Given
+      val codeSafir = CodeSafir("35410")
+      val correspondantsOffre = Map(codeSafir -> Seq(Email("correspondant-offre@perspectives.fr")))
+
+      // When
+      val request = mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl, templateId, useVersionA = false, correspondantsOffre, Seq(mockOffreGereeParRecruteurAvecCandidats(Some(codeSafir))))
+
+      // Then
+      request.messages.head.cc.getOrElse(Nil).headOption.map(_.email).getOrElse("") mustBe "correspondant-offre@perspectives.fr"
     }
   }
   "buildRequestEmailDisponibiliteCandidat" should {
@@ -289,7 +311,7 @@ class MailjetWSMappingSpec extends WordSpec
     candidat
   }
 
-  private def mockOffreGereeParRecruteurAvecCandidats: OffreGereeParRecruteurAvecCandidats = {
+  private def mockOffreGereeParRecruteurAvecCandidats(codeSafir: Option[CodeSafir] = None): OffreGereeParRecruteurAvecCandidats = {
     val offre = mock[OffreGereeParRecruteurAvecCandidats]
     when(offre.emailCorrespondant).thenReturn(Email("email@candidat.fr"))
     when(offre.intitule).thenReturn("Mon offre")
@@ -301,6 +323,7 @@ class MailjetWSMappingSpec extends WordSpec
     when(coordonnees.longitude).thenReturn(2.3488)
     when(offre.coordonnees).thenReturn(coordonnees)
     when(offre.lieuTravail).thenReturn("Paris")
+    codeSafir.foreach(c => when(offre.codeSafir).thenReturn(c))
     offre
   }
 }

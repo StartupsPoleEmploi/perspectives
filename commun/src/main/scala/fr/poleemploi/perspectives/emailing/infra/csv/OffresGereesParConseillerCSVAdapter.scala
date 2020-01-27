@@ -32,6 +32,7 @@ class OffresGereesParConseillerCSVAdapter(val actorSystem: ActorSystem) {
         m.get("kc_offre").exists(_.nonEmpty) &&
           m.get("code_postal").exists(isCodePostalCible) &&
           m.get("mail_suivi").exists(isEmailValide) &&
+          m.get("unite_suivi").exists(isCodeSafirValide) &&
           m.get("enseigne").exists(_.nonEmpty) &&
           m.get("dc_rome_id").exists(_.nonEmpty) &&
           m.get("intitule").exists(_.nonEmpty) &&
@@ -43,6 +44,7 @@ class OffresGereesParConseillerCSVAdapter(val actorSystem: ActorSystem) {
           offreId = OffreId(data("kc_offre")),
           enseigne = data("enseigne"),
           emailCorrespondant = Email(data("mail_suivi")),
+          codeSafir = CodeSafir(data("unite_suivi")),
           codePostal = CodePostal(data("code_postal")),
           codeROME = CodeROME(data("dc_rome_id")),
           intitule = data("intitule"),
@@ -54,6 +56,9 @@ class OffresGereesParConseillerCSVAdapter(val actorSystem: ActorSystem) {
 
   private def isEmailValide(email: String): Boolean =
     email.nonEmpty && email != "null"
+
+  private def isCodeSafirValide(codeSafir: String): Boolean =
+    CodeSafir.from(codeSafir).isDefined
 
   private def isCodePostalCible(codePostal: String): Boolean =
     CodePostal.from(codePostal).isDefined && !codePostal.slice(0, 2).matches("^(16|17|19|23|24|33|40|47|64|79|86|87)$") // Region Nouvelle-Aquitaine exclue

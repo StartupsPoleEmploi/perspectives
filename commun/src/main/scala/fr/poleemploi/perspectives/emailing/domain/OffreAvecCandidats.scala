@@ -2,7 +2,7 @@ package fr.poleemploi.perspectives.emailing.domain
 
 import java.time.LocalDate
 
-import fr.poleemploi.perspectives.commun.domain.{CodePostal, CodeROME, Coordonnees, Email}
+import fr.poleemploi.perspectives.commun.domain.{CodePostal, CodeROME, CodeSafir, Coordonnees, Email}
 import fr.poleemploi.perspectives.offre.domain.OffreId
 
 trait OffreAvecCandidats {
@@ -12,6 +12,8 @@ trait OffreAvecCandidats {
   def enseigne: String
 
   def emailCorrespondant: Email
+
+  def codeSafir: CodeSafir
 
   def intitule: String
 

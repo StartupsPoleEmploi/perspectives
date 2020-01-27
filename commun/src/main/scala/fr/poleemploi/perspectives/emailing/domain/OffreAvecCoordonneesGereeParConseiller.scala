@@ -8,6 +8,7 @@ import fr.poleemploi.perspectives.offre.domain.OffreId
 case class OffreAvecCoordonneesGereeParConseiller(offreId: OffreId,
                                                   enseigne: String,
                                                   emailCorrespondant: Email,
+                                                  codeSafir: CodeSafir,
                                                   intitule: String,
                                                   codePostal: CodePostal,
                                                   coordonnees: Coordonnees,

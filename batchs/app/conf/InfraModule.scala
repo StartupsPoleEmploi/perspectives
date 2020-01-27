@@ -416,6 +416,7 @@ class InfraModule extends AbstractModule with ScalaModule {
     new MailjetImportOffresGereesParRecruteurService(
       actorSystem = actorSystem,
       baseUrl = batchsConfig.baseUrl,
+      correspondantsOffresParCodeSafir = batchsConfig.correspondantsOffresParCodeSafir,
       importOffresGereesParRecruteurCSVAdapter = importOffresGereesParRecruteurCSVAdapter,
       localisationService = localisationService,
       candidatQueryHandler = candidatQueryHandler,
@@ -433,6 +434,7 @@ class InfraModule extends AbstractModule with ScalaModule {
     new MailjetImportOffresEnDifficulteGereesParRecruteurService(
       actorSystem = actorSystem,
       baseUrl = batchsConfig.baseUrl,
+      correspondantsOffresParCodeSafir = batchsConfig.correspondantsOffresParCodeSafir,
       importOffresEnDifficulteGereesParRecruteurCSVAdapter = importOffresEnDifficulteGereesParRecruteurCSVAdapter,
       localisationService = localisationService,
       candidatQueryHandler = candidatQueryHandler,
@@ -451,6 +453,7 @@ class InfraModule extends AbstractModule with ScalaModule {
     new MailjetImportOffresGereesParConseillerService(
       actorSystem = actorSystem,
       baseUrl = batchsConfig.baseUrl,
+      correspondantsOffresParCodeSafir = batchsConfig.correspondantsOffresParCodeSafir,
       importOffresGereesParConseillerCSVAdapter = importOffresGereesParConseillerCSVAdapter,
       localisationService = localisationService,
       candidatQueryHandler = candidatQueryHandler,
@@ -469,6 +472,7 @@ class InfraModule extends AbstractModule with ScalaModule {
     new MailjetImportOffresEnDifficulteGereesParConseillerService(
       actorSystem = actorSystem,
       baseUrl = batchsConfig.baseUrl,
+      correspondantsOffresParCodeSafir = batchsConfig.correspondantsOffresParCodeSafir,
       importOffresEnDifficulteGereesParConseillerCSVAdapter = importOffresEnDifficulteGereesParConseillerCSVAdapter,
       localisationService = localisationService,
       candidatQueryHandler = candidatQueryHandler,
