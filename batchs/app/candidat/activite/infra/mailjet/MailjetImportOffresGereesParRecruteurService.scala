@@ -3,6 +3,7 @@ package candidat.activite.infra.mailjet
 import akka.actor.ActorSystem
 import candidat.activite.domain.{ImportOffresGereesParRecruteurService, OffresGereesParRecruteurImportService}
 import fr.poleemploi.perspectives.candidat.localisation.domain.LocalisationService
+import fr.poleemploi.perspectives.commun.domain.{CodeSafir, Email}
 import fr.poleemploi.perspectives.emailing.domain.{OffreGereeParRecruteur, OffreGereeParRecruteurAvecCandidats}
 import fr.poleemploi.perspectives.emailing.infra.csv.ImportOffresGereesParRecruteurCSVAdapter
 import fr.poleemploi.perspectives.emailing.infra.ws.MailjetWSAdapter
@@ -12,6 +13,7 @@ import scala.concurrent.Future
 
 class MailjetImportOffresGereesParRecruteurService(override val actorSystem: ActorSystem,
                                                    override val baseUrl: String,
+                                                   override val correspondantsOffresParCodeSafir: Map[CodeSafir, Seq[Email]],
                                                    importOffresGereesParRecruteurCSVAdapter: ImportOffresGereesParRecruteurCSVAdapter,
                                                    override val localisationService: LocalisationService,
                                                    override val candidatQueryHandler: CandidatQueryHandler,
@@ -22,6 +24,6 @@ class MailjetImportOffresGereesParRecruteurService(override val actorSystem: Act
     importOffresGereesParRecruteurCSVAdapter.importerOffres
 
   override def envoyerCandidatsParMailPourOffreGereeParRecruteur(offresGereesParRecruteurAvecCandidats: Seq[OffreGereeParRecruteurAvecCandidats]): Future[Unit] =
-    mailjetWSAdapter.envoyerCandidatsPourOffreGereeParRecruteur(baseUrl, offresGereesParRecruteurAvecCandidats)
+    mailjetWSAdapter.envoyerCandidatsPourOffreGereeParRecruteur(baseUrl, correspondantsOffresParCodeSafir, offresGereesParRecruteurAvecCandidats)
 
 }

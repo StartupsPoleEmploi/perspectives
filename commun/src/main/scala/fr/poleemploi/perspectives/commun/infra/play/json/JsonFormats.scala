@@ -33,6 +33,7 @@ object JsonFormats {
   implicit val formatPEConnectId: Format[PEConnectId] = formatStringValueObject(PEConnectId)
   implicit val formatIdentifiantLocal: Format[IdentifiantLocal] = formatStringValueObject(IdentifiantLocal)
   implicit val formatCodeNeptune: Format[CodeNeptune] = formatStringValueObject(CodeNeptune)
+  implicit val formatCodeSafir: Format[CodeSafir] = formatStringValueObject(CodeSafir(_))
 
   implicit val formatCentreInteret: Format[CentreInteret] = formatStringValueObject(CentreInteret(_))
   implicit val formatNiveauLangue: Format[NiveauLangue] = formatStringValueObject(NiveauLangue(_))

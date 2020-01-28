@@ -5,7 +5,7 @@ import java.util.Base64
 
 import fr.poleemploi.perspectives.candidat.Adresse
 import fr.poleemploi.perspectives.candidat.activite.domain.EmailingDisponibiliteCandidatAvecEmail
-import fr.poleemploi.perspectives.commun.domain.Email
+import fr.poleemploi.perspectives.commun.domain.{CodeSafir, Email}
 import fr.poleemploi.perspectives.commun.infra.ws.WSAdapter
 import fr.poleemploi.perspectives.emailing.domain._
 import fr.poleemploi.perspectives.emailing.infra.mailjet.MailjetContactId
@@ -97,19 +97,24 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
     else
       Future.successful(())
 
-  def envoyerCandidatsPourOffreGereeParRecruteur(baseUrl: String, offresGereesParRecruteurAvecCandidats: Seq[OffreGereeParRecruteurAvecCandidats]): Future[Unit] =
+  def envoyerCandidatsPourOffreGereeParRecruteur(baseUrl: String,
+                                                 correspondantsOffresParCodeSafir: Map[CodeSafir, Seq[Email]],
+                                                 offresGereesParRecruteurAvecCandidats: Seq[OffreGereeParRecruteurAvecCandidats]): Future[Unit] =
     if (offresGereesParRecruteurAvecCandidats.nonEmpty)
       Future.sequence(offresGereesParRecruteurAvecCandidats.grouped(nbMaxDestinataires).map(offresChunk =>
         sendMail(mapping.buildRequestCandidatsPourOffreGereeParRecruteur(
           baseUrl = baseUrl,
           offresGereesParRecruteurAvecCandidats = offresChunk,
-          idTemplate = idTemplateOffreGereeParRecruteur
+          idTemplate = idTemplateOffreGereeParRecruteur,
+          correspondantsOffresParCodeSafir = correspondantsOffresParCodeSafir
         ))
       )).map(_ => ())
     else
       Future.successful(())
 
-  def envoyerCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl: String, offresGereesParRecruteurAvecCandidats: Seq[OffreGereeParRecruteurAvecCandidats]): Future[Unit] =
+  def envoyerCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl: String,
+                                                             correspondantsOffresParCodeSafir: Map[CodeSafir, Seq[Email]],
+                                                             offresGereesParRecruteurAvecCandidats: Seq[OffreGereeParRecruteurAvecCandidats]): Future[Unit] =
     if (offresGereesParRecruteurAvecCandidats.nonEmpty)
       Future.sequence(offresGereesParRecruteurAvecCandidats.grouped(nbMaxDestinataires).map { offresChunk =>
         val useVersionA = Random.nextBoolean()
@@ -117,31 +122,38 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
           baseUrl = baseUrl,
           offresGereesParRecruteurAvecCandidats = offresChunk,
           idTemplate = if (useVersionA) idTemplateOffreEnDifficulteGereeParRecruteurVersionA else idTemplateOffreEnDifficulteGereeParRecruteurVersionB,
-          useVersionA = useVersionA
+          useVersionA = useVersionA,
+          correspondantsOffresParCodeSafir = correspondantsOffresParCodeSafir
         ))
       }).map(_ => ())
     else
       Future.successful(())
 
-  def envoyerCandidatsPourOffreGereeParConseiller(baseUrl: String, offresGereesParConseillerAvecCandidats: Seq[OffreGereeParConseillerAvecCandidats]): Future[Unit] =
+  def envoyerCandidatsPourOffreGereeParConseiller(baseUrl: String,
+                                                  correspondantsOffresParCodeSafir: Map[CodeSafir, Seq[Email]],
+                                                  offresGereesParConseillerAvecCandidats: Seq[OffreGereeParConseillerAvecCandidats]): Future[Unit] =
     if (offresGereesParConseillerAvecCandidats.nonEmpty)
       Future.sequence(offresGereesParConseillerAvecCandidats.grouped(nbMaxDestinataires).map(offresChunk =>
         sendMail(mapping.buildRequestCandidatsPourOffreGereeParConseiller(
           baseUrl = baseUrl,
           offresGereesParConseillerAvecCandidats = offresChunk,
-          idTemplate = idTemplateOffreGereeParConseiller
+          idTemplate = idTemplateOffreGereeParConseiller,
+          correspondantsOffresParCodeSafir = correspondantsOffresParCodeSafir
         ))
       )).map(_ => ())
     else
       Future.successful(())
 
-  def envoyerCandidatsPourOffreEnDifficulteGereeParConseiller(baseUrl: String, offresGereesParConseillerAvecCandidats: Seq[OffreGereeParConseillerAvecCandidats]): Future[Unit] =
+  def envoyerCandidatsPourOffreEnDifficulteGereeParConseiller(baseUrl: String,
+                                                              correspondantsOffresParCodeSafir: Map[CodeSafir, Seq[Email]],
+                                                              offresGereesParConseillerAvecCandidats: Seq[OffreGereeParConseillerAvecCandidats]): Future[Unit] =
     if (offresGereesParConseillerAvecCandidats.nonEmpty)
       Future.sequence(offresGereesParConseillerAvecCandidats.grouped(nbMaxDestinataires).map(offresChunk =>
         sendMail(mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParConseiller(
           baseUrl = baseUrl,
           offresGereesParConseillerAvecCandidats = offresChunk,
-          idTemplate = idTemplateOffreEnDifficulteGereeParConseiller
+          idTemplate = idTemplateOffreEnDifficulteGereeParConseiller,
+          correspondantsOffresParCodeSafir = correspondantsOffresParCodeSafir
         ))
       )).map(_ => ())
     else
