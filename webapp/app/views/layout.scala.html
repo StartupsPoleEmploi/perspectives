@@ -1,5 +1,5 @@
 @import conf.WebAppConfig
-@import play.api.libs.json.{JsArray, Json}
+@import play.api.libs.json.JsArray
 
 @(title: String = "Perspectives : boostez vos opportunités !",
         metaDescription: Option[String] = None,
@@ -11,7 +11,9 @@
 <html lang="fr">
     <head>
         <title>@title</title>
-        @metaDescription.foreach{d => <meta name="description" content="@d" />}
+        @if(metaDescription.isDefined) {
+            <meta name="description" content="@{metaDescription.get}">
+        }
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=Edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,6 +21,7 @@
         <link rel="stylesheet" media="screen" href="@assetsFinder.path("stylesheets/main.css")">
         <link rel="shortcut icon" href="@assetsFinder.path("images/commun/perspectives.ico")"/>
         <script src="@assetsFinder.path("javascripts/vendor.bundle.js")" type="text/javascript"></script>
+        <script src="@assetsFinder.path("javascripts/modernizr-bundle.js")" type="text/javascript"></script>
         @views.html.commun.polyfill()
         @if(gtmDataLayer.isDefined) {
             @commun.googleTagManagerDataLayer(gtmDataLayer.get)

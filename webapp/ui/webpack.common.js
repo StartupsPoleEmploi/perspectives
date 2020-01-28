@@ -1,5 +1,12 @@
 const path = require('path');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const ModernizrWebpackPlugin = require('modernizr-webpack-plugin');
+
+const modernizrConfig = {
+    'feature-detects': [
+        'img/webp'
+    ]
+};
 
 module.exports = {
     entry: {
@@ -40,7 +47,8 @@ module.exports = {
         ]
     },
     plugins: [
-        new VueLoaderPlugin()
+        new VueLoaderPlugin(),
+        new ModernizrWebpackPlugin(modernizrConfig)
     ],
     optimization: {
         splitChunks: {

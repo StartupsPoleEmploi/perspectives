@@ -7,7 +7,7 @@
         gtmDataLayer: Option[JsArray] = None)(content: Html)(implicit flash: Flash, assetsFinder: AssetsFinder, webAppConfig: WebAppConfig)
 
 @views.html.layout(
-    metaDescription = Some("Vous avez des difficultés à recruteur sur des métiers en tension ?"),
+    metaDescription = Some("Vous avez des difficultés à recruter sur des métiers en tension ?"),
     menuNavigation = views.html.commun.navigation(
         menuConnecte = recruteurAuthentifie.map(r => views.html.recruteur.partials.menuRecruteur(r)),
         lienLandingRecruteurActif = true,
