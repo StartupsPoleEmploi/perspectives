@@ -5,7 +5,8 @@ const ModernizrWebpackPlugin = require('modernizr-webpack-plugin');
 const modernizrConfig = {
     'feature-detects': [
         'img/webp'
-    ]
+    ],
+    'minify': true
 };
 
 module.exports = {
