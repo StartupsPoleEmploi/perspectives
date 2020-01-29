@@ -51,8 +51,8 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
   private val authorization: String = Base64.getEncoder
     .encodeToString(s"${config.apiKeyPublic}:${config.apiKeyPrivate}".getBytes(StandardCharsets.UTF_8))
 
-  // limitation de l'API /send de mailjet
-  private val nbMaxDestinataires: Int = 50
+  // limitation de l'API /send de mailjet (la limite de mailjet est à 50 en cumulant les To, Cc et Bcc)
+  private val nbMaxDestinataires: Int = 20
 
   def ajouterCandidatInscrit(candidatInscrit: CandidatInscrit): Future[MailjetContactId] =
     for {
