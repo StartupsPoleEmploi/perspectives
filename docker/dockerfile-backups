@@ -1,7 +1,9 @@
 FROM alpine
 
-RUN apk --update add postgresql-client rsync && \
+RUN apk --update add postgresql-client rsync npm gzip && \
     rm -rf /var/cache/apk/*
+
+RUN npm install -g elasticdump
 
 ARG POSTGRES_DB=perspectives
 ARG POSTGRES_USER=perspectives
@@ -9,11 +11,13 @@ ARG POSTGRES_PASSWORD=perspectives
 ARG POSTGRES_HOST=localhost
 ENV POSTGRES_BACKUP_DIR=/var/opt/backups/postgresql
 ENV POSTGRES_BACKUP_REMOTE_DIR=/mnt/backups/postgresql
+ENV ELASTICSEARCH_BACKUP_DIR=/var/opt/backups/elasticsearch
+ENV ELASTICSEARCH_BACKUP_REMOTE_DIR=/mnt/backups/elasticsearch
 
 ARG BACKUP_ROTATION_DAYS=30
 ENV BACKUP_ROTATION_DAYS=${BACKUP_ROTATION_DAYS}
 
-RUN mkdir -p /etc/periodic/backups ${POSTGRES_BACKUP_DIR} ${POSTGRES_BACKUP_REMOTE_DIR}
+RUN mkdir -p /etc/periodic/backups ${POSTGRES_BACKUP_DIR} ${POSTGRES_BACKUP_REMOTE_DIR} ${ELASTICSEARCH_BACKUP_DIR} ${ELASTICSEARCH_BACKUP_REMOTE_DIR}
 
 COPY backups/crontab /etc/crontabs/root
 COPY backups/scripts/ /etc/periodic/backups/
