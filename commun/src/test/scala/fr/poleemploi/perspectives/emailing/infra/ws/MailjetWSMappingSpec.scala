@@ -123,31 +123,31 @@ class MailjetWSMappingSpec extends WordSpec
   "buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur" should {
     "construire une requete avec la campagne GA de la version A du template" in {
       // Given & When
-      val request = mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl, templateId, useVersionA = true, Map(),Seq(mockOffreGereeParRecruteurAvecCandidats()))
+      val request = mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl, templateId, Map(),Seq(mockOffreGereeParRecruteurAvecCandidats()))
 
       // Then
-      request.messages.head.variables.getOrElse(VAR_URL_RECHERCHE_CANDIDATS, "") must include ("&utm_campaign=offre-en-difficulte-sans-preselection-version-a-a")
+      request.messages.head.variables.getOrElse(VAR_URL_RECHERCHE_CANDIDATS, "") must include ("&utm_campaign=offre-en-difficulte-sans-preselection")
     }
     "construire une requete avec la campagne GA de la version B du template" in {
       // Given & When
-      val request = mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl, templateId, useVersionA = false, Map(), Seq(mockOffreGereeParRecruteurAvecCandidats()))
+      val request = mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl, templateId, Map(), Seq(mockOffreGereeParRecruteurAvecCandidats()))
 
       // Then
-      request.messages.head.variables.getOrElse(VAR_URL_RECHERCHE_CANDIDATS, "") must include ("&utm_campaign=offre-en-difficulte-sans-preselection-version-a-b")
+      request.messages.head.variables.getOrElse(VAR_URL_RECHERCHE_CANDIDATS, "") must include ("&utm_campaign=offre-en-difficulte-sans-preselection")
     }
     "construire une requete avec la campagne mailjet de la version A du template" in {
       // Given & When
-      val request = mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl, templateId, useVersionA = true, Map(),Seq(mockOffreGereeParRecruteurAvecCandidats()))
+      val request = mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl, templateId, Map(),Seq(mockOffreGereeParRecruteurAvecCandidats()))
 
       // Then
-      request.messages.head.category.getOrElse("") mustBe "offre_en_difficulte_geree_par_recruteur_version_a_a"
+      request.messages.head.category.getOrElse("") mustBe "offre_en_difficulte_geree_par_recruteur"
     }
     "construire une requete avec la campagne mailjet de la version B du template" in {
       // Given & When
-      val request = mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl, templateId, useVersionA = false, Map(),Seq(mockOffreGereeParRecruteurAvecCandidats()))
+      val request = mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl, templateId, Map(),Seq(mockOffreGereeParRecruteurAvecCandidats()))
 
       // Then
-      request.messages.head.category.getOrElse("") mustBe "offre_en_difficulte_geree_par_recruteur_version_a_b"
+      request.messages.head.category.getOrElse("") mustBe "offre_en_difficulte_geree_par_recruteur"
     }
     "construire une requete sans correspondant en copie quand pas de correspondant pour le code safir de l'offre" in {
       // Given
@@ -155,7 +155,7 @@ class MailjetWSMappingSpec extends WordSpec
       val correspondantsOffre = Map(codeSafir -> Seq(Email("correspondant-offre@perspectives.fr")))
 
       // When
-      val request = mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl, templateId, useVersionA = false, correspondantsOffre, Seq(mockOffreGereeParRecruteurAvecCandidats(Some(CodeSafir("22220")))))
+      val request = mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl, templateId, correspondantsOffre, Seq(mockOffreGereeParRecruteurAvecCandidats(Some(CodeSafir("22220")))))
 
       // Then
       request.messages.head.cc mustBe None
@@ -166,7 +166,7 @@ class MailjetWSMappingSpec extends WordSpec
       val correspondantsOffre = Map(codeSafir -> Seq(Email("correspondant-offre@perspectives.fr")))
 
       // When
-      val request = mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl, templateId, useVersionA = false, correspondantsOffre, Seq(mockOffreGereeParRecruteurAvecCandidats(Some(codeSafir))))
+      val request = mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl, templateId, correspondantsOffre, Seq(mockOffreGereeParRecruteurAvecCandidats(Some(codeSafir))))
 
       // Then
       request.messages.head.cc.getOrElse(Nil).headOption.map(_.email).getOrElse("") mustBe "correspondant-offre@perspectives.fr"

@@ -17,7 +17,6 @@ import play.api.libs.ws.WSClient
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration._
-import scala.util.Random
 
 class MailjetWSAdapter(config: MailjetWSAdapterConfig,
                        mapping: MailjetWSMapping,
@@ -42,9 +41,7 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
 
   private val idTemplateOffreEnDifficulteGereeParConseiller: Int = 1126280
 
-  private val idTemplateOffreEnDifficulteGereeParRecruteurVersionA: Int = 1128159
-
-  private val idTemplateOffreEnDifficulteGereeParRecruteurVersionB: Int = 1140276
+  private val idTemplateOffreEnDifficulteGereeParRecruteur: Int = 1128159
 
   private val cacheKeyTesteurs = "mailjetWSAdapter.testeurs"
 
@@ -116,16 +113,14 @@ class MailjetWSAdapter(config: MailjetWSAdapterConfig,
                                                              correspondantsOffresParCodeSafir: Map[CodeSafir, Seq[Email]],
                                                              offresGereesParRecruteurAvecCandidats: Seq[OffreGereeParRecruteurAvecCandidats]): Future[Unit] =
     if (offresGereesParRecruteurAvecCandidats.nonEmpty)
-      Future.sequence(offresGereesParRecruteurAvecCandidats.grouped(nbMaxDestinataires).map { offresChunk =>
-        val useVersionA = Random.nextBoolean()
+      Future.sequence(offresGereesParRecruteurAvecCandidats.grouped(nbMaxDestinataires).map(offresChunk =>
         sendMail(mapping.buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(
           baseUrl = baseUrl,
           offresGereesParRecruteurAvecCandidats = offresChunk,
-          idTemplate = if (useVersionA) idTemplateOffreEnDifficulteGereeParRecruteurVersionA else idTemplateOffreEnDifficulteGereeParRecruteurVersionB,
-          useVersionA = useVersionA,
+          idTemplate = idTemplateOffreEnDifficulteGereeParRecruteur,
           correspondantsOffresParCodeSafir = correspondantsOffresParCodeSafir
         ))
-      }).map(_ => ())
+      )).map(_ => ())
     else
       Future.successful(())
 

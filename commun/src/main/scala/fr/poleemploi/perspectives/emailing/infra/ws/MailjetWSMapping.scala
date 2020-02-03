@@ -199,10 +199,9 @@ class MailjetWSMapping {
 
   def buildRequestCandidatsPourOffreEnDifficulteGereeParRecruteur(baseUrl: String,
                                                                   idTemplate: Int,
-                                                                  useVersionA: Boolean,
                                                                   correspondantsOffresParCodeSafir: Map[CodeSafir, Seq[Email]],
                                                                   offresGereesParRecruteurAvecCandidats: Seq[OffreGereeParRecruteurAvecCandidats]): SendMailRequest = {
-    val utmCampaign = "offre-en-difficulte-sans-preselection" + (if(useVersionA) "-version-a-a" else "-version-a-b")
+    val utmCampaign = "offre-en-difficulte-sans-preselection"
     SendMailRequest(
       messages = offresGereesParRecruteurAvecCandidats.map(offre => {
         val correspondantsOffre = correspondantsOffresParCodeSafir.get(offre.codeSafir)
@@ -212,7 +211,7 @@ class MailjetWSMapping {
           cc = correspondantsOffre.map(_.map(c => EmailAndName(email = c.value))),
           subject = None,
           templateId = idTemplate,
-          category = Some(OFFRE_EN_DIFFICULTE_GEREE_PAR_RECRUTEUR_CATEGORY + (if(useVersionA) "_version_a_a" else "_version_a_b")),
+          category = Some(OFFRE_EN_DIFFICULTE_GEREE_PAR_RECRUTEUR_CATEGORY),
           variables = Map(
             VAR_TITRE_POSTE -> offre.intitule,
             VAR_OFFRE_ID -> offre.offreId.value,
