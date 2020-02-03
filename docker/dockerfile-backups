@@ -8,7 +8,7 @@ RUN npm install -g elasticdump
 ARG POSTGRES_DB=perspectives
 ARG POSTGRES_USER=perspectives
 ARG POSTGRES_PASSWORD=perspectives
-ARG POSTGRES_HOST=localhost
+ARG POSTGRES_HOST=database
 ENV POSTGRES_BACKUP_DIR=/var/opt/backups/postgresql
 ENV POSTGRES_BACKUP_REMOTE_DIR=/mnt/backups/postgresql
 ENV ELASTICSEARCH_BACKUP_DIR=/var/opt/backups/elasticsearch
@@ -25,6 +25,6 @@ COPY backups/scripts/ /etc/periodic/backups/
 RUN chmod 755 /etc/periodic/backups/**
 
 # Pour disposer des variables d'environnement nécessaires à pg_dump dans le contexte d'un cron
-RUN echo -e "export PGUSER=${POSTGRES_USER}\nexport PGPASSWORD=${POSTGRES_PASSWORD}\nexport PGHOST=${POSTGRES_HOST}\nexport PGDATABASE=${POSTGRES_DB}" > /etc/periodic/backups/pgenv.sh
+RUN echo -e "export PGUSER=${POSTGRES_USER}\nexport PGPASSWORD=$(cat "${POSTGRES_PASSWORD_FILE}")\nexport PGHOST=${POSTGRES_HOST}\nexport PGDATABASE=${POSTGRES_DB}" > /etc/periodic/backups/pgenv.sh
 
 CMD ["crond", "-f"]

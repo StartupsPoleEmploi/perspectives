@@ -132,6 +132,11 @@ services:
       options:
         tag: "perspectives_backups.{{.ID}}"
         fluentd-async-connect: "true"
+    environment:
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    secrets:
+      - source: postgres_password_v1
+        target: postgres_password
     networks:
       - net
 
