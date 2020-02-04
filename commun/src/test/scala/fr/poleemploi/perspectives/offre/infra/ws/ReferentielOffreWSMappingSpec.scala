@@ -305,6 +305,48 @@ class ReferentielOffreWSMappingSpec extends WordSpec
       // Then
       result.isEmpty mustBe true
     }
+    "ne pas retourner l'offre lorsqu'elle contient une formation Bac+2 ou équivalents et que l'experience demandée est débutant" in {
+      // Given
+      val formationResponse = mock[FormationResponse]
+      when(formationResponse.niveauLibelle) thenReturn Some("Bac+2 ou équivalents")
+      when(formationResponse.exigence) thenReturn ExigenceResponse.SOUHAITE
+      when(criteresRechercheOffre.experience) thenReturn Experience.DEBUTANT
+      when(offreResponse.formations) thenReturn List(formationResponse)
+
+      // When
+      val result = mapping.filterOffresResponses(criteresRechercheOffre, List(offreResponse))
+
+      // Then
+      result.isEmpty mustBe true
+    }
+    "ne pas retourner l'offre lorsqu'elle contient une formation Bac+3, Bac+4 ou équivalents et que l'experience demandée est débutant" in {
+      // Given
+      val formationResponse = mock[FormationResponse]
+      when(formationResponse.niveauLibelle) thenReturn Some("Bac+3, Bac+4 ou équivalents")
+      when(formationResponse.exigence) thenReturn ExigenceResponse.SOUHAITE
+      when(criteresRechercheOffre.experience) thenReturn Experience.DEBUTANT
+      when(offreResponse.formations) thenReturn List(formationResponse)
+
+      // When
+      val result = mapping.filterOffresResponses(criteresRechercheOffre, List(offreResponse))
+
+      // Then
+      result.isEmpty mustBe true
+    }
+    "ne pas retourner l'offre lorsqu'elle contient une formation Bac+5 et plus ou équivalents et que l'experience demandée est débutant" in {
+      // Given
+      val formationResponse = mock[FormationResponse]
+      when(formationResponse.niveauLibelle) thenReturn Some("Bac+5 et plus ou équivalents")
+      when(formationResponse.exigence) thenReturn ExigenceResponse.SOUHAITE
+      when(criteresRechercheOffre.experience) thenReturn Experience.DEBUTANT
+      when(offreResponse.formations) thenReturn List(formationResponse)
+
+      // When
+      val result = mapping.filterOffresResponses(criteresRechercheOffre, List(offreResponse))
+
+      // Then
+      result.isEmpty mustBe true
+    }
     "retourner l'offre lorsqu'elle contient une formation exigée mais que l'experience demandée n'est pas débutant" in {
       // Given
       val formationResponse = mock[FormationResponse]

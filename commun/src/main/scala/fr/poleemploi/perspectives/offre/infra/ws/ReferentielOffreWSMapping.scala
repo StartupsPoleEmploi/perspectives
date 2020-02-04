@@ -267,7 +267,7 @@ class ReferentielOffreWSMapping {
     * l'API ne permet de passer que peu de filtres pour l'instant (que 3 codeROME par appels, deux secteurActivite par appel, etc.) : on fait donc plusieurs filtres à postériori. <br />
     * <ul>
     * <li>Si l'experience est DEBUTANT cela signifie moins d'un an d'expérience côté API, on doit donc quand même vérifier qu'il n'y ait pas d'expérience exigée</li>
-    * <li>Si l'experience est DEBUTANT, malgré le filtre sur l'expérience l'offre peut aussi contenir des formations exigées</li>
+    * <li>Si l'experience est DEBUTANT, malgré le filtre sur l'expérience l'offre peut aussi contenir des formations exigées ou des formations supérieures souhaitées</li>
     * <li>l'API ne permet pas de passer beaucoup de codeROME, on filtre donc à postériori sur les secteurs, domaines ou codeROME</li>
     * <li>on exclut certains codes ROME tels que N41 (Transport routier) qui posent des problèmes au niveau des permis et qualifications exigeés</li>
     * </ul>
@@ -275,7 +275,9 @@ class ReferentielOffreWSMapping {
   def filterOffresResponses(criteresRechercheOffre: CriteresRechercheOffre,
                             offres: List[OffreResponse]): List[OffreResponse] =
     offres.filter(o =>
-      (Experience.DEBUTANT != criteresRechercheOffre.experience || (!o.experienceExige.contains(ExperienceExigeResponse.EXIGE) && !o.formations.exists(f => ExigenceResponse.EXIGE == f.exigence))) &&
+      (Experience.DEBUTANT != criteresRechercheOffre.experience ||
+        (!o.experienceExige.contains(ExperienceExigeResponse.EXIGE) &&
+          !o.formations.exists(f => ExigenceResponse.EXIGE == f.exigence || isFormationSuperieure(f.niveauLibelle)))) &&
         o.romeCode.exists(r =>
           (criteresRechercheOffre.codesROME.isEmpty || criteresRechercheOffre.codesROME.exists(c => r.startsWith(c.value))) &&
             (criteresRechercheOffre.secteursActivites.isEmpty || criteresRechercheOffre.secteursActivites.exists(c => r.startsWith(c.value))) &&
@@ -283,6 +285,9 @@ class ReferentielOffreWSMapping {
             !r.startsWith("N41") && !"K2110".equals(r) && !"K2503".equals(r)
         )
     )
+
+  private def isFormationSuperieure(niveauLibelle: Option[String]): Boolean =
+    niveauLibelle.contains("Bac+2 ou équivalents") || niveauLibelle.contains("Bac+3, Bac+4 ou équivalents") || niveauLibelle.contains("Bac+5 et plus ou équivalents") // codes niveauFormation NV3, NV2 et NV1
 
   def buildPageOffres(contentRange: Option[String], acceptRange: Option[String]): Option[PageOffres] =
     for {
