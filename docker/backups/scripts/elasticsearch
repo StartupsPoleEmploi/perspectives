@@ -11,4 +11,4 @@ gzip $ELASTICSEARCH_BACKUP_DIR/dump-candidats-*.json
 find $ELASTICSEARCH_BACKUP_DIR/ -mtime +$BACKUP_ROTATION_DAYS -type f -exec rm {} \;
 
 # Synchronise vers un autre répertoire que l'on pourra monter vers une machine distante pour avoir une sauvegarde (en plus de la sauvegarde locale)
-rsync -vd $ELASTICSEARCH_BACKUP_DIR/ ELASTICSEARCH_BACKUP_REMOTE_DIR/
+rsync -vd $ELASTICSEARCH_BACKUP_DIR/ $ELASTICSEARCH_BACKUP_REMOTE_DIR/
