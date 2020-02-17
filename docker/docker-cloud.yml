@@ -125,6 +125,7 @@ services:
     image: perspectives-backups
     volumes:
       - postgresql_backups:/var/opt/backups/postgresql
+      - elasticsearch_backups:/var/opt/backups/elasticsearch
     deploy:
       replicas: 1
     logging:
@@ -158,6 +159,7 @@ networks:
 volumes:
   postgresql:
   postgresql_backups:
+  elasticsearch_backups:
   export_poleemploi:
   projections_elasticsearch:
 

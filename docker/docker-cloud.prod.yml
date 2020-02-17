@@ -33,6 +33,9 @@ services:
       - type: bind
         source: /mnt/backups/postgresql
         target: /mnt/backups/postgresql
+      - type: bind
+        source: /mnt/backups/elasticsearch
+        target: /mnt/backups/elasticsearch
 
   fluentbit:
     extra_hosts:

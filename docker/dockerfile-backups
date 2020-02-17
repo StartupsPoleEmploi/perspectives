@@ -25,6 +25,6 @@ COPY backups/scripts/ /etc/periodic/backups/
 RUN chmod 755 /etc/periodic/backups/**
 
 # Pour disposer des variables d'environnement nécessaires à pg_dump dans le contexte d'un cron
-RUN echo -e "export PGUSER=${POSTGRES_USER}\nexport PGPASSWORD=$(cat "${POSTGRES_PASSWORD_FILE}")\nexport PGHOST=${POSTGRES_HOST}\nexport PGDATABASE=${POSTGRES_DB}" > /etc/periodic/backups/pgenv.sh
+RUN echo -e "export PGUSER=${POSTGRES_USER}\nexport PGPASSWORD=${POSTGRES_PASSWORD}\nexport PGHOST=${POSTGRES_HOST}\nexport PGDATABASE=${POSTGRES_DB}" > /etc/periodic/backups/pgenv.sh
 
 CMD ["crond", "-f"]
