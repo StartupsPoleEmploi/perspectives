@@ -26,4 +26,6 @@ trait MRSProspectCandidat {
   def metier: Metier
 
   def dateEvaluation: LocalDate
+
+  def resultatMrs: Option[ResultatMrs]
 }

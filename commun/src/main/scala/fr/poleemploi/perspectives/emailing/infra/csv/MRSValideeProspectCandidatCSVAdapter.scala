@@ -42,7 +42,8 @@ class MRSValideeProspectCandidatCSVAdapter(val actorSystem: ActorSystem) {
           m.get("dc_adresseemail").exists(_.nonEmpty) &&
           m.get("dc_consentement_mail_id").exists(isConsentementMailValide) &&
           m.get("dc_rome_id").exists(_.nonEmpty) &&
-          m.get("dc_lblrome").exists(_.nonEmpty)
+          m.get("dc_lblrome").exists(_.nonEmpty) &&
+          m.get("resultatsbeneficiaire").exists(_.nonEmpty)
       )
       .map(data =>
         MRSValideeProspectCandidat(
@@ -58,7 +59,8 @@ class MRSValideeProspectCandidatCSVAdapter(val actorSystem: ActorSystem) {
             codeROME = CodeROME(data("dc_rome_id")),
             label = data("dc_lblrome")
           ),
-          dateEvaluation = data.get("dd_daterealisation").map(s => LocalDate.parse(s.take(10), dateTimeFormatter)).get
+          dateEvaluation = data.get("dd_daterealisation").map(s => LocalDate.parse(s.take(10), dateTimeFormatter)).get,
+          resultatMrs = Some(ResultatMrs.buildFrom(data("resultatsbeneficiaire"))),
         )
       )
       .runWith(Sink.collection)

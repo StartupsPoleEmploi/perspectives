@@ -15,4 +15,8 @@ case class MRSDHAEValideeProspectCandidat(override val peConnectId: PEConnectId,
                                           override val prenom: Prenom,
                                           override val email: Email,
                                           override val genre: Genre,
-                                          override val metier: Metier) extends MRSProspectCandidat
+                                          override val metier: Metier) extends MRSProspectCandidat {
+
+  override val resultatMrs: Option[ResultatMrs] = None
+
+}

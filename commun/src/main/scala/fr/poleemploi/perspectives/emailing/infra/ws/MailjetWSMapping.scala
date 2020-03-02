@@ -92,7 +92,9 @@ class MailjetWSMapping {
           id_peconnect -> p.peConnectId.value,
           identifiant_local -> p.identifiantLocal.value,
           code_neptune -> p.codeNeptune.value
-        )
+        ) ++ p.resultatMrs.map(resultatMrs => Json.obj(
+          mrs_resultat -> resultatMrs.value
+        )).getOrElse(Json.obj())
       )).toList,
       contactsLists = List(ContactList(
         listID = s"$idListe",

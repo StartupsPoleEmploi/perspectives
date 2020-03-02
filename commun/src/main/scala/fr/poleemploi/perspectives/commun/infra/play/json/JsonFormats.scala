@@ -20,6 +20,7 @@ object JsonFormats {
   implicit val formatOffreId: Format[OffreId] = formatStringValueObject(OffreId)
 
   implicit val formatGenre: Format[Genre] = formatStringValueObject(Genre(_))
+  implicit val formatResultatMrs: Format[ResultatMrs] = formatStringValueObject(ResultatMrs(_))
   implicit val formatNom: Format[Nom] = formatStringValueObject(Nom(_))
   implicit val formatPrenom: Format[Prenom] = formatStringValueObject(Prenom(_))
   implicit val formatCodeDepartement: Format[CodeDepartement] = formatStringValueObject(CodeDepartement)

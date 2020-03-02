@@ -294,6 +294,7 @@ class MailjetWSMappingSpec extends WordSpec
     when(prospect.peConnectId) thenReturn PEConnectId("28d0b75a-b694-4de3-8849-18bfbfebd729")
     when(prospect.identifiantLocal) thenReturn IdentifiantLocal("0123456789A")
     when(prospect.codeNeptune) thenReturn CodeNeptune("IADE3110")
+    when(prospect.resultatMrs) thenReturn Some(ResultatMrs.VSL)
     prospect
   }
 

@@ -15,4 +15,5 @@ case class MRSValideeProspectCandidat(override val peConnectId: PEConnectId,
                                       override val genre: Genre,
                                       override val codeDepartement: CodeDepartement,
                                       override val metier: Metier,
-                                      override val dateEvaluation: LocalDate) extends MRSProspectCandidat
+                                      override val dateEvaluation: LocalDate,
+                                      override val resultatMrs: Option[ResultatMrs]) extends MRSProspectCandidat

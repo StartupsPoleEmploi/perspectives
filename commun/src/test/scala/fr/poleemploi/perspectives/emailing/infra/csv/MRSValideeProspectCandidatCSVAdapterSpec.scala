@@ -22,7 +22,7 @@ class MRSValideeProspectCandidatCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome""".stripMargin)
+          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome;resultatsbeneficiaire""".stripMargin)
       )
 
       // When
@@ -35,8 +35,8 @@ class MRSValideeProspectCandidatCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome
-            |;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle""".stripMargin)
+          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome;resultatsbeneficiaire
+            |;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle;VSL""".stripMargin)
       )
 
       // When
@@ -49,8 +49,8 @@ class MRSValideeProspectCandidatCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome
-            |NULL;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle""".stripMargin)
+          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome;resultatsbeneficiaire
+            |NULL;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle;VSL""".stripMargin)
       )
 
       // When
@@ -63,8 +63,8 @@ class MRSValideeProspectCandidatCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome
-            |28d0b75a-b694-4de3-8849-18bfbfebd729;;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle""".stripMargin)
+          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome;resultatsbeneficiaire
+            |28d0b75a-b694-4de3-8849-18bfbfebd729;;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle;VSL""".stripMargin)
       )
 
       // When
@@ -77,8 +77,8 @@ class MRSValideeProspectCandidatCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome
-            |28d0b75a-b694-4de3-8849-18bfbfebd729;NULL;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle""".stripMargin)
+          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome;resultatsbeneficiaire
+            |28d0b75a-b694-4de3-8849-18bfbfebd729;NULL;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle;VSL""".stripMargin)
       )
 
       // When
@@ -92,8 +92,8 @@ class MRSValideeProspectCandidatCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome
-            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle""".stripMargin)
+          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome;resultatsbeneficiaire
+            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle;VSL""".stripMargin)
       )
 
       // When
@@ -106,8 +106,8 @@ class MRSValideeProspectCandidatCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome
-            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;NULL;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle""".stripMargin)
+          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome;resultatsbeneficiaire
+            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;NULL;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle;VSL""".stripMargin)
       )
 
       // When
@@ -120,8 +120,8 @@ class MRSValideeProspectCandidatCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome
-            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle""".stripMargin)
+          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome;resultatsbeneficiaire
+            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle;VSL""".stripMargin)
       )
 
       // When
@@ -134,8 +134,8 @@ class MRSValideeProspectCandidatCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome
-            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle""".stripMargin)
+          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome;resultatsbeneficiaire
+            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle;VSL""".stripMargin)
       )
 
       // When
@@ -148,8 +148,8 @@ class MRSValideeProspectCandidatCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome
-            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;;69220;O;H3404;Peinture industrielle""".stripMargin)
+          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome;resultatsbeneficiaire
+            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;;69220;O;H3404;Peinture industrielle;VSL""".stripMargin)
       )
 
       // When
@@ -162,8 +162,8 @@ class MRSValideeProspectCandidatCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome
-            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;;O;H3404;Peinture industrielle""".stripMargin)
+          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome;resultatsbeneficiaire
+            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;;O;H3404;Peinture industrielle;VSL""".stripMargin)
       )
 
       // When
@@ -176,8 +176,8 @@ class MRSValideeProspectCandidatCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome
-            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle""".stripMargin)
+          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome;resultatsbeneficiaire
+            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle;VSL""".stripMargin)
       )
 
       // When
@@ -190,8 +190,36 @@ class MRSValideeProspectCandidatCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome
-            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle""".stripMargin)
+          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome;resultatsbeneficiaire
+            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle;VSL""".stripMargin)
+      )
+
+      // When
+      val future = adapter.load(source)
+
+      // Then
+      future.map(s => s.isEmpty mustBe true)
+    }
+    "ignorer la ligne si elle ne contient pas de resultat MRS" in {
+      // Given
+      val source = Source.single(
+        ByteString(
+          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome;resultatsbeneficiaire
+            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle;""".stripMargin)
+      )
+
+      // When
+      val future = adapter.load(source)
+
+      // Then
+      future.map(s => s.isEmpty mustBe true)
+    }
+    "ignorer la ligne si elle contient un resultat MRS invalide" in {
+      // Given
+      val source = Source.single(
+        ByteString(
+          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome;resultatsbeneficiaire
+            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle;XXX""".stripMargin)
       )
 
       // When
@@ -204,8 +232,8 @@ class MRSValideeProspectCandidatCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome
-            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;;H3404;Peinture industrielle""".stripMargin)
+          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome;resultatsbeneficiaire
+            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;;H3404;Peinture industrielle;VSL""".stripMargin)
       )
 
       // When
@@ -218,8 +246,8 @@ class MRSValideeProspectCandidatCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome
-            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;N;H3404;Peinture industrielle""".stripMargin)
+          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome;resultatsbeneficiaire
+            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;N;H3404;Peinture industrielle;VSL""".stripMargin)
       )
 
       // When
@@ -232,7 +260,7 @@ class MRSValideeProspectCandidatCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome
+          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome;resultatsbeneficiaire
             |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;""".stripMargin)
       )
 
@@ -246,8 +274,8 @@ class MRSValideeProspectCandidatCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome
-            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;;Peinture industrielle""".stripMargin)
+          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome;resultatsbeneficiaire
+            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;;Peinture industrielle;VSL""".stripMargin)
       )
 
       // When
@@ -260,8 +288,8 @@ class MRSValideeProspectCandidatCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome
-            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle""".stripMargin)
+          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome;resultatsbeneficiaire
+            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle;VSL""".stripMargin)
       )
 
       // When
@@ -274,8 +302,8 @@ class MRSValideeProspectCandidatCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome
-            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle""".stripMargin)
+          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome;resultatsbeneficiaire
+            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle;VSL""".stripMargin)
       )
 
       // When
@@ -290,8 +318,8 @@ class MRSValideeProspectCandidatCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome
-            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle""".stripMargin)
+          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome;resultatsbeneficiaire
+            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle;VSL""".stripMargin)
       )
 
       // When
@@ -306,8 +334,8 @@ class MRSValideeProspectCandidatCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome
-            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle""".stripMargin)
+          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome;resultatsbeneficiaire
+            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle;VSL""".stripMargin)
       )
 
       // When
@@ -322,8 +350,8 @@ class MRSValideeProspectCandidatCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome
-            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle""".stripMargin)
+          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome;resultatsbeneficiaire
+            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle;VSL""".stripMargin)
       )
 
       // When
@@ -338,8 +366,8 @@ class MRSValideeProspectCandidatCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome
-            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle""".stripMargin)
+          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome;resultatsbeneficiaire
+            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle;VSL""".stripMargin)
       )
 
       // When
@@ -354,8 +382,8 @@ class MRSValideeProspectCandidatCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome
-            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle""".stripMargin)
+          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome;resultatsbeneficiaire
+            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle;VSL""".stripMargin)
       )
 
       // When
@@ -368,8 +396,8 @@ class MRSValideeProspectCandidatCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome
-            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle""".stripMargin)
+          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome;resultatsbeneficiaire
+            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle;VSL""".stripMargin)
       )
 
       // When
@@ -380,12 +408,28 @@ class MRSValideeProspectCandidatCSVAdapterSpec extends AsyncWordSpec
         s.toList.head.email.value mustBe "prenom.nom@mail.com"
       })
     }
+    "integrer le resultat MRS de la ligne" in {
+      // Given
+      val source = Source.single(
+        ByteString(
+          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome;resultatsbeneficiaire
+            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle;VSL""".stripMargin)
+      )
+
+      // When
+      val future = adapter.load(source)
+
+      // Then
+      future.map(s => {
+        s.toList.head.resultatMrs.get mustBe ResultatMrs.VSL
+      })
+    }
     "integrer le genre de la ligne" in {
       // Given
       val source = Source.single(
         ByteString(
-          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome
-            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle""".stripMargin)
+          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome;resultatsbeneficiaire
+            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle;VSL""".stripMargin)
       )
 
       // When
@@ -400,8 +444,8 @@ class MRSValideeProspectCandidatCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome
-            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle""".stripMargin)
+          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome;resultatsbeneficiaire
+            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle;VSL""".stripMargin)
       )
 
       // When
@@ -414,8 +458,8 @@ class MRSValideeProspectCandidatCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome
-            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle""".stripMargin)
+          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome;resultatsbeneficiaire
+            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle;VSL""".stripMargin)
       )
 
       // When
@@ -428,9 +472,9 @@ class MRSValideeProspectCandidatCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome
-            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-21 00:00:00;69220;O;H2909;Montage-assemblage mécanique
-            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle""".stripMargin)
+          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome;resultatsbeneficiaire
+            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-21 00:00:00;69220;O;H2909;Montage-assemblage mécanique;VEM
+            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle;VSL""".stripMargin)
       )
 
       // When
@@ -446,9 +490,9 @@ class MRSValideeProspectCandidatCSVAdapterSpec extends AsyncWordSpec
       // Given
       val source = Source.single(
         ByteString(
-          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome
+          """id_peconnect;identifiant_local;dc_agentpe_referent_id;dc_nom;dc_prenom;dc_adresseemail;dc_sexe_id;dd_daterealisation;dc_codepostal;dc_consentement_mail_id;dc_rome_id;dc_lblrome;resultatsbeneficiaire
             |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-20 00:00:00;69220;O;H3404;Peinture industrielle
-            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-21 00:00:00;69220;O;H3404;Peinture industrielle""".stripMargin)
+            |28d0b75a-b694-4de3-8849-18bfbfebd729;0123456789A;IDMU6650;NOM;PRENOM;PRENOM.NOM@mail.com;F;2019-06-21 00:00:00;69220;O;H3404;Peinture industrielle;VSL""".stripMargin)
       )
 
       // When
