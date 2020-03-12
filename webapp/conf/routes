@@ -43,4 +43,4 @@ GET         /infos-legales                                           controllers
 
 GET         /robots.txt                                              controllers.Assets.at(path="/public", file="robots.txt")
 GET         /assets/*file                                            controllers.Assets.versioned(file: String)
-GET         /stats                                                   controllers.Default.redirect(to = "https://datastudio.google.com/u/2/reporting/1RshGL_nciTUU3GyGH86UrQP_Yb7Ymlc0/page/WdGm")
+GET         /stats                                                   controllers.Default.redirect(to = "https://datastudio.google.com/reporting/be35ad66-85ac-40dd-8722-9112919e07bb")
