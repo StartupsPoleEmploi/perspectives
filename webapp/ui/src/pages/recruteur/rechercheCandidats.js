@@ -3,6 +3,7 @@ import $ from 'jquery';
 import 'bootstrap/js/dist/modal';
 import Pagination from '../../composants/Pagination.vue';
 import Places from '../../composants/Places.vue';
+import Autocompletion from '../../composants/Autocompletion.vue';
 import '../../commun/filters.js';
 import listeTempsTravail from '../../domain/candidat/tempsTravail';
 import niveauxLangues from '../../domain/candidat/niveauxLangues';
@@ -17,7 +18,8 @@ const app = new Vue({
     el: '#rechercheCandidats',
     components: {
         'pagination': Pagination,
-        'places': Places
+        'places': Places,
+        'autocompletion': Autocompletion
     },
     data: function () {
         return {
@@ -42,6 +44,7 @@ const app = new Vue({
             resultatRecherche: {
                 candidats: jsData.resultatRecherche.candidats,
                 nbCandidatsTotal: jsData.resultatRecherche.nbCandidatsTotal,
+                metierRechercheLabel: '',
                 pages: []
             },
             placesOptions: {
@@ -105,10 +108,7 @@ const app = new Vue({
                 candidatsInteresses = [];
             let titreSectionInteresses = '';
             if (self.metierChoisi) {
-                const metiersSecteur = self.secteurActiviteParCode(self.secteurActiviteChoisi).metiers;
-                const labelMetier = metiersSecteur.find(function (m) {
-                    return m.codeROME === self.metierChoisi;
-                }).label;
+                const labelMetier = self.resultatRecherche.metierRechercheLabel;
                 self.resultatRecherche.candidats.forEach(function (c) {
                     if (c.metiersValidesRecherches.filter(function (m) {
                         return m.codeROME.indexOf(self.metierChoisi) !== -1;
@@ -126,31 +126,6 @@ const app = new Vue({
                 return [
                     {
                         titre: self.titreSectionValides() + self.suffixeMetier(labelMetier),
-                        candidats: candidatsValides
-                    }, {
-                        titre: titreSectionInteresses,
-                        candidats: candidatsInteresses
-                    },
-                ]
-            } else if (self.secteurActiviteChoisi) {
-                const labelSecteurActivite = self.secteurActiviteParCode(self.secteurActiviteChoisi).label;
-                self.resultatRecherche.candidats.forEach(function (c) {
-                    if (c.metiersValidesRecherches.filter(function (m) {
-                        return self.secteurActiviteChoisi === ROME.codeSecteurActivite(m.codeROME);
-                    }).length !== 0) {
-                        candidatsValides.push(c);
-                    } else {
-                        candidatsInteresses.push(c);
-                    }
-                });
-                if (self.$refs.pagination.getPageCourante() === 1 && candidatsValides.length === 0) {
-                    titreSectionInteresses = self.titreSansCandidatsValides() + self.suffixeSecteur(labelSecteurActivite) + this.suffixeVille();
-                } else {
-                    titreSectionInteresses = 'D\'autres candidats recherchent ' + self.suffixeSecteur(labelSecteurActivite);
-                }
-                return [
-                    {
-                        titre: self.titreSectionValides() + self.suffixeSecteur(labelSecteurActivite),
                         candidats: candidatsValides
                     }, {
                         titre: titreSectionInteresses,
@@ -327,6 +302,7 @@ const app = new Vue({
                 app.localisationChoisie = app.localisation.label;
                 app.resultatRecherche.candidats = response.candidats;
                 app.resultatRecherche.nbCandidatsTotal = response.nbCandidatsTotal;
+                app.resultatRecherche.metierRechercheLabel = response.metierRecherche ? response.metierRecherche.label : '';
 
                 tracking.sendEvent(tracking.Events.RECRUTEUR_AFFICHAGE_RESULTATS_RECHERCHE_CANDIDAT, {
                     'page_courante': app.$refs.pagination ? app.$refs.pagination.getPageCourante() : 1,

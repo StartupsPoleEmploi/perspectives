@@ -272,25 +272,17 @@
                                         v-on:change="placesChange" v-on:clear="placesClear"></places>
                             </div>
                             <div class="col-12 mb-3">
-                                <div class="conteneurSelecteur conteneurSelecteur--violet">
-                                    <label for="secteursActivites" class="sr-only">Choisissez un secteur d'activité</label>
-                                    <select id="secteursActivites" name="secteurActivite" class="conteneurSelecteur-selecteur px-2 py-3 border-0 texte-noir font-size-sm"
-                                        v-model="secteurActivite" v-on:change="onSecteurActiviteModifie">
-                                        <option value="">Quel secteur d'activité ?</option>
-                                        <option v-for="secteurActivite in secteursActivites" v-bind:value="secteurActivite.code">{{secteurActivite.label}}</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-12 mb-3">
-                                <div class="conteneurSelecteur conteneurSelecteur--violet">
-                                    <label for="metiers" class="sr-only">Chosissez un métier</label>
-                                    <select id="metiers" name="metier" class="conteneurSelecteur-selecteur px-2 py-3 border-0 texte-noir font-size-sm"
-                                            v-model="metier" v-bind:disabled="secteurActivite === null || secteurActivite === ''">
-                                        <option value="" v-if="secteurActivite === null || secteurActivite === ''">Choisissez un secteur</option>
-                                        <option value="" v-else>Tous les métiers du secteur</option>
-                                        <option v-for="metier in metiers" v-bind:value="metier.codeROME">{{metier.label}}</option>
-                                    </select>
-                                </div>
+                                <autocompletion
+                                        source="/recruteur/recherche/metier?q="
+                                        propriete-resultats="metiers"
+                                        affichage-resultats="label"
+                                        valeur-resultats="codeROME"
+                                        nom="metier"
+                                        placeholder="Métier (3 lettres min.)"
+                                        :longueur-min="3"
+                                        v-model="metier"
+                                >
+                                </autocompletion>
                             </div>
                             <div class="col-12">
                                 <button type="submit" class="bouton bouton-action bouton--theme3 w-100"
